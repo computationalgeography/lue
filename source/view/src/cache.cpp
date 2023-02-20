@@ -2,13 +2,12 @@
 
 
 namespace lue {
-namespace view {
+    namespace view {
 
-bool Cache::contains(
-    Key const& key) const
-{
-    return _objects.find(key) != _objects.end();
-}
+        bool Cache::contains(Key const& key) const
+        {
+            return _objects.find(key) != _objects.end();
+        }
 
-}  // namespace view
+    }  // namespace view
 }  // namespace lue

@@ -19,8 +19,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_inter_partition_stream(
-        pybind11::module& module)
+    void bind_inter_partition_stream(pybind11::module& module)
     {
         module.def("inter_partition_stream", inter_partition_stream);
     }

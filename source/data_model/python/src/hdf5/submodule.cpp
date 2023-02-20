@@ -6,14 +6,13 @@ namespace py = pybind11;
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-void init_submodule(
-    py::module& module)
-{
-    py::module submodule = module.def_submodule(
-        "hdf5",
-        R"(
+        void init_submodule(py::module& module)
+        {
+            py::module submodule = module.def_submodule(
+                "hdf5",
+                R"(
     :mod:`lue.data_model.hdf5` --- Manipulating HDF5 from Python
     ============================================================
 
@@ -26,17 +25,17 @@ void init_submodule(
     not offered by this package yet.
 )");
 
-    submodule.attr("__version__") = py::str(BuildOptions::hdf5_version);
-    submodule.attr("hdf5_version") = py::str(BuildOptions::hdf5_version);
+            submodule.attr("__version__") = py::str(BuildOptions::hdf5_version);
+            submodule.attr("hdf5_version") = py::str(BuildOptions::hdf5_version);
 
-    init_shape(submodule);
-    init_identifier(submodule);
-    init_primary_data_object(submodule);
-    init_group(submodule);
-    init_file(submodule);
-    init_dataset(submodule);
-    init_validate(submodule);
-}
+            init_shape(submodule);
+            init_identifier(submodule);
+            init_primary_data_object(submodule);
+            init_group(submodule);
+            init_file(submodule);
+            init_dataset(submodule);
+            init_validate(submodule);
+        }
 
-}  // namespace hdf5
+    }  // namespace hdf5
 }  // namespace lue

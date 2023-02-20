@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm abs
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/default_policies/abs.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/default_policies/abs.hpp"
 
 #include "lue/framework/algorithm/value_policies/abs.hpp"
 #include "lue/framework/algorithm/value_policies/all.hpp"
@@ -16,9 +16,7 @@
 
 namespace detail {
 
-    template<
-        typename Element,
-        std::size_t rank>
+    template<typename Element, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
@@ -36,14 +34,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                               \
-    rank,                                        \
-    Element)                                     \
-                                                 \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
-{                                                \
-    detail::test_array<Element, rank>();         \
-}
+#define TEST_CASE(rank, Element)                                                                             \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
+    {                                                                                                        \
+        detail::test_array<Element, rank>();                                                                 \
+    }
 
 // TEST_CASE(1, double)
 TEST_CASE(2, double)
@@ -67,20 +63,14 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     using namespace lue::value_policies;
 
     {
-        Array array{
-                lue::create_partitioned_array(
-                        array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest() + 1}
-                    )
-            };
+        Array array{lue::create_partitioned_array(
+            array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest() + 1})};
         BOOST_CHECK(all(valid<BooleanElement>(abs(array))).get());
     }
 
     {
-        Array array{
-                lue::create_partitioned_array(
-                        array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest()}
-                    )
-            };
+        Array array{lue::create_partitioned_array(
+            array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest()})};
         BOOST_CHECK(none(valid<BooleanElement>(abs(array))).get());
     }
 }

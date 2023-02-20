@@ -5,8 +5,7 @@
 namespace lue {
     namespace policy::maximum {
 
-        template<
-            typename Element>
+        template<typename Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,11 +16,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        hpx::future<Element> maximum(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        hpx::future<Element> maximum(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::maximum::DefaultValuePolicies<Element>;
 

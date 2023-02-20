@@ -5,38 +5,29 @@
 namespace lue {
     namespace policy::asin {
 
-        template<
-            typename Element>
+        template<typename Element>
         class DomainPolicy
         {
 
             public:
 
-                static constexpr bool within_domain(
-                    Element const element) noexcept
+                static constexpr bool within_domain(Element const element) noexcept
                 {
                     return element >= Element{-1} && element <= Element{1};
                 }
-
         };
 
-        template<
-            typename Element>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultValuePolicies = policy::
+            DefaultValuePolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::asin
 
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        auto asin(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        auto asin(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::asin::DefaultValuePolicies<Element>;
 

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue shared no_data
-#include <boost/test/unit_test.hpp>
 #include "lue/no_data.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(integral)

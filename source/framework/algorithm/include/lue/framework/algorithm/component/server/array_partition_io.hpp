@@ -5,27 +5,16 @@
 
 namespace lue::server {
 
-    template<
-        typename Index,
-        Rank rank,
-        typename Value_>
+    template<typename Index, Rank rank, typename Value_>
     class ArrayPartitionIO:
-        public
-            hpx::components::migration_support<
-                    hpx::components::component_base<
-                            ArrayPartitionIO<Index, rank, Value_>
-                        >
-                >
+        public hpx::components::migration_support<
+            hpx::components::component_base<ArrayPartitionIO<Index, rank, Value_>>>
     {
 
         private:
 
-            using Base =
-                hpx::components::migration_support<
-                        hpx::components::component_base<
-                                ArrayPartitionIO<Index, rank, Value_>
-                            >
-                    >;
+            using Base = hpx::components::migration_support<
+                hpx::components::component_base<ArrayPartitionIO<Index, rank, Value_>>>;
 
         public:
 
@@ -46,8 +35,7 @@ namespace lue::server {
             }
 
 
-            ArrayPartitionIO(
-                Data&& data):
+            ArrayPartitionIO(Data&& data):
 
                 _io{std::move(data)}
 
@@ -59,8 +47,7 @@ namespace lue::server {
             // be Serializable and CopyConstructable. Components can be
             // MoveConstructable in which case the serialized data is moved into the
             // component's constructor.
-            ArrayPartitionIO(
-                ArrayPartitionIO const& other):
+            ArrayPartitionIO(ArrayPartitionIO const& other):
 
                 Base{other},
                 _io{other._io}
@@ -69,8 +56,7 @@ namespace lue::server {
             }
 
 
-            ArrayPartitionIO(
-                ArrayPartitionIO&& other):
+            ArrayPartitionIO(ArrayPartitionIO&& other):
 
                 Base{std::move(other)},
                 _io{std::move(other._io)}
@@ -110,8 +96,7 @@ namespace lue::server {
 
 
             std::vector<std::tuple<Indices, Value>> drain(
-                Offset const& partition_offset,
-                Shape const& partition_shape)
+                Offset const& partition_offset, Shape const& partition_shape)
             {
                 return _io.drain(partition_offset, partition_shape);
             }
@@ -129,13 +114,10 @@ namespace lue::server {
             }
 
 
-            template<
-                typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned version)
+            template<typename Archive>
+            void serialize(Archive& archive, [[maybe_unused]] unsigned version)
             {
-                archive & _io;
+                archive& _io;
             }
 
 
@@ -150,49 +132,44 @@ namespace lue::server {
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, is_solved, IsSolvedAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, nr_input_cells, NrInputCellsAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, partition_offsets, PartitionOffsetsAction);
-            HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, partition_offset_counts, PartitionOffsetCountsAction);
+            HPX_DEFINE_COMPONENT_ACTION(
+                ArrayPartitionIO, partition_offset_counts, PartitionOffsetCountsAction);
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartitionIO, drain, DrainAction);
-
     };
 
 }  // namespace lue::server
 
 
-#define LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(                 \
-    Index,                                                                   \
-    rank,                                                                    \
-    Value)                                                                   \
-                                                                             \
-namespace lue::detail {                                                      \
-                                                                             \
-    using ArrayPartitionIO_##Index##_##rank##_##Value =                      \
-        server::ArrayPartitionIO<Index, rank, Value>;                        \
-                                                                             \
-}                                                                            \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::IsDrainedAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_IsDrainedAction)              \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::IsSolvedAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_IsSolvedAction)              \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::NrInputCellsAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_NrInputCellsAction)        \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::DrainAction,   \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_DrainAction)               \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetsAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)    \
-                                                                             \
-HPX_REGISTER_ACTION_DECLARATION(                                             \
-    lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetCountsAction,  \
-    ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetCountsAction)
+#define LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(Index, rank, Value)                              \
+                                                                                                             \
+    namespace lue::detail {                                                                                  \
+                                                                                                             \
+        using ArrayPartitionIO_##Index##_##rank##_##Value = server::ArrayPartitionIO<Index, rank, Value>;    \
+    }                                                                                                        \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::IsDrainedAction,                           \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_IsDrainedAction)                                       \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::IsSolvedAction,                            \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_IsSolvedAction)                                        \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::NrInputCellsAction,                        \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_NrInputCellsAction)                                    \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::DrainAction,                               \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_DrainAction)                                           \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetsAction,                    \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetsAction)                                \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionIO_##Index##_##rank##_##Value::PartitionOffsetCountsAction,               \
+        ArrayPartitionIO_##Index##_##rank##_##Value##_PartitionOffsetCountsAction)
 
 using lue_Index = lue::Index;
 
@@ -205,25 +182,19 @@ LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, double)
 // #undef LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS
 
 
-#define LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(  \
-    name)                                                         \
-                                                                  \
-namespace lue {                                                   \
-                                                                  \
-    template<                                                     \
-        typename Index,                                           \
-        Rank rank,                                                \
-        typename Value>                                           \
-    class ArrayPartitionIO##name##Action                          \
-    {                                                             \
-                                                                  \
-        public:                                                   \
-                                                                  \
-            using Type = typename server::ArrayPartitionIO<Index, rank, Value>::name##Action;  \
-                                                                  \
-    };                                                            \
-                                                                  \
-}
+#define LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(name)                                        \
+                                                                                                             \
+    namespace lue {                                                                                          \
+                                                                                                             \
+        template<typename Index, Rank rank, typename Value>                                                  \
+        class ArrayPartitionIO##name##Action                                                                 \
+        {                                                                                                    \
+                                                                                                             \
+            public:                                                                                          \
+                                                                                                             \
+                using Type = typename server::ArrayPartitionIO<Index, rank, Value>::name##Action;            \
+        };                                                                                                   \
+    }
 
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(Drain)
 LUE_DEFINE_ARRAY_PARTITION_IO_COMPONENT_ACTION_TEMPLATE(IsDrained)

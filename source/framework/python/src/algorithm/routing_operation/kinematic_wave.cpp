@@ -8,8 +8,7 @@ namespace lue::framework {
         Rank const rank{2};
         using FlowDirectionElement = std::uint8_t;
 
-        template<
-            typename Element>
+        template<typename Element>
         PartitionedArray<Element, rank> kinematic_wave(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<Element, rank> const& discharge,
@@ -26,8 +25,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_kinematic_wave(
-        pybind11::module& module)
+    void bind_kinematic_wave(pybind11::module& module)
     {
         module.def("kinematic_wave", kinematic_wave<float>);
         module.def("kinematic_wave", kinematic_wave<double>);

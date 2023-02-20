@@ -1,14 +1,12 @@
 #pragma once
-#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_>
+        template<typename InputElement, typename OutputElement_>
         class Minimum
         {
 
@@ -22,44 +20,34 @@ namespace lue {
                     return std::numeric_limits<OutputElement>::max();
                 }
 
-                constexpr OutputElement operator()(
-                    InputElement const input_element) const noexcept
+                constexpr OutputElement operator()(InputElement const input_element) const noexcept
                 {
                     return input_element;
                 }
 
                 constexpr OutputElement operator()(
-                    InputElement const aggregated_value,
-                    InputElement const input_element) const noexcept
+                    InputElement const aggregated_value, InputElement const input_element) const noexcept
                 {
                     return std::min(aggregated_value, input_element);
                 }
 
-                constexpr OutputElement partition(
-                    OutputElement const input_element) const noexcept
+                constexpr OutputElement partition(OutputElement const input_element) const noexcept
                 {
                     return input_element;
                 }
 
                 constexpr OutputElement partition(
-                    OutputElement const aggregated_value,
-                    OutputElement const input_element) const noexcept
+                    OutputElement const aggregated_value, OutputElement const input_element) const noexcept
                 {
                     return std::min(aggregated_value, input_element);
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
-    hpx::future<Element> minimum(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array)
+    template<typename Policies, typename Element, Rank rank>
+    hpx::future<Element> minimum(Policies const& policies, PartitionedArray<Element, rank> const& array)
     {
         using Functor = detail::Minimum<Element, Element>;
 

@@ -5,17 +5,12 @@
 
 namespace lue {
 
-    template<
-        typename Element>
+    template<typename Element>
     using Gradients = std::tuple<PartitionedArray<Element, 2>, PartitionedArray<Element, 2>>;
 
 
-    template<
-        typename Policies,
-        typename Element>
+    template<typename Policies, typename Element>
     Gradients<Element> gradients(
-        Policies const& policies,
-        PartitionedArray<Element, 2> const& elevation,
-        Element const cell_size);
+        Policies const& policies, PartitionedArray<Element, 2> const& elevation, Element const cell_size);
 
 }  // namespace lue

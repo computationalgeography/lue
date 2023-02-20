@@ -3,13 +3,12 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-template<
-    typename T>
-class TypeTraits
-{
-};
+        template<typename T>
+        class TypeTraits
+        {
+        };
 
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

@@ -7,28 +7,19 @@
 namespace lue {
     namespace policy::d8_flow_direction {
 
-        template<
-            typename FlowDirectionElement,
-            typename ElevationElement>
+        template<typename FlowDirectionElement, typename ElevationElement>
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<ElevationElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<FlowDirectionElement>,
-                            AllValuesWithinRange<FlowDirectionElement>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    SkipNoData<ElevationElement>,
-                    FillHaloWithConstantValue<ElevationElement>>>>;
+            OutputsPolicies<OutputPolicies<
+                DontMarkNoData<FlowDirectionElement>,
+                AllValuesWithinRange<FlowDirectionElement>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                SkipNoData<ElevationElement>,
+                FillHaloWithConstantValue<ElevationElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename ElevationElement>
-        class DefaultPolicies:
-            public DefaultPoliciesBase<FlowDirectionElement, ElevationElement>
+        template<typename FlowDirectionElement, typename ElevationElement>
+        class DefaultPolicies: public DefaultPoliciesBase<FlowDirectionElement, ElevationElement>
         {
 
             public:
@@ -41,40 +32,29 @@ namespace lue {
                 DefaultPolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FlowDirectionOutputPolicies{},
-                            ElevationInputPolicies{FillHaloWithConstantValue<ElevationElement>{
-                                std::numeric_limits<ElevationElement>::min()}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FlowDirectionOutputPolicies{},
+                        ElevationInputPolicies{FillHaloWithConstantValue<ElevationElement>{
+                            std::numeric_limits<ElevationElement>::min()}}}
 
                 {
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement,
-            typename ElevationElement>
+        template<typename FlowDirectionElement, typename ElevationElement>
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<ElevationElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<FlowDirectionElement>,
-                            AllValuesWithinRange<FlowDirectionElement>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    DefaultInputNoDataPolicy<ElevationElement>,
-                    FillHaloWithConstantValue<ElevationElement>>>>;
+            OutputsPolicies<OutputPolicies<
+                DefaultOutputNoDataPolicy<FlowDirectionElement>,
+                AllValuesWithinRange<FlowDirectionElement>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                DefaultInputNoDataPolicy<ElevationElement>,
+                FillHaloWithConstantValue<ElevationElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename ElevationElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<FlowDirectionElement, ElevationElement>
+        template<typename FlowDirectionElement, typename ElevationElement>
+        class DefaultValuePolicies: public DefaultValuePoliciesBase<FlowDirectionElement, ElevationElement>
         {
 
             public:
@@ -87,34 +67,24 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FlowDirectionOutputPolicies{},
-                            ElevationInputPolicies{FillHaloWithConstantValue<ElevationElement>{
-                                std::numeric_limits<ElevationElement>::min()}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FlowDirectionOutputPolicies{},
+                        ElevationInputPolicies{FillHaloWithConstantValue<ElevationElement>{
+                            std::numeric_limits<ElevationElement>::min()}}}
 
                 {
                 }
-
         };
 
     }  // namespace policy::d8_flow_direction
 
 
-    template<
-        typename FlowDirectionElement,
-        typename Policies,
-        typename ElevationElement,
-        Rank rank>
+    template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>
     PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
-        Policies const& policies,
-        PartitionedArray<ElevationElement, rank> const& elevation);
+        Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation);
 
 
-    template<
-        typename FlowDirectionElement,
-        typename ElevationElement,
-        Rank rank>
+    template<typename FlowDirectionElement, typename ElevationElement, Rank rank>
     PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
         PartitionedArray<ElevationElement, rank> const& elevation)
     {

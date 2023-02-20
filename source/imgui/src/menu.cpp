@@ -4,9 +4,7 @@
 
 namespace lue::gui {
 
-    Menu::Menu(
-        std::string const& label,
-        bool const enabled):
+    Menu::Menu(std::string const& label, bool const enabled):
 
         Selectable{ImGui::BeginMenu(label.c_str(), enabled)}
 
@@ -16,7 +14,7 @@ namespace lue::gui {
 
     Menu::~Menu()
     {
-        if(was_selected())
+        if (was_selected())
         {
             ImGui::EndMenu();
         }

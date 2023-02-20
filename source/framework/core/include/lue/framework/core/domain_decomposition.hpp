@@ -1,23 +1,21 @@
 #pragma once
-#include "lue/framework/core/indices.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/array_partition_definition.hpp"
 #include "lue/framework/core/array_visitor.hpp"
 #include "lue/framework/core/assert.hpp"
+#include "lue/framework/core/indices.hpp"
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <numeric>
 #include <vector>
-#include <iostream>
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename Shapes>
-        class ReshapeVisitor:
-            public ArrayVisitor<ShapeT<Shapes>>
+        template<typename Shapes>
+        class ReshapeVisitor: public ArrayVisitor<ShapeT<Shapes>>
         {
 
             private:
@@ -27,10 +25,7 @@ namespace lue {
 
             public:
 
-                ReshapeVisitor(
-                    Shapes& shapes,
-                    Index const dimension_idx,
-                    Count const new_size):
+                ReshapeVisitor(Shapes& shapes, Index const dimension_idx, Count const new_size):
 
                     Base{shapes.shape()},
                     _shapes{shapes},
@@ -56,13 +51,10 @@ namespace lue {
                 Index const _dimension_idx;
 
                 Count const _new_size;
-
         };
 
 
-        template<
-            typename Count,
-            Rank rank>
+        template<typename Count, Rank rank>
         void reshape_shapes(
             Array<Shape<Count, rank>, rank>& shapes,
             Shape<Count, rank> const& begin_indices,
@@ -77,24 +69,17 @@ namespace lue {
         }
 
 
-        template<
-            typename Container>
-        bool is_all_less(
-            Container const& container1,
-            Container const& container2)
+        template<typename Container>
+        bool is_all_less(Container const& container1, Container const& container2)
         {
-            return
-                std::mismatch(container1.begin(), container1.end(), container2.begin(), std::less_equal<>{}) ==
-                std::make_pair(container1.end(), container2.end());
+            return std::mismatch(
+                       container1.begin(), container1.end(), container2.begin(), std::less_equal<>{}) ==
+                   std::make_pair(container1.end(), container2.end());
         }
 
 
-        template<
-            typename Count,
-            Rank rank>
-        bool is_subset_of(
-            Shape<Count, rank> const& small_shape,
-            Shape<Count, rank> const& large_shape)
+        template<typename Count, Rank rank>
+        bool is_subset_of(Shape<Count, rank> const& small_shape, Shape<Count, rank> const& large_shape)
         {
             return is_all_less(small_shape, large_shape);
         }
@@ -102,12 +87,9 @@ namespace lue {
     }  // namespace detail
 
 
-    template<
-        typename Count,
-        Rank rank>
+    template<typename Count, Rank rank>
     Array<Shape<Count, rank>, rank> partition_shapes(
-        Shape<Count, rank> const& array_shape,
-        Shape<Count, rank> const& partition_shape)
+        Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
     {
         using Shape = lue::Shape<Count, rank>;
         using Shapes = lue::Array<Shape, rank>;
@@ -119,17 +101,17 @@ namespace lue {
         // number of times the extent of a partition fits within the extent of
         // the array.
 
-        if(nr_elements(array_shape) == 0)
+        if (nr_elements(array_shape) == 0)
         {
             throw std::runtime_error("Array shape must not be empty");
         }
 
-        if(nr_elements(partition_shape) == 0)
+        if (nr_elements(partition_shape) == 0)
         {
             throw std::runtime_error("Partition shape must not be empty");
         }
 
-        if(!detail::is_subset_of(partition_shape, array_shape))
+        if (!detail::is_subset_of(partition_shape, array_shape))
         {
             throw std::runtime_error("Partition size must be smaller than or equal to array size");
         }
@@ -137,12 +119,12 @@ namespace lue {
         Shape shape_in_partitions{};
 
         std::transform(
-            array_shape.begin(), array_shape.end(), partition_shape.begin(),
+            array_shape.begin(),
+            array_shape.end(),
+            partition_shape.begin(),
             shape_in_partitions.begin(),
             [](Count const area_extent, Count const partition_extent)
-            {
-                return area_extent / partition_extent;
-            });
+            { return area_extent / partition_extent; });
 
         // Create an array of shape, filled with the partition shape passed in
         Shapes partition_shapes{shape_in_partitions, partition_shape};
@@ -154,7 +136,7 @@ namespace lue {
         begin_indices.fill(0);
         Shape end_indices{shape_in_partitions};
 
-        for(Rank d = 0; d < rank; ++d)
+        for (Rank d = 0; d < rank; ++d)
         {
             Count new_extent =
                 // Extent of a partition
@@ -164,7 +146,7 @@ namespace lue {
 
             lue_hpx_assert(new_extent < 2 * partition_shape[d]);
 
-            if(new_extent != partition_shape[d])
+            if (new_extent != partition_shape[d])
             {
                 // We can select the relevant shapes using start
                 // indices and end indices along all dimensions. For
@@ -191,41 +173,30 @@ namespace lue {
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
+    template<typename Index, std::size_t rank>
     Shape<Index, rank> shape_in_partitions(
-        Shape<Index, rank> const& area_shape,
-        Shape<Index, rank> const& partition_shape)
+        Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
     {
         Shape<Index, rank> result;
 
         std::transform(
-            area_shape.begin(), area_shape.end(), partition_shape.begin(),
+            area_shape.begin(),
+            area_shape.end(),
+            partition_shape.begin(),
             result.begin(),
             [](Index const area_extent, Index const partition_extent)
-            {
-                return
-                    static_cast<Index>(std::ceil(
-                        double(area_extent) / double(partition_extent)));
-            });
+            { return static_cast<Index>(std::ceil(double(area_extent) / double(partition_extent))); });
 
         return result;
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
-    std::size_t nr_partitions(
-        Shape<Index, rank> const& area_shape,
-        Shape<Index, rank> const& partition_shape)
+    template<typename Index, std::size_t rank>
+    std::size_t nr_partitions(Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
     {
         auto const shape = shape_in_partitions(area_shape, partition_shape);
 
-        return std::accumulate(
-            shape.begin(), shape.end(), std::size_t{1},
-            std::multiplies<std::size_t>());
+        return std::accumulate(shape.begin(), shape.end(), std::size_t{1}, std::multiplies<std::size_t>());
     }
 
 
@@ -243,12 +214,9 @@ namespace lue {
         the array. In that case, those partitions will have to be resized
         to match the array's extent.
     */
-    template<
-        typename Index,
-        std::size_t rank>
+    template<typename Index, std::size_t rank>
     Shape<Index, rank> max_partition_shape(
-        Shape<Index, rank> const& array_shape,
-        Index const min_nr_partitions)
+        Shape<Index, rank> const& array_shape, Index const min_nr_partitions)
     {
         static_assert(rank > 0);
 
@@ -263,32 +231,27 @@ namespace lue {
 
         Index nr_partitions = 0;
 
-        for(auto& extent: partition_shape) {
-            if(nr_partitions < min_nr_partitions) {
+        for (auto& extent : partition_shape)
+        {
+            if (nr_partitions < min_nr_partitions)
+            {
                 extent /= nr_partitions_per_dimension;
                 nr_partitions += nr_partitions_per_dimension;
             }
         }
 
         lue_hpx_assert(nr_elements(partition_shape) > 0);
-        lue_hpx_assert(nr_elements(shape_in_partitions(array_shape, partition_shape)) >=
-            min_nr_partitions);
+        lue_hpx_assert(nr_elements(shape_in_partitions(array_shape, partition_shape)) >= min_nr_partitions);
 
         return partition_shape;
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
-    Indices<Index, rank> linear_to_shape_index(
-        Shape<Index, rank> const& shape,
-        Index idx)
+    template<typename Index, std::size_t rank>
+    Indices<Index, rank> linear_to_shape_index(Shape<Index, rank> const& shape, Index idx)
     {
         static_assert(rank > 0);
-        lue_hpx_assert(
-            idx < std::accumulate(
-                shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
+        lue_hpx_assert(idx < std::accumulate(shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
 
         // Given a shape and a linear index, return the corresponding cell
         // indices along each dimension
@@ -299,13 +262,13 @@ namespace lue {
             auto result_ptr = result.begin();
 
             // Iterate over all dimensions
-            for(auto shape_ptr = shape.begin(); shape_ptr != shape.end();
-                    ++shape_ptr) {
+            for (auto shape_ptr = shape.begin(); shape_ptr != shape.end(); ++shape_ptr)
+            {
 
                 // Determine the number of cells represented by a single increment
                 // along the current dimension
-                auto const nr_cells = std::accumulate(
-                    shape_ptr + 1, shape.end(), Index{1}, std::multiplies<Index>());
+                auto const nr_cells =
+                    std::accumulate(shape_ptr + 1, shape.end(), Index{1}, std::multiplies<Index>());
 
                 auto& dimension_index = *result_ptr;
 
@@ -320,9 +283,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
+    template<typename Index, std::size_t rank>
     ArrayPartitionDefinition<Index, rank> partition(
         Shape<Index, rank> const& area_shape,
         Shape<Index, rank> const& partition_shape,
@@ -337,23 +298,21 @@ namespace lue {
             auto const indices = linear_to_shape_index(shape_in_partitions, Index{locality_id});
 
             std::transform(
-                indices.begin(), indices.end(), partition_shape.begin(),
+                indices.begin(),
+                indices.end(),
+                partition_shape.begin(),
                 start.begin(),
-                [](
-                    Index const partition_dimension_index,
-                    Index const partition_dimension_extent)
-                {
-                    return partition_dimension_index * partition_dimension_extent;
-                });
+                [](Index const partition_dimension_index, Index const partition_dimension_extent)
+                { return partition_dimension_index * partition_dimension_extent; });
         }
 
         ArrayPartitionDefinition<Index, rank> result{start, partition_shape};
 
         // Determine final shape of partition, taking into account that the
         // partition must not extent beyond the area's shape
-        for(std::size_t i = 0; i < rank; ++i) {
-            auto const extent =
-                std::min(result.start()[i] + result.shape()[i], area_shape[i]);
+        for (std::size_t i = 0; i < rank; ++i)
+        {
+            auto const extent = std::min(result.start()[i] + result.shape()[i], area_shape[i]);
 
             result.shape()[i] = extent - result.start()[i];
         }
@@ -362,12 +321,9 @@ namespace lue {
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
+    template<typename Index, std::size_t rank>
     Shape<Index, rank> clamp_area_shape(
-        Shape<Index, rank> const& area_shape,
-        Shape<Index, rank> const& partition_shape)
+        Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
     {
         // Iterate over each extent and divide the area extent by the partition
         // extent (rounded up). Create a new area shape in which along each
@@ -375,23 +331,20 @@ namespace lue {
         Shape<Index, rank> result;
 
         std::transform(
-            area_shape.begin(), area_shape.end(), partition_shape.begin(),
+            area_shape.begin(),
+            area_shape.end(),
+            partition_shape.begin(),
             result.begin(),
-            [](Index const area_extent, Index const partition_extent)
-            {
-                return
-                    static_cast<Index>(std::ceil(
-                        double(area_extent) / double(partition_extent))) *
-                    partition_extent;
+            [](Index const area_extent, Index const partition_extent) {
+                return static_cast<Index>(std::ceil(double(area_extent) / double(partition_extent))) *
+                       partition_extent;
             });
 
         return result;
     }
 
 
-    template<
-        typename Index,
-        std::size_t rank>
+    template<typename Index, std::size_t rank>
     std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
         Shape<Index, rank> const& area_shape,
         Shape<Index, rank> const& partition_shape,
@@ -401,11 +354,12 @@ namespace lue {
         lue_hpx_assert(nr_localities > 0);
         lue_hpx_assert(locality_id < nr_localities);
 
-        auto const shape_in_partitions_ =
-            shape_in_partitions(area_shape, partition_shape);
+        auto const shape_in_partitions_ = shape_in_partitions(area_shape, partition_shape);
         auto const nr_partitions = std::accumulate(
-            shape_in_partitions_.begin(), shape_in_partitions_.end(),
-            std::size_t(1), std::multiplies<std::size_t>());
+            shape_in_partitions_.begin(),
+            shape_in_partitions_.end(),
+            std::size_t(1),
+            std::multiplies<std::size_t>());
 
         std::vector<ArrayPartitionDefinition<Index, rank>> result;
 
@@ -413,22 +367,24 @@ namespace lue {
         // Pick partitions according to the Hilbert curve. This way, partitions
         // within a locality are close to each other.
 
-        if(nr_partitions <= nr_localities) {
+        if (nr_partitions <= nr_localities)
+        {
             // The first nr_partitions localities will get a single partition. The
             // rest will get none. This is a waste of resources. We seem
             // to have more localities than we need.
-            if(locality_id < nr_partitions) {
+            if (locality_id < nr_partitions)
+            {
                 result.emplace_back(
                     partition(area_shape, partition_shape, shape_in_partitions_, locality_id));
             }
         }
-        else {
+        else
+        {
             // Try to assign an equal amount of partitions to each locality. This
             // is not always possible. The last n localities might have one
             // partition less than ones before that.
             auto const max_nr_partitions_per_locality =
-                static_cast<std::size_t>(
-                    std::ceil(double(nr_partitions) / double(nr_localities)));
+                static_cast<std::size_t>(std::ceil(double(nr_partitions) / double(nr_localities)));
             auto const nr_localities_with_less_partitions =
                 (nr_localities * max_nr_partitions_per_locality) - nr_partitions;
             std::uint32_t const first_locality_with_less_partitions =
@@ -439,25 +395,22 @@ namespace lue {
 
             // Determine indices of partitions to assign to current locality
             {
-                if(locality_id < first_locality_with_less_partitions) {
+                if (locality_id < first_locality_with_less_partitions)
+                {
                     // Current locality is one of those that get the regular
                     // amount of partitions assigned
-                    begin_partition_idx =
-                        locality_id * max_nr_partitions_per_locality;
-                    end_partition_idx =
-                        begin_partition_idx + max_nr_partitions_per_locality;
+                    begin_partition_idx = locality_id * max_nr_partitions_per_locality;
+                    end_partition_idx = begin_partition_idx + max_nr_partitions_per_locality;
                 }
-                else {
+                else
+                {
                     // Current locality is one of those that get one partition
                     // less assigned
                     begin_partition_idx =
-                        first_locality_with_less_partitions *
-                        max_nr_partitions_per_locality;
-                    begin_partition_idx +=
-                        (locality_id - first_locality_with_less_partitions) *
-                        (max_nr_partitions_per_locality - 1);
-                    end_partition_idx =
-                        begin_partition_idx + (max_nr_partitions_per_locality - 1);
+                        first_locality_with_less_partitions * max_nr_partitions_per_locality;
+                    begin_partition_idx += (locality_id - first_locality_with_less_partitions) *
+                                           (max_nr_partitions_per_locality - 1);
+                    end_partition_idx = begin_partition_idx + (max_nr_partitions_per_locality - 1);
                 }
             }
 
@@ -467,14 +420,12 @@ namespace lue {
                 auto const nr_partitions = end_partition_idx - begin_partition_idx;
                 result.reserve(nr_partitions);
 
-                for(std::uint32_t partition_id = begin_partition_idx;
-                        partition_id < end_partition_idx; ++partition_id) {
+                for (std::uint32_t partition_id = begin_partition_idx; partition_id < end_partition_idx;
+                     ++partition_id)
+                {
 
                     result.emplace_back(
-                        partition(
-                            area_shape, partition_shape, shape_in_partitions_,
-                            partition_id));
-
+                        partition(area_shape, partition_shape, shape_in_partitions_, partition_id));
                 }
             }
         }

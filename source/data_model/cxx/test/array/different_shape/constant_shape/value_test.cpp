@@ -1,64 +1,60 @@
 #define BOOST_TEST_MODULE lue array different_shape constant_shape value
-#include <boost/test/unit_test.hpp>
 #include "lue/array/different_shape/constant_shape/value.hpp"
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
-class Fixture:
-    public lue::data_model::test::FileFixture
+class Fixture: public lue::data_model::test::FileFixture
 {
 
-public:
+    public:
 
-    Fixture()
-        : FileFixture{"value.h5"},
-          _filename{"value.h5"},
-          _value_name{"my_value"},
-          _datatype{lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()},
-          _rank{2},
-          _file{std::make_unique<lue::hdf5::File>(
-            lue::hdf5::create_file(_filename))},
-          _value{std::make_unique<lue::data_model::different_shape::constant_shape::Value>(
-            lue::data_model::different_shape::constant_shape::create_value(
-                *_file, _value_name, _datatype, _rank))}
-    {
-    }
+        Fixture():
+            FileFixture{"value.h5"},
+            _filename{"value.h5"},
+            _value_name{"my_value"},
+            _datatype{lue::hdf5::NativeDatatypeTraits<int32_t>::type_id()},
+            _rank{2},
+            _file{std::make_unique<lue::hdf5::File>(lue::hdf5::create_file(_filename))},
+            _value{std::make_unique<lue::data_model::different_shape::constant_shape::Value>(
+                lue::data_model::different_shape::constant_shape::create_value(
+                    *_file, _value_name, _datatype, _rank))}
+        {
+        }
 
-    Fixture(Fixture const&)=delete;
+        Fixture(Fixture const&) = delete;
 
-    Fixture(Fixture&&)=delete;
+        Fixture(Fixture&&) = delete;
 
-    ~Fixture() override =default;
+        ~Fixture() override = default;
 
-    Fixture& operator=(Fixture const&)=delete;
+        Fixture& operator=(Fixture const&) = delete;
 
-    Fixture& operator=(Fixture&&)=delete;
+        Fixture& operator=(Fixture&&) = delete;
 
-    auto& value()
-    {
-        return *_value;
-    }
+        auto& value()
+        {
+            return *_value;
+        }
 
-    auto rank() const
-    {
-        return _rank;
-    }
+        auto rank() const
+        {
+            return _rank;
+        }
 
-    auto const& datatype() const
-    {
-        return _datatype;
-    }
+        auto const& datatype() const
+        {
+            return _datatype;
+        }
 
-private:
+    private:
 
-    std::string const _filename;
-    std::string const _value_name;
-    lue::hdf5::Datatype const _datatype;
-    lue::data_model::Rank const _rank;
-    std::unique_ptr<lue::hdf5::File> _file;
-    std::unique_ptr<lue::data_model::different_shape::constant_shape::Value>
-        _value;
-
+        std::string const _filename;
+        std::string const _value_name;
+        lue::hdf5::Datatype const _datatype;
+        lue::data_model::Rank const _rank;
+        std::unique_ptr<lue::hdf5::File> _file;
+        std::unique_ptr<lue::data_model::different_shape::constant_shape::Value> _value;
 };
 
 
@@ -67,8 +63,7 @@ BOOST_FIXTURE_TEST_CASE(create_value, Fixture)
     auto const& value = this->value();
 
     BOOST_CHECK(value.memory_datatype() == datatype());
-    BOOST_CHECK(
-        value.file_datatype() == lue::hdf5::file_datatype(datatype()));
+    BOOST_CHECK(value.file_datatype() == lue::hdf5::file_datatype(datatype()));
     BOOST_CHECK_EQUAL(value.rank(), rank());
     BOOST_CHECK_EQUAL(value.nr_objects(), 0);
 }
@@ -83,13 +78,12 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
     lue::data_model::Counts const nr_locations_in_time1{2, 1, 3};
 
     {
-        value.expand(
-            ids1.size(), ids1.data(),
-            array_shapes1.data(), nr_locations_in_time1.data());
+        value.expand(ids1.size(), ids1.data(), array_shapes1.data(), nr_locations_in_time1.data());
 
         BOOST_REQUIRE_EQUAL(value.nr_objects(), ids1.size());
 
-        for(std::size_t o = 0; o < ids1.size(); ++o) {
+        for (std::size_t o = 0; o < ids1.size(); ++o)
+        {
             auto value_o = value[ids1[o]];
 
             BOOST_CHECK(value_o.array_shape() == array_shapes1[o]);
@@ -102,13 +96,12 @@ BOOST_FIXTURE_TEST_CASE(update_all_object_arrays, Fixture)
     lue::data_model::Counts const nr_locations_in_time2{4, 3, 2};
 
     {
-        value.expand(
-            ids2.size(), ids2.data(),
-            array_shapes2.data(), nr_locations_in_time2.data());
+        value.expand(ids2.size(), ids2.data(), array_shapes2.data(), nr_locations_in_time2.data());
 
         BOOST_REQUIRE_EQUAL(value.nr_objects(), ids1.size() + ids2.size());
 
-        for(std::size_t o = 0; o < ids2.size(); ++o) {
+        for (std::size_t o = 0; o < ids2.size(); ++o)
+        {
             auto value_o = value[ids2[o]];
 
             BOOST_CHECK(value_o.array_shape() == array_shapes2[o]);

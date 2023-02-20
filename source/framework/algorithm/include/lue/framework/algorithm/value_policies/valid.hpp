@@ -10,25 +10,17 @@ namespace lue {
         // In the result, each elements contains a 0 or 1. No element
         // contains a no-data value, or any other value.
 
-        template<
-            typename BooleanElement,
-            typename ExpressionElement>
+        template<typename BooleanElement, typename ExpressionElement>
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<ExpressionElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            MarkNoDataByValue<BooleanElement>,
-                            AllValuesWithinRange<BooleanElement, ExpressionElement>
-                        >
-                >,
+            OutputsPolicies<OutputPolicies<
+                MarkNoDataByValue<BooleanElement>,
+                AllValuesWithinRange<BooleanElement, ExpressionElement>>>,
             InputsPolicies<InputPolicies<DefaultInputNoDataPolicy<ExpressionElement>>>>;
 
 
-        template<
-            typename BooleanElement,
-            typename ExpressionElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<BooleanElement, ExpressionElement>
+        template<typename BooleanElement, typename ExpressionElement>
+        class DefaultValuePolicies: public DefaultValuePoliciesBase<BooleanElement, ExpressionElement>
         {
 
             public:
@@ -40,14 +32,10 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            BooleanOutputPolicies{0},
-                            ExpressionInputPolicies{}
-                        }
+                        DomainPolicyT<PoliciesBase>{}, BooleanOutputPolicies{0}, ExpressionInputPolicies{}}
 
                 {
                 }
-
         };
 
     }  // namespace policy::valid
@@ -55,12 +43,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename BooleanElement,
-            typename ExpressionElement,
-            Rank rank>
-        PartitionedArray<BooleanElement, rank> valid(
-            PartitionedArray<ExpressionElement, rank> const& array)
+        template<typename BooleanElement, typename ExpressionElement, Rank rank>
+        PartitionedArray<BooleanElement, rank> valid(PartitionedArray<ExpressionElement, rank> const& array)
         {
             using Policies = policy::valid::DefaultValuePolicies<BooleanElement, ExpressionElement>;
 

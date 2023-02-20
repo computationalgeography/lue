@@ -1,14 +1,13 @@
 #pragma once
-#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 
 
 namespace lue::detail {
 
     // Return true if none of the input elements is true. All of them evaluate
     // to false.
-    template<
-        typename InputElement>
+    template<typename InputElement>
     class None
     {
 
@@ -24,38 +23,33 @@ namespace lue::detail {
                 return false;
             }
 
-            constexpr OutputElement operator()(
-                InputElement const input_element) const noexcept
+            constexpr OutputElement operator()(InputElement const input_element) const noexcept
             {
                 // The result is true if the input element is not true
                 return !input_element;
             }
 
             constexpr OutputElement operator()(
-                InputElement const aggregated_value,
-                InputElement const input_element) const noexcept
+                InputElement const aggregated_value, InputElement const input_element) const noexcept
             {
                 // The result is true if the value aggregated until now is true
                 // and the input element is not true
                 return aggregated_value && !input_element;
             }
 
-            constexpr OutputElement partition(
-                OutputElement const input_element) const noexcept
+            constexpr OutputElement partition(OutputElement const input_element) const noexcept
             {
                 // The result is true if the input element is true
                 return input_element;
             }
 
             constexpr OutputElement partition(
-                OutputElement const aggregated_value,
-                OutputElement const input_element) const noexcept
+                OutputElement const aggregated_value, OutputElement const input_element) const noexcept
             {
                 // The result is true if the value aggregated until now is true
                 // and the input element is true
                 return aggregated_value && input_element;
             }
-
     };
 
 }  // namespace lue::detail

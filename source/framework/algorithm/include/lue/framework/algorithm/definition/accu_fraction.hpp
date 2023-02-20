@@ -1,15 +1,14 @@
 #pragma once
 #include "lue/framework/algorithm/accu_fraction.hpp"
-#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail::accu_fraction {
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         using Material = flow_accumulation::Material<MaterialElement>;
 
 
@@ -48,9 +47,7 @@ namespace lue {
                 }
 
 
-                void accumulate_input(
-                    InputElement const& input_element,
-                    OutputElement output_element) const
+                void accumulate_input(InputElement const& input_element, OutputElement output_element) const
                 {
                     auto const& [material, fraction] = input_element;
                     auto& [flux, state] = output_element;
@@ -59,10 +56,9 @@ namespace lue {
                         (_ondp_flux.is_no_data(flux) && _ondp_state.is_no_data(state)) ||
                         (!_ondp_flux.is_no_data(flux) && !_ondp_state.is_no_data(state)));
 
-                    if(!_ondp_flux.is_no_data(flux))
+                    if (!_ondp_flux.is_no_data(flux))
                     {
-                        if(_indp_material.is_no_data(material) ||
-                            _indp_fraction.is_no_data(fraction))
+                        if (_indp_material.is_no_data(material) || _indp_fraction.is_no_data(fraction))
                         {
                             _ondp_flux.mark_no_data(flux);
                             _ondp_state.mark_no_data(state);
@@ -93,11 +89,11 @@ namespace lue {
                     auto const& [upstream_flux, upstream_state] = upstream_material_element;
                     auto& [downstream_flux, downstream_state] = downstream_material_element;
 
-                    if(!_ondp_flux.is_no_data(downstream_flux))
+                    if (!_ondp_flux.is_no_data(downstream_flux))
                     {
                         lue_hpx_assert(!_ondp_state.is_no_data(downstream_state));
 
-                        if(_ondp_flux.is_no_data(upstream_flux))
+                        if (_ondp_flux.is_no_data(upstream_flux))
                         {
                             lue_hpx_assert(_ondp_state.is_no_data(upstream_state));
 
@@ -122,15 +118,12 @@ namespace lue {
                 OutputFluxNoDataPolicy _ondp_flux;
 
                 OutputStateNoDataPolicy _ondp_state;
-
         };
 
 
         // This class is needed for keeping track of information
         // that is needed to insert external material into a cell.
-        template<
-            typename MaterialCells,
-            typename FractionCells>
+        template<typename MaterialCells, typename FractionCells>
         class InputMaterial
         {
 
@@ -141,9 +134,7 @@ namespace lue {
                 using InputElement = std::tuple<InputMaterialElement const&, FractionElement const&>;
 
 
-                InputMaterial(
-                    MaterialCells const& material,
-                    FractionCells const& fraction):
+                InputMaterial(MaterialCells const& material, FractionCells const& fraction):
 
                     _material{material},
                     _fraction{fraction}
@@ -152,9 +143,7 @@ namespace lue {
                 }
 
 
-                InputElement operator()(
-                    Index const idx0,
-                    Index const idx1) const
+                InputElement operator()(Index const idx0, Index const idx1) const
                 {
                     return std::forward_as_tuple(_material(idx0, idx1), _fraction(idx0, idx1));
                 }
@@ -165,18 +154,14 @@ namespace lue {
                 MaterialCells const& _material;
 
                 FractionCells const& _fraction;
-
         };
 
 
-        template<
-            typename MaterialCells>
+        template<typename MaterialCells>
         using OutputMaterial = flow_accumulation::OutputMaterial<MaterialCells>;
 
 
-        template<
-            typename MaterialElement,
-            typename FractionElement>
+        template<typename MaterialElement, typename FractionElement>
         class Accumulator
         {
 
@@ -207,15 +192,11 @@ namespace lue {
                     OutputFluxNoDataPolicy,
                     OutputStateNoDataPolicy>;
 
-                template<
-                    typename MaterialCells,
-                    typename FractionCells>
+                template<typename MaterialCells, typename FractionCells>
                 using InputMaterial = accu_fraction::InputMaterial<MaterialCells, FractionCells>;
 
-                template<
-                    typename MaterialCells>
+                template<typename MaterialCells>
                 using OutputMaterial = accu_fraction::OutputMaterial<MaterialCells>;
-
         };
 
     }  // namespace detail::accu_fraction
@@ -233,14 +214,12 @@ namespace lue {
         typename MaterialElement,
         typename FractionElement,
         Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_fraction(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<FractionElement, rank> const& fraction)
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_fraction(
+        Policies const& policies,
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<FractionElement, rank> const& fraction)
     {
         using Accumulator = detail::accu_fraction::Accumulator<MaterialElement, FractionElement>;
 
@@ -252,15 +231,13 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ACCU_FRACTION(                                                                 \
-    Policies, FlowDirectionElement, MaterialElement, FractionElement)                                  \
-                                                                                                       \
-    template LUE_ROUTING_OPERATION_EXPORT                                                              \
-    std::tuple<                                                                                        \
-        PartitionedArray<MaterialElement, 2>,                                                          \
-        PartitionedArray<MaterialElement, 2>> accu_fraction<                                           \
-            ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, FractionElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                                           \
-        PartitionedArray<FlowDirectionElement, 2> const&,                                              \
-        PartitionedArray<MaterialElement, 2> const&,                                                   \
+#define LUE_INSTANTIATE_ACCU_FRACTION(Policies, FlowDirectionElement, MaterialElement, FractionElement)      \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT std::tuple<                                                        \
+        PartitionedArray<MaterialElement, 2>,                                                                \
+        PartitionedArray<MaterialElement, 2>>                                                                \
+    accu_fraction<ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, FractionElement, 2>(  \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<FlowDirectionElement, 2> const&,                                                    \
+        PartitionedArray<MaterialElement, 2> const&,                                                         \
         PartitionedArray<FractionElement, 2> const&);

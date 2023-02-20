@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue object presence_in_time
-#include <boost/test/unit_test.hpp>
 #include "lue/object/property/property_set.hpp"
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixture)
@@ -30,9 +30,7 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixtu
         std::vector<lue::data_model::ID> ids_read(nr_objects);
 
         phenomenon.object_id().read(ids_read.data());
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-            ids_read.begin(), ids_read.end(),
-            ids.begin(), ids.end());
+        BOOST_CHECK_EQUAL_COLLECTIONS(ids_read.begin(), ids_read.end(), ids.begin(), ids.end());
     }
 }
 
@@ -52,8 +50,7 @@ BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
     lue::data_model::test::select_random_ids(active_ids, nr_active_objects);
 
     // Create and write
-    {
-    }
+    {}
 
     // Open and read
     {
@@ -64,8 +61,7 @@ BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
 BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::test::DatasetFixture)
 {
     // Create and write
-    {
-    }
+    {}
 
     // Open and read
     {
@@ -76,8 +72,7 @@ BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::test::DatasetFixture)
 BOOST_FIXTURE_TEST_CASE(time_grids, lue::data_model::test::DatasetFixture)
 {
     // Create and write
-    {
-    }
+    {}
 
     // Open and read
     {

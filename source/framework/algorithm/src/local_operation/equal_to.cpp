@@ -8,30 +8,30 @@
 // not used elsewhere, get rid of it. If we need to be able to call
 // operations for partitions instead of array, then keep it.
 
-#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                         \
-                                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION_PARTITION(                              \
-        ESC(policy::equal_to::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                             \
-        InputElement,                                                              \
-        InputElement,                                                              \
-        rank,                                                                      \
-        ESC(detail::EqualTo<InputElement, OutputElement>));                        \
-                                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                        \
-        ESC(policy::equal_to::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                             \
-        InputElement,                                                              \
-        InputElement,                                                              \
-        rank,                                                                      \
-        ESC(detail::EqualTo<InputElement, OutputElement>));                        \
-                                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                        \
-        ESC(policy::equal_to::DefaultValuePolicies<OutputElement, InputElement>),  \
-        OutputElement,                                                             \
-        InputElement,                                                              \
-        InputElement,                                                              \
-        rank,                                                                      \
+#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION_PARTITION(                                                        \
+        ESC(policy::equal_to::DefaultPolicies<OutputElement, InputElement>),                                 \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
+        ESC(detail::EqualTo<InputElement, OutputElement>));                                                  \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::equal_to::DefaultPolicies<OutputElement, InputElement>),                                 \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
+        ESC(detail::EqualTo<InputElement, OutputElement>));                                                  \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::equal_to::DefaultValuePolicies<OutputElement, InputElement>),                            \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
         ESC(detail::EqualTo<InputElement, OutputElement>));
 
 

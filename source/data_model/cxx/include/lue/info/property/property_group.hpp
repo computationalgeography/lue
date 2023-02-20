@@ -1,69 +1,58 @@
 #pragma once
-#include "lue/hdf5.hpp"
 #include "lue/core/define.hpp"
+#include "lue/hdf5.hpp"
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-class PropertyGroup:
-    public hdf5::Group
-{
+        class PropertyGroup: public hdf5::Group
+        {
 
-public:
+            public:
 
-                   PropertyGroup       (hdf5::Group const& parent,
-                                        std::string const& name);
+                PropertyGroup(hdf5::Group const& parent, std::string const& name);
 
-    explicit       PropertyGroup       (hdf5::Group&& group);
+                explicit PropertyGroup(hdf5::Group&& group);
 
-                   PropertyGroup       (PropertyGroup const&)=default;
+                PropertyGroup(PropertyGroup const&) = default;
 
-                   PropertyGroup       (PropertyGroup&&)=default;
+                PropertyGroup(PropertyGroup&&) = default;
 
-                   ~PropertyGroup      () override =default;
+                ~PropertyGroup() override = default;
 
-    PropertyGroup& operator=           (PropertyGroup const&)=default;
+                PropertyGroup& operator=(PropertyGroup const&) = default;
 
-    PropertyGroup& operator=           (PropertyGroup&&)=default;
+                PropertyGroup& operator=(PropertyGroup&&) = default;
 
-    std::string    name                () const;
+                std::string name() const;
 
-    std::string const& description     () const;
+                std::string const& description() const;
 
-    bool           time_is_discretized () const;
+                bool time_is_discretized() const;
 
-    bool           space_is_discretized() const;
+                bool space_is_discretized() const;
 
-    TimeDiscretization
-                   time_discretization_type() const;
+                TimeDiscretization time_discretization_type() const;
 
-    SpaceDiscretization
-                   space_discretization_type() const;
+                SpaceDiscretization space_discretization_type() const;
 
-    void           set_time_discretization(
-                                        TimeDiscretization type,
-                                        PropertyGroup& property);
+                void set_time_discretization(TimeDiscretization type, PropertyGroup& property);
 
-    void           set_space_discretization(
-                                        SpaceDiscretization type,
-                                        PropertyGroup& property);
+                void set_space_discretization(SpaceDiscretization type, PropertyGroup& property);
 
-    PropertyGroup  time_discretization_property();
+                PropertyGroup time_discretization_property();
 
-    PropertyGroup  space_discretization_property();
+                PropertyGroup space_discretization_property();
 
-private:
+            private:
 
-    std::string    _description;
-
-};
+                std::string _description;
+        };
 
 
-PropertyGroup      create_property_group(
-                                        hdf5::Group& parent,
-                                        std::string const& name,
-                                        std::string const& description);
+        PropertyGroup create_property_group(
+            hdf5::Group& parent, std::string const& name, std::string const& description);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

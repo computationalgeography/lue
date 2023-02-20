@@ -8,54 +8,38 @@
 namespace lue {
     namespace policy::log {
 
-        template<
-            typename Element>
+        template<typename Element>
         class DomainPolicy
         {
 
             public:
 
-                static constexpr bool within_domain(
-                    Element const element) noexcept
+                static constexpr bool within_domain(Element const element) noexcept
                 {
                     return element >= 0;
                 }
-
         };
 
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies =
+            policy::DefaultPolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element>>;
 
 
-        template<
-            typename Element>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultValuePolicies = policy::
+            DefaultValuePolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::log
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> log(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array);
+        Policies const& policies, PartitionedArray<Element, rank> const& array);
 
 
-    template<
-        typename Element,
-        Rank rank>
-    PartitionedArray<Element, rank> log(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    PartitionedArray<Element, rank> log(PartitionedArray<Element, rank> const& array)
     {
         using Policies = policy::log::DefaultPolicies<Element>;
 

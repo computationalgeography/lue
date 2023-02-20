@@ -14,110 +14,113 @@
 #include <iostream>
 #include <utility>
 
-namespace phylanx { namespace bindings
-{
-    class pythonbuf : public std::streambuf
-    {
-    private:
-        using traits_type = std::streambuf::traits_type;
-
-        char d_buffer[1024];
-        pybind11::object pywrite;
-        pybind11::object pyflush;
-
-        int overflow(int c) override
+namespace phylanx {
+    namespace bindings {
+        class pythonbuf: public std::streambuf
         {
-            if (!traits_type::eq_int_type(c, traits_type::eof()))
-            {
-                *pptr() = traits_type::to_char_type(c);
-                pbump(1);
-            }
-            return sync() ? traits_type::not_eof(c) : traits_type::eof();
-        }
+            private:
 
-        int sync() override
-        {
-            if (pbase() != pptr())
-            {
+                using traits_type = std::streambuf::traits_type;
+
+                char d_buffer[1024];
+                pybind11::object pywrite;
+                pybind11::object pyflush;
+
+                int overflow(int c) override
                 {
-                    // acquire GIL to avoid multi-threading problems
-                    pybind11::gil_scoped_acquire acquire;
-
-                    // This subtraction cannot be negative, so dropping the sign
-                    pybind11::str line(
-                        pbase(), static_cast<std::size_t>(pptr() - pbase()));
-
-                    pywrite(line);
-                    pyflush();
+                    if (!traits_type::eq_int_type(c, traits_type::eof()))
+                    {
+                        *pptr() = traits_type::to_char_type(c);
+                        pbump(1);
+                    }
+                    return sync() ? traits_type::not_eof(c) : traits_type::eof();
                 }
 
-                setp(pbase(), epptr());
-            }
-            return 0;
-        }
+                int sync() override
+                {
+                    if (pbase() != pptr())
+                    {
+                        {
+                            // acquire GIL to avoid multi-threading problems
+                            pybind11::gil_scoped_acquire acquire;
 
-    public:
-        pythonbuf(pybind11::object pyostream)
+                            // This subtraction cannot be negative, so dropping the sign
+                            pybind11::str line(pbase(), static_cast<std::size_t>(pptr() - pbase()));
+
+                            pywrite(line);
+                            pyflush();
+                        }
+
+                        setp(pbase(), epptr());
+                    }
+                    return 0;
+                }
+
+            public:
+
+                pythonbuf(pybind11::object pyostream)
+                {
+                    {
+                        // acquire GIL to avoid multi-threading problems
+                        pybind11::gil_scoped_acquire acquire;
+                        pybind11::object tmp = std::move(pyostream);
+                        pywrite = tmp.attr("write");
+                        pyflush = tmp.attr("flush");
+                    }
+
+                    setp(d_buffer, d_buffer + sizeof(d_buffer) - 1);
+                }
+
+                // Sync before destroy
+                ~pythonbuf()
+                {
+                    {
+                        pybind11::gil_scoped_release release;
+                        sync();
+                    }
+
+                    pywrite.release();
+                    pyflush.release();
+                }
+        };
+
+        class scoped_ostream_redirect
         {
-            {
-                // acquire GIL to avoid multi-threading problems
-                pybind11::gil_scoped_acquire acquire;
-                pybind11::object tmp = std::move(pyostream);
-                pywrite = tmp.attr("write");
-                pyflush = tmp.attr("flush");
-            }
+            protected:
 
-            setp(d_buffer, d_buffer + sizeof(d_buffer) - 1);
-        }
+                std::streambuf* old;
+                std::ostream& costream;
+                pythonbuf buffer;
 
-        // Sync before destroy
-        ~pythonbuf()
-        {
-            {
-                pybind11::gil_scoped_release release;
-                sync();
-            }
+                static pybind11::object import_stdout()
+                {
+                    pybind11::gil_scoped_acquire acquire;
+                    return pybind11::module::import("sys").attr("stdout");
+                }
 
-            pywrite.release();
-            pyflush.release();
-        }
-    };
+            public:
 
-    class scoped_ostream_redirect
-    {
-    protected:
-        std::streambuf* old;
-        std::ostream& costream;
-        pythonbuf buffer;
+                scoped_ostream_redirect(
+                    std::ostream& costream = std::cout, pybind11::object pyostream = import_stdout()):
+                    old(nullptr),
+                    costream(costream),
+                    buffer(std::move(pyostream))
+                {
+                    old = costream.rdbuf(&buffer);
+                }
 
-        static pybind11::object import_stdout()
-        {
-            pybind11::gil_scoped_acquire acquire;
-            return pybind11::module::import("sys").attr("stdout");
-        }
+                ~scoped_ostream_redirect()
+                {
+                    costream.rdbuf(old);
+                }
 
-    public:
-        scoped_ostream_redirect(std::ostream& costream = std::cout,
-                pybind11::object pyostream = import_stdout())
-          : old(nullptr)
-          , costream(costream)
-          , buffer(std::move(pyostream))
-        {
-            old = costream.rdbuf(&buffer);
-        }
+                scoped_ostream_redirect(const scoped_ostream_redirect&) = delete;
+                scoped_ostream_redirect(scoped_ostream_redirect&&) = delete;
 
-        ~scoped_ostream_redirect()
-        {
-            costream.rdbuf(old);
-        }
-
-        scoped_ostream_redirect(const scoped_ostream_redirect&) = delete;
-        scoped_ostream_redirect(scoped_ostream_redirect&&) = delete;
-
-        scoped_ostream_redirect& operator=(
-            const scoped_ostream_redirect&) = delete;
-        scoped_ostream_redirect& operator=(scoped_ostream_redirect&&) = delete;
-    };
-}}
+                scoped_ostream_redirect& operator=(const scoped_ostream_redirect&) = delete;
+                scoped_ostream_redirect& operator=(scoped_ostream_redirect&&) = delete;
+        };
+    }  // namespace bindings
+}  // namespace phylanx
 
 #endif

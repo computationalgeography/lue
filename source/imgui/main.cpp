@@ -22,10 +22,12 @@ static void imgui_demo()
     while (!done)
     {
         // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to
+        // use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main
+        // application. Generally you may always pass all inputs to dear imgui, and hide them from your
+        // application based on those two flags.
         SDL_Event event;
         while (SDL_PollEvent(&event))
         {
@@ -40,30 +42,37 @@ static void imgui_demo()
         /// ImGui_ImplSDL2_NewFrame(window);
         /// ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse
+        // its code to learn more about Dear ImGui!).
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named
+        // window.
         {
             static float f = 0.0f;
             static int counter = 0;
 
             sdl2::imgui::Window window{"Hello, world!"};
 
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Text("This is some useful text.");  // Display some text (you can use a format strings too)
+            ImGui::Checkbox(
+                "Demo Window", &show_demo_window);  // Edit bools storing our window open/close state
             ImGui::Checkbox("Another Window", &show_another_window);
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);  // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color);  // Edit 3 floats representing a color
 
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            if (ImGui::Button("Button"))  // Buttons return true when clicked (most widgets return true when
+                                          // edited/activated)
                 counter++;
             ImGui::SameLine();
             ImGui::Text("counter = %d", counter);
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::Text(
+                "Application average %.3f ms/frame (%.1f FPS)",
+                1000.0f / ImGui::GetIO().Framerate,
+                ImGui::GetIO().Framerate);
         }
 
         // 3. Show another simple window.
@@ -90,13 +99,16 @@ static void dashboard(
     sdl2::Window sdl_window{"Simulation"};
     sdl2::ImGuiBinding binding{sdl_window};
 
-    while(!simulation_finished) {
+    while (!simulation_finished)
+    {
 
         // Handle key presses
         SDL_Event event;
-        while(SDL_PollEvent(&event)) {
+        while (SDL_PollEvent(&event))
+        {
             ImGui_ImplSDL2_ProcessEvent(&event);
-            if(event.type == SDL_QUIT) {
+            if (event.type == SDL_QUIT)
+            {
                 stop_simulation = true;
             }
         }
@@ -110,19 +122,21 @@ static void dashboard(
         ImGui::ProgressBar(progress, ImVec2(0.0f, 0.0f));
 
         // Label
-        if(!stop_simulation) {
-            ImGui::TextUnformatted(fmt::format(
-                    "Simulating time step {} of {}",
-                    current_time_step, nr_time_steps
-                ).c_str());
+        if (!stop_simulation)
+        {
+            ImGui::TextUnformatted(
+                fmt::format("Simulating time step {} of {}", current_time_step, nr_time_steps).c_str());
         }
-        else {
+        else
+        {
             ImGui::TextUnformatted("Stopping simulation...");
         }
 
         // Push button
-        if(!stop_simulation) {
-            if(ImGui::Button("Stop")) {
+        if (!stop_simulation)
+        {
+            if (ImGui::Button("Stop"))
+            {
                 stop_simulation = true;
             }
         }
@@ -138,9 +152,8 @@ static void simulate(
 {
     using namespace std::chrono_literals;
 
-    for(current_time_step = 1;
-            current_time_step <= nr_time_steps && !stop_simulation;
-            ++current_time_step) {
+    for (current_time_step = 1; current_time_step <= nr_time_steps && !stop_simulation; ++current_time_step)
+    {
 
         // Do work
         std::this_thread::sleep_for(5s);
@@ -206,13 +219,15 @@ int main(int, char**)
 {
     int status = EXIT_FAILURE;
 
-    try {
+    try
+    {
         imgui_demo();
         // model_demo();
 
         status = EXIT_SUCCESS;
     }
-    catch(std::exception const& exception) {
+    catch (std::exception const& exception)
+    {
         std::cerr << exception.what() << std::endl;
     }
 

@@ -5,10 +5,7 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> atan2(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array1,

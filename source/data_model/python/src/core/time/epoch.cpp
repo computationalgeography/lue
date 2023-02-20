@@ -1,5 +1,5 @@
-#include "../../python_extension.hpp"
 #include "lue/py/data_model/core/time/epoch.hpp"
+#include "../../python_extension.hpp"
 #include "lue/core/aspect.hpp"
 #include <pybind11/pybind11.h>
 
@@ -9,64 +9,58 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-std::string formal_string_representation(
-    time::Epoch const& epoch)
-{
-    std::string result;
+        std::string formal_string_representation(time::Epoch const& epoch)
+        {
+            std::string result;
 
-    if(!epoch.origin()) {
-        result = fmt::format(
-            "Epoch(kind={})",
-            aspect_to_string(epoch.kind()));
-    }
-    else {
-        if(!epoch.calendar()) {
-            result = fmt::format(
-                "Epoch(kind={}, origin='{}')",
-                aspect_to_string(epoch.kind()),
-                *epoch.origin());
+            if (!epoch.origin())
+            {
+                result = fmt::format("Epoch(kind={})", aspect_to_string(epoch.kind()));
+            }
+            else
+            {
+                if (!epoch.calendar())
+                {
+                    result = fmt::format(
+                        "Epoch(kind={}, origin='{}')", aspect_to_string(epoch.kind()), *epoch.origin());
+                }
+                else
+                {
+                    result = fmt::format(
+                        "Epoch(kind={}, origin='{}', calendar={})",
+                        aspect_to_string(epoch.kind()),
+                        *epoch.origin(),
+                        aspect_to_string(*epoch.calendar()));
+                }
+            }
+
+            return result;
         }
-        else {
-            result = fmt::format(
-                "Epoch(kind={}, origin='{}', calendar={})",
-                aspect_to_string(epoch.kind()),
-                *epoch.origin(),
-                aspect_to_string(*epoch.calendar()));
+
+
+        std::string informal_string_representation(time::Epoch const& epoch)
+        {
+            return formal_string_representation(epoch);
         }
-    }
-
-    return result;
-}
 
 
-std::string informal_string_representation(
-    time::Epoch const& epoch)
-{
-    return formal_string_representation(epoch);
-}
+        void init_epoch(py::module& module)
+        {
 
-
-void init_epoch(
-    py::module& module)
-{
-
-    py::enum_<time::Calendar>(
-        module,
-        "Calendar",
-        R"(
+            py::enum_<time::Calendar>(
+                module,
+                "Calendar",
+                R"(
     TODO
 )")
-        .value(
-            aspect_to_string(time::Calendar::gregorian).c_str(),
-            time::Calendar::gregorian)
-        ;
+                .value(aspect_to_string(time::Calendar::gregorian).c_str(), time::Calendar::gregorian);
 
-    py::class_<time::Epoch> epoch(
-        module,
-        "Epoch",
-        R"(
+            py::class_<time::Epoch> epoch(
+                module,
+                "Epoch",
+                R"(
     Location in time that marks the start of an era
 
     All time points are at a distance in time (duration) relative to
@@ -87,107 +81,77 @@ void init_epoch(
     formats.
 )");
 
-    epoch
+            epoch
 
-        .def(
-            py::init<>(),
-            R"(
+                .def(
+                    py::init<>(),
+                    R"(
     Default construct an instance
 
     This instance is set to Unix time epoch: kind is
     :py:class:`Kind.common_era`, origin is "1970-01-01T00:00:00+00:00",
     and calendar is :py:class:`Calendar.gregorian`.
-)"
-        )
+)")
 
-        .def(
-            py::init<time::Epoch::Kind>(),
-            R"(
+                .def(
+                    py::init<time::Epoch::Kind>(),
+                    R"(
     Construct an instance base on epoch kind
 
     :param Kind kind: Epoch kind
 )",
-            "kind"_a
-        )
+                    "kind"_a)
 
-        .def(
-            py::init<time::Epoch::Kind, std::string const&>(),
-            R"(
+                .def(
+                    py::init<time::Epoch::Kind, std::string const&>(),
+                    R"(
     Construct an instance base on epoch kind and origin
 
     :param Kind kind: Epoch kind
     :param str origin: Location in time after epoch kind
 )",
-            "kind"_a,
-            "origin"_a
-        )
+                    "kind"_a,
+                    "origin"_a)
 
-        .def(
-            py::init<time::Epoch::Kind, std::string const&, time::Calendar>(),
-            R"(
+                .def(
+                    py::init<time::Epoch::Kind, std::string const&, time::Calendar>(),
+                    R"(
     Construct an instance base on epoch kind, origin and calendar
 
     :param Kind kind: Epoch kind
     :param str origin: Location in time after epoch kind
     :param str calendar: Calender for interpreting locations in time
-)"
-        )
+)")
 
-        .def(
-            "__repr__",
-            [](time::Epoch const& epoch) {
-                return formal_string_representation(epoch);
-            }
-        )
+                .def("__repr__", [](time::Epoch const& epoch) { return formal_string_representation(epoch); })
 
-        .def(
-            "__str__",
-            [](time::Epoch const& epoch) {
-                return informal_string_representation(epoch);
-            }
-        )
+                .def(
+                    "__str__", [](time::Epoch const& epoch) { return informal_string_representation(epoch); })
 
-        .def_property_readonly(
-            "kind",
-            &time::Epoch::kind)
+                .def_property_readonly("kind", &time::Epoch::kind)
 
-        .def_property_readonly(
-            "origin",
-            [](time::Epoch const& epoch) {
-                return epoch.origin()
-                    ? py::cast(*epoch.origin())
-                    : py::none()
-                    ;
-            })
+                .def_property_readonly(
+                    "origin",
+                    [](time::Epoch const& epoch)
+                    { return epoch.origin() ? py::cast(*epoch.origin()) : py::none(); })
 
-        .def_property_readonly(
-            "calendar",
-            [](time::Epoch const& epoch) {
-                return epoch.calendar()
-                    ? py::cast(*epoch.calendar())
-                    : py::none()
-                    ;
-            })
+                .def_property_readonly(
+                    "calendar",
+                    [](time::Epoch const& epoch)
+                    { return epoch.calendar() ? py::cast(*epoch.calendar()) : py::none(); })
 
-        ;
+                ;
 
-    py::enum_<time::Epoch::Kind>(
-        epoch,
-        "Kind")
+            py::enum_<time::Epoch::Kind>(epoch, "Kind")
 
-        .value(
-            aspect_to_string(time::Epoch::Kind::common_era).c_str(),
-            time::Epoch::Kind::common_era
-        )
+                .value(aspect_to_string(time::Epoch::Kind::common_era).c_str(), time::Epoch::Kind::common_era)
 
-        .value(
-            aspect_to_string(time::Epoch::Kind::formation_of_earth).c_str(),
-            time::Epoch::Kind::formation_of_earth
-        )
+                .value(
+                    aspect_to_string(time::Epoch::Kind::formation_of_earth).c_str(),
+                    time::Epoch::Kind::formation_of_earth)
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

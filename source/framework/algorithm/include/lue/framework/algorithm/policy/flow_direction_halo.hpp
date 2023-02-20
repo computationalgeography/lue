@@ -5,8 +5,7 @@
 
 namespace lue::policy {
 
-    template<
-        typename FlowDirectionElement>
+    template<typename FlowDirectionElement>
     class FlowDirectionHalo
     {
 
@@ -60,26 +59,21 @@ namespace lue::policy {
             }
 
         private:
-
     };
 
 
     namespace detail {
 
-        template<
-            typename E>
-        class TypeTraits<
-            FlowDirectionHalo<E>>
+        template<typename E>
+        class TypeTraits<FlowDirectionHalo<E>>
         {
 
             public:
 
                 using Element = E;
 
-                template<
-                    typename E_>
+                template<typename E_>
                 using Policy = FlowDirectionHalo<E_>;
-
         };
 
     }  // namespace detail

@@ -1,56 +1,39 @@
 #pragma once
-#include "lue/framework/algorithm/focal_operation_export.hpp"
-#include "lue/framework/algorithm/gradients.hpp"
-#include "lue/framework/algorithm/slope.hpp"
 #include "lue/framework/algorithm/definition/add.hpp"
 #include "lue/framework/algorithm/definition/pow.hpp"
 #include "lue/framework/algorithm/definition/sqrt.hpp"
+#include "lue/framework/algorithm/focal_operation_export.hpp"
+#include "lue/framework/algorithm/gradients.hpp"
+#include "lue/framework/algorithm/slope.hpp"
 
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element>
+    template<typename Policies, typename Element>
     PartitionedArray<Element, 2> slope(
-        [[maybe_unused]] Policies const& policies,
-        Gradients<Element> const& gradients)
+        [[maybe_unused]] Policies const& policies, Gradients<Element> const& gradients)
     {
         auto const& [dz_dx, dz_dy] = gradients;
 
         using PowPolicies = policy::Policies<
-                policy::pow::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPoliciesT<Policies, 0, Element>
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<Policies, 0, Element>,
-                        policy::InputPolicies<policy::SkipNoData<Element>>
-                    >
-            >;
+            policy::pow::DomainPolicy<Element>,
+            policy::OutputsPolicies<policy::OutputPoliciesT<Policies, 0, Element>>,
+            policy::InputsPolicies<
+                policy::InputPoliciesT<Policies, 0, Element>,
+                policy::InputPolicies<policy::SkipNoData<Element>>>>;
         using AddPolicies = policy::Policies<
-                policy::add::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPoliciesT<Policies, 0, Element>
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<Policies, 0, Element>,
-                        policy::InputPoliciesT<Policies, 0, Element>
-                    >
-            >;
+            policy::add::DomainPolicy<Element>,
+            policy::OutputsPolicies<policy::OutputPoliciesT<Policies, 0, Element>>,
+            policy::InputsPolicies<
+                policy::InputPoliciesT<Policies, 0, Element>,
+                policy::InputPoliciesT<Policies, 0, Element>>>;
         using SqrtPolicies = policy::Policies<
-                policy::sqrt::DomainPolicy<Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPolicies<
-                                // policy::OutputPoliciesT<Policies, 0, Element>
-                                policy::OutputNoDataPolicy3T<Policies, 0, Element>,
-                                policy::AllValuesWithinRange<Element, Element>
-                            >
-                        >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<Policies, 0, Element>
-                    >
-            >;
+            policy::sqrt::DomainPolicy<Element>,
+            policy::OutputsPolicies<policy::OutputPolicies<
+                // policy::OutputPoliciesT<Policies, 0, Element>
+                policy::OutputNoDataPolicy3T<Policies, 0, Element>,
+                policy::AllValuesWithinRange<Element, Element>>>,
+            policy::InputsPolicies<policy::InputPoliciesT<Policies, 0, Element>>>;
 
         PowPolicies pow_policies{};
         AddPolicies add_policies{};
@@ -59,12 +42,9 @@ namespace lue {
         // TODO Already use atan to get slope angle in radians? All angles (aspect, slope,
         //      ...) in radians seems to make sense.
 
-        return sqrt(sqrt_policies,
-                add(add_policies,
-                        pow(pow_policies, dz_dx, Element{2}),
-                        pow(pow_policies, dz_dy, Element{2})
-                    )
-            );
+        return sqrt(
+            sqrt_policies,
+            add(add_policies, pow(pow_policies, dz_dx, Element{2}), pow(pow_policies, dz_dy, Element{2})));
     }
 
     /*!
@@ -123,13 +103,9 @@ namespace lue {
         +----+----+----+
         @endcode
     */
-    template<
-        typename Policies,
-        typename Element>
+    template<typename Policies, typename Element>
     PartitionedArray<Element, 2> slope(
-        Policies const& policies,
-        PartitionedArray<Element, 2> const& elevation,
-        Element const cell_size)
+        Policies const& policies, PartitionedArray<Element, 2> const& elevation, Element const cell_size)
     {
         return slope(policies, gradients(policies, elevation, cell_size));
     }
@@ -137,10 +113,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_SLOPE(Policies, Element)                                \
-                                                                                \
-    template LUE_FOCAL_OPERATION_EXPORT                                         \
-    PartitionedArray<Element, 2> slope<ArgumentType<void(Policies)>, Element>(  \
-        ArgumentType<void(Policies)> const&,                                    \
-        PartitionedArray<Element, 2> const&,                                    \
-        Element const);
+#define LUE_INSTANTIATE_SLOPE(Policies, Element)                                                             \
+                                                                                                             \
+    template LUE_FOCAL_OPERATION_EXPORT PartitionedArray<Element, 2>                                         \
+    slope<ArgumentType<void(Policies)>, Element>(                                                            \
+        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&, Element const);

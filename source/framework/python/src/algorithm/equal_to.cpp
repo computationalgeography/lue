@@ -3,18 +3,23 @@
 #include <pybind11/pybind11.h>
 
 
-#define LUE_EQUAL_TO_OVERLOADS(type, rank)  \
-    module.def("equal_to", equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);  \
-    module.def("equal_to", equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, type>                        );  \
-    module.def("equal_to", equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>    );  \
-    module.def("equal_to", equal_to<type, std::uint8_t, rank, type                        , PartitionedArray<type, rank>>);  \
-    module.def("equal_to", equal_to<type, std::uint8_t, rank, hpx::shared_future<type>    , PartitionedArray<type, rank>>);
+#define LUE_EQUAL_TO_OVERLOADS(type, rank)                                                                   \
+    module.def(                                                                                              \
+        "equal_to",                                                                                          \
+        equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);     \
+    module.def("equal_to", equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, type>);          \
+    module.def(                                                                                              \
+        "equal_to",                                                                                          \
+        equal_to<type, std::uint8_t, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>);         \
+    module.def("equal_to", equal_to<type, std::uint8_t, rank, type, PartitionedArray<type, rank>>);          \
+    module.def(                                                                                              \
+        "equal_to",                                                                                          \
+        equal_to<type, std::uint8_t, rank, hpx::shared_future<type>, PartitionedArray<type, rank>>);
 
 
 namespace lue::framework {
 
-    void bind_equal_to(
-        pybind11::module& module)
+    void bind_equal_to(pybind11::module& module)
     {
         LUE_EQUAL_TO_OVERLOADS(std::uint8_t, 2)
         LUE_EQUAL_TO_OVERLOADS(std::uint32_t, 2)

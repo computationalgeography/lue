@@ -3,17 +3,11 @@
 #include "lue/framework/algorithm/value_policies/atan.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                     \
-                                                           \
-    LUE_INSTANTIATE_ATAN(                                  \
-        ESC(policy::atan::DefaultPolicies<Element>),       \
-        Element,                                           \
-        rank);                                             \
-                                                           \
-    LUE_INSTANTIATE_ATAN(                                  \
-        ESC(policy::atan::DefaultValuePolicies<Element>),  \
-        Element,                                           \
-        rank);
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_ATAN(ESC(policy::atan::DefaultPolicies<Element>), Element, rank);                        \
+                                                                                                             \
+    LUE_INSTANTIATE_ATAN(ESC(policy::atan::DefaultValuePolicies<Element>), Element, rank);
 
 
 namespace lue {

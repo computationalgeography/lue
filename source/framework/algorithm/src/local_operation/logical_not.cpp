@@ -3,17 +3,13 @@
 #include "lue/framework/algorithm/value_policies/logical_not.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                                          \
-                                                                                \
-    LUE_INSTANTIATE_LOGICAL_NOT(                                                \
-        ESC(policy::logical_not::DefaultPolicies<std::uint8_t, Element>),       \
-        Element,                                                                \
-        rank);                                                                  \
-                                                                                \
-    LUE_INSTANTIATE_LOGICAL_NOT(                                                \
-        ESC(policy::logical_not::DefaultValuePolicies<std::uint8_t, Element>),  \
-        Element,                                                                \
-        rank);
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_LOGICAL_NOT(                                                                             \
+        ESC(policy::logical_not::DefaultPolicies<std::uint8_t, Element>), Element, rank);                    \
+                                                                                                             \
+    LUE_INSTANTIATE_LOGICAL_NOT(                                                                             \
+        ESC(policy::logical_not::DefaultValuePolicies<std::uint8_t, Element>), Element, rank);
 
 
 namespace lue {

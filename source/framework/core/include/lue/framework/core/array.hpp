@@ -12,9 +12,7 @@
 
 namespace lue {
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     class Array
     {
 
@@ -53,8 +51,7 @@ namespace lue {
             }
 
 
-            explicit Array(
-                Shape const& shape):
+            explicit Array(Shape const& shape):
 
                 _shape{shape},
                 _elements(lue::nr_elements(shape)),
@@ -65,9 +62,7 @@ namespace lue {
             }
 
 
-            Array(
-                Shape const& shape,
-                Element const value):
+            Array(Shape const& shape, Element const value):
 
                 _shape{shape},
                 _elements(lue::nr_elements(shape), value),
@@ -78,18 +73,14 @@ namespace lue {
             }
 
 
-            Array(
-                Shape const& shape,
-                std::initializer_list<Element> values):
+            Array(Shape const& shape, std::initializer_list<Element> values):
 
                 _shape{shape},
                 _elements(lue::nr_elements(shape)),
                 _span{_elements.data(), _shape}
 
             {
-                lue_hpx_assert(
-                    std::distance(values.begin(), values.end()) ==
-                    lue::nr_elements(_shape));
+                lue_hpx_assert(std::distance(values.begin(), values.end()) == lue::nr_elements(_shape));
 
                 std::move(values.begin(), values.end(), _elements.begin());
 
@@ -97,12 +88,8 @@ namespace lue {
             }
 
 
-            template<
-                typename InputIterator>
-            Array(
-                Shape const& shape,
-                InputIterator begin,
-                InputIterator end):
+            template<typename InputIterator>
+            Array(Shape const& shape, InputIterator begin, InputIterator end):
 
                 _shape{shape},
                 _elements(lue::nr_elements(shape)),
@@ -115,8 +102,7 @@ namespace lue {
             }
 
 
-            Array(
-                Array const& other):
+            Array(Array const& other):
 
                 _shape{other._shape},
                 _elements{other._elements},
@@ -127,8 +113,7 @@ namespace lue {
             }
 
 
-            Array(
-                Array&& other):
+            Array(Array&& other):
 
                 _shape{std::move(other._shape)},
                 _elements{std::move(other._elements)},
@@ -145,13 +130,12 @@ namespace lue {
             }
 
 
-            ~Array()=default;
+            ~Array() = default;
 
 
-            Array& operator=(
-                Array const& other)
+            Array& operator=(Array const& other)
             {
-                if(this != &other)
+                if (this != &other)
                 {
                     _shape = other._shape;
                     _elements = other._elements;
@@ -164,10 +148,9 @@ namespace lue {
             }
 
 
-            Array& operator=(
-                Array&& other)
+            Array& operator=(Array&& other)
             {
-                if(this != &other)
+                if (this != &other)
                 {
                     _shape = std::move(other._shape);
                     other._shape.fill(0);
@@ -229,10 +212,9 @@ namespace lue {
             }
 
 
-            void reshape(
-                Shape const& shape)
+            void reshape(Shape const& shape)
             {
-                if(_shape != shape)
+                if (_shape != shape)
                 {
                     _elements.resize(lue::nr_elements(shape));
                     _shape = shape;
@@ -244,9 +226,7 @@ namespace lue {
 
 
             void erase(
-                Rank const dimension_idx,
-                Index const hyperslab_begin_idx,
-                Index const hyperslab_end_idx)
+                Rank const dimension_idx, Index const hyperslab_begin_idx, Index const hyperslab_end_idx)
             {
                 _shape = lue::erase(_elements, _shape, dimension_idx, hyperslab_begin_idx, hyperslab_end_idx);
                 _span = Span{_elements.data(), _shape};
@@ -267,12 +247,10 @@ namespace lue {
             }
 
 
-            template<
-                typename... Idxs>
-            Element const& operator()(
-                Idxs... idxs) const
+            template<typename... Idxs>
+            Element const& operator()(Idxs... idxs) const
             {
-                if constexpr(BuildOptions::validate_idxs)
+                if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
                 }
@@ -281,12 +259,10 @@ namespace lue {
             }
 
 
-            template<
-                typename... Idxs>
-            Element& operator()(
-                Idxs... idxs)
+            template<typename... Idxs>
+            Element& operator()(Idxs... idxs)
             {
-                if constexpr(BuildOptions::validate_idxs)
+                if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
                 }
@@ -295,15 +271,13 @@ namespace lue {
             }
 
 
-            Element const& operator[](
-                std::size_t idx) const
+            Element const& operator[](std::size_t idx) const
             {
                 return this->data()[idx];
             }
 
 
-            Element& operator[](
-                std::size_t idx)
+            Element& operator[](std::size_t idx)
             {
                 return this->data()[idx];
             }
@@ -328,22 +302,19 @@ namespace lue {
 
 
             // Shape of array
-            Shape          _shape;
+            Shape _shape;
 
             // 1D buffer with array elements
-            Elements       _elements;
+            Elements _elements;
 
             // Span for converting nD indices to linear indices
-            Span           _span;
-
+            Span _span;
     };
 
 
     namespace detail {
 
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<lue::Array<E, r>>
         {
 
@@ -354,27 +325,20 @@ namespace lue {
                 constexpr static Rank rank = r;
 
                 using Shape = typename lue::Array<E, r>::Shape;
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Element,
-        Rank rank>
-    inline auto const& shape(
-        Array<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    inline auto const& shape(Array<Element, rank> const& array)
     {
         return array.shape();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    inline auto nr_elements(
-        Array<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    inline auto nr_elements(Array<Element, rank> const& array)
     {
         return nr_elements(shape(array));
     }

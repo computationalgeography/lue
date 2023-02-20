@@ -1,40 +1,37 @@
 #pragma once
-#include "lue/object/phenomenon.hpp"
 #include "lue/core/collection.hpp"
+#include "lue/object/phenomenon.hpp"
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-class Phenomena:
-    public Collection<Phenomenon>
-{
+        class Phenomena: public Collection<Phenomenon>
+        {
 
-public:
+            public:
 
-    explicit       Phenomena           (hdf5::Group const& parent);
+                explicit Phenomena(hdf5::Group const& parent);
 
-    explicit       Phenomena           (Collection<Phenomenon>&& collection);
+                explicit Phenomena(Collection<Phenomenon>&& collection);
 
-                   Phenomena           (Phenomena const&)=default;
+                Phenomena(Phenomena const&) = default;
 
-                   Phenomena           (Phenomena&&)=default;
+                Phenomena(Phenomena&&) = default;
 
-                   ~Phenomena          () override =default;
+                ~Phenomena() override = default;
 
-    Phenomena&     operator=           (Phenomena const&)=default;
+                Phenomena& operator=(Phenomena const&) = default;
 
-    Phenomena&     operator=           (Phenomena&&)=default;
+                Phenomena& operator=(Phenomena&&) = default;
 
-    Phenomenon&    add                 (std::string const& name,
-                                        std::string const& description="");
+                Phenomenon& add(std::string const& name, std::string const& description = "");
 
-private:
-
-};
+            private:
+        };
 
 
-Phenomena          create_phenomena    (hdf5::Group& parent);
+        Phenomena create_phenomena(hdf5::Group& parent);
 
-} // namespace data_model
-} // namespace lue
+    }  // namespace data_model
+}  // namespace lue

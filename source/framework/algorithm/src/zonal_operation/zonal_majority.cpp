@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_majority.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element, Zone)               \
-                                                               \
-    LUE_INSTANTIATE_ZONAL_MAJORITY(                            \
-        ESC(policy::zonal_majority::Policies<Element, Zone>),  \
-        Element,                                               \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Element, Zone)                                                             \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_MAJORITY(ESC(policy::zonal_majority::Policies<Element, Zone>), Element, Zone);
 
 
 namespace lue {

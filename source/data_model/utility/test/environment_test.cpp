@@ -1,15 +1,11 @@
 #define BOOST_TEST_MODULE lue utility environment
-#include <boost/test/unit_test.hpp>
 #include "lue/utility/environment.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(expand_environment_variables)
 {
-    auto expand =
-        [](std::string const& string)
-        {
-            return lue::expand_environment_variables(string);
-        };
+    auto expand = [](std::string const& string) { return lue::expand_environment_variables(string); };
 
     BOOST_CHECK_EQUAL(expand(""), "");
 
@@ -18,11 +14,11 @@ BOOST_AUTO_TEST_CASE(expand_environment_variables)
     std::string unexisting_variable_name;
 
     {
-        for(std::string variable_name: {"HOME", "SHELL", "TMP", "TEMP"})
+        for (std::string variable_name : {"HOME", "SHELL", "TMP", "TEMP"})
         {
             char const* const variable_value_ptr{std::getenv(variable_name.c_str())};
 
-            if(variable_value_ptr != nullptr)
+            if (variable_value_ptr != nullptr)
             {
                 existing_variable_name = variable_name;
                 existing_variable_value = std::string{variable_value_ptr};
@@ -39,46 +35,31 @@ BOOST_AUTO_TEST_CASE(expand_environment_variables)
 
     // Existing variable
     {
+        BOOST_CHECK_EQUAL(expand("${" + existing_variable_name + "}"), existing_variable_value);
+        BOOST_CHECK_EQUAL(expand("${" + existing_variable_name + "}/.."), existing_variable_value + "/..");
+        BOOST_CHECK_EQUAL(expand("../${" + existing_variable_name + "}"), "../" + existing_variable_value);
         BOOST_CHECK_EQUAL(
-            expand("${" + existing_variable_name + "}"),
-            existing_variable_value);
-        BOOST_CHECK_EQUAL(
-            expand("${" + existing_variable_name + "}/.."),
-            existing_variable_value + "/..");
-        BOOST_CHECK_EQUAL(
-            expand("../${" + existing_variable_name + "}"),
-            "../" + existing_variable_value);
-        BOOST_CHECK_EQUAL(
-            expand("../${" + existing_variable_name + "}/.."),
-            "../" + existing_variable_value + "/..");
+            expand("../${" + existing_variable_name + "}/.."), "../" + existing_variable_value + "/..");
     }
 
     // Unexisting variable
     {
-        BOOST_CHECK_EQUAL(
-            expand("${" + unexisting_variable_name + "}"),
-            "");
-        BOOST_CHECK_EQUAL(expand(
-            "${" + unexisting_variable_name + "}/.."),
-            "/..");
-        BOOST_CHECK_EQUAL(
-            expand("../${" + unexisting_variable_name + "}"),
-            "../");
-        BOOST_CHECK_EQUAL(
-            expand("../${" + unexisting_variable_name + "}/.."),
-            "..//..");
+        BOOST_CHECK_EQUAL(expand("${" + unexisting_variable_name + "}"), "");
+        BOOST_CHECK_EQUAL(expand("${" + unexisting_variable_name + "}/.."), "/..");
+        BOOST_CHECK_EQUAL(expand("../${" + unexisting_variable_name + "}"), "../");
+        BOOST_CHECK_EQUAL(expand("../${" + unexisting_variable_name + "}/.."), "..//..");
     }
 
     // Combinations
     {
         BOOST_CHECK_EQUAL(
-            expand("${" + existing_variable_name + "}${" +
-                unexisting_variable_name + "}${" +
+            expand(
+                "${" + existing_variable_name + "}${" + unexisting_variable_name + "}${" +
                 existing_variable_name + "}"),
             existing_variable_value + existing_variable_value);
         BOOST_CHECK_EQUAL(
-            expand("${" + unexisting_variable_name + "}${" +
-                existing_variable_name + "}${" +
+            expand(
+                "${" + unexisting_variable_name + "}${" + existing_variable_name + "}${" +
                 unexisting_variable_name + "}"),
             existing_variable_value);
     }

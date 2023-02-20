@@ -34,13 +34,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Element const nd{std::numeric_limits<Element>::quiet_NaN()};
 
-    auto elevation = lue::test::create_partitioned_array<Array>(shape, shape,
+    auto elevation = lue::test::create_partitioned_array<Array>(
+        shape,
+        shape,
         {{
-             70,  70,  80,  nd, 120,
-             70,  70,  90,  nd,  nd,
-             70,  70, 100, 140, 280,
-            180, 160, 110, 160, 320,
-            510, 440, 300, 400, 480,
+            70,  70,  80,  nd,  120, 70,  70,  90,  nd,  nd,  70,  70,  100,
+            140, 280, 180, 160, 110, 160, 320, 510, 440, 300, 400, 480,
         }});
 
     Element cell_size = 50.0;
@@ -48,13 +47,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     auto slope_we_got = lue::value_policies::slope(elevation, cell_size);
     LUE_UNUSED(slope_we_got);
 
-    auto slope_we_want = lue::test::create_partitioned_array<Array>(shape, shape,
+    auto slope_we_want = lue::test::create_partitioned_array<Array>(
+        shape,
+        shape,
         {{
-            0.0118, 0.114, 0.394, nd  , 0.673,
-            0.13  , 0.206, 0.604, nd  , nd,
-            1.3   , 0.775, 0.643, 1.73, 1.87,
-            3.73  , 3.54 , 2.58 , 3.02, 2.36,
-            2.76  , 3.07 , 2.59 , 2.66, 1.65,
+            0.0118, 0.114, 0.394, nd,   0.673, 0.13, 0.206, 0.604, nd,   nd,   1.3,  0.775, 0.643,
+            1.73,   1.87,  3.73,  3.54, 2.58,  3.02, 2.36,  2.76,  3.07, 2.59, 2.66, 1.65,
         }});
     LUE_UNUSED(slope_we_want);
 

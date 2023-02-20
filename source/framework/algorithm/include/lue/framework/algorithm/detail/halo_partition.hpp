@@ -1,21 +1,18 @@
 #pragma once
 #include "lue/framework/algorithm/flow_direction.hpp"
-#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue::detail {
 
-    template<
-        typename... T>
+    template<typename... T>
     using ShapeT = ShapeT<std::tuple_element_t<0, std::tuple<T...>>>;
 
 
-    template<
-        typename Element>
+    template<typename Element>
     ArrayPartition<Element, 2> corner_halo_partition(
-        ShapeT<ArrayPartition<Element, 2>> const& min_shape,
-        Element const fill_value)
+        ShapeT<ArrayPartition<Element, 2>> const& min_shape, Element const fill_value)
     {
         // Asynchronously create a new partition:
         // - With a shape based on the partition passsed in
@@ -28,8 +25,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     ArrayPartition<Element, 2> longitudinal_side_halo_partition(
         ArrayPartition<Element, 2> const& partition,
         ShapeT<ArrayPartition<Element, 2>> const& min_shape,
@@ -49,19 +45,16 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                    [extent0=std::get<0>(min_shape), fill_value](
-                        Shape const& shape)
-                    {
-                        return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value};
-                    }
+                [extent0 = std::get<0>(min_shape), fill_value](Shape const& shape) {
+                    return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value};
+                }
 
                 ),
             partition.shape());
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     ArrayPartition<Element, 2> latitudinal_side_halo_partition(
         ArrayPartition<Element, 2> const& partition,
         ShapeT<ArrayPartition<Element, 2>> const& min_shape,
@@ -81,51 +74,46 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                    [extent1=std::get<1>(min_shape), fill_value](
-                        Shape const& shape)
-                    {
-                        return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value};
-                    }
+                [extent1 = std::get<1>(min_shape), fill_value](Shape const& shape) {
+                    return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value};
+                }
 
                 ),
             partition.shape());
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     struct CornerHaloPartitionAction:
         hpx::actions::make_action<
             decltype(&corner_halo_partition<Element>),
             &corner_halo_partition<Element>,
             CornerHaloPartitionAction<Element>>::type
-    {};
+    {
+    };
 
 
-    template<
-        typename Element>
+    template<typename Element>
     struct LongitudinalSideHaloPartitionAction:
         hpx::actions::make_action<
             decltype(&longitudinal_side_halo_partition<Element>),
             &longitudinal_side_halo_partition<Element>,
             LongitudinalSideHaloPartitionAction<Element>>::type
-    {};
+    {
+    };
 
 
-    template<
-        typename Element>
+    template<typename Element>
     struct LatitudinalSideHaloPartitionAction:
         hpx::actions::make_action<
             decltype(&latitudinal_side_halo_partition<Element>),
             &latitudinal_side_halo_partition<Element>,
             LatitudinalSideHaloPartitionAction<Element>>::type
-    {};
+    {
+    };
 
 
-    template<
-        typename InputPolicies,
-        typename InputPartitions,
-        typename Localities>
+    template<typename InputPolicies, typename InputPartitions, typename Localities>
     InputPartitions halo_corner_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
@@ -150,20 +138,19 @@ namespace lue::detail {
         Action action{};
 
         // North-west corner halo partition
-        halo_partitions(0, 0) = hpx::async(action,
-            localities(0, 0), min_shape, hp.north_west_corner());
+        halo_partitions(0, 0) = hpx::async(action, localities(0, 0), min_shape, hp.north_west_corner());
 
         // North-east corner halo partition
-        halo_partitions(0, 1) = hpx::async(action,
-            localities(0, nr_partitions1 - 1), min_shape, hp.north_east_corner());
+        halo_partitions(0, 1) =
+            hpx::async(action, localities(0, nr_partitions1 - 1), min_shape, hp.north_east_corner());
 
         // South-west corner halo partition
-        halo_partitions(1, 0) = hpx::async(action,
-            localities(nr_partitions0 - 1, 0), min_shape, hp.south_west_corner());
+        halo_partitions(1, 0) =
+            hpx::async(action, localities(nr_partitions0 - 1, 0), min_shape, hp.south_west_corner());
 
         // South-east corner halo partition
-        halo_partitions(1, 1) = hpx::async(action,
-            localities(nr_partitions0 - 1, nr_partitions1 - 1), min_shape, hp.south_east_corner());
+        halo_partitions(1, 1) = hpx::async(
+            action, localities(nr_partitions0 - 1, nr_partitions1 - 1), min_shape, hp.south_east_corner());
 
         lue_hpx_assert(all_are_valid(halo_partitions));
 
@@ -171,10 +158,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename InputPolicies,
-        typename InputPartitions,
-        typename Localities>
+    template<typename InputPolicies, typename InputPartitions, typename Localities>
     InputPartitions halo_longitudinal_side_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
@@ -199,20 +183,17 @@ namespace lue::detail {
 
         Action action{};
 
-        for(auto const& [rh, rp, fill_value]: {
-                std::tuple<Index, Index, Element>{0, 0, hp.north_side()},
-                std::tuple<Index, Index, Element>{1, nr_partitions0 - 1, hp.south_side()}
-            })
+        for (auto const& [rh, rp, fill_value] :
+             {std::tuple<Index, Index, Element>{0, 0, hp.north_side()},
+              std::tuple<Index, Index, Element>{1, nr_partitions0 - 1, hp.south_side()}})
         {
-            for(Index cp = 0; cp < nr_partitions1; ++cp)
+            for (Index cp = 0; cp < nr_partitions1; ++cp)
             {
                 halo_partitions(rh, cp) = InputPartition{input_partitions(rp, cp)}.then(
 
-                    [action, locality=localities(rp, cp), min_shape, fill_value=fill_value](
+                    [action, locality = localities(rp, cp), min_shape, fill_value = fill_value](
                         InputPartition&& input_partition)
-                    {
-                        return action(locality, std::move(input_partition), min_shape, fill_value);
-                    });
+                    { return action(locality, std::move(input_partition), min_shape, fill_value); });
             }
         }
 
@@ -222,10 +203,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename InputPolicies,
-        typename InputPartitions,
-        typename Localities>
+    template<typename InputPolicies, typename InputPartitions, typename Localities>
     InputPartitions halo_latitudinal_side_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
@@ -252,20 +230,18 @@ namespace lue::detail {
 
         Action action{};
 
-        for(Index rp = 0; rp < nr_partitions0; ++rp) {
+        for (Index rp = 0; rp < nr_partitions0; ++rp)
+        {
 
-            for(auto const& [ch, cp, fill_value]: {
-                    std::tuple<Index, Index, Element>{0, 0, hp.west_side()},
-                    std::tuple<Index, Index, Element>{1, nr_partitions1 - 1, hp.east_side()}
-                })
+            for (auto const& [ch, cp, fill_value] :
+                 {std::tuple<Index, Index, Element>{0, 0, hp.west_side()},
+                  std::tuple<Index, Index, Element>{1, nr_partitions1 - 1, hp.east_side()}})
             {
                 halo_partitions(rp, ch) = InputPartition{input_partitions(rp, cp)}.then(
 
-                    [action, locality=localities(rp, cp), min_shape, fill_value=fill_value](
+                    [action, locality = localities(rp, cp), min_shape, fill_value = fill_value](
                         InputPartition&& input_partition)
-                    {
-                        return action(locality, std::move(input_partition), min_shape, fill_value);
-                    });
+                    { return action(locality, std::move(input_partition), min_shape, fill_value); });
             }
         }
 
@@ -275,10 +251,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename InputPolicies,
-        typename InputPartitions,
-        typename Localities>
+    template<typename InputPolicies, typename InputPartitions, typename Localities>
     std::array<InputPartitions, 3> halo_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
@@ -294,11 +267,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename InputsPolicies,
-        typename Localities,
-        typename... InputPartitions>
+    template<std::size_t... idxs, typename InputsPolicies, typename Localities, typename... InputPartitions>
     std::tuple<std::array<InputPartitions, 3>...> halo_partitions(
         std::index_sequence<idxs...>,
         InputsPolicies const& inputs_policies,
@@ -306,13 +275,8 @@ namespace lue::detail {
         ShapeT<InputPartitions...> const& min_shape,
         InputPartitions const&... input_partition_collections)
     {
-        return std::tuple<std::array<InputPartitions, 3>...>{
-                std::array<InputPartitions, 3>{
-                        halo_partitions(
-                            std::get<idxs>(inputs_policies), localities,
-                            min_shape, input_partition_collections)
-                    }...
-            };
+        return std::tuple<std::array<InputPartitions, 3>...>{std::array<InputPartitions, 3>{halo_partitions(
+            std::get<idxs>(inputs_policies), localities, min_shape, input_partition_collections)}...};
     }
 
 
@@ -329,29 +293,27 @@ namespace lue::detail {
                     longitudinal side partitions, and latitudinal side
                     partitions
     */
-    template<
-        typename InputsPolicies,
-        typename Localities,
-        typename... InputPartitions>
+    template<typename InputsPolicies, typename Localities, typename... InputPartitions>
     std::tuple<std::array<InputPartitions, 3>...> halo_partitions(
         InputsPolicies const& inputs_policies,
         Localities const& localities,
         ShapeT<InputPartitions...> const& min_shape,
-        InputPartitions const& ... input_partition_collection)
+        InputPartitions const&... input_partition_collection)
     {
         static_assert(std::tuple_size_v<InputsPolicies> == sizeof...(input_partition_collection));
 
         return halo_partitions(
             std::index_sequence_for<InputPartitions...>(),
-            inputs_policies, localities, min_shape, input_partition_collection...);
+            inputs_policies,
+            localities,
+            min_shape,
+            input_partition_collection...);
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions north_west_corner_input_partitions(
-        InputPartitions const& input_partitions,
-        std::array<InputPartitions, 3> const& halo_partitions)
+        InputPartitions const& input_partitions, std::array<InputPartitions, 3> const& halo_partitions)
     {
         // This block also handles the first partition in case there
         // is only a single row and/or a single column of partitions
@@ -359,38 +321,27 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         InputPartitions result{Shape{{3, 3}}};
 
         result(0, 0) = halo_corner_partitions(0, 0);
         result(0, 1) = halo_longitudinal_side_partitions(0, 0);
-        result(0, 2) = nr_partitions1 == 1
-            ? halo_corner_partitions(0, 1)
-            : halo_longitudinal_side_partitions(0, 1);
+        result(0, 2) =
+            nr_partitions1 == 1 ? halo_corner_partitions(0, 1) : halo_longitudinal_side_partitions(0, 1);
 
         result(1, 0) = halo_latitudinal_side_partitions(0, 0);
         result(1, 1) = input_partitions(0, 0);
-        result(1, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(0, 1)
-            : input_partitions(0, 1);
+        result(1, 2) = nr_partitions1 == 1 ? halo_latitudinal_side_partitions(0, 1) : input_partitions(0, 1);
 
-        result(2, 0) = nr_partitions0 == 1
-            ? halo_corner_partitions(1, 0)
-            : halo_latitudinal_side_partitions(1, 0);
-        result(2, 1) = nr_partitions0 == 1
-            ? halo_longitudinal_side_partitions(1, 0)
-            : input_partitions(1, 0);
-        result(2, 2) = nr_partitions0 == 1
-            ? (nr_partitions1 == 1
-                ? halo_corner_partitions(1, 1)
-                : halo_longitudinal_side_partitions(1, 1))
-            : (nr_partitions1 == 1
-                ? halo_latitudinal_side_partitions(1, 1)
-                : input_partitions(1, 1));
+        result(2, 0) =
+            nr_partitions0 == 1 ? halo_corner_partitions(1, 0) : halo_latitudinal_side_partitions(1, 0);
+        result(2, 1) = nr_partitions0 == 1 ? halo_longitudinal_side_partitions(1, 0) : input_partitions(1, 0);
+        result(2, 2) = nr_partitions0 == 1 ? (nr_partitions1 == 1 ? halo_corner_partitions(1, 1)
+                                                                  : halo_longitudinal_side_partitions(1, 1))
+                                           : (nr_partitions1 == 1 ? halo_latitudinal_side_partitions(1, 1)
+                                                                  : input_partitions(1, 1));
 
         lue_hpx_assert(all_are_valid(result));
 
@@ -398,27 +349,20 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> north_west_corner_input_partitions(
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        north_west_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            north_west_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions north_east_corner_input_partitions(
-        InputPartitions const& input_partitions,
-        std::array<InputPartitions, 3> const& halo_partitions)
+        InputPartitions const& input_partitions, std::array<InputPartitions, 3> const& halo_partitions)
     {
         // This block also handles the last partition in case there
         // is only a single row of partitions
@@ -426,10 +370,8 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         lue_hpx_assert(nr_partitions1 > 1);
 
@@ -443,7 +385,7 @@ namespace lue::detail {
         result(1, 1) = input_partitions(0, nr_partitions1 - 1);
         result(1, 2) = halo_latitudinal_side_partitions(0, 1);
 
-        if(nr_partitions0 == 1)
+        if (nr_partitions0 == 1)
         {
             // Case where nr_partitions1 == 1 is handled by north-west
             // corner logic
@@ -466,27 +408,20 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> north_east_corner_input_partitions(
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        north_east_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            north_east_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions south_west_corner_input_partitions(
-        InputPartitions const& input_partitions,
-        std::array<InputPartitions, 3> const& halo_partitions)
+        InputPartitions const& input_partitions, std::array<InputPartitions, 3> const& halo_partitions)
     {
         // This block also handles the last partition in case there
         // is only a single column of partitions
@@ -494,10 +429,8 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         lue_hpx_assert(nr_partitions0 > 1);
 
@@ -505,21 +438,18 @@ namespace lue::detail {
 
         result(0, 0) = halo_latitudinal_side_partitions(nr_partitions0 - 2, 0);
         result(0, 1) = input_partitions(nr_partitions0 - 2, 0);
-        result(0, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(nr_partitions0 - 2, 1)
-            : input_partitions(nr_partitions0 - 2, 1);
+        result(0, 2) = nr_partitions1 == 1 ? halo_latitudinal_side_partitions(nr_partitions0 - 2, 1)
+                                           : input_partitions(nr_partitions0 - 2, 1);
 
         result(1, 0) = halo_latitudinal_side_partitions(nr_partitions0 - 1, 0);
         result(1, 1) = input_partitions(nr_partitions0 - 1, 0);
-        result(1, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(nr_partitions0 - 1, 1)
-            : input_partitions(nr_partitions0 - 1, 1);
+        result(1, 2) = nr_partitions1 == 1 ? halo_latitudinal_side_partitions(nr_partitions0 - 1, 1)
+                                           : input_partitions(nr_partitions0 - 1, 1);
 
         result(2, 0) = halo_corner_partitions(1, 0);
         result(2, 1) = halo_longitudinal_side_partitions(1, 0);
-        result(2, 2) = nr_partitions1 == 1
-            ? halo_corner_partitions(1, 1)
-            : halo_longitudinal_side_partitions(1, 1);
+        result(2, 2) =
+            nr_partitions1 == 1 ? halo_corner_partitions(1, 1) : halo_longitudinal_side_partitions(1, 1);
 
         lue_hpx_assert(all_are_valid(result));
 
@@ -527,35 +457,26 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> south_west_corner_input_partitions(
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        south_west_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            south_west_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions south_east_corner_input_partitions(
-        InputPartitions const& input_partitions,
-        std::array<InputPartitions, 3> const& halo_partitions)
+        InputPartitions const& input_partitions, std::array<InputPartitions, 3> const& halo_partitions)
     {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         lue_hpx_assert(nr_partitions0 > 1 && nr_partitions1 > 1);
 
@@ -577,24 +498,18 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> south_east_corner_input_partitions(
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        south_east_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            south_east_corner_input_partitions(input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions north_side_input_partitions(
         Index const c,
         InputPartitions const& input_partitions,
@@ -606,35 +521,33 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         InputPartitions result{Shape{{3, 3}}};
 
         result(0, 0) = halo_longitudinal_side_partitions(0, c - 1);
-        result(0, 1) = halo_longitudinal_side_partitions(0, c    );
+        result(0, 1) = halo_longitudinal_side_partitions(0, c);
         result(0, 2) = halo_longitudinal_side_partitions(0, c + 1);
 
         result(1, 0) = input_partitions(0, c - 1);
-        result(1, 1) = input_partitions(0, c    );
+        result(1, 1) = input_partitions(0, c);
         result(1, 2) = input_partitions(0, c + 1);
 
-        if(nr_partitions0 == 1)
+        if (nr_partitions0 == 1)
         {
             // Case where nr_partitions1 == 1 is handled by north-west
             // corner logic
             lue_hpx_assert(nr_partitions1 > 1);
 
             result(2, 0) = halo_longitudinal_side_partitions(1, c - 1);
-            result(2, 1) = halo_longitudinal_side_partitions(1, c    );
+            result(2, 1) = halo_longitudinal_side_partitions(1, c);
             result(2, 2) = halo_longitudinal_side_partitions(1, c + 1);
         }
         else
         {
             result(2, 0) = input_partitions(1, c - 1);
-            result(2, 1) = input_partitions(1, c    );
+            result(2, 1) = input_partitions(1, c);
             result(2, 2) = input_partitions(1, c + 1);
         }
 
@@ -644,25 +557,19 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> north_side_input_partitions(
         Index const c,
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        north_side_input_partitions(c, input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            north_side_input_partitions(c, input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions south_side_input_partitions(
         Index const c,
         InputPartitions const& input_partitions,
@@ -671,21 +578,19 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         InputPartitions result{Shape{{3, 3}}};
 
         result(0, 0) = input_partitions(nr_partitions0 - 2, c - 1);
-        result(0, 1) = input_partitions(nr_partitions0 - 2, c    );
+        result(0, 1) = input_partitions(nr_partitions0 - 2, c);
         result(0, 2) = input_partitions(nr_partitions0 - 2, c + 1);
         result(1, 0) = input_partitions(nr_partitions0 - 1, c - 1);
-        result(1, 1) = input_partitions(nr_partitions0 - 1, c    );
+        result(1, 1) = input_partitions(nr_partitions0 - 1, c);
         result(1, 2) = input_partitions(nr_partitions0 - 1, c + 1);
         result(2, 0) = halo_longitudinal_side_partitions(1, c - 1);
-        result(2, 1) = halo_longitudinal_side_partitions(1, c    );
+        result(2, 1) = halo_longitudinal_side_partitions(1, c);
         result(2, 2) = halo_longitudinal_side_partitions(1, c + 1);
 
         lue_hpx_assert(all_are_valid(result));
@@ -694,25 +599,19 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> south_side_input_partitions(
         Index const c,
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        south_side_input_partitions(c, input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            south_side_input_partitions(c, input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions west_side_input_partitions(
         Index const r,
         InputPartitions const& input_partitions,
@@ -724,30 +623,24 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         InputPartitions result{Shape{{3, 3}}};
 
         result(0, 0) = halo_latitudinal_side_partitions(r - 1, 0);
         result(0, 1) = input_partitions(r - 1, 0);
-        result(0, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(r - 1, 1)
-            : input_partitions(r - 1, 1);
+        result(0, 2) =
+            nr_partitions1 == 1 ? halo_latitudinal_side_partitions(r - 1, 1) : input_partitions(r - 1, 1);
 
         result(1, 0) = halo_latitudinal_side_partitions(r, 0);
         result(1, 1) = input_partitions(r, 0);
-        result(1, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(r, 1)
-            : input_partitions(r, 1);
+        result(1, 2) = nr_partitions1 == 1 ? halo_latitudinal_side_partitions(r, 1) : input_partitions(r, 1);
 
         result(2, 0) = halo_latitudinal_side_partitions(r + 1, 0);
         result(2, 1) = input_partitions(r + 1, 0);
-        result(2, 2) = nr_partitions1 == 1
-            ? halo_latitudinal_side_partitions(r + 1, 1)
-            : input_partitions(r + 1, 1);
+        result(2, 2) =
+            nr_partitions1 == 1 ? halo_latitudinal_side_partitions(r + 1, 1) : input_partitions(r + 1, 1);
 
         lue_hpx_assert(all_are_valid(result));
 
@@ -755,25 +648,19 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> west_side_input_partitions(
         Index const r,
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        west_side_input_partitions(r, input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            west_side_input_partitions(r, input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions east_side_input_partitions(
         Index const r,
         InputPartitions const& input_partitions,
@@ -782,19 +669,17 @@ namespace lue::detail {
         using Shape = ShapeT<InputPartitions>;
 
         auto const [nr_partitions0, nr_partitions1] = input_partitions.shape();
-        auto const& [
-            halo_corner_partitions,
-            halo_longitudinal_side_partitions,
-            halo_latitudinal_side_partitions] = halo_partitions;
+        auto const& [halo_corner_partitions, halo_longitudinal_side_partitions, halo_latitudinal_side_partitions] =
+            halo_partitions;
 
         InputPartitions result{Shape{{3, 3}}};
 
         result(0, 0) = input_partitions(r - 1, nr_partitions1 - 2);
         result(0, 1) = input_partitions(r - 1, nr_partitions1 - 1);
         result(0, 2) = halo_latitudinal_side_partitions(r - 1, 1);
-        result(1, 0) = input_partitions(r    , nr_partitions1 - 2);
-        result(1, 1) = input_partitions(r    , nr_partitions1 - 1);
-        result(1, 2) = halo_latitudinal_side_partitions(r    , 1);
+        result(1, 0) = input_partitions(r, nr_partitions1 - 2);
+        result(1, 1) = input_partitions(r, nr_partitions1 - 1);
+        result(1, 2) = halo_latitudinal_side_partitions(r, 1);
         result(2, 0) = input_partitions(r + 1, nr_partitions1 - 2);
         result(2, 1) = input_partitions(r + 1, nr_partitions1 - 1);
         result(2, 2) = halo_latitudinal_side_partitions(r + 1, 1);
@@ -805,29 +690,21 @@ namespace lue::detail {
     }
 
 
-    template<
-        std::size_t... idxs,
-        typename... InputPartitionCollection>
+    template<std::size_t... idxs, typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> east_side_input_partitions(
         Index const r,
         std::index_sequence<idxs...>,
         std::tuple<std::array<InputPartitionCollection, 3>...> const& halo_partitions,
         InputPartitionCollection const&... input_partitions)
     {
-        return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        east_side_input_partitions(r, input_partitions, std::get<idxs>(halo_partitions))
-                    }...
-            };
+        return std::tuple<InputPartitionCollection...>{InputPartitionCollection{
+            east_side_input_partitions(r, input_partitions, std::get<idxs>(halo_partitions))}...};
     }
 
 
-    template<
-        typename InputPartitions>
+    template<typename InputPartitions>
     InputPartitions inner_input_partitions(
-        Index const r,
-        Index const c,
-        InputPartitions const& input_partitions)
+        Index const r, Index const c, InputPartitions const& input_partitions)
     {
         using Shape = ShapeT<InputPartitions>;
 
@@ -843,8 +720,9 @@ namespace lue::detail {
         // partition and its neighboring partitions
         InputPartitions result{Shape{{3, 3}}};
 
-        for(Index i = 0; i < 2 * radius + 1; ++i) {
-            for(Index j = 0; j < 2 * radius + 1; ++j)
+        for (Index i = 0; i < 2 * radius + 1; ++i)
+        {
+            for (Index j = 0; j < 2 * radius + 1; ++j)
             {
                 result(i, j) = input_partitions(r - radius + i, c - radius + j);
             }
@@ -856,18 +734,12 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename... InputPartitionCollection>
+    template<typename... InputPartitionCollection>
     std::tuple<InputPartitionCollection...> inner_input_partitions(
-        Index const r,
-        Index const c,
-        InputPartitionCollection const&... input_partitions)
+        Index const r, Index const c, InputPartitionCollection const&... input_partitions)
     {
         return std::tuple<InputPartitionCollection...>{
-                InputPartitionCollection{
-                        inner_input_partitions(r, c, input_partitions)
-                    }...
-            };
+            InputPartitionCollection{inner_input_partitions(r, c, input_partitions)}...};
     }
 
 }  // namespace lue::detail

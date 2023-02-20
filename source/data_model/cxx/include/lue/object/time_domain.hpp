@@ -1,76 +1,65 @@
 #pragma once
-#include "lue/info/time.hpp"
 #include "lue/core/clock.hpp"
 #include "lue/core/configuration.hpp"
 #include "lue/hdf5.hpp"
+#include "lue/info/time.hpp"
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-using TimeConfiguration = Configuration<
-    TimeDomainItemType
->;
+        using TimeConfiguration = Configuration<TimeDomainItemType>;
 
 
-class TimeDomain:
-    public hdf5::Group
-{
+        class TimeDomain: public hdf5::Group
+        {
 
-public:
+            public:
 
-    explicit       TimeDomain          (hdf5::Group const& parent);
+                explicit TimeDomain(hdf5::Group const& parent);
 
-    explicit       TimeDomain          (hdf5::Group&& group);
+                explicit TimeDomain(hdf5::Group&& group);
 
-                   TimeDomain          (TimeDomain const&)=default;
+                TimeDomain(TimeDomain const&) = default;
 
-                   TimeDomain          (TimeDomain&&)=default;
+                TimeDomain(TimeDomain&&) = default;
 
-                   ~TimeDomain         () override =default;
+                ~TimeDomain() override = default;
 
-    TimeDomain&    operator=           (TimeDomain const&)=default;
+                TimeDomain& operator=(TimeDomain const&) = default;
 
-    TimeDomain&    operator=           (TimeDomain&&)=default;
+                TimeDomain& operator=(TimeDomain&&) = default;
 
-    TimeConfiguration const&
-                   configuration       () const;
+                TimeConfiguration const& configuration() const;
 
-    Clock const&   clock               () const;
+                Clock const& clock() const;
 
-    template<
-        typename T>
-    T              value               ();
+                template<typename T>
+                T value();
 
-private:
+            private:
 
-    TimeConfiguration _configuration;
+                TimeConfiguration _configuration;
 
-    Clock          _clock;
-
-};
+                Clock _clock;
+        };
 
 
-TimeDomain         create_time_domain  (hdf5::Group& parent,
-                                        TimeConfiguration const&
-                                            configuration,
-                                        data_model::Clock const& clock);
+        TimeDomain create_time_domain(
+            hdf5::Group& parent, TimeConfiguration const& configuration, data_model::Clock const& clock);
 
-void               link_time_domain    (hdf5::Group& parent,
-                                        TimeDomain& domain);
+        void link_time_domain(hdf5::Group& parent, TimeDomain& domain);
 
-bool               has_linked_time_domain(
-                                        hdf5::Group const& parent);
+        bool has_linked_time_domain(hdf5::Group const& parent);
 
-bool               time_domain_exists  (hdf5::Group const& parent);
+        bool time_domain_exists(hdf5::Group const& parent);
 
 
-template<
-    typename T>
-inline T TimeDomain::value()
-{
-    return T{*this};
-}
+        template<typename T>
+        inline T TimeDomain::value()
+        {
+            return T{*this};
+        }
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

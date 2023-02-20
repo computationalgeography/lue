@@ -11,25 +11,22 @@ namespace glfw {
 
         public:
 
-            ImGuiBinding(
-                API const& api,
-                Window& window);
+            ImGuiBinding(API const& api, Window& window);
 
-            ImGuiBinding(ImGuiBinding const&)=default;
+            ImGuiBinding(ImGuiBinding const&) = default;
 
-            ImGuiBinding(ImGuiBinding&&)=default;
+            ImGuiBinding(ImGuiBinding&&) = default;
 
             ~ImGuiBinding();
 
-            ImGuiBinding& operator=(ImGuiBinding const&)=default;
+            ImGuiBinding& operator=(ImGuiBinding const&) = default;
 
-            ImGuiBinding& operator=(ImGuiBinding&&)=default;
+            ImGuiBinding& operator=(ImGuiBinding&&) = default;
 
             static ImGuiIO& io()
             {
                 return ImGui::GetIO();
             }
-
     };
 
 }  // namespace glfw

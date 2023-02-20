@@ -27,9 +27,7 @@ namespace lue::hdf5 {
         @brief      Construct an instance based on an HDF5 identifier and a
                     close function
     */
-    Identifier::Identifier(
-        hid_t const id,
-        Close const& close):
+    Identifier::Identifier(hid_t const id, Close const& close):
 
         _id{id},
         _close{close}
@@ -45,14 +43,14 @@ namespace lue::hdf5 {
         If the HDF5 identifier is valid, the reference count of the object
         it identifies will be incremented.
     */
-    Identifier::Identifier(
-        Identifier const& other):
+    Identifier::Identifier(Identifier const& other):
 
         _id{other._id},
         _close{other._close}
 
     {
-        if(is_valid()) {
+        if (is_valid())
+        {
             increment_reference_count();
         }
 
@@ -68,8 +66,7 @@ namespace lue::hdf5 {
         in a valid state, but semantically invalid (not identifying an
         object anymore).
     */
-    Identifier::Identifier(
-        Identifier&& other) noexcept:
+    Identifier::Identifier(Identifier&& other) noexcept:
 
         _id{other._id},
         _close{std::move(other._close)}
@@ -82,7 +79,7 @@ namespace lue::hdf5 {
             assert_invariant();
             assert(!other.is_valid());
         }
-        catch(...)
+        catch (...)
         {
             // This should never happen
             assert(false);
@@ -101,7 +98,7 @@ namespace lue::hdf5 {
         {
             close_if_valid();
         }
-        catch(...)
+        catch (...)
         {
             // This should never happen
             assert(false);
@@ -115,20 +112,20 @@ namespace lue::hdf5 {
         If necessary, the close function is called on the currently layered
         HDF5 identifier before the assignment.
     */
-    Identifier& Identifier::operator=(
-        Identifier const& other)
+    Identifier& Identifier::operator=(Identifier const& other)
     {
         // Copy-assign:
         // - Clean-up this instance
         // - Copy the other instance in
 
-        if(&other != this)
+        if (&other != this)
         {
             close_if_valid();
 
             _id = other._id;
 
-            if(is_valid()) {
+            if (is_valid())
+            {
                 increment_reference_count();
             }
 
@@ -147,8 +144,7 @@ namespace lue::hdf5 {
         If necessary, the close function is called on the currently layered
         HDF5 identifier before the assignment.
     */
-    Identifier& Identifier::operator=(
-        Identifier&& other) noexcept
+    Identifier& Identifier::operator=(Identifier&& other) noexcept
     {
         // Move-assign:
         // - Clean-up this instance
@@ -166,7 +162,7 @@ namespace lue::hdf5 {
             assert_invariant();
             assert(!other.is_valid());
         }
-        catch(...)
+        catch (...)
         {
             // This should never happen
             assert(false);
@@ -185,7 +181,8 @@ namespace lue::hdf5 {
     {
         int const count{::H5Iget_ref(_id)};
 
-        if(count < 0) {
+        if (count < 0)
+        {
             throw std::runtime_error("Cannot retrieve object's reference count");
         }
 
@@ -200,7 +197,8 @@ namespace lue::hdf5 {
 
         int const count{::H5Iinc_ref(_id)};
 
-        if(count < 0) {
+        if (count < 0)
+        {
             throw std::runtime_error("Cannot increment object's reference count");
         }
 
@@ -219,7 +217,7 @@ namespace lue::hdf5 {
     */
     void Identifier::close_if_valid()
     {
-        if(is_valid())
+        if (is_valid())
         {
             assert(reference_count() > 0);
             _close(_id);
@@ -243,11 +241,12 @@ namespace lue::hdf5 {
 
         ::htri_t status{0};
 
-        if(_id >= 0)
+        if (_id >= 0)
         {
             status = ::H5Iis_valid(_id);
 
-            if(status < 0) {
+            if (status < 0)
+            {
                 throw std::runtime_error("Cannot determine whether identifier is valid");
             }
         }
@@ -260,7 +259,8 @@ namespace lue::hdf5 {
     {
         ::H5I_type_t const result{::H5Iget_type(_id)};
 
-        if(result == ::H5I_BADID) {
+        if (result == ::H5I_BADID)
+        {
             throw std::runtime_error("Cannot determine type of object identifier");
         }
 
@@ -273,7 +273,8 @@ namespace lue::hdf5 {
     {
         void* result{::H5Iobject_verify(_id, type())};
 
-        if(result == nullptr) {
+        if (result == nullptr)
+        {
             throw std::runtime_error("Cannot obtain pointer to object");
         }
 
@@ -303,15 +304,16 @@ namespace lue::hdf5 {
     */
     std::string Identifier::pathname() const
     {
-        static_assert(std::is_same<std::string::value_type, char>::value,
-            "expect std::string::value_type to be char");
+        static_assert(
+            std::is_same<std::string::value_type, char>::value, "expect std::string::value_type to be char");
 
         assert(is_valid());
 
         // Number of bytes, excluding \0
         ::ssize_t const nr_bytes{::H5Iget_name(_id, nullptr, 0)};
 
-        if(nr_bytes < 0) {
+        if (nr_bytes < 0)
+        {
             throw std::runtime_error("Cannot retrieve name of object");
         }
 
@@ -358,7 +360,8 @@ namespace lue::hdf5 {
 
         ::hid_t const object_id{::H5Iget_file_id(_id)};
 
-        if(object_id < 0) {
+        if (object_id < 0)
+        {
             throw std::runtime_error("Cannot get file ID");
         }
 
@@ -372,8 +375,7 @@ namespace lue::hdf5 {
         Two identifiers are considered equal if they are pointing to the same
         object in the HDF5 dataset.
     */
-    bool Identifier::operator==(
-        Identifier const& other) const
+    bool Identifier::operator==(Identifier const& other) const
     {
         return info() == other.info();
     }
@@ -385,10 +387,9 @@ namespace lue::hdf5 {
         Two identifiers are considered equal if they are pointing to the same
         object in the HDF5 dataset.
     */
-    bool Identifier::operator!=(
-        Identifier const& other) const
+    bool Identifier::operator!=(Identifier const& other) const
     {
         return info() != other.info();
     }
 
-} // namespace lue::hdf5
+}  // namespace lue::hdf5

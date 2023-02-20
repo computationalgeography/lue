@@ -10,12 +10,8 @@ namespace lue::server {
 
         The @a shape passed in will be passed to the constructor of @a Data.
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        Offset const& offset,
-        Shape const& shape):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(Offset const& offset, Shape const& shape):
 
         Base{},
         _offset{offset},
@@ -32,13 +28,8 @@ namespace lue::server {
         The @a shape and the @a value passed in will be passed to the
         constructor of @a Data.
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        Offset const& offset,
-        Shape const& shape,
-        Element value):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(Offset const& offset, Shape const& shape, Element value):
 
         Base{},
         _offset{offset},
@@ -56,12 +47,8 @@ namespace lue::server {
 
         The @a data passed in is copied.
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        Offset const& offset,
-        Data const& data):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(Offset const& offset, Data const& data):
 
         Base{},
         _offset{offset},
@@ -76,12 +63,8 @@ namespace lue::server {
 
         The @a data passed in is moved from.
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        Offset const& offset,
-        Data&& data):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(Offset const& offset, Data&& data):
 
         Base{},
         _offset{offset},
@@ -91,11 +74,8 @@ namespace lue::server {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        ArrayPartition const& other):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(ArrayPartition const& other):
 
         Base{other},
         _offset{other._offset},
@@ -105,11 +85,8 @@ namespace lue::server {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(
-        ArrayPartition&& other):
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::ArrayPartition(ArrayPartition&& other):
 
         Base{std::move(other)},
         _offset{std::move(other._offset)},
@@ -122,75 +99,57 @@ namespace lue::server {
     /*!
         @brief      Return this partition's data
     */
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartition<Element, rank>::Data
-        ArrayPartition<Element, rank>::data() const
+    template<typename Element, Rank rank>
+    typename ArrayPartition<Element, rank>::Data ArrayPartition<Element, rank>::data() const
     {
         return _data;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartition<Element, rank>::Data
-        ArrayPartition<Element, rank>::slice(
-            Slices const& slices) const
+    template<typename Element, Rank rank>
+    typename ArrayPartition<Element, rank>::Data ArrayPartition<Element, rank>::slice(
+        Slices const& slices) const
     {
-        if constexpr (rank == 0) {
+        if constexpr (rank == 0)
+        {
             return _data;
         }
-        else {
+        else
+        {
             return _data.slice(slices);
         }
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void ArrayPartition<Element, rank>::fill(
-        Element value)
+    template<typename Element, Rank rank>
+    void ArrayPartition<Element, rank>::fill(Element value)
     {
         std::fill(_data.begin(), _data.end(), value);
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void ArrayPartition<Element, rank>::set_data(
-        Data const& data)
+    template<typename Element, Rank rank>
+    void ArrayPartition<Element, rank>::set_data(Data const& data)
     {
         _data = data;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartition<Element, rank>::Offset
-        ArrayPartition<Element, rank>::offset() const
+    template<typename Element, Rank rank>
+    typename ArrayPartition<Element, rank>::Offset ArrayPartition<Element, rank>::offset() const
     {
         return _offset;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartition<Element, rank>::Shape
-        ArrayPartition<Element, rank>::shape() const
+    template<typename Element, Rank rank>
+    typename ArrayPartition<Element, rank>::Shape ArrayPartition<Element, rank>::shape() const
     {
         return _data.shape();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     Count ArrayPartition<Element, rank>::nr_elements() const
     {
         return _data.nr_elements();

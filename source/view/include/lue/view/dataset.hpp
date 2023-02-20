@@ -8,63 +8,60 @@
 
 
 namespace lue {
-namespace view {
+    namespace view {
 
-class Dataset
-{
+        class Dataset
+        {
 
-public:
+            public:
 
-    // using CachePtr = std::shared_ptr<Cache>;
+                // using CachePtr = std::shared_ptr<Cache>;
 
-    explicit       Dataset             (std::string const& name);
+                explicit Dataset(std::string const& name);
 
-    std::string const& name            () const;
+                std::string const& name() const;
 
-    data_model::Dataset const&
-                   dataset             () const;
+                data_model::Dataset const& dataset() const;
 
-    // CachePtr       cache               ();
+                // CachePtr       cache               ();
 
-    std::filesystem::path const& path() const;
+                std::filesystem::path const& path() const;
 
-    std::filesystem::file_time_type
-                   write_time          () const;
+                std::filesystem::file_time_type write_time() const;
 
-    std::string    pathname            () const;
+                std::string pathname() const;
 
-    std::string    filename            () const;
+                std::string filename() const;
 
-    bool           is_open             () const;
+                bool is_open() const;
 
-    bool           rescan              ();
+                bool rescan();
 
-private:
+            private:
 
-    bool           exists              () const;
+                bool exists() const;
 
-    bool           changed             () const;
+                bool changed() const;
 
-    //! Name of dataset as passed into constructor
-    std::string const _name;
+                //! Name of dataset as passed into constructor
+                std::string const _name;
 
-    //! Dataset instance, if opened
-    std::optional<data_model::Dataset> _dataset;
+                //! Dataset instance, if opened
+                std::optional<data_model::Dataset> _dataset;
 
-    //! Canonical pathname of dataset
-    std::filesystem::path _path;
+                //! Canonical pathname of dataset
+                std::filesystem::path _path;
 
-    //! Last time the dataset was updated
-    std::filesystem::file_time_type _write_time;
+                //! Last time the dataset was updated
+                std::filesystem::file_time_type _write_time;
 
-    // CachePtr       _cache;
-
-};
+                // CachePtr       _cache;
+        };
 
 
-// Or just use a optional<lue::Dataset> ?
-using Datasets = std::vector<Dataset>;
+        // Or just use a optional<lue::Dataset> ?
+        using Datasets = std::vector<Dataset>;
 
 
-}  // namespace view
+    }  // namespace view
 }  // namespace lue

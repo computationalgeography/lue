@@ -1,9 +1,9 @@
 #pragma once
-#include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
-#include "lue/framework/algorithm/inflow_count3.hpp"
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
 #include "lue/framework/algorithm/detail/inflow_count3.hpp"
+#include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
+#include "lue/framework/algorithm/inflow_count3.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
 
@@ -106,7 +106,6 @@ namespace lue {
             private:
 
                 Index _row;
-
         };
 
 
@@ -140,7 +139,6 @@ namespace lue {
             private:
 
                 Index _col;
-
         };
 
 
@@ -159,7 +157,8 @@ namespace lue {
 
                 CornerIdxConverter(Index const row, Index const col):
 
-                    _row{row}, _col{col}
+                    _row{row},
+                    _col{col}
 
                 {
                 }
@@ -176,14 +175,10 @@ namespace lue {
                 Index _row;
 
                 Index _col;
-
         };
 
 
-        template<
-            typename T,
-            typename IdxConverter,
-            Rank rank>
+        template<typename T, typename IdxConverter, Rank rank>
         std::vector<std::array<Index, rank>> monitor_cell_idx_inputs(
             hpx::lcos::channel<T> const& channel,
             IdxConverter&& idx_to_idxs,
@@ -193,11 +188,11 @@ namespace lue {
 
             std::vector<std::array<Index, rank>> cells_idxs{};
 
-            if(channel)
+            if (channel)
             {
-                for(std::vector<Index> const& idxs: channel)
+                for (std::vector<Index> const& idxs : channel)
                 {
-                    if(idxs.empty())
+                    if (idxs.empty())
                     {
                         // This was the last one
                         break;
@@ -213,7 +208,7 @@ namespace lue {
 #ifndef NDEBUG
             auto const [extent0, extent1] = partition_shape;
 
-            for(auto const& cell_idxs: cells_idxs)
+            for (auto const& cell_idxs : cells_idxs)
             {
                 auto const [idx0, idx1] = cell_idxs;
 
@@ -221,9 +216,7 @@ namespace lue {
                 lue_hpx_assert(idx0 < extent0);
                 lue_hpx_assert(idx1 >= 0);
                 lue_hpx_assert(idx1 < extent1);
-                lue_hpx_assert(
-                    (idx0 == 0 || idx0 == extent0 - 1) ||
-                    (idx1 == 0 || idx1 == extent1 - 1));
+                lue_hpx_assert((idx0 == 0 || idx0 == extent0 - 1) || (idx1 == 0 || idx1 == extent1 - 1));
             }
 #endif
 
@@ -231,17 +224,14 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename Policies, typename FlowDirectionElement, Rank rank>
         hpx::tuple<
             hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
             std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>
-                connectivity_ready(
-                    Policies const& policies,
-                    ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-                    InflowCountCommunicator<rank>&& communicator)
+        connectivity_ready(
+            Policies const& policies,
+            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
+            InflowCountCommunicator<rank>&& communicator)
         {
             lue_hpx_assert(flow_direction_partition.is_ready());
 
@@ -264,13 +254,13 @@ namespace lue {
             //     neighbouring partition, if any
 
             std::array<std::vector<Index>, nr_neighbours> input_cell_idxs{};
-            for(auto& cell_idxs: input_cell_idxs)
+            for (auto& cell_idxs : input_cell_idxs)
             {
                 cell_idxs.reserve(20);  // Prevent first few reallocations
             }
 
             std::array<CellsIdxs, nr_neighbours> output_cells_idxs{};
-            for(auto& cells_idxs: output_cells_idxs)
+            for (auto& cells_idxs : output_cells_idxs)
             {
                 cells_idxs.reserve(20);  // Prevent first few reallocations
             }
@@ -280,28 +270,28 @@ namespace lue {
                 Index idx0, idx1;
                 FlowDirectionElement flow_direction;
 
-                if(extent1 > 2)
+                if (extent1 > 2)
                 {
                     // North side, excluding north-west and north-east corners
                     idx0 = 0;
 
-                    for(idx1 = 1; idx1 < extent1 - 1; ++idx1)
+                    for (idx1 = 1; idx1 < extent1 - 1; ++idx1)
                     {
-                        if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                        if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                         {
                             flow_direction = flow_direction_data(idx0, idx1);
 
-                            if(flow_direction == north_west<FlowDirectionElement>)
+                            if (flow_direction == north_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::north].push_back(idx1 - 1);
                             }
-                            else if(flow_direction == north<FlowDirectionElement>)
+                            else if (flow_direction == north<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::north].push_back(idx1);
                             }
-                            else if(flow_direction == north_east<FlowDirectionElement>)
+                            else if (flow_direction == north_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::north].push_back(idx1 + 1);
@@ -312,54 +302,53 @@ namespace lue {
                     // South side, excluding south-west and south-east corners
                     idx0 = extent0 - 1;
 
-                    for(idx1 = 1; idx1 < extent1 - 1; ++idx1)
+                    for (idx1 = 1; idx1 < extent1 - 1; ++idx1)
                     {
-                        if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                        if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                         {
                             flow_direction = flow_direction_data(idx0, idx1);
 
-                            if(flow_direction == south_west<FlowDirectionElement>)
+                            if (flow_direction == south_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::south].push_back(idx1 - 1);
                             }
-                            else if(flow_direction == south<FlowDirectionElement>)
+                            else if (flow_direction == south<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::south].push_back(idx1);
                             }
-                            else if(flow_direction == south_east<FlowDirectionElement>)
+                            else if (flow_direction == south_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::south].push_back(idx1 + 1);
                             }
                         }
-
                     }
                 }
 
-                if(extent0 > 2)
+                if (extent0 > 2)
                 {
                     // West side, excluding north-west and south-west corners
                     idx1 = 0;
 
-                    for(idx0 = 1; idx0 < extent0 - 1; ++idx0)
+                    for (idx0 = 1; idx0 < extent0 - 1; ++idx0)
                     {
-                        if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                        if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                         {
                             flow_direction = flow_direction_data(idx0, idx1);
 
-                            if(flow_direction == north_west<FlowDirectionElement>)
+                            if (flow_direction == north_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::west].push_back(idx0 - 1);
                             }
-                            else if(flow_direction == west<FlowDirectionElement>)
+                            else if (flow_direction == west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::west].push_back(idx0);
                             }
-                            else if(flow_direction == south_west<FlowDirectionElement>)
+                            else if (flow_direction == south_west<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::west].push_back(idx0 + 1);
@@ -370,23 +359,23 @@ namespace lue {
                     // East side, excluding north-east and south-east corners
                     idx1 = extent1 - 1;
 
-                    for(idx0 = 1; idx0 < extent0 - 1; ++idx0)
+                    for (idx0 = 1; idx0 < extent0 - 1; ++idx0)
                     {
-                        if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                        if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                         {
                             flow_direction = flow_direction_data(idx0, idx1);
 
-                            if(flow_direction == north_east<FlowDirectionElement>)
+                            if (flow_direction == north_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::east].push_back(idx0 - 1);
                             }
-                            else if(flow_direction == east<FlowDirectionElement>)
+                            else if (flow_direction == east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::east].push_back(idx0);
                             }
-                            else if(flow_direction == south_east<FlowDirectionElement>)
+                            else if (flow_direction == south_east<FlowDirectionElement>)
                             {
                                 output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                                 input_cell_idxs[accu::Direction::east].push_back(idx0 + 1);
@@ -400,31 +389,31 @@ namespace lue {
                     idx0 = 0;
                     idx1 = 0;
 
-                    if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                    if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                     {
                         flow_direction = flow_direction_data(idx0, idx1);
 
-                        if(flow_direction == south_west<FlowDirectionElement>)
+                        if (flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::west].push_back(idx0 + 1);
                         }
-                        else if(flow_direction == west<FlowDirectionElement>)
+                        else if (flow_direction == west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::west].push_back(idx0);
                         }
-                        else if(flow_direction == north_west<FlowDirectionElement>)
+                        else if (flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north_west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north_west].push_back(std::size_t(-1));
                         }
-                        else if(flow_direction == north<FlowDirectionElement>)
+                        else if (flow_direction == north<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north].push_back(idx1);
                         }
-                        else if(flow_direction == north_east<FlowDirectionElement>)
+                        else if (flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north].push_back(idx1 + 1);
@@ -437,31 +426,31 @@ namespace lue {
                     idx0 = 0;
                     idx1 = extent1 - 1;
 
-                    if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                    if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                     {
                         flow_direction = flow_direction_data(idx0, idx1);
 
-                        if(flow_direction == north_west<FlowDirectionElement>)
+                        if (flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north].push_back(idx1 - 1);
                         }
-                        else if(flow_direction == north<FlowDirectionElement>)
+                        else if (flow_direction == north<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north].push_back(idx1);
                         }
-                        else if(flow_direction == north_east<FlowDirectionElement>)
+                        else if (flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::north_east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::north_east].push_back(std::size_t(-1));
                         }
-                        else if(flow_direction == east<FlowDirectionElement>)
+                        else if (flow_direction == east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::east].push_back(idx0);
                         }
-                        else if(flow_direction == south_east<FlowDirectionElement>)
+                        else if (flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::east].push_back(idx0 + 1);
@@ -474,31 +463,31 @@ namespace lue {
                     idx0 = extent0 - 1;
                     idx1 = extent1 - 1;
 
-                    if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                    if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                     {
                         flow_direction = flow_direction_data(idx0, idx1);
 
-                        if(flow_direction == north_east<FlowDirectionElement>)
+                        if (flow_direction == north_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::east].push_back(idx0 - 1);
                         }
-                        else if(flow_direction == east<FlowDirectionElement>)
+                        else if (flow_direction == east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::east].push_back(idx0);
                         }
-                        else if(flow_direction == south_east<FlowDirectionElement>)
+                        else if (flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south_east].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south_east].push_back(std::size_t(-1));
                         }
-                        else if(flow_direction == south<FlowDirectionElement>)
+                        else if (flow_direction == south<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south].push_back(idx1);
                         }
-                        else if(flow_direction == south_west<FlowDirectionElement>)
+                        else if (flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south].push_back(idx1 - 1);
@@ -511,31 +500,31 @@ namespace lue {
                     idx0 = extent0 - 1;
                     idx1 = 0;
 
-                    if(!indp.is_no_data(flow_direction_data, idx0, idx1))
+                    if (!indp.is_no_data(flow_direction_data, idx0, idx1))
                     {
                         flow_direction = flow_direction_data(idx0, idx1);
 
-                        if(flow_direction == north_west<FlowDirectionElement>)
+                        if (flow_direction == north_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::west].push_back(idx0 - 1);
                         }
-                        else if(flow_direction == west<FlowDirectionElement>)
+                        else if (flow_direction == west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::west].push_back(idx0);
                         }
-                        else if(flow_direction == south_west<FlowDirectionElement>)
+                        else if (flow_direction == south_west<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south_west].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south_west].push_back(std::size_t(-1));
                         }
-                        else if(flow_direction == south<FlowDirectionElement>)
+                        else if (flow_direction == south<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south].push_back(idx1);
                         }
-                        else if(flow_direction == south_east<FlowDirectionElement>)
+                        else if (flow_direction == south_east<FlowDirectionElement>)
                         {
                             output_cells_idxs[accu::Direction::south].push_back({idx0, idx1});
                             input_cell_idxs[accu::Direction::south].push_back(idx1 + 1);
@@ -543,9 +532,9 @@ namespace lue {
                     }
                 }
 
-                for(accu::Direction const direction: accu::directions)
+                for (accu::Direction const direction : accu::directions)
                 {
-                    if(communicator.has_neighbour(direction) && !input_cell_idxs[direction].empty())
+                    if (communicator.has_neighbour(direction) && !input_cell_idxs[direction].empty())
                     {
                         communicator.send(direction, input_cell_idxs[direction]);
                     }
@@ -572,54 +561,62 @@ namespace lue {
                 received_cells_idxs[accu::Direction::north] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, RowIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::north),
-                    RowIdxConverter{}, flow_direction_data.shape());
+                    RowIdxConverter{},
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, RowIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::south),
-                    RowIdxConverter{extent0 - 1}, flow_direction_data.shape());
+                    RowIdxConverter{extent0 - 1},
+                    flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::west] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, ColIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::west),
-                    ColIdxConverter{}, flow_direction_data.shape());
+                    ColIdxConverter{},
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::east] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, ColIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::east),
-                    ColIdxConverter{extent1 - 1}, flow_direction_data.shape());
+                    ColIdxConverter{extent1 - 1},
+                    flow_direction_data.shape());
 
                 received_cells_idxs[accu::Direction::north_west] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::north_west),
-                    CornerIdxConverter{}, flow_direction_data.shape());
+                    CornerIdxConverter{},
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::north_east] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::north_east),
-                    CornerIdxConverter{0, extent1 - 1}, flow_direction_data.shape());
+                    CornerIdxConverter{0, extent1 - 1},
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_east] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::south_east),
-                    CornerIdxConverter{extent0 - 1, extent1 - 1}, flow_direction_data.shape());
+                    CornerIdxConverter{extent0 - 1, extent1 - 1},
+                    flow_direction_data.shape());
                 received_cells_idxs[accu::Direction::south_west] = hpx::async(
                     monitor_cell_idx_inputs<std::vector<Index>, CornerIdxConverter, rank>,
                     communicator.receive_channel(accu::Direction::south_west),
-                    CornerIdxConverter{extent0 - 1, 0}, flow_direction_data.shape());
+                    CornerIdxConverter{extent0 - 1, 0},
+                    flow_direction_data.shape());
 
-                input_cells_idxs_f = hpx::when_all(received_cells_idxs).then(
-                        hpx::unwrapping(
+                input_cells_idxs_f =
+                    hpx::when_all(received_cells_idxs)
+                        .then(hpx::unwrapping(
 
-                                [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
-                                {
-                                    std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
+                            [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
+                            {
+                                std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
 
-                                    std::transform(idxs_fs.begin(), idxs_fs.end(), cells_idxs.begin(),
-                                            [](auto& idxs_f)
-                                            {
-                                                return idxs_f.get();
-                                            }
-                                        );
+                                std::transform(
+                                    idxs_fs.begin(),
+                                    idxs_fs.end(),
+                                    cells_idxs.begin(),
+                                    [](auto& idxs_f) { return idxs_f.get(); });
 
-                                    return cells_idxs;
-                                }
+                                return cells_idxs;
+                            }
 
                             ));
             }
@@ -628,41 +625,33 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename Policies, typename FlowDirectionElement, Rank rank>
         hpx::tuple<
             hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
             hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
-                connectivity(
-                    Policies const& policies,
-                    ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-                    InflowCountCommunicator<rank>&& communicator)
+        connectivity(
+            Policies const& policies,
+            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
+            InflowCountCommunicator<rank>&& communicator)
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
 
             return hpx::split_future(hpx::dataflow(
-                        hpx::launch::async,
+                hpx::launch::async,
 
-                        [policies, communicator=std::move(communicator)](
-                            FlowDirectionPartition const& flow_direction_partition) mutable
-                        {
-                            AnnotateFunction annotation{"connectivity"};
+                [policies, communicator = std::move(communicator)](
+                    FlowDirectionPartition const& flow_direction_partition) mutable
+                {
+                    AnnotateFunction annotation{"connectivity"};
 
-                            return connectivity_ready(
-                                policies, flow_direction_partition, std::move(communicator));
-                        },
+                    return connectivity_ready(policies, flow_direction_partition, std::move(communicator));
+                },
 
-                    flow_direction_partition));
+                flow_direction_partition));
         }
 
 
-        template<
-            typename CountElement,
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
         ArrayPartition<CountElement, rank> inflow_count3_ready(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
@@ -689,19 +678,18 @@ namespace lue {
             [[maybe_unused]] auto const& partition_shape{flow_direction_data.shape()};
             [[maybe_unused]] auto const [extent0, extent1] = partition_shape;
             [[maybe_unused]] auto const& indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
-            [[maybe_unused]] auto const& ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
+            [[maybe_unused]] auto const& ondp{
+                std::get<0>(policies.outputs_policies()).output_no_data_policy()};
 
-            for(Index d = 0; d < nr_neighbours<rank>(); ++d)
+            for (Index d = 0; d < nr_neighbours<rank>(); ++d)
             {
-                for(auto const& input_cell_idxs: input_cells_idxs[d])
+                for (auto const& input_cell_idxs : input_cells_idxs[d])
                 {
                     auto [idx0, idx1] = input_cell_idxs;
 
                     lue_hpx_assert(idx0 >= 0 && idx0 < extent0);
                     lue_hpx_assert(idx1 >= 0 && idx1 < extent1);
-                    lue_hpx_assert(
-                        (idx0 == 0 || idx0 == extent0 - 1) ||
-                        (idx1 == 0 || idx1 == extent1 - 1));
+                    lue_hpx_assert((idx0 == 0 || idx0 == extent0 - 1) || (idx1 == 0 || idx1 == extent1 - 1));
                     lue_hpx_assert(!indp.is_no_data(flow_direction_data, idx0, idx1));
                     lue_hpx_assert(!ondp.is_no_data(inflow_count_data, idx0, idx1));
 
@@ -715,11 +703,7 @@ namespace lue {
         }
 
 
-        template<
-            typename CountElement,
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
         ArrayPartition<CountElement, rank> inflow_count3(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
@@ -740,38 +724,33 @@ namespace lue {
             // information in order to be able to do more within a single
             // task.
             return hpx::dataflow(
-                    hpx::launch::async,
+                hpx::launch::async,
 
-                    [policies](
-                        FlowDirectionPartition const& flow_direction_partition,
-                        hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const&
-                            input_cells_idxs_f)
-                    {
-                        AnnotateFunction annotation{"inflow_count"};
+                [policies](
+                    FlowDirectionPartition const& flow_direction_partition,
+                    hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const&
+                        input_cells_idxs_f)
+                {
+                    AnnotateFunction annotation{"inflow_count"};
 
-                        return inflow_count3_ready<CountElement>(
-                            policies, flow_direction_partition, input_cells_idxs_f.get());
-                    },
+                    return inflow_count3_ready<CountElement>(
+                        policies, flow_direction_partition, input_cells_idxs_f.get());
+                },
 
-                    flow_direction_partition,
-                    input_cells_idxs_f
-                );
+                flow_direction_partition,
+                input_cells_idxs_f);
         }
 
 
-        template<
-            typename CountElement,
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
         hpx::tuple<
             ArrayPartition<CountElement, rank>,
             hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
             hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
-                inflow_count3_action(
-                    Policies const& policies,
-                    ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-                    InflowCountCommunicator<rank> inflow_count_communicator)
+        inflow_count3_action(
+            Policies const& policies,
+            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
+            InflowCountCommunicator<rank> inflow_count_communicator)
         {
             AnnotateFunction annotation{"inflow_count"};
 
@@ -782,44 +761,36 @@ namespace lue {
             hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> input_cells_idxs_f{};
             hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>> output_cells_idxs_f{};
 
-            hpx::tie(input_cells_idxs_f, output_cells_idxs_f) = connectivity(
-                policies, flow_direction_partition, std::move(inflow_count_communicator));
+            hpx::tie(input_cells_idxs_f, output_cells_idxs_f) =
+                connectivity(policies, flow_direction_partition, std::move(inflow_count_communicator));
 
 
             // Calculate inflow count of each cell
             using CountPartition = ArrayPartition<CountElement, rank>;
 
-            CountPartition count_partition = inflow_count3<CountElement>(
-                policies, flow_direction_partition, input_cells_idxs_f);
+            CountPartition count_partition =
+                inflow_count3<CountElement>(policies, flow_direction_partition, input_cells_idxs_f);
 
             return hpx::make_tuple(
                 std::move(count_partition), std::move(input_cells_idxs_f), std::move(output_cells_idxs_f));
         }
 
 
-        template<
-            typename CountElement,
-            typename Policies,
-            typename FlowDirectionElement,
-            Rank rank>
+        template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
         struct InflowCountAction3:
             hpx::actions::make_action<
                 decltype(&inflow_count3_action<CountElement, Policies, FlowDirectionElement, rank>),
                 &inflow_count3_action<CountElement, Policies, FlowDirectionElement, rank>,
                 InflowCountAction3<CountElement, Policies, FlowDirectionElement, rank>>::type
-        {};
+        {
+        };
 
     }  // namespace detail
 
 
-    template<
-        typename CountElement,
-        typename Policies,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
     PartitionedArray<CountElement, rank> inflow_count3(
-        Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
     {
         // The result of this function must be equal to
         // upstream(flow_direction, material=1), but it should be faster
@@ -846,11 +817,14 @@ namespace lue {
             detail::InflowCountAction3<CountElement, Policies, FlowDirectionElement, rank> action{};
             Count const nr_partitions{nr_elements(inflow_count_partitions.shape())};
 
-            for(Index p = 0; p < nr_partitions; ++p)
+            for (Index p = 0; p < nr_partitions; ++p)
             {
                 inflow_count_partitions[p] = hpx::get<0>(hpx::split_future(hpx::async(
-                    hpx::annotated_function(action, "inflow_count"), localities[p], policies,
-                    flow_direction.partitions()[p], inflow_count_communicators[p])));
+                    hpx::annotated_function(action, "inflow_count"),
+                    localities[p],
+                    policies,
+                    flow_direction.partitions()[p],
+                    inflow_count_communicators[p])));
             }
         }
 
@@ -858,10 +832,11 @@ namespace lue {
         // ---------------------------------------------------------------------
         // Keep channel components layered in communicators alive until
         // the results are ready. Once they are, free up AGAS resources.
-        hpx::when_all(inflow_count_partitions.begin(), inflow_count_partitions.end(),
-            [
-                inflow_count_communicators=std::move(inflow_count_communicators)
-            ]([[maybe_unused]] auto&& partitions) mutable
+        hpx::when_all(
+            inflow_count_partitions.begin(),
+            inflow_count_partitions.end(),
+            [inflow_count_communicators =
+                 std::move(inflow_count_communicators)]([[maybe_unused]] auto&& partitions) mutable
             {
                 HPX_UNUSED(inflow_count_communicators);
 
@@ -877,11 +852,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_INFLOW_COUNT3(                                             \
-    Policies, CountElement, FlowDirectionElement)                                  \
-                                                                                   \
-    template LUE_ROUTING_OPERATION_EXPORT                                          \
-    PartitionedArray<CountElement, 2> inflow_count3<                               \
-            CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                       \
-        PartitionedArray<FlowDirectionElement, 2> const&);
+#define LUE_INSTANTIATE_INFLOW_COUNT3(Policies, CountElement, FlowDirectionElement)                          \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<CountElement, 2>                                  \
+    inflow_count3<CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(                      \
+        ArgumentType<void(Policies)> const&, PartitionedArray<FlowDirectionElement, 2> const&);

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm add
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/add.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/add.hpp"
 #include "lue/framework/algorithm/value_policies/none.hpp"
@@ -12,9 +12,7 @@
 
 namespace detail {
 
-    template<
-        typename Element,
-        std::size_t rank>
+    template<typename Element, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
@@ -38,14 +36,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                               \
-    rank,                                        \
-    Element)                                     \
-                                                 \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
-{                                                \
-    detail::test_array<Element, rank>();         \
-}
+#define TEST_CASE(rank, Element)                                                                             \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
+    {                                                                                                        \
+        detail::test_array<Element, rank>();                                                                 \
+    }
 
 // TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)

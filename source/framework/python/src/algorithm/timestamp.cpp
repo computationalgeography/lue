@@ -7,10 +7,8 @@ namespace lue::framework {
 
         Rank const rank{2};
 
-        template<
-            typename Element>
-        PartitionedArray<ClockTick, rank> timestamp(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element>
+        PartitionedArray<ClockTick, rank> timestamp(PartitionedArray<Element, rank> const& array)
         {
             return lue::timestamp(array);
         }
@@ -18,8 +16,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_timestamp(
-        pybind11::module& module)
+    void bind_timestamp(pybind11::module& module)
     {
         module.def("timestamp", timestamp<std::uint8_t>);
         module.def("timestamp", timestamp<std::uint32_t>);

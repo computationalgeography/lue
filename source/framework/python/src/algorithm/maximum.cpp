@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        hpx::shared_future<Element> maximum(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        hpx::shared_future<Element> maximum(PartitionedArray<Element, rank> const& array)
         {
             return value_policies::maximum(array).share();
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_maximum(
-        pybind11::module& module)
+    void bind_maximum(pybind11::module& module)
     {
         // TODO How to document these?
         module.def("maximum", maximum<std::uint8_t, 2>);

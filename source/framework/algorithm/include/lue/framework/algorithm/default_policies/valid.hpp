@@ -7,9 +7,7 @@ namespace lue {
 
         // No-op: all input values are valid
 
-        template<
-            typename BooleanElement,
-            typename ExpressionElement>
+        template<typename BooleanElement, typename ExpressionElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<ExpressionElement>,
             OutputElements<BooleanElement>,
@@ -20,12 +18,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename BooleanElement,
-            typename ExpressionElement,
-            Rank rank>
-        PartitionedArray<BooleanElement, rank> valid(
-            PartitionedArray<ExpressionElement, rank> const& array)
+        template<typename BooleanElement, typename ExpressionElement, Rank rank>
+        PartitionedArray<BooleanElement, rank> valid(PartitionedArray<ExpressionElement, rank> const& array)
         {
             using Policies = policy::valid::DefaultPolicies<BooleanElement, ExpressionElement>;
 

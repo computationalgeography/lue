@@ -3,65 +3,60 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    @brief      Class for representing time box domains that are
-                discretized using regular grids
+        /*!
+            @brief      Class for representing time box domains that are
+                        discretized using regular grids
 
-    Time cells are time boxes with additional information about the
-    number of cells in which each box is discretized.
-*/
-class TimeCell:
-    public TimeBox
-{
+            Time cells are time boxes with additional information about the
+            number of cells in which each box is discretized.
+        */
+        class TimeCell: public TimeBox
+        {
 
-public:
+            public:
 
-    using Count = same_shape::constant_shape::Value;
+                using Count = same_shape::constant_shape::Value;
 
-    explicit       TimeCell            (hdf5::Group const& parent);
+                explicit TimeCell(hdf5::Group const& parent);
 
-                   TimeCell            (TimeBox&& time_box,
-                                        Count count);
+                TimeCell(TimeBox&& time_box, Count count);
 
-                   TimeCell            (TimeCell const&)=default;
+                TimeCell(TimeCell const&) = default;
 
-                   TimeCell            (TimeCell&&)=default;
+                TimeCell(TimeCell&&) = default;
 
-                   ~TimeCell           () override =default;
+                ~TimeCell() override = default;
 
-    TimeCell&      operator=           (TimeCell const&)=default;
+                TimeCell& operator=(TimeCell const&) = default;
 
-    TimeCell&      operator=           (TimeCell&&)=default;
+                TimeCell& operator=(TimeCell&&) = default;
 
-    data_model::Count
-                   nr_counts           () const;
+                data_model::Count nr_counts() const;
 
-    Count const&   count               () const;
+                Count const& count() const;
 
-    Count&         count               ();
+                Count& count();
 
-private:
+            private:
 
-    //! For each time box a count
-    Count          _count;
-
-};
+                //! For each time box a count
+                Count _count;
+        };
 
 
-TimeCell            create_time_cell   (hdf5::Group& parent);
+        TimeCell create_time_cell(hdf5::Group& parent);
 
 
-template<>
-class ValueTraits<TimeCell>
-{
+        template<>
+        class ValueTraits<TimeCell>
+        {
 
-public:
+            public:
 
-    using Element = typename ValueTraits<LocationInTime>::Element;
+                using Element = typename ValueTraits<LocationInTime>::Element;
+        };
 
-};
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

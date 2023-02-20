@@ -1,5 +1,5 @@
-#include "../python_extension.hpp"
 #include "lue/info/identity/object_id.hpp"
+#include "../python_extension.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,16 +8,15 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-void init_object_id(
-    py::module& module)
-{
+        void init_object_id(py::module& module)
+        {
 
-    py::class_<ObjectID, same_shape::Value>(
-        module,
-        "ObjectID",
-        R"(
+            py::class_<ObjectID, same_shape::Value>(
+                module,
+                "ObjectID",
+                R"(
     A class for storing the IDs of objects whose state does not change
     through time
 
@@ -31,9 +30,8 @@ void init_object_id(
     yourself. :class:`Phenomenon` instances provide one.
 )")
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

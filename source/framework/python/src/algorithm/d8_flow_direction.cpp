@@ -8,8 +8,7 @@ namespace lue::framework {
         Rank const rank{2};
         using FlowDirectionElement = std::uint8_t;
 
-        template<
-            typename ElevationElement>
+        template<typename ElevationElement>
         PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
             PartitionedArray<ElevationElement, rank> const& elevation)
         {
@@ -22,8 +21,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_d8_flow_direction(
-        pybind11::module& module)
+    void bind_d8_flow_direction(pybind11::module& module)
     {
         module.def("d8_flow_direction", d8_flow_direction<float>);
         module.def("d8_flow_direction", d8_flow_direction<double>);

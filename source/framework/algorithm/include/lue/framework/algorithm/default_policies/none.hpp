@@ -5,23 +5,17 @@
 namespace lue {
     namespace policy::none {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::none
 
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        hpx::future<Element> none(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        hpx::future<Element> none(PartitionedArray<Element, rank> const& array)
         {
             using Functor = detail::None<Element>;
             using Policies = policy::none::DefaultPolicies<Element>;

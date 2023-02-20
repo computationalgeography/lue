@@ -1,5 +1,5 @@
-#include "python_extension.hpp"
 #include "lue/info/time/time_box.hpp"
+#include "python_extension.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,27 +8,22 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-void init_time_box(
-    py::module& module)
-{
+        void init_time_box(py::module& module)
+        {
 
-    py::class_<TimeBox, LocationInTime>(
-        module,
-        "TimeBox",
-        R"(
+            py::class_<TimeBox, LocationInTime>(
+                module,
+                "TimeBox",
+                R"(
     TODO
 )")
 
-        .def_property_readonly(
-            "nr_boxes",
-            &TimeBox::nr_boxes
-        )
+                .def_property_readonly("nr_boxes", &TimeBox::nr_boxes)
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

@@ -4,28 +4,24 @@
 
 namespace lue {
 
-class LandUseChangeModel final:
-    public LandUseChangeModelBase
-{
+    class LandUseChangeModel final: public LandUseChangeModelBase
+    {
 
-public:
+        public:
 
-                   LandUseChangeModel  ();
+            LandUseChangeModel();
 
-                   LandUseChangeModel  (LandUseChangeModel const&)=default;
+            LandUseChangeModel(LandUseChangeModel const&) = default;
 
-                   LandUseChangeModel  (LandUseChangeModel&&)=default;
+            LandUseChangeModel(LandUseChangeModel&&) = default;
 
-                   ~LandUseChangeModel ()=default;
+            ~LandUseChangeModel() = default;
 
-    LandUseChangeModel&
-                   operator=           (LandUseChangeModel const&)=default;
+            LandUseChangeModel& operator=(LandUseChangeModel const&) = default;
 
-    LandUseChangeModel&
-                   operator=           (LandUseChangeModel&&)=default;
+            LandUseChangeModel& operator=(LandUseChangeModel&&) = default;
 
-private:
-
-};
+        private:
+    };
 
 }  // namespace lue

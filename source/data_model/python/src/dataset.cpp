@@ -1,8 +1,8 @@
-#include "python_extension.hpp"
 #include "lue/object/dataset.hpp"
+#include "python_extension.hpp"
 #include "lue/py/data_model/hdf5/file.hpp"
-#include <pybind11/pybind11.h>
 #include <boost/algorithm/string/join.hpp>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -10,42 +10,39 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace {
+    namespace data_model {
+        namespace {
 
-static std::string formal_string_representation(
-    Dataset const& dataset)
-{
-    return fmt::format(
-        "Dataset(name='{}', flags='{}')",
-        dataset.pathname(),
-        hdf5::intent_to_python_mode(dataset.intent()));
-}
-
-
-static std::string informal_string_representation(
-    Dataset const& dataset)
-{
-    return fmt::format(
-        "{}\n"
-        "    universes: [{}]\n"
-        "    phenomena: [{}]",
-        formal_string_representation(dataset),
-        boost::algorithm::join(dataset.universes().names(), ", "),
-        boost::algorithm::join(dataset.phenomena().names(), ", "));
-}
-
-}  // Anonymous namespace
+            static std::string formal_string_representation(Dataset const& dataset)
+            {
+                return fmt::format(
+                    "Dataset(name='{}', flags='{}')",
+                    dataset.pathname(),
+                    hdf5::intent_to_python_mode(dataset.intent()));
+            }
 
 
-void init_dataset(
-        py::module& module)
-{
+            static std::string informal_string_representation(Dataset const& dataset)
+            {
+                return fmt::format(
+                    "{}\n"
+                    "    universes: [{}]\n"
+                    "    phenomena: [{}]",
+                    formal_string_representation(dataset),
+                    boost::algorithm::join(dataset.universes().names(), ", "),
+                    boost::algorithm::join(dataset.phenomena().names(), ", "));
+            }
 
-    py::class_<Dataset, hdf5::File>(
-        module,
-        "Dataset",
-        R"(
+        }  // Anonymous namespace
+
+
+        void init_dataset(py::module& module)
+        {
+
+            py::class_<Dataset, hdf5::File>(
+                module,
+                "Dataset",
+                R"(
     A class representing a scientific database stored in a file
 
     A LUE dataset contains collections of :class:`universes <Universes>`
@@ -62,34 +59,24 @@ void init_dataset(
         datasets.
 )")
 
-        .def(
-            "__repr__",
-            [](Dataset const& dataset) {
-                return formal_string_representation(dataset);
-            }
-        )
+                .def("__repr__", [](Dataset const& dataset) { return formal_string_representation(dataset); })
 
-        .def(
-            "__str__",
-            [](Dataset const& dataset) {
-                return informal_string_representation(dataset);
-            }
-        )
+                .def(
+                    "__str__", [](Dataset const& dataset) { return informal_string_representation(dataset); })
 
-        .def_property_readonly(
-            "lue_version",
-            &Dataset::lue_version,
-            R"(
+                .def_property_readonly(
+                    "lue_version",
+                    &Dataset::lue_version,
+                    R"(
     Return version of LUE used to create the dataset
 
     :rtype: str
-)"
-        )
+)")
 
-        .def(
-            "add_phenomenon",
-            &Dataset::add_phenomenon,
-            R"(
+                .def(
+                    "add_phenomenon",
+                    &Dataset::add_phenomenon,
+                    R"(
     Add new phenomenon to dataset
 
     :param str name: Name of phenomenon to create
@@ -97,86 +84,82 @@ void init_dataset(
     :raises RuntimeError: In case the phenomenon cannot be created
     :rtype: Phenomenon
 )",
-            "name"_a,
-            "description"_a="",
-            py::return_value_policy::reference_internal)
+                    "name"_a,
+                    "description"_a = "",
+                    py::return_value_policy::reference_internal)
 
-        .def_property_readonly(
-            "phenomena",
-            py::overload_cast<>(&Dataset::phenomena),
-            R"(
+                .def_property_readonly(
+                    "phenomena",
+                    py::overload_cast<>(&Dataset::phenomena),
+                    R"(
     Return phenomena collection
 
     :rtype: Phenomena
 )",
-            py::return_value_policy::reference_internal)
+                    py::return_value_policy::reference_internal)
 
-        .def(
-            "add_universe",
-            &Dataset::add_universe,
-            R"(
+                .def(
+                    "add_universe",
+                    &Dataset::add_universe,
+                    R"(
     Add new universe to dataset
 
     :param str name: Name of universe to create
     :raises RuntimeError: In case the universe cannot be created
     :rtype: Universe
 )",
-            "name"_a,
-            py::return_value_policy::reference_internal)
+                    "name"_a,
+                    py::return_value_policy::reference_internal)
 
-        .def_property_readonly(
-            "universes",
-            py::overload_cast<>(&Dataset::universes),
-            R"(
+                .def_property_readonly(
+                    "universes",
+                    py::overload_cast<>(&Dataset::universes),
+                    R"(
     Return universes collection
 
     :rtype: Universes
 )",
-            py::return_value_policy::reference_internal)
+                    py::return_value_policy::reference_internal)
 
-        .def(
-            "__getattr__",
-            [](
-                Dataset& dataset,
-                std::string const& name)
-            {
-                py::object result = py::none();
+                .def(
+                    "__getattr__",
+                    [](Dataset& dataset, std::string const& name)
+                    {
+                        py::object result = py::none();
 
-                if(dataset.universes().contains(name)) {
-                    result = py::cast(&dataset.universes()[name]);
-                }
-                else if(dataset.phenomena().contains(name)) {
-                    result = py::cast(&dataset.phenomena()[name]);
-                }
-                else {
-                    // TODO We are throwing a KeyError here. Should be
-                    // an AttributeError, but pybind11 does not seem to
-                    // support that yet.
-                    //
-                    // Python message:
-                    // AttributeError: 'x' object has no attribute 'y'
-                    // Ours is a little bit different:
-                    throw pybind11::key_error(fmt::format(
-                        "Dataset does not contain universe or phenomenon '{}'",
-                        name));
-                }
+                        if (dataset.universes().contains(name))
+                        {
+                            result = py::cast(&dataset.universes()[name]);
+                        }
+                        else if (dataset.phenomena().contains(name))
+                        {
+                            result = py::cast(&dataset.phenomena()[name]);
+                        }
+                        else
+                        {
+                            // TODO We are throwing a KeyError here. Should be
+                            // an AttributeError, but pybind11 does not seem to
+                            // support that yet.
+                            //
+                            // Python message:
+                            // AttributeError: 'x' object has no attribute 'y'
+                            // Ours is a little bit different:
+                            throw pybind11::key_error(
+                                fmt::format("Dataset does not contain universe or phenomenon '{}'", name));
+                        }
 
-                return result;
-            },
-            py::return_value_policy::reference_internal)
+                        return result;
+                    },
+                    py::return_value_policy::reference_internal)
 
-        ;
+                ;
 
 
-    module.def(
-        "open_dataset",
-        [](
-            std::string const& name,
-            std::string const& mode)
-        {
-            return Dataset(name, hdf5::python_mode_to_hdf5_flag(mode));
-        },
-        R"(
+            module.def(
+                "open_dataset",
+                [](std::string const& name, std::string const& mode)
+                { return Dataset(name, hdf5::python_mode_to_hdf5_flag(mode)); },
+                R"(
     Open existing LUE dataset
 
     :param str name: Name of dataset to open
@@ -193,19 +176,15 @@ void init_dataset(
 
     Updated datasets can be validated using :func:`validate`.
 )",
-        "name"_a,
-        "mode"_a="r",
-        py::return_value_policy::move);
+                "name"_a,
+                "mode"_a = "r",
+                py::return_value_policy::move);
 
-    module.def(
-        "create_dataset",
-        [](
-            std::string const& name,
-            std::string const& description)
-        {
-            return create_dataset(name, description);
-        },
-        R"(
+            module.def(
+                "create_dataset",
+                [](std::string const& name, std::string const& description)
+                { return create_dataset(name, description); },
+                R"(
     Create new LUE dataset
 
     :param str name: Name of dataset to create. If a file with this name
@@ -215,11 +194,10 @@ void init_dataset(
 
     Newly created datasets can be validated using :func:`validate`.
 )",
-        "name"_a,
-        "description"_a="",
-        py::return_value_policy::move);
+                "name"_a,
+                "description"_a = "",
+                py::return_value_policy::move);
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

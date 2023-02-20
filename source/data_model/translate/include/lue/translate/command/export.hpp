@@ -3,37 +3,33 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class Export:
-    public Command
-{
+        class Export: public Command
+        {
 
-public:
+            public:
 
-    static std::string const name;
+                static std::string const name;
 
-    static CommandPtr command          (std::vector<std::string> const&
-                                            arguments);
+                static CommandPtr command(std::vector<std::string> const& arguments);
 
-    explicit       Export              (std::vector<std::string> const&
-                                            arguments);
+                explicit Export(std::vector<std::string> const& arguments);
 
-                   Export              (Export const& other)=delete;
+                Export(Export const& other) = delete;
 
-                   Export              (Export&& other)=delete;
+                Export(Export&& other) = delete;
 
-                   ~Export             () override =default;
+                ~Export() override = default;
 
-   Export&         operator=           (Export const& other)=delete;
+                Export& operator=(Export const& other) = delete;
 
-   Export&         operator=           (Export&& other)=delete;
+                Export& operator=(Export&& other) = delete;
 
-protected:
+            protected:
 
-   int             run_implementation  () override;
+                int run_implementation() override;
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

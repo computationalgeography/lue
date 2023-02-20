@@ -62,8 +62,7 @@ namespace lue::framework {
     void bind_where(pybind11::module& module);
 
 
-    void bind_local_operations(
-        pybind11::module& module)
+    void bind_local_operations(pybind11::module& module)
     {
         bind_abs(module);
         bind_accu(module);

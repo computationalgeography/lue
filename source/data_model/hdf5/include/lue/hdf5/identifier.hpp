@@ -29,13 +29,11 @@ namespace lue::hdf5 {
                 For example, when an HDF5 group is opened, you would pass H5Gclose
                 as the close function into the constructor.
             */
-            using Close = std::function<herr_t (hid_t)>;
+            using Close = std::function<herr_t(hid_t)>;
 
             Identifier();
 
-            Identifier(
-                hid_t id,
-                Close const& close);
+            Identifier(hid_t id, Close const& close);
 
             Identifier(Identifier const& other);
 
@@ -85,7 +83,6 @@ namespace lue::hdf5 {
 
             //! Function to call when the identifier must be closed
             Close _close;
-
     };
 
-} // namespace lue::hdf5
+}  // namespace lue::hdf5

@@ -1,13 +1,12 @@
 #define BOOST_TEST_MODULE lue hdf5 chunk
-#include <boost/test/unit_test.hpp>
 #include "lue/hdf5/chunk.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace lh5 = lue::hdf5;
 
 
-static lh5::Shape test_chunk(
-    lh5::Shape const& value_shape)
+static lh5::Shape test_chunk(lh5::Shape const& value_shape)
 {
     using T = std::int32_t;
 

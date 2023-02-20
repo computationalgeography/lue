@@ -29,18 +29,19 @@ namespace lue {
             // C++20
             // static constexpr std::string version{LUE_VERSION};
 
-            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+            // modernize-avoid-c-arrays)
             static constexpr char const* version{LUE_VERSION};
 
             // static constexpr char const* version_tweak{LUE_VERSION_TWEAK};
 
             static constexpr bool build_framework{
 #ifdef LUE_BUILD_FRAMEWORK
-                    true
+                true
 #else
-                    false
+                false
 #endif
-                };
+            };
 
             static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
 
@@ -48,20 +49,19 @@ namespace lue {
 
             static constexpr bool build_qa{
 #ifdef LUE_BUILD_QA
-                    true
+                true
 #else
-                    false
+                false
 #endif
-                };
+            };
 
             static constexpr bool qa_with_tests{
 #ifdef LUE_QA_WITH_TESTS
-                    true
+                true
 #else
-                    false
+                false
 #endif
-                };
-
+            };
     };
 
 

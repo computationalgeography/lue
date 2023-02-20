@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm array_partition_io
 #include "lue/framework/algorithm/detail/array_partition_io.hpp"
-#include "lue/framework/test/stream.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(default_construct)
@@ -60,8 +60,10 @@ BOOST_AUTO_TEST_CASE(use_case_01)
         PartitionOffsets partition_offsets_we_got{partition_io.partition_offsets()};
 
         BOOST_CHECK_EQUAL_COLLECTIONS(
-            partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-            partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+            partition_offsets_we_got.begin(),
+            partition_offsets_we_got.end(),
+            partition_offsets_we_want.begin(),
+            partition_offsets_we_want.end());
     }
 }
 
@@ -101,15 +103,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_REQUIRE_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -120,15 +123,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -143,15 +147,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -162,15 +167,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -181,15 +187,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -204,15 +211,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -223,15 +231,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -252,15 +261,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -271,15 +281,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -294,15 +305,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -313,15 +325,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -332,15 +345,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -355,15 +369,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -374,15 +389,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -403,15 +419,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -422,15 +439,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -445,15 +463,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -464,15 +483,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -483,15 +503,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -506,15 +527,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -525,15 +547,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -554,15 +577,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -573,15 +597,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -596,15 +621,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -615,15 +641,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -634,15 +661,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
 
@@ -657,15 +685,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
 
             {
@@ -676,15 +705,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -705,15 +735,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -734,15 +765,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_east_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -763,15 +795,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), south_west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -792,15 +825,16 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
 
                 PartitionOffsets const partition_offsets_we_got{partition_io.partition_offsets()};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-                    partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+                    partition_offsets_we_got.begin(),
+                    partition_offsets_we_got.end(),
+                    partition_offsets_we_want.begin(),
+                    partition_offsets_we_want.end());
 
                 Tuples const tuples_we_want{{input_cell_we_want, value}};
                 Tuples const tuples_we_got{
                     partition_io.drain(*partition_offsets_we_want.begin(), north_west_partition_shape)};
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    tuples_we_got.begin(), tuples_we_got.end(),
-                    tuples_we_want.begin(), tuples_we_want.end());
+                    tuples_we_got.begin(), tuples_we_got.end(), tuples_we_want.begin(), tuples_we_want.end());
             }
         }
     }
@@ -832,14 +866,12 @@ BOOST_AUTO_TEST_CASE(partition_offsets)
     partition_io.add_output_cell({4, 0}, {1, -1}, Value{});
     partition_io.add_output_cell({2, 0}, {1, -1}, Value{});
 
-    PartitionOffsets partition_offsets_we_want{
-            {-1, 0}, {-1, 1},
-            {0, -1}, {0, 1},
-            {1, -1}, {1, 0}, {1, 1}
-        };
+    PartitionOffsets partition_offsets_we_want{{-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
     PartitionOffsets partition_offsets_we_got{partition_io.partition_offsets()};
 
     BOOST_CHECK_EQUAL_COLLECTIONS(
-        partition_offsets_we_got.begin(), partition_offsets_we_got.end(),
-        partition_offsets_we_want.begin(), partition_offsets_we_want.end());
+        partition_offsets_we_got.begin(),
+        partition_offsets_we_got.end(),
+        partition_offsets_we_want.begin(),
+        partition_offsets_we_want.end());
 }

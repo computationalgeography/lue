@@ -1,5 +1,5 @@
-#include "submodule.hpp"
 #include "lue/hdf5/primary_data_object.hpp"
+#include "submodule.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,8 +9,7 @@ using namespace pybind11::literals;
 
 namespace lue::hdf5 {
 
-    void init_primary_data_object(
-        py::module& module)
+    void init_primary_data_object(py::module& module)
     {
 
         py::class_<PrimaryDataObject>(
@@ -32,7 +31,6 @@ namespace lue::hdf5 {
                 py::return_value_policy::reference_internal)
 
             ;
-
     }
 
 }  // namespace lue::hdf5

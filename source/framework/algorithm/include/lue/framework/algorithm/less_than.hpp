@@ -7,9 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_=std::uint8_t>
+        template<typename InputElement, typename OutputElement_ = std::uint8_t>
         class LessThan
         {
 
@@ -19,12 +17,10 @@ namespace lue {
 
 
                 constexpr OutputElement operator()(
-                    InputElement const& input_element1,
-                    InputElement const& input_element2) const noexcept
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
                 {
                     return input_element1 < input_element2;
                 }
-
         };
 
     }  // namespace detail

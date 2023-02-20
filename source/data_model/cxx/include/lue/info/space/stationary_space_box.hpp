@@ -3,52 +3,47 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    - One space box per item
-    - Each space box has a unique location in space
-*/
-class StationarySpaceBox:
-    public same_shape::Value
-{
+        /*!
+            - One space box per item
+            - Each space box has a unique location in space
+        */
+        class StationarySpaceBox: public same_shape::Value
+        {
 
-public:
+            public:
 
-    explicit       StationarySpaceBox  (hdf5::Group const& parent);
+                explicit StationarySpaceBox(hdf5::Group const& parent);
 
-                   StationarySpaceBox  (hdf5::Group const& parent,
-                                        hdf5::Datatype const& memory_datatype);
+                StationarySpaceBox(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
 
-    explicit       StationarySpaceBox  (same_shape::Value&& value);
+                explicit StationarySpaceBox(same_shape::Value&& value);
 
-                   StationarySpaceBox  (StationarySpaceBox const&)=default;
+                StationarySpaceBox(StationarySpaceBox const&) = default;
 
-                   StationarySpaceBox  (StationarySpaceBox&&)=default;
+                StationarySpaceBox(StationarySpaceBox&&) = default;
 
-                   ~StationarySpaceBox () override =default;
+                ~StationarySpaceBox() override = default;
 
-    StationarySpaceBox& operator=      (StationarySpaceBox const&)=default;
+                StationarySpaceBox& operator=(StationarySpaceBox const&) = default;
 
-    StationarySpaceBox& operator=      (StationarySpaceBox&&)=default;
+                StationarySpaceBox& operator=(StationarySpaceBox&&) = default;
 
-    Count          nr_boxes            () const;
+                Count nr_boxes() const;
 
-private:
-
-};
+            private:
+        };
 
 
-StationarySpaceBox create_stationary_space_box(
-                                        hdf5::Group& parent,
-                                        hdf5::Datatype const& memory_datatype,
-                                        std::size_t rank);
+        StationarySpaceBox create_stationary_space_box(
+            hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank);
 
-StationarySpaceBox create_stationary_space_box(
-                                        hdf5::Group& parent,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype,
-                                        std::size_t rank);
+        StationarySpaceBox create_stationary_space_box(
+            hdf5::Group& parent,
+            hdf5::Datatype const& file_datatype,
+            hdf5::Datatype const& memory_datatype,
+            std::size_t rank);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

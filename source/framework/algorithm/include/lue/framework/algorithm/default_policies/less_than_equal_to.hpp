@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::less_than_equal_to {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -19,8 +17,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            less_than_equal_to, detail::LessThanEqualTo,
-            policy::less_than_equal_to::DefaultPolicies)
+            less_than_equal_to, detail::LessThanEqualTo, policy::less_than_equal_to::DefaultPolicies)
         LUE_BINARY_COMPARISON_OPERATOR(<=, less_than_equal_to)
 
     }  // namespace default_policies

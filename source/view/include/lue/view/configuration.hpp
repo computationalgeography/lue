@@ -2,25 +2,24 @@
 
 
 namespace lue {
-namespace view {
+    namespace view {
 
-// Overall view configuration. Put specifics in static function-scoped vars
-class Configuration
-{
+        // Overall view configuration. Put specifics in static function-scoped vars
+        class Configuration
+        {
 
-public:
+            public:
 
-                   Configuration       ();
+                Configuration();
 
-    bool           show_details        () const;
+                bool show_details() const;
 
-    bool&          show_details        ();
+                bool& show_details();
 
-private:
+            private:
 
-    bool           _show_details;
+                bool _show_details;
+        };
 
-};
-
-}  // namespace view
+    }  // namespace view
 }  // namespace lue

@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue translate import
-#include <boost/test/unit_test.hpp>
+#include "lue/test/print.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
-#include "lue/test/print.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 /*
@@ -32,8 +32,7 @@ BOOST_AUTO_TEST_CASE(empty_dataset)
 }
 })"_json;
 
-        auto const dataset =
-            lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
+        auto const dataset = lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
         lue::data_model::assert_is_valid(dataset);
 
         BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
@@ -50,14 +49,12 @@ BOOST_AUTO_TEST_CASE(empty_dataset)
 }
 })"_json;
 
-        auto const dataset =
-            lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
+        auto const dataset = lue::utility::translate_json_to_lue(lue_json, "empty_dataset.lue");
         lue::data_model::assert_is_valid(dataset);
 
         BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
         BOOST_CHECK_EQUAL(dataset.phenomena().size(), 0);
     }
-
 }
 
 
@@ -134,8 +131,7 @@ BOOST_AUTO_TEST_CASE(new_rasters)
     }
 })"_json;
 
-    auto dataset =
-        lue::utility::translate_json_to_lue(lue_json, "new_raster.lue");
+    auto dataset = lue::utility::translate_json_to_lue(lue_json, "new_raster.lue");
     lue::data_model::assert_is_valid(dataset);
 
     BOOST_CHECK_EQUAL(dataset.universes().size(), 0);
@@ -186,26 +182,22 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         auto const& configuration{space_domain.configuration()};
 
         BOOST_REQUIRE_EQUAL(
-            configuration.value<lue::data_model::Mobility>(),
-            lue::data_model::Mobility::stationary);
+            configuration.value<lue::data_model::Mobility>(), lue::data_model::Mobility::stationary);
         BOOST_REQUIRE_EQUAL(
             configuration.value<lue::data_model::SpaceDomainItemType>(),
             lue::data_model::SpaceDomainItemType::box);
 
         BOOST_CHECK(!space_domain.presence_is_discretized());
 
-        auto value{
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-            const_cast<lue::data_model::SpaceDomain&>(space_domain)
-                .value<lue::data_model::StationarySpaceBox>()};
+        auto value{// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                   const_cast<lue::data_model::SpaceDomain&>(space_domain)
+                       .value<lue::data_model::StationarySpaceBox>()};
 
         BOOST_REQUIRE_EQUAL(value.nr_boxes(), 2);
         BOOST_REQUIRE_EQUAL(value.array_shape(), lue::hdf5::Shape{4});
 
-        BOOST_CHECK_EQUAL(
-            value.file_datatype(), lue::hdf5::ieee_float64_le);
-        BOOST_REQUIRE_EQUAL(
-            value.memory_datatype(), lue::hdf5::native_float64);
+        BOOST_CHECK_EQUAL(value.file_datatype(), lue::hdf5::ieee_float64_le);
+        BOOST_REQUIRE_EQUAL(value.memory_datatype(), lue::hdf5::native_float64);
 
         std::vector<double> elements(2 * 4);
 
@@ -233,15 +225,10 @@ BOOST_AUTO_TEST_CASE(new_rasters)
 
     // DEM
     {
-        BOOST_REQUIRE_EQUAL(
-            properties.shape_per_object("dem"),
-            lue::data_model::ShapePerObject::different);
-        BOOST_REQUIRE_EQUAL(
-            properties.value_variability("dem"),
-            lue::data_model::ValueVariability::constant);
+        BOOST_REQUIRE_EQUAL(properties.shape_per_object("dem"), lue::data_model::ShapePerObject::different);
+        BOOST_REQUIRE_EQUAL(properties.value_variability("dem"), lue::data_model::ValueVariability::constant);
 
-        auto const& property{
-            properties.collection<lue::data_model::different_shape::Properties>()["dem"]};
+        auto const& property{properties.collection<lue::data_model::different_shape::Properties>()["dem"]};
 
         auto const& value{property.value()};
         BOOST_REQUIRE_EQUAL(value.nr_objects(), 2);
@@ -250,15 +237,12 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         {
             BOOST_REQUIRE(value.contains(5));
 
-            auto const array{
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                const_cast<lue::data_model::different_shape::Value&>(value)[5]};
+            auto const array{// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                             const_cast<lue::data_model::different_shape::Value&>(value)[5]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{4, 6}));
-            BOOST_CHECK_EQUAL(
-                array.file_datatype(), lue::hdf5::ieee_float64_le);
-            BOOST_REQUIRE_EQUAL(
-                array.memory_datatype(), lue::hdf5::native_float64);
+            BOOST_CHECK_EQUAL(array.file_datatype(), lue::hdf5::ieee_float64_le);
+            BOOST_REQUIRE_EQUAL(array.memory_datatype(), lue::hdf5::native_float64);
 
             std::vector<double> elements(24);
 
@@ -273,10 +257,10 @@ BOOST_AUTO_TEST_CASE(new_rasters)
             BOOST_CHECK_EQUAL(elements[5], 16.5);
 
             // Row 2
-            BOOST_CHECK_EQUAL(elements[ 6], 21.5);
-            BOOST_CHECK_EQUAL(elements[ 7], 22.5);
-            BOOST_CHECK_EQUAL(elements[ 8], 23.5);
-            BOOST_CHECK_EQUAL(elements[ 9], 24.5);
+            BOOST_CHECK_EQUAL(elements[6], 21.5);
+            BOOST_CHECK_EQUAL(elements[7], 22.5);
+            BOOST_CHECK_EQUAL(elements[8], 23.5);
+            BOOST_CHECK_EQUAL(elements[9], 24.5);
             BOOST_CHECK_EQUAL(elements[10], 25.5);
             BOOST_CHECK_EQUAL(elements[11], 26.5);
 
@@ -294,33 +278,30 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         // Object 9
         {
             BOOST_REQUIRE(value.contains(9));
-            auto const array{
-                // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                const_cast<lue::data_model::different_shape::Value&>(value)[9]};
+            auto const array{// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                             const_cast<lue::data_model::different_shape::Value&>(value)[9]};
 
             BOOST_REQUIRE_EQUAL(array.shape(), (lue::hdf5::Shape{3, 5}));
-            BOOST_CHECK_EQUAL(
-                array.file_datatype(), lue::hdf5::ieee_float64_le);
-            BOOST_REQUIRE_EQUAL(
-                array.memory_datatype(), lue::hdf5::native_float64);
+            BOOST_CHECK_EQUAL(array.file_datatype(), lue::hdf5::ieee_float64_le);
+            BOOST_REQUIRE_EQUAL(array.memory_datatype(), lue::hdf5::native_float64);
 
             std::vector<double> elements(3 * 5);
 
             array.read(elements.data());
 
             // Row 1
-            BOOST_CHECK_EQUAL(elements[ 0], 11.5);
-            BOOST_CHECK_EQUAL(elements[ 1], 12.5);
-            BOOST_CHECK_EQUAL(elements[ 2], 13.5);
-            BOOST_CHECK_EQUAL(elements[ 3], 14.5);
-            BOOST_CHECK_EQUAL(elements[ 4], 15.5);
+            BOOST_CHECK_EQUAL(elements[0], 11.5);
+            BOOST_CHECK_EQUAL(elements[1], 12.5);
+            BOOST_CHECK_EQUAL(elements[2], 13.5);
+            BOOST_CHECK_EQUAL(elements[3], 14.5);
+            BOOST_CHECK_EQUAL(elements[4], 15.5);
 
             // Row 2
-            BOOST_CHECK_EQUAL(elements[ 5], 21.5);
-            BOOST_CHECK_EQUAL(elements[ 6], 22.5);
-            BOOST_CHECK_EQUAL(elements[ 7], 23.5);
-            BOOST_CHECK_EQUAL(elements[ 8], 24.5);
-            BOOST_CHECK_EQUAL(elements[ 9], 25.5);
+            BOOST_CHECK_EQUAL(elements[5], 21.5);
+            BOOST_CHECK_EQUAL(elements[6], 22.5);
+            BOOST_CHECK_EQUAL(elements[7], 23.5);
+            BOOST_CHECK_EQUAL(elements[8], 24.5);
+            BOOST_CHECK_EQUAL(elements[9], 25.5);
 
             // Row 3
             BOOST_CHECK_EQUAL(elements[10], 31.5);
@@ -334,13 +315,11 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         BOOST_CHECK(!property.time_is_discretized());
         BOOST_REQUIRE(property.space_is_discretized());
         BOOST_REQUIRE_EQUAL(
-            property.space_discretization_type(),
-            lue::data_model::SpaceDiscretization::regular_grid);
+            property.space_discretization_type(), lue::data_model::SpaceDiscretization::regular_grid);
 
-        auto discretization_property{
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-            const_cast<lue::data_model::different_shape::Property&>(property)
-                .space_discretization_property()};
+        auto discretization_property{// NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
+                                     const_cast<lue::data_model::different_shape::Property&>(property)
+                                         .space_discretization_property()};
 
         BOOST_CHECK_EQUAL(discretization_property.name(), "discretization");
     }
@@ -348,23 +327,18 @@ BOOST_AUTO_TEST_CASE(new_rasters)
     // Discretization
     {
         BOOST_REQUIRE_EQUAL(
-            properties.shape_per_object("discretization"),
-            lue::data_model::ShapePerObject::same);
+            properties.shape_per_object("discretization"), lue::data_model::ShapePerObject::same);
         BOOST_REQUIRE_EQUAL(
-            properties.value_variability("discretization"),
-            lue::data_model::ValueVariability::constant);
+            properties.value_variability("discretization"), lue::data_model::ValueVariability::constant);
 
         auto const& property{
-            properties
-                .collection<lue::data_model::same_shape::Properties>()["discretization"]};
+            properties.collection<lue::data_model::same_shape::Properties>()["discretization"]};
 
         auto const& value{property.value()};
         BOOST_REQUIRE_EQUAL(value.nr_arrays(), 2);
         BOOST_REQUIRE_EQUAL(value.array_shape(), (lue::hdf5::Shape{2}));
-        BOOST_CHECK_EQUAL(
-            value.file_datatype(), lue::hdf5::std_uint64_le);
-        BOOST_REQUIRE_EQUAL(
-            value.memory_datatype(), lue::hdf5::native_uint64);
+        BOOST_CHECK_EQUAL(value.file_datatype(), lue::hdf5::std_uint64_le);
+        BOOST_REQUIRE_EQUAL(value.memory_datatype(), lue::hdf5::native_uint64);
 
         std::vector<std::uint64_t> elements(2 * 2);
 

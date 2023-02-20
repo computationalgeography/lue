@@ -5,21 +5,21 @@ namespace lue::gui {
 
     class Selectable
     {
-        // TODO Rename to Visible
+            // TODO Rename to Visible
 
         public:
 
             explicit Selectable(bool selected);
 
-            Selectable(Selectable const&)=default;
+            Selectable(Selectable const&) = default;
 
-            Selectable(Selectable&&)=default;
+            Selectable(Selectable&&) = default;
 
-            virtual ~Selectable()=default;
+            virtual ~Selectable() = default;
 
-            Selectable& operator=(Selectable const&)=default;
+            Selectable& operator=(Selectable const&) = default;
 
-            Selectable& operator=(Selectable&&)=default;
+            Selectable& operator=(Selectable&&) = default;
 
             explicit operator bool() const;
 
@@ -30,7 +30,6 @@ namespace lue::gui {
         private:
 
             bool _was_selected;
-
     };
 
 }  // namespace lue::gui

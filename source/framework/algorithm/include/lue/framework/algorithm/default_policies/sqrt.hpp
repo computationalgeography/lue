@@ -5,23 +5,17 @@
 namespace lue {
     namespace policy::sqrt {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            DomainPolicy<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies =
+            policy::DefaultPolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::sqrt
 
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        auto sqrt(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        auto sqrt(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::sqrt::DefaultPolicies<Element>;
 

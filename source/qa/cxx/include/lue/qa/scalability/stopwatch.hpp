@@ -24,17 +24,17 @@ namespace lue::qa {
 
             static TimePoint now();
 
-            Stopwatch()=default;
+            Stopwatch() = default;
 
-            Stopwatch(Stopwatch const&)=default;
+            Stopwatch(Stopwatch const&) = default;
 
-            Stopwatch(Stopwatch&&)=default;
+            Stopwatch(Stopwatch&&) = default;
 
-            ~Stopwatch()=default;
+            ~Stopwatch() = default;
 
-            Stopwatch& operator=(Stopwatch const&)=default;
+            Stopwatch& operator=(Stopwatch const&) = default;
 
-            Stopwatch& operator=(Stopwatch&&)=default;
+            Stopwatch& operator=(Stopwatch&&) = default;
 
             void start();
 
@@ -48,8 +48,7 @@ namespace lue::qa {
                 Use this function to convert the high resolution duration to some
                 courser unit, like seconds.
             */
-            template<
-                typename ToDuration>
+            template<typename ToDuration>
             ToDuration duration() const
             {
                 return _time_interval.duration<ToDuration>();
@@ -62,7 +61,6 @@ namespace lue::qa {
 
             //! Amount of time after a start and stop of the stopwatch
             TimeInterval _time_interval;
-
     };
 
 }  // namespace lue::qa

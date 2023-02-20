@@ -5,44 +5,30 @@
 namespace lue {
     namespace policy::focal_diversity {
 
-        template<
-            typename Count>
-        using DefaultOutputPolicies = policy::OutputPolicies<
-                DontMarkNoData<Count>,
-                AllValuesWithinRange<Count>
-            >;
+        template<typename Count>
+        using DefaultOutputPolicies =
+            policy::OutputPolicies<DontMarkNoData<Count>, AllValuesWithinRange<Count>>;
 
 
-        template<
-            typename Element>
-        using DefaultInputPolicies = policy::SpatialOperationInputPolicies<
-                SkipNoData<Element>,
-                FillHaloWithConstantValue<Element>
-            >;
+        template<typename Element>
+        using DefaultInputPolicies =
+            policy::SpatialOperationInputPolicies<SkipNoData<Element>, FillHaloWithConstantValue<Element>>;
 
 
-        template<
-            typename Count,
-            typename Element>
+        template<typename Count, typename Element>
         using DefaultPolicies = policy::Policies<
-                DomainPolicy<Element>,
-                OutputsPolicies<DefaultOutputPolicies<Count>>,
-                InputsPolicies<DefaultInputPolicies<Element>>
-            >;
+            DomainPolicy<Element>,
+            OutputsPolicies<DefaultOutputPolicies<Count>>,
+            InputsPolicies<DefaultInputPolicies<Element>>>;
 
     }  // namespace policy::focal_diversity
 
 
     namespace default_policies {
 
-        template<
-            typename Count,
-            typename Element,
-            Rank rank,
-            typename Kernel>
+        template<typename Count, typename Element, Rank rank, typename Kernel>
         PartitionedArray<Count, rank> focal_diversity(
-            PartitionedArray<Element, rank> const& array,
-            Kernel const& kernel)
+            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
         {
             using Policies = policy::focal_diversity::DefaultPolicies<Count, Element>;
 

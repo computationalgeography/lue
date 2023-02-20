@@ -1,6 +1,6 @@
 #include "lue/gui/glfw/api.hpp"
-#include <GLFW/glfw3.h>
 #include <fmt/format.h>
+#include <GLFW/glfw3.h>
 #include <stdexcept>
 
 
@@ -9,8 +9,7 @@ namespace glfw {
     static void glfw_error_callback(int error, const char* description)
     {
         // fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-        throw std::runtime_error(
-            fmt::format("Glfw error {}: {}", error, description));
+        throw std::runtime_error(fmt::format("Glfw error {}: {}", error, description));
     }
 
 

@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework core array_test
-#include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/test/stream.hpp"
+#include <hpx/config.hpp>
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(rank)

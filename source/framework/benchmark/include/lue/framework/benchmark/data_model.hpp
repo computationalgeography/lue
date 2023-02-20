@@ -4,15 +4,12 @@
 
 namespace lue::benchmark {
 
-    template<
-        typename Count,
-        Rank rank>
-    hdf5::Shape shape_to_shape(
-        lue::Shape<Count, rank> const& from_shape)
+    template<typename Count, Rank rank>
+    hdf5::Shape shape_to_shape(lue::Shape<Count, rank> const& from_shape)
     {
         hdf5::Shape to_shape(rank);
 
-        for(std::size_t i = 0; i < rank; ++i)
+        for (std::size_t i = 0; i < rank; ++i)
         {
             to_shape[i] = from_shape[i];
         }
@@ -21,9 +18,7 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Count,
-        Rank rank>
+    template<typename Count, Rank rank>
     std::tuple<data_model::ID, hdf5::Hyperslab> array_info(
         std::string const& array_pathname,
         std::vector<Index> center_cell,
@@ -39,7 +34,7 @@ namespace lue::benchmark {
         RasterView raster_view{&dataset, phenomenon_name, property_set_name};
         data_model::ID const object_id{raster_view.object_id()};
 
-        if(center_cell.empty())
+        if (center_cell.empty())
         {
             // Default center cell is the center cell of the array
             hdf5::Shape const& grid_shape{raster_view.grid_shape()};
@@ -53,9 +48,7 @@ namespace lue::benchmark {
         hdf5::Shape const h5_array_shape{shape_to_shape(array_shape)};
 
         hdf5::Offset start{
-                center_cell[0] - (h5_array_shape[0] / 2),
-                center_cell[1] - (h5_array_shape[1] / 2)
-            };
+            center_cell[0] - (h5_array_shape[0] / 2), center_cell[1] - (h5_array_shape[1] / 2)};
         hdf5::Count count{h5_array_shape[0], h5_array_shape[1]};
 
         hdf5::Hyperslab hyperslab{start, count};
@@ -67,4 +60,4 @@ namespace lue::benchmark {
         return std::make_tuple(object_id, std::move(hyperslab));
     }
 
-}  // namespace lue::data_model
+}  // namespace lue::benchmark

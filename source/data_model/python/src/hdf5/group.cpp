@@ -1,5 +1,5 @@
-#include "submodule.hpp"
 #include "lue/hdf5/group.hpp"
+#include "submodule.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,8 +9,7 @@ using namespace pybind11::literals;
 
 namespace lue::hdf5 {
 
-    void init_group(
-        py::module& module)
+    void init_group(py::module& module)
     {
 
         py::class_<Group, PrimaryDataObject>(
@@ -21,7 +20,6 @@ namespace lue::hdf5 {
     )")
 
             ;
-
     }
 
 }  // namespace lue::hdf5

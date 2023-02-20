@@ -1,14 +1,14 @@
 #include "lue/framework/algorithm/definition/pow.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                             \
-                                                                   \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                        \
-        ESC(policy::pow::DefaultValuePolicies<Element, Element>),  \
-        Element,                                                   \
-        Element,                                                   \
-        Element,                                                   \
-        rank,                                                      \
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::pow::DefaultValuePolicies<Element, Element>),                                            \
+        Element,                                                                                             \
+        Element,                                                                                             \
+        Element,                                                                                             \
+        rank,                                                                                                \
         ESC(detail::Pow<Element, Element>));
 
 

@@ -2,46 +2,57 @@
 
 
 namespace lue {
-namespace data_model {
-namespace time {
+    namespace data_model {
+        namespace time {
 
-/*!
-    @brief      Class representing the unit for representing seconds
-*/
-class Second{};
+            /*!
+                @brief      Class representing the unit for representing seconds
+            */
+            class Second
+            {
+            };
 
-class Minute{};
-class Day{};
-class Week{};
-class Month{};
-class Year{};
+            class Minute
+            {
+            };
+            class Day
+            {
+            };
+            class Week
+            {
+            };
+            class Month
+            {
+            };
+            class Year
+            {
+            };
 
 
-enum class Unit
-{
+            enum class Unit {
 
-    nanosecond,
+                nanosecond,
 
-    microsecond,
+                microsecond,
 
-    millisecond,
+                millisecond,
 
-    second,
+                second,
 
-    minute,
+                minute,
 
-    hour,
+                hour,
 
-    day,
+                day,
 
-    week,
+                week,
 
-    month,
+                month,
 
-    year
+                year
 
-};
+            };
 
-}  // namespace time
-}  // namespace data_model
+        }  // namespace time
+    }      // namespace data_model
 }  // namespace lue

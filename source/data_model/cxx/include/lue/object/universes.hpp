@@ -1,39 +1,37 @@
 #pragma once
-#include "lue/object/universe.hpp"
 #include "lue/core/collection.hpp"
+#include "lue/object/universe.hpp"
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-class Universes:
-    public Collection<Universe>
-{
+        class Universes: public Collection<Universe>
+        {
 
-public:
+            public:
 
-    explicit       Universes           (hdf5::Group const& parent);
+                explicit Universes(hdf5::Group const& parent);
 
-    explicit       Universes           (Collection<Universe>&& collection);
+                explicit Universes(Collection<Universe>&& collection);
 
-                   Universes           (Universes const&)=default;
+                Universes(Universes const&) = default;
 
-                   Universes           (Universes&&)=default;
+                Universes(Universes&&) = default;
 
-                   ~Universes          () override =default;
+                ~Universes() override = default;
 
-    Universes&     operator=           (Universes const&)=default;
+                Universes& operator=(Universes const&) = default;
 
-    Universes&     operator=           (Universes&&)=default;
+                Universes& operator=(Universes&&) = default;
 
-    Universe&      add                 (std::string const& name);
+                Universe& add(std::string const& name);
 
-private:
-
-};
+            private:
+        };
 
 
-Universes          create_universes    (hdf5::Group& parent);
+        Universes create_universes(hdf5::Group& parent);
 
-} // namespace data_model
-} // namespace lue
+    }  // namespace data_model
+}  // namespace lue

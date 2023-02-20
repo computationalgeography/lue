@@ -1,7 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/focal_diversity.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
-#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include <algorithm>
 #include <set>
 
@@ -9,9 +9,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename Count,
-            typename Element>
+        template<typename Count, typename Element>
         class FocalDiversity
         {
 
@@ -24,11 +22,7 @@ namespace lue {
                 static_assert(std::is_integral_v<OutputElement>);
 
 
-                template<
-                    typename Kernel,
-                    typename OutputPolicies,
-                    typename InputPolicies,
-                    typename Subspan>
+                template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
                 Count operator()(
                     Kernel const& kernel,
                     OutputPolicies const& output_policies,
@@ -54,13 +48,14 @@ namespace lue {
                     std::vector<InputElement> values{};
                     values.reserve(nr_elements(kernel));
 
-                    for(Index r = 0; r < window.extent(0); ++r) {
-                        for(Index c = 0; c < window.extent(1); ++c)
+                    for (Index r = 0; r < window.extent(0); ++r)
+                    {
+                        for (Index c = 0; c < window.extent(1); ++c)
                         {
                             Weight const weight{kernel(r, c)};
                             InputElement const value{window(r, c)};
 
-                            if(indp.is_no_data(value))
+                            if (indp.is_no_data(value))
                             {
                                 // In case one of the cells within the window contains a no-data
                                 // value, the result is marked as no-data
@@ -70,7 +65,7 @@ namespace lue {
                             }
                             else
                             {
-                                if(weight)
+                                if (weight)
                                 {
                                     values.push_back(value);
                                 }
@@ -81,7 +76,7 @@ namespace lue {
                     Count count;
 
                     {
-                        if(values.empty())
+                        if (values.empty())
                         {
                             // No valid values found
                             ondp.mark_no_data(count);
@@ -96,22 +91,14 @@ namespace lue {
 
                     return count;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Count,
-        typename Policies,
-        typename Element,
-        Rank rank,
-        typename Kernel>
+    template<typename Count, typename Policies, typename Element, Rank rank, typename Kernel>
     PartitionedArray<Count, rank> focal_diversity(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array,
-        Kernel const& kernel)
+        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)
     {
         using Functor = detail::FocalDiversity<Count, Element>;
 
@@ -121,12 +108,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_FOCAL_DIVERSITY(                               \
-    Policies, Count, Element, Kernel)                                  \
-                                                                       \
-    template LUE_FOCAL_OPERATION_EXPORT                                \
-    PartitionedArray<Count, 2> focal_diversity<                        \
-            Count, ArgumentType<void(Policies)>, Element, 2, Kernel>(  \
-        ArgumentType<void(Policies)> const&,                           \
-        PartitionedArray<Element, 2> const&,                           \
-        Kernel const&);
+#define LUE_INSTANTIATE_FOCAL_DIVERSITY(Policies, Count, Element, Kernel)                                    \
+                                                                                                             \
+    template LUE_FOCAL_OPERATION_EXPORT PartitionedArray<Count, 2>                                           \
+    focal_diversity<Count, ArgumentType<void(Policies)>, Element, 2, Kernel>(                                \
+        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&, Kernel const&);

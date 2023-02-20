@@ -8,13 +8,9 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            typename Zone,
-            Rank rank>
+        template<typename Element, typename Zone, Rank rank>
         PartitionedArray<Element, rank> zonal_sum(
-            PartitionedArray<Element, rank> const& array,
-            PartitionedArray<Zone, rank> const& zones)
+            PartitionedArray<Element, rank> const& array, PartitionedArray<Zone, rank> const& zones)
         {
             return value_policies::zonal_sum(array, zones);
         }
@@ -22,8 +18,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_zonal_sum(
-        pybind11::module& module)
+    void bind_zonal_sum(pybind11::module& module)
     {
         module.def("zonal_sum", zonal_sum<std::uint8_t, std::uint8_t, 2>, "array"_a, "zones"_a);
         module.def("zonal_sum", zonal_sum<std::uint8_t, std::uint32_t, 2>, "array"_a, "zones"_a);

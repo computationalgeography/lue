@@ -1,79 +1,76 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
+#include <hpx/components/get_ptr.hpp>
 #include <hpx/modules/async_combinators.hpp>
 #include <algorithm>
 
 
 namespace lue {
 
-    template<
-        typename Collection>
-    void wait_all(
-        Collection const& components)
+    template<typename Collection>
+    void wait_all(Collection const& components)
     {
         hpx::wait_all(components.begin(), components.end());
     }
 
 
-    template<
-        typename Collection>
-    bool all_are_valid(
-        Collection const& components)
+    template<typename Collection>
+    bool all_are_valid(Collection const& components)
     {
-        return std::all_of(components.begin(), components.end(),
+        return std::all_of(
+            components.begin(),
+            components.end(),
 
-                [](auto const& component)
-                {
-                    // shared_state_ != nullptr
-                    return component.valid();
-                }
+            [](auto const& component)
+            {
+                // shared_state_ != nullptr
+                return component.valid();
+            }
 
-            );
+        );
     }
 
 
-    template<
-        typename Collection>
-    bool all_are_ready(
-        Collection const& components)
+    template<typename Collection>
+    bool all_are_ready(Collection const& components)
     {
-        return std::all_of(components.begin(), components.end(),
+        return std::all_of(
+            components.begin(),
+            components.end(),
 
-                [](auto const& component)
-                {
-                    // is_valid() && shared_state_->is_ready()
-                    return component.is_ready();
-                }
+            [](auto const& component)
+            {
+                // is_valid() && shared_state_->is_ready()
+                return component.is_ready();
+            }
 
-            );
+        );
     }
 
 
-    template<
-        typename Collection>
-    bool none_have_exception(
-        Collection const& components)
+    template<typename Collection>
+    bool none_have_exception(Collection const& components)
     {
-        return std::none_of(components.begin(), components.end(),
+        return std::none_of(
+            components.begin(),
+            components.end(),
 
-                [](auto const& component)
-                {
-                    // shared_state_ != nullptr && shared_state_->has_exception();
-                    return component.has_exception();
-                }
+            [](auto const& component)
+            {
+                // shared_state_ != nullptr && shared_state_->has_exception();
+                return component.has_exception();
+            }
 
-            );
+        );
     }
 
 
     namespace detail {
 
-        template<
-            typename ComponentClient>
+        template<typename ComponentClient>
         // std::shared_ptr<typename ComponentClient::Server> ready_component_ptr(
         //     ComponentClient const& client)
-        auto ready_component_ptr(
-            ComponentClient const& client)
+        auto ready_component_ptr(ComponentClient const& client)
         {
             // Only call this function on the same locality as the component
             // Only call this function when the client is ready

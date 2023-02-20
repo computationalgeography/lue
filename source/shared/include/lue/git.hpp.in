@@ -12,12 +12,13 @@ namespace lue {
 
         public:
 
-            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+            // modernize-avoid-c-arrays)
             static constexpr char const* sha1{LUE_GIT_SHA1};
 
-            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
+            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays,
+            // modernize-avoid-c-arrays)
             static constexpr char const* short_sha1{LUE_GIT_SHORT_SHA1};
-
     };
 
 }  // namespace lue

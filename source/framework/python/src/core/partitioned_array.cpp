@@ -12,8 +12,7 @@ namespace lue::framework {
     void bind_partitioned_array_double(pybind11::module& module);
 
 
-    void bind_partitioned_array(
-        pybind11::module& module)
+    void bind_partitioned_array(pybind11::module& module)
     {
         bind_partitioned_array_uint8(module);
         bind_partitioned_array_uint32(module);

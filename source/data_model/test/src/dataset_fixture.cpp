@@ -3,50 +3,52 @@
 
 
 namespace lue {
-namespace data_model {
-namespace test {
+    namespace data_model {
+        namespace test {
 
-DatasetFixture::DatasetFixture()
+            DatasetFixture::DatasetFixture():
 
-    : _pathname{"my_dataset.lue"},
-      _remove_dataset_upon_destruction{true},
-      _dataset{std::make_unique<Dataset>(create_dataset(_pathname))}
+                _pathname{"my_dataset.lue"},
+                _remove_dataset_upon_destruction{true},
+                _dataset{std::make_unique<Dataset>(create_dataset(_pathname))}
 
-{
-    assert(dataset_exists(_pathname));
-}
-
-
-DatasetFixture::~DatasetFixture()
-{
-    if(_remove_dataset_upon_destruction) {
-        if(dataset_exists(_pathname)) {
-            _dataset.reset();
-            remove_dataset(_pathname);
-        }
-
-        assert(!dataset_exists(_pathname));
-    }
-}
+            {
+                assert(dataset_exists(_pathname));
+            }
 
 
-std::string const& DatasetFixture::pathname() const
-{
-    return _pathname;
-}
+            DatasetFixture::~DatasetFixture()
+            {
+                if (_remove_dataset_upon_destruction)
+                {
+                    if (dataset_exists(_pathname))
+                    {
+                        _dataset.reset();
+                        remove_dataset(_pathname);
+                    }
+
+                    assert(!dataset_exists(_pathname));
+                }
+            }
 
 
-Dataset& DatasetFixture::dataset()
-{
-    return *_dataset;
-}
+            std::string const& DatasetFixture::pathname() const
+            {
+                return _pathname;
+            }
 
 
-void DatasetFixture::keep_dataset_upon_destruction()
-{
-    _remove_dataset_upon_destruction = false;
-}
+            Dataset& DatasetFixture::dataset()
+            {
+                return *_dataset;
+            }
 
-}  // namespace test
-}  // namespace data_model
+
+            void DatasetFixture::keep_dataset_upon_destruction()
+            {
+                _remove_dataset_upon_destruction = false;
+            }
+
+        }  // namespace test
+    }      // namespace data_model
 }  // namespace lue

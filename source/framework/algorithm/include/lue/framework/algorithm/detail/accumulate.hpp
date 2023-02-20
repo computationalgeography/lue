@@ -11,26 +11,21 @@
 
 namespace lue::detail {
 
-    template<
-        typename Index,
-         Rank rank>
-    Offset<Index, rank> invert(
-        Offset<Index, rank> const& offset)
-        {
-            Offset<Index, rank> result{offset};
+    template<typename Index, Rank rank>
+    Offset<Index, rank> invert(Offset<Index, rank> const& offset)
+    {
+        Offset<Index, rank> result{offset};
 
-            result[0] *= -1;
-            result[1] *= -1;
+        result[0] *= -1;
+        result[1] *= -1;
 
-            return result;
-        };
+        return result;
+    };
 
 
-    template<
-        typename PartitionIOComponents>
+    template<typename PartitionIOComponents>
     Array<hpx::future<bool>, rank<PartitionIOComponents>> solved_partitions(
-        PartitionIOComponents& partition_io_partitions,
-        Array<bool, 2> const& ready_partitions)
+        PartitionIOComponents& partition_io_partitions, Array<bool, 2> const& ready_partitions)
     {
         // For each partition that is not yet ready, request whether
         // it is solved. If a partition is solved, then it is potentially
@@ -48,9 +43,9 @@ namespace lue::detail {
         // they are solved.
         Array<hpx::future<bool>, rank> is_solved{shape_in_partitions};
 
-        for(Index p = 0; p < nr_partitions; ++p)
+        for (Index p = 0; p < nr_partitions; ++p)
         {
-            if(ready_partitions[p])
+            if (ready_partitions[p])
             {
                 is_solved[p] = hpx::make_ready_future<bool>(true);
             }
@@ -58,12 +53,10 @@ namespace lue::detail {
             {
                 is_solved[p] = partition_io_partitions[p].then(
 
-                        [](PartitionIOComponent const& partition_io_partition)
-                        {
-                            return partition_io_partition.is_solved();
-                        }
+                    [](PartitionIOComponent const& partition_io_partition)
+                    { return partition_io_partition.is_solved(); }
 
-                    );
+                );
             }
         }
 
@@ -71,11 +64,9 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename PartitionIOComponents>
+    template<typename PartitionIOComponents>
     Array<hpx::future<Count>, rank<PartitionIOComponents>> solved_partitions2(
-        PartitionIOComponents& partition_io_partitions,
-        Array<bool, 2> const& ready_partitions)
+        PartitionIOComponents& partition_io_partitions, Array<bool, 2> const& ready_partitions)
     {
         // For each partition that is not yet ready, request whether
         // it is solved. If a partition is solved, then it is potentially
@@ -93,9 +84,9 @@ namespace lue::detail {
         // they are solved.
         Array<hpx::future<Count>, rank> is_solved{shape_in_partitions};
 
-        for(Index p = 0; p < nr_partitions; ++p)
+        for (Index p = 0; p < nr_partitions; ++p)
         {
-            if(ready_partitions[p])
+            if (ready_partitions[p])
             {
                 is_solved[p] = hpx::make_ready_future<Count>(0);
             }
@@ -103,12 +94,10 @@ namespace lue::detail {
             {
                 is_solved[p] = partition_io_partitions[p].then(
 
-                        [](PartitionIOComponent const& partition_io_partition)
-                        {
-                            return partition_io_partition.nr_input_cells();
-                        }
+                    [](PartitionIOComponent const& partition_io_partition)
+                    { return partition_io_partition.nr_input_cells(); }
 
-                    );
+                );
             }
         }
 
@@ -116,14 +105,12 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename PartitionIOComponents>
-    hpx::future<Array<
-        typename ComponentT<PartitionIOComponents>::PartitionOffsets,
-        rank<PartitionIOComponents>>>
-            upstream_partition_offsets(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, rank<PartitionIOComponents>> const& ready_partitions)
+    template<typename PartitionIOComponents>
+    hpx::future<
+        Array<typename ComponentT<PartitionIOComponents>::PartitionOffsets, rank<PartitionIOComponents>>>
+    upstream_partition_offsets(
+        PartitionIOComponents& partition_io_partitions,
+        Array<bool, rank<PartitionIOComponents>> const& ready_partitions)
     {
         using PartitionIOComponent = ComponentT<PartitionIOComponents>;
         using PartitionOffsets = typename PartitionIOComponent::PartitionOffsets;
@@ -135,9 +122,9 @@ namespace lue::detail {
 
         Array<hpx::future<PartitionOffsets>, rank> downstream_partition_offsets{shape_in_partitions};
 
-        for(Index p = 0; p < nr_partitions; ++p)
+        for (Index p = 0; p < nr_partitions; ++p)
         {
-            if(ready_partitions[p])
+            if (ready_partitions[p])
             {
                 downstream_partition_offsets[p] = hpx::make_ready_future<PartitionOffsets>();
             }
@@ -145,12 +132,10 @@ namespace lue::detail {
             {
                 downstream_partition_offsets[p] = partition_io_partitions[p].then(
 
-                        [](PartitionIOComponent const& partition_io_partition)
-                        {
-                            return partition_io_partition.partition_offsets();
-                        }
+                    [](PartitionIOComponent const& partition_io_partition)
+                    { return partition_io_partition.partition_offsets(); }
 
-                    );
+                );
             }
         }
 
@@ -164,9 +149,9 @@ namespace lue::detail {
         // Non-halo partitions can produce material for
         // halo-partitions, but that is irrelevant. Skip'm.
 
-        return when_all_get(std::move(downstream_partition_offsets)).then(
-                [](
-                    hpx::future<Array<PartitionOffsets, rank>>&& downstream_partition_offsets_f)
+        return when_all_get(std::move(downstream_partition_offsets))
+            .then(
+                [](hpx::future<Array<PartitionOffsets, rank>>&& downstream_partition_offsets_f)
                 {
                     // For each partition,
                     // downstream_partition_offsets contains the
@@ -188,27 +173,23 @@ namespace lue::detail {
                     auto const [extent0, extent1] = shape_in_partitions;
 
                     auto flows_towards_halo_partition =
-                        [extent0=extent0, extent1=extent1](
-                            Index const idx0,
-                            Index const idx1,
-                            Offset const& offset) -> bool
-                        {
-                            return
-                                (idx0 == 0 && offset[0] == -1) ||
-                                (idx0 == extent0 - 1 && offset[0] == 1) ||
-                                (idx1 == 0 && offset[1] == -1) ||
-                                (idx1 == extent1 - 1 && offset[1] == 1);
-                        };
-
-                    for(Index idx0 = 0; idx0 < extent0; ++idx0)
+                        [extent0 = extent0,
+                         extent1 = extent1](Index const idx0, Index const idx1, Offset const& offset) -> bool
                     {
-                        for(Index idx1 = 0; idx1 < extent1; ++idx1)
+                        return (idx0 == 0 && offset[0] == -1) || (idx0 == extent0 - 1 && offset[0] == 1) ||
+                               (idx1 == 0 && offset[1] == -1) || (idx1 == extent1 - 1 && offset[1] == 1);
+                    };
+
+                    for (Index idx0 = 0; idx0 < extent0; ++idx0)
+                    {
+                        for (Index idx1 = 0; idx1 < extent1; ++idx1)
                         {
-                            for(auto const& offset: downstream_partition_offsets(idx0, idx1))
+                            for (auto const& offset : downstream_partition_offsets(idx0, idx1))
                             {
-                                if(!flows_towards_halo_partition(idx0, idx1, offset))
+                                if (!flows_towards_halo_partition(idx0, idx1, offset))
                                 {
-                                    upstream_partition_offsets(idx0 + offset[0], idx1 + offset[1]).insert(invert(offset));
+                                    upstream_partition_offsets(idx0 + offset[0], idx1 + offset[1])
+                                        .insert(invert(offset));
                                 }
                             }
                         }
@@ -221,14 +202,12 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename PartitionIOComponents>
-    hpx::future<Array<
-        typename ComponentT<PartitionIOComponents>::PartitionOffsetCounts,
-        rank<PartitionIOComponents>>>
-            upstream_partition_offset_counts(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, rank<PartitionIOComponents>> const& ready_partitions)
+    template<typename PartitionIOComponents>
+    hpx::future<
+        Array<typename ComponentT<PartitionIOComponents>::PartitionOffsetCounts, rank<PartitionIOComponents>>>
+    upstream_partition_offset_counts(
+        PartitionIOComponents& partition_io_partitions,
+        Array<bool, rank<PartitionIOComponents>> const& ready_partitions)
     {
         using PartitionIOComponent = ComponentT<PartitionIOComponents>;
         using PartitionOffsetCounts = typename PartitionIOComponent::PartitionOffsetCounts;
@@ -238,11 +217,12 @@ namespace lue::detail {
         Shape const& shape_in_partitions{partition_io_partitions.shape()};
         Count const nr_partitions{nr_elements(shape_in_partitions)};
 
-        Array<hpx::future<PartitionOffsetCounts>, rank> downstream_partition_offset_counts{shape_in_partitions};
+        Array<hpx::future<PartitionOffsetCounts>, rank> downstream_partition_offset_counts{
+            shape_in_partitions};
 
-        for(Index p = 0; p < nr_partitions; ++p)
+        for (Index p = 0; p < nr_partitions; ++p)
         {
-            if(ready_partitions[p])
+            if (ready_partitions[p])
             {
                 downstream_partition_offset_counts[p] = hpx::make_ready_future<PartitionOffsetCounts>();
             }
@@ -250,12 +230,10 @@ namespace lue::detail {
             {
                 downstream_partition_offset_counts[p] = partition_io_partitions[p].then(
 
-                        [](PartitionIOComponent const& partition_io_partition)
-                        {
-                            return partition_io_partition.partition_offset_counts();
-                        }
+                    [](PartitionIOComponent const& partition_io_partition)
+                    { return partition_io_partition.partition_offset_counts(); }
 
-                    );
+                );
             }
         }
 
@@ -269,9 +247,9 @@ namespace lue::detail {
         // Non-halo partitions can produce material for
         // halo-partitions, but that is irrelevant. Skip'm.
 
-        return when_all_get(std::move(downstream_partition_offset_counts)).then(
-                [](
-                    hpx::future<Array<PartitionOffsetCounts, rank>>&& downstream_partition_offsets_f)
+        return when_all_get(std::move(downstream_partition_offset_counts))
+            .then(
+                [](hpx::future<Array<PartitionOffsetCounts, rank>>&& downstream_partition_offsets_f)
                 {
                     // For each partition,
                     // downstream_partition_offset_counts contains the
@@ -293,27 +271,23 @@ namespace lue::detail {
                     auto const [extent0, extent1] = shape_in_partitions;
 
                     auto flows_towards_halo_partition =
-                        [extent0=extent0, extent1=extent1](
-                            Index const idx0,
-                            Index const idx1,
-                            Offset const& offset) -> bool
-                        {
-                            return
-                                (idx0 == 0 && offset[0] == -1) ||
-                                (idx0 == extent0 - 1 && offset[0] == 1) ||
-                                (idx1 == 0 && offset[1] == -1) ||
-                                (idx1 == extent1 - 1 && offset[1] == 1);
-                        };
-
-                    for(Index idx0 = 0; idx0 < extent0; ++idx0)
+                        [extent0 = extent0,
+                         extent1 = extent1](Index const idx0, Index const idx1, Offset const& offset) -> bool
                     {
-                        for(Index idx1 = 0; idx1 < extent1; ++idx1)
+                        return (idx0 == 0 && offset[0] == -1) || (idx0 == extent0 - 1 && offset[0] == 1) ||
+                               (idx1 == 0 && offset[1] == -1) || (idx1 == extent1 - 1 && offset[1] == 1);
+                    };
+
+                    for (Index idx0 = 0; idx0 < extent0; ++idx0)
+                    {
+                        for (Index idx1 = 0; idx1 < extent1; ++idx1)
                         {
-                            for(auto const& [offset, count]: downstream_partition_offset_counts(idx0, idx1))
+                            for (auto const& [offset, count] : downstream_partition_offset_counts(idx0, idx1))
                             {
-                                if(!flows_towards_halo_partition(idx0, idx1, offset))
+                                if (!flows_towards_halo_partition(idx0, idx1, offset))
                                 {
-                                    upstream_partition_offset_counts(idx0 + offset[0], idx1 + offset[1]).emplace_back(invert(offset), count);
+                                    upstream_partition_offset_counts(idx0 + offset[0], idx1 + offset[1])
+                                        .emplace_back(invert(offset), count);
                                 }
                             }
                         }
@@ -326,15 +300,9 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename PartitionIOComponents>
-    std::tuple<
-            Array<bool, 2>,
-            Array<std::set<Offset<std::int8_t, 2>>, 2>
-        >
-            flow_accumulation_front(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, 2> const& ready_partitions)
+    template<typename PartitionIOComponents>
+    std::tuple<Array<bool, 2>, Array<std::set<Offset<std::int8_t, 2>>, 2>> flow_accumulation_front(
+        PartitionIOComponents& partition_io_partitions, Array<bool, 2> const& ready_partitions)
     {
         lue_hpx_assert(partition_io_partitions.shape() == ready_partitions.shape());
 
@@ -358,8 +326,11 @@ namespace lue::detail {
 
 
         hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
-        std::transform(solved_partitions_f.begin(), solved_partitions_f.end(),
-            solved_partitions_.begin(), [](auto& f) { return f.get(); });
+        std::transform(
+            solved_partitions_f.begin(),
+            solved_partitions_f.end(),
+            solved_partitions_.begin(),
+            [](auto& f) { return f.get(); });
         upstream_partition_offsets_f.wait();
 
 
@@ -367,15 +338,10 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename PartitionIOComponents>
-    std::tuple<
-            Array<Count, 2>,
-            Array<typename ComponentT<PartitionIOComponents>::PartitionOffsetCounts, 2>
-        >
-            flow_accumulation_front2(
-                PartitionIOComponents& partition_io_partitions,
-                Array<bool, 2> const& ready_partitions)
+    template<typename PartitionIOComponents>
+    std::tuple<Array<Count, 2>, Array<typename ComponentT<PartitionIOComponents>::PartitionOffsetCounts, 2>>
+    flow_accumulation_front2(
+        PartitionIOComponents& partition_io_partitions, Array<bool, 2> const& ready_partitions)
     {
         lue_hpx_assert(partition_io_partitions.shape() == ready_partitions.shape());
 
@@ -398,8 +364,11 @@ namespace lue::detail {
             upstream_partition_offset_counts(partition_io_partitions, ready_partitions)};
 
         hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
-        std::transform(solved_partitions_f.begin(), solved_partitions_f.end(),
-            solved_partitions_.begin(), [](auto& f) { return f.get(); });
+        std::transform(
+            solved_partitions_f.begin(),
+            solved_partitions_f.end(),
+            solved_partitions_.begin(),
+            [](auto& f) { return f.get(); });
         upstream_partition_offset_counts_f.wait();
 
         return std::make_tuple(std::move(solved_partitions_), upstream_partition_offset_counts_f.get());
@@ -410,7 +379,7 @@ namespace lue::detail {
         typename PartitionIOData_,
         typename InputMaterialData_,
         typename CellAccumulator,
-        typename OutputMaterialData_=InputMaterialData_>
+        typename OutputMaterialData_ = InputMaterialData_>
     class Accumulator
     {
 
@@ -440,36 +409,26 @@ namespace lue::detail {
             }
 
 
-            void enter_cell(
-                Index const idx0,
-                Index const idx1)
+            void enter_cell(Index const idx0, Index const idx1)
             {
                 this->accumulate_input(idx0, idx1);
             }
 
 
-            void leave_at_sink(
-                [[maybe_unused]] Index const idx0,
-                [[maybe_unused]] Index const idx1)
+            void leave_at_sink([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
             {
             }
 
 
             void leave_at_output_cell(
-                Index const idx0,
-                Index const idx1,
-                Index const offset0,
-                Index const offset1)
+                Index const idx0, Index const idx1, Index const offset0, Index const offset1)
             {
                 this->leave_partition(idx0, idx1, offset0, offset1);
             }
 
 
             void move_downstream(
-                Index const idx0_from,
-                Index const idx1_from,
-                Index const idx0_to,
-                Index const idx1_to)
+                Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
             {
                 this->accumulate_downstream(idx0_from, idx1_from, idx0_to, idx1_to);
             }
@@ -477,9 +436,7 @@ namespace lue::detail {
 
             // TODO private
             // TODO rename to grab_external_material
-            void accumulate_input(
-                Index const idx0,
-                Index const idx1)
+            void accumulate_input(Index const idx0, Index const idx1)
             {
                 // We are entering the current cell. Material from
                 // upstream is already present.
@@ -495,10 +452,7 @@ namespace lue::detail {
             // TODO make private
             // TODO rename to push_material_downstream
             void accumulate_downstream(
-                Index const idx0_from,
-                Index const idx1_from,
-                Index const idx0_to,
-                Index const idx1_to)
+                Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
             {
                 // We are about the leave the current cell. This is the
                 // final step.
@@ -516,18 +470,15 @@ namespace lue::detail {
 
             // TODO make private
             // TODO rename to cache_result
-            void leave_partition(
-                Index const idx0,
-                Index const idx1,
-                Index const offset0,
-                Index const offset1)
+            void leave_partition(Index const idx0, Index const idx1, Index const offset0, Index const offset1)
             {
                 // The offset used in ArrayPartitionIO is narrower than
                 // Index. We have to cast.
                 using O = typename PartitionIOData::Offset::value_type;
 
                 _partition_io_data.add_output_cell(
-                    {idx0, idx1}, {static_cast<O>(offset0), static_cast<O>(offset1)},
+                    {idx0, idx1},
+                    {static_cast<O>(offset0), static_cast<O>(offset1)},
                     OutputMaterialElement{_output_material_data(idx0, idx1)});
             }
 
@@ -547,15 +498,10 @@ namespace lue::detail {
             CellAccumulator _cell_accumulator;
 
             OutputMaterialData& _output_material_data;
-
     };
 
 
-    template<
-        typename Accumulator,
-        typename Index,
-        typename FlowDirectionData,
-        typename InflowCountData>
+    template<typename Accumulator, typename Index, typename FlowDirectionData, typename InflowCountData>
     std::tuple<std::array<Index, 2>, AccumulationExitCellClass> accumulate(
         Accumulator& accumulator,
         Index idx0,
@@ -568,7 +514,7 @@ namespace lue::detail {
         bool is_within_partition;
         AccumulationExitCellClass cell_class;
 
-        while(true)
+        while (true)
         {
             lue_hpx_assert(inflow_count_data(idx0, idx1) == 0);
 
@@ -582,7 +528,7 @@ namespace lue::detail {
                 flow_direction_data, nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
 
             // First check conditions that will end the current stream ---------
-            if(offset0 == 0 && offset1 == 0)
+            if (offset0 == 0 && offset1 == 0)
             {
                 // Current cell is a sink. This is the end of this
                 // stream.
@@ -592,7 +538,7 @@ namespace lue::detail {
             }
 
             // Downstream cell is pointed to by idx0 + offset0 and idx1 + offset1
-            if(!is_within_partition)
+            if (!is_within_partition)
             {
                 // Current cell is partition output cell. This is the
                 // end of this stream in the current partition. Finish
@@ -615,7 +561,7 @@ namespace lue::detail {
             lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
             --inflow_count_data(idx0, idx1);
 
-            if(inflow_count_data(idx0, idx1) > 0)
+            if (inflow_count_data(idx0, idx1) > 0)
             {
                 // There are other streams flowing into the new cell → stop
                 cell_class = AccumulationExitCellClass::junction;

@@ -20,8 +20,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_accu_info3(
-        pybind11::module& module)
+    void bind_accu_info3(pybind11::module& module)
     {
         module.def("accu_info3", accu_info3);
     }

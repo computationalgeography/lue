@@ -2,11 +2,11 @@
 
 
 namespace lue {
-namespace benchmark {
+    namespace benchmark {
 
-class RuntimeEnvironment
-{
-};
+        class RuntimeEnvironment
+        {
+        };
 
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue

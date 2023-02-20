@@ -3,11 +3,9 @@
 #include "lue/framework/algorithm/value_policies/unique.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element)       \
-                                                 \
-    LUE_INSTANTIATE_UNIQUE(                      \
-        ESC(policy::unique::Policies<Element>),  \
-        Element);
+#define LUE_INSTANTIATE(Policies, Element)                                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_UNIQUE(ESC(policy::unique::Policies<Element>), Element);
 
 
 namespace lue {

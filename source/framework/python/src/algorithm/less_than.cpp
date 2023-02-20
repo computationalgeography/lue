@@ -3,18 +3,23 @@
 #include <pybind11/pybind11.h>
 
 
-#define LUE_LESS_THAN_OVERLOADS(type, rank)  \
-    module.def("less_than", less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);  \
-    module.def("less_than", less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, type>                        );  \
-    module.def("less_than", less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>    );  \
-    module.def("less_than", less_than<type, std::uint8_t, rank, type                        , PartitionedArray<type, rank>>);  \
-    module.def("less_than", less_than<type, std::uint8_t, rank, hpx::shared_future<type>    , PartitionedArray<type, rank>>);
+#define LUE_LESS_THAN_OVERLOADS(type, rank)                                                                  \
+    module.def(                                                                                              \
+        "less_than",                                                                                         \
+        less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);    \
+    module.def("less_than", less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, type>);        \
+    module.def(                                                                                              \
+        "less_than",                                                                                         \
+        less_than<type, std::uint8_t, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>);        \
+    module.def("less_than", less_than<type, std::uint8_t, rank, type, PartitionedArray<type, rank>>);        \
+    module.def(                                                                                              \
+        "less_than",                                                                                         \
+        less_than<type, std::uint8_t, rank, hpx::shared_future<type>, PartitionedArray<type, rank>>);
 
 
 namespace lue::framework {
 
-    void bind_less_than(
-        pybind11::module& module)
+    void bind_less_than(pybind11::module& module)
     {
         // TODO How to document these?
         LUE_LESS_THAN_OVERLOADS(std::uint8_t, 2)

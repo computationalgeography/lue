@@ -102,9 +102,8 @@
 /// };
 
 
-
-    // WARNING This is an expensive and synchronous operation. Never do
-    //     this in production code.
+// WARNING This is an expensive and synchronous operation. Never do
+//     this in production code.
 
 /// #ifndef NDEBUG
 ///

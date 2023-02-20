@@ -6,8 +6,7 @@
 namespace lue {
     namespace policy::focal_maximum {
 
-        template<
-            typename Element>
+        template<typename Element>
         using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -18,13 +17,9 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank,
-            typename Kernel>
+        template<typename Element, Rank rank, typename Kernel>
         PartitionedArray<Element, rank> focal_maximum(
-            PartitionedArray<Element, rank> const& array,
-            Kernel const& kernel)
+            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
         {
             using Policies = policy::focal_maximum::DefaultPolicies<Element>;
 

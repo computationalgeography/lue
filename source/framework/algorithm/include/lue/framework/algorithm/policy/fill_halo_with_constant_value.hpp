@@ -8,8 +8,7 @@ namespace lue::policy {
     /*!
         @brief      Fill halo cells with a constant value
     */
-    template<
-        typename Element>
+    template<typename Element>
     class FillHaloWithConstantValue
     {
 
@@ -23,8 +22,7 @@ namespace lue::policy {
             }
 
 
-            FillHaloWithConstantValue(
-                Element const fill_value):
+            FillHaloWithConstantValue(Element const fill_value):
 
                 _fill_value{fill_value}
 
@@ -84,34 +82,27 @@ namespace lue::policy {
             friend class hpx::serialization::access;
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive & _fill_value;
+                archive& _fill_value;
             }
 
             Element _fill_value;
-
     };
 
 
     namespace detail {
 
-        template<
-            typename E>
-        class TypeTraits<
-            FillHaloWithConstantValue<E>>
+        template<typename E>
+        class TypeTraits<FillHaloWithConstantValue<E>>
         {
 
             public:
 
                 using Element = E;
 
-                template<
-                    typename E_>
+                template<typename E_>
                 using Policy = FillHaloWithConstantValue<E_>;
-
         };
 
     }  // namespace detail

@@ -4,42 +4,41 @@
 
 
 namespace lue {
-namespace data_model {
-namespace test {
+    namespace data_model {
+        namespace test {
 
-class DatasetFixture
-{
+            class DatasetFixture
+            {
 
-public:
+                public:
 
-                   DatasetFixture      ();
+                    DatasetFixture();
 
-                   DatasetFixture      (DatasetFixture const&)=delete;
+                    DatasetFixture(DatasetFixture const&) = delete;
 
-                   DatasetFixture      (DatasetFixture&&)=delete;
+                    DatasetFixture(DatasetFixture&&) = delete;
 
-                   ~DatasetFixture     ();
+                    ~DatasetFixture();
 
-   DatasetFixture& operator=           (DatasetFixture const&)=delete;
+                    DatasetFixture& operator=(DatasetFixture const&) = delete;
 
-   DatasetFixture& operator=           (DatasetFixture&&)=delete;
+                    DatasetFixture& operator=(DatasetFixture&&) = delete;
 
-   std::string const& pathname         () const;
+                    std::string const& pathname() const;
 
-   Dataset&        dataset             ();
+                    Dataset& dataset();
 
-   void            keep_dataset_upon_destruction();
+                    void keep_dataset_upon_destruction();
 
-private:
+                private:
 
-    std::string const _pathname;
+                    std::string const _pathname;
 
-    bool           _remove_dataset_upon_destruction;
+                    bool _remove_dataset_upon_destruction;
 
-    std::unique_ptr<Dataset> _dataset;
+                    std::unique_ptr<Dataset> _dataset;
+            };
 
-};
-
-}  // namespace test
-}  // namespace data_model
+        }  // namespace test
+    }      // namespace data_model
 }  // namespace lue

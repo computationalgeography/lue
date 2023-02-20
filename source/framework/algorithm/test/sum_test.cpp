@@ -7,10 +7,7 @@
 
 namespace detail {
 
-    template<
-        typename Element,
-        typename ResultElement,
-        std::size_t rank>
+    template<typename Element, typename ResultElement, std::size_t rank>
     void test_array()
     {
         using Array = lue::PartitionedArray<Element, rank>;
@@ -28,24 +25,18 @@ namespace detail {
         using TypeWeWant = hpx::future<ResultElement>;
         static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
 
-        BOOST_CHECK_EQUAL(
-            sum.get(),
-            static_cast<Element>(lue::nr_elements(array_shape) * fill_value));
+        BOOST_CHECK_EQUAL(sum.get(), static_cast<Element>(lue::nr_elements(array_shape) * fill_value));
     }
 
 
-    template<
-        typename Element,
-        typename ResultElement>
+    template<typename Element, typename ResultElement>
     void test_array_1d()
     {
         test_array<Element, ResultElement, 1>();
     }
 
 
-    template<
-        typename Element,
-        typename ResultElement>
+    template<typename Element, typename ResultElement>
     void test_array_2d()
     {
         test_array<Element, ResultElement, 2>();
@@ -54,15 +45,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                                                 \
-    rank,                                                          \
-    Element,                                                       \
-    ResultElement)                                                 \
-                                                                   \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_##ResultElement)  \
-{                                                                  \
-    detail::test_array_##rank##d<Element, ResultElement>();        \
-}
+#define TEST_CASE(rank, Element, ResultElement)                                                              \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_##ResultElement)                                        \
+    {                                                                                                        \
+        detail::test_array_##rank##d<Element, ResultElement>();                                              \
+    }
 
 TEST_CASE(1, int32_t, int32_t)
 TEST_CASE(2, int32_t, int32_t)

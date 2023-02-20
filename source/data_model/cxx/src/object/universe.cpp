@@ -2,59 +2,52 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-Universe::Universe(
-    hdf5::Group const& parent,
-    std::string const& name):
+        Universe::Universe(hdf5::Group const& parent, std::string const& name):
 
-    hdf5::Group{parent, name},
-    _phenomena{*this}
+            hdf5::Group{parent, name},
+            _phenomena{*this}
 
-{
-}
+        {
+        }
 
 
-Universe::Universe(
-    hdf5::Group&& group):
+        Universe::Universe(hdf5::Group&& group):
 
-    hdf5::Group{std::move(group)},
-    _phenomena{*this}
+            hdf5::Group{std::move(group)},
+            _phenomena{*this}
 
-{
-}
-
-
-Phenomena const& Universe::phenomena() const
-{
-    return _phenomena;
-}
+        {
+        }
 
 
-Phenomena& Universe::phenomena()
-{
-    return _phenomena;
-}
+        Phenomena const& Universe::phenomena() const
+        {
+            return _phenomena;
+        }
 
 
-Phenomenon& Universe::add_phenomenon(
-    std::string const& name,
-    std::string const& description)
-{
-    return _phenomena.add(name, description);
-}
+        Phenomena& Universe::phenomena()
+        {
+            return _phenomena;
+        }
 
 
-Universe create_universe(
-    hdf5::Group& parent,
-    std::string const& name)
-{
-    hdf5::Group group{hdf5::create_group(parent, name)};
+        Phenomenon& Universe::add_phenomenon(std::string const& name, std::string const& description)
+        {
+            return _phenomena.add(name, description);
+        }
 
-    create_phenomena(group);
 
-    return Universe{std::move(group)};
-}
+        Universe create_universe(hdf5::Group& parent, std::string const& name)
+        {
+            hdf5::Group group{hdf5::create_group(parent, name)};
 
-} // namespace data_model
-} // namespace lue
+            create_phenomena(group);
+
+            return Universe{std::move(group)};
+        }
+
+    }  // namespace data_model
+}  // namespace lue

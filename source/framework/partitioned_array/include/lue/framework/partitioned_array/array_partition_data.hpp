@@ -1,11 +1,11 @@
 #pragma once
-#include "lue/framework/partitioned_array/serialize/shared_buffer.hpp"
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/core/erase.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/span.hpp"
 #include "lue/framework/core/type_traits.hpp"
+#include "lue/framework/partitioned_array/serialize/shared_buffer.hpp"
 #include "lue/configure.hpp"
 #include "lue/define.hpp"
 #include <initializer_list>
@@ -21,9 +21,7 @@ namespace lue {
         There is a specialization for array scalars (arrays with rank ==
         0). This allows scalars to be handled the same as arrays.
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     class ArrayPartitionData
     {
 
@@ -49,67 +47,58 @@ namespace lue {
 
             using ConstIterator = typename Elements::ConstIterator;
 
-                           ArrayPartitionData  ();
+            ArrayPartitionData();
 
-            explicit       ArrayPartitionData  (Shape const& shape);
+            explicit ArrayPartitionData(Shape const& shape);
 
-                           ArrayPartitionData  (Shape const& shape,
-                                                Element const& value);
+            ArrayPartitionData(Shape const& shape, Element const& value);
 
-            template<
-                typename InputIterator>
-                           ArrayPartitionData  (Shape const& shape,
-                                                InputIterator begin,
-                                                InputIterator end);
+            template<typename InputIterator>
+            ArrayPartitionData(Shape const& shape, InputIterator begin, InputIterator end);
 
-                           ArrayPartitionData  (Shape const& shape,
-                                                std::initializer_list<Element>
-                                                    elements);
+            ArrayPartitionData(Shape const& shape, std::initializer_list<Element> elements);
 
-                           ArrayPartitionData  (ArrayPartitionData const&)=default;
+            ArrayPartitionData(ArrayPartitionData const&) = default;
 
-                           ArrayPartitionData  (ArrayPartitionData&& other);
+            ArrayPartitionData(ArrayPartitionData&& other);
 
-                           ~ArrayPartitionData ()=default;
+            ~ArrayPartitionData() = default;
 
-            ArrayPartitionData& operator=      (ArrayPartitionData const&)=default;
+            ArrayPartitionData& operator=(ArrayPartitionData const&) = default;
 
-            ArrayPartitionData& operator=      (ArrayPartitionData&& other);
+            ArrayPartitionData& operator=(ArrayPartitionData&& other);
 
-            bool           operator==          (ArrayPartitionData const& other) const;
+            bool operator==(ArrayPartitionData const& other) const;
 
-            Shape const&   shape               () const;
+            Shape const& shape() const;
 
-            Count          nr_elements         () const;
+            Count nr_elements() const;
 
-            bool           empty               () const;
+            bool empty() const;
 
-            void           reshape             (Shape const& shape);
+            void reshape(Shape const& shape);
 
-            void           erase               (Rank const dimension_idx,
-                                                Index const hyperslab_begin_idx,
-                                                Index const hyperslab_end_idx);
+            void erase(
+                Rank const dimension_idx, Index const hyperslab_begin_idx, Index const hyperslab_end_idx);
 
-            ConstIterator  begin               () const;
+            ConstIterator begin() const;
 
-            Iterator       begin               ();
+            Iterator begin();
 
-            ConstIterator  end                 () const;
+            ConstIterator end() const;
 
-            Iterator       end                 ();
+            Iterator end();
 
-            Element&       operator[]          (Index idx);
+            Element& operator[](Index idx);
 
-            Element const& operator[]          (Index idx) const;
+            Element const& operator[](Index idx) const;
 
-            Span const&    span                () const;
+            Span const& span() const;
 
-            template<
-                typename... Idxs>
-            Element const& operator()(
-                Idxs... idxs) const
+            template<typename... Idxs>
+            Element const& operator()(Idxs... idxs) const
             {
-                if constexpr(BuildOptions::validate_idxs)
+                if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
                 }
@@ -117,12 +106,10 @@ namespace lue {
                 return _span(idxs...);
             }
 
-            template<
-                typename... Idxs>
-            Element& operator()(
-                Idxs... idxs)
+            template<typename... Idxs>
+            Element& operator()(Idxs... idxs)
             {
-                if constexpr(BuildOptions::validate_idxs)
+                if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
                 }
@@ -143,49 +130,45 @@ namespace lue {
             //     return _span.mapping()(idxs...);
             // }
 
-            ArrayPartitionData slice           (Slices const& slices) const;
+            ArrayPartitionData slice(Slices const& slices) const;
 
-            Element*       data()
+            Element* data()
             {
                 return _elements.data();
             }
 
         private:
 
-            Elements const& elements           () const;
+            Elements const& elements() const;
 
-            Elements&      elements            ();
+            Elements& elements();
 
-            void           assert_invariants   () const;
+            void assert_invariants() const;
 
             friend class hpx::serialization::access;
 
-            void serialize(
-                hpx::serialization::input_archive& archive,
-                unsigned int const /* version */)
+            void serialize(hpx::serialization::input_archive& archive, unsigned int const /* version */)
             {
-                archive & _shape & _elements;
+                archive& _shape& _elements;
                 _span = Span{_elements.data(), _shape};
 
                 assert_invariants();
             }
 
             void serialize(
-                hpx::serialization::output_archive& archive,
-                unsigned int const /* version */) const
+                hpx::serialization::output_archive& archive, unsigned int const /* version */) const
             {
                 assert_invariants();
 
-                archive & _shape & _elements;
+                archive& _shape& _elements;
             }
 
-            Shape          _shape;
+            Shape _shape;
 
-            Elements       _elements;
+            Elements _elements;
 
             // Span for converting nD indices to linear indices
-            Span           _span;
-
+            Span _span;
     };
 
 
@@ -194,9 +177,7 @@ namespace lue {
 
         The instance will be an empty partition.
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     ArrayPartitionData<Element, rank>::ArrayPartitionData():
 
         _shape{},
@@ -220,11 +201,8 @@ namespace lue {
 
         The elements will be default-initialized.
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartitionData<Element, rank>::ArrayPartitionData(
-        Shape const& shape):
+    template<typename Element, Rank rank>
+    ArrayPartitionData<Element, rank>::ArrayPartitionData(Shape const& shape):
 
         _shape{shape},
         _elements{lue::nr_elements(shape)},
@@ -240,12 +218,8 @@ namespace lue {
         @param      shape Shape of data array to create
         @param      value Value to fill array with
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartitionData<Element, rank>::ArrayPartitionData(
-        Shape const& shape,
-        Element const& value):
+    template<typename Element, Rank rank>
+    ArrayPartitionData<Element, rank>::ArrayPartitionData(Shape const& shape, Element const& value):
 
         ArrayPartitionData{shape}
 
@@ -263,15 +237,10 @@ namespace lue {
         @param      last Iterator to end of range of elements to move
         @warning    The range of elements passed in is *moved* into the instance
     */
-    template<
-        typename Element,
-        Rank rank>
-    template<
-        typename InputIterator>
+    template<typename Element, Rank rank>
+    template<typename InputIterator>
     ArrayPartitionData<Element, rank>::ArrayPartitionData(
-        Shape const& shape,
-        InputIterator begin,
-        InputIterator end):
+        Shape const& shape, InputIterator begin, InputIterator end):
 
         ArrayPartitionData{shape}
 
@@ -284,12 +253,9 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     ArrayPartitionData<Element, rank>::ArrayPartitionData(
-        Shape const& shape,
-        std::initializer_list<Element> elements):
+        Shape const& shape, std::initializer_list<Element> elements):
 
         ArrayPartitionData{shape}
 
@@ -304,11 +270,8 @@ namespace lue {
     /*!
         @brief      Move-construct and instance based on @a other
     */
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartitionData<Element, rank>::ArrayPartitionData(
-        ArrayPartitionData&& other):
+    template<typename Element, Rank rank>
+    ArrayPartitionData<Element, rank>::ArrayPartitionData(ArrayPartitionData&& other):
 
         _shape{std::move(other._shape)},
         _elements{std::move(other._elements)},
@@ -330,13 +293,11 @@ namespace lue {
     /*!
         @brief      Move assign @a other to this instance
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     ArrayPartitionData<Element, rank>& ArrayPartitionData<Element, rank>::operator=(
         ArrayPartitionData&& other)
     {
-        if(this != &other)
+        if (this != &other)
         {
             _shape = std::move(other._shape);
             other._shape.fill(0);
@@ -357,50 +318,36 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    bool ArrayPartitionData<Element, rank>::operator==(
-        ArrayPartitionData const& other) const
+    template<typename Element, Rank rank>
+    bool ArrayPartitionData<Element, rank>::operator==(ArrayPartitionData const& other) const
     {
         return _shape == other._shape && elements() == other.elements();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Shape const&
-        ArrayPartitionData<Element, rank>::shape() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Shape const& ArrayPartitionData<Element, rank>::shape() const
     {
         return _shape;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Count
-        ArrayPartitionData<Element, rank>::nr_elements() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Count ArrayPartitionData<Element, rank>::nr_elements() const
     {
         return lue::nr_elements(_shape);
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     bool ArrayPartitionData<Element, rank>::empty() const
     {
         return nr_elements() == 0;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void ArrayPartitionData<Element, rank>::reshape(
-        Shape const& shape)
+    template<typename Element, Rank rank>
+    void ArrayPartitionData<Element, rank>::reshape(Shape const& shape)
     {
         // Reshaping the elements while multiple ArrayPartitionData instances
         // refer to it is dangereous because of the _span member. The other
@@ -410,7 +357,7 @@ namespace lue {
         // using the data at the same time, while it is reshaped...
         lue_hpx_assert(_elements.use_count() == 1);
 
-        if(_shape != shape)
+        if (_shape != shape)
         {
             _elements.resize(lue::nr_elements(shape));
             _shape = shape;
@@ -429,13 +376,9 @@ namespace lue {
         @warning    The underlying memory buffer is not resized. Array
                     elements are moved within the buffer.
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void ArrayPartitionData<Element, rank>::erase(
-        Rank const dimension_idx,
-        Index const hyperslab_begin_idx,
-        Index const hyperslab_end_idx)
+        Rank const dimension_idx, Index const hyperslab_begin_idx, Index const hyperslab_end_idx)
     {
         _shape = lue::erase(_elements, _shape, dimension_idx, hyperslab_begin_idx, hyperslab_end_idx);
         _span = Span{_elements.data(), _shape};
@@ -444,71 +387,51 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Elements const&
-        ArrayPartitionData<Element, rank>::elements() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Elements const& ArrayPartitionData<Element, rank>::elements()
+        const
     {
         return _elements;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Elements&
-        ArrayPartitionData<Element, rank>::elements()
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Elements& ArrayPartitionData<Element, rank>::elements()
     {
         return _elements;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::ConstIterator
-        ArrayPartitionData<Element, rank>::begin() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::begin() const
     {
         return elements().begin();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Iterator
-        ArrayPartitionData<Element, rank>::begin()
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::begin()
     {
         return elements().begin();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::ConstIterator
-        ArrayPartitionData<Element, rank>::end() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::end() const
     {
         return elements().end();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Iterator
-        ArrayPartitionData<Element, rank>::end()
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::end()
     {
         return elements().end();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    Element& ArrayPartitionData<Element, rank>::operator[](
-        Index const idx)
+    template<typename Element, Rank rank>
+    Element& ArrayPartitionData<Element, rank>::operator[](Index const idx)
     {
         lue_hpx_assert(idx < _elements.size());
 
@@ -516,11 +439,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    Element const& ArrayPartitionData<Element, rank>::operator[](
-        Index const idx) const
+    template<typename Element, Rank rank>
+    Element const& ArrayPartitionData<Element, rank>::operator[](Index const idx) const
     {
         lue_hpx_assert(idx < _elements.size());
 
@@ -528,28 +448,23 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename ArrayPartitionData<Element, rank>::Span const&
-        ArrayPartitionData<Element, rank>::span() const
+    template<typename Element, Rank rank>
+    typename ArrayPartitionData<Element, rank>::Span const& ArrayPartitionData<Element, rank>::span() const
     {
         return _span;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(
-        Slices const& slices) const
+    template<typename Element, Rank rank>
+    ArrayPartitionData<Element, rank> ArrayPartitionData<Element, rank>::slice(Slices const& slices) const
     {
         static_assert(rank > 0 && rank < 3);
 
         // TODO Maybe also allow a slice into a shared buffer. This would prevent
         //      the copy of the sliced elements into the new instance.
 
-        if constexpr (rank == 1) {
+        if constexpr (rank == 1)
+        {
             auto const [nr_elements] = _shape;
             LUE_UNUSED(nr_elements);
 
@@ -562,7 +477,7 @@ namespace lue {
 
             ArrayPartitionData sliced_data{Shape{{nr_elements_slice}}};
 
-            if(!sliced_data.empty())
+            if (!sliced_data.empty())
             {
                 auto const source_begin = &(operator()(begin));
                 auto destination = &(sliced_data(0));
@@ -572,7 +487,8 @@ namespace lue {
 
             return sliced_data;
         }
-        else {
+        else
+        {
             [[maybe_unused]] auto const [nr_elements0, nr_elements1] = _shape;
 
             auto const& slice0 = slices[0];
@@ -592,11 +508,11 @@ namespace lue {
 
             ArrayPartitionData sliced_data{Shape{{nr_elements0_slice, nr_elements1_slice}}};
 
-            if(!sliced_data.empty())
+            if (!sliced_data.empty())
             {
                 using Idx = std::tuple_element<0, Slice>::type;
 
-                for(Idx r = 0; r < nr_elements0_slice; ++r)
+                for (Idx r = 0; r < nr_elements0_slice; ++r)
                 {
                     auto const source_begin = &(operator()(begin0 + r, begin1));
                     auto destination = &(sliced_data(r, 0));
@@ -610,9 +526,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void ArrayPartitionData<Element, rank>::assert_invariants() const
     {
         lue_hpx_assert(lue::nr_elements(_shape) == _elements.size());
@@ -621,8 +535,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     class ArrayPartitionData<Element, 0>
     {
 
@@ -644,46 +557,45 @@ namespace lue {
 
             using ConstIterator = typename Elements::const_iterator;
 
-                           ArrayPartitionData  ();
+            ArrayPartitionData();
 
-            explicit       ArrayPartitionData  (Element const& value);
+            explicit ArrayPartitionData(Element const& value);
 
-            explicit       ArrayPartitionData  (Shape const& shape);
+            explicit ArrayPartitionData(Shape const& shape);
 
-                           ArrayPartitionData  (Shape const& shape,
-                                                Element const& value);
+            ArrayPartitionData(Shape const& shape, Element const& value);
 
-                           ArrayPartitionData  (ArrayPartitionData const&)=default;
+            ArrayPartitionData(ArrayPartitionData const&) = default;
 
-                           ArrayPartitionData  (ArrayPartitionData&&)=default;
+            ArrayPartitionData(ArrayPartitionData&&) = default;
 
-                           ~ArrayPartitionData ()=default;
+            ~ArrayPartitionData() = default;
 
-            ArrayPartitionData& operator=      (ArrayPartitionData const&)=default;
+            ArrayPartitionData& operator=(ArrayPartitionData const&) = default;
 
-            ArrayPartitionData& operator=      (ArrayPartitionData&&)=default;
+            ArrayPartitionData& operator=(ArrayPartitionData&&) = default;
 
-            bool           operator==          (ArrayPartitionData const& other) const;
+            bool operator==(ArrayPartitionData const& other) const;
 
-            Shape const&   shape               () const;
+            Shape const& shape() const;
 
-            Count          nr_elements         () const;
+            Count nr_elements() const;
 
-            bool           empty               () const;
+            bool empty() const;
 
-            void           reshape             (Shape const& shape);
+            void reshape(Shape const& shape);
 
-            ConstIterator  begin               () const;
+            ConstIterator begin() const;
 
-            Iterator       begin               ();
+            Iterator begin();
 
-            ConstIterator  end                 () const;
+            ConstIterator end() const;
 
-            Iterator       end                 ();
+            Iterator end();
 
-            Element&       operator[]          (Index idx);
+            Element& operator[](Index idx);
 
-            Element const& operator[]          (Index idx) const;
+            Element const& operator[](Index idx) const;
 
         private:
 
@@ -698,15 +610,13 @@ namespace lue {
                 HPX_ASSERT(false);
             }
 
-            Shape          _shape;
+            Shape _shape;
 
-            Elements       _elements;
-
+            Elements _elements;
     };
 
 
-    template<
-        typename Element>
+    template<typename Element>
     ArrayPartitionData<Element, 0>::ArrayPartitionData():
 
         _shape{},
@@ -718,10 +628,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
-    ArrayPartitionData<Element, 0>::ArrayPartitionData(
-        Element const& value):
+    template<typename Element>
+    ArrayPartitionData<Element, 0>::ArrayPartitionData(Element const& value):
 
         ArrayPartitionData{}
 
@@ -730,10 +638,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
-    ArrayPartitionData<Element, 0>::ArrayPartitionData(
-        [[maybe_unused]] Shape const& shape):
+    template<typename Element>
+    ArrayPartitionData<Element, 0>::ArrayPartitionData([[maybe_unused]] Shape const& shape):
 
         ArrayPartitionData{}
 
@@ -742,11 +648,9 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     ArrayPartitionData<Element, 0>::ArrayPartitionData(
-        [[maybe_unused]] Shape const& shape,
-        Element const& value):
+        [[maybe_unused]] Shape const& shape, Element const& value):
 
         ArrayPartitionData{value}
 
@@ -755,10 +659,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
-    bool ArrayPartitionData<Element, 0>::operator==(
-        ArrayPartitionData const& other) const
+    template<typename Element>
+    bool ArrayPartitionData<Element, 0>::operator==(ArrayPartitionData const& other) const
     {
         lue_hpx_assert(_shape == other._shape);
 
@@ -766,26 +668,22 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::Shape const& ArrayPartitionData<Element, 0>::shape() const
     {
         return _shape;
     }
 
 
-    template<
-        typename Element>
-    void ArrayPartitionData<Element, 0>::reshape(
-        Shape const& /* shape */)
+    template<typename Element>
+    void ArrayPartitionData<Element, 0>::reshape(Shape const& /* shape */)
     {
         // Cannot resize a scalar array
         HPX_ASSERT(false);
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::Count ArrayPartitionData<Element, 0>::nr_elements() const
     {
         lue_hpx_assert(lue::nr_elements(_shape) == 0);
@@ -795,50 +693,43 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     bool ArrayPartitionData<Element, 0>::empty() const
     {
         return false;
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::begin() const
     {
         return _elements.begin();
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::begin()
     {
         return _elements.begin();
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::end() const
     {
         return _elements.end();
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::end()
     {
         return _elements.end();
     }
 
 
-    template<
-        typename Element>
-    Element& ArrayPartitionData<Element, 0>::operator[](
-        [[maybe_unused]] Index const idx)
+    template<typename Element>
+    Element& ArrayPartitionData<Element, 0>::operator[]([[maybe_unused]] Index const idx)
     {
         lue_hpx_assert(idx == 0);
 
@@ -846,10 +737,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
-    Element const& ArrayPartitionData<Element, 0>::operator[](
-        [[maybe_unused]] Index const idx) const
+    template<typename Element>
+    Element const& ArrayPartitionData<Element, 0>::operator[]([[maybe_unused]] Index const idx) const
     {
         lue_hpx_assert(idx == 0);
 
@@ -859,9 +748,7 @@ namespace lue {
 
     namespace detail {
 
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<ArrayPartitionData<E, r>>
         {
 
@@ -876,37 +763,27 @@ namespace lue {
                 using Slice = typename ArrayPartitionData<E, r>::Slice;
 
                 using Slices = typename ArrayPartitionData<E, r>::Slices;
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Element,
-        Rank rank>
-    inline auto const& shape(
-        ArrayPartitionData<Element, rank> const& data)
+    template<typename Element, Rank rank>
+    inline auto const& shape(ArrayPartitionData<Element, rank> const& data)
     {
         return data.shape();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    inline auto nr_elements(
-        ArrayPartitionData<Element, rank> const& data)
+    template<typename Element, Rank rank>
+    inline auto nr_elements(ArrayPartitionData<Element, rank> const& data)
     {
         return lue::nr_elements(shape(data));
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ArrayPartitionData<Element, rank> deep_copy(
-        ArrayPartitionData<Element, rank> const& data)
+    template<typename Element, Rank rank>
+    ArrayPartitionData<Element, rank> deep_copy(ArrayPartitionData<Element, rank> const& data)
     {
         ArrayPartitionData<Element, rank> copy{data.shape()};
 

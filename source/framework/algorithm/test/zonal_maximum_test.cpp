@@ -29,16 +29,18 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     auto zonal_maximum = lue::value_policies::zonal_maximum<Value>(value_array, class_array);
 
     ValueArray array_we_want = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {
-            { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 2, 2, 2, 2, 2, 2, 2, 2, 2 },
-            { 3, 3, 3, 3, 3, 3, 3, 3, 3 },
-            { 4, 4, 4, 4, 4, 4, 4, 4, 4 },
-            { 5, 5, 5, 5, 5, 5, 5, 5, 5 },
-            { 6, 6, 6, 6, 6, 6, 6, 6, 6 },
-            { 7, 7, 7, 7, 7, 7, 7, 7, 7 },
-            { 8, 8, 8, 8, 8, 8, 8, 8, 8 },
+        array_shape,
+        partition_shape,
+        {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {2, 2, 2, 2, 2, 2, 2, 2, 2},
+            {3, 3, 3, 3, 3, 3, 3, 3, 3},
+            {4, 4, 4, 4, 4, 4, 4, 4, 4},
+            {5, 5, 5, 5, 5, 5, 5, 5, 5},
+            {6, 6, 6, 6, 6, 6, 6, 6, 6},
+            {7, 7, 7, 7, 7, 7, 7, 7, 7},
+            {8, 8, 8, 8, 8, 8, 8, 8, 8},
         });
 
     lue::test::check_arrays_are_equal(zonal_maximum, array_we_want);
@@ -74,16 +76,18 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     // vx vx vx | 76 77 78 | 79 80 81
 
     ValueArray value_array = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {
-            {  1,  2,  3, 10, 11, 12, 19, 20, 21 },
-            {  4,  5,  6, 13, 14, 15, 22, 23, 24 },
-            {  7,  8,  9, 16, 17, 18, 25, 26, 27 },
-            { 28, 29, 30, 37, 38, 39, 46, 47, 48 },
-            { 31, 32, 33, 40, 41, 42, 49, 50, vx },
-            { 34, 35, 36, 43, 44, 45, 52, 53, 54 },
-            { vx, vx, vx, vx, vx, vx, vx, vx, vx },
-            { 58, 59, 60, 67, 68, 69, 76, 77, 78 },
-            { 61, 62, 63, 70, 71, 72, 79, 80, 81 },
+        array_shape,
+        partition_shape,
+        {
+            {1, 2, 3, 10, 11, 12, 19, 20, 21},
+            {4, 5, 6, 13, 14, 15, 22, 23, 24},
+            {7, 8, 9, 16, 17, 18, 25, 26, 27},
+            {28, 29, 30, 37, 38, 39, 46, 47, 48},
+            {31, 32, 33, 40, 41, 42, 49, 50, vx},
+            {34, 35, 36, 43, 44, 45, 52, 53, 54},
+            {vx, vx, vx, vx, vx, vx, vx, vx, vx},
+            {58, 59, 60, 67, 68, 69, 76, 77, 78},
+            {61, 62, 63, 70, 71, 72, 79, 80, 81},
         });
 
     ClassArray class_array = lue::array_partition_id(value_array);
@@ -91,16 +95,18 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     auto zonal_maximum = lue::value_policies::zonal_maximum(value_array, class_array);
 
     ValueArray array_we_want = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {
-            { 21, 21, 21, 21, 21, 21, 21, 21, 21 },
-            { 24, 24, 24, 24, 24, 24, 24, 24, 24 },
-            { 27, 27, 27, 27, 27, 27, 27, 27, 27 },
-            { 48, 48, 48, 48, 48, 48, 48, 48, 48 },
-            { 50, 50, 50, 50, 50, 50, 50, 50, 50 },
-            { 54, 54, 54, 54, 54, 54, 54, 54, 54 },
-            { vx, vx, vx, vx, vx, vx, vx, vx, vx },
-            { 78, 78, 78, 78, 78, 78, 78, 78, 78 },
-            { 81, 81, 81, 81, 81, 81, 81, 81, 81 },
+        array_shape,
+        partition_shape,
+        {
+            {21, 21, 21, 21, 21, 21, 21, 21, 21},
+            {24, 24, 24, 24, 24, 24, 24, 24, 24},
+            {27, 27, 27, 27, 27, 27, 27, 27, 27},
+            {48, 48, 48, 48, 48, 48, 48, 48, 48},
+            {50, 50, 50, 50, 50, 50, 50, 50, 50},
+            {54, 54, 54, 54, 54, 54, 54, 54, 54},
+            {vx, vx, vx, vx, vx, vx, vx, vx, vx},
+            {78, 78, 78, 78, 78, 78, 78, 78, 78},
+            {81, 81, 81, 81, 81, 81, 81, 81, 81},
         });
 
     lue::test::check_arrays_are_equal(zonal_maximum, array_we_want);

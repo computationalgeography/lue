@@ -6,9 +6,7 @@
 namespace lue {
     namespace policy::logical_inclusive_or {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -20,7 +18,9 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            logical_inclusive_or, detail::LogicalInclusiveOr, policy::logical_inclusive_or::DefaultValuePolicies)
+            logical_inclusive_or,
+            detail::LogicalInclusiveOr,
+            policy::logical_inclusive_or::DefaultValuePolicies)
         LUE_BINARY_LOGICAL_OPERATOR(||, logical_inclusive_or)
 
     }  // namespace value_policies

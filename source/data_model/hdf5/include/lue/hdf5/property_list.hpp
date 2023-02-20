@@ -3,38 +3,38 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      This class represents an HDF5 property list.
-    @sa         [Property list interface](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#FileAccessPropFuncs)
-*/
-class PropertyList
-{
+        /*!
+            @brief      This class represents an HDF5 property list.
+            @sa         [Property list
+           interface](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#FileAccessPropFuncs)
+        */
+        class PropertyList
+        {
 
-public:
+            public:
 
-                   PropertyList        (PropertyList const&)=default;
+                PropertyList(PropertyList const&) = default;
 
-                   PropertyList        (PropertyList&&)=default;
+                PropertyList(PropertyList&&) = default;
 
-    virtual        ~PropertyList       ()=default;
+                virtual ~PropertyList() = default;
 
-    PropertyList&  operator=           (PropertyList const&)=default;
+                PropertyList& operator=(PropertyList const&) = default;
 
-    PropertyList&  operator=           (PropertyList&&)=default;
+                PropertyList& operator=(PropertyList&&) = default;
 
-    Identifier const& id               () const;
+                Identifier const& id() const;
 
-protected:
+            protected:
 
-    explicit       PropertyList        (::hid_t class_id);
+                explicit PropertyList(::hid_t class_id);
 
-private:
+            private:
 
-    Identifier     _id;
+                Identifier _id;
+        };
 
-};
-
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

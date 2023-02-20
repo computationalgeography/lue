@@ -9,9 +9,7 @@
 
 namespace detail {
 
-    template<
-        typename IDElement,
-        std::size_t rank>
+    template<typename IDElement, std::size_t rank>
     void test_array()
     {
         using Array = lue::PartitionedArray<IDElement, rank>;
@@ -37,9 +35,7 @@ namespace detail {
             Array array{lue::create_partitioned_array<IDElement>(array_shape, partition_shape, fill_value)};
 
             auto const unique_id =
-                lue::value_policies::unique_id<IDElement>(
-                    lue::value_policies::valid<BooleanElement>(
-                        array));
+                lue::value_policies::unique_id<IDElement>(lue::value_policies::valid<BooleanElement>(array));
             auto const unique = lue::value_policies::unique(unique_id).get();
 
             BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
@@ -49,14 +45,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                                 \
-    rank,                                          \
-    IDElement)                                     \
-                                                   \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement)  \
-{                                                  \
-    detail::test_array<IDElement, rank>();         \
-}
+#define TEST_CASE(rank, IDElement)                                                                           \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement)                                                        \
+    {                                                                                                        \
+        detail::test_array<IDElement, rank>();                                                               \
+    }
 
 // TEST_CASE(1, int32_t)
 TEST_CASE(2, int32_t)

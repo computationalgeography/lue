@@ -5,31 +5,26 @@
 
 namespace lue::framework {
 
-    template<
-        typename Weight,
-        Rank rank,
-        typename Element>
-    Kernel<Weight, rank> array_to_kernel(
-        pybind11::array_t<Element> const& array)
+    template<typename Weight, Rank rank, typename Element>
+    Kernel<Weight, rank> array_to_kernel(pybind11::array_t<Element> const& array)
     {
         using Kernel = lue::Kernel<Weight, rank>;
         using Shape = typename Kernel::Shape;
 
         // Verify rank of shape of array corresponds with the one requested
-        if(array.ndim() != rank)
+        if (array.ndim() != rank)
         {
             throw std::runtime_error(fmt::format(
-                "Rank of array shape must be equal to rank of array ({} != {})",
-                array.ndim(), 2));
+                "Rank of array shape must be equal to rank of array ({} != {})", array.ndim(), 2));
         }
 
         Shape shape{};
         std::copy_n(array.shape(), rank, shape.begin());
 
-        if(!is_hypercube(shape))
+        if (!is_hypercube(shape))
         {
-            throw std::runtime_error(fmt::format(
-                "Shape of array to use as kernel must be a hypercube (a square in 2D)"));
+            throw std::runtime_error(
+                fmt::format("Shape of array to use as kernel must be a hypercube (a square in 2D)"));
         }
 
 

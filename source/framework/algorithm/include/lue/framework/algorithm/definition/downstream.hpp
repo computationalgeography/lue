@@ -1,17 +1,15 @@
 #pragma once
+#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/downstream.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         class Downstream
         {
 
@@ -50,7 +48,7 @@ namespace lue {
                     // If input flow direction or material contain a
                     // no-data in the focal cell, then the result will be
                     // marked as no-data
-                    if(indp1.is_no_data(flow_direction_window(1, 1)) ||
+                    if (indp1.is_no_data(flow_direction_window(1, 1)) ||
                         indp2.is_no_data(material_window(1, 1)))
                     {
                         ondp.mark_no_data(material);
@@ -59,9 +57,9 @@ namespace lue {
                     {
                         // If a downstream material contains no-data,
                         // then the result will be marked as no-data
-                        if(flow_direction_window(1, 1) == north_west<FlowDirectionElement>)
+                        if (flow_direction_window(1, 1) == north_west<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(0, 0)))
+                            if (indp2.is_no_data(material_window(0, 0)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -70,9 +68,9 @@ namespace lue {
                                 material = material_window(0, 0);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == north<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == north<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(0, 1)))
+                            if (indp2.is_no_data(material_window(0, 1)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -81,9 +79,9 @@ namespace lue {
                                 material = material_window(0, 1);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == north_east<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == north_east<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(0, 2)))
+                            if (indp2.is_no_data(material_window(0, 2)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -92,9 +90,9 @@ namespace lue {
                                 material = material_window(0, 2);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == west<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == west<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(1, 0)))
+                            if (indp2.is_no_data(material_window(1, 0)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -103,9 +101,9 @@ namespace lue {
                                 material = material_window(1, 0);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == east<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == east<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(1, 2)))
+                            if (indp2.is_no_data(material_window(1, 2)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -114,9 +112,9 @@ namespace lue {
                                 material = material_window(1, 2);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == south_west<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == south_west<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(2, 0)))
+                            if (indp2.is_no_data(material_window(2, 0)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -125,9 +123,9 @@ namespace lue {
                                 material = material_window(2, 0);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == south<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == south<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(2, 1)))
+                            if (indp2.is_no_data(material_window(2, 1)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -136,9 +134,9 @@ namespace lue {
                                 material = material_window(2, 1);
                             }
                         }
-                        else if(flow_direction_window(1, 1) == south_east<FlowDirectionElement>)
+                        else if (flow_direction_window(1, 1) == south_east<FlowDirectionElement>)
                         {
-                            if(indp2.is_no_data(material_window(2, 2)))
+                            if (indp2.is_no_data(material_window(2, 2)))
                             {
                                 ondp.mark_no_data(material);
                             }
@@ -156,17 +154,12 @@ namespace lue {
 
                     return material;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
     PartitionedArray<MaterialElement, rank> downstream(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
@@ -183,12 +176,10 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_DOWNSTREAM(                                                   \
-    Policies, FlowDirectionElement, MaterialElement)                                  \
-                                                                                      \
-    template LUE_ROUTING_OPERATION_EXPORT                                             \
-    PartitionedArray<MaterialElement, 2> downstream<                                  \
-            ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                          \
-        PartitionedArray<FlowDirectionElement, 2> const&,                             \
+#define LUE_INSTANTIATE_DOWNSTREAM(Policies, FlowDirectionElement, MaterialElement)                          \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<MaterialElement, 2>                               \
+    downstream<ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(                      \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<FlowDirectionElement, 2> const&,                                                    \
         PartitionedArray<MaterialElement, 2> const&);

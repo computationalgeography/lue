@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> atan(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> atan(PartitionedArray<Element, rank> const& array)
         {
             return value_policies::atan(array);
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_atan(
-        pybind11::module& module)
+    void bind_atan(pybind11::module& module)
     {
         module.def("atan", atan<float, 2>);
         module.def("atan", atan<double, 2>);

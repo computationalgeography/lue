@@ -1,51 +1,49 @@
 #pragma once
-#include <hdf5.h>
 #include <array>
+#include <hdf5.h>
 
 
 namespace lue {
-namespace hl {
+    namespace hl {
 
-class RasterDiscretization
-{
+        class RasterDiscretization
+        {
 
-public:
+            public:
 
-    // [nr_rows, nr_cols]
-    using Shape = std::array<hsize_t, 2>;
+                // [nr_rows, nr_cols]
+                using Shape = std::array<hsize_t, 2>;
 
-                   RasterDiscretization()=default;
+                RasterDiscretization() = default;
 
-                   RasterDiscretization(hsize_t nr_rows,
-                                        hsize_t nr_cols);
+                RasterDiscretization(hsize_t nr_rows, hsize_t nr_cols);
 
-    explicit       RasterDiscretization(Shape&& shape);
+                explicit RasterDiscretization(Shape&& shape);
 
-                   RasterDiscretization(RasterDiscretization const&)=default;
+                RasterDiscretization(RasterDiscretization const&) = default;
 
-                   RasterDiscretization(RasterDiscretization&&)=default;
+                RasterDiscretization(RasterDiscretization&&) = default;
 
-                   ~RasterDiscretization()=default;
+                ~RasterDiscretization() = default;
 
-    RasterDiscretization& operator=    (RasterDiscretization const&)=default;
+                RasterDiscretization& operator=(RasterDiscretization const&) = default;
 
-    RasterDiscretization& operator=    (RasterDiscretization&&)=default;
+                RasterDiscretization& operator=(RasterDiscretization&&) = default;
 
-    bool           operator==          (RasterDiscretization const& other) const;
+                bool operator==(RasterDiscretization const& other) const;
 
-    bool           operator<           (RasterDiscretization const& other) const;
+                bool operator<(RasterDiscretization const& other) const;
 
-    Shape const&   shape               () const;
+                Shape const& shape() const;
 
-    hsize_t        nr_rows             () const;
+                hsize_t nr_rows() const;
 
-    hsize_t        nr_cols             () const;
+                hsize_t nr_cols() const;
 
-private:
+            private:
 
-    Shape          _shape;
+                Shape _shape;
+        };
 
-};
-
-}  // namespace hl
+    }  // namespace hl
 }  // namespace lue

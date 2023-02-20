@@ -5,21 +5,18 @@
 namespace lue {
     namespace policy::divide {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             DomainPolicy<InputElement>,
             OutputElements<OutputElement>,
             InputElements<InputElement, InputElement>>;
 
-    }  // namespace divide::policy
+    }  // namespace policy::divide
 
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            divide, detail::Divide, policy::divide::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(divide, detail::Divide, policy::divide::DefaultPolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(/, divide)
 
     }  // namespace default_policies

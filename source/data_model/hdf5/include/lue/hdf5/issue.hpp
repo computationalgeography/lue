@@ -5,43 +5,40 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      Information about issue found during validation
-*/
-class Issue
-{
+        /*!
+            @brief      Information about issue found during validation
+        */
+        class Issue
+        {
 
-public:
+            public:
 
-                   Issue               (Identifier const& id,
-                                        std::string const& message);
+                Issue(Identifier const& id, std::string const& message);
 
-                   Issue               (Issue const&)=default;
+                Issue(Issue const&) = default;
 
-                   Issue               (Issue&&)=default;
+                Issue(Issue&&) = default;
 
-                   ~Issue              ()=default;
+                ~Issue() = default;
 
-    Issue&         operator=           (Issue const&)=default;
+                Issue& operator=(Issue const&) = default;
 
-    Issue&         operator=           (Issue&&)=default;
+                Issue& operator=(Issue&&) = default;
 
-    Identifier const& id               () const;
+                Identifier const& id() const;
 
-    std::string const&
-                   message             () const;
+                std::string const& message() const;
 
-private:
+            private:
 
-    //! Id of HDF5 object related to the issue
-    Identifier     _id;
+                //! Id of HDF5 object related to the issue
+                Identifier _id;
 
-    //! Message describing the issue
-    std::string    _message;
+                //! Message describing the issue
+                std::string _message;
+        };
 
-};
-
-}  // namespace hdf5
+    }  // namespace hdf5
 }  // namespace lue

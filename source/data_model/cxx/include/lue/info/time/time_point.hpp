@@ -3,51 +3,48 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    - Zero or more time points per item
-    - Each time point has a unique location in time
-*/
-class TimePoint:
-    public LocationInTime
-{
+        /*!
+            - Zero or more time points per item
+            - Each time point has a unique location in time
+        */
+        class TimePoint: public LocationInTime
+        {
 
-public:
+            public:
 
-    explicit       TimePoint           (hdf5::Group const& parent);
+                explicit TimePoint(hdf5::Group const& parent);
 
-    explicit       TimePoint           (LocationInTime&& value);
+                explicit TimePoint(LocationInTime&& value);
 
-                   TimePoint           (TimePoint const&)=default;
+                TimePoint(TimePoint const&) = default;
 
-                   TimePoint           (TimePoint&&)=default;
+                TimePoint(TimePoint&&) = default;
 
-                   ~TimePoint          () override =default;
+                ~TimePoint() override = default;
 
-    TimePoint&     operator=           (TimePoint const&)=default;
+                TimePoint& operator=(TimePoint const&) = default;
 
-    TimePoint&     operator=           (TimePoint&&)=default;
+                TimePoint& operator=(TimePoint&&) = default;
 
-    Count          nr_points           () const;
+                Count nr_points() const;
 
-private:
-
-};
+            private:
+        };
 
 
-TimePoint          create_time_point   (hdf5::Group& parent);
+        TimePoint create_time_point(hdf5::Group& parent);
 
 
-template<>
-class ValueTraits<TimePoint>
-{
+        template<>
+        class ValueTraits<TimePoint>
+        {
 
-public:
+            public:
 
-    using Element = typename ValueTraits<LocationInTime>::Element;
+                using Element = typename ValueTraits<LocationInTime>::Element;
+        };
 
-};
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

@@ -3,17 +3,11 @@
 #include "lue/framework/algorithm/value_policies/acos.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                     \
-                                                           \
-    LUE_INSTANTIATE_ACOS(                                  \
-        ESC(policy::acos::DefaultPolicies<Element>),       \
-        Element,                                           \
-        rank);                                             \
-                                                           \
-    LUE_INSTANTIATE_ACOS(                                  \
-        ESC(policy::acos::DefaultValuePolicies<Element>),  \
-        Element,                                           \
-        rank);
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_ACOS(ESC(policy::acos::DefaultPolicies<Element>), Element, rank);                        \
+                                                                                                             \
+    LUE_INSTANTIATE_ACOS(ESC(policy::acos::DefaultValuePolicies<Element>), Element, rank);
 
 
 namespace lue {

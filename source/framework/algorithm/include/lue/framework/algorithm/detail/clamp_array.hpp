@@ -1,93 +1,80 @@
 #pragma once
-#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array_partition_visitor.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include <boost/predef.h>
 
 
 namespace lue::detail {
 
-    template<
-        typename Partitions>
-    class ShrinkVisitor:
-        public PartitionVisitor<Partitions>
+    template<typename Partitions>
+    class ShrinkVisitor: public PartitionVisitor<Partitions>
     {
 
-    private:
+        private:
 
-        using Base = PartitionVisitor<Partitions>;
+            using Base = PartitionVisitor<Partitions>;
 
-    public:
+        public:
 
-        ShrinkVisitor(
-            Partitions& partitions,
-            ShapeT<Partitions> const& new_shape):
+            ShrinkVisitor(Partitions& partitions, ShapeT<Partitions> const& new_shape):
 
-            Base{partitions},
-            _new_shape{new_shape}
+                Base{partitions},
+                _new_shape{new_shape}
 
-        {
-        }
+            {
+            }
 
-        void operator()()
-        {
-            using Partition = PartitionT<Partitions>;
-            using Shape = ShapeT<Partitions>;
+            void operator()()
+            {
+                using Partition = PartitionT<Partitions>;
+                using Shape = ShapeT<Partitions>;
 
-            Partition& partition = this->partition();
+                Partition& partition = this->partition();
 
-            // Only once the partition is ready we can manipulate it
+                // Only once the partition is ready we can manipulate it
 #if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 #endif
-            partition = partition.then(
-                    [new_shape=this->_new_shape](
-                        Partition&& partition)
+                partition = partition.then(
+                    [new_shape = this->_new_shape](Partition&& partition)
                     {
                         // Once the current shape is obtained we can
                         // reshape the partition
-                        return partition.shape().then(
-                            hpx::unwrapping(
-                                [new_shape, partition](
-                                    Shape current_shape) mutable
+                        return partition.shape().then(hpx::unwrapping(
+                            [new_shape, partition](Shape current_shape) mutable
+                            {
+                                AnnotateFunction annotation{"shrink_partition"};
+
+                                Count const rank = static_cast<Count>(lue::rank<Partitions>);
+
+                                // Update current shape given requested shape
+                                for (Index i = 0; i < rank; ++i)
                                 {
-                                    AnnotateFunction annotation{"shrink_partition"};
-
-                                    Count const rank =
-                                        static_cast<Count>(lue::rank<Partitions>);
-
-                                    // Update current shape given requested shape
-                                    for(Index i = 0; i < rank; ++i) {
-                                        current_shape[i] =
-                                            std::min(current_shape[i], new_shape[i]);
-                                    }
-
-                                    // FIXME Blocks current thread... Is this a problem?
-                                    //     Guess not, we are doing useful stuff.
-                                    partition.reshape(current_shape).wait();
-
-                                    return partition;
+                                    current_shape[i] = std::min(current_shape[i], new_shape[i]);
                                 }
-                            ));
-                    }
-                );
+
+                                // FIXME Blocks current thread... Is this a problem?
+                                //     Guess not, we are doing useful stuff.
+                                partition.reshape(current_shape).wait();
+
+                                return partition;
+                            }));
+                    });
 #if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
 #endif
-        }
+            }
 
-    private:
+        private:
 
-        //! New shape to use for partitions visited
-        ShapeT<Partitions> const _new_shape;
-
+            //! New shape to use for partitions visited
+            ShapeT<Partitions> const _new_shape;
     };
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void shrink_partitions(
         PartitionsT<PartitionedArray<Element, rank>>& partitions,
         ShapeT<PartitionedArray<Element, rank>> const& begin_indices,
@@ -109,9 +96,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void clamp_array_shrink(
         PartitionsT<PartitionedArray<Element, rank>>& partitions,
         ShapeT<PartitionedArray<Element, rank>> const& array_shape,
@@ -136,15 +121,14 @@ namespace lue::detail {
         Shape const end_indices{shape_in_partitions};
 
         // Iterate over all dimensions
-        for(Rank d = 0; d < rank; ++d)
+        for (Rank d = 0; d < rank; ++d)
         {
             // Extent of current dimension in partitioned array
             auto const array_extent = array_shape[d];
 
             // Maximum extent of current dimension in partitioned array, given
             // the number of partitions and the max extent
-            auto const max_partitions_extent =
-                shape_in_partitions[d] * max_partition_shape[d];
+            auto const max_partitions_extent = shape_in_partitions[d] * max_partition_shape[d];
 
             // Excess cells along current dimension in partitioned
             // array. These cells need to be removed.
@@ -155,7 +139,7 @@ namespace lue::detail {
             // the array's extent.
             lue_hpx_assert(excess_cells < max_partition_shape[d]);
 
-            if(excess_cells > 0)
+            if (excess_cells > 0)
             {
                 // Resize current dimension of all partitions at currently
                 // considered side of array
@@ -178,93 +162,78 @@ namespace lue::detail {
                 partition_shape[d] -= excess_cells;
 
                 shrink_partitions<Element, rank>(
-                    partitions,
-                    begin_indices_hyperslab, end_indices_hyperslab,
-                    partition_shape);
+                    partitions, begin_indices_hyperslab, end_indices_hyperslab, partition_shape);
             }
         }
     }
 
 
-    template<
-        typename Partitions>
-    class ResizeVisitor:
-        public PartitionVisitor<Partitions>
+    template<typename Partitions>
+    class ResizeVisitor: public PartitionVisitor<Partitions>
     {
 
-    private:
+        private:
 
-        using Base = PartitionVisitor<Partitions>;
+            using Base = PartitionVisitor<Partitions>;
 
-    public:
+        public:
 
-        ResizeVisitor(
-            Partitions& partitions,
-            Index const dimension_idx,
-            Count const new_size):
+            ResizeVisitor(Partitions& partitions, Index const dimension_idx, Count const new_size):
 
-            Base{partitions},
-            _dimension_idx{dimension_idx},
-            _new_size{new_size}
+                Base{partitions},
+                _dimension_idx{dimension_idx},
+                _new_size{new_size}
 
-        {
-            lue_hpx_assert(_dimension_idx >= 0);
-            lue_hpx_assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
-        }
+            {
+                lue_hpx_assert(_dimension_idx >= 0);
+                lue_hpx_assert(_dimension_idx < static_cast<Index>(rank<Partitions>));
+            }
 
-        void operator()()
-        {
-            using Partition = PartitionT<Partitions>;
-            using Shape = ShapeT<Partitions>;
+            void operator()()
+            {
+                using Partition = PartitionT<Partitions>;
+                using Shape = ShapeT<Partitions>;
 
-            Partition& partition = this->partition();
+                Partition& partition = this->partition();
 
-            // Only once the partition is ready we can manipulate it
+                // Only once the partition is ready we can manipulate it
 #if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 #endif
-            partition = partition.then(
-                    [dimension_idx=this->_dimension_idx, new_size=this->_new_size](
-                        Partition&& partition)
+                partition = partition.then(
+                    [dimension_idx = this->_dimension_idx, new_size = this->_new_size](Partition&& partition)
                     {
                         // Once the current shape is obtained we can
                         // reshape the partition
-                        return partition.shape().then(
-                            hpx::unwrapping(
-                                [dimension_idx, new_size, partition](
-                                    Shape current_shape) mutable
-                                {
-                                    AnnotateFunction annotation{"resize_partition"};
+                        return partition.shape().then(hpx::unwrapping(
+                            [dimension_idx, new_size, partition](Shape current_shape) mutable
+                            {
+                                AnnotateFunction annotation{"resize_partition"};
 
-                                    current_shape[dimension_idx] = new_size;
+                                current_shape[dimension_idx] = new_size;
 
-                                    // FIXME Blocks current thread... Is this a problem?
-                                    //     Guess not, we are doing useful stuff.
-                                    partition.reshape(current_shape).wait();
+                                // FIXME Blocks current thread... Is this a problem?
+                                //     Guess not, we are doing useful stuff.
+                                partition.reshape(current_shape).wait();
 
-                                    return partition;
-                                }
-                            ));
-                    }
-                );
+                                return partition;
+                            }));
+                    });
 #if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
 #endif
-        }
+            }
 
-    private:
+        private:
 
-        Index          _dimension_idx;
+            Index _dimension_idx;
 
-        Count          _new_size;
-
+            Count _new_size;
     };
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void resize_partitions(
         PartitionsT<PartitionedArray<Element, rank>>& partitions,
         ShapeT<PartitionedArray<Element, rank>> const& begin_indices,
@@ -282,9 +251,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void clamp_array_merge(
         Localities<rank>& localities,
         PartitionsT<PartitionedArray<Element, rank>>& partitions,
@@ -305,15 +272,14 @@ namespace lue::detail {
         Shape end_indices{shape_in_partitions};
 
         // Iterate over all dimensions
-        for(Rank d = 0; d < rank; ++d)
+        for (Rank d = 0; d < rank; ++d)
         {
             // Extent of current dimension in partitioned array
             auto const array_extent = array_shape[d];
 
             // Maximum extent of current dimension in partitioned array, given
             // the number of partitions and the max extent
-            auto const max_partitions_extent =
-                shape_in_partitions[d] * max_partition_shape[d];
+            auto const max_partitions_extent = shape_in_partitions[d] * max_partition_shape[d];
 
             // Excess cells along current dimension in partitioned
             // array. These cells need to be removed.
@@ -324,9 +290,9 @@ namespace lue::detail {
             // the array's extent.
             lue_hpx_assert(excess_cells < max_partition_shape[d]);
 
-            if(excess_cells > 0)
+            if (excess_cells > 0)
             {
-                if(shape_in_partitions[d] == 1)
+                if (shape_in_partitions[d] == 1)
                 {
                     // Only one partition along the current dimension:
                     // shrink it
@@ -352,9 +318,7 @@ namespace lue::detail {
                     partition_shape[d] -= excess_cells;
 
                     shrink_partitions<Element, rank>(
-                        partitions,
-                        begin_indices_hyperslab, end_indices_hyperslab,
-                        partition_shape);
+                        partitions, begin_indices_hyperslab, end_indices_hyperslab, partition_shape);
                 }
                 else
                 {
@@ -386,9 +350,7 @@ namespace lue::detail {
                     partition_shape[d] += max_partition_shape[d] - excess_cells;
 
                     resize_partitions<Element, rank>(
-                        partitions,
-                        begin_indices_hyperslab, end_indices_hyperslab,
-                        d, partition_shape[d]);
+                        partitions, begin_indices_hyperslab, end_indices_hyperslab, d, partition_shape[d]);
 
                     localities.erase(d, shape_in_partitions[d] - 1, shape_in_partitions[d]);
                     partitions.erase(d, shape_in_partitions[d] - 1, shape_in_partitions[d]);

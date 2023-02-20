@@ -3,25 +3,24 @@
 
 namespace lue {
 
-class HPXFixture
-{
+    class HPXFixture
+    {
 
-public:
+        public:
 
-                   HPXFixture          ()=default;
+            HPXFixture() = default;
 
-                   HPXFixture          (HPXFixture const&)=delete;
+            HPXFixture(HPXFixture const&) = delete;
 
-                   HPXFixture          (HPXFixture&&)=delete;
+            HPXFixture(HPXFixture&&) = delete;
 
-   virtual         ~HPXFixture         ()=default;
+            virtual ~HPXFixture() = default;
 
-   HPXFixture&     operator=           (HPXFixture const&)=delete;
+            HPXFixture& operator=(HPXFixture const&) = delete;
 
-   HPXFixture&     operator=           (HPXFixture&&)=delete;
+            HPXFixture& operator=(HPXFixture&&) = delete;
 
-private:
-
-};
+        private:
+    };
 
 }  // namespace lue

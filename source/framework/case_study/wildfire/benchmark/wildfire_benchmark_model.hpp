@@ -5,48 +5,40 @@
 
 
 namespace lue {
-namespace benchmark {
-namespace detail {
+    namespace benchmark {
+        namespace detail {
 
-class Model;
+            class Model;
 
-}  // namespace detail
+        }  // namespace detail
 
 
-class WildfireBenchmarkModel:
-    public BenchmarkModel<WildfireModelBase::NominalElement, 2>
-{
+        class WildfireBenchmarkModel: public BenchmarkModel<WildfireModelBase::NominalElement, 2>
+        {
 
-public:
+            public:
 
-                   WildfireBenchmarkModel(
-                                        Environment const& environment,
-                                        Task const& task,
-                                        std::size_t max_tree_depth);
+                WildfireBenchmarkModel(
+                    Environment const& environment, Task const& task, std::size_t max_tree_depth);
 
-                   WildfireBenchmarkModel(
-                                        WildfireBenchmarkModel const&)=default;
+                WildfireBenchmarkModel(WildfireBenchmarkModel const&) = default;
 
-                   WildfireBenchmarkModel(
-                                        WildfireBenchmarkModel&&)=default;
+                WildfireBenchmarkModel(WildfireBenchmarkModel&&) = default;
 
-                   ~WildfireBenchmarkModel();
+                ~WildfireBenchmarkModel();
 
-    WildfireBenchmarkModel&
-                   operator=           (WildfireBenchmarkModel const&)=default;
+                WildfireBenchmarkModel& operator=(WildfireBenchmarkModel const&) = default;
 
-    WildfireBenchmarkModel&
-                   operator=           (WildfireBenchmarkModel&&)=default;
+                WildfireBenchmarkModel& operator=(WildfireBenchmarkModel&&) = default;
 
-private:
+            private:
 
-    void           do_initialize       () override;
+                void do_initialize() override;
 
-    void           do_simulate         (Count time_step) override;
+                void do_simulate(Count time_step) override;
 
-    std::unique_ptr<detail::Model> _model;
+                std::unique_ptr<detail::Model> _model;
+        };
 
-};
-
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue

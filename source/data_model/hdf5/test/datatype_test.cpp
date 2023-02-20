@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue hdf5 datatype
-#include <boost/test/unit_test.hpp>
 #include "lue/hdf5/datatype.hpp"
+#include <boost/test/unit_test.hpp>
 #include <map>
 
 
@@ -125,7 +125,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
 
     // native types
     {
-        for(auto const& datatype: lh5::native_unsigned_integrals) {
+        for (auto const& datatype : lh5::native_unsigned_integrals)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -133,7 +134,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
-        for(auto const& datatype: lh5::native_signed_integrals) {
+        for (auto const& datatype : lh5::native_signed_integrals)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -141,7 +143,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
-        for(auto const& datatype: lh5::native_floating_points) {
+        for (auto const& datatype : lh5::native_floating_points)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -152,7 +155,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
 
     // std le types
     {
-        for(auto const& datatype: lh5::std_unsigned_integrals_le) {
+        for (auto const& datatype : lh5::std_unsigned_integrals_le)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -160,7 +164,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
-        for(auto const& datatype: lh5::std_signed_integrals_le) {
+        for (auto const& datatype : lh5::std_signed_integrals_le)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -168,7 +173,8 @@ BOOST_AUTO_TEST_CASE(is_valid)
             BOOST_CHECK(!datatype_copy.id().is_valid());
         }
 
-        for(auto const& datatype: lh5::ieee_floating_points_le) {
+        for (auto const& datatype : lh5::ieee_floating_points_le)
+        {
             BOOST_CHECK(!datatype.id().is_valid());
 
             // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
@@ -184,8 +190,7 @@ BOOST_AUTO_TEST_CASE(memory_file_memory_datatype)
     // uint64
     {
         lh5::Datatype memory_datatype1 = lh5::native_uint64;
-        lh5::Datatype memory_datatype2 =
-            memory_datatype(file_datatype(memory_datatype1));
+        lh5::Datatype memory_datatype2 = memory_datatype(file_datatype(memory_datatype1));
 
         BOOST_CHECK(memory_datatype2 == memory_datatype1);
         BOOST_CHECK(!memory_datatype1.id().is_valid());
@@ -195,8 +200,7 @@ BOOST_AUTO_TEST_CASE(memory_file_memory_datatype)
     // float32
     {
         lh5::Datatype memory_datatype1 = lh5::native_float32;
-        lh5::Datatype memory_datatype2 =
-            memory_datatype(file_datatype(memory_datatype1));
+        lh5::Datatype memory_datatype2 = memory_datatype(file_datatype(memory_datatype1));
 
         BOOST_CHECK(memory_datatype2 == memory_datatype1);
         BOOST_CHECK(!memory_datatype1.id().is_valid());

@@ -3,22 +3,22 @@
 #include "lue/framework/algorithm/value_policies/less_than.hpp"
 
 
-#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                          \
-                                                                                    \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                         \
-        ESC(policy::less_than::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                              \
-        InputElement,                                                               \
-        InputElement,                                                               \
-        rank,                                                                       \
-        ESC(detail::LessThan<InputElement, OutputElement>));                        \
-                                                                                    \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                         \
-        ESC(policy::less_than::DefaultValuePolicies<OutputElement, InputElement>),  \
-        OutputElement,                                                              \
-        InputElement,                                                               \
-        InputElement,                                                               \
-        rank,                                                                       \
+#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::less_than::DefaultPolicies<OutputElement, InputElement>),                                \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
+        ESC(detail::LessThan<InputElement, OutputElement>));                                                 \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::less_than::DefaultValuePolicies<OutputElement, InputElement>),                           \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
         ESC(detail::LessThan<InputElement, OutputElement>));
 
 

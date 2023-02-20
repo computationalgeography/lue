@@ -1,14 +1,13 @@
 #pragma once
-#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/unary_aggregate_operation.hpp"
 
 
 namespace lue {
     namespace detail {
 
         // Return true if all of the input elements are true
-        template<
-            typename InputElement>
+        template<typename InputElement>
         class All
         {
 
@@ -24,50 +23,40 @@ namespace lue {
                     return false;
                 }
 
-                constexpr OutputElement operator()(
-                    InputElement const input_element) const noexcept
+                constexpr OutputElement operator()(InputElement const input_element) const noexcept
                 {
                     // The result is true if the input element is true
                     return input_element;
                 }
 
                 constexpr OutputElement operator()(
-                    InputElement const aggregate_value,
-                    InputElement const input_element) const noexcept
+                    InputElement const aggregate_value, InputElement const input_element) const noexcept
                 {
                     // The result is true if the value aggregated until now is true
                     // and the input element is true
                     return aggregate_value && input_element;
                 }
 
-                constexpr OutputElement partition(
-                    OutputElement const input_element) const noexcept
+                constexpr OutputElement partition(OutputElement const input_element) const noexcept
                 {
                     // The result is true if the input element is true
                     return input_element;
                 }
 
                 constexpr OutputElement partition(
-                    OutputElement const aggregated_value,
-                    OutputElement const input_element) const noexcept
+                    OutputElement const aggregated_value, OutputElement const input_element) const noexcept
                 {
                     // The result is true if the value aggregated until now is true
                     // and the input element is true
                     return aggregated_value && input_element;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
-    hpx::future<Element> all(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array)
+    template<typename Policies, typename Element, Rank rank>
+    hpx::future<Element> all(Policies const& policies, PartitionedArray<Element, rank> const& array)
     {
         using Functor = detail::All<Element>;
 
@@ -75,10 +64,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     hpx::future<Element> all(
         hpx::id_type const locality_id,
         Policies const& policies,

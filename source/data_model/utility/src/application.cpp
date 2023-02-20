@@ -2,27 +2,27 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-Application::Application(
-    std::string const& usage,
-    std::vector<std::string> const& arguments)
+        Application::Application(std::string const& usage, std::vector<std::string> const& arguments)
 
-    : Command(usage, arguments)
+            :
+            Command(usage, arguments)
 
-{
-}
+        {
+        }
 
 
-Application::Application(
-    std::string const& usage,
-    std::vector<std::string> const& arguments,
-    SubcommandCreators const& subcommand_creators)
+        Application::Application(
+            std::string const& usage,
+            std::vector<std::string> const& arguments,
+            SubcommandCreators const& subcommand_creators)
 
-    : Command(usage, arguments, subcommand_creators)
+            :
+            Command(usage, arguments, subcommand_creators)
 
-{
-}
+        {
+        }
 
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

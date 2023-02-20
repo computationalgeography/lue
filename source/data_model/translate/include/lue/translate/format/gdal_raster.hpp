@@ -2,148 +2,140 @@
 #include "lue/translate/format/gdal.hpp"
 #include "lue/translate/format/gdal_block.hpp"
 // #include "lue/utility/progress_indicator.hpp"
+#include "lue/hdf5/datatype.hpp"
 #include "lue/translate/format/raster_discretization.hpp"
 #include "lue/translate/format/raster_domain.hpp"
-#include "lue/hdf5/datatype.hpp"
 #include <gdal_priv.h>
 #include <memory>
 #include <string>
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-// hdf5::Datatype     gdal_datatype_to_memory_datatype(
-//                                         GDALDataType datatype);
+        // hdf5::Datatype     gdal_datatype_to_memory_datatype(
+        //                                         GDALDataType datatype);
 
-// This is nicer than the GDALDatasetDeleter below, but doesn't work
-// (gcc 4.9.3).
-//
-// auto gdal_dataset_deleter =
-//     [](::GDALDataset* dataset) {
-//         if(dataset) {
-//             ::GDALClose(dataset);
-//         }
-//     };
-//
-// using GDALDatasetDeleter = decltype(gdal_dataset_deleter);
+        // This is nicer than the GDALDatasetDeleter below, but doesn't work
+        // (gcc 4.9.3).
+        //
+        // auto gdal_dataset_deleter =
+        //     [](::GDALDataset* dataset) {
+        //         if(dataset) {
+        //             ::GDALClose(dataset);
+        //         }
+        //     };
+        //
+        // using GDALDatasetDeleter = decltype(gdal_dataset_deleter);
 
-// struct GDALDatasetDeleter
-// {
-//     void operator()(::GDALDataset* dataset) const
-//     {
-//         if(dataset) {
-//             ::GDALClose(dataset);
-//         }
-//     }
-// };
-//
-//
-// /*!
-//     @brief      Unique pointer to a dataset
-// */
-// using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
-
-
-GDALDatasetPtr     try_open_gdal_raster_dataset_for_read(
-                                        std::string const& dataset_name);
-
-GDALDatasetPtr     open_gdal_raster_dataset_for_read(
-                                        std::string const& dataset_name);
-
-void               translate_gdal_raster_dataset_to_lue(
-                                        std::vector<std::string> const& gdal_dataset_names,
-                                        std::string const& lue_dataset_name,
-                                        bool add,
-                                        Metadata const& metadata);
+        // struct GDALDatasetDeleter
+        // {
+        //     void operator()(::GDALDataset* dataset) const
+        //     {
+        //         if(dataset) {
+        //             ::GDALClose(dataset);
+        //         }
+        //     }
+        // };
+        //
+        //
+        // /*!
+        //     @brief      Unique pointer to a dataset
+        // */
+        // using GDALDatasetPtr = std::unique_ptr<::GDALDataset, GDALDatasetDeleter>;
 
 
-class GDALRaster
-{
+        GDALDatasetPtr try_open_gdal_raster_dataset_for_read(std::string const& dataset_name);
 
-public:
+        GDALDatasetPtr open_gdal_raster_dataset_for_read(std::string const& dataset_name);
 
-    class Band
-    {
-
-    public:
-
-        explicit   Band                (GDALRasterBand* band);
-
-                   Band                (Band const&)=delete;
-
-                   Band                (Band&&)=default;
-
-                   ~Band               ()=default;
-
-        Band&      operator=           (Band const&)=delete;
-
-        Band&      operator=           (Band&&)=default;
-
-        GDALDataType gdal_datatype     () const;
-
-        hdf5::Datatype datatype        () const;
-
-        GDALBlock  blocks              () const;
-
-        void       read_block          (std::size_t block_x,
-                                        std::size_t block_y,
-                                        void* buffer);
-
-        void       read                (void* buffer);
-
-        // void       write               (hl::Raster::Band& raster_band,
-        //                                 ProgressIndicator& progress_indicator);
-
-    private:
-
-        // template<
-        //     typename T>
-        // void       write               (hl::Raster::Band& raster_band,
-        //                                 ProgressIndicator& progress_indicator);
-
-        GDALRasterBand* _band;
-
-    };
+        void translate_gdal_raster_dataset_to_lue(
+            std::vector<std::string> const& gdal_dataset_names,
+            std::string const& lue_dataset_name,
+            bool add,
+            Metadata const& metadata);
 
 
-    explicit       GDALRaster          (std::string const& dataset_name);
+        class GDALRaster
+        {
 
-    explicit       GDALRaster          (GDALDatasetPtr dataset);
+            public:
 
-                   GDALRaster          (GDALRaster const&)=delete;
+                class Band
+                {
 
-                   GDALRaster          (GDALRaster&&)=default;
+                    public:
 
-                   ~GDALRaster         ()=default;
+                        explicit Band(GDALRasterBand* band);
 
-   GDALRaster&     operator=           (GDALRaster const&)=delete;
+                        Band(Band const&) = delete;
 
-   GDALRaster&     operator=           (GDALRaster&&)=default;
+                        Band(Band&&) = default;
 
-   Band            band                (int nr) const;
+                        ~Band() = default;
 
-   hl::RasterDomain const&
-                   domain              () const;
+                        Band& operator=(Band const&) = delete;
 
-   hl::RasterDiscretization const&
-                   discretization      () const;
+                        Band& operator=(Band&&) = default;
 
-   std::size_t     nr_bands            () const;
+                        GDALDataType gdal_datatype() const;
 
-private:
+                        hdf5::Datatype datatype() const;
 
-   void            init                ();
+                        GDALBlock blocks() const;
 
-   GDALDatasetPtr  _dataset;
+                        void read_block(std::size_t block_x, std::size_t block_y, void* buffer);
 
-   // std::string     _dataset_name;
+                        void read(void* buffer);
 
-   hl::RasterDomain _domain;
+                        // void       write               (hl::Raster::Band& raster_band,
+                        //                                 ProgressIndicator& progress_indicator);
 
-   hl::RasterDiscretization _discretization;
+                    private:
 
-};
+                        // template<
+                        //     typename T>
+                        // void       write               (hl::Raster::Band& raster_band,
+                        //                                 ProgressIndicator& progress_indicator);
 
-}  // namespace utility
+                        GDALRasterBand* _band;
+                };
+
+
+                explicit GDALRaster(std::string const& dataset_name);
+
+                explicit GDALRaster(GDALDatasetPtr dataset);
+
+                GDALRaster(GDALRaster const&) = delete;
+
+                GDALRaster(GDALRaster&&) = default;
+
+                ~GDALRaster() = default;
+
+                GDALRaster& operator=(GDALRaster const&) = delete;
+
+                GDALRaster& operator=(GDALRaster&&) = default;
+
+                Band band(int nr) const;
+
+                hl::RasterDomain const& domain() const;
+
+                hl::RasterDiscretization const& discretization() const;
+
+                std::size_t nr_bands() const;
+
+            private:
+
+                void init();
+
+                GDALDatasetPtr _dataset;
+
+                // std::string     _dataset_name;
+
+                hl::RasterDomain _domain;
+
+                hl::RasterDiscretization _discretization;
+        };
+
+    }  // namespace utility
 }  // namespace lue

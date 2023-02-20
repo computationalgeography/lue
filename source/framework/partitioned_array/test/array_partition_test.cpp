@@ -159,18 +159,17 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
         BOOST_CHECK(partition1.valid());
         BOOST_CHECK(!partition1.is_ready());
 
-        auto solve =
-            [component_id_p=std::move(component_id_p)]() mutable
-            {
-                // Create a server instance
-                Offset offset{3, 4};
-                Shape shape{{5, 6}};
-                PartitionClient partition2{hpx::find_here(), offset, shape};
-                BOOST_CHECK(partition2.valid());
+        auto solve = [component_id_p = std::move(component_id_p)]() mutable
+        {
+            // Create a server instance
+            Offset offset{3, 4};
+            Shape shape{{5, 6}};
+            PartitionClient partition2{hpx::find_here(), offset, shape};
+            BOOST_CHECK(partition2.valid());
 
-                // Pass the ID of the server instance to partition1
-                component_id_p.set_value(partition2.get_id());
-            };
+            // Pass the ID of the server instance to partition1
+            component_id_p.set_value(partition2.get_id());
+        };
 
         solve();
 
@@ -187,25 +186,21 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
         BOOST_CHECK(partition1.valid());
         BOOST_CHECK(!partition1.is_ready());
 
-        hpx::future<lue::Count> answer = partition1.then(
-                []([[maybe_unused]] PartitionClient&& client)
-                {
-                    return lue::nr_elements(client.shape().get());
-                });
+        hpx::future<lue::Count> answer = partition1.then([]([[maybe_unused]] PartitionClient&& client)
+                                                         { return lue::nr_elements(client.shape().get()); });
 
         BOOST_CHECK(answer.valid());
         BOOST_CHECK(!answer.is_ready());
 
-        auto solve =
-            [component_id_p=std::move(component_id_p)]() mutable
-            {
-                Offset offset{3, 4};
-                Shape shape{{5, 6}};
-                PartitionClient partition2{hpx::find_here(), offset, shape};
-                BOOST_CHECK(partition2.valid());
+        auto solve = [component_id_p = std::move(component_id_p)]() mutable
+        {
+            Offset offset{3, 4};
+            Shape shape{{5, 6}};
+            PartitionClient partition2{hpx::find_here(), offset, shape};
+            BOOST_CHECK(partition2.valid());
 
-                component_id_p.set_value(partition2.get_id());
-            };
+            component_id_p.set_value(partition2.get_id());
+        };
 
         solve();
 

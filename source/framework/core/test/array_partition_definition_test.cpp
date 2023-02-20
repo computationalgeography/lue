@@ -1,14 +1,14 @@
 #define BOOST_TEST_MODULE lue framework core array_partition_definition
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/array_partition_definition.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace {
 
-lue::Rank const rank = 2;
-using Definition = lue::ArrayPartitionDefinition<lue::Index, rank>;
-using Start = Definition::Start;
-using Shape = Definition::Shape;
+    lue::Rank const rank = 2;
+    using Definition = lue::ArrayPartitionDefinition<lue::Index, rank>;
+    using Start = Definition::Start;
+    using Shape = Definition::Shape;
 
 }  // Anonymous namespace
 
@@ -38,7 +38,6 @@ BOOST_AUTO_TEST_CASE(default_construct)
 
         BOOST_CHECK_EQUAL(definition.nr_elements(), 0);
     }
-
 }
 
 

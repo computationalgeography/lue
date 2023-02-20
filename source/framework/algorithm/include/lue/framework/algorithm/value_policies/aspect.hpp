@@ -5,8 +5,7 @@
 namespace lue {
     namespace policy::aspect {
 
-        template<
-            typename Element>
+        template<typename Element>
         using DefaultValuePolicies = policy::DefaultSpatialOperationValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,11 +16,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> aspect(
-            PartitionedArray<Element, rank> const& elevation)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> aspect(PartitionedArray<Element, rank> const& elevation)
         {
             using Policies = policy::aspect::DefaultValuePolicies<Element>;
 

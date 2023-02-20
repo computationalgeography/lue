@@ -44,20 +44,21 @@ namespace lue {
         automodules.push_back("qa");
 #endif
 
-        for(std::string& item: automodules)
+        for (std::string& item : automodules)
         {
             item = fmt::format(".. automodule:: lue.{}", item);
         }
 
-        module.doc() =
-            fmt::format(R"(
+        module.doc() = fmt::format(
+            R"(
     :mod:`lue` --- Scientific Database and Environmental Modelling Framework
     ========================================================================
 
     The :mod:`lue` package provides functionality for ...
 
     {}
-)", boost::algorithm::join(automodules, "\n    "));
+)",
+            boost::algorithm::join(automodules, "\n    "));
 
         module.attr("__version__") = py::str(BuildOptions::version);
         module.attr("lue_version") = py::str(BuildOptions::version);

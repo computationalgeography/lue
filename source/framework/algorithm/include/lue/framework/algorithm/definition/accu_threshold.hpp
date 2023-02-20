@@ -1,15 +1,14 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold.hpp"
-#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail::accu_threshold {
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         using Material = flow_accumulation::Material<MaterialElement>;
 
 
@@ -48,9 +47,7 @@ namespace lue {
                 }
 
 
-                void accumulate_input(
-                    InputElement const& input_element,
-                    OutputElement output_element) const
+                void accumulate_input(InputElement const& input_element, OutputElement output_element) const
                 {
                     auto const& [material, threshold] = input_element;
                     auto& [flux, state] = output_element;
@@ -59,10 +56,9 @@ namespace lue {
                         (_ondp_flux.is_no_data(flux) && _ondp_state.is_no_data(state)) ||
                         (!_ondp_flux.is_no_data(flux) && !_ondp_state.is_no_data(state)));
 
-                    if(!_ondp_flux.is_no_data(flux))
+                    if (!_ondp_flux.is_no_data(flux))
                     {
-                        if(_indp_material.is_no_data(material) ||
-                            _indp_threshold.is_no_data(threshold))
+                        if (_indp_material.is_no_data(material) || _indp_threshold.is_no_data(threshold))
                         {
                             _ondp_flux.mark_no_data(flux);
                             _ondp_state.mark_no_data(state);
@@ -81,7 +77,7 @@ namespace lue {
 
                             OutputFluxElement mobile_material{flux - threshold};
 
-                            if(mobile_material > 0)
+                            if (mobile_material > 0)
                             {
                                 state = threshold;
                                 flux = mobile_material;
@@ -103,11 +99,11 @@ namespace lue {
                     auto const& [upstream_flux, upstream_state] = upstream_material_element;
                     auto& [downstream_flux, downstream_state] = downstream_material_element;
 
-                    if(!_ondp_flux.is_no_data(downstream_flux))
+                    if (!_ondp_flux.is_no_data(downstream_flux))
                     {
                         lue_hpx_assert(!_ondp_state.is_no_data(downstream_state));
 
-                        if(_ondp_flux.is_no_data(upstream_flux))
+                        if (_ondp_flux.is_no_data(upstream_flux))
                         {
                             lue_hpx_assert(_ondp_state.is_no_data(upstream_state));
 
@@ -132,15 +128,12 @@ namespace lue {
                 OutputFluxNoDataPolicy _ondp_flux;
 
                 OutputStateNoDataPolicy _ondp_state;
-
         };
 
 
         // This class is needed for keeping track of information
         // that is needed to insert external material into a cell.
-        template<
-            typename MaterialCells,
-            typename ThresholdCells>
+        template<typename MaterialCells, typename ThresholdCells>
         class InputMaterial
         {
 
@@ -151,9 +144,7 @@ namespace lue {
                 using InputElement = std::tuple<InputMaterialElement const&, ThresholdElement const&>;
 
 
-                InputMaterial(
-                    MaterialCells const& material,
-                    ThresholdCells const& threshold):
+                InputMaterial(MaterialCells const& material, ThresholdCells const& threshold):
 
                     _material{material},
                     _threshold{threshold}
@@ -162,9 +153,7 @@ namespace lue {
                 }
 
 
-                InputElement operator()(
-                    Index const idx0,
-                    Index const idx1) const
+                InputElement operator()(Index const idx0, Index const idx1) const
                 {
                     return std::forward_as_tuple(_material(idx0, idx1), _threshold(idx0, idx1));
                 }
@@ -175,17 +164,14 @@ namespace lue {
                 MaterialCells const& _material;
 
                 ThresholdCells const& _threshold;
-
         };
 
 
-        template<
-            typename MaterialCells>
+        template<typename MaterialCells>
         using OutputMaterial = flow_accumulation::OutputMaterial<MaterialCells>;
 
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         class Accumulator
         {
 
@@ -216,15 +202,11 @@ namespace lue {
                     OutputFluxNoDataPolicy,
                     OutputStateNoDataPolicy>;
 
-                template<
-                    typename MaterialCells,
-                    typename ThresholdCells>
+                template<typename MaterialCells, typename ThresholdCells>
                 using InputMaterial = accu_threshold::InputMaterial<MaterialCells, ThresholdCells>;
 
-                template<
-                    typename MaterialCells>
+                template<typename MaterialCells>
                 using OutputMaterial = accu_threshold::OutputMaterial<MaterialCells>;
-
         };
 
     }  // namespace detail::accu_threshold
@@ -236,19 +218,13 @@ namespace lue {
         @return     Tuple of two arrays representing the flux and state
         @exception  .
     */
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_threshold(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<MaterialElement, rank> const& threshold)
+    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_threshold(
+        Policies const& policies,
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<MaterialElement, rank> const& threshold)
     {
         using Accumulator = detail::accu_threshold::Accumulator<MaterialElement>;
 
@@ -260,15 +236,12 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ACCU_THRESHOLD(                                               \
-    Policies, FlowDirectionElement, MaterialElement)                                  \
-                                                                                      \
-    template LUE_ROUTING_OPERATION_EXPORT                                             \
-    std::tuple<                                                                       \
-        PartitionedArray<MaterialElement, 2>,                                         \
-        PartitionedArray<MaterialElement, 2>> accu_threshold<                         \
-            ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                          \
-        PartitionedArray<FlowDirectionElement, 2> const&,                             \
-        PartitionedArray<MaterialElement, 2> const&,                                  \
-        PartitionedArray<MaterialElement, 2> const&);
+#define LUE_INSTANTIATE_ACCU_THRESHOLD(Policies, FlowDirectionElement, MaterialElement)                      \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT                                                                    \
+        std::tuple<PartitionedArray<MaterialElement, 2>, PartitionedArray<MaterialElement, 2>>               \
+        accu_threshold<ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(              \
+            ArgumentType<void(Policies)> const&,                                                             \
+            PartitionedArray<FlowDirectionElement, 2> const&,                                                \
+            PartitionedArray<MaterialElement, 2> const&,                                                     \
+            PartitionedArray<MaterialElement, 2> const&);

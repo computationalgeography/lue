@@ -3,45 +3,42 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    @brief      An ID per object
+        /*!
+            @brief      An ID per object
 
-    An ObjectID instance can be used to store the IDs of the active objects
-    when this collection of objects does not change through time.
+            An ObjectID instance can be used to store the IDs of the active objects
+            when this collection of objects does not change through time.
 
-    @sa         same_shape::Value, different_shape::Value
-*/
-class ObjectID:
-    public same_shape::Value
-{
+            @sa         same_shape::Value, different_shape::Value
+        */
+        class ObjectID: public same_shape::Value
+        {
 
-public:
+            public:
 
-    explicit       ObjectID            (hdf5::Group const& parent);
+                explicit ObjectID(hdf5::Group const& parent);
 
-    explicit       ObjectID            (same_shape::Value&& value);
+                explicit ObjectID(same_shape::Value&& value);
 
-                   ObjectID            (ObjectID const&)=default;
+                ObjectID(ObjectID const&) = default;
 
-                   ObjectID            (ObjectID&&)=default;
+                ObjectID(ObjectID&&) = default;
 
-                   ~ObjectID           () override =default;
+                ~ObjectID() override = default;
 
-    ObjectID&      operator=           (ObjectID const&)=default;
+                ObjectID& operator=(ObjectID const&) = default;
 
-    ObjectID&      operator=           (ObjectID&&)=default;
+                ObjectID& operator=(ObjectID&&) = default;
 
-    Count          nr_objects          () const;
+                Count nr_objects() const;
 
-private:
-
-};
+            private:
+        };
 
 
-ObjectID                 create_object_id(
-                                        hdf5::Group& parent);
+        ObjectID create_object_id(hdf5::Group& parent);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

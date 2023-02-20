@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::zonal_majority {
 
-        template<
-            typename Element,
-            typename Zone>
+        template<typename Element, typename Zone>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<Element, Zone>,
             OutputElements<Element>,
@@ -18,13 +16,9 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            typename Zone,
-            Rank rank>
+        template<typename Element, typename Zone, Rank rank>
         PartitionedArray<Element, rank> zonal_majority(
-            PartitionedArray<Element, rank> const& array,
-            PartitionedArray<Zone, rank> const& zones)
+            PartitionedArray<Element, rank> const& array, PartitionedArray<Zone, rank> const& zones)
         {
             using Policies = policy::zonal_majority::DefaultPolicies<Element, Zone>;
 

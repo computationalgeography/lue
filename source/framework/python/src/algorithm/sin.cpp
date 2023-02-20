@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> sin(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> sin(PartitionedArray<Element, rank> const& array)
         {
             return value_policies::sin(array);
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_sin(
-        pybind11::module& module)
+    void bind_sin(pybind11::module& module)
     {
         module.def("sin", sin<float, 2>);
         module.def("sin", sin<double, 2>);

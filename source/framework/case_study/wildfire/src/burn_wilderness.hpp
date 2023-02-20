@@ -3,10 +3,9 @@
 
 
 namespace lue {
-namespace benchmark {
+    namespace benchmark {
 
-void               burn_wilderness     (Task const& task,
-                                        std::size_t max_tree_depth);
+        void burn_wilderness(Task const& task, std::size_t max_tree_depth);
 
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue

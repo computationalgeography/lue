@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique_id
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/unique_id.hpp"
 #include "lue/framework/algorithm/default_policies/unique.hpp"
+#include "lue/framework/algorithm/default_policies/unique_id.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
@@ -9,10 +9,7 @@
 
 namespace detail {
 
-    template<
-        typename IDElement,
-        typename ConditionElement,
-        std::size_t rank>
+    template<typename IDElement, typename ConditionElement, std::size_t rank>
     void test_array()
     {
         using Array = lue::PartitionedArray<ConditionElement, rank>;
@@ -33,15 +30,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                                                    \
-    rank,                                                             \
-    IDElement,                                                        \
-    ConditionElement)                                                 \
-                                                                      \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement##_##ConditionElement)  \
-{                                                                     \
-    detail::test_array<IDElement, ConditionElement, rank>();          \
-}
+#define TEST_CASE(rank, IDElement, ConditionElement)                                                         \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement##_##ConditionElement)                                   \
+    {                                                                                                        \
+        detail::test_array<IDElement, ConditionElement, rank>();                                             \
+    }
 
 // TEST_CASE(1, int32_t, uint8_t)
 TEST_CASE(2, int32_t, uint8_t)

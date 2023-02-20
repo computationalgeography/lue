@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework partitioned_array partitioned_array
-#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/test/stream.hpp"
 
@@ -186,13 +186,15 @@ BOOST_AUTO_TEST_CASE(array_with_array_partitions)
     Partitions partitions{};
     partitions = Partitions{shape_in_partitions};
 
-    for(auto& partition: partitions) {
+    for (auto& partition : partitions)
+    {
         partition = Partition{};
     }
 
     std::size_t const nr_partitions = partitions.nr_elements();
 
-    for(std::size_t i = 0; i < nr_partitions; ++i) {
+    for (std::size_t i = 0; i < nr_partitions; ++i)
+    {
         partitions[i] = Partition{};
     }
 }

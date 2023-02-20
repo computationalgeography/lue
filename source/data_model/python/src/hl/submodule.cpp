@@ -4,8 +4,7 @@
 
 namespace lue::data_model {
 
-    void bind_hl_submodule(
-        pybind11::module& module)
+    void bind_hl_submodule(pybind11::module& module)
     {
         pybind11::module submodule = module.def_submodule(
             "hl",

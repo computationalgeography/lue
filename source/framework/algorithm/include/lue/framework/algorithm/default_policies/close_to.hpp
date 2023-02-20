@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::close_to {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -18,8 +16,7 @@ namespace lue {
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            close_to, detail::CloseTo, policy::close_to::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(close_to, detail::CloseTo, policy::close_to::DefaultPolicies)
 
     }  // namespace default_policies
 

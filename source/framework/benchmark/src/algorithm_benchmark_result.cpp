@@ -2,22 +2,20 @@
 
 
 namespace lue {
-namespace benchmark {
+    namespace benchmark {
 
-AlgorithmBenchmarkResult::AlgorithmBenchmarkResult(
-    Shape const& shape_in_partitions):
+        AlgorithmBenchmarkResult::AlgorithmBenchmarkResult(Shape const& shape_in_partitions):
 
-    _shape_in_partitions{shape_in_partitions}
+            _shape_in_partitions{shape_in_partitions}
 
-{
-}
+        {
+        }
 
 
-AlgorithmBenchmarkResult::Shape const&
-    AlgorithmBenchmarkResult::shape_in_partitions() const
-{
-    return _shape_in_partitions;
-}
+        AlgorithmBenchmarkResult::Shape const& AlgorithmBenchmarkResult::shape_in_partitions() const
+        {
+            return _shape_in_partitions;
+        }
 
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue

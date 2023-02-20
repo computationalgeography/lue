@@ -6,10 +6,10 @@
 
 namespace lue::framework {
 
-    template<
-        typename Element>
+    template<typename Element>
     class TypeTraits
-    {};
+    {
+    };
 
 
     template<>
@@ -19,48 +19,44 @@ namespace lue::framework {
         public:
 
             inline static std::string const name{"void"};
-
     };
 
 
-#define TYPE_TRAITS(Element, name_)  \
-    template<>                                            \
-    class TypeTraits<Element>                             \
-    {                                                     \
-                                                          \
-        public:                                           \
-                                                          \
-            inline static std::string const name{name_};  \
-                                                          \
-            inline static pybind11::dtype dtype()         \
-            {                                             \
-                return pybind11::dtype::of<Element>();    \
-            }                                             \
-                                                          \
+#define TYPE_TRAITS(Element, name_)                                                                          \
+    template<>                                                                                               \
+    class TypeTraits<Element>                                                                                \
+    {                                                                                                        \
+                                                                                                             \
+        public:                                                                                              \
+                                                                                                             \
+            inline static std::string const name{name_};                                                     \
+                                                                                                             \
+            inline static pybind11::dtype dtype()                                                            \
+            {                                                                                                \
+                return pybind11::dtype::of<Element>();                                                       \
+            }                                                                                                \
     };
 
-TYPE_TRAITS(std::uint8_t, "uint8")
-TYPE_TRAITS(std::uint32_t, "uint32")
-TYPE_TRAITS(std::uint64_t, "uint64")
-TYPE_TRAITS(std::int8_t, "int8")
-TYPE_TRAITS(std::int32_t, "int32")
-TYPE_TRAITS(std::int64_t, "int64")
-TYPE_TRAITS(float, "float32")
-TYPE_TRAITS(double, "float64")
+    TYPE_TRAITS(std::uint8_t, "uint8")
+    TYPE_TRAITS(std::uint32_t, "uint32")
+    TYPE_TRAITS(std::uint64_t, "uint64")
+    TYPE_TRAITS(std::int8_t, "int8")
+    TYPE_TRAITS(std::int32_t, "int32")
+    TYPE_TRAITS(std::int64_t, "int64")
+    TYPE_TRAITS(float, "float32")
+    TYPE_TRAITS(double, "float64")
 
 
 #undef TYPE_TRAITS
 
-    template<
-        typename Element>
+    template<typename Element>
     std::string as_string()
     {
         return TypeTraits<Element>::name;
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     pybind11::dtype dtype()
     {
         return TypeTraits<Element>::dtype();

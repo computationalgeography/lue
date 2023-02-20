@@ -6,11 +6,11 @@ using lue_CellsIdxs = std::vector<lue::Index>;
 HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
 
 
-#define LUE_INSTANTIATE(CountElement, FlowDirectionElement)                                    \
-                                                                                               \
-    LUE_INSTANTIATE_INFLOW_COUNT3(                                                             \
-        ESC(policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>),  \
-        CountElement,                                                                          \
+#define LUE_INSTANTIATE(CountElement, FlowDirectionElement)                                                  \
+                                                                                                             \
+    LUE_INSTANTIATE_INFLOW_COUNT3(                                                                           \
+        ESC(policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>),                \
+        CountElement,                                                                                        \
         FlowDirectionElement);
 
 

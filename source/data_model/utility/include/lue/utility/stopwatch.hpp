@@ -4,47 +4,46 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class Stopwatch
-{
+        class Stopwatch
+        {
 
-public:
+            public:
 
-    using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
+                using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-                   Stopwatch           ()=default;
+                Stopwatch() = default;
 
-                   Stopwatch           (Stopwatch const&)=default;
+                Stopwatch(Stopwatch const&) = default;
 
-                   Stopwatch           (Stopwatch&&)=default;
+                Stopwatch(Stopwatch&&) = default;
 
-                   ~Stopwatch          ()=default;
+                ~Stopwatch() = default;
 
-    Stopwatch&     operator=           (Stopwatch const&)=default;
+                Stopwatch& operator=(Stopwatch const&) = default;
 
-    Stopwatch&     operator=           (Stopwatch&&)=default;
+                Stopwatch& operator=(Stopwatch&&) = default;
 
-    void           start               ();
+                void start();
 
-    void           stop                ();
+                void stop();
 
-    TimePoint const& start             () const;
+                TimePoint const& start() const;
 
-    TimePoint const& end               () const;
+                TimePoint const& end() const;
 
-    double         elapsed_seconds     () const;
+                double elapsed_seconds() const;
 
-private:
+            private:
 
-    TimePoint      _start;
+                TimePoint _start;
 
-    TimePoint      _end;
+                TimePoint _end;
+        };
 
-};
 
+        std::string to_string(Stopwatch::TimePoint const& time_point);
 
-std::string        to_string           (Stopwatch::TimePoint const& time_point);
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

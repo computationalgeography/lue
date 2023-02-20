@@ -3,52 +3,47 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    - Zero or more space points per item
-    - Each space point has a unique location in space
-*/
-class MobileSpacePoint:
-    public same_shape::constant_shape::Value
-{
+        /*!
+            - Zero or more space points per item
+            - Each space point has a unique location in space
+        */
+        class MobileSpacePoint: public same_shape::constant_shape::Value
+        {
 
-public:
+            public:
 
-     explicit      MobileSpacePoint    (hdf5::Group const& parent);
+                explicit MobileSpacePoint(hdf5::Group const& parent);
 
-                   MobileSpacePoint    (hdf5::Group const& parent,
-                                        hdf5::Datatype const& memory_datatype);
+                MobileSpacePoint(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
 
-    explicit       MobileSpacePoint    (same_shape::constant_shape::Value&& value);
+                explicit MobileSpacePoint(same_shape::constant_shape::Value&& value);
 
-                   MobileSpacePoint    (MobileSpacePoint const&)=default;
+                MobileSpacePoint(MobileSpacePoint const&) = default;
 
-                   MobileSpacePoint    (MobileSpacePoint&&)=default;
+                MobileSpacePoint(MobileSpacePoint&&) = default;
 
-                   ~MobileSpacePoint   () override =default;
+                ~MobileSpacePoint() override = default;
 
-    MobileSpacePoint& operator=        (MobileSpacePoint const&)=default;
+                MobileSpacePoint& operator=(MobileSpacePoint const&) = default;
 
-    MobileSpacePoint& operator=        (MobileSpacePoint&&)=default;
+                MobileSpacePoint& operator=(MobileSpacePoint&&) = default;
 
-    Count          nr_points           () const;
+                Count nr_points() const;
 
-private:
-
-};
+            private:
+        };
 
 
-MobileSpacePoint   create_mobile_space_point(
-                                        hdf5::Group& parent,
-                                        hdf5::Datatype const& memory_datatype,
-                                        std::size_t rank);
+        MobileSpacePoint create_mobile_space_point(
+            hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank);
 
-MobileSpacePoint   create_mobile_space_point(
-                                        hdf5::Group& parent,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype,
-                                        std::size_t rank);
+        MobileSpacePoint create_mobile_space_point(
+            hdf5::Group& parent,
+            hdf5::Datatype const& file_datatype,
+            hdf5::Datatype const& memory_datatype,
+            std::size_t rank);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

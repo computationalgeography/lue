@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::accu_threshold3 {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<MaterialElement, MaterialElement>,
             OutputElements<MaterialElement, MaterialElement>,
@@ -18,20 +16,14 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            Rank rank>
-        std::tuple<
-            PartitionedArray<MaterialElement, rank>,
-            PartitionedArray<MaterialElement, rank>>
-                accu_threshold3(
-                    PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                    PartitionedArray<MaterialElement, rank> const& external_inflow,
-                    PartitionedArray<MaterialElement, rank> const& threshold)
+        template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
+        std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+        accu_threshold3(
+            PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+            PartitionedArray<MaterialElement, rank> const& external_inflow,
+            PartitionedArray<MaterialElement, rank> const& threshold)
         {
-            using Policies =
-                policy::accu_threshold3::DefaultPolicies<FlowDirectionElement, MaterialElement>;
+            using Policies = policy::accu_threshold3::DefaultPolicies<FlowDirectionElement, MaterialElement>;
 
             return accu_threshold3(Policies{}, flow_direction, external_inflow, threshold);
         }

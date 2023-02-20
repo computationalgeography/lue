@@ -1,14 +1,12 @@
 #include "lue/framework/algorithm/definition/focal_sum.hpp"
-#include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element)          \
-                                                    \
-    LUE_INSTANTIATE_FOCAL_SUM(                      \
-        ESC(policy::focal_sum::Policies<Element>),  \
-        Element,                                    \
-        ESC(Kernel<std::uint8_t, 2>));
+#define LUE_INSTANTIATE(Policies, Element)                                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_FOCAL_SUM(                                                                               \
+        ESC(policy::focal_sum::Policies<Element>), Element, ESC(Kernel<std::uint8_t, 2>));
 
 
 namespace lue {

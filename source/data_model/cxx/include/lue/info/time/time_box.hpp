@@ -3,51 +3,48 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    - Zero or more time boxes per item
-    - Each time box has a unique location in time
-*/
-class TimeBox:
-    public LocationInTime
-{
+        /*!
+            - Zero or more time boxes per item
+            - Each time box has a unique location in time
+        */
+        class TimeBox: public LocationInTime
+        {
 
-public:
+            public:
 
-    explicit       TimeBox             (hdf5::Group const& parent);
+                explicit TimeBox(hdf5::Group const& parent);
 
-    explicit       TimeBox             (LocationInTime&& value);
+                explicit TimeBox(LocationInTime&& value);
 
-                   TimeBox             (TimeBox const&)=default;
+                TimeBox(TimeBox const&) = default;
 
-                   TimeBox             (TimeBox&&)=default;
+                TimeBox(TimeBox&&) = default;
 
-                   ~TimeBox            () override =default;
+                ~TimeBox() override = default;
 
-    TimeBox&       operator=           (TimeBox const&)=default;
+                TimeBox& operator=(TimeBox const&) = default;
 
-    TimeBox&       operator=           (TimeBox&&)=default;
+                TimeBox& operator=(TimeBox&&) = default;
 
-    Count          nr_boxes            () const;
+                Count nr_boxes() const;
 
-private:
-
-};
+            private:
+        };
 
 
-TimeBox            create_time_box     (hdf5::Group& parent);
+        TimeBox create_time_box(hdf5::Group& parent);
 
 
-template<>
-class ValueTraits<TimeBox>
-{
+        template<>
+        class ValueTraits<TimeBox>
+        {
 
-public:
+            public:
 
-    using Element = typename ValueTraits<LocationInTime>::Element;
+                using Element = typename ValueTraits<LocationInTime>::Element;
+        };
 
-};
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

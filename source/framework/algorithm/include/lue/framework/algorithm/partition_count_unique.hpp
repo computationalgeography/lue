@@ -10,9 +10,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_>
+        template<typename InputElement, typename OutputElement_>
         class CountUnique
         {
 
@@ -20,10 +18,9 @@ namespace lue {
 
                 using OutputElement = OutputElement_;
 
-                CountUnique()=default;
+                CountUnique() = default;
 
-                void add_value(
-                    InputElement const& value)
+                void add_value(InputElement const& value)
                 {
                     _values.insert(value);
                 }
@@ -43,11 +40,10 @@ namespace lue {
                 friend class hpx::serialization::access;
 
                 void serialize(
-                    hpx::serialization::input_archive& archive,
-                    [[maybe_unused]] unsigned int const version)
+                    hpx::serialization::input_archive& archive, [[maybe_unused]] unsigned int const version)
                 {
                     lue_hpx_assert(_values.empty());
-                    archive & _values;
+                    archive& _values;
                 }
 
                 void serialize(
@@ -55,11 +51,10 @@ namespace lue {
                     [[maybe_unused]] unsigned int const version) const
                 {
                     lue_hpx_assert(_values.empty());
-                    archive & _values;
+                    archive& _values;
                 }
 
                 std::set<InputElement> _values;
-
         };
 
     }  // namespace detail
@@ -67,18 +62,14 @@ namespace lue {
 
     namespace policy::partition_count_unique {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
             InputElements<InputElement>>;
 
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -87,14 +78,9 @@ namespace lue {
     }  // namespace policy::partition_count_unique
 
 
-    template<
-        typename Policies,
-        typename InputElement,
-        typename OutputElement=std::int64_t,
-        Rank rank>
+    template<typename Policies, typename InputElement, typename OutputElement = std::int64_t, Rank rank>
     PartitionedArray<OutputElement, rank> partition_count_unique(
-        Policies const& policies,
-        PartitionedArray<InputElement, rank> const& array)
+        Policies const& policies, PartitionedArray<InputElement, rank> const& array)
     {
         using Functor = detail::CountUnique<InputElement, OutputElement>;
 
@@ -102,10 +88,7 @@ namespace lue {
     }
 
 
-    template<
-        typename InputElement,
-        typename OutputElement=std::int64_t,
-        Rank rank>
+    template<typename InputElement, typename OutputElement = std::int64_t, Rank rank>
     PartitionedArray<OutputElement, rank> partition_count_unique(
         PartitionedArray<InputElement, rank> const& array)
     {

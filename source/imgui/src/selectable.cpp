@@ -3,8 +3,7 @@
 
 namespace lue::gui {
 
-    Selectable::Selectable(
-        bool const selected):
+    Selectable::Selectable(bool const selected):
 
         _was_selected{selected}
 

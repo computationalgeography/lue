@@ -3,22 +3,22 @@
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
 
 
-#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                             \
-                                                                                       \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                            \
-        ESC(policy::not_equal_to::DefaultPolicies<OutputElement, InputElement>),       \
-        OutputElement,                                                                 \
-        InputElement,                                                                  \
-        InputElement,                                                                  \
-        rank,                                                                          \
-        ESC(detail::NotEqualTo<InputElement, OutputElement>));                         \
-                                                                                       \
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                            \
-        ESC(policy::not_equal_to::DefaultValuePolicies<OutputElement, InputElement>),  \
-        OutputElement,                                                                 \
-        InputElement,                                                                  \
-        InputElement,                                                                  \
-        rank,                                                                          \
+#define LUE_INSTANTIATE(OutputElement, InputElement, rank)                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::not_equal_to::DefaultPolicies<OutputElement, InputElement>),                             \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
+        ESC(detail::NotEqualTo<InputElement, OutputElement>));                                               \
+                                                                                                             \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                                  \
+        ESC(policy::not_equal_to::DefaultValuePolicies<OutputElement, InputElement>),                        \
+        OutputElement,                                                                                       \
+        InputElement,                                                                                        \
+        InputElement,                                                                                        \
+        rank,                                                                                                \
         ESC(detail::NotEqualTo<InputElement, OutputElement>));
 
 

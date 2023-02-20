@@ -1,10 +1,10 @@
 #pragma once
-#include "lue/framework/io/configure.hpp"
-#include "lue/framework/io/util.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/data_model.hpp"
+#include "lue/framework/io/configure.hpp"
+#include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
+#include "lue/data_model.hpp"
 #ifdef LUE_USE_PARALLEL_IO
 // Only available in case MPI is used in HPX
 #include <hpx/mpi_base/mpi_environment.hpp>
@@ -45,101 +45,99 @@ namespace lue {
         // }
 
 
+        ///         template<
+        ///             typename Policies,
+        ///             typename Partitions>
+        ///         void write_partitions_on_os_thread(
+        ///             Policies const& /* policies */,
+        ///             Partitions const& partitions,
+        ///             std::string const& array_pathname,
+        ///             data_model::ID const object_id)
+        ///         {
+        ///             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+        ///                 parse_array_pathname(array_pathname);
+        ///
+        ///             // Open dataset. Configure for use of parallel I/O if necessary.
+        ///             hdf5::File::AccessPropertyList access_property_list{};
+        ///
+        /// #ifdef LUE_USE_PARALLEL_IO
+        ///             if(hpx::util::mpi_environment::enabled())
+        ///             {
+        ///                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
+        ///                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
+        ///                 // ::MPI_Info info{MPI_INFO_NULL};
+        ///                 // access_property_list.use_mpi_communicator(communicator, info);
+        ///             }
+        /// #endif
+        ///
+        ///             auto dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDWR,
+        ///             access_property_list)};
+        ///
+        ///             // Open phenomenon
+        ///             auto& phenomenon{dataset.phenomena()[phenomenon_name]};
+        ///
+        ///             // Open property-set
+        ///             auto& property_set{phenomenon.property_sets()[property_set_name]};
+        ///
+        ///             // Open property
+        ///             lue_hpx_assert(property_set.properties().contains(property_name));
+        ///             lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+        ///                 data_model::ShapePerObject::different);
+        ///             lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+        ///                 data_model::ValueVariability::constant);
+        ///             using Properties = data_model::different_shape::Properties;
+        ///             auto& property{property_set.properties().collection<Properties>()[property_name]};
+        ///
+        ///             // Open value. Configure for use of parallel I/O if necessary.
+        ///             hdf5::Dataset::TransferPropertyList transfer_property_list{};
+        ///
+        /// #ifdef LUE_USE_PARALLEL_IO
+        ///             if(hpx::util::mpi_environment::enabled())
+        ///             {
+        ///                 // // Use collective I/O
+        ///                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
+        ///             }
+        /// #endif
+        ///
+        ///             auto& value{property.value()};
+        ///             auto array{value[object_id]};
+        ///
+        ///             // Iterate over partitions and write each partition's piece to the dataset
+        ///             using Partition = typename Partitions::value_type;
+        ///             using PartitionServer = typename Partition::Server;
+        ///             using Element = ElementT<Partition>;
+        ///
+        ///             for(Partition const& partition: partitions)
+        ///             {
+        ///                 auto partition_ptr{detail::ready_component_ptr(partition)};
+        ///                 PartitionServer const& partition_server{*partition_ptr};
+        ///                 Element const* buffer{partition_server.data().data()};
+        ///
+        ///                 array.write(hyperslab(partition_server), transfer_property_list, buffer);
+        ///             }
+        ///         }
+        ///
+        ///
+        ///         template<
+        ///             typename Policies,
+        ///             typename Partitions>
+        ///         void write_partitions(
+        ///             Policies const& policies,
+        ///             Partitions const& partitions,
+        ///             std::string const& array_pathname,
+        ///             data_model::ID const object_id)
+        ///         {
+        ///             // Get a reference to one of the IO specific HPX io_service objects ...
+        ///             hpx::parallel::execution::io_pool_executor executor;
+        ///
+        ///             // ... and schedule the handler to run on one of its OS-threads.
+        ///             hpx::async(
+        ///                 executor, &write_partitions_on_os_thread<Policies, Partitions>,
+        ///                 policies, partitions, array_pathname, object_id).get();
+        ///         }
 
-///         template<
-///             typename Policies,
-///             typename Partitions>
-///         void write_partitions_on_os_thread(
-///             Policies const& /* policies */,
-///             Partitions const& partitions,
-///             std::string const& array_pathname,
-///             data_model::ID const object_id)
-///         {
-///             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
-///                 parse_array_pathname(array_pathname);
-///
-///             // Open dataset. Configure for use of parallel I/O if necessary.
-///             hdf5::File::AccessPropertyList access_property_list{};
-///
-/// #ifdef LUE_USE_PARALLEL_IO
-///             if(hpx::util::mpi_environment::enabled())
-///             {
-///                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
-///                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
-///                 // ::MPI_Info info{MPI_INFO_NULL};
-///                 // access_property_list.use_mpi_communicator(communicator, info);
-///             }
-/// #endif
-///
-///             auto dataset{data_model::open_dataset(dataset_pathname, H5F_ACC_RDWR, access_property_list)};
-///
-///             // Open phenomenon
-///             auto& phenomenon{dataset.phenomena()[phenomenon_name]};
-///
-///             // Open property-set
-///             auto& property_set{phenomenon.property_sets()[property_set_name]};
-///
-///             // Open property
-///             lue_hpx_assert(property_set.properties().contains(property_name));
-///             lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
-///                 data_model::ShapePerObject::different);
-///             lue_hpx_assert(property_set.properties().value_variability(property_name) ==
-///                 data_model::ValueVariability::constant);
-///             using Properties = data_model::different_shape::Properties;
-///             auto& property{property_set.properties().collection<Properties>()[property_name]};
-///
-///             // Open value. Configure for use of parallel I/O if necessary.
-///             hdf5::Dataset::TransferPropertyList transfer_property_list{};
-///
-/// #ifdef LUE_USE_PARALLEL_IO
-///             if(hpx::util::mpi_environment::enabled())
-///             {
-///                 // // Use collective I/O
-///                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
-///             }
-/// #endif
-///
-///             auto& value{property.value()};
-///             auto array{value[object_id]};
-///
-///             // Iterate over partitions and write each partition's piece to the dataset
-///             using Partition = typename Partitions::value_type;
-///             using PartitionServer = typename Partition::Server;
-///             using Element = ElementT<Partition>;
-///
-///             for(Partition const& partition: partitions)
-///             {
-///                 auto partition_ptr{detail::ready_component_ptr(partition)};
-///                 PartitionServer const& partition_server{*partition_ptr};
-///                 Element const* buffer{partition_server.data().data()};
-///
-///                 array.write(hyperslab(partition_server), transfer_property_list, buffer);
-///             }
-///         }
-///
-///
-///         template<
-///             typename Policies,
-///             typename Partitions>
-///         void write_partitions(
-///             Policies const& policies,
-///             Partitions const& partitions,
-///             std::string const& array_pathname,
-///             data_model::ID const object_id)
-///         {
-///             // Get a reference to one of the IO specific HPX io_service objects ...
-///             hpx::parallel::execution::io_pool_executor executor;
-///
-///             // ... and schedule the handler to run on one of its OS-threads.
-///             hpx::async(
-///                 executor, &write_partitions_on_os_thread<Policies, Partitions>,
-///                 policies, partitions, array_pathname, object_id).get();
-///         }
 
-
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         void write_block(
             Array<Element, rank> const& block,
             hdf5::Dataspace const& block_dataspace,
@@ -150,11 +148,15 @@ namespace lue {
             // Configure selection corresponding with the subset of the block that must be written
             hdf5::Offset block_offset{0, 0};
             ::herr_t status{::H5Sselect_hyperslab(
-                block_dataspace.id(), H5S_SELECT_SET,
-                block_offset.data(), nullptr, array_hyperslab.count().data(),
+                block_dataspace.id(),
+                H5S_SELECT_SET,
+                block_offset.data(),
+                nullptr,
+                array_hyperslab.count().data(),
                 nullptr)};
 
-            if(status < 0) {
+            if (status < 0)
+            {
                 throw std::runtime_error("Cannot create hyperslab");
             }
 
@@ -169,28 +171,22 @@ namespace lue {
         // Sort partitions according to the row index first and
         // the column index after that
         inline auto compare_by_partition_offset =
-            [](
-                auto const& partition_tuple1,
-                auto const& partition_tuple2)
-            {
-                auto const& offset1{std::get<0>(partition_tuple1)};
-                auto const& offset2{std::get<0>(partition_tuple2)};
+            [](auto const& partition_tuple1, auto const& partition_tuple2)
+        {
+            auto const& offset1{std::get<0>(partition_tuple1)};
+            auto const& offset2{std::get<0>(partition_tuple2)};
 
-                // Every partition is an individual (except for Brian)
-                // Don't assert this. Depending on the sort algorithm, the same offset may be passed in.
-                // lue_hpx_assert(offset1 != offset2);
+            // Every partition is an individual (except for Brian)
+            // Don't assert this. Depending on the sort algorithm, the same offset may be passed in.
+            // lue_hpx_assert(offset1 != offset2);
 
-                // Sort by row. In case the rows are equal, sort by column.
-                return std::get<0>(offset1) != std::get<0>(offset2)
-                    ? std::get<0>(offset1) < std::get<0>(offset2)
-                    : std::get<1>(offset1) < std::get<1>(offset2)
-                    ;
-            };
+            // Sort by row. In case the rows are equal, sort by column.
+            return std::get<0>(offset1) != std::get<0>(offset2) ? std::get<0>(offset1) < std::get<0>(offset2)
+                                                                : std::get<1>(offset1) < std::get<1>(offset2);
+        };
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         void write_partitions(
             Policies const& /* policies */,
             Partitions&& partitions,
@@ -204,7 +200,7 @@ namespace lue {
             hdf5::File::AccessPropertyList access_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            if(hpx::util::mpi_environment::enabled())
+            if (hpx::util::mpi_environment::enabled())
             {
                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
@@ -223,9 +219,11 @@ namespace lue {
 
             // Open property
             lue_hpx_assert(property_set.properties().contains(property_name));
-            lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_per_object(property_name) ==
                 data_model::ShapePerObject::different);
-            lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().value_variability(property_name) ==
                 data_model::ValueVariability::constant);
             using Properties = data_model::different_shape::Properties;
             auto& property{property_set.properties().collection<Properties>()[property_name]};
@@ -234,7 +232,7 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            if(hpx::util::mpi_environment::enabled())
+            if (hpx::util::mpi_environment::enabled())
             {
                 // // Use collective I/O
                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
@@ -277,17 +275,16 @@ namespace lue {
 
                 // Dataspace corresponding with the whole block
                 hdf5::Count block_count{
-                    static_cast<::hsize_t>(block.shape()[0]),
-                    static_cast<::hsize_t>(block.shape()[1])};
-                hdf5::Dataspace const block_dataspace{hdf5::create_dataspace(
-                    hdf5::Shape{block_count.begin(), block_count.end()})};
+                    static_cast<::hsize_t>(block.shape()[0]), static_cast<::hsize_t>(block.shape()[1])};
+                hdf5::Dataspace const block_dataspace{
+                    hdf5::create_dataspace(hdf5::Shape{block_count.begin(), block_count.end()})};
 
                 // Iterate over the sets of adjacent partitions. Copy
                 // the values of each of these partitions into the
                 // block row.
                 Index partition_idx{0};
 
-                while(partition_idx < static_cast<Index>(partition_tuples.size()))
+                while (partition_idx < static_cast<Index>(partition_tuples.size()))
                 {
                     // Start with a new set of adjacent partitions that
                     // are located in the same row in the partitioned array
@@ -318,26 +315,24 @@ namespace lue {
                     lue_hpx_assert(std::get<1>(partition_row_slice) <= max_nr_rows_block);
                     lue_hpx_assert(std::get<1>(partition_col_slice) <= max_nr_cols_block);
 
-                    copy(partition_buffer,
-                        subspan(block.span(), partition_row_slice, partition_col_slice));
+                    copy(partition_buffer, subspan(block.span(), partition_row_slice, partition_col_slice));
 
                     // Update offset for next partition. Only update the column.
                     std::get<1>(partition_block_offset) += std::get<1>(partition_shape);
-
 
 
                     // Copy adjacent partitions to the block. An
                     // adjacent partition is located at the same
                     // row offset as the current one and at the next
                     // column offset.
-                    while(
-                        ++partition_idx < static_cast<Index>(partition_tuples.size()) &&
-                        std::get<0>(std::get<0>(partition_tuples[partition_idx])) == current_partition_row &&
-                        std::get<1>(std::get<0>(partition_tuples[partition_idx])) == current_partition_col + std::get<1>(partition_shape))
+                    while (++partition_idx < static_cast<Index>(partition_tuples.size()) &&
+                           std::get<0>(std::get<0>(partition_tuples[partition_idx])) ==
+                               current_partition_row &&
+                           std::get<1>(std::get<0>(partition_tuples[partition_idx])) ==
+                               current_partition_col + std::get<1>(partition_shape))
                     {
                         auto [partition_offset, partition_shape, partition_buffer] =
                             partition_tuples[partition_idx];
-
 
 
                         partition_row_slice = Slice{
@@ -350,14 +345,13 @@ namespace lue {
                         lue_hpx_assert(std::get<1>(partition_row_slice) <= max_nr_rows_block);
                         lue_hpx_assert(std::get<1>(partition_col_slice) <= max_nr_cols_block);
 
-                        copy(partition_buffer,
+                        copy(
+                            partition_buffer,
                             subspan(block.span(), partition_row_slice, partition_col_slice));
 
                         // Update offset for next partition
                         current_partition_col += std::get<1>(partition_shape);
                         std::get<1>(partition_block_offset) += std::get<1>(partition_shape);
-
-
                     }
 
 
@@ -372,7 +366,8 @@ namespace lue {
                             Shape{
                                 std::get<0>(partition_shape),
                                 static_cast<Count>(std::get<1>(partition_block_offset))}),
-                        array, transfer_property_list);
+                        array,
+                        transfer_property_list);
                 }
 
                 lue_hpx_assert(partition_idx == static_cast<Index>(partition_tuples.size()));
@@ -396,9 +391,7 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         void write_partitions2(
             Policies const& /* policies */,
             Partitions&& partitions,
@@ -413,7 +406,7 @@ namespace lue {
             hdf5::File::AccessPropertyList access_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            if(hpx::util::mpi_environment::enabled())
+            if (hpx::util::mpi_environment::enabled())
             {
                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
@@ -432,11 +425,14 @@ namespace lue {
 
             // Open property
             lue_hpx_assert(property_set.properties().contains(property_name));
-            lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_per_object(property_name) ==
                 data_model::ShapePerObject::different);
-            lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().value_variability(property_name) ==
                 data_model::ValueVariability::variable);
-            lue_hpx_assert(property_set.properties().shape_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_variability(property_name) ==
                 data_model::ShapeVariability::constant);
             using Properties = data_model::different_shape::constant_shape::Properties;
             auto const& property{property_set.properties().collection<Properties>()[property_name]};
@@ -445,7 +441,7 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            if(hpx::util::mpi_environment::enabled())
+            if (hpx::util::mpi_environment::enabled())
             {
                 // // Use collective I/O
                 // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
@@ -476,9 +472,6 @@ namespace lue {
             ///     //     array, transfer_property_list,
             ///     //     block_hyperslab(array_hyperslab_start, block_offset, block_shape), block_shape)};
             ///     // copy_partition_elements<Partition>(block, block_offset, partition_tuples);
-
-
-
 
 
             ///     // The block we need for storing the partition data for
@@ -545,19 +538,18 @@ namespace lue {
             ///         std::get<1>(partition_block_offset) += std::get<1>(partition_shape);
 
 
-
             ///         // Copy adjacent partitions to the block. An
             ///         // adjacent partition is located at the same
             ///         // row offset as the current one and at the next
             ///         // column offset.
             ///         while(
             ///             ++partition_idx < static_cast<Index>(partition_tuples.size()) &&
-            ///             std::get<0>(std::get<0>(partition_tuples[partition_idx])) == current_partition_row &&
-            ///             std::get<1>(std::get<0>(partition_tuples[partition_idx])) == current_partition_col + std::get<1>(partition_shape))
+            ///             std::get<0>(std::get<0>(partition_tuples[partition_idx])) == current_partition_row
+            ///             && std::get<1>(std::get<0>(partition_tuples[partition_idx])) ==
+            ///             current_partition_col + std::get<1>(partition_shape))
             ///         {
             ///             auto [partition_offset, partition_shape, partition_buffer] =
             ///                 partition_tuples[partition_idx];
-
 
 
             ///             partition_row_slice = Slice{
@@ -606,7 +598,7 @@ namespace lue {
             using PartitionServer = typename Partition::Server;
             using Element = ElementT<Partition>;
 
-            for(Partition const& partition: partitions)
+            for (Partition const& partition : partitions)
             {
                 lue_hpx_assert(partition.is_ready());
                 auto partition_ptr{detail::ready_component_ptr(partition)};
@@ -621,55 +613,42 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         struct WritePartitionsAction:
             hpx::actions::make_action<
-                    decltype(&write_partitions<Policies, Partitions>),
-                    &write_partitions<Policies, Partitions>,
-                    WritePartitionsAction<Policies, Partitions>
-                >::type
-        {};
+                decltype(&write_partitions<Policies, Partitions>),
+                &write_partitions<Policies, Partitions>,
+                WritePartitionsAction<Policies, Partitions>>::type
+        {
+        };
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         struct WritePartitionsAction2:
             hpx::actions::make_action<
-                    decltype(&write_partitions2<Policies, Partitions>),
-                    &write_partitions2<Policies, Partitions>,
-                    WritePartitionsAction2<Policies, Partitions>
-                >::type
-        {};
+                decltype(&write_partitions2<Policies, Partitions>),
+                &write_partitions2<Policies, Partitions>,
+                WritePartitionsAction2<Policies, Partitions>>::type
+        {
+        };
 
     }  // namespace detail
 
 
     namespace policy::write_into {
 
-        template<
-            typename OutputElement>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<>,
-            OutputElements<OutputElement>,
-            InputElements<>>;
+        template<typename OutputElement>
+        using DefaultPolicies =
+            policy::DefaultPolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
-        template<
-            typename OutputElement>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<>,
-            OutputElements<OutputElement>,
-            InputElements<>>;
+        template<typename OutputElement>
+        using DefaultValuePolicies = policy::
+            DefaultValuePolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
     }  // namespace policy::write_into
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> write(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
@@ -690,22 +669,22 @@ namespace lue {
             using Action = detail::WritePartitionsAction<Policies, std::vector<Partition>>;
             Action action{};
 
-            for(auto& [locality, partitions]: partitions_by_locality)
+            for (auto& [locality, partitions] : partitions_by_locality)
             {
                 hpx::dataflow(
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality=locality, action, policies, array_pathname, object_id](
-                                std::vector<Partition>&& partitions)
-                            {
-                                return action(locality, policies,
-                                    std::move(partitions), array_pathname, object_id);
-                            }
+                        [locality = locality, action, policies, array_pathname, object_id](
+                            std::vector<Partition>&& partitions) {
+                            return action(
+                                locality, policies, std::move(partitions), array_pathname, object_id);
+                        }
 
                         ),
 
-                    hpx::when_all(partitions.begin(), partitions.end())).get();
+                    hpx::when_all(partitions.begin(), partitions.end()))
+                    .get();
             }
         }
 
@@ -729,7 +708,8 @@ namespace lue {
         //                         [locality, action, policies, array_pathname, object_id](
         //                             std::vector<Partition> const& partitions)
         //                         {
-        //                             return action(locality, policies, partitions, array_pathname, object_id);
+        //                             return action(locality, policies, partitions, array_pathname,
+        //                             object_id);
         //                         }
 
         //                     ),
@@ -742,9 +722,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> write(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
@@ -756,10 +734,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> write(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
@@ -781,22 +756,27 @@ namespace lue {
             using Action = detail::WritePartitionsAction2<Policies, std::vector<Partition>>;
             Action action{};
 
-            for(auto& [locality, partitions]: partitions_by_locality)
+            for (auto& [locality, partitions] : partitions_by_locality)
             {
                 hpx::dataflow(
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality=locality, action, policies, array_pathname, object_id, time_step_idx](
-                                std::vector<Partition>&& partitions)
-                            {
-                                return action(locality, policies,
-                                    std::move(partitions), array_pathname, object_id, time_step_idx);
-                            }
+                        [locality = locality, action, policies, array_pathname, object_id, time_step_idx](
+                            std::vector<Partition>&& partitions) {
+                            return action(
+                                locality,
+                                policies,
+                                std::move(partitions),
+                                array_pathname,
+                                object_id,
+                                time_step_idx);
+                        }
 
                         ),
 
-                    hpx::when_all(partitions.begin(), partitions.end())).get();
+                    hpx::when_all(partitions.begin(), partitions.end()))
+                    .get();
             }
         }
 
@@ -834,9 +814,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> write(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,

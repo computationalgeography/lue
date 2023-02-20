@@ -4,72 +4,67 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      This class is a base class for the HDF5 primary data objects
-                (Dataset, Group, named datatype)
-*/
-class PrimaryDataObject
-{
+        /*!
+            @brief      This class is a base class for the HDF5 primary data objects
+                        (Dataset, Group, named datatype)
+        */
+        class PrimaryDataObject
+        {
 
-public:
+            public:
 
-                   PrimaryDataObject   (Identifier const& location,
-                                        std::string const& name);
+                PrimaryDataObject(Identifier const& location, std::string const& name);
 
-                   PrimaryDataObject   (PrimaryDataObject const&)=default;
+                PrimaryDataObject(PrimaryDataObject const&) = default;
 
-                   PrimaryDataObject   (PrimaryDataObject&&)=default;
+                PrimaryDataObject(PrimaryDataObject&&) = default;
 
-    virtual        ~PrimaryDataObject  ()=default;
+                virtual ~PrimaryDataObject() = default;
 
-    PrimaryDataObject& operator=       (PrimaryDataObject const&)=default;
+                PrimaryDataObject& operator=(PrimaryDataObject const&) = default;
 
-    PrimaryDataObject& operator=       (PrimaryDataObject&&)=default;
+                PrimaryDataObject& operator=(PrimaryDataObject&&) = default;
 
-    bool           operator==          (PrimaryDataObject const& other) const;
+                bool operator==(PrimaryDataObject const& other) const;
 
-    bool           operator!=          (PrimaryDataObject const& other) const;
+                bool operator!=(PrimaryDataObject const& other) const;
 
-    Identifier const& id               () const;
+                Identifier const& id() const;
 
-    Identifier&    id                  ();
+                Identifier& id();
 
-    Attributes const& attributes       () const;
+                Attributes const& attributes() const;
 
-    Attributes&    attributes          ();
+                Attributes& attributes();
 
-    template<
-        typename T>
-    T              attribute           (std::string const& name) const;
+                template<typename T>
+                T attribute(std::string const& name) const;
 
-    bool           contains_attribute  (std::string const& name) const;
+                bool contains_attribute(std::string const& name) const;
 
-protected:
+            protected:
 
-    explicit       PrimaryDataObject   (Identifier&& id);
+                explicit PrimaryDataObject(Identifier&& id);
 
-private:
+            private:
 
-    //! Identifier
-    Identifier     _id;
+                //! Identifier
+                Identifier _id;
 
-    //! Attributes
-    Attributes     _attributes;
-
-};
+                //! Attributes
+                Attributes _attributes;
+        };
 
 
-template<
-    typename T>
-inline T PrimaryDataObject::attribute(
-    std::string const& name) const
-{
-    assert(contains_attribute(name));
+        template<typename T>
+        inline T PrimaryDataObject::attribute(std::string const& name) const
+        {
+            assert(contains_attribute(name));
 
-    return _attributes.read<T>(name);
-}
+            return _attributes.read<T>(name);
+        }
 
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

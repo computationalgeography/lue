@@ -6,55 +6,32 @@
 namespace lue {
     namespace policy::inflow_count3 {
 
-        template<
-            typename CountElement,
-            typename FlowDirectionElement>
+        template<typename CountElement, typename FlowDirectionElement>
         using DefaultPolicies = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<CountElement>,
-                            AllValuesWithinRange<CountElement>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    SkipNoData<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>>>;
+            OutputsPolicies<OutputPolicies<DontMarkNoData<CountElement>, AllValuesWithinRange<CountElement>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                SkipNoData<FlowDirectionElement>,
+                FlowDirectionHalo<FlowDirectionElement>>>>;
 
-        template<
-            typename CountElement,
-            typename FlowDirectionElement>
+        template<typename CountElement, typename FlowDirectionElement>
         using DefaultValuePolicies = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<CountElement>,
-                            AllValuesWithinRange<CountElement>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    DetectNoDataByValue<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>>>;
+                OutputPolicies<DefaultOutputNoDataPolicy<CountElement>, AllValuesWithinRange<CountElement>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                DetectNoDataByValue<FlowDirectionElement>,
+                FlowDirectionHalo<FlowDirectionElement>>>>;
 
     }  // namespace policy::inflow_count3
 
 
-    template<
-        typename CountElement,
-        typename Policies,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
     PartitionedArray<CountElement, rank> inflow_count3(
-        Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
+        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
 
 
-    template<
-        typename CountElement,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename CountElement, typename FlowDirectionElement, Rank rank>
     PartitionedArray<CountElement, rank> inflow_count3(
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
     {

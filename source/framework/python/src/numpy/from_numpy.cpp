@@ -1,8 +1,8 @@
 #include "shape.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional
-#include <fmt/format.h>
 
 
 using namespace pybind11::literals;
@@ -12,21 +12,18 @@ namespace lue::framework {
 
     namespace {
 
-        template<
-            typename T>
+        template<typename T>
         using Array = pybind11::array_t<T>;
 
-        template<
-            typename T>
+        template<typename T>
         using Object = std::tuple<Array<T>, pybind11::buffer_info>;
 
-        template<
-            typename T>
+        template<typename T>
         using ReferenceCountedObject = std::shared_ptr<Object<T>>;
 
     }  // Anonymous namespace
 
-}
+}  // namespace lue::framework
 
 
 namespace lue::detail {
@@ -43,16 +40,13 @@ namespace lue::detail {
 
     // };
 
-    template<
-        typename T>
-    class ArrayTraits<
-        lue::framework::ReferenceCountedObject<T>>
+    template<typename T>
+    class ArrayTraits<lue::framework::ReferenceCountedObject<T>>
     {
 
         public:
 
             using Element = T;
-
     };
 
 }  // namespace lue::detail
@@ -64,9 +58,7 @@ namespace lue::framework {
 
         // TODO Handle partition shape checks, in main operation
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         PartitionedArray<Element, rank> from_numpy3(
             pybind11::array_t<Element> const& array,
             StaticShape<rank> const& partition_shape,
@@ -100,35 +92,32 @@ namespace lue::framework {
             std::copy_n(array.shape(), rank, array_shape.begin());
 
             ReferenceCountedObject<Element> object{
-                    std::make_shared<Object<Element>>(
-                        std::make_tuple(array, array.request()))
-                };
+                std::make_shared<Object<Element>>(std::make_tuple(array, array.request()))};
 
             return lue::create_partitioned_array(
-                    Policies{}, array_shape, partition_shape,
-                    Functor{object,  // Copy: increments reference count
-                            [](ReferenceCountedObject<Element> const& object) -> Element*
-                            {
-                                return static_cast<Element*>(std::get<1>(*object).ptr);
-                            },
-                            no_data_value
-                        }
-                );
+                Policies{},
+                array_shape,
+                partition_shape,
+                Functor{
+                    object,  // Copy: increments reference count
+                    [](ReferenceCountedObject<Element> const& object) -> Element*
+                    { return static_cast<Element*>(std::get<1>(*object).ptr); },
+                    no_data_value});
         }
 
 
-        template<
-            typename Element>
+        template<typename Element>
         pybind11::object from_numpy2(
             pybind11::array_t<Element> const& array,
             DynamicShape const& partition_shape,
             std::optional<Element> const& no_data_value)
         {
-            if(DynamicShape::size_type(array.ndim()) != partition_shape.size())
+            if (DynamicShape::size_type(array.ndim()) != partition_shape.size())
             {
                 throw std::runtime_error(fmt::format(
                     "Rank of array shape and partition shape must be equal ({} != {})",
-                    array.ndim(), partition_shape.size()));
+                    array.ndim(),
+                    partition_shape.size()));
             }
 
             // NOTE: For now we assume
@@ -138,7 +127,7 @@ namespace lue::framework {
             Rank const rank(array.ndim());
             pybind11::object result;
 
-            if(rank == 2)
+            if (rank == 2)
             {
                 result = pybind11::cast(from_numpy3<Element, 2>(
                     array, dynamic_shape_to_static_shape<2>(partition_shape), no_data_value));
@@ -154,8 +143,7 @@ namespace lue::framework {
         }
 
 
-        template<
-            typename Element>
+        template<typename Element>
         pybind11::object from_numpy(
             pybind11::array_t<Element> const& array,
             pybind11::tuple const& partition_shape,
@@ -167,23 +155,50 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_from_numpy(
-        pybind11::module& module)
+    void bind_from_numpy(pybind11::module& module)
     {
-        module.def("from_numpy", from_numpy<uint8_t>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint8_t>{});
-        module.def("from_numpy", from_numpy<uint32_t>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint32_t>{});
-        module.def("from_numpy", from_numpy<uint64_t>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<uint64_t>{});
-        module.def("from_numpy", from_numpy<int32_t>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<int32_t>{});
-        module.def("from_numpy", from_numpy<int64_t>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<int64_t>{});
-        module.def("from_numpy", from_numpy<float>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<float>{});
-        module.def("from_numpy", from_numpy<double>,
-            "array"_a.noconvert(), "partition_shape"_a, "no_data_value"_a=std::optional<double>{});
+        module.def(
+            "from_numpy",
+            from_numpy<uint8_t>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<uint8_t>{});
+        module.def(
+            "from_numpy",
+            from_numpy<uint32_t>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<uint32_t>{});
+        module.def(
+            "from_numpy",
+            from_numpy<uint64_t>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<uint64_t>{});
+        module.def(
+            "from_numpy",
+            from_numpy<int32_t>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<int32_t>{});
+        module.def(
+            "from_numpy",
+            from_numpy<int64_t>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<int64_t>{});
+        module.def(
+            "from_numpy",
+            from_numpy<float>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<float>{});
+        module.def(
+            "from_numpy",
+            from_numpy<double>,
+            "array"_a.noconvert(),
+            "partition_shape"_a,
+            "no_data_value"_a = std::optional<double>{});
     }
 
 }  // namespace lue::framework

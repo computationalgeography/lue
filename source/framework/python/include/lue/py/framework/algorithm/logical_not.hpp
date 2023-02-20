@@ -3,11 +3,8 @@
 
 namespace lue::framework {
 
-    template<
-        typename Element,
-        Rank rank>
-    PartitionedArray<std::uint8_t, rank> logical_not(
-        PartitionedArray<Element, rank> const& argument)
+    template<typename Element, Rank rank>
+    PartitionedArray<std::uint8_t, rank> logical_not(PartitionedArray<Element, rank> const& argument)
     {
         return value_policies::logical_not(argument);
     }

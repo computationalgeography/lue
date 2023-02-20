@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue raster
-#include <boost/test/unit_test.hpp>
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
@@ -12,11 +12,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 
     // Space domain
     lue::data_model::SpaceConfiguration space_configuration{
-        lue::data_model::Mobility::stationary,
-            lue::data_model::SpaceDomainItemType::box
-        };
-    lue::hdf5::Datatype const coordinate_datatype{
-        lue::hdf5::NativeDatatypeTraits<int>::type_id()};
+        lue::data_model::Mobility::stationary, lue::data_model::SpaceDomainItemType::box};
+    lue::hdf5::Datatype const coordinate_datatype{lue::hdf5::NativeDatatypeTraits<int>::type_id()};
     std::size_t const rank = 2;
     std::vector<int> boxes(40 /* -> nr_areas * rank * 2 */);
     lue::data_model::test::generate_random_values(boxes, 0, 1000);
@@ -28,8 +25,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     // Discretization property
     std::string const discretization_property_name = "discretization";
     lue::hdf5::Datatype const shape_datatype{
-        lue::hdf5::NativeDatatypeTraits<
-            lue::hdf5::Shape::value_type>::type_id()};
+        lue::hdf5::NativeDatatypeTraits<lue::hdf5::Shape::value_type>::type_id()};
     std::vector<lue::hdf5::Shape::value_type> shapes(nr_areas * rank);
     lue::data_model::test::generate_random_values(shapes, 10, 20);
 
@@ -39,7 +35,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const elevation_datatype{
         lue::hdf5::NativeDatatypeTraits<ElevationValueType>::type_id()};
     std::vector<std::vector<ElevationValueType>> values(nr_areas);
-    for(std::size_t o = 0, s = 0; o < nr_areas; ++o, s += rank) {
+    for (std::size_t o = 0, s = 0; o < nr_areas; ++o, s += rank)
+    {
         values[o].resize(shapes[s] * shapes[s + 1]);
     }
     lue::data_model::test::generate_random_values(values, 5.0, 15.0);
@@ -51,12 +48,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         auto& areas = dataset().add_phenomenon(phenomenon_name);
 
         // Property set
-        auto& area_boxes = areas.property_sets().add(
-                property_set_name,
-                space_configuration,
-                coordinate_datatype,
-                rank
-            );
+        auto& area_boxes =
+            areas.property_sets().add(property_set_name, space_configuration, coordinate_datatype, rank);
 
         // IDs
         areas.object_id().expand(nr_areas);
@@ -77,8 +70,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 
         // Discretization property
         auto& discretization_property = area_boxes.properties().add(
-            discretization_property_name, shape_datatype,
-            lue::hdf5::Shape{2});  // nr rows, nr_cols
+            discretization_property_name, shape_datatype, lue::hdf5::Shape{2});  // nr rows, nr_cols
         {
             auto& value = discretization_property.value();
             value.expand(nr_areas);
@@ -86,21 +78,21 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         }
 
         // Elevation property
-        auto& elevation_property = area_boxes.properties().add(
-            elevation_property_name, elevation_datatype, rank);
+        auto& elevation_property =
+            area_boxes.properties().add(elevation_property_name, elevation_datatype, rank);
         {
             auto& value = elevation_property.value();
             value.expand(nr_areas, ids.data(), shapes.data());
 
-            for(std::size_t o = 0; o < nr_areas; ++o) {
+            for (std::size_t o = 0; o < nr_areas; ++o)
+            {
                 value[ids[o]].write(values[o].data());
             }
         }
 
         // Link from elevation property to discretization property
         elevation_property.set_space_discretization(
-            lue::data_model::SpaceDiscretization::regular_grid,
-            discretization_property);
+            lue::data_model::SpaceDiscretization::regular_grid, discretization_property);
     }
 
     lue::data_model::assert_is_valid(pathname());
@@ -110,7 +102,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         // Phenomenon
         auto& areas = dataset().phenomena()[phenomenon_name];
 
-        //Property set
+        // Property set
         auto& area_boxes = areas.property_sets()[property_set_name];
 
         // Time domain
@@ -123,35 +115,28 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
             BOOST_REQUIRE(area_boxes.has_space_domain());
 
             auto& space_domain = area_boxes.space_domain();
-            BOOST_REQUIRE_EQUAL(
-                space_domain.configuration(), space_configuration);
+            BOOST_REQUIRE_EQUAL(space_domain.configuration(), space_configuration);
 
             auto value = space_domain.value<lue::data_model::StationarySpaceBox>();
 
             BOOST_REQUIRE_EQUAL(value.nr_arrays(), nr_areas);
             BOOST_REQUIRE_EQUAL(value.memory_datatype(), coordinate_datatype);
-            BOOST_REQUIRE_EQUAL(
-                value.array_shape(), lue::hdf5::Shape{rank * 2});
+            BOOST_REQUIRE_EQUAL(value.array_shape(), lue::hdf5::Shape{rank * 2});
 
             std::vector<int> boxes_read(nr_areas * rank * 2);
             value.read(boxes_read.data());
 
-            BOOST_CHECK_EQUAL_COLLECTIONS(
-                    boxes_read.begin(), boxes_read.end(),
-                    boxes.begin(), boxes.end());
+            BOOST_CHECK_EQUAL_COLLECTIONS(boxes_read.begin(), boxes_read.end(), boxes.begin(), boxes.end());
         }
 
         {
             // Elevation property
-            BOOST_REQUIRE(
-                area_boxes.properties().contains(elevation_property_name));
+            BOOST_REQUIRE(area_boxes.properties().contains(elevation_property_name));
             BOOST_REQUIRE_EQUAL(
-                area_boxes.properties().shape_per_object(
-                    elevation_property_name),
+                area_boxes.properties().shape_per_object(elevation_property_name),
                 lue::data_model::ShapePerObject::different);
             BOOST_REQUIRE_EQUAL(
-                area_boxes.properties().value_variability(
-                    elevation_property_name),
+                area_boxes.properties().value_variability(elevation_property_name),
                 lue::data_model::ValueVariability::constant);
 
             auto& properties =
@@ -162,20 +147,19 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
             BOOST_REQUIRE_EQUAL(value.nr_objects(), nr_areas);
             BOOST_REQUIRE_EQUAL(value.memory_datatype(), elevation_datatype);
 
-            for(std::size_t o = 0; o < nr_areas; ++o) {
+            for (std::size_t o = 0; o < nr_areas; ++o)
+            {
                 auto array = value[ids[o]];
 
                 lue::hdf5::Shape shape{shapes[o * rank], shapes[o * rank + 1]};
                 BOOST_REQUIRE_EQUAL(array.shape(), shape);
 
-                std::vector<ElevationValueType> values_read(
-                    lue::hdf5::size_of_shape(array.shape()));
+                std::vector<ElevationValueType> values_read(lue::hdf5::size_of_shape(array.shape()));
 
                 array.read(values_read.data());
 
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                        values_read.begin(), values_read.end(),
-                        values[o].begin(), values[o].end());
+                    values_read.begin(), values_read.end(), values[o].begin(), values[o].end());
             }
 
             // Discretization property
@@ -185,49 +169,38 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
             BOOST_REQUIRE(elevation_property.space_is_discretized());
 
             // Figure out how the property is discretized
-            auto discretization_type =
-                elevation_property.space_discretization_type();
-            BOOST_CHECK_EQUAL(
-                discretization_type, lue::data_model::SpaceDiscretization::regular_grid);
+            auto discretization_type = elevation_property.space_discretization_type();
+            BOOST_CHECK_EQUAL(discretization_type, lue::data_model::SpaceDiscretization::regular_grid);
 
             // Verify discretization parameters
-            auto discretization_property =
-                elevation_property.space_discretization_property();
+            auto discretization_property = elevation_property.space_discretization_property();
 
             auto property_set{lue::data_model::property_set(discretization_property)};
 
-            BOOST_CHECK(
-                property_set.properties().contains(
-                    discretization_property_name));
+            BOOST_CHECK(property_set.properties().contains(discretization_property_name));
 
             BOOST_REQUIRE_EQUAL(
-                property_set.properties().shape_per_object(
-                    discretization_property_name),
+                property_set.properties().shape_per_object(discretization_property_name),
                 lue::data_model::ShapePerObject::same);
             BOOST_REQUIRE_EQUAL(
-                property_set.properties().value_variability(
-                    discretization_property_name),
+                property_set.properties().value_variability(discretization_property_name),
                 lue::data_model::ValueVariability::constant);
 
             // Discretization property value
             {
                 auto& properties =
                     property_set.properties().collection<lue::data_model::same_shape::Properties>();
-                auto& discretization_property =
-                    properties[discretization_property_name];
+                auto& discretization_property = properties[discretization_property_name];
                 auto& value = discretization_property.value();
 
                 BOOST_REQUIRE_EQUAL(value.nr_arrays(), nr_areas);
                 BOOST_REQUIRE_EQUAL(value.memory_datatype(), shape_datatype);
-                BOOST_REQUIRE_EQUAL(
-                    value.array_shape(), lue::hdf5::Shape{rank});
+                BOOST_REQUIRE_EQUAL(value.array_shape(), lue::hdf5::Shape{rank});
 
-                std::vector<lue::hdf5::Shape::value_type> shapes_read(
-                    nr_areas * 2);
+                std::vector<lue::hdf5::Shape::value_type> shapes_read(nr_areas * 2);
                 value.read(shapes_read.data());
                 BOOST_CHECK_EQUAL_COLLECTIONS(
-                    shapes_read.begin(), shapes_read.end(),
-                    shapes.begin(), shapes.end());
+                    shapes_read.begin(), shapes_read.end(), shapes.begin(), shapes.end());
             }
         }
     }

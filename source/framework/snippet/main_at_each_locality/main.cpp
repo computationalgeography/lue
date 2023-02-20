@@ -8,9 +8,7 @@ namespace {
 }  // Anonymous namespace
 
 
-int hpx_main(
-    int const /* argc */,
-    char* /* argv */ [])
+int hpx_main(int const /* argc */, char* /* argv */[])
 {
     // The current locality
     auto const locality = hpx::get_locality_id();
@@ -21,23 +19,21 @@ int hpx_main(
     // The localities, including the current one
     auto const localities = hpx::find_all_localities();
 
-    hpx::cout << fmt::format(
-            "Locality {} is ready for action!\n",
-            locality);
+    hpx::cout << fmt::format("Locality {} is ready for action!\n", locality);
 
-    if(locality == 0) {
+    if (locality == 0)
+    {
         hpx::cout << fmt::format(
-                "Together we have {} worker threads running on {} localities\n",
-                nr_worker_threads, localities.size());
+            "Together we have {} worker threads running on {} localities\n",
+            nr_worker_threads,
+            localities.size());
     }
 
     return hpx::finalize();
 }
 
 
-int main(
-    int const argc,
-    char* argv[])
+int main(int const argc, char* argv[])
 {
     std::vector<std::string> cfg = {
         // "hpx.numa_sensitive=2"  // no-cross NUMA stealing

@@ -7,8 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         class IteratePerElement
         {
 
@@ -19,21 +18,19 @@ namespace lue {
                 using OutputElement = InputElement;
 
 
-                constexpr OutputElement operator()(
-                    InputElement const& input_element) const noexcept
+                constexpr OutputElement operator()(InputElement const& input_element) const noexcept
                 {
                     // The use of volatile prevends the optimizing compiler
                     // to remove this iteration
                     volatile InputElement nr_iterations{std::max<InputElement>(input_element, 0)};
 
-                    while(nr_iterations > InputElement{0})
+                    while (nr_iterations > InputElement{0})
                     {
                         nr_iterations -= 1;
                     }
 
                     return input_element;
                 }
-
         };
 
     }  // namespace detail
@@ -41,23 +38,16 @@ namespace lue {
 
     namespace policy::iterate_per_element {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::iterate_per_element
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> iterate_per_element(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& input_array)
+        Policies const& policies, PartitionedArray<Element, rank> const& input_array)
     {
         using Functor = detail::IteratePerElement<Element>;
 
@@ -73,11 +63,8 @@ namespace lue {
         some more time. It is useful when simulating a configurable amount
         of load per cell.
     */
-    template<
-        typename Element,
-        Rank rank>
-    PartitionedArray<Element, rank> iterate_per_element(
-        PartitionedArray<Element, rank> const& input_array)
+    template<typename Element, Rank rank>
+    PartitionedArray<Element, rank> iterate_per_element(PartitionedArray<Element, rank> const& input_array)
     {
         using Policies = policy::iterate_per_element::DefaultPolicies<Element>;
 

@@ -10,12 +10,8 @@ namespace lue {
     /*!
         @brief      Add two numbers and return whether the result is valid
     */
-    template<
-        typename T>
-    bool safe_add(
-        T const& argument1,
-        T const& argument2,
-        T& result) noexcept
+    template<typename T>
+    bool safe_add(T const& argument1, T const& argument2, T& result) noexcept
     {
         static_assert(std::is_arithmetic_v<T>);
 
@@ -34,7 +30,7 @@ namespace lue {
                 result = r;
                 status = true;
             }
-            catch([[maybe_unused]] std::exception const& exception)
+            catch ([[maybe_unused]] std::exception const& exception)
             {
             }
 
@@ -50,24 +46,16 @@ namespace lue {
     }
 
 
-    template<
-        typename T>
-    bool add_within_range(
-        T const& argument1,
-        T const& argument2,
-        [[maybe_unused]] T const& result) noexcept
+    template<typename T>
+    bool add_within_range(T const& argument1, T const& argument2, [[maybe_unused]] T const& result) noexcept
     {
         T r;
         return safe_add(argument1, argument2, r);
     }
 
 
-    template<
-        typename T>
-    bool add_out_of_range(
-        T const& argument1,
-        T const& argument2,
-        T const& result) noexcept
+    template<typename T>
+    bool add_out_of_range(T const& argument1, T const& argument2, T const& result) noexcept
     {
         return !add_within_range(argument1, argument2, result);
     }
@@ -76,12 +64,8 @@ namespace lue {
     /*!
         @brief      Subtract a number from another one and return whether the result is valid
     */
-    template<
-        typename T>
-    bool safe_subtract(
-        T const& argument1,
-        T const& argument2,
-        T& result) noexcept
+    template<typename T>
+    bool safe_subtract(T const& argument1, T const& argument2, T& result) noexcept
     {
         static_assert(std::is_arithmetic_v<T>);
 
@@ -100,7 +84,7 @@ namespace lue {
                 result = r;
                 status = true;
             }
-            catch([[maybe_unused]] std::exception const& exception)
+            catch ([[maybe_unused]] std::exception const& exception)
             {
             }
 
@@ -116,24 +100,17 @@ namespace lue {
     }
 
 
-    template<
-        typename T>
+    template<typename T>
     bool subtract_within_range(
-        T const& argument1,
-        T const& argument2,
-        [[maybe_unused]] T const& result) noexcept
+        T const& argument1, T const& argument2, [[maybe_unused]] T const& result) noexcept
     {
         T r;
         return safe_subtract(argument1, argument2, r);
     }
 
 
-    template<
-        typename T>
-    bool subtract_out_of_range(
-        T const& argument1,
-        T const& argument2,
-        T const& result) noexcept
+    template<typename T>
+    bool subtract_out_of_range(T const& argument1, T const& argument2, T const& result) noexcept
     {
         return !subtract_within_range(argument1, argument2, result);
     }
@@ -142,12 +119,8 @@ namespace lue {
     /*!
         @brief      Multiply two numbers and return whether the result is valid
     */
-    template<
-        typename T>
-    bool safe_multiply(
-        T const& argument1,
-        T const& argument2,
-        T& result) noexcept
+    template<typename T>
+    bool safe_multiply(T const& argument1, T const& argument2, T& result) noexcept
     {
         static_assert(std::is_arithmetic_v<T>);
 
@@ -166,7 +139,7 @@ namespace lue {
                 result = r;
                 status = true;
             }
-            catch([[maybe_unused]] std::exception const& exception)
+            catch ([[maybe_unused]] std::exception const& exception)
             {
             }
 
@@ -182,31 +155,23 @@ namespace lue {
     }
 
 
-    template<
-        typename T>
+    template<typename T>
     bool multiply_within_range(
-        T const& argument1,
-        T const& argument2,
-        [[maybe_unused]] T const& result) noexcept
+        T const& argument1, T const& argument2, [[maybe_unused]] T const& result) noexcept
     {
         T r;
         return safe_multiply(argument1, argument2, r);
     }
 
 
-    template<
-        typename T>
-    bool multiply_out_of_range(
-        T const& argument1,
-        T const& argument2,
-        T const& result) noexcept
+    template<typename T>
+    bool multiply_out_of_range(T const& argument1, T const& argument2, T const& result) noexcept
     {
         return !multiply_within_range(argument1, argument2, result);
     }
 
 
-    template<
-        typename T>
+    template<typename T>
     bool divide_within_range(
         [[maybe_unused]] T const& argument1,
         [[maybe_unused]] T const& argument2,
@@ -229,12 +194,8 @@ namespace lue {
     }
 
 
-    template<
-        typename T>
-    bool divide_out_of_range(
-        T const& argument1,
-        T const& argument2,
-        T const& result) noexcept
+    template<typename T>
+    bool divide_out_of_range(T const& argument1, T const& argument2, T const& result) noexcept
     {
         return !divide_within_range(argument1, argument2, result);
     }

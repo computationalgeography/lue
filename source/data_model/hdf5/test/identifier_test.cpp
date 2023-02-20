@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue hdf5 identifier
-#include <boost/test/unit_test.hpp>
 #include "lue/hdf5/file.hpp"
 #include "lue/hdf5/identifier.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace lh5 = lue::hdf5;
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(reference_count)
         // Move id1 to id2
         lh5::Identifier id2{std::move(id1)};
         BOOST_CHECK(!id1.is_valid());
-        BOOST_CHECK( id2.is_valid());
+        BOOST_CHECK(id2.is_valid());
         BOOST_CHECK_EQUAL(id2.reference_count(), 1);
 
         {

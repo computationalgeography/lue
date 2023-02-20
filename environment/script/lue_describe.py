@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-import lue
-import docopt
 import os.path
 import sys
+
+import docopt
+
+import lue
 
 
 usage = """\

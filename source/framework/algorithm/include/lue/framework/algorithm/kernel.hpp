@@ -4,11 +4,8 @@
 
 namespace lue {
 
-    template<
-        typename Weight,
-        Rank rank>
-    class Kernel:
-        public Array<Weight, rank>
+    template<typename Weight, Rank rank>
+    class Kernel: public Array<Weight, rank>
     {
 
             static_assert(rank > 0);
@@ -25,44 +22,38 @@ namespace lue {
 
             // using Radius = std::ptrdiff_t;  // std::size_t;
 
-                           Kernel              ()=default;
+            Kernel() = default;
 
-            explicit       Kernel              (Shape const& shape);
+            explicit Kernel(Shape const& shape);
 
-                           Kernel              (Shape const& shape,
-                                                Weight weight);
+            Kernel(Shape const& shape, Weight weight);
 
-                           Kernel              (Shape const& shape,
-                                                std::initializer_list<Weight> weights);
+            Kernel(Shape const& shape, std::initializer_list<Weight> weights);
 
-            explicit       Kernel              (Array<Weight, rank> const& weights);
+            explicit Kernel(Array<Weight, rank> const& weights);
 
-                           Kernel              (Kernel const&)=default;
+            Kernel(Kernel const&) = default;
 
-                           Kernel              (Kernel&&)=default;
+            Kernel(Kernel&&) = default;
 
-                           ~Kernel             ()=default;
+            ~Kernel() = default;
 
-            Kernel&        operator=           (Kernel const&)=default;
+            Kernel& operator=(Kernel const&) = default;
 
-            Kernel&        operator=           (Kernel&&)=default;
+            Kernel& operator=(Kernel&&) = default;
 
-            Radius         radius              () const;
+            Radius radius() const;
 
-            Count          size                () const;
+            Count size() const;
 
         private:
 
-            Radius         _radius;
-
+            Radius _radius;
     };
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank>::Kernel(
-        Shape const& shape):
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank>::Kernel(Shape const& shape):
 
         Base{shape},
         _radius{(shape[0] - 1) / 2}
@@ -74,12 +65,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank>::Kernel(
-        Shape const& shape,
-        Weight const weight):
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank>::Kernel(Shape const& shape, Weight const weight):
 
         Base{shape, weight},
         _radius{(shape[0] - 1) / 2}
@@ -91,12 +78,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank>::Kernel(
-        Shape const& shape,
-        std::initializer_list<Weight> weights):
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank>::Kernel(Shape const& shape, std::initializer_list<Weight> weights):
 
         Base{shape, weights},
         _radius{(shape[0] - 1) / 2}
@@ -108,11 +91,8 @@ namespace lue {
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank>::Kernel(
-        Array<Weight, rank> const& weights):
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank>::Kernel(Array<Weight, rank> const& weights):
 
         Base{weights},
         _radius{(this->shape()[0] - 1) / 2}
@@ -124,30 +104,22 @@ namespace lue {
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
+    template<typename Weight, Rank rank>
     Radius Kernel<Weight, rank>::radius() const
     {
         return _radius;
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
+    template<typename Weight, Rank rank>
     Count Kernel<Weight, rank>::size() const
     {
         return 2 * _radius + 1;
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank> box_kernel(
-        Radius const radius,
-        Weight const value)
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank> box_kernel(Radius const radius, Weight const value)
     {
         using Kernel = Kernel<Weight, rank>;
         using Shape = ShapeT<Kernel>;
@@ -160,20 +132,17 @@ namespace lue {
     }
 
 
-    template<
-        typename Weight,
-        Rank rank>
-    Kernel<Weight, rank> circle_kernel(
-        Radius const radius,
-        Weight const value)
+    template<typename Weight, Rank rank>
+    Kernel<Weight, rank> circle_kernel(Radius const radius, Weight const value)
     {
         static_assert(rank <= 2);
 
-        if constexpr(rank == 1)
+        if constexpr (rank == 1)
         {
             return box_kernel<Weight, rank>(radius, value);
         }
-        else {
+        else
+        {
             using Kernel = Kernel<Weight, rank>;
             using Shape = ShapeT<Kernel>;
 
@@ -189,15 +158,15 @@ namespace lue {
             {
                 Radius dist0, dist1;
 
-                for(Index idx0 = 0; idx0 < shape[0]; ++idx0)
+                for (Index idx0 = 0; idx0 < shape[0]; ++idx0)
                 {
                     dist0 = (idx0 - radius) * (idx0 - radius);
 
-                    for(Index idx1 = 0; idx1 < shape[1]; ++idx1)
+                    for (Index idx1 = 0; idx1 < shape[1]; ++idx1)
                     {
                         dist1 = (idx1 - radius) * (idx1 - radius);
 
-                        if(dist0 + dist1 <= distance_measure)
+                        if (dist0 + dist1 <= distance_measure)
                         {
                             kernel(idx0, idx1) = value;
                         }
@@ -212,9 +181,7 @@ namespace lue {
 
     namespace detail {
 
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<Kernel<E, r>>
         {
 
@@ -225,7 +192,6 @@ namespace lue {
                 constexpr static Rank rank = r;
 
                 using Shape = typename Array<E, r>::Shape;
-
         };
 
     }  // namespace detail

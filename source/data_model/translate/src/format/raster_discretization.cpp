@@ -2,57 +2,54 @@
 
 
 namespace lue {
-namespace hl {
+    namespace hl {
 
-RasterDiscretization::RasterDiscretization(
-    Shape&& shape)
+        RasterDiscretization::RasterDiscretization(Shape&& shape)
 
-    : _shape(std::forward<Shape>(shape))
+            :
+            _shape(std::forward<Shape>(shape))
 
-{
-}
-
-
-RasterDiscretization::RasterDiscretization(
-    hsize_t const nr_rows,
-    hsize_t const nr_cols)
-
-    : _shape{{nr_rows, nr_cols}}
-
-{
-}
+        {
+        }
 
 
-RasterDiscretization::Shape const& RasterDiscretization::shape() const
-{
-    return _shape;
-}
+        RasterDiscretization::RasterDiscretization(hsize_t const nr_rows, hsize_t const nr_cols)
+
+            :
+            _shape{{nr_rows, nr_cols}}
+
+        {
+        }
 
 
-hsize_t RasterDiscretization::nr_rows() const
-{
-    return _shape[0];
-}
+        RasterDiscretization::Shape const& RasterDiscretization::shape() const
+        {
+            return _shape;
+        }
 
 
-hsize_t RasterDiscretization::nr_cols() const
-{
-    return _shape[1];
-}
+        hsize_t RasterDiscretization::nr_rows() const
+        {
+            return _shape[0];
+        }
 
 
-bool RasterDiscretization::operator==(
-    RasterDiscretization const& other) const
-{
-    return _shape == other._shape;
-}
+        hsize_t RasterDiscretization::nr_cols() const
+        {
+            return _shape[1];
+        }
 
 
-bool RasterDiscretization::operator<(
-    RasterDiscretization const& other) const
-{
-    return _shape < other._shape;
-}
+        bool RasterDiscretization::operator==(RasterDiscretization const& other) const
+        {
+            return _shape == other._shape;
+        }
 
-}  // namespace hl
+
+        bool RasterDiscretization::operator<(RasterDiscretization const& other) const
+        {
+            return _shape < other._shape;
+        }
+
+    }  // namespace hl
 }  // namespace lue

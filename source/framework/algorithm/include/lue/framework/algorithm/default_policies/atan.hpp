@@ -5,23 +5,17 @@
 namespace lue {
     namespace policy::atan {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::atan
 
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        auto atan(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        auto atan(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::atan::DefaultPolicies<Element>;
 

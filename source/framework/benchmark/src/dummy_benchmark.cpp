@@ -5,9 +5,7 @@
 #include <thread>
 
 
-static void dummy(
-    lue::benchmark::Environment const& environment,
-    lue::benchmark::Task const& task)
+static void dummy(lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
 {
     using namespace std::chrono_literals;
 
@@ -25,26 +23,23 @@ static void dummy(
     auto const duration_per_work_item = 10000.0 + parallelization_overhead;
 
     auto const duration_of_work_size = work_size * duration_per_work_item;
-    auto const duration_in_case_of_perfect_scaling =
-        duration_of_work_size / nr_workers;
+    auto const duration_in_case_of_perfect_scaling = duration_of_work_size / nr_workers;
 
-    std::chrono::duration<double, std::milli> duration{
-        duration_in_case_of_perfect_scaling};
+    std::chrono::duration<double, std::milli> duration{duration_in_case_of_perfect_scaling};
 
     std::this_thread::sleep_for(duration);
 }
 
 
 auto setup_benchmark(
-        int /* argc */,
-        char* /* argv */[],
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+    int /* argc */,
+    char* /* argv */[],
+    lue::benchmark::Environment const& environment,
+    lue::benchmark::Task const& task)
 {
     auto callable = dummy;
 
-    return lue::benchmark::Benchmark{
-        std::move(callable), environment, task};
+    return lue::benchmark::Benchmark{std::move(callable), environment, task};
 }
 
 

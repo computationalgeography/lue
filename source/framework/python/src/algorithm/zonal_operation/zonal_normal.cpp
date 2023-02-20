@@ -8,12 +8,9 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Zone,
-            Rank rank>
+        template<typename Zone, Rank rank>
         pybind11::object zonal_normal(
-            PartitionedArray<Zone, rank> const& zones,
-            pybind11::object const& dtype_args)
+            PartitionedArray<Zone, rank> const& zones, pybind11::object const& dtype_args)
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -23,18 +20,20 @@ namespace lue::framework {
             auto const size = dtype.itemsize();  // bytes
             pybind11::object result;
 
-            switch(kind)
+            switch (kind)
             {
                 case 'f':
                 {
                     // Floating-point
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::zonal_normal<float>(zones));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::zonal_normal<double>(zones));
                             break;
                         }
@@ -44,12 +43,13 @@ namespace lue::framework {
                 }
             }
 
-            if(!result)
+            if (!result)
             {
                 throw std::runtime_error(fmt::format(
                     "Operation expects dtype representing float32 or float64, "
                     "but got: kind={}, itemsize={}",
-                    kind, size));
+                    kind,
+                    size));
             }
 
             return result;
@@ -58,8 +58,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_zonal_normal(
-        pybind11::module& module)
+    void bind_zonal_normal(pybind11::module& module)
     {
         module.def("zonal_normal", zonal_normal<std::uint8_t, 2>, "zones"_a, "dtype"_a);
         module.def("zonal_normal", zonal_normal<std::uint32_t, 2>, "zones"_a, "dtype"_a);

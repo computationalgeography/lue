@@ -33,29 +33,25 @@ namespace lue::test {
 
     FlowDirectionArray pcraster_example_flow_direction();
 
-    template<
-        typename Element>
+    template<typename Element>
     PartitionedArray<Element, 2> filled(Element const fill_value);
 
 
-    template<
-        typename Element>
+    template<typename Element>
     PartitionedArray<Element, 2> ones()
     {
         return filled(Element{1});
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     PartitionedArray<Element, 2> zeros()
     {
         return filled(Element{0});
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     PartitionedArray<Element, 2> no_data()
     {
         return filled(policy::no_data_value<Element>);

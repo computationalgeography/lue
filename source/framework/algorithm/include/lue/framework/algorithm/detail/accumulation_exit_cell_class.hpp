@@ -4,8 +4,7 @@
 
 namespace lue::detail {
 
-    enum class AccumulationExitCellClass: std::uint8_t
-    {
+    enum class AccumulationExitCellClass : std::uint8_t {
         sink,
         partition_output,
         junction,

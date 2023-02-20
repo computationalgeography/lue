@@ -5,11 +5,7 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element,
-        typename Zone,
-        Rank rank>
+    template<typename Policies, typename Element, typename Zone, Rank rank>
     PartitionedArray<Element, rank> zonal_majority(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,

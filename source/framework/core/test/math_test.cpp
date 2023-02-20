@@ -1,41 +1,32 @@
 #define BOOST_TEST_MODULE lue framework core math
+#include "lue/framework/core/math.hpp"
 #include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
-#include "lue/framework/core/math.hpp"
 
 
 namespace detail {
 
-template<
-    typename Input,
-    typename Output>
-auto check_equal = [](
-        Input const from_min,
-        Input const from_max,
-        Output const to_min,
-        Output const to_max,
-        Input const value_to_map,
-        Output const result_we_want)
+    template<typename Input, typename Output>
+    auto check_equal = [](Input const from_min,
+                          Input const from_max,
+                          Output const to_min,
+                          Output const to_max,
+                          Input const value_to_map,
+                          Output const result_we_want)
     {
         BOOST_TEST_INFO("With value " << value_to_map);
         BOOST_CHECK_EQUAL(
-            lue::map_to_range(
-                from_min, from_max, to_min, to_max, value_to_map),
-            result_we_want);
+            lue::map_to_range(from_min, from_max, to_min, to_max, value_to_map), result_we_want);
     };
 
 }  // namespace detail
 
 
-#define DEFINE_CHECK_EQUAL() \
-    auto check_equal = [=]( \
-            Input const value_to_map, \
-            Output const result_we_want) \
-        { \
-            detail::check_equal<Input, Output>( \
-                    from_min, from_max, to_min, to_max, value_to_map, \
-                    result_we_want); \
-        };
+#define DEFINE_CHECK_EQUAL()                                                                                 \
+    auto check_equal = [=](Input const value_to_map, Output const result_we_want) {                          \
+        detail::check_equal<Input, Output>(                                                                  \
+            from_min, from_max, to_min, to_max, value_to_map, result_we_want);                               \
+    };
 
 
 BOOST_AUTO_TEST_CASE(map_indices)
@@ -146,7 +137,7 @@ BOOST_AUTO_TEST_CASE(map_to_range_case_1)
     //  0 - 33: 0 (→ 34)
     // 33 - 66: 1 (→ 33)
     // 66 - 99: 2 (→ 33)
-    check_equal( 0, 0);
+    check_equal(0, 0);
     check_equal(33, 0);
     check_equal(34, 1);
     check_equal(66, 1);

@@ -5,23 +5,17 @@
 namespace lue {
     namespace policy::minimum {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::minimum
 
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        hpx::future<Element> minimum(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        hpx::future<Element> minimum(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::minimum::DefaultPolicies<Element>;
 

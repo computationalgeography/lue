@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/framework/algorithm/where.hpp"
-#include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/definition/binary_local_operation.hpp"
+#include "lue/framework/algorithm/local_operation_export.hpp"
+#include "lue/framework/algorithm/where.hpp"
 #include "lue/macro.hpp"
 
 
@@ -9,9 +9,7 @@ namespace lue {
     namespace detail {
         namespace where {
 
-            template<
-                typename ConditionElement,
-                typename InputElement>
+            template<typename ConditionElement, typename InputElement>
             class Where
             {
 
@@ -29,7 +27,6 @@ namespace lue {
 
                         return true_value;
                     }
-
             };
 
 
@@ -43,11 +40,7 @@ namespace lue {
             };
 
 
-            template<
-                typename Policies,
-                typename ConditionElement,
-                typename Element,
-                Rank rank>
+            template<typename Policies, typename ConditionElement, typename Element, Rank rank>
             class OverloadPicker<
                 Policies,
                 ArrayPartition<ConditionElement, rank>,
@@ -78,74 +71,80 @@ namespace lue {
                             hpx::launch::async,
                             hpx::unwrapping(
 
-                                    [policies, condition_partition, true_partition, false_partition](
-                                        Offset const& offset,
-                                        ConditionData const& condition_data,
-                                        Data const& true_data,
-                                        Data const& false_data)
+                                [policies, condition_partition, true_partition, false_partition](
+                                    Offset const& offset,
+                                    ConditionData const& condition_data,
+                                    Data const& true_data,
+                                    Data const& false_data)
+                                {
+                                    AnnotateFunction annotation{"where"};
+
+                                    HPX_UNUSED(condition_partition);
+                                    HPX_UNUSED(true_partition);
+                                    HPX_UNUSED(false_partition);
+
+                                    Data output_partition_data{condition_data.shape()};
+
+                                    auto const& dp = policies.domain_policy();
+                                    auto const& indp1 =
+                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp2 =
+                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp3 =
+                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& ondp =
+                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                    Count const nr_elements{lue::nr_elements(condition_data)};
+                                    lue_hpx_assert(lue::nr_elements(true_data) == nr_elements);
+                                    lue_hpx_assert(lue::nr_elements(false_data) == nr_elements);
+
+                                    // No-data is generated at:
+                                    // - No-data in condition expression
+                                    // - True in condition expression && no-data in true expression
+                                    // - False in condition expression && no-data in false expression
+
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        AnnotateFunction annotation{"where"};
-
-                                        HPX_UNUSED(condition_partition);
-                                        HPX_UNUSED(true_partition);
-                                        HPX_UNUSED(false_partition);
-
-                                        Data output_partition_data{condition_data.shape()};
-
-                                        auto const& dp = policies.domain_policy();
-                                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                        Count const nr_elements{lue::nr_elements(condition_data)};
-                                        lue_hpx_assert(lue::nr_elements(true_data) == nr_elements);
-                                        lue_hpx_assert(lue::nr_elements(false_data) == nr_elements);
-
-                                        // No-data is generated at:
-                                        // - No-data in condition expression
-                                        // - True in condition expression && no-data in true expression
-                                        // - False in condition expression && no-data in false expression
-
-                                        for(Index i = 0; i < nr_elements; ++i)
+                                        if (indp1.is_no_data(condition_data, i))
                                         {
-                                            if(indp1.is_no_data(condition_data, i))
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else if (!dp.within_domain(
+                                                     condition_data[i], true_data[i], false_data[i]))
+                                        {
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            if (condition_data[i])
                                             {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if(!dp.within_domain(condition_data[i], true_data[i], false_data[i]))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                if(condition_data[i])
+                                                if (indp2.is_no_data(true_data, i))
                                                 {
-                                                    if(indp2.is_no_data(true_data, i))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = true_data[i];
-                                                    }
+                                                    ondp.mark_no_data(output_partition_data, i);
                                                 }
                                                 else
                                                 {
-                                                    if(indp3.is_no_data(false_data, i))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = false_data[i];
-                                                    }
+                                                    output_partition_data[i] = true_data[i];
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (indp3.is_no_data(false_data, i))
+                                                {
+                                                    ondp.mark_no_data(output_partition_data, i);
+                                                }
+                                                else
+                                                {
+                                                    output_partition_data[i] = false_data[i];
                                                 }
                                             }
                                         }
-
-                                        return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
                                     }
+
+                                    return Partition{
+                                        hpx::find_here(), offset, std::move(output_partition_data)};
+                                }
 
                                 ),
                             condition_partition.offset(),
@@ -155,20 +154,13 @@ namespace lue {
                     }
 
                     struct Action:
-                        hpx::actions::make_action<
-                            decltype(&where_partition),
-                            &where_partition,
-                            Action>::type
-                    {};
-
+                        hpx::actions::make_action<decltype(&where_partition), &where_partition, Action>::type
+                    {
+                    };
             };
 
 
-            template<
-                typename Policies,
-                typename ConditionElement,
-                typename Element,
-                Rank rank>
+            template<typename Policies, typename ConditionElement, typename Element, Rank rank>
             class OverloadPicker<
                 Policies,
                 ArrayPartition<ConditionElement, rank>,
@@ -198,71 +190,77 @@ namespace lue {
                             hpx::launch::async,
                             hpx::unwrapping(
 
-                                    [policies, condition_partition, true_partition, false_scalar](
-                                        Offset const& offset,
-                                        ConditionData const& condition_data,
-                                        Data const& true_data)
+                                [policies, condition_partition, true_partition, false_scalar](
+                                    Offset const& offset,
+                                    ConditionData const& condition_data,
+                                    Data const& true_data)
+                                {
+                                    AnnotateFunction annotation{"where_partition"};
+
+                                    HPX_UNUSED(condition_partition);
+                                    HPX_UNUSED(true_partition);
+
+                                    Data output_partition_data{condition_data.shape()};
+
+                                    auto const& dp = policies.domain_policy();
+                                    auto const& indp1 =
+                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp2 =
+                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp3 =
+                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& ondp =
+                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                    Count const nr_elements{lue::nr_elements(condition_data)};
+                                    lue_hpx_assert(lue::nr_elements(true_data) == nr_elements);
+
+                                    // No-data is generated at:
+                                    // - No-data in condition expression
+                                    // - True in condition expression && no-data in true expression
+                                    // - False in condition expression && no-data in false expression
+
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        AnnotateFunction annotation{"where_partition"};
-
-                                        HPX_UNUSED(condition_partition);
-                                        HPX_UNUSED(true_partition);
-
-                                        Data output_partition_data{condition_data.shape()};
-
-                                        auto const& dp = policies.domain_policy();
-                                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                        Count const nr_elements{lue::nr_elements(condition_data)};
-                                        lue_hpx_assert(lue::nr_elements(true_data) == nr_elements);
-
-                                        // No-data is generated at:
-                                        // - No-data in condition expression
-                                        // - True in condition expression && no-data in true expression
-                                        // - False in condition expression && no-data in false expression
-
-                                        for(Index i = 0; i < nr_elements; ++i)
+                                        if (indp1.is_no_data(condition_data, i))
                                         {
-                                            if(indp1.is_no_data(condition_data, i))
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else if (!dp.within_domain(
+                                                     condition_data[i], true_data[i], false_scalar))
+                                        {
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            if (condition_data[i])
                                             {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if(!dp.within_domain(condition_data[i], true_data[i], false_scalar))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                if(condition_data[i])
+                                                if (indp2.is_no_data(true_data, i))
                                                 {
-                                                    if(indp2.is_no_data(true_data, i))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = true_data[i];
-                                                    }
+                                                    ondp.mark_no_data(output_partition_data, i);
                                                 }
                                                 else
                                                 {
-                                                    if(indp3.is_no_data(false_scalar))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = false_scalar;
-                                                    }
+                                                    output_partition_data[i] = true_data[i];
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (indp3.is_no_data(false_scalar))
+                                                {
+                                                    ondp.mark_no_data(output_partition_data, i);
+                                                }
+                                                else
+                                                {
+                                                    output_partition_data[i] = false_scalar;
                                                 }
                                             }
                                         }
-
-                                        return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
                                     }
+
+                                    return Partition{
+                                        hpx::find_here(), offset, std::move(output_partition_data)};
+                                }
 
                                 ),
                             condition_partition.offset(),
@@ -271,20 +269,13 @@ namespace lue {
                     }
 
                     struct Action:
-                        hpx::actions::make_action<
-                            decltype(&where_partition),
-                            &where_partition,
-                            Action>::type
-                    {};
-
+                        hpx::actions::make_action<decltype(&where_partition), &where_partition, Action>::type
+                    {
+                    };
             };
 
 
-            template<
-                typename Policies,
-                typename ConditionElement,
-                typename Element,
-                Rank rank>
+            template<typename Policies, typename ConditionElement, typename Element, Rank rank>
             class OverloadPicker<
                 Policies,
                 ArrayPartition<ConditionElement, rank>,
@@ -314,71 +305,77 @@ namespace lue {
                             hpx::launch::async,
                             hpx::unwrapping(
 
-                                    [policies, condition_partition, true_scalar, false_partition](
-                                        Offset const& offset,
-                                        ConditionData const& condition_data,
-                                        Data const& false_data)
+                                [policies, condition_partition, true_scalar, false_partition](
+                                    Offset const& offset,
+                                    ConditionData const& condition_data,
+                                    Data const& false_data)
+                                {
+                                    AnnotateFunction annotation{"where_partition"};
+
+                                    HPX_UNUSED(condition_partition);
+                                    HPX_UNUSED(false_partition);
+
+                                    Data output_partition_data{condition_data.shape()};
+
+                                    auto const& dp = policies.domain_policy();
+                                    auto const& indp1 =
+                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp2 =
+                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp3 =
+                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& ondp =
+                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                    Count const nr_elements{lue::nr_elements(condition_data)};
+                                    lue_hpx_assert(lue::nr_elements(false_data) == nr_elements);
+
+                                    // No-data is generated at:
+                                    // - No-data in condition expression
+                                    // - True in condition expression && no-data in true expression
+                                    // - False in condition expression && no-data in false expression
+
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        AnnotateFunction annotation{"where_partition"};
-
-                                        HPX_UNUSED(condition_partition);
-                                        HPX_UNUSED(false_partition);
-
-                                        Data output_partition_data{condition_data.shape()};
-
-                                        auto const& dp = policies.domain_policy();
-                                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                        Count const nr_elements{lue::nr_elements(condition_data)};
-                                        lue_hpx_assert(lue::nr_elements(false_data) == nr_elements);
-
-                                        // No-data is generated at:
-                                        // - No-data in condition expression
-                                        // - True in condition expression && no-data in true expression
-                                        // - False in condition expression && no-data in false expression
-
-                                        for(Index i = 0; i < nr_elements; ++i)
+                                        if (indp1.is_no_data(condition_data, i))
                                         {
-                                            if(indp1.is_no_data(condition_data, i))
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else if (!dp.within_domain(
+                                                     condition_data[i], true_scalar, false_data[i]))
+                                        {
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            if (condition_data[i])
                                             {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if(!dp.within_domain(condition_data[i], true_scalar, false_data[i]))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                if(condition_data[i])
+                                                if (indp3.is_no_data(true_scalar))
                                                 {
-                                                    if(indp3.is_no_data(true_scalar))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = true_scalar;
-                                                    }
+                                                    ondp.mark_no_data(output_partition_data, i);
                                                 }
                                                 else
                                                 {
-                                                    if(indp2.is_no_data(false_data, i))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = false_data[i];
-                                                    }
+                                                    output_partition_data[i] = true_scalar;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (indp2.is_no_data(false_data, i))
+                                                {
+                                                    ondp.mark_no_data(output_partition_data, i);
+                                                }
+                                                else
+                                                {
+                                                    output_partition_data[i] = false_data[i];
                                                 }
                                             }
                                         }
-
-                                        return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
                                     }
+
+                                    return Partition{
+                                        hpx::find_here(), offset, std::move(output_partition_data)};
+                                }
 
                                 ),
                             condition_partition.offset(),
@@ -387,25 +384,14 @@ namespace lue {
                     }
 
                     struct Action:
-                        hpx::actions::make_action<
-                            decltype(&where_partition),
-                            &where_partition,
-                            Action>::type
-                    {};
-
+                        hpx::actions::make_action<decltype(&where_partition), &where_partition, Action>::type
+                    {
+                    };
             };
 
 
-            template<
-                typename Policies,
-                typename ConditionElement,
-                typename Element,
-                Rank rank>
-            class OverloadPicker<
-                Policies,
-                ArrayPartition<ConditionElement, rank>,
-                Element,
-                Element>
+            template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+            class OverloadPicker<Policies, ArrayPartition<ConditionElement, rank>, Element, Element>
             {
 
                 public:
@@ -429,68 +415,73 @@ namespace lue {
                             hpx::launch::async,
                             hpx::unwrapping(
 
-                                    [policies, condition_partition, true_scalar, false_scalar](
-                                        Offset const& offset,
-                                        ConditionData const& condition_data)
+                                [policies, condition_partition, true_scalar, false_scalar](
+                                    Offset const& offset, ConditionData const& condition_data)
+                                {
+                                    AnnotateFunction annotation{"where_partition"};
+
+                                    HPX_UNUSED(condition_partition);
+
+                                    Data output_partition_data{condition_data.shape()};
+
+                                    auto const& dp = policies.domain_policy();
+                                    auto const& indp1 =
+                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp2 =
+                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& indp3 =
+                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                    auto const& ondp =
+                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                    Count const nr_elements{lue::nr_elements(condition_data)};
+
+                                    // No-data is generated at:
+                                    // - No-data in condition expression
+                                    // - True in condition expression && no-data in true expression
+                                    // - False in condition expression && no-data in false expression
+
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        AnnotateFunction annotation{"where_partition"};
-
-                                        HPX_UNUSED(condition_partition);
-
-                                        Data output_partition_data{condition_data.shape()};
-
-                                        auto const& dp = policies.domain_policy();
-                                        auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                        Count const nr_elements{lue::nr_elements(condition_data)};
-
-                                        // No-data is generated at:
-                                        // - No-data in condition expression
-                                        // - True in condition expression && no-data in true expression
-                                        // - False in condition expression && no-data in false expression
-
-                                        for(Index i = 0; i < nr_elements; ++i)
+                                        if (indp1.is_no_data(condition_data, i))
                                         {
-                                            if(indp1.is_no_data(condition_data, i))
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else if (!dp.within_domain(
+                                                     condition_data[i], true_scalar, false_scalar))
+                                        {
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            if (condition_data[i])
                                             {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if(!dp.within_domain(condition_data[i], true_scalar, false_scalar))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                if(condition_data[i])
+                                                if (indp3.is_no_data(true_scalar))
                                                 {
-                                                    if(indp3.is_no_data(true_scalar))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = true_scalar;
-                                                    }
+                                                    ondp.mark_no_data(output_partition_data, i);
                                                 }
                                                 else
                                                 {
-                                                    if(indp2.is_no_data(false_scalar))
-                                                    {
-                                                        ondp.mark_no_data(output_partition_data, i);
-                                                    }
-                                                    else
-                                                    {
-                                                        output_partition_data[i] = false_scalar;
-                                                    }
+                                                    output_partition_data[i] = true_scalar;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (indp2.is_no_data(false_scalar))
+                                                {
+                                                    ondp.mark_no_data(output_partition_data, i);
+                                                }
+                                                else
+                                                {
+                                                    output_partition_data[i] = false_scalar;
                                                 }
                                             }
                                         }
-
-                                        return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
                                     }
+
+                                    return Partition{
+                                        hpx::find_here(), offset, std::move(output_partition_data)};
+                                }
 
                                 ),
                             condition_partition.offset(),
@@ -498,12 +489,9 @@ namespace lue {
                     }
 
                     struct Action:
-                        hpx::actions::make_action<
-                            decltype(&where_partition),
-                            &where_partition,
-                            Action>::type
-                    {};
-
+                        hpx::actions::make_action<decltype(&where_partition), &where_partition, Action>::type
+                    {
+                    };
             };
 
 
@@ -516,14 +504,10 @@ namespace lue {
                 typename OverloadPicker<Policies, ConditionPartition, TruePartition, FalsePartition>::Action;
 
         }  // namespace where
-    }  // namespace detail
+    }      // namespace detail
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -551,20 +535,20 @@ namespace lue {
         Partitions const& false_partitions{false_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
-        for(Index p = 0; p < nr_partitions(condition); ++p)
+        for (Index p = 0; p < nr_partitions(condition); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies](
+                [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
                     Partition const& false_partition)
                 {
                     AnnotateFunction annotation{"where"};
 
-                    return action(locality_id, policies,
-                        condition_partition, true_partition, false_partition);
+                    return action(
+                        locality_id, policies, condition_partition, true_partition, false_partition);
                 },
 
                 condition_partitions[p],
@@ -576,11 +560,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -605,20 +585,20 @@ namespace lue {
         Partitions const& true_partitions{true_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
-        for(Index p = 0; p < nr_partitions(condition); ++p)
+        for (Index p = 0; p < nr_partitions(condition); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies](
+                [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
                     hpx::shared_future<Element> const& false_value)
                 {
                     AnnotateFunction annotation{"where"};
 
-                    return action(locality_id, policies,
-                        condition_partition, true_partition, false_value.get());
+                    return action(
+                        locality_id, policies, condition_partition, true_partition, false_value.get());
                 },
 
                 condition_partitions[p],
@@ -630,11 +610,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -659,20 +635,20 @@ namespace lue {
         Partitions const& false_partitions{false_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
-        for(Index p = 0; p < nr_partitions(condition); ++p)
+        for (Index p = 0; p < nr_partitions(condition); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies](
+                [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value,
                     Partition const& false_partition)
                 {
                     AnnotateFunction annotation{"where"};
 
-                    return action(locality_id, policies,
-                        condition_partition, true_value.get(), false_partition);
+                    return action(
+                        locality_id, policies, condition_partition, true_value.get(), false_partition);
                 },
 
                 condition_partitions[p],
@@ -684,11 +660,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -708,20 +680,20 @@ namespace lue {
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
-        for(Index p = 0; p < nr_partitions(condition); ++p)
+        for (Index p = 0; p < nr_partitions(condition); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies](
+                [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value,
                     hpx::shared_future<Element> const& false_value)
                 {
                     AnnotateFunction annotation{"where"};
 
-                    return action(locality_id, policies,
-                        condition_partition, true_value.get(), false_value.get());
+                    return action(
+                        locality_id, policies, condition_partition, true_value.get(), false_value.get());
                 },
 
                 condition_partitions[p],
@@ -733,11 +705,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -749,11 +717,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -767,53 +731,47 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_WHERE2(Policies, ConditionElement, Element, rank)    \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
-        PartitionedArray<Element, rank> const&);                             \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
+#define LUE_INSTANTIATE_WHERE2(Policies, ConditionElement, Element, rank)                                    \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
+        PartitionedArray<Element, rank> const&);                                                             \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
         hpx::shared_future<Element> const);
 
 
-#define LUE_INSTANTIATE_WHERE3(Policies, ConditionElement, Element, rank)    \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
-        PartitionedArray<Element, rank> const&,                              \
-        PartitionedArray<Element, rank> const&);                             \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
-        PartitionedArray<Element, rank> const&,                              \
-        hpx::shared_future<Element> const);                                  \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
-        hpx::shared_future<Element> const,                                   \
-        PartitionedArray<Element, rank> const&);                             \
-                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT                                      \
-    PartitionedArray<Element, rank> where<                                   \
-            ArgumentType<void(Policies)>, ConditionElement, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                 \
-        PartitionedArray<ConditionElement, rank> const&,                     \
-        hpx::shared_future<Element> const,                                   \
+#define LUE_INSTANTIATE_WHERE3(Policies, ConditionElement, Element, rank)                                    \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
+        PartitionedArray<Element, rank> const&,                                                              \
+        PartitionedArray<Element, rank> const&);                                                             \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
+        PartitionedArray<Element, rank> const&,                                                              \
+        hpx::shared_future<Element> const);                                                                  \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
+        hpx::shared_future<Element> const,                                                                   \
+        PartitionedArray<Element, rank> const&);                                                             \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    where<ArgumentType<void(Policies)>, ConditionElement, Element, rank>(                                    \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<ConditionElement, rank> const&,                                                     \
+        hpx::shared_future<Element> const,                                                                   \
         hpx::shared_future<Element> const);

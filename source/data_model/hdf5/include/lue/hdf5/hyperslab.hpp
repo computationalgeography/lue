@@ -6,76 +6,70 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      Class representing a hyperslab selection of a dataspace
-    @sa         [Reading from or writing to a subset of a dataset](
-                https://support.hdfgroup.org/HDF5/Tutor/selectsimple.html)
+        /*!
+            @brief      Class representing a hyperslab selection of a dataspace
+            @sa         [Reading from or writing to a subset of a dataset](
+                        https://support.hdfgroup.org/HDF5/Tutor/selectsimple.html)
 
-    A hyperslab defines a subset of a dataspace.
-*/
-class Hyperslab
-{
+            A hyperslab defines a subset of a dataspace.
+        */
+        class Hyperslab
+        {
 
-public:
+            public:
 
-                   Hyperslab           ()=default;
+                Hyperslab() = default;
 
-                   Hyperslab           (Offset const& start,
-                                        Stride const& stride,
-                                        Count const& count);
+                Hyperslab(Offset const& start, Stride const& stride, Count const& count);
 
-                   Hyperslab           (Offset const& start,
-                                        Count const& count);
+                Hyperslab(Offset const& start, Count const& count);
 
-    explicit       Hyperslab           (Shape const& shape);
+                explicit Hyperslab(Shape const& shape);
 
-                   Hyperslab           (Hyperslab const&)=default;
+                Hyperslab(Hyperslab const&) = default;
 
-                   Hyperslab           (Hyperslab&&)=default;
+                Hyperslab(Hyperslab&&) = default;
 
-                   ~Hyperslab          ()=default;
+                ~Hyperslab() = default;
 
-    Hyperslab&     operator=           (Hyperslab const&)=default;
+                Hyperslab& operator=(Hyperslab const&) = default;
 
-    Hyperslab&     operator=           (Hyperslab&&)=default;
+                Hyperslab& operator=(Hyperslab&&) = default;
 
-    Offset const&  start               () const;
+                Offset const& start() const;
 
-    Offset&        start               ();
+                Offset& start();
 
-    Stride const&  stride              () const;
+                Stride const& stride() const;
 
-    Stride&        stride              ();
+                Stride& stride();
 
-    Count const&   count               () const;
+                Count const& count() const;
 
-    Count&         count               ();
+                Count& count();
 
-    std::size_t    nr_dimensions       () const;
+                std::size_t nr_dimensions() const;
 
-    bool           empty               () const;
+                bool empty() const;
 
-    std::size_t    nr_elements         () const;
+                std::size_t nr_elements() const;
 
-private:
+            private:
 
-    //! Offset of the starting element
-    Offset         _start;
+                //! Offset of the starting element
+                Offset _start;
 
-    //! Amount of elements to move in each direction
-    Stride         _stride;
+                //! Amount of elements to move in each direction
+                Stride _stride;
 
-    //! Number of blocks to select
-    Count          _count;
-
-};
+                //! Number of blocks to select
+                Count _count;
+        };
 
 
-Hyperslab          hyperslab           (Offset const& subset_center,
-                                        Shape const& subset_shape,
-                                        Shape const& array_shape);
+        Hyperslab hyperslab(Offset const& subset_center, Shape const& subset_shape, Shape const& array_shape);
 
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

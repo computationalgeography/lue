@@ -1,7 +1,7 @@
+#include "lue/py/qa/submodule.hpp"
 #include "lue/qa/scalability/array_experiment.hpp"
 #include "lue/qa/scalability/io.hpp"
 #include "lue/qa/scalability/run.hpp"
-#include "lue/py/qa/submodule.hpp"
 
 
 namespace py = pybind11;
@@ -10,8 +10,7 @@ using namespace pybind11::literals;
 
 namespace lue::qa {
 
-    void init_submodule(
-        py::module& module)
+    void init_submodule(py::module& module)
     {
         py::module submodule = module.def_submodule("qa");
 
@@ -21,11 +20,7 @@ namespace lue::qa {
             R"(
     Class for instances containing information about a scalability experiment.
 )")
-            .def(
-                    "add",
-                    &Experiment::add,
-                    "run"_a
-                )
+            .def("add", &Experiment::add, "run"_a)
 
             ;
 
@@ -37,20 +32,12 @@ namespace lue::qa {
     experiment.
 )")
             .def(
-                    py::init<Count, Shape const&, Shape const&>(),
-                    "nr_workers"_a,
-                    "array_shape"_a,
-                    "partition_shape"_a
-                )
-            .def(
-                    "start",
-                    &Run::start
-                )
-            .def(
-                    "stop",
-                    &Run::stop
-                )
-            ;
+                py::init<Count, Shape const&, Shape const&>(),
+                "nr_workers"_a,
+                "array_shape"_a,
+                "partition_shape"_a)
+            .def("start", &Run::start)
+            .def("stop", &Run::stop);
 
         py::class_<Run>(
             submodule,
@@ -58,26 +45,12 @@ namespace lue::qa {
             R"(
     Class for keeping track of information of running some calculations once.
 )")
-            .def(
-                    py::init<>())
-            .def(
-                    "start",
-                    &Run::start
-                )
-            .def(
-                    "stop",
-                    &Run::stop
-                )
-            ;
+            .def(py::init<>())
+            .def("start", &Run::start)
+            .def("stop", &Run::stop);
 
 
-        submodule.def(
-                "save_results",
-                save_results,
-                "experiment"_a,
-                "pathname"_a
-            );
-
+        submodule.def("save_results", save_results, "experiment"_a, "pathname"_a);
     }
 
 }  // namespace lue::qa

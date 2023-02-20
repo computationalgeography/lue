@@ -1,14 +1,14 @@
 #include "lue/framework/algorithm/definition/focal_diversity.hpp"
-#include "lue/framework/algorithm/value_policies/focal_diversity.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/focal_diversity.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Count, Element)                \
-                                                                 \
-    LUE_INSTANTIATE_FOCAL_DIVERSITY(                             \
-        ESC(policy::focal_diversity::Policies<Count, Element>),  \
-        Count,                                                   \
-        Element,                                                 \
+#define LUE_INSTANTIATE(Policies, Count, Element)                                                            \
+                                                                                                             \
+    LUE_INSTANTIATE_FOCAL_DIVERSITY(                                                                         \
+        ESC(policy::focal_diversity::Policies<Count, Element>),                                              \
+        Count,                                                                                               \
+        Element,                                                                                             \
         ESC(Kernel<std::uint8_t, 2>));
 
 

@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_normal.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element, Zone)             \
-                                                             \
-    LUE_INSTANTIATE_ZONAL_NORMAL(                            \
-        ESC(policy::zonal_normal::Policies<Element, Zone>),  \
-        Element,                                             \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Element, Zone)                                                             \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_NORMAL(ESC(policy::zonal_normal::Policies<Element, Zone>), Element, Zone);
 
 
 namespace lue {

@@ -4,8 +4,7 @@
 
 namespace lue::gui {
 
-    TabItem::TabItem(
-        std::string const& name):
+    TabItem::TabItem(std::string const& name):
 
         Selectable{ImGui::BeginTabItem(name.c_str())}
 
@@ -15,7 +14,7 @@ namespace lue::gui {
 
     TabItem::~TabItem()
     {
-        if(was_selected())
+        if (was_selected())
         {
             ImGui::EndTabItem();
         }

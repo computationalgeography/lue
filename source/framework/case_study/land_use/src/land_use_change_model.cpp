@@ -3,11 +3,11 @@
 
 namespace lue {
 
-LandUseChangeModel::LandUseChangeModel():
+    LandUseChangeModel::LandUseChangeModel():
 
-    LandUseChangeModelBase{}
+        LandUseChangeModelBase{}
 
-{
-}
+    {
+    }
 
 }  // namespace lue

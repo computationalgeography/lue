@@ -1,7 +1,7 @@
 #pragma once
+#include "lue/framework/algorithm/definition/inflow_count3.hpp"
 #include "lue/framework/algorithm/detail/accumulation_exit_cell_class.hpp"
 #include "lue/framework/algorithm/detail/communicator.hpp"
-#include "lue/framework/algorithm/definition/inflow_count3.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/define.hpp"
 #include <hpx/serialization.hpp>
@@ -9,40 +9,32 @@
 
 namespace lue::detail {
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, Rank rank>
     hpx::tuple<
         ArrayPartition<std::uint8_t, rank>,
         hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
-        hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>
-    >
-        inflow_count3(
-            Policies const& policies,
-            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-            InflowCountCommunicator<rank> inflow_count_communicator)
+        hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
+    inflow_count3(
+        Policies const& policies,
+        ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
+        InflowCountCommunicator<rank> inflow_count_communicator)
     {
         // As long as we only use flow direction, external inflow and threshold to detect
         // no-data in input, there is no need to mark no-data in the output of inflow_count. We
         // won't be reading these cells anyway.
 
         using CountElement = std::uint8_t;
-        using InflowCountOutputPolicies =
-            policy::OutputPolicies<
-                    policy::DontMarkNoData<CountElement>,
-                    policy::AllValuesWithinRange<CountElement>
-                >;
+        using InflowCountOutputPolicies = policy::
+            OutputPolicies<policy::DontMarkNoData<CountElement>, policy::AllValuesWithinRange<CountElement>>;
         InflowCountOutputPolicies inflow_count_output_policies{};
 
         using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;
         FlowDirectionInputPolicies flow_direction_input_policies{std::get<0>(policies.inputs_policies())};
 
-        using InflowCountPolicies =
-            policy::Policies<
-                policy::AllValuesWithinDomain<FlowDirectionElement>,
-                policy::OutputsPolicies<InflowCountOutputPolicies>,
-                policy::InputsPolicies<FlowDirectionInputPolicies>>;
+        using InflowCountPolicies = policy::Policies<
+            policy::AllValuesWithinDomain<FlowDirectionElement>,
+            policy::OutputsPolicies<InflowCountOutputPolicies>,
+            policy::InputsPolicies<FlowDirectionInputPolicies>>;
 
         InflowCountPolicies inflow_count_policies{
             policy::AllValuesWithinDomain<FlowDirectionElement>{},
@@ -62,12 +54,10 @@ namespace lue::detail {
 
         public:
 
-            ChannelMaterial()=default;
+            ChannelMaterial() = default;
 
 
-            ChannelMaterial(
-                Index const& idx,
-                MaterialElement const& value):
+            ChannelMaterial(Index const& idx, MaterialElement const& value):
 
                 _cell_idx{idx},
                 _value{value}
@@ -94,26 +84,20 @@ namespace lue::detail {
 
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive & _cell_idx & _value;
+                archive& _cell_idx& _value;
             }
 
 
             Index _cell_idx;
 
             MaterialElement _value;
-
     };
 
 
-    template<
-        typename MaterialElement,
-        Rank rank>
-    class MaterialCommunicator:
-        public Communicator<ChannelMaterial<MaterialElement, rank>, rank>
+    template<typename MaterialElement, Rank rank>
+    class MaterialCommunicator: public Communicator<ChannelMaterial<MaterialElement, rank>, rank>
     {
 
         public:
@@ -121,7 +105,7 @@ namespace lue::detail {
             using Base = Communicator<ChannelMaterial<MaterialElement, rank>, rank>;
 
 
-            MaterialCommunicator()=default;
+            MaterialCommunicator() = default;
 
 
             MaterialCommunicator(
@@ -142,20 +126,14 @@ namespace lue::detail {
 
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                unsigned int const version)
+            void serialize(Archive& archive, unsigned int const version)
             {
                 Base::serialize(archive, version);
             }
-
     };
 
 
-    template<
-         typename CellAccumulator,
-         typename Communicator
-    >
+    template<typename CellAccumulator, typename Communicator>
     class Accumulator3
     {
 
@@ -177,18 +155,14 @@ namespace lue::detail {
             }
 
 
-            void enter_cell(
-                Index const idx0,
-                Index const idx1)
+            void enter_cell(Index const idx0, Index const idx1)
             {
                 // What to do when we enter a cell
                 this->accumulate_external_inflow(idx0, idx1);
             }
 
 
-            void leave_at_sink(
-                [[maybe_unused]] Index const idx0,
-                [[maybe_unused]] Index const idx1)
+            void leave_at_sink([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
             {
                 // What to do when we leave at a sink
             }
@@ -208,10 +182,7 @@ namespace lue::detail {
 
 
             void push_downstream(
-                Index const idx0_from,
-                Index const idx1_from,
-                Index const idx0_to,
-                Index const idx1_to)
+                Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
             {
                 // What to do when we have to push material downstream
                 this->accumulate_downstream(idx0_from, idx1_from, idx0_to, idx1_to);
@@ -219,9 +190,7 @@ namespace lue::detail {
 
 
             void enter_at_partition_input(
-                MaterialElement const& value,
-                Index const idx0_to,
-                Index const idx1_to)
+                MaterialElement const& value, Index const idx0_to, Index const idx1_to)
             {
                 _cell_accumulator.accumulate_downstream(value, idx0_to, idx1_to);
             }
@@ -230,9 +199,7 @@ namespace lue::detail {
         private:
 
 
-            void accumulate_external_inflow(
-                Index const idx0,
-                Index const idx1)
+            void accumulate_external_inflow(Index const idx0, Index const idx1)
             {
                 // We are entering the current cell. Material from
                 // upstream is already present.
@@ -245,10 +212,7 @@ namespace lue::detail {
 
 
             void accumulate_downstream(
-                Index const idx0_from,
-                Index const idx1_from,
-                Index const idx0_to,
-                Index const idx1_to)
+                Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
             {
                 // We are about the leave the current cell. This is the
                 // final step.
@@ -277,18 +241,17 @@ namespace lue::detail {
                 // are solved / handled, the sending channel can be closed. This will end
                 // the reading for loop on the other side of the channel.
                 auto& output_cells_idxs{_output_cells_idxs[direction]};
-                auto it = std::find_if(output_cells_idxs.begin(), output_cells_idxs.end(),
-                        [idx0, idx1](std::array<Index, 2> const& cell_idxs2)
-                        {
-                            return idx0 == cell_idxs2[0] && idx1 == cell_idxs2[1];
-                        }
-                    );
+                auto it = std::find_if(
+                    output_cells_idxs.begin(),
+                    output_cells_idxs.end(),
+                    [idx0, idx1](std::array<Index, 2> const& cell_idxs2)
+                    { return idx0 == cell_idxs2[0] && idx1 == cell_idxs2[1]; });
                 lue_hpx_assert(it != output_cells_idxs.end());
                 output_cells_idxs.erase(it);
 
 
                 // Send material to cell in neighbouring partition
-                if(_communicator.has_neighbour(direction))
+                if (_communicator.has_neighbour(direction))
                 {
                     // We are not at the border of the array
                     using Value = typename Communicator::Value;
@@ -296,7 +259,7 @@ namespace lue::detail {
                     _communicator.send(direction, Value{idx, _cell_accumulator.outflow(idx0, idx1)});
 
                     // The sending channel can be closed
-                    if(output_cells_idxs.empty())
+                    if (output_cells_idxs.empty())
                     {
                         _communicator.close(direction);
                     }
@@ -311,15 +274,10 @@ namespace lue::detail {
             Communicator& _communicator;
 
             std::array<std::vector<std::array<Index, 2>>, 8>& _output_cells_idxs;
-
     };
 
 
-    template<
-        typename Accumulator,
-        typename Index,
-        typename FlowDirectionData,
-        typename InflowCountData>
+    template<typename Accumulator, typename Index, typename FlowDirectionData, typename InflowCountData>
     std::tuple<std::array<Index, 2>, AccumulationExitCellClass> accumulate3(
         Accumulator& accumulator,
         Index idx0,
@@ -332,7 +290,7 @@ namespace lue::detail {
         bool is_within_partition;
         AccumulationExitCellClass cell_class;
 
-        while(true)
+        while (true)
         {
             lue_hpx_assert(inflow_count_data(idx0, idx1) == 0);
 
@@ -346,7 +304,7 @@ namespace lue::detail {
                 flow_direction_data, nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
 
             // First check conditions that will end the current stream ---------
-            if(offset0 == 0 && offset1 == 0)
+            if (offset0 == 0 && offset1 == 0)
             {
                 // Current cell is a sink. This is the end of this
                 // stream.
@@ -356,7 +314,7 @@ namespace lue::detail {
             }
 
             // Downstream cell is pointed to by idx0 + offset0 and idx1 + offset1
-            if(!is_within_partition)
+            if (!is_within_partition)
             {
                 // Current cell is partition output cell. This is the
                 // end of this stream in the current partition. Finish
@@ -379,7 +337,7 @@ namespace lue::detail {
             lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
             --inflow_count_data(idx0, idx1);
 
-            if(inflow_count_data(idx0, idx1) > 0)
+            if (inflow_count_data(idx0, idx1) > 0)
             {
                 // There are other streams flowing into the new / downstream cell → stop
                 cell_class = AccumulationExitCellClass::junction;
@@ -391,11 +349,7 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename MaterialElement,
-        typename IdxConverter,
-        typename Accumulate,
-        Rank rank>
+    template<typename MaterialElement, typename IdxConverter, typename Accumulate, Rank rank>
     void monitor_material_inputs(
         std::vector<std::array<Index, rank>>&& input_cells_idxs,
         typename MaterialCommunicator<MaterialElement, rank>::Channel&& channel,
@@ -413,24 +367,23 @@ namespace lue::detail {
         // is equal to the number of input cells at the specific side
         // of the partition.
 
-        for(auto const& material: channel)
+        for (auto const& material : channel)
         {
             lue_hpx_assert(!input_cells_idxs.empty());
 
             auto const cell_idxs{idx_to_idxs(material.cell_idx())};
 
-            auto it = std::find_if(input_cells_idxs.begin(), input_cells_idxs.end(),
-                    [cell_idxs1=cell_idxs](std::array<Index, rank> const& cell_idxs2)
-                    {
-                        return cell_idxs1 == cell_idxs2;
-                    }
-                );
+            auto it = std::find_if(
+                input_cells_idxs.begin(),
+                input_cells_idxs.end(),
+                [cell_idxs1 = cell_idxs](std::array<Index, rank> const& cell_idxs2)
+                { return cell_idxs1 == cell_idxs2; });
             lue_hpx_assert(it != input_cells_idxs.end());
             input_cells_idxs.erase(it);
 
             accumulate(cell_idxs, material.value());
 
-            if(input_cells_idxs.empty())
+            if (input_cells_idxs.empty())
             {
                 // No material should be sent trough this channel
                 // again. We don't need it. It would be a bug.

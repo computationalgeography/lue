@@ -7,8 +7,7 @@
 
 namespace lue {
 
-    std::array<std::string, 3> parse_array_pathname3(
-        std::string const& array_pathname)
+    std::array<std::string, 3> parse_array_pathname3(std::string const& array_pathname)
     {
         // Parse array pathname into
         // <phenomenon_name>/<property_set_name>/<property_name>
@@ -19,7 +18,7 @@ namespace lue {
             std::vector<std::string> tokens;
             boost::algorithm::split(tokens, array_pathname, [](char const c) { return c == '/'; });
 
-            if(tokens.size() != 3)
+            if (tokens.size() != 3)
             {
                 throw std::runtime_error(fmt::format(
                     "Array pathname must be formatted as "
@@ -36,8 +35,7 @@ namespace lue {
     }
 
 
-    std::array<std::string, 4> parse_array_pathname(
-        std::string const& array_pathname)
+    std::array<std::string, 4> parse_array_pathname(std::string const& array_pathname)
     {
         // Parse array pathname into
         // <dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>
@@ -49,7 +47,7 @@ namespace lue {
             std::vector<std::string> tokens;
             boost::algorithm::split(tokens, array_pathname, [](char const c) { return c == '/'; });
 
-            if(tokens.size() < 4)
+            if (tokens.size() < 4)
             {
                 throw std::runtime_error(fmt::format(
                     "Array pathname must be formatted as "
@@ -57,26 +55,30 @@ namespace lue {
                     array_pathname));
             }
 
-            property_name = tokens.back(); tokens.pop_back();
-            property_set_name = tokens.back(); tokens.pop_back();
-            phenomenon_name = tokens.back(); tokens.pop_back();
+            property_name = tokens.back();
+            tokens.pop_back();
+            property_set_name = tokens.back();
+            tokens.pop_back();
+            phenomenon_name = tokens.back();
+            tokens.pop_back();
 
             std::filesystem::path dataset_path{tokens.front()};
 
-            for(auto it = tokens.begin() + 1; it != tokens.end(); ++it)
+            for (auto it = tokens.begin() + 1; it != tokens.end(); ++it)
             {
                 dataset_path /= *it;
             }
 
             dataset_pathname = dataset_path.u8string();
 
-            if(std::filesystem::path{array_pathname}.is_absolute())
+            if (std::filesystem::path{array_pathname}.is_absolute())
             {
                 dataset_pathname = "/" + dataset_pathname;
             }
         }
 
-        return std::array<std::string, 4>{dataset_pathname, phenomenon_name, property_set_name, property_name};
+        return std::array<std::string, 4>{
+            dataset_pathname, phenomenon_name, property_set_name, property_name};
     }
 
 }  // namespace lue

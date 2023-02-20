@@ -27,33 +27,27 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Class const cx{lue::policy::no_data_value<Class>};  // Class no-data
     Value const vx{lue::policy::no_data_value<Value>};  // Value no-data
     ValueArray value_array = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {{
-                -1, -1, -1, -1, -1,
-                -1, -1, -1, -1, -1,
-                7, 6, 0, 4, 18,
-                2, 6, 2, 8, -1,
-                5, 2, 3, 3, vx,
-            }});
+        array_shape,
+        partition_shape,
+        {{
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7, 6, 0, 4, 18, 2, 6, 2, 8, -1, 5, 2, 3, 3, vx,
+        }});
 
     ClassArray class_array = lue::test::create_partitioned_array<ClassArray>(
-        array_shape, partition_shape, {{
-                2, 6, 2, 2, cx,
-                6, 6, 2, 2, 2,
-                6, 6, 0, 0, 0,
-                6, 6, 0, 0, 0,
-                6, 3, 3, 4, 4,
-            }});
+        array_shape,
+        partition_shape,
+        {{
+            2, 6, 2, 2, cx, 6, 6, 2, 2, 2, 6, 6, 0, 0, 0, 6, 6, 0, 0, 0, 6, 3, 3, 4, 4,
+        }});
 
     auto zonal_diversity = lue::value_policies::zonal_diversity<Count>(value_array, class_array);
 
     CountArray array_we_want = lue::test::create_partitioned_array<CountArray>(
-        array_shape, partition_shape, {{
-                1, 5, 1, 1, ox,
-                5, 5, 1, 1, 1,
-                5, 5, 6, 6, 6,
-                5, 5, 6, 6, 6,
-                5, 2, 2, 1, 1,
-            }});
+        array_shape,
+        partition_shape,
+        {{
+            1, 5, 1, 1, ox, 5, 5, 1, 1, 1, 5, 5, 6, 6, 6, 5, 5, 6, 6, 6, 5, 2, 2, 1, 1,
+        }});
 
     lue::test::check_arrays_are_equal(zonal_diversity, array_we_want);
 }

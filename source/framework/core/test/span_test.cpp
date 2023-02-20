@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework core span
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/span.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(dynamic_span_test)
@@ -10,12 +10,8 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
     lue::Count const nr_cells = nr_rows * nr_cols;
 
     // NOLINTNEXTLINE(clang-diagnostic-unused-lambda-capture)
-    auto idx = [nr_rows, nr_cols](
-            lue::Index const row,
-            lue::Index const col) -> lue::Index
-        {
-            return row * nr_cols + col;
-        };
+    auto idx = [nr_rows, nr_cols](lue::Index const row, lue::Index const col) -> lue::Index
+    { return row * nr_cols + col; };
 
     // Allocate a 1D array
     std::vector<int> cells(nr_cells);
@@ -33,22 +29,14 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single cell
     {
-        auto const cell = lue::subspan(
-                raster,
-                3,
-                4
-            );
+        auto const cell = lue::subspan(raster, 3, 4);
         BOOST_CHECK_EQUAL(cell.rank(), 0);
         BOOST_CHECK_EQUAL(cell(), idx(3, 4));
     }
 
     // Select a single row
     {
-        auto const row = lue::subspan(
-                raster,
-                3,
-                std::experimental::all
-            );
+        auto const row = lue::subspan(raster, 3, std::experimental::all);
         BOOST_CHECK_EQUAL(row.rank(), 1);
         BOOST_REQUIRE_EQUAL(row.extent(0), nr_cols);
         BOOST_CHECK_EQUAL(row(0), idx(3, 0));
@@ -57,11 +45,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single column
     {
-        auto const col = lue::subspan(
-                raster,
-                std::experimental::all,
-                4
-            );
+        auto const col = lue::subspan(raster, std::experimental::all, 4);
         BOOST_CHECK_EQUAL(col.rank(), 1);
         BOOST_REQUIRE_EQUAL(col.extent(0), nr_rows);
         BOOST_CHECK_EQUAL(col(0), idx(0, 4));
@@ -74,10 +58,9 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
         lue::Count const radius = 1;
         lue::Count const window_size = 2 * radius + 1;
         auto const window = lue::subspan(
-                raster,
-                std::pair<lue::Index, lue::Index>{3, 3 + window_size},
-                std::pair<lue::Index, lue::Index>{4, 4 + window_size}
-            );
+            raster,
+            std::pair<lue::Index, lue::Index>{3, 3 + window_size},
+            std::pair<lue::Index, lue::Index>{4, 4 + window_size});
         BOOST_CHECK_EQUAL(window.rank(), 2);
         BOOST_REQUIRE_EQUAL(window.extent(0), window_size);
         BOOST_REQUIRE_EQUAL(window.extent(1), window_size);

@@ -11,11 +11,11 @@ HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_float);
 HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_double);
 
 
-#define LUE_INSTANTIATE(FlowDirectionElement, Element)                                     \
-                                                                                           \
-    LUE_INSTANTIATE_KINEMATIC_WAVE(                                                        \
-        ESC(policy::kinematic_wave::DefaultValuePolicies<FlowDirectionElement, Element>),  \
-        FlowDirectionElement,                                                              \
+#define LUE_INSTANTIATE(FlowDirectionElement, Element)                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_KINEMATIC_WAVE(                                                                          \
+        ESC(policy::kinematic_wave::DefaultValuePolicies<FlowDirectionElement, Element>),                    \
+        FlowDirectionElement,                                                                                \
         Element);
 
 

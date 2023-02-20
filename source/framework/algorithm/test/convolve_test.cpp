@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm convolve
-#include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/definition/convolve.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/definition/convolve.hpp"
+#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
@@ -129,18 +129,19 @@ BOOST_AUTO_TEST_CASE(window_total_2d)
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
     auto convolve = lue::convolve<double>(array, kernel);
 
-    OutputArray array_we_want =
-            lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 4., 6., 6., 6., 9., 9., 6., 9., 9. },
-            { 6., 6., 6., 9., 9., 9., 9., 9., 9. },
-            { 6., 6., 4., 9., 9., 6., 9., 9., 6. },
-            { 6., 9., 9., 6., 9., 9., 6., 9., 9. },
-            { 9., 9., 9., 9., 9., 9., 9., 9., 9. },
-            { 9., 9., 6., 9., 9., 6., 9., 9., 6. },
-            { 6., 9., 9., 6., 9., 9., 4., 6., 6. },
-            { 9., 9., 9., 9., 9., 9., 6., 6., 6. },
-            { 9., 9., 6., 9., 9., 6., 6., 6., 4. },
+    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+        array_shape,
+        partition_shape,
+        {
+            {4., 6., 6., 6., 9., 9., 6., 9., 9.},
+            {6., 6., 6., 9., 9., 9., 9., 9., 9.},
+            {6., 6., 4., 9., 9., 6., 9., 9., 6.},
+            {6., 9., 9., 6., 9., 9., 6., 9., 9.},
+            {9., 9., 9., 9., 9., 9., 9., 9., 9.},
+            {9., 9., 6., 9., 9., 6., 9., 9., 6.},
+            {6., 9., 9., 6., 9., 9., 4., 6., 6.},
+            {9., 9., 9., 9., 9., 9., 6., 6., 6.},
+            {9., 9., 6., 9., 9., 6., 6., 6., 4.},
         });
 
     lue::test::check_arrays_are_equal(convolve, array_we_want);
@@ -174,10 +175,11 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
     // [4. 6. 4.]
     auto convolve = lue::convolve<double>(array, kernel);
 
-    OutputArray array_we_want =
-            lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 4., 6., 4., 6., 9., 6., 4., 6., 4. },
+    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+        array_shape,
+        partition_shape,
+        {
+            {4., 6., 4., 6., 9., 6., 4., 6., 4.},
         });
 
     lue::test::check_arrays_are_equal(convolve, array_we_want);
@@ -211,12 +213,13 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
     auto convolve = lue::convolve<double>(array, kernel);
 
-    OutputArray array_we_want =
-            lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 4., 6., 6., 6., 9., 9., 4., 6., 6. },
-            { 6., 6., 6., 9., 9., 9., 6., 6., 6. },
-            { 6., 6., 4., 9., 9., 6., 6., 6., 4. },
+    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+        array_shape,
+        partition_shape,
+        {
+            {4., 6., 6., 6., 9., 9., 4., 6., 6.},
+            {6., 6., 6., 9., 9., 9., 6., 6., 6.},
+            {6., 6., 4., 9., 9., 6., 6., 6., 4.},
         });
 
     lue::test::check_arrays_are_equal(convolve, array_we_want);
@@ -266,12 +269,13 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
     // [4. 6. 4.]
     auto convolve = lue::convolve<double>(array, kernel);
 
-    OutputArray array_we_want =
-            lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 4., 6., 4., 6., 9., 6., 6., 9., 6. },
-            { 6., 9., 6., 6., 9., 6., 6., 9., 6. },
-            { 6., 9., 6., 6., 9., 6., 4., 6., 4. },
+    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+        array_shape,
+        partition_shape,
+        {
+            {4., 6., 4., 6., 9., 6., 6., 9., 6.},
+            {6., 9., 6., 6., 9., 6., 6., 9., 6.},
+            {6., 9., 6., 6., 9., 6., 4., 6., 4.},
         });
 
     lue::test::check_arrays_are_equal(convolve, array_we_want);

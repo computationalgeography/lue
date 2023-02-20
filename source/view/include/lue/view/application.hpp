@@ -3,23 +3,20 @@
 
 
 namespace lue {
-namespace view {
+    namespace view {
 
-class Application:
-    public utility::Application
+        class Application: public utility::Application
 
-{
+        {
 
-public:
+            public:
 
-    explicit       Application         (std::vector<std::string> const&
-                                            arguments);
+                explicit Application(std::vector<std::string> const& arguments);
 
-    int            run_implementation  () final;
+                int run_implementation() final;
 
-private:
+            private:
+        };
 
-};
-
-}  // namespace view
+    }  // namespace view
 }  // namespace lue

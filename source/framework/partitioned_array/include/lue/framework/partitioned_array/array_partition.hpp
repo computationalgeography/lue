@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/framework/partitioned_array/server/array_partition.hpp"
 #include "lue/framework/partitioned_array/export.hpp"
+#include "lue/framework/partitioned_array/server/array_partition.hpp"
 
 
 namespace lue {
@@ -15,13 +15,10 @@ namespace lue {
         server instance. Multiple instances can be associated with a single
         server instance.
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     class LUE_FPA_EXPORT ArrayPartition:
-        public hpx::components::client_base<
-            ArrayPartition<Element, rank>,
-            server::ArrayPartition<Element, rank>>
+        public hpx::components::
+            client_base<ArrayPartition<Element, rank>, server::ArrayPartition<Element, rank>>
 
     {
 
@@ -41,59 +38,49 @@ namespace lue {
 
             using Slices = typename Server::Slices;
 
-                           ArrayPartition      ();
+            ArrayPartition();
 
-            explicit       ArrayPartition      (hpx::id_type const& component_id);
+            explicit ArrayPartition(hpx::id_type const& component_id);
 
-            explicit       ArrayPartition      (hpx::future<hpx::id_type>&& component_id);
+            explicit ArrayPartition(hpx::future<hpx::id_type>&& component_id);
 
-                           ArrayPartition      (hpx::future<ArrayPartition>&& partition);
+            ArrayPartition(hpx::future<ArrayPartition>&& partition);
 
-                           ArrayPartition      (hpx::id_type locality_id,
-                                                Offset const& offset,
-                                                Shape const& shape);
+            ArrayPartition(hpx::id_type locality_id, Offset const& offset, Shape const& shape);
 
-                           ArrayPartition      (hpx::id_type locality_id,
-                                                Offset const& offset,
-                                                Shape const& shape,
-                                                Element value);
+            ArrayPartition(hpx::id_type locality_id, Offset const& offset, Shape const& shape, Element value);
 
-                           ArrayPartition      (hpx::id_type locality_id,
-                                                Offset const& offset,
-                                                Data&& data);
+            ArrayPartition(hpx::id_type locality_id, Offset const& offset, Data&& data);
 
-                           ArrayPartition      (ArrayPartition const&)=default;
+            ArrayPartition(ArrayPartition const&) = default;
 
-                           ArrayPartition      (ArrayPartition&&)=default;
+            ArrayPartition(ArrayPartition&&) = default;
 
-                           ~ArrayPartition     ()=default;
+            ~ArrayPartition() = default;
 
-            ArrayPartition& operator=          (ArrayPartition const&)=default;
+            ArrayPartition& operator=(ArrayPartition const&) = default;
 
-            ArrayPartition& operator=          (ArrayPartition&&)=default;
+            ArrayPartition& operator=(ArrayPartition&&) = default;
 
-            hpx::future<Data> data             () const;
+            hpx::future<Data> data() const;
 
-            hpx::future<Data> slice            (Slices const& slices) const;
+            hpx::future<Data> slice(Slices const& slices) const;
 
-            hpx::future<void> fill             (Element value);
+            hpx::future<void> fill(Element value);
 
-            hpx::future<void> set_data         (Data const& data);
+            hpx::future<void> set_data(Data const& data);
 
-            hpx::future<Offset> offset         () const;
+            hpx::future<Offset> offset() const;
 
-            hpx::future<Shape> shape           () const;
+            hpx::future<Shape> shape() const;
 
-            hpx::future<Count> nr_elements     () const;
-
+            hpx::future<Count> nr_elements() const;
     };
 
 
     namespace detail {
 
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<ArrayPartition<E, r>>
         {
 
@@ -111,25 +98,18 @@ namespace lue {
 
                 using Slice = typename ArrayPartition<E, r>::Slice;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Partition = ArrayPartition<E_, r_>;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Data = typename ArrayPartition<E_, r_>::Data;
-
         };
 
 
-        template<
-            typename Element,
-            Rank rank>
-        class IsArrayPartition<ArrayPartition<Element, rank>>:
-            public std::true_type
-        {};
+        template<typename Element, Rank rank>
+        class IsArrayPartition<ArrayPartition<Element, rank>>: public std::true_type
+        {
+        };
 
     }  // namespace detail
 }  // namespace lue

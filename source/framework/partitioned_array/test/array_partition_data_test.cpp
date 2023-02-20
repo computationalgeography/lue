@@ -9,20 +9,16 @@ namespace {
 
     using Value = std::int32_t;
 
-    template<
-        lue::Rank rank>
+    template<lue::Rank rank>
     using Data = lue::ArrayPartitionData<Value, rank>;
 
-    template<
-        lue::Rank rank>
+    template<lue::Rank rank>
     using Shape = lue::ShapeT<Data<rank>>;
 
-    template<
-        lue::Rank rank>
+    template<lue::Rank rank>
     using Slice = lue::SliceT<Data<rank>>;
 
-    template<
-        lue::Rank rank>
+    template<lue::Rank rank>
     using Slices = lue::SlicesT<Data<rank>>;
 
 }  // Anonymous namespace
@@ -84,19 +80,23 @@ BOOST_AUTO_TEST_CASE(construct_with_shape_and_value)
     BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
     std::vector<Value> values(30 * 40, 5);
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        data.begin(), data.end(), values.begin(), values.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(), data.end(), values.begin(), values.end());
 }
 
 
 BOOST_AUTO_TEST_CASE(construct_initializer_list)
 {
     Shape<2> shape{{3, 2}};
-    Data<2> data{shape, {
-        1, 2,
-        3, 4,
-        5, 6,
-    }};
+    Data<2> data{
+        shape,
+        {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+        }};
 
     BOOST_CHECK_EQUAL(data.shape(), shape);
 
@@ -126,8 +126,7 @@ BOOST_AUTO_TEST_CASE(assign)
     BOOST_CHECK_EQUAL(data.nr_elements(), 30 * 40);
 
     std::vector<Value> values(30 * 40, 5);
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        data.begin(), data.end(), values.begin(), values.end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(data.begin(), data.end(), values.begin(), values.end());
 }
 
 
@@ -155,11 +154,16 @@ BOOST_AUTO_TEST_CASE(scalar_array)
 BOOST_AUTO_TEST_CASE(move_construct)
 {
     Shape<2> shape{{3, 2}};
-    Data<2> other_data{shape, {
-        1, 2,
-        3, 4,
-        5, 6,
-    }};
+    Data<2> other_data{
+        shape,
+        {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+        }};
 
     Data<2> data{std::move(other_data)};
 
@@ -182,11 +186,16 @@ BOOST_AUTO_TEST_CASE(move_construct)
 BOOST_AUTO_TEST_CASE(move_assign)
 {
     Shape<2> shape{{3, 2}};
-    Data<2> other_data{shape, {
-        1, 2,
-        3, 4,
-        5, 6,
-    }};
+    Data<2> other_data{
+        shape,
+        {
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+        }};
 
     Data<2> data{};
 
@@ -421,16 +430,16 @@ BOOST_AUTO_TEST_CASE(erase_2d)
     data.erase(0, 4, 5);
     BOOST_CHECK_EQUAL(data.shape()[0], 4);
     BOOST_CHECK_EQUAL(data.shape()[1], 6);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 11);
-    BOOST_CHECK_EQUAL(data[ 2], 12);
-    BOOST_CHECK_EQUAL(data[ 3], 13);
-    BOOST_CHECK_EQUAL(data[ 4], 14);
-    BOOST_CHECK_EQUAL(data[ 5], 15);
-    BOOST_CHECK_EQUAL(data[ 6], 16);
-    BOOST_CHECK_EQUAL(data[ 7], 17);
-    BOOST_CHECK_EQUAL(data[ 8], 18);
-    BOOST_CHECK_EQUAL(data[ 9], 19);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 11);
+    BOOST_CHECK_EQUAL(data[2], 12);
+    BOOST_CHECK_EQUAL(data[3], 13);
+    BOOST_CHECK_EQUAL(data[4], 14);
+    BOOST_CHECK_EQUAL(data[5], 15);
+    BOOST_CHECK_EQUAL(data[6], 16);
+    BOOST_CHECK_EQUAL(data[7], 17);
+    BOOST_CHECK_EQUAL(data[8], 18);
+    BOOST_CHECK_EQUAL(data[9], 19);
     BOOST_CHECK_EQUAL(data[10], 20);
     BOOST_CHECK_EQUAL(data[11], 21);
     BOOST_CHECK_EQUAL(data[12], 22);
@@ -459,16 +468,16 @@ BOOST_AUTO_TEST_CASE(erase_2d)
     data.erase(1, 5, 6);
     BOOST_CHECK_EQUAL(data.shape()[0], 4);
     BOOST_CHECK_EQUAL(data.shape()[1], 5);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 11);
-    BOOST_CHECK_EQUAL(data[ 2], 12);
-    BOOST_CHECK_EQUAL(data[ 3], 13);
-    BOOST_CHECK_EQUAL(data[ 4], 14);
-    BOOST_CHECK_EQUAL(data[ 5], 16);
-    BOOST_CHECK_EQUAL(data[ 6], 17);
-    BOOST_CHECK_EQUAL(data[ 7], 18);
-    BOOST_CHECK_EQUAL(data[ 8], 19);
-    BOOST_CHECK_EQUAL(data[ 9], 20);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 11);
+    BOOST_CHECK_EQUAL(data[2], 12);
+    BOOST_CHECK_EQUAL(data[3], 13);
+    BOOST_CHECK_EQUAL(data[4], 14);
+    BOOST_CHECK_EQUAL(data[5], 16);
+    BOOST_CHECK_EQUAL(data[6], 17);
+    BOOST_CHECK_EQUAL(data[7], 18);
+    BOOST_CHECK_EQUAL(data[8], 19);
+    BOOST_CHECK_EQUAL(data[9], 20);
     BOOST_CHECK_EQUAL(data[10], 22);
     BOOST_CHECK_EQUAL(data[11], 23);
     BOOST_CHECK_EQUAL(data[12], 24);
@@ -493,16 +502,16 @@ BOOST_AUTO_TEST_CASE(erase_2d)
     data.erase(1, 2, 3);
     BOOST_CHECK_EQUAL(data.shape()[0], 4);
     BOOST_CHECK_EQUAL(data.shape()[1], 4);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 11);
-    BOOST_CHECK_EQUAL(data[ 2], 13);
-    BOOST_CHECK_EQUAL(data[ 3], 14);
-    BOOST_CHECK_EQUAL(data[ 4], 16);
-    BOOST_CHECK_EQUAL(data[ 5], 17);
-    BOOST_CHECK_EQUAL(data[ 6], 19);
-    BOOST_CHECK_EQUAL(data[ 7], 20);
-    BOOST_CHECK_EQUAL(data[ 8], 22);
-    BOOST_CHECK_EQUAL(data[ 9], 23);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 11);
+    BOOST_CHECK_EQUAL(data[2], 13);
+    BOOST_CHECK_EQUAL(data[3], 14);
+    BOOST_CHECK_EQUAL(data[4], 16);
+    BOOST_CHECK_EQUAL(data[5], 17);
+    BOOST_CHECK_EQUAL(data[6], 19);
+    BOOST_CHECK_EQUAL(data[7], 20);
+    BOOST_CHECK_EQUAL(data[8], 22);
+    BOOST_CHECK_EQUAL(data[9], 23);
     BOOST_CHECK_EQUAL(data[10], 25);
     BOOST_CHECK_EQUAL(data[11], 26);
     BOOST_CHECK_EQUAL(data[12], 28);
@@ -525,16 +534,16 @@ BOOST_AUTO_TEST_CASE(erase_2d)
     data.erase(0, 2, 3);
     BOOST_CHECK_EQUAL(data.shape()[0], 3);
     BOOST_CHECK_EQUAL(data.shape()[1], 4);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 11);
-    BOOST_CHECK_EQUAL(data[ 2], 13);
-    BOOST_CHECK_EQUAL(data[ 3], 14);
-    BOOST_CHECK_EQUAL(data[ 4], 16);
-    BOOST_CHECK_EQUAL(data[ 5], 17);
-    BOOST_CHECK_EQUAL(data[ 6], 19);
-    BOOST_CHECK_EQUAL(data[ 7], 20);
-    BOOST_CHECK_EQUAL(data[ 8], 28);
-    BOOST_CHECK_EQUAL(data[ 9], 29);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 11);
+    BOOST_CHECK_EQUAL(data[2], 13);
+    BOOST_CHECK_EQUAL(data[3], 14);
+    BOOST_CHECK_EQUAL(data[4], 16);
+    BOOST_CHECK_EQUAL(data[5], 17);
+    BOOST_CHECK_EQUAL(data[6], 19);
+    BOOST_CHECK_EQUAL(data[7], 20);
+    BOOST_CHECK_EQUAL(data[8], 28);
+    BOOST_CHECK_EQUAL(data[9], 29);
     BOOST_CHECK_EQUAL(data[10], 31);
     BOOST_CHECK_EQUAL(data[11], 32);
 
@@ -572,7 +581,7 @@ BOOST_AUTO_TEST_CASE(erase_3d)
     BOOST_CHECK_EQUAL(data.shape()[0], 2);
     BOOST_CHECK_EQUAL(data.shape()[1], 3);
     BOOST_CHECK_EQUAL(data.shape()[2], 4);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
+    BOOST_CHECK_EQUAL(data[0], 10);
     BOOST_CHECK_EQUAL(data[23], 33);
 
     // Remove a slab from the inner part of the cube
@@ -595,16 +604,16 @@ BOOST_AUTO_TEST_CASE(erase_3d)
     BOOST_CHECK_EQUAL(data.shape()[0], 2);
     BOOST_CHECK_EQUAL(data.shape()[1], 3);
     BOOST_CHECK_EQUAL(data.shape()[2], 2);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 13);
-    BOOST_CHECK_EQUAL(data[ 2], 14);
-    BOOST_CHECK_EQUAL(data[ 3], 17);
-    BOOST_CHECK_EQUAL(data[ 4], 18);
-    BOOST_CHECK_EQUAL(data[ 5], 21);
-    BOOST_CHECK_EQUAL(data[ 6], 22);
-    BOOST_CHECK_EQUAL(data[ 7], 25);
-    BOOST_CHECK_EQUAL(data[ 8], 26);
-    BOOST_CHECK_EQUAL(data[ 9], 29);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 13);
+    BOOST_CHECK_EQUAL(data[2], 14);
+    BOOST_CHECK_EQUAL(data[3], 17);
+    BOOST_CHECK_EQUAL(data[4], 18);
+    BOOST_CHECK_EQUAL(data[5], 21);
+    BOOST_CHECK_EQUAL(data[6], 22);
+    BOOST_CHECK_EQUAL(data[7], 25);
+    BOOST_CHECK_EQUAL(data[8], 26);
+    BOOST_CHECK_EQUAL(data[9], 29);
     BOOST_CHECK_EQUAL(data[10], 30);
     BOOST_CHECK_EQUAL(data[11], 33);
 
@@ -632,14 +641,14 @@ BOOST_AUTO_TEST_CASE(erase_3d)
     BOOST_CHECK_EQUAL(data.shape()[0], 2);
     BOOST_CHECK_EQUAL(data.shape()[1], 2);
     BOOST_CHECK_EQUAL(data.shape()[2], 2);
-    BOOST_CHECK_EQUAL(data[ 0], 10);
-    BOOST_CHECK_EQUAL(data[ 1], 13);
-    BOOST_CHECK_EQUAL(data[ 2], 18);
-    BOOST_CHECK_EQUAL(data[ 3], 21);
-    BOOST_CHECK_EQUAL(data[ 4], 22);
-    BOOST_CHECK_EQUAL(data[ 5], 25);
-    BOOST_CHECK_EQUAL(data[ 6], 30);
-    BOOST_CHECK_EQUAL(data[ 7], 33);
+    BOOST_CHECK_EQUAL(data[0], 10);
+    BOOST_CHECK_EQUAL(data[1], 13);
+    BOOST_CHECK_EQUAL(data[2], 18);
+    BOOST_CHECK_EQUAL(data[3], 21);
+    BOOST_CHECK_EQUAL(data[4], 22);
+    BOOST_CHECK_EQUAL(data[5], 25);
+    BOOST_CHECK_EQUAL(data[6], 30);
+    BOOST_CHECK_EQUAL(data[7], 33);
 
     // +----+----+
     // | 22 | 25 |
@@ -650,8 +659,8 @@ BOOST_AUTO_TEST_CASE(erase_3d)
     BOOST_CHECK_EQUAL(data.shape()[0], 1);
     BOOST_CHECK_EQUAL(data.shape()[1], 2);
     BOOST_CHECK_EQUAL(data.shape()[2], 2);
-    BOOST_CHECK_EQUAL(data[ 0], 22);
-    BOOST_CHECK_EQUAL(data[ 1], 25);
-    BOOST_CHECK_EQUAL(data[ 2], 30);
-    BOOST_CHECK_EQUAL(data[ 3], 33);
+    BOOST_CHECK_EQUAL(data[0], 22);
+    BOOST_CHECK_EQUAL(data[1], 25);
+    BOOST_CHECK_EQUAL(data[2], 30);
+    BOOST_CHECK_EQUAL(data[3], 33);
 }
