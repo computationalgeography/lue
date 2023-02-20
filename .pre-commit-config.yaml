@@ -21,12 +21,10 @@ repos:
   rev: 22.12.0
   hooks:
   - id: black
-    name: black (Python)
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v1.0.0
   hooks:
   - id: mypy
-    name: mypy (Python)
     # args: [--verbose]
     language: system  # Use interpreter in environment
     exclude: |
@@ -42,7 +40,6 @@ repos:
   rev: 5.12.0
   hooks:
   - id: isort
-    name: isort (Python)
     files: |
       (?x)^(
         .*\.py|
@@ -52,5 +49,4 @@ repos:
   rev: v1.3.5
   hooks:
   - id: clang-format
-    name: clang-format (C++)
     args: [--style=file, -i]
