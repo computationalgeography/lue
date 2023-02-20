@@ -4,9 +4,7 @@
 
 namespace lue {
 
-template<
-    typename Index,
-    Index rank>
-using Offset = std::array<Index, rank>;
+    template<typename Index, Index rank>
+    using Offset = std::array<Index, rank>;
 
 }  // namespace lue

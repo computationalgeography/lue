@@ -3,44 +3,40 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-Universes::Universes(
-    hdf5::Group const& parent):
+        Universes::Universes(hdf5::Group const& parent):
 
-    Collection<Universe>{parent, universes_tag}
+            Collection<Universe>{parent, universes_tag}
 
-{
-}
-
-
-Universes::Universes(
-    Collection<Universe>&& collection):
-
-    Collection<Universe>{std::move(collection)}
-
-{
-}
+        {
+        }
 
 
-Universe& Universes::add(
-    std::string const& name)
-{
-    return Collection::add(name, create_universe(*this, name));
-}
+        Universes::Universes(Collection<Universe>&& collection):
+
+            Collection<Universe>{std::move(collection)}
+
+        {
+        }
 
 
-Universes create_universes(
-    hdf5::Group& parent)
-{
-    if(collection_exists(parent, universes_tag)) {
-        throw std::runtime_error(fmt::format(
-            "Universes collection already exists at {}",
-            parent.id().pathname()));
-    }
+        Universe& Universes::add(std::string const& name)
+        {
+            return Collection::add(name, create_universe(*this, name));
+        }
 
-    return Universes{create_collection<Universe>(parent, universes_tag)};
-}
 
-}  // namespace data_model
+        Universes create_universes(hdf5::Group& parent)
+        {
+            if (collection_exists(parent, universes_tag))
+            {
+                throw std::runtime_error(
+                    fmt::format("Universes collection already exists at {}", parent.id().pathname()));
+            }
+
+            return Universes{create_collection<Universe>(parent, universes_tag)};
+        }
+
+    }  // namespace data_model
 }  // namespace lue

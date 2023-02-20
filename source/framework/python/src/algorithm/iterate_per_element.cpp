@@ -7,10 +7,8 @@ namespace lue::framework {
 
         Rank const rank{2};
 
-        template<
-            typename Element>
-        PartitionedArray<Element, rank> iterate_per_element(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element>
+        PartitionedArray<Element, rank> iterate_per_element(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::iterate_per_element::DefaultPolicies<Element>;
 
@@ -20,8 +18,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_iterate_per_element(
-        pybind11::module& module)
+    void bind_iterate_per_element(pybind11::module& module)
     {
         module.def("iterate_per_element", iterate_per_element<std::uint8_t>);
         module.def("iterate_per_element", iterate_per_element<std::uint32_t>);

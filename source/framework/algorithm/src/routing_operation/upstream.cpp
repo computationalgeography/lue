@@ -1,12 +1,12 @@
 #include "lue/framework/algorithm/definition/upstream.hpp"
 
 
-#define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement)                                \
-                                                                                              \
-    LUE_INSTANTIATE_UPSTREAM(                                                                 \
-        ESC(policy::upstream::DefaultValuePolicies<FlowDirectionElement, MaterialElement>),   \
-        FlowDirectionElement,                                                                 \
-        MaterialElement);                                                                     \
+#define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement)                                               \
+                                                                                                             \
+    LUE_INSTANTIATE_UPSTREAM(                                                                                \
+        ESC(policy::upstream::DefaultValuePolicies<FlowDirectionElement, MaterialElement>),                  \
+        FlowDirectionElement,                                                                                \
+        MaterialElement);
 
 
 namespace lue {

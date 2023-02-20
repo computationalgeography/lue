@@ -1,16 +1,15 @@
 #pragma once
 #include "lue/framework/algorithm/aspect.hpp"
+#include "lue/framework/algorithm/definition/binary_local_operation.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/gradients.hpp"
-#include "lue/framework/algorithm/definition/binary_local_operation.hpp"
 #include "lue/framework/core/math.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         class Aspect
         {
 
@@ -21,32 +20,31 @@ namespace lue {
                 using OutputElement = InputElement;
 
                 OutputElement operator()(
-                    InputElement const gradient_x,
-                    InputElement const gradient_y) const noexcept
+                    InputElement const gradient_x, InputElement const gradient_y) const noexcept
                 {
                     OutputElement result;
 
-                    if(gradient_x == 0)
+                    if (gradient_x == 0)
                     {
-                        if(gradient_y < 0)
+                        if (gradient_y < 0)
                         {
                             // Dip to the north
                             result = 0;
                         }
-                        else if(gradient_y > 0)
+                        else if (gradient_y > 0)
                         {
                             // Dip to the south
                             result = pi<OutputElement>;
                         }
                     }
-                    else if(gradient_y == 0)
+                    else if (gradient_y == 0)
                     {
-                        if(gradient_x < 0)
+                        if (gradient_x < 0)
                         {
                             // Dip to the west
                             result = pi<OutputElement> + half_pi<OutputElement>;
                         }
-                        else if(gradient_x > 0)
+                        else if (gradient_x > 0)
                         {
                             // Dip to the east
                             result = half_pi<OutputElement>;
@@ -54,55 +52,42 @@ namespace lue {
                     }
                     else
                     {
-                        result =
-                            std::atan(gradient_x / gradient_y) +
-                            (gradient_x < 0 ? pi<OutputElement> + half_pi<OutputElement> : half_pi<OutputElement>);
+                        result = std::atan(gradient_x / gradient_y) +
+                                 (gradient_x < 0 ? pi<OutputElement> + half_pi<OutputElement>
+                                                 : half_pi<OutputElement>);
                     }
 
                     HPX_ASSERT(std::isnan(result) || (result >= 0 && result <= two_pi<OutputElement>));
 
                     return result;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element>
+    template<typename Policies, typename Element>
     PartitionedArray<Element, 2> aspect(
-        [[maybe_unused]] Policies const& policies,
-        Gradients<Element> const& gradients)
+        [[maybe_unused]] Policies const& policies, Gradients<Element> const& gradients)
     {
         auto const& [dz_dx, dz_dy] = gradients;
 
         using AspectPolicies = policy::Policies<
-                policy::AllValuesWithinDomain<Element, Element>,
-                policy::OutputsPolicies<
-                        policy::OutputPolicies<
-                                policy::OutputNoDataPolicy3T<Policies, 0>,
-                                policy::AllValuesWithinRange<Element, Element, Element>
-                            >
-                    >,
-                policy::InputsPolicies<
-                        policy::InputPoliciesT<Policies, 0, Element>,
-                        policy::InputPoliciesT<Policies, 0, Element>
-                    >
-            >;
+            policy::AllValuesWithinDomain<Element, Element>,
+            policy::OutputsPolicies<policy::OutputPolicies<
+                policy::OutputNoDataPolicy3T<Policies, 0>,
+                policy::AllValuesWithinRange<Element, Element, Element>>>,
+            policy::InputsPolicies<
+                policy::InputPoliciesT<Policies, 0, Element>,
+                policy::InputPoliciesT<Policies, 0, Element>>>;
 
         return binary_local_operation(AspectPolicies{}, dz_dx, dz_dy, detail::Aspect<Element>{});
     }
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> aspect(
-        [[maybe_unused]] Policies const& policies,
-        PartitionedArray<Element, rank> const& elevation)
+        [[maybe_unused]] Policies const& policies, PartitionedArray<Element, rank> const& elevation)
     {
         // TODO Somehow deduce this type from the policy passed in. This must result in one of
         //      the policy types for which we instantiate the gradient operation. For now,
@@ -119,11 +104,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ASPECT(                         \
-    Policies, Element)                                  \
-                                                        \
-    template LUE_FOCAL_OPERATION_EXPORT                 \
-    PartitionedArray<Element, 2> aspect<                \
-            ArgumentType<void(Policies)>, Element, 2>(  \
-        ArgumentType<void(Policies)> const&,            \
-        PartitionedArray<Element, 2> const&);
+#define LUE_INSTANTIATE_ASPECT(Policies, Element)                                                            \
+                                                                                                             \
+    template LUE_FOCAL_OPERATION_EXPORT PartitionedArray<Element, 2>                                         \
+    aspect<ArgumentType<void(Policies)>, Element, 2>(                                                        \
+        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&);

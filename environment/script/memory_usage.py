@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf8 -*-
+import functools
+import math
 import os.path
 import sys
 
@@ -8,8 +10,6 @@ import sys
 # ] + sys.path
 # import benchmark
 import docopt
-import functools
-import math
 
 
 usage = """\

@@ -4,15 +4,13 @@
 
 namespace lue {
 
-    template<
-        typename Array>
+    template<typename Array>
     class Test
     {
     };
 
 
-    template<
-        typename Element>
+    template<typename Element>
     class Test<PartitionedArray<Element, 1>>
     {
 
@@ -37,12 +35,10 @@ namespace lue {
             static constexpr Shape _array_shape{{100}};
 
             static constexpr Shape _partition_shape{{10}};
-
     };
 
 
-    template<
-        typename Element>
+    template<typename Element>
     class Test<PartitionedArray<Element, 2>>
     {
 
@@ -67,15 +63,12 @@ namespace lue {
             static constexpr Shape _array_shape{{60, 40}};
 
             static constexpr Shape _partition_shape{{10, 10}};
-
     };
 
 
     namespace test {
 
-        template<
-            typename Array,
-            typename Shape>
+        template<typename Array, typename Shape>
         Array create_partitioned_array(
             Shape const& array_shape,
             Shape const& partition_shape,
@@ -91,7 +84,7 @@ namespace lue {
             {
                 auto elements_it = elements.begin();
 
-                for(Partition& partition: array.partitions())
+                for (Partition& partition : array.partitions())
                 {
                     partition.wait();  // FIXME be made asynchronous
                     partition.set_data(Data{partition.shape().get(), *elements_it});
@@ -103,14 +96,13 @@ namespace lue {
         }
 
 
-        template<
-            typename Array>
+        template<typename Array>
         Array create_component_array(
             Localities<rank<Array>> const& localities,
             std::initializer_list<DataT<ComponentT<Array>>> elements)
         {
-            using Component = ComponentT<Array>;  // HPX component in the array. The elements.
-            using Data = DataT<Component>;  // The type of the objects in the initializer list.
+            using Component = ComponentT<Array>;    // HPX component in the array. The elements.
+            using Data = DataT<Component>;          // The type of the objects in the initializer list.
             using Components = ComponentsT<Array>;  // The type of the collection of components.
 
             lue_hpx_assert(nr_elements(localities.shape()) == static_cast<Count>(std::size(elements)));
@@ -123,7 +115,7 @@ namespace lue {
 
                 auto element_it = elements.begin();
 
-                for(std::size_t idx = 0; idx < std::size(elements); ++idx, ++element_it)
+                for (std::size_t idx = 0; idx < std::size(elements); ++idx, ++element_it)
                 {
                     components[idx] = hpx::new_<Component>(localities[idx], Data{*element_it});
                 }

@@ -7,8 +7,7 @@ namespace lue::detail {
 
     using IDPromise = hpx::promise<hpx::id_type>;
 
-    template<
-        Rank rank>
+    template<Rank rank>
     using IDPromiseArray = Array<IDPromise, rank>;
 
 }  // namespace lue::detail

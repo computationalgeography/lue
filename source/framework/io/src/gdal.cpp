@@ -8,7 +8,7 @@ namespace lue {
     {
         static bool drivers_registered{false};
 
-        if(!drivers_registered)
+        if (!drivers_registered)
         {
             ::GDALAllRegister();
             drivers_registered = true;
@@ -16,9 +16,7 @@ namespace lue {
     }
 
 
-    GDALDatasetPtr open_dataset(
-        std::string const& name,
-        GDALAccess const open_mode)
+    GDALDatasetPtr open_dataset(std::string const& name, GDALAccess const open_mode)
     {
         register_gdal_drivers();
 
@@ -26,13 +24,13 @@ namespace lue {
         CPLPushErrorHandler(CPLQuietErrorHandler);
 #endif
 
-        GDALDatasetPtr dataset_ptr{(GDALDataset *)::GDALOpen(name.c_str(), open_mode), gdal_close};
+        GDALDatasetPtr dataset_ptr{(GDALDataset*)::GDALOpen(name.c_str(), open_mode), gdal_close};
 
 #ifndef NDEBUG
         CPLPopErrorHandler();
 #endif
 
-        if(!dataset_ptr)
+        if (!dataset_ptr)
         {
             throw std::runtime_error("Raster " + name + " cannot be opened");
         }
@@ -41,12 +39,11 @@ namespace lue {
     }
 
 
-    GDALDriverPtr driver(
-        std::string const& name)
+    GDALDriverPtr driver(std::string const& name)
     {
         GDALDriverPtr driver_ptr{GetGDALDriverManager()->GetDriverByName(name.c_str())};
 
-        if(!driver_ptr)
+        if (!driver_ptr)
         {
             throw std::runtime_error("Driver " + name + " not available");
         }
@@ -55,9 +52,7 @@ namespace lue {
     }
 
 
-    GDALDatasetPtr create_copy(
-        std::string const& name,
-        GDALDatasetPtr& clone_dataset)
+    GDALDatasetPtr create_copy(std::string const& name, GDALDatasetPtr& clone_dataset)
     {
         register_gdal_drivers();
 
@@ -69,15 +64,14 @@ namespace lue {
         GDALDriverPtr driver{lue::driver("GTiff")};
 
         GDALDatasetPtr dataset_ptr{
-                driver->CreateCopy(name.c_str(), clone_dataset.get(), FALSE, nullptr, nullptr, nullptr),
-                gdal_close
-            };
+            driver->CreateCopy(name.c_str(), clone_dataset.get(), FALSE, nullptr, nullptr, nullptr),
+            gdal_close};
 
 #ifndef NDEBUG
         CPLPopErrorHandler();
 #endif
 
-        if(!dataset_ptr)
+        if (!dataset_ptr)
         {
             throw std::runtime_error("Raster " + name + " cannot be created");
         }
@@ -108,15 +102,13 @@ namespace lue {
         GDALDriverPtr driver{lue::driver("GTiff")};
 
         GDALDatasetPtr dataset_ptr{
-                driver->Create(name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr),
-                gdal_close
-            };
+            driver->Create(name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr), gdal_close};
 
 #ifndef NDEBUG
         CPLPopErrorHandler();
 #endif
 
-        if(!dataset_ptr)
+        if (!dataset_ptr)
         {
             throw std::runtime_error("Raster " + name + " cannot be created");
         }
@@ -125,12 +117,11 @@ namespace lue {
     }
 
 
-    GDALBandPtr get_raster_band(
-        GDALDataset& dataset)
+    GDALBandPtr get_raster_band(GDALDataset& dataset)
     {
         GDALBandPtr band_ptr{dataset.GetRasterBand(1)};
 
-        if(!band_ptr)
+        if (!band_ptr)
         {
             throw std::runtime_error("First band cannot be obtained");
         }
@@ -139,15 +130,13 @@ namespace lue {
     }
 
 
-    GDALDataType data_type(
-        GDALRasterBand& band)
+    GDALDataType data_type(GDALRasterBand& band)
     {
         return band.GetRasterDataType();
     }
 
 
-    GDALDataType data_type(
-        GDALDataset& dataset)
+    GDALDataType data_type(GDALDataset& dataset)
     {
         GDALBandPtr band_ptr{get_raster_band(dataset)};
 
@@ -155,8 +144,7 @@ namespace lue {
     }
 
 
-    GDALDataType data_type(
-        std::string const& name)
+    GDALDataType data_type(std::string const& name)
     {
         GDALDatasetPtr dataset_ptr{open_dataset(name, GDALAccess::GA_ReadOnly)};
 

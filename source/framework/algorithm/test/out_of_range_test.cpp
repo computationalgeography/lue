@@ -5,22 +5,16 @@
 
 namespace {
 
-    template<
-        typename T>
-    bool safe_add(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool safe_add(T const& argument1, T const& argument2)
     {
         T result;
         return lue::safe_add<T>(argument1, argument2, result);
     }
 
 
-    template<
-        typename T>
-    bool safe_multiply(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool safe_multiply(T const& argument1, T const& argument2)
     {
         T result;
         return lue::safe_multiply<T>(argument1, argument2, result);
@@ -156,41 +150,29 @@ BOOST_AUTO_TEST_CASE(safe_multiply_floating_point)
 
 namespace {
 
-    template<
-        typename T>
-    bool add_within_range(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool add_within_range(T const& argument1, T const& argument2)
     {
         return lue::add_within_range<T>(argument1, argument2, argument1 + argument2);
     }
 
 
-    template<
-        typename T>
-    bool add_out_of_range(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool add_out_of_range(T const& argument1, T const& argument2)
     {
         return lue::add_out_of_range<T>(argument1, argument2, argument1 + argument2);
     }
 
 
-    template<
-        typename T>
-    bool multiply_within_range(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool multiply_within_range(T const& argument1, T const& argument2)
     {
         return lue::multiply_within_range<T>(argument1, argument2, argument1 * argument2);
     }
 
 
-    template<
-        typename T>
-    bool multiply_out_of_range(
-        T const& argument1,
-        T const& argument2)
+    template<typename T>
+    bool multiply_out_of_range(T const& argument1, T const& argument2)
     {
         return lue::multiply_out_of_range<T>(argument1, argument2, argument1 * argument2);
     }

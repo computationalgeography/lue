@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue hdf5 group
-#include <boost/test/unit_test.hpp>
-#include "lue/hdf5/group.hpp"
 #include "lue/hdf5/file.hpp"
+#include "lue/hdf5/group.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace {
@@ -11,8 +11,7 @@ namespace {
 
         public:
 
-            explicit Fixture(
-                std::string const& dataset_name):
+            explicit Fixture(std::string const& dataset_name):
 
                 _filename{dataset_name}
 
@@ -24,9 +23,9 @@ namespace {
                 BOOST_REQUIRE(!lue::hdf5::file_exists(_filename));
             }
 
-            Fixture(Fixture const&)=delete;
+            Fixture(Fixture const&) = delete;
 
-            Fixture(Fixture&&)=delete;
+            Fixture(Fixture&&) = delete;
 
             ~Fixture()
             {
@@ -37,9 +36,9 @@ namespace {
                 BOOST_CHECK(!lue::hdf5::file_exists(_filename));
             }
 
-            Fixture& operator=(Fixture const&)=delete;
+            Fixture& operator=(Fixture const&) = delete;
 
-            Fixture& operator=(Fixture&&)=delete;
+            Fixture& operator=(Fixture&&) = delete;
 
         private:
 
@@ -47,11 +46,11 @@ namespace {
 
             void remove_file()
             {
-                if(lue::hdf5::file_exists(_filename)) {
+                if (lue::hdf5::file_exists(_filename))
+                {
                     lue::hdf5::remove_file(_filename);
                 }
             }
-
     };
 
 }  // Anonymous namespace

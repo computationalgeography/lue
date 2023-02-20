@@ -4,68 +4,62 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-class ValueGroup:
-    public hdf5::Group
-{
+        class ValueGroup: public hdf5::Group
+        {
 
-public:
+            public:
 
-                   ValueGroup          (Group const& parent,
-                                        hdf5::Datatype const& memory_datatype);
+                ValueGroup(Group const& parent, hdf5::Datatype const& memory_datatype);
 
-                   ValueGroup          (ValueGroup const&)=default;
+                ValueGroup(ValueGroup const&) = default;
 
-                   ValueGroup          (ValueGroup&&)=default;
+                ValueGroup(ValueGroup&&) = default;
 
-                   ~ValueGroup         () override =default;
+                ~ValueGroup() override = default;
 
-    ValueGroup&    operator=           (ValueGroup const&)=default;
+                ValueGroup& operator=(ValueGroup const&) = default;
 
-    ValueGroup&    operator=           (ValueGroup&&)=default;
+                ValueGroup& operator=(ValueGroup&&) = default;
 
-    hdf5::Datatype const&
-                   file_datatype       () const;
+                hdf5::Datatype const& file_datatype() const;
 
-    hdf5::Datatype const&
-                   memory_datatype     () const;
+                hdf5::Datatype const& memory_datatype() const;
 
-    Rank           rank                () const;
+                Rank rank() const;
 
-protected:
+            protected:
 
-                   ValueGroup          (hdf5::Group const& parent,
-                                        std::string const& name);
+                ValueGroup(hdf5::Group const& parent, std::string const& name);
 
-                   ValueGroup          (hdf5::Group const& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
+                ValueGroup(
+                    hdf5::Group const& parent,
+                    std::string const& name,
+                    hdf5::Datatype const& memory_datatype);
 
-private:
+            private:
 
-    //! In-file datatype
-    hdf5::Datatype _file_datatype;
+                //! In-file datatype
+                hdf5::Datatype _file_datatype;
 
-    //! In-memory datatype
-    hdf5::Datatype _memory_datatype;
+                //! In-memory datatype
+                hdf5::Datatype _memory_datatype;
 
-    //! Rank of the object arrays
-    Rank           _rank;
-
-};
+                //! Rank of the object arrays
+                Rank _rank;
+        };
 
 
-ValueGroup         create_value_group  (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype,
-                                        Rank rank);
+        ValueGroup create_value_group(
+            hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype, Rank rank);
 
-ValueGroup         create_value_group  (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype,
-                                        Rank rank);
+        ValueGroup create_value_group(
+            hdf5::Group& parent,
+            std::string const& name,
+            hdf5::Datatype const& file_datatype,
+            hdf5::Datatype const& memory_datatype,
+            Rank rank);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

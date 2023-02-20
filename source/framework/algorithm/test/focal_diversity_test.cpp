@@ -42,18 +42,20 @@ BOOST_AUTO_TEST_CASE(focal_diversity_2d_int32)
     Count const nd{lue::policy::no_data_value<Count>};
 
     CountArray array_we_want = lue::test::create_partitioned_array<CountArray>(
-        array_shape, partition_shape, {
-            {  nd,  nd,  nd,  nd,  9,   9,  nd,   9,   9 },
-            {  nd,  nd,  nd,   9,  9,   9,   9,   9,   9 },
-            {  nd,  nd,  nd,   9,  9,  nd,   9,   9,  nd },
+        array_shape,
+        partition_shape,
+        {
+            {nd, nd, nd, nd, 9, 9, nd, 9, 9},
+            {nd, nd, nd, 9, 9, 9, 9, 9, 9},
+            {nd, nd, nd, 9, 9, nd, 9, 9, nd},
 
-            {  nd,   9,   9,  nd,   9,   9,  nd,   9,   9 },
-            {   9,   9,   9,   9,   9,   9,   9,   9,   9 },
-            {   9,   9,  nd,   9,   9,  nd,   9,   9,  nd },
+            {nd, 9, 9, nd, 9, 9, nd, 9, 9},
+            {9, 9, 9, 9, 9, 9, 9, 9, 9},
+            {9, 9, nd, 9, 9, nd, 9, 9, nd},
 
-            {  nd,   9,   9,  nd,   9,   9,  nd,  nd,  nd },
-            {   9,   9,   9,   9,   9,   9,  nd,  nd,  nd },
-            {   9,   9,  nd,   9,   9,  nd,  nd,  nd,  nd },
+            {nd, 9, 9, nd, 9, 9, nd, nd, nd},
+            {9, 9, 9, 9, 9, 9, nd, nd, nd},
+            {9, 9, nd, 9, 9, nd, nd, nd, nd},
         });
 
     lue::test::check_arrays_are_equal(focal_diversity, array_we_want);

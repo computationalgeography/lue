@@ -5,17 +5,12 @@
 namespace lue {
     namespace policy::flow_accumulation {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement, FlowDirectionElement>
-                        >
-                >,
+            OutputsPolicies<OutputPolicies<
+                DontMarkNoData<MaterialElement>,
+                AllValuesWithinRange<MaterialElement, FlowDirectionElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<FlowDirectionElement>,
@@ -25,11 +20,8 @@ namespace lue {
                     FillHaloWithConstantValue<MaterialElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultPolicies:
-            public DefaultPoliciesBase<FlowDirectionElement, MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
+        class DefaultPolicies: public DefaultPoliciesBase<FlowDirectionElement, MaterialElement>
         {
 
             public:
@@ -42,30 +34,23 @@ namespace lue {
                 DefaultPolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            MaterialOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        MaterialOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}}
 
                 {
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultValuePoliciesBase = Policies<
             // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement>,
-            OutputsPolicies<
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement, FlowDirectionElement>
-                        >
-                >,
+            OutputsPolicies<OutputPolicies<
+                DefaultOutputNoDataPolicy<MaterialElement>,
+                AllValuesWithinRange<MaterialElement, FlowDirectionElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,
@@ -75,11 +60,8 @@ namespace lue {
                     FillHaloWithConstantValue<MaterialElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
+        class DefaultValuePolicies: public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>
         {
 
             public:
@@ -92,15 +74,13 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            MaterialOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        MaterialOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}}
 
                 {
                 }
-
         };
 
 

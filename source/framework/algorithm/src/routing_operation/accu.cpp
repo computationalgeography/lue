@@ -1,11 +1,11 @@
 #include "lue/framework/algorithm/definition/accu.hpp"
 
 
-#define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement)                           \
-                                                                                         \
-    LUE_INSTANTIATE_ACCU(                                                                \
-        ESC(policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>),  \
-        FlowDirectionElement,                                                            \
+#define LUE_INSTANTIATE(FlowDirectionElement, MaterialElement)                                               \
+                                                                                                             \
+    LUE_INSTANTIATE_ACCU(                                                                                    \
+        ESC(policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>),                      \
+        FlowDirectionElement,                                                                                \
         MaterialElement);
 
 

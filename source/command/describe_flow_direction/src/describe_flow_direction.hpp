@@ -3,24 +3,21 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class DescribeFlowDirection:
-    public Application
+        class DescribeFlowDirection: public Application
 
-{
+        {
 
-public:
+            public:
 
-    explicit       DescribeFlowDirection(
-                                        std::vector<std::string> const& arguments);
+                explicit DescribeFlowDirection(std::vector<std::string> const& arguments);
 
 
-    int            run_implementation();
+                int run_implementation();
 
-private:
+            private:
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

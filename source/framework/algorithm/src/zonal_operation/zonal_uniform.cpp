@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_uniform.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element, Zone)              \
-                                                              \
-    LUE_INSTANTIATE_ZONAL_UNIFORM(                            \
-        ESC(policy::zonal_uniform::Policies<Element, Zone>),  \
-        Element,                                              \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Element, Zone)                                                             \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_UNIFORM(ESC(policy::zonal_uniform::Policies<Element, Zone>), Element, Zone);
 
 
 namespace lue {

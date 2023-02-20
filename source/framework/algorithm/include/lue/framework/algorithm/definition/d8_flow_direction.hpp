@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/d8_flow_direction.hpp"
+#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/macro.hpp"
 
@@ -10,9 +10,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename FlowDirectionElement,
-            typename ElevationElement>
+        template<typename FlowDirectionElement, typename ElevationElement>
         class D8FlowDirection
         {
 
@@ -21,14 +19,10 @@ namespace lue {
                 using OutputElement = FlowDirectionElement;
 
 
-                D8FlowDirection()=default;
+                D8FlowDirection() = default;
 
 
-                template<
-                    typename Kernel,
-                    typename OutputPolicies,
-                    typename InputPolicies,
-                    typename Subspan>
+                template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
                 FlowDirectionElement operator()(
                     [[maybe_unused]] Kernel const& kernel,
                     OutputPolicies const& output_policies,
@@ -54,7 +48,7 @@ namespace lue {
 
                     FlowDirectionElement direction;
 
-                    if(indp.is_no_data(window(1, 1)))
+                    if (indp.is_no_data(window(1, 1)))
                     {
                         ondp.mark_no_data(direction);
                     }
@@ -67,10 +61,10 @@ namespace lue {
 
                         // First try the nearest cells -----------------------------------------
                         // North
-                        if(!indp.is_no_data(window(0, 1)))
+                        if (!indp.is_no_data(window(0, 1)))
                         {
                             other_drop = window(1, 1) - window(0, 1);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = north<FlowDirectionElement>;
@@ -78,10 +72,10 @@ namespace lue {
                         }
 
                         // West
-                        if(!indp.is_no_data(window(1, 0)))
+                        if (!indp.is_no_data(window(1, 0)))
                         {
                             other_drop = window(1, 1) - window(1, 0);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = west<FlowDirectionElement>;
@@ -89,10 +83,10 @@ namespace lue {
                         }
 
                         // East
-                        if(!indp.is_no_data(window(1, 2)))
+                        if (!indp.is_no_data(window(1, 2)))
                         {
                             other_drop = window(1, 1) - window(1, 2);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = east<FlowDirectionElement>;
@@ -100,10 +94,10 @@ namespace lue {
                         }
 
                         // South
-                        if(!indp.is_no_data(window(2, 1)))
+                        if (!indp.is_no_data(window(2, 1)))
                         {
                             other_drop = window(1, 1) - window(2, 1);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = south<FlowDirectionElement>;
@@ -112,10 +106,10 @@ namespace lue {
 
                         // Move on the diagonal cells ------------------------------------------
                         // North-west
-                        if(!indp.is_no_data(window(0, 0)))
+                        if (!indp.is_no_data(window(0, 0)))
                         {
                             other_drop = window(1, 1) - window(0, 0);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = north_west<FlowDirectionElement>;
@@ -123,10 +117,10 @@ namespace lue {
                         }
 
                         // North-east
-                        if(!indp.is_no_data(window(0, 2)))
+                        if (!indp.is_no_data(window(0, 2)))
                         {
                             other_drop = window(1, 1) - window(0, 2);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = north_east<FlowDirectionElement>;
@@ -134,10 +128,10 @@ namespace lue {
                         }
 
                         // South-west
-                        if(!indp.is_no_data(window(2, 0)))
+                        if (!indp.is_no_data(window(2, 0)))
                         {
                             other_drop = window(1, 1) - window(2, 0);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = south_west<FlowDirectionElement>;
@@ -145,10 +139,10 @@ namespace lue {
                         }
 
                         // South-east
-                        if(!indp.is_no_data(window(2, 2)))
+                        if (!indp.is_no_data(window(2, 2)))
                         {
                             other_drop = window(1, 1) - window(2, 2);
-                            if(other_drop > drop)
+                            if (other_drop > drop)
                             {
                                 drop = other_drop;
                                 direction = south_east<FlowDirectionElement>;
@@ -158,20 +152,14 @@ namespace lue {
 
                     return direction;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename FlowDirectionElement,
-        typename Policies,
-        typename ElevationElement,
-        Rank rank>
+    template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>
     PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
-        Policies const& policies,
-        PartitionedArray<ElevationElement, rank> const& elevation)
+        Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation)
     {
         using Weight = bool;
         using Functor = detail::D8FlowDirection<FlowDirectionElement, ElevationElement>;
@@ -184,11 +172,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_D8_FLOW_DIRECTION(                                             \
-    Policies, FlowDirectionElement, ElevationElement)                                  \
-                                                                                       \
-    template LUE_ROUTING_OPERATION_EXPORT                                              \
-    PartitionedArray<FlowDirectionElement, 2> d8_flow_direction<                       \
-            FlowDirectionElement, ArgumentType<void(Policies)>, ElevationElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                           \
-        PartitionedArray<ElevationElement, 2> const&);
+#define LUE_INSTANTIATE_D8_FLOW_DIRECTION(Policies, FlowDirectionElement, ElevationElement)                  \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<FlowDirectionElement, 2>                          \
+    d8_flow_direction<FlowDirectionElement, ArgumentType<void(Policies)>, ElevationElement, 2>(              \
+        ArgumentType<void(Policies)> const&, PartitionedArray<ElevationElement, 2> const&);

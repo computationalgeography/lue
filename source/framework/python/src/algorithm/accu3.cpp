@@ -8,8 +8,7 @@ namespace lue::framework {
         Rank const rank{2};
         using FlowDirectionElement = std::uint8_t;
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         PartitionedArray<MaterialElement, rank> accu3(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<MaterialElement, rank> const& material)
@@ -20,8 +19,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_accu3(
-        pybind11::module& module)
+    void bind_accu3(pybind11::module& module)
     {
         module.def("accu3", accu3<float>);
         module.def("accu3", accu3<double>);

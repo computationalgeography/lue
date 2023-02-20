@@ -4,9 +4,7 @@
 namespace lue::qa {
 
     ArrayExperiment::ArrayExperiment(
-        Count const nr_workers,
-        Shape const& array_shape,
-        Shape const& partition_shape):
+        Count const nr_workers, Shape const& array_shape, Shape const& partition_shape):
 
         Experiment{nr_workers},
         _array_shape{array_shape},

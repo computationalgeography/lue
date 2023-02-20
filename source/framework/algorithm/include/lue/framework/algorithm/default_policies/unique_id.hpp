@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::unique_id {
 
-        template<
-            typename IDElement,
-            typename ConditionElement>
+        template<typename IDElement, typename ConditionElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<ConditionElement>,
             OutputElements<IDElement>,
@@ -18,12 +16,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename IDElement,
-            typename ConditionElement,
-            Rank rank>
-        PartitionedArray<IDElement, rank> unique_id(
-            PartitionedArray<ConditionElement, rank> const& array)
+        template<typename IDElement, typename ConditionElement, Rank rank>
+        PartitionedArray<IDElement, rank> unique_id(PartitionedArray<ConditionElement, rank> const& array)
         {
             using Policies = policy::unique_id::DefaultPolicies<IDElement, ConditionElement>;
 

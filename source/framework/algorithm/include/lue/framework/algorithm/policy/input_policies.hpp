@@ -5,8 +5,7 @@
 
 namespace lue::policy {
 
-    template<
-        typename InputNoDataPolicy>
+    template<typename InputNoDataPolicy>
     class InputPolicies
     {
 
@@ -19,15 +18,14 @@ namespace lue::policy {
             {
             }
 
-            InputPolicies(
-                InputNoDataPolicy const& indp):
+            InputPolicies(InputNoDataPolicy const& indp):
 
                 _indp{indp}
 
             {
             }
 
-            virtual ~InputPolicies()=default;
+            virtual ~InputPolicies() = default;
 
             InputNoDataPolicy const& input_no_data_policy() const
             {
@@ -39,26 +37,21 @@ namespace lue::policy {
             friend class hpx::serialization::access;
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive & _indp;
+                archive& _indp;
             }
 
         private:
 
             InputNoDataPolicy _indp;
-
     };
 
 
     namespace detail {
 
-        template<
-            typename InputNoDataPolicy_>
-        class TypeTraits<
-            InputPolicies<InputNoDataPolicy_>>
+        template<typename InputNoDataPolicy_>
+        class TypeTraits<InputPolicies<InputNoDataPolicy_>>
         {
 
             public:
@@ -67,21 +60,15 @@ namespace lue::policy {
 
                 using Element = ElementT<InputNoDataPolicy>;
 
-                template<
-                    typename Element>
-                using Policies = InputPolicies<
-                    InputNoDataPolicyT<InputNoDataPolicy, Element>>;
-
+                template<typename Element>
+                using Policies = InputPolicies<InputNoDataPolicyT<InputNoDataPolicy, Element>>;
         };
 
     }  // namespace detail
 
 
-    template<
-        typename InputNoDataPolicy,
-        typename HaloPolicy>
-    class SpatialOperationInputPolicies:
-        public InputPolicies<InputNoDataPolicy>
+    template<typename InputNoDataPolicy, typename HaloPolicy>
+    class SpatialOperationInputPolicies: public InputPolicies<InputNoDataPolicy>
     {
 
         public:
@@ -94,8 +81,7 @@ namespace lue::policy {
             {
             }
 
-            SpatialOperationInputPolicies(
-                InputNoDataPolicy const& indp):
+            SpatialOperationInputPolicies(InputNoDataPolicy const& indp):
 
                 InputPolicies<InputNoDataPolicy>{indp},
                 _hp{}
@@ -103,8 +89,7 @@ namespace lue::policy {
             {
             }
 
-            SpatialOperationInputPolicies(
-                HaloPolicy const& hp):
+            SpatialOperationInputPolicies(HaloPolicy const& hp):
 
                 InputPolicies<InputNoDataPolicy>{},
                 _hp{hp}
@@ -112,9 +97,7 @@ namespace lue::policy {
             {
             }
 
-            SpatialOperationInputPolicies(
-                InputNoDataPolicy const& indp,
-                HaloPolicy const& hp):
+            SpatialOperationInputPolicies(InputNoDataPolicy const& indp, HaloPolicy const& hp):
 
                 InputPolicies<InputNoDataPolicy>{indp},
                 _hp{hp}
@@ -132,26 +115,20 @@ namespace lue::policy {
             friend class hpx::serialization::access;
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
                 InputPolicies<InputNoDataPolicy>::serialize(archive, version);
-                archive & _hp;
+                archive& _hp;
             }
 
             HaloPolicy _hp;
-
     };
 
 
     namespace detail {
 
-        template<
-            typename InputNoDataPolicy_,
-            typename HaloPolicy>
-        class TypeTraits<
-            SpatialOperationInputPolicies<InputNoDataPolicy_, HaloPolicy>>
+        template<typename InputNoDataPolicy_, typename HaloPolicy>
+        class TypeTraits<SpatialOperationInputPolicies<InputNoDataPolicy_, HaloPolicy>>
         {
 
             public:
@@ -160,12 +137,10 @@ namespace lue::policy {
 
                 using Element = ElementT<InputNoDataPolicy>;
 
-                template<
-                    typename Element>
+                template<typename Element>
                 using Policies = SpatialOperationInputPolicies<
                     InputNoDataPolicyT<InputNoDataPolicy, Element>,
                     HaloPolicyT<HaloPolicy, Element>>;
-
         };
 
     }  // namespace detail

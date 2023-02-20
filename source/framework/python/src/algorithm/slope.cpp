@@ -8,12 +8,9 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         PartitionedArray<Element, rank> slope(
-            PartitionedArray<Element, rank> const& elevation,
-            Element const& cell_size)
+            PartitionedArray<Element, rank> const& elevation, Element const& cell_size)
         {
             return value_policies::slope(elevation, cell_size);
         }
@@ -21,8 +18,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_slope(
-        pybind11::module& module)
+    void bind_slope(pybind11::module& module)
     {
         // TODO How to document these?
         module.def("slope", slope<float, 2>, "dem"_a, "cell_size"_a);

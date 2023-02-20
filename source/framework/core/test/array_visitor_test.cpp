@@ -1,54 +1,50 @@
 #define BOOST_TEST_MODULE lue framework core array_visitor_test
-#include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/array_visitor.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/test/stream.hpp"
+#include <hpx/config.hpp>
+#include <boost/test/unit_test.hpp>
 
 
 namespace {
 
-template<
-    typename Shape>
-class Visitor:
-    public lue::ArrayVisitor<Shape>
-{
-
-public:
-
-    using CellIndices = std::vector<lue::Index>;
-
-    explicit Visitor(
-        Shape const& shape):
-
-        lue::ArrayVisitor<Shape>{shape},
-        _cell_indices{}
-
+    template<typename Shape>
+    class Visitor: public lue::ArrayVisitor<Shape>
     {
-    }
 
-    CellIndices const& cell_indices() const
-    {
-        return _cell_indices;
-    }
+        public:
 
-    void operator()()
-    {
-        // Record linear index of current cell
-        _cell_indices.push_back(this->cursor().linear_idx());
-    }
+            using CellIndices = std::vector<lue::Index>;
 
-private:
+            explicit Visitor(Shape const& shape):
 
-    // Indices of cells visited
-    CellIndices _cell_indices;
+                lue::ArrayVisitor<Shape>{shape},
+                _cell_indices{}
 
-};
+            {
+            }
+
+            CellIndices const& cell_indices() const
+            {
+                return _cell_indices;
+            }
+
+            void operator()()
+            {
+                // Record linear index of current cell
+                _cell_indices.push_back(this->cursor().linear_idx());
+            }
+
+        private:
+
+            // Indices of cells visited
+            CellIndices _cell_indices;
+    };
 
 
-lue::Rank const rank = 2;
-using Shape = lue::Shape<lue::Index, rank>;
-using Cursor = lue::detail::ArrayVisitorCursor<Shape>;
+    lue::Rank const rank = 2;
+    using Shape = lue::Shape<lue::Index, rank>;
+    using Cursor = lue::detail::ArrayVisitorCursor<Shape>;
 
 }  // Anonymous namespace
 

@@ -4,8 +4,7 @@
 
 namespace lue {
 
-    template<
-        typename Element>
+    template<typename Element>
     class GDALTypeTraits
     {
     };
@@ -18,7 +17,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Byte};
-
     };
 
 
@@ -29,7 +27,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_UInt16};
-
     };
 
 
@@ -40,7 +37,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Int16};
-
     };
 
 
@@ -51,7 +47,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_UInt32};
-
     };
 
 
@@ -62,7 +57,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Int32};
-
     };
 
 
@@ -74,7 +68,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_UInt64};
-
     };
 
 
@@ -85,7 +78,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Int64};
-
     };
 #endif
 
@@ -97,7 +89,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Float32};
-
     };
 
 
@@ -108,7 +99,6 @@ namespace lue {
         public:
 
             static constexpr GDALDataType type_id{GDT_Float64};
-
     };
 
 }  // namespace lue

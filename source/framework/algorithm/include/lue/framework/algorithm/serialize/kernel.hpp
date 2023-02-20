@@ -4,40 +4,31 @@
 
 
 namespace hpx {
-namespace serialization {
+    namespace serialization {
 
-template<
-    typename Weight,
-    std::size_t rank>
-void serialize(
-    input_archive& archive,
-    lue::Kernel<Weight, rank>& kernel,
-    unsigned int const version)
-{
-    using Array = lue::Array<Weight, rank>;
-    using Kernel = lue::Kernel<Weight, rank>;
+        template<typename Weight, std::size_t rank>
+        void serialize(input_archive& archive, lue::Kernel<Weight, rank>& kernel, unsigned int const version)
+        {
+            using Array = lue::Array<Weight, rank>;
+            using Kernel = lue::Kernel<Weight, rank>;
 
-    // Read array
-    Array array;
-    serialize(archive, array, version);
+            // Read array
+            Array array;
+            serialize(archive, array, version);
 
-    // Assign new instance to kernel passed in
-    kernel = Kernel{array};
-}
+            // Assign new instance to kernel passed in
+            kernel = Kernel{array};
+        }
 
 
-template<
-    typename Weight,
-    std::size_t rank>
-void serialize(
-    output_archive& archive,
-    lue::Kernel<Weight, rank> const& kernel,
-    unsigned int const version)
-{
-    using Array = lue::Array<Weight, rank>;
+        template<typename Weight, std::size_t rank>
+        void serialize(
+            output_archive& archive, lue::Kernel<Weight, rank> const& kernel, unsigned int const version)
+        {
+            using Array = lue::Array<Weight, rank>;
 
-    serialize(archive, dynamic_cast<Array const&>(kernel), version);
-}
+            serialize(archive, dynamic_cast<Array const&>(kernel), version);
+        }
 
-}  // namespace serialization
+    }  // namespace serialization
 }  // namespace hpx

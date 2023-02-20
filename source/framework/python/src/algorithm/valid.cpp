@@ -8,11 +8,8 @@ namespace lue::framework {
         using BooleanElement = std::uint8_t;
 
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<BooleanElement, rank> valid(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<BooleanElement, rank> valid(PartitionedArray<Element, rank> const& array)
         {
             using BooleanElement = std::uint8_t;
 
@@ -22,8 +19,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_valid(
-        pybind11::module& module)
+    void bind_valid(pybind11::module& module)
     {
         module.def("valid", valid<std::uint8_t, 2>);
         module.def("valid", valid<std::uint32_t, 2>);

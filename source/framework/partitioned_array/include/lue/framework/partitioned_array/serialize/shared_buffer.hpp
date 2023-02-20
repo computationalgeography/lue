@@ -5,12 +5,9 @@
 
 namespace hpx::serialization {
 
-    template<
-        typename Element>
+    template<typename Element>
     void serialize(
-        input_archive& archive,
-        lue::SharedBuffer<Element>& buffer,
-        unsigned int const /* version */)
+        input_archive& archive, lue::SharedBuffer<Element>& buffer, unsigned int const /* version */)
     {
         // Read buffer from archive
 
@@ -19,27 +16,21 @@ namespace hpx::serialization {
 
         // Read buffer size and make sure buffer has enough room for the elements
         Size size{};
-        archive & size;
+        archive& size;
         buffer.resize(size);
 
         // Read elements
-        archive & hpx::serialization::make_array(buffer.data(), size);
+        archive& hpx::serialization::make_array(buffer.data(), size);
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     void serialize(
-        output_archive& archive,
-        lue::SharedBuffer<Element> const& buffer,
-        unsigned int const /* version */)
+        output_archive& archive, lue::SharedBuffer<Element> const& buffer, unsigned int const /* version */)
     {
         // Write buffer to archive
 
-        archive
-            & buffer.size()
-            & hpx::serialization::make_array(buffer.data(), buffer.size())
-            ;
+        archive& buffer.size() & hpx::serialization::make_array(buffer.data(), buffer.size());
     }
 
 }  // namespace hpx::serialization

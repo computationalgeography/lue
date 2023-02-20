@@ -4,12 +4,10 @@
 
 namespace lue::framework {
 
-#define LUE_ALL_OVERLOADS(type, rank)  \
-    module.def("all", all<type, rank>);
+#define LUE_ALL_OVERLOADS(type, rank) module.def("all", all<type, rank>);
 
 
-    void bind_all(
-        pybind11::module& module)
+    void bind_all(pybind11::module& module)
     {
         // TODO How to document these?
         LUE_ALL_OVERLOADS(std::uint8_t, 2)

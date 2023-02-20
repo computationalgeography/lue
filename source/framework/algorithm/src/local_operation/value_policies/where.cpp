@@ -2,20 +2,22 @@
 #include "lue/framework/algorithm/value_policies/where.hpp"
 
 
-#define LUE_INSTANTIATE(ConditionElement, ExpressionElement, rank)                        \
-                                                                                          \
-    LUE_INSTANTIATE_WHERE2(                                                               \
-        ESC(policy::where::DefaultValuePolicies<                                          \
-            ExpressionElement, ConditionElement, ExpressionElement>),                     \
-        ConditionElement,                                                                 \
-        ExpressionElement,                                                                \
-        rank);                                                                            \
-                                                                                          \
-    LUE_INSTANTIATE_WHERE3(                                                               \
-        ESC(policy::where::DefaultValuePolicies<                                          \
-            ExpressionElement, ConditionElement, ExpressionElement, ExpressionElement>),  \
-        ConditionElement,                                                                 \
-        ExpressionElement,                                                                \
+#define LUE_INSTANTIATE(ConditionElement, ExpressionElement, rank)                                           \
+                                                                                                             \
+    LUE_INSTANTIATE_WHERE2(                                                                                  \
+        ESC(policy::where::DefaultValuePolicies<ExpressionElement, ConditionElement, ExpressionElement>),    \
+        ConditionElement,                                                                                    \
+        ExpressionElement,                                                                                   \
+        rank);                                                                                               \
+                                                                                                             \
+    LUE_INSTANTIATE_WHERE3(                                                                                  \
+        ESC(policy::where::DefaultValuePolicies<                                                             \
+            ExpressionElement,                                                                               \
+            ConditionElement,                                                                                \
+            ExpressionElement,                                                                               \
+            ExpressionElement>),                                                                             \
+        ConditionElement,                                                                                    \
+        ExpressionElement,                                                                                   \
         rank);
 
 

@@ -6,17 +6,11 @@
 namespace lue {
 
     // local_operation(array, array)
-    template<
-        typename Policies,
-        typename InputElement,
-        Rank rank,
-        typename Functor>
+    template<typename Policies, typename InputElement, Rank rank, typename Functor>
     PartitionedArray<OutputElementT<Functor>, rank> unary_local_operation(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
         Functor const& functor);
-
-
 
 
     /// // local_operation(partition, scalar)
@@ -480,67 +474,39 @@ namespace lue {
 
 
 // All overloads *with* a Policies template parameter
-#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS3(name, Functor)        \
-                                                                   \
-/* f(policies, array) */                                           \
-template<                                                          \
-    typename Policies,                                             \
-    typename InputElement,                                         \
-    Rank rank>                                                     \
-auto name(                                                         \
-    Policies const& policies,                                      \
-    PartitionedArray<InputElement, rank> const& array)             \
-{                                                                  \
-    using OutputElement = OutputElementT<Functor<InputElement>>;   \
-                                                                   \
-    return unary_local_operation(                                  \
-        policies, array, Functor<InputElement, OutputElement>{});  \
-}
-
-
-
+#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS3(name, Functor)                                                  \
+                                                                                                             \
+    /* f(policies, array) */                                                                                 \
+    template<typename Policies, typename InputElement, Rank rank>                                            \
+    auto name(Policies const& policies, PartitionedArray<InputElement, rank> const& array)                   \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+                                                                                                             \
+        return unary_local_operation(policies, array, Functor<InputElement, OutputElement>{});               \
+    }
 
 
 // Declare all overloads *with* a Policies template parameter.
 // This is the most general version.
-#define LUE_DECLARE_UNARY_LOCAL_OPERATION_OVERLOADS(name)  \
-                                                           \
-/* f(policies, array) */                                   \
-template<                                                  \
-    typename Policies,                                     \
-    typename InputElement,                                 \
-    Rank rank>                                             \
-auto name(                                                 \
-    Policies const& policies,                              \
-    PartitionedArray<InputElement, rank> const& array);
-
-
-
+#define LUE_DECLARE_UNARY_LOCAL_OPERATION_OVERLOADS(name)                                                    \
+                                                                                                             \
+    /* f(policies, array) */                                                                                 \
+    template<typename Policies, typename InputElement, Rank rank>                                            \
+    auto name(Policies const& policies, PartitionedArray<InputElement, rank> const& array);
 
 
 // Define all overloads for when a specific policies type is used.
-#define LUE_DEFINE_UNARY_LOCAL_OPERATION_OVERLOADS(name, Functor, Policies)  \
-                                                                             \
-/* f(array) */                                                               \
-template<                                                                    \
-    typename InputElement,                                                   \
-    Rank rank>                                                               \
-auto name(                                                                   \
-    PartitionedArray<InputElement, rank> const& array);                      \
-{                                                                            \
-    using OutputElement = OutputElementT<Functor<InputElement>>;             \
-    using Policies_ = Policies<InputElement>;                                \
-                                                                             \
-    return name<Policies_, OutputElement, InputElement, rank>(               \
-        Policies_{}, array);                                                 \
-}
-
-
-
-
-
-
-
+#define LUE_DEFINE_UNARY_LOCAL_OPERATION_OVERLOADS(name, Functor, Policies)                                  \
+                                                                                                             \
+    /* f(array) */                                                                                           \
+    template<typename InputElement, Rank rank>                                                               \
+    auto name(PartitionedArray<InputElement, rank> const& array);                                            \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+        using Policies_ = Policies<InputElement>;                                                            \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement, rank>(Policies_{}, array);                       \
+    }
 
 
 /// /* f(policies, array, scalar) */                                                \

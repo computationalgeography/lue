@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm communicator_array
-#include "lue/framework/algorithm/detail/communicator_array.hpp"
-#include "lue/framework/algorithm/detail/communicator.hpp"
 #include "flow_accumulation.hpp"
+#include "lue/framework/algorithm/detail/communicator.hpp"
+#include "lue/framework/algorithm/detail/communicator_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

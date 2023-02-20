@@ -6,26 +6,22 @@
 
 namespace lue::gui {
 
-    class TreeNode:
-        public Selectable
+    class TreeNode: public Selectable
     {
 
         public:
 
-            explicit TreeNode(
-                std::string const& name,
-                ImGuiTreeNodeFlags flags=0);
+            explicit TreeNode(std::string const& name, ImGuiTreeNodeFlags flags = 0);
 
-            TreeNode(TreeNode const&)=default;
+            TreeNode(TreeNode const&) = default;
 
-            TreeNode(TreeNode&&)=default;
+            TreeNode(TreeNode&&) = default;
 
             ~TreeNode() override;
 
-            TreeNode& operator=(TreeNode const&)=default;
+            TreeNode& operator=(TreeNode const&) = default;
 
-            TreeNode& operator=(TreeNode&&)=default;
-
+            TreeNode& operator=(TreeNode&&) = default;
     };
 
 }  // namespace lue::gui

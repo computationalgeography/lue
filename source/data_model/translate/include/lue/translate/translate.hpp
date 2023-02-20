@@ -3,30 +3,26 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class Translate:
-    public Application
+        class Translate: public Application
 
-{
+        {
 
-public:
+            public:
 
-    explicit       Translate           (std::vector<std::string> const&
-                                            arguments);
+                explicit Translate(std::vector<std::string> const& arguments);
 
-private:
+            private:
 
-    // static CommandPtr import_data      (std::vector<std::string> const&
-    //                                         arguments);
+                // static CommandPtr import_data      (std::vector<std::string> const&
+                //                                         arguments);
 
-    static CommandPtr export_data      (std::vector<std::string> const&
-                                            arguments);
+                static CommandPtr export_data(std::vector<std::string> const& arguments);
 
-    // void           print_format        (std::string const& dataset_name,
-    //                                     std::string const& format);
+                // void           print_format        (std::string const& dataset_name,
+                //                                     std::string const& format);
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue translate stack_name
-#include <boost/test/unit_test.hpp>
 #include "lue/translate/stack_name.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)

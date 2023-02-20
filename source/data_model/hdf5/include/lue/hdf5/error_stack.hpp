@@ -4,48 +4,46 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      This class provides a view on the HDF5 error stack
-*/
-class ErrorStack
-{
+        /*!
+            @brief      This class provides a view on the HDF5 error stack
+        */
+        class ErrorStack
+        {
 
-public:
+            public:
 
-                   ErrorStack          ();
+                ErrorStack();
 
-    explicit       ErrorStack          (Identifier const& id);
+                explicit ErrorStack(Identifier const& id);
 
-                   ErrorStack          (ErrorStack const&)=default;
+                ErrorStack(ErrorStack const&) = default;
 
-                   ErrorStack          (ErrorStack&&)=default;
+                ErrorStack(ErrorStack&&) = default;
 
-                   ~ErrorStack         ();
+                ~ErrorStack();
 
-    ErrorStack&    operator=           (ErrorStack const&)=default;
+                ErrorStack& operator=(ErrorStack const&) = default;
 
-    ErrorStack&    operator=           (ErrorStack&&)=default;
+                ErrorStack& operator=(ErrorStack&&) = default;
 
-    bool           empty               () const;
+                bool empty() const;
 
-    void           clear               () const;
+                void clear() const;
 
-    // void           add_message         (std::string const& message);
+                // void           add_message         (std::string const& message);
 
-    std::vector<std::string>
-                   messages            () const;
+                std::vector<std::string> messages() const;
 
-private:
+            private:
 
-    Identifier     _id;
+                Identifier _id;
 
-    ::herr_t (*_original_error_handler)(::hid_t, void*);
+                ::herr_t (*_original_error_handler)(::hid_t, void*);
 
-    void*          _original_client_data;
+                void* _original_client_data;
+        };
 
-};
-
-}  // namespace hdf5
+    }  // namespace hdf5
 }  // namespace lue

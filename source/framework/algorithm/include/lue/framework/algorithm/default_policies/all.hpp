@@ -5,23 +5,17 @@
 namespace lue {
     namespace policy::all {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<Element>,
-            OutputElements<Element>,
-            InputElements<Element>>;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
     }  // namespace policy::all
 
 
     namespace default_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        hpx::future<Element> all(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        hpx::future<Element> all(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::all::DefaultPolicies<Element>;
 
@@ -29,12 +23,9 @@ namespace lue {
         }
 
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         hpx::future<Element> all(
-            hpx::id_type const locality_id,
-            ArrayPartition<Element, rank> const& partition)
+            hpx::id_type const locality_id, ArrayPartition<Element, rank> const& partition)
         {
             using Policies = policy::all::DefaultPolicies<Element>;
 

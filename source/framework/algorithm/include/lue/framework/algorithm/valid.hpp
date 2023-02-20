@@ -5,13 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename BooleanElement,
-        typename Policies,
-        typename ExpressionElement,
-        Rank rank>
+    template<typename BooleanElement, typename Policies, typename ExpressionElement, Rank rank>
     PartitionedArray<BooleanElement, rank> valid(
-        Policies const& policies,
-        PartitionedArray<ExpressionElement, rank> const& array);
+        Policies const& policies, PartitionedArray<ExpressionElement, rank> const& array);
 
 }  // namespace lue

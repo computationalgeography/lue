@@ -17,21 +17,18 @@ namespace lue {
 
     namespace policy::accu_info3 {
 
-        template<
-            typename FlowDirectionElement>
+        template<typename FlowDirectionElement>
         using DomainPolicy = AllValuesWithinDomain<FlowDirectionElement>;
 
 
-        template<
-            typename FlowDirectionElement>
+        template<typename FlowDirectionElement>
         using DefaultPolicies = policy::DefaultPolicies<
             DomainPolicy<FlowDirectionElement>,
             OutputElements<CellClass>,
             InputElements<FlowDirectionElement>>;
 
 
-        template<
-            typename FlowDirectionElement>
+        template<typename FlowDirectionElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<FlowDirectionElement>,
             OutputElements<CellClass>,
@@ -40,12 +37,8 @@ namespace lue {
     }  // namespace policy::accu_info3
 
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, Rank rank>
     PartitionedArray<CellClass, rank> accu_info3(
-        Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
+        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
 
 }  // namespace lue

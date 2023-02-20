@@ -6,21 +6,12 @@
 namespace lue {
     namespace policy::accu_threshold {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement, MaterialElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >,
-                    OutputPolicies<
-                            DontMarkNoData<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >
-                >,
+                OutputPolicies<DontMarkNoData<MaterialElement>, AllValuesWithinRange<MaterialElement>>,
+                OutputPolicies<DontMarkNoData<MaterialElement>, AllValuesWithinRange<MaterialElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<FlowDirectionElement>,
@@ -33,11 +24,8 @@ namespace lue {
                     FillHaloWithConstantValue<MaterialElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultPolicies:
-            public DefaultPoliciesBase<FlowDirectionElement, MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
+        class DefaultPolicies: public DefaultPoliciesBase<FlowDirectionElement, MaterialElement>
         {
 
             public:
@@ -52,36 +40,25 @@ namespace lue {
                 DefaultPolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            StateOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
-                            ThresholdInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FluxOutputPolicies{},
+                        StateOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
+                        ThresholdInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}}
 
                 {
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultValuePoliciesBase = Policies<
             // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement, MaterialElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            MarkNoDataByNaN<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >,
-                    OutputPolicies<
-                            MarkNoDataByNaN<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >
-                >,
+                OutputPolicies<MarkNoDataByNaN<MaterialElement>, AllValuesWithinRange<MaterialElement>>,
+                OutputPolicies<MarkNoDataByNaN<MaterialElement>, AllValuesWithinRange<MaterialElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,
@@ -94,11 +71,8 @@ namespace lue {
                     FillHaloWithConstantValue<MaterialElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
+        class DefaultValuePolicies: public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement>
         {
 
             public:
@@ -114,48 +88,35 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            StateOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
-                            ThresholdInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FluxOutputPolicies{},
+                        StateOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
+                        ThresholdInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}}}
 
                 {
                 }
-
         };
 
     }  // namespace policy::accu_threshold
 
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_threshold(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<MaterialElement, rank> const& threshold);
+    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_threshold(
+        Policies const& policies,
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<MaterialElement, rank> const& threshold);
 
 
-    template<
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_threshold(
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<MaterialElement, rank> const& threshold)
+    template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_threshold(
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<MaterialElement, rank> const& threshold)
     {
         using Policies = policy::accu_threshold::DefaultPolicies<FlowDirectionElement, MaterialElement>;
 

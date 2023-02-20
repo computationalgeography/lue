@@ -156,7 +156,8 @@
 //                 lue_hpx_assert(!has_value(output_cell_idxs));
 //                 lue_hpx_assert(std::is_sorted(input_cells_idxs.begin(), input_cells_idxs.end()));
 //                 /// lue_hpx_assert(
-//                 ///     std::adjacent_find(input_cells_idxs.begin(), input_cells_idxs.end()) == input_cells_idxs.end());
+//                 ///     std::adjacent_find(input_cells_idxs.begin(), input_cells_idxs.end()) ==
+//                 input_cells_idxs.end());
 //
 //                 _input_cells_idxs.emplace(std::make_pair(output_cell_idxs, std::move(input_cells_idxs)));
 //                 _offsets.emplace(std::make_pair(output_cell_idxs, std::move(offset)));
@@ -184,12 +185,14 @@
 //             {
 //                 auto& input_cells_idxs{this->input_cells_idxs(output_cell_idxs)};
 //
-//                 lue_hpx_assert(std::count(input_cells_idxs.begin(), input_cells_idxs.end(), input_cell_idx) == 1);
+//                 lue_hpx_assert(std::count(input_cells_idxs.begin(), input_cells_idxs.end(), input_cell_idx)
+//                 == 1);
 //
 //                 input_cells_idxs.erase(
 //                     std::lower_bound(input_cells_idxs.begin(), input_cells_idxs.end(), input_cell_idx));
 //
-//                 lue_hpx_assert(std::count(input_cells_idxs.begin(), input_cells_idxs.end(), input_cell_idx) == 0);
+//                 lue_hpx_assert(std::count(input_cells_idxs.begin(), input_cells_idxs.end(), input_cell_idx)
+//                 == 0);
 //             }
 //
 //

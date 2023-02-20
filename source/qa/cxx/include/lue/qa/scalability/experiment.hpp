@@ -10,24 +10,22 @@ namespace lue::qa {
     using Runs = std::vector<Run>;
 
 
-    class Experiment:
-        public Run
+    class Experiment: public Run
     {
 
         public:
 
-            Experiment(
-                Count const nr_workers);
+            Experiment(Count const nr_workers);
 
-            Experiment(Experiment const&)=default;
+            Experiment(Experiment const&) = default;
 
-            Experiment(Experiment&&)=default;
+            Experiment(Experiment&&) = default;
 
-            ~Experiment()=default;
+            ~Experiment() = default;
 
-            Experiment& operator=(Experiment const&)=default;
+            Experiment& operator=(Experiment const&) = default;
 
-            Experiment& operator=(Experiment&&)=default;
+            Experiment& operator=(Experiment&&) = default;
 
             Count nr_workers() const;
 
@@ -40,7 +38,6 @@ namespace lue::qa {
             Count _nr_workers;
 
             Runs _runs;
-
     };
 
 }  // namespace lue::qa

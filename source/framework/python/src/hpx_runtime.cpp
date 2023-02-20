@@ -6,8 +6,7 @@
 
 namespace lue {
 
-    HPXRuntime::HPXRuntime(
-        std::vector<std::string> const& configuration):
+    HPXRuntime::HPXRuntime(std::vector<std::string> const& configuration):
 
         _running{false},
         _command_line{},
@@ -22,7 +21,7 @@ namespace lue {
         params.mode = hpx::runtime_mode::default_;
         // params.mode = hpx::runtime_mode::console;
 
-        if(!hpx::start(start_function, _command_line.argc(), _command_line.argv(), params))
+        if (!hpx::start(start_function, _command_line.argc(), _command_line.argv(), params))
         {
             // Something went wrong while initializing the runtime.
             // This early we can't generate any output, just bail out.
@@ -33,7 +32,7 @@ namespace lue {
         // running
         std::unique_lock<std::mutex> lock(_startup_mutex);
 
-        while(!_running)
+        while (!_running)
         {
             _startup_condition_variable.wait(lock);
         }
@@ -56,9 +55,7 @@ namespace lue {
 
 
     // Main HPX thread, does nothing but wait for the application to exit
-    int HPXRuntime::hpx_main(
-        [[maybe_unused]] int argc,
-        [[maybe_unused]] char* argv[])
+    int HPXRuntime::hpx_main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
     {
         // Store a pointer to the runtime here.
         _runtime = hpx::get_runtime_ptr();
@@ -82,7 +79,7 @@ namespace lue {
         // Now, wait for destructor to be called.
         {
             std::unique_lock<hpx::spinlock> lock(_mutex);
-            if(_runtime != nullptr)
+            if (_runtime != nullptr)
             {
                 _condition_variable.wait(lock);
             }

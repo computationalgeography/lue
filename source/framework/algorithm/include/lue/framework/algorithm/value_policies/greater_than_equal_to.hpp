@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::greater_than_equal_to {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -19,7 +17,8 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            greater_than_equal_to, detail::GreaterThanEqualTo,
+            greater_than_equal_to,
+            detail::GreaterThanEqualTo,
             policy::greater_than_equal_to::DefaultValuePolicies)
         LUE_BINARY_COMPARISON_OPERATOR(>=, greater_than_equal_to)
 

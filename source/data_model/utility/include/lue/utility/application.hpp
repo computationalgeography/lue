@@ -3,39 +3,34 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class Application:
-    public Command
-{
+        class Application: public Command
+        {
 
-public:
+            public:
 
-                   Application         (Application const&)=delete;
+                Application(Application const&) = delete;
 
-                   Application         (Application&&)=delete;
+                Application(Application&&) = delete;
 
-                   ~Application        () override =default;
+                ~Application() override = default;
 
-    Application&   operator=           (Application const&)=delete;
+                Application& operator=(Application const&) = delete;
 
-    Application&   operator=           (Application&&)=delete;
+                Application& operator=(Application&&) = delete;
 
-protected:
+            protected:
 
-                   Application         (std::string const& usage,
-                                        std::vector<std::string> const&
-                                            arguments);
+                Application(std::string const& usage, std::vector<std::string> const& arguments);
 
-                   Application         (std::string const& usage,
-                                        std::vector<std::string> const&
-                                            arguments,
-                                        SubcommandCreators const&
-                                            subcommand_creators);
+                Application(
+                    std::string const& usage,
+                    std::vector<std::string> const& arguments,
+                    SubcommandCreators const& subcommand_creators);
 
-private:
+            private:
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

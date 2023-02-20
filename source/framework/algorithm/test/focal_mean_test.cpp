@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_mean
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/value_policies/focal_mean.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/focal_mean.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -41,18 +41,20 @@ BOOST_AUTO_TEST_CASE(focal_mean_2d_float64)
     Element const nd{lue::policy::no_data_value<Element>};
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
-        array_shape, partition_shape, {
-            {   nd,   nd,   nd,   nd, 11.0, 12.0,   nd, 20.0, 21.0 },
-            {   nd,   nd,   nd, 13.0, 14.0, 15.0, 22.0, 23.0, 24.0 },
-            {   nd,   nd,   nd, 16.0, 17.0,   nd, 25.0, 26.0,   nd },
+        array_shape,
+        partition_shape,
+        {
+            {nd, nd, nd, nd, 11.0, 12.0, nd, 20.0, 21.0},
+            {nd, nd, nd, 13.0, 14.0, 15.0, 22.0, 23.0, 24.0},
+            {nd, nd, nd, 16.0, 17.0, nd, 25.0, 26.0, nd},
 
-            {   nd, 29.0, 30.0,   nd, 38.0, 39.0,   nd, 47.0, 48.0 },
-            { 31.0, 32.0, 33.0, 40.0, 41.0, 42.0, 49.0, 50.0, 51.0 },
-            { 34.0, 35.0,   nd, 43.0, 44.0,   nd, 52.0, 53.0,   nd },
+            {nd, 29.0, 30.0, nd, 38.0, 39.0, nd, 47.0, 48.0},
+            {31.0, 32.0, 33.0, 40.0, 41.0, 42.0, 49.0, 50.0, 51.0},
+            {34.0, 35.0, nd, 43.0, 44.0, nd, 52.0, 53.0, nd},
 
-            {   nd, 56.0, 57.0,   nd, 65.0, 66.0,   nd,   nd,   nd },
-            { 58.0, 59.0, 60.0, 67.0, 68.0, 69.0,   nd,   nd,   nd },
-            { 61.0, 62.0,   nd, 70.0, 71.0,   nd,   nd,   nd,   nd },
+            {nd, 56.0, 57.0, nd, 65.0, 66.0, nd, nd, nd},
+            {58.0, 59.0, 60.0, 67.0, 68.0, 69.0, nd, nd, nd},
+            {61.0, 62.0, nd, 70.0, 71.0, nd, nd, nd, nd},
         });
 
     lue::test::check_arrays_are_equal(focal_mean, array_we_want);

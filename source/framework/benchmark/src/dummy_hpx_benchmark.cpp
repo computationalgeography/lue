@@ -5,7 +5,7 @@
 
 
 static void dummy()
-    // lue::benchmark::Environment const& /* environment */)
+// lue::benchmark::Environment const& /* environment */)
 {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(1s);
@@ -16,10 +16,10 @@ HPX_PLAIN_ACTION(dummy, DummyAction);
 
 
 auto setup_benchmark(
-        int /* argc */,
-        char* /* argv */[],
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+    int /* argc */,
+    char* /* argv */[],
+    lue::benchmark::Environment const& environment,
+    lue::benchmark::Task const& task)
 {
     DummyAction dummy_;
 
@@ -38,24 +38,20 @@ auto setup_benchmark(
     auto node = hpx::find_here();
 
     // Function to benchmark
-    auto callable = [dummy_, node](
-        lue::benchmark::Environment const& /* environment */,
-        lue::benchmark::Task const& /* task */)
+    auto callable =
+        [dummy_,
+         node](lue::benchmark::Environment const& /* environment */, lue::benchmark::Task const& /* task */)
     {
         std::vector<hpx::future<void>> futures;
 
-        futures.emplace_back(
-            hpx::async(dummy_, node /* , environment, task */));
-        futures.emplace_back(
-            hpx::async(dummy_, node /* , environment, task */));
-        futures.emplace_back(
-            hpx::async(dummy_, node /* , environment, task */));
+        futures.emplace_back(hpx::async(dummy_, node /* , environment, task */));
+        futures.emplace_back(hpx::async(dummy_, node /* , environment, task */));
+        futures.emplace_back(hpx::async(dummy_, node /* , environment, task */));
 
         hpx::wait_all(futures);
     };
 
-    return lue::benchmark::Benchmark{
-        std::move(callable), environment, task};  // , name, description};
+    return lue::benchmark::Benchmark{std::move(callable), environment, task};  // , name, description};
 }
 
 

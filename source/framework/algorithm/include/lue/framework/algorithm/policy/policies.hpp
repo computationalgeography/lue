@@ -6,25 +6,19 @@
 
 namespace lue::policy {
 
-    template<
-        typename... InputPolicy>
+    template<typename... InputPolicy>
     using InputsPolicies = detail::TypeList<InputPolicy...>;
 
 
-    template<
-        typename... OutputPolicy>
+    template<typename... OutputPolicy>
     using OutputsPolicies = detail::TypeList<OutputPolicy...>;
 
 
-    template<
-        typename... Element>
+    template<typename... Element>
     using Elements = detail::TypeList<Element...>;
 
 
-    template<
-        typename DomainPolicy_,
-        typename OutputsPolicies_,
-        typename InputsPolicies_>
+    template<typename DomainPolicy_, typename OutputsPolicies_, typename InputsPolicies_>
     class Policies
     {
 
@@ -35,7 +29,6 @@ namespace lue::policy {
             using OutputsPolicies = OutputsPolicies_;
 
             using InputsPolicies = InputsPolicies_;
-
     };
 
 
@@ -47,14 +40,8 @@ namespace lue::policy {
     //         - NoDataFocusElementPolicy
 
 
-    template<
-        typename DomainPolicy_,
-        typename... OutputPolicy,
-        typename... InputPolicy>
-    class Policies<
-        DomainPolicy_,
-        detail::TypeList<OutputPolicy...>,
-        detail::TypeList<InputPolicy...>>
+    template<typename DomainPolicy_, typename... OutputPolicy, typename... InputPolicy>
+    class Policies<DomainPolicy_, detail::TypeList<OutputPolicy...>, detail::TypeList<InputPolicy...>>
     {
 
         public:
@@ -66,7 +53,7 @@ namespace lue::policy {
             using OutputsPolicies = std::tuple<OutputPolicy...>;
             using InputsPolicies = std::tuple<InputPolicy...>;
 
-            Policies()=default;
+            Policies() = default;
 
             Policies(
                 DomainPolicy const& domain_policy,
@@ -100,11 +87,9 @@ namespace lue::policy {
             friend class hpx::serialization::access;
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive & _op & _ip;
+                archive& _op& _ip;
             }
 
             DomainPolicy _dp;
@@ -112,16 +97,13 @@ namespace lue::policy {
             OutputsPolicies _op;
 
             InputsPolicies _ip;
-
     };
 
 
     namespace detail {
 
-        template<
-            typename... P>
-        class TypeTraits<
-            std::tuple<P ...>>
+        template<typename... P>
+        class TypeTraits<std::tuple<P...>>
         {
 
             public:
@@ -129,13 +111,12 @@ namespace lue::policy {
                 // template<
                 //     std::size_t idx,
                 //     typename Element>
-                // using Policy = typename TypeTraits<typename std::tuple_element<idx, std::tuple<P...>>::type>::
+                // using Policy = typename TypeTraits<typename std::tuple_element<idx,
+                // std::tuple<P...>>::type>::
                 //     template Type<Element>;
 
-                template<
-                    std::size_t idx>
+                template<std::size_t idx>
                 using Policies = typename std::tuple_element<idx, std::tuple<P...>>::type;
-
         };
 
     }  // namespace detail

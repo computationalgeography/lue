@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm downstream_distance
-#include "lue/framework/algorithm/definition/downstream_distance.hpp"
 #include "flow_accumulation.hpp"
+#include "lue/framework/algorithm/definition/downstream_distance.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -16,11 +16,7 @@ namespace {
     using DistanceElement = double;
     using DistanceArray = lue::PartitionedArray<DistanceElement, rank>;
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename DistanceElement,
-        lue::Rank rank>
+    template<typename Policies, typename FlowDirectionElement, typename DistanceElement, lue::Rank rank>
     void test_downstream_distance(
         Policies const& policies,
         lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
@@ -34,17 +30,14 @@ namespace {
     }
 
 
-    template<
-        typename FlowDirectionElement,
-        typename DistanceElement,
-        lue::Rank rank>
+    template<typename FlowDirectionElement, typename DistanceElement, lue::Rank rank>
     void test_downstream_distance(
         lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         DistanceElement const cell_size,
         lue::PartitionedArray<DistanceElement, rank> const& downstream_distance_we_want)
     {
-        using Policies = lue::policy::downstream_distance::DefaultPolicies<
-            FlowDirectionElement, DistanceElement>;
+        using Policies =
+            lue::policy::downstream_distance::DefaultPolicies<FlowDirectionElement, DistanceElement>;
 
         test_downstream_distance(Policies{}, flow_direction, cell_size, downstream_distance_we_want);
     }
@@ -67,25 +60,21 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example)
     auto const q{std::sqrt(DistanceElement{2}) * cell_size};
 
     auto flow_direction = lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape, partition_shape,
+        array_shape,
+        partition_shape,
+        {
             {
-                {  s,  s,  s, sw, sw,
-                   s,  s, sw, sw, sw,
-                  se,  s, sw,  w, sw,
-                  se,  s, sw,  w,  w,
-                   e,  p,  w,  w,  w, },
-            }
-        );
+                s, s, s, sw, sw, s, s, sw, sw, sw, se, s, sw, w, sw, se, s, sw, w, w, e, p, w, w, w,
+            },
+        });
     auto result_we_want = lue::test::create_partitioned_array<DistanceArray>(
-            array_shape, partition_shape,
+        array_shape,
+        partition_shape,
+        {
             {
-                { 2, 2, 2, q, q,
-                  2, 2, q, q, q,
-                  q, 2, q, 2, q,
-                  q, 2, q, 2, 2,
-                  2, 0, 2, 2, 2, },
-            }
-        );
+                2, 2, 2, q, q, 2, 2, q, q, q, q, 2, q, 2, q, q, 2, q, 2, 2, 2, 0, 2, 2, 2,
+            },
+        });
 
     test_downstream_distance(policies, flow_direction, cell_size, result_we_want);
 }

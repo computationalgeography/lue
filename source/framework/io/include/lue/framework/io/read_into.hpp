@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/util.hpp"
-#include "lue/framework/algorithm/policy.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/data_model.hpp"
@@ -15,9 +15,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         Array<Element, rank> read_block(
             data_model::Array const& array,
             hdf5::Dataset::TransferPropertyList const& transfer_property_list,
@@ -39,12 +37,12 @@ namespace lue {
         }
 
 
-        template<
-            typename Partition>
+        template<typename Partition>
         void copy_partition_elements(
             Array<ElementT<Partition>, rank<Partition>> const& block,
             Offset<Index, rank<Partition>> const& block_offset,
-            PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>> const& partition_tuples)
+            PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>> const&
+                partition_tuples)
         {
             // block_offset: Offset of the block within the array
             // hyperslab. It is required to be able to transpate partition
@@ -55,7 +53,7 @@ namespace lue {
             using Slice = typename Array<ElementT<Partition>, rank<Partition>>::Slice;
 
             // Copy hyperslabs from block into the individual partitions
-            for(auto& [partition_offset, partition_shape, partition_buffer]: partition_tuples)
+            for (auto& [partition_offset, partition_shape, partition_buffer] : partition_tuples)
             {
                 // Select hyperslab corresponding to this partition from
                 // block and copy the values to the partition's buffer
@@ -77,9 +75,7 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         void read_into_partitions(
             Policies const& /* policies */,
             std::string const& array_pathname,
@@ -94,7 +90,7 @@ namespace lue {
             hdf5::File::AccessPropertyList access_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            if(hpx::util::mpi_environment::enabled())
+            if (hpx::util::mpi_environment::enabled())
             {
                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
                 // ::MPI_Comm communicator{MPI_COMM_WORLD};
@@ -114,9 +110,11 @@ namespace lue {
 
             // Open property
             lue_hpx_assert(property_set.properties().contains(property_name));
-            lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_per_object(property_name) ==
                 data_model::ShapePerObject::different);
-            lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().value_variability(property_name) ==
                 data_model::ValueVariability::constant);
             using Properties = data_model::different_shape::Properties;
             auto const& property{property_set.properties().collection<Properties>()[property_name]};
@@ -150,8 +148,10 @@ namespace lue {
 
                 auto [partition_tuples, block_offset, block_shape] = detail::partition_tuples(partitions);
                 Block block{read_block<Element, rank>(
-                    array, transfer_property_list,
-                    block_hyperslab(array_hyperslab_start, block_offset, block_shape), block_shape)};
+                    array,
+                    transfer_property_list,
+                    block_hyperslab(array_hyperslab_start, block_offset, block_shape),
+                    block_shape)};
                 copy_partition_elements<Partition>(block, block_offset, partition_tuples);
             }
 
@@ -174,9 +174,7 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         void read_into_partitions2(
             Policies const& /* policies */,
             std::string const& array_pathname,
@@ -201,8 +199,8 @@ namespace lue {
             // }
 #endif
 
-            auto const dataset{data_model::open_dataset(
-                dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
+            auto const dataset{
+                data_model::open_dataset(dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
 
             // Open phenomenon
             auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
@@ -212,11 +210,14 @@ namespace lue {
 
             // Open property
             lue_hpx_assert(property_set.properties().contains(property_name));
-            lue_hpx_assert(property_set.properties().shape_per_object(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_per_object(property_name) ==
                 data_model::ShapePerObject::different);
-            lue_hpx_assert(property_set.properties().value_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().value_variability(property_name) ==
                 data_model::ValueVariability::variable);
-            lue_hpx_assert(property_set.properties().shape_variability(property_name) ==
+            lue_hpx_assert(
+                property_set.properties().shape_variability(property_name) ==
                 data_model::ShapeVariability::constant);
             using Properties = data_model::different_shape::constant_shape::Properties;
             auto const& property{property_set.properties().collection<Properties>()[property_name]};
@@ -245,7 +246,8 @@ namespace lue {
 
                 auto [partition_tuples, block_offset, block_shape] = detail::partition_tuples(partitions);
                 Block block{read_block<Element, rank>(
-                    array, transfer_property_list,
+                    array,
+                    transfer_property_list,
                     block_hyperslab(array_hyperslab_start, time_step_idx, block_offset, block_shape),
                     block_shape)};
 
@@ -271,36 +273,29 @@ namespace lue {
         }
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         struct ReadIntoPartitionsAction:
             hpx::actions::make_action<
-                    decltype(&read_into_partitions<Policies, Partitions>),
-                    &read_into_partitions<Policies, Partitions>,
-                    ReadIntoPartitionsAction<Policies, Partitions>
-                >::type
-        {};
+                decltype(&read_into_partitions<Policies, Partitions>),
+                &read_into_partitions<Policies, Partitions>,
+                ReadIntoPartitionsAction<Policies, Partitions>>::type
+        {
+        };
 
 
-        template<
-            typename Policies,
-            typename Partitions>
+        template<typename Policies, typename Partitions>
         struct ReadIntoPartitionsAction2:
             hpx::actions::make_action<
-                    decltype(&read_into_partitions2<Policies, Partitions>),
-                    &read_into_partitions2<Policies, Partitions>,
-                    ReadIntoPartitionsAction2<Policies, Partitions>
-                >::type
-        {};
+                decltype(&read_into_partitions2<Policies, Partitions>),
+                &read_into_partitions2<Policies, Partitions>,
+                ReadIntoPartitionsAction2<Policies, Partitions>>::type
+        {
+        };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> read_into(
         Policies const& policies,
         std::string const& array_pathname,
@@ -330,23 +325,32 @@ namespace lue {
             using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
             Action action{};
 
-            for(auto& [locality, partitions]: partitions_by_locality)
+            for (auto& [locality, partitions] : partitions_by_locality)
             {
                 hpx::dataflow(
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality=locality, action, policies, array_pathname, array_hyperslab_start, object_id](
-                                std::vector<Partition>&& partitions)
-                            {
-                                return action(
-                                    locality, policies, array_pathname, array_hyperslab_start,
-                                    object_id, std::move(partitions));
-                            }
+                        [locality = locality,
+                         action,
+                         policies,
+                         array_pathname,
+                         array_hyperslab_start,
+                         object_id](std::vector<Partition>&& partitions)
+                        {
+                            return action(
+                                locality,
+                                policies,
+                                array_pathname,
+                                array_hyperslab_start,
+                                object_id,
+                                std::move(partitions));
+                        }
 
                         ),
 
-                    hpx::when_all(partitions.begin(), partitions.end())).get();
+                    hpx::when_all(partitions.begin(), partitions.end()))
+                    .get();
             }
         }
 
@@ -370,7 +374,8 @@ namespace lue {
         //                         [locality, action, policies, array_pathname, object_id](
         //                             std::vector<Partition> const& partitions)
         //                         {
-        //                             return action(locality, policies, array_pathname, object_id, partitions);
+        //                             return action(locality, policies, array_pathname, object_id,
+        //                             partitions);
         //                         }
 
         //                     ),
@@ -453,7 +458,8 @@ namespace lue {
     //     //                         [locality, action, policies, array_pathname, object_id](
     //     //                             std::vector<Partition> const& partitions)
     //     //                         {
-    //     //                             return action(locality, policies, array_pathname, object_id, partitions);
+    //     //                             return action(locality, policies, array_pathname, object_id,
+    //     partitions);
     //     //                         }
 
     //     //                     ),
@@ -466,10 +472,7 @@ namespace lue {
     // }
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     [[nodiscard]] hpx::future<void> read_into(
         Policies const& policies,
         std::string const& array_pathname,
@@ -497,23 +500,34 @@ namespace lue {
             using Action = detail::ReadIntoPartitionsAction2<Policies, std::vector<Partition>>;
             Action action{};
 
-            for(auto& [locality, partitions]: partitions_by_locality)
+            for (auto& [locality, partitions] : partitions_by_locality)
             {
                 hpx::dataflow(
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                            [locality=locality, action, policies, array_pathname, array_hyperslab_start, object_id, time_step_idx](
-                                std::vector<Partition>&& partitions)
-                            {
-                                return action(
-                                    locality, policies, array_pathname, array_hyperslab_start,
-                                    object_id, time_step_idx, std::move(partitions));
-                            }
+                        [locality = locality,
+                         action,
+                         policies,
+                         array_pathname,
+                         array_hyperslab_start,
+                         object_id,
+                         time_step_idx](std::vector<Partition>&& partitions)
+                        {
+                            return action(
+                                locality,
+                                policies,
+                                array_pathname,
+                                array_hyperslab_start,
+                                object_id,
+                                time_step_idx,
+                                std::move(partitions));
+                        }
 
                         ),
 
-                    hpx::when_all(partitions.begin(), partitions.end())).get();
+                    hpx::when_all(partitions.begin(), partitions.end()))
+                    .get();
             }
         }
 
@@ -538,7 +552,8 @@ namespace lue {
         //                             std::vector<Partition> const& partitions)
         //                         {
         //                             return action(
-        //                                 locality, policies, array_pathname, object_id, time_step_idx, partitions);
+        //                                 locality, policies, array_pathname, object_id, time_step_idx,
+        //                                 partitions);
         //                         }
 
         //                     ),
@@ -553,11 +568,8 @@ namespace lue {
 
     namespace detail {
 
-        template<
-            typename Count,
-            Rank rank>
-        Shape<Count, rank> constant_array_shape(
-            std::string const& array_pathname)
+        template<typename Count, Rank rank>
+        Shape<Count, rank> constant_array_shape(std::string const& array_pathname)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -568,8 +580,8 @@ namespace lue {
             using DatasetPtr = std::shared_ptr<ldm::Dataset>;
             using RasterView = ldm::constant::RasterView<DatasetPtr>;
 
-            auto input_dataset_ptr = std::make_shared<ldm::Dataset>(
-                ldm::open_dataset(dataset_pathname, H5F_ACC_RDONLY));
+            auto input_dataset_ptr =
+                std::make_shared<ldm::Dataset>(ldm::open_dataset(dataset_pathname, H5F_ACC_RDONLY));
 
             lh5::Shape grid_shape{};
 
@@ -582,17 +594,14 @@ namespace lue {
 
             lue_hpx_assert(rank == 2);  // TODO(KDJ)
 
-            return Shape{{
-                static_cast<typename Shape::value_type>(grid_shape[0]),
-                static_cast<typename Shape::value_type>(grid_shape[1])}};
+            return Shape{
+                {static_cast<typename Shape::value_type>(grid_shape[0]),
+                 static_cast<typename Shape::value_type>(grid_shape[1])}};
         }
 
 
-        template<
-            typename Count,
-            Rank rank>
-        Shape<Count, rank> variable_array_shape(
-            std::string const& array_pathname)
+        template<typename Count, Rank rank>
+        Shape<Count, rank> variable_array_shape(std::string const& array_pathname)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -603,8 +612,8 @@ namespace lue {
             using DatasetPtr = std::shared_ptr<ldm::Dataset>;
             using RasterView = ldm::variable::RasterView<DatasetPtr>;
 
-            auto input_dataset_ptr = std::make_shared<ldm::Dataset>(
-                ldm::open_dataset(dataset_pathname, H5F_ACC_RDONLY));
+            auto input_dataset_ptr =
+                std::make_shared<ldm::Dataset>(ldm::open_dataset(dataset_pathname, H5F_ACC_RDONLY));
 
             lh5::Shape grid_shape{};
 
@@ -617,9 +626,9 @@ namespace lue {
 
             lue_hpx_assert(rank == 2);  // TODO(KDJ)
 
-            return Shape{{
-                static_cast<typename Shape::value_type>(grid_shape[0]),
-                static_cast<typename Shape::value_type>(grid_shape[1])}};
+            return Shape{
+                {static_cast<typename Shape::value_type>(grid_shape[0]),
+                 static_cast<typename Shape::value_type>(grid_shape[1])}};
         }
 
     }  // namespace detail
@@ -627,28 +636,19 @@ namespace lue {
 
     namespace policy::read_into {
 
-        template<
-            typename OutputElement>
-        using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<>,
-            OutputElements<OutputElement>,
-            InputElements<>>;
+        template<typename OutputElement>
+        using DefaultPolicies =
+            policy::DefaultPolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
 
-        template<
-            typename OutputElement>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<>,
-            OutputElements<OutputElement>,
-            InputElements<>>;
+        template<typename OutputElement>
+        using DefaultValuePolicies = policy::
+            DefaultValuePolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
     }  // namespace policy::read_into
 
 
-    template<
-        typename Element,
-        typename Policies,
-        Rank rank>
+    template<typename Element, typename Policies, Rank rank>
     PartitionedArray<Element, rank> read(
         Policies const& policies,
         std::string const& array_pathname,
@@ -672,9 +672,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank> read(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
@@ -688,10 +686,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        typename Policies,
-        Rank rank>
+    template<typename Element, typename Policies, Rank rank>
     PartitionedArray<Element, rank> read(
         Policies const& policies,
         std::string const& array_pathname,
@@ -704,14 +699,11 @@ namespace lue {
         Shape const array_shape{detail::constant_array_shape<Count, rank>(array_pathname)};
 
         return read<Element, Policies, rank>(
-            policies, array_pathname, detail::shape_to_hyperslab(array_shape), partition_shape,
-            object_id);
+            policies, array_pathname, detail::shape_to_hyperslab(array_shape), partition_shape, object_id);
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank> read(
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
@@ -726,10 +718,7 @@ namespace lue {
     // -------------------------------------------------------------------------
 
 
-    template<
-        typename Element,
-        typename Policies,
-        Rank rank>
+    template<typename Element, typename Policies, Rank rank>
     PartitionedArray<Element, rank> read(
         Policies const& policies,
         std::string const& array_pathname,
@@ -754,9 +743,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank> read(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
@@ -771,10 +758,7 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        typename Policies,
-        Rank rank>
+    template<typename Element, typename Policies, Rank rank>
     PartitionedArray<Element, rank> read(
         Policies const& policies,
         std::string const& array_pathname,
@@ -788,14 +772,16 @@ namespace lue {
         Shape const array_shape{detail::variable_array_shape<Count, rank>(array_pathname)};
 
         return read<Element, Policies, rank>(
-            policies, array_pathname, detail::shape_to_hyperslab(array_shape), partition_shape,
-            object_id, time_step_idx);
+            policies,
+            array_pathname,
+            detail::shape_to_hyperslab(array_shape),
+            partition_shape,
+            object_id,
+            time_step_idx);
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank> read(
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,

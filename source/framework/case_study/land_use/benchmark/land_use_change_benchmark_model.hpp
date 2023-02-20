@@ -5,48 +5,41 @@
 
 namespace lue {
 
-class LandUseChangeBenchmarkModel final:
-    public LandUseChangeModelBase
-{
+    class LandUseChangeBenchmarkModel final: public LandUseChangeModelBase
+    {
 
-public:
+        public:
 
-    // using Base = LandUseChangeModelBase;
+            // using Base = LandUseChangeModelBase;
 
-    // using Base::NominalRaster;
+            // using Base::NominalRaster;
 
-    // using Base::ScalarRaster;
+            // using Base::ScalarRaster;
 
-                   LandUseChangeBenchmarkModel(
-                                        benchmark::Environment const& environment,
-                                        benchmark::Task const& task);
+            LandUseChangeBenchmarkModel(
+                benchmark::Environment const& environment, benchmark::Task const& task);
 
-                   LandUseChangeBenchmarkModel(
-                                        LandUseChangeBenchmarkModel const&)=default;
+            LandUseChangeBenchmarkModel(LandUseChangeBenchmarkModel const&) = default;
 
-                   LandUseChangeBenchmarkModel(
-                                        LandUseChangeBenchmarkModel&&)=default;
+            LandUseChangeBenchmarkModel(LandUseChangeBenchmarkModel&&) = default;
 
-                   ~LandUseChangeBenchmarkModel()=default;
+            ~LandUseChangeBenchmarkModel() = default;
 
-    LandUseChangeBenchmarkModel&
-                   operator=           (LandUseChangeBenchmarkModel const&)=default;
+            LandUseChangeBenchmarkModel& operator=(LandUseChangeBenchmarkModel const&) = default;
 
-    LandUseChangeBenchmarkModel&
-                   operator=           (LandUseChangeBenchmarkModel&&)=default;
+            LandUseChangeBenchmarkModel& operator=(LandUseChangeBenchmarkModel&&) = default;
 
-protected:
+        protected:
 
-private:
+        private:
 
-    NominalRaster  land_use            () const final;
+            NominalRaster land_use() const final;
 
-    ScalarRaster   elevation           () const final;
+            ScalarRaster elevation() const final;
 
-    RasterShape    _raster_shape;
+            RasterShape _raster_shape;
 
-    RasterShape    _partition_shape;
-
-};
+            RasterShape _partition_shape;
+    };
 
 }  // namespace lue

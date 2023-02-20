@@ -5,8 +5,7 @@
 namespace lue {
     namespace policy::sin {
 
-        template<
-            typename Element>
+        template<typename Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,11 +16,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        auto sin(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        auto sin(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::sin::DefaultValuePolicies<Element>;
 

@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_maximum.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element, Zone)              \
-                                                              \
-    LUE_INSTANTIATE_ZONAL_MAXIMUM(                            \
-        ESC(policy::zonal_maximum::Policies<Element, Zone>),  \
-        Element,                                              \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Element, Zone)                                                             \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_MAXIMUM(ESC(policy::zonal_maximum::Policies<Element, Zone>), Element, Zone);
 
 
 namespace lue {

@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> aspect(
-            PartitionedArray<Element, rank> const& elevation)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> aspect(PartitionedArray<Element, rank> const& elevation)
         {
             return value_policies::aspect(elevation);
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_aspect(
-        pybind11::module& module)
+    void bind_aspect(pybind11::module& module)
     {
         // TODO How to document these?
         module.def("aspect", aspect<float, 2>);

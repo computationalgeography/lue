@@ -1,6 +1,6 @@
 #pragma once
-#include <hpx/hpx.hpp>
 #include "command_line.hpp"
+#include <hpx/hpx.hpp>
 
 
 namespace lue {
@@ -32,7 +32,6 @@ namespace lue {
 
             hpx::runtime* _runtime;
             std::vector<std::string> const _configuration;
-
     };
 
 }  // namespace lue

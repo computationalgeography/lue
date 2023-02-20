@@ -3,8 +3,8 @@
 
 namespace lue {
 
-class SkipOutOfImage
-{
-};
+    class SkipOutOfImage
+    {
+    };
 
 }  // namespace lue

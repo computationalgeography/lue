@@ -3,45 +3,40 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-class Universe:
-    public hdf5::Group
-{
+        class Universe: public hdf5::Group
+        {
 
-public:
+            public:
 
-                   Universe            (hdf5::Group const& parent,
-                                        std::string const& name);
+                Universe(hdf5::Group const& parent, std::string const& name);
 
-    explicit       Universe            (hdf5::Group&& group);
+                explicit Universe(hdf5::Group&& group);
 
-                   Universe            (Universe const&)=default;
+                Universe(Universe const&) = default;
 
-                   Universe            (Universe&&)=default;
+                Universe(Universe&&) = default;
 
-                   ~Universe           () override =default;
+                ~Universe() override = default;
 
-    Universe&      operator=           (Universe const&)=default;
+                Universe& operator=(Universe const&) = default;
 
-    Universe&      operator=           (Universe&&)=default;
+                Universe& operator=(Universe&&) = default;
 
-    Phenomena const& phenomena         () const;
+                Phenomena const& phenomena() const;
 
-    Phenomena&     phenomena           ();
+                Phenomena& phenomena();
 
-    Phenomenon&    add_phenomenon      (std::string const& name,
-                                        std::string const& description="");
+                Phenomenon& add_phenomenon(std::string const& name, std::string const& description = "");
 
-private:
+            private:
 
-    Phenomena      _phenomena;
-
-};
+                Phenomena _phenomena;
+        };
 
 
-Universe           create_universe     (hdf5::Group& parent,
-                                        std::string const& name);
+        Universe create_universe(hdf5::Group& parent, std::string const& name);
 
-} // namespace data_model
-} // namespace lue
+    }  // namespace data_model
+}  // namespace lue

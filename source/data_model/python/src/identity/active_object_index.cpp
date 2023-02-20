@@ -1,7 +1,7 @@
-#include "../python_extension.hpp"
 #include "lue/info/identity/active_object_index.hpp"
-#include <pybind11/pybind11.h>
+#include "../python_extension.hpp"
 #include <fmt/format.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -9,36 +9,30 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace {
+    namespace data_model {
+        namespace {
 
-static std::string formal_string_representation(
-    ActiveObjectIndex const& index)
-{
-    return fmt::format(
-            "ActiveObjectIndex(pathname='{}')",
-            index.id().pathname()
-        );
-}
+            static std::string formal_string_representation(ActiveObjectIndex const& index)
+            {
+                return fmt::format("ActiveObjectIndex(pathname='{}')", index.id().pathname());
+            }
 
 
-static std::string informal_string_representation(
-    ActiveObjectIndex const& index)
-{
-    return formal_string_representation(index);
-}
+            static std::string informal_string_representation(ActiveObjectIndex const& index)
+            {
+                return formal_string_representation(index);
+            }
 
-}  // Anonymous namespace
+        }  // Anonymous namespace
 
 
-void init_active_object_index(
-    py::module& module)
-{
+        void init_active_object_index(py::module& module)
+        {
 
-    py::class_<ActiveObjectIndex, same_shape::constant_shape::Value>(
-        module,
-        "ActiveObjectIndex",
-        R"(
+            py::class_<ActiveObjectIndex, same_shape::constant_shape::Value>(
+                module,
+                "ActiveObjectIndex",
+                R"(
     A class for storing the indices of object arrays in the value array
     of active objects
 
@@ -57,27 +51,18 @@ void init_active_object_index(
     yourself. :class:`ObjectTracker` instances provide one.
 )")
 
-        .def(
-            "__repr__",
-            [](ActiveObjectIndex const& index) {
-                return formal_string_representation(index);
-            }
-        )
+                .def(
+                    "__repr__",
+                    [](ActiveObjectIndex const& index) { return formal_string_representation(index); })
 
-        .def(
-            "__str__",
-            [](ActiveObjectIndex const& index) {
-                return informal_string_representation(index);
-            }
-        )
+                .def(
+                    "__str__",
+                    [](ActiveObjectIndex const& index) { return informal_string_representation(index); })
 
-        .def_property_readonly(
-            "nr_indices",
-            &ActiveObjectIndex::nr_indices)
+                .def_property_readonly("nr_indices", &ActiveObjectIndex::nr_indices)
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

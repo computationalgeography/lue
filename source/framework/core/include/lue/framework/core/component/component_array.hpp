@@ -5,8 +5,7 @@
 
 namespace lue {
 
-    template<
-        Rank rank>
+    template<Rank rank>
     using Localities = Array<hpx::id_type, rank>;
 
 
@@ -22,120 +21,111 @@ namespace lue {
         ComponentArray instances store the component client instances
         and the localities each server instance is located on.
     */
-    template<
-        typename ComponentClient,
-        Rank rank>
+    template<typename ComponentClient, Rank rank>
     class ComponentArray
     {
 
-    public:
+        public:
 
-        using Client = ComponentClient;
+            using Client = ComponentClient;
 
-        using Server = typename Client::Server;
+            using Server = typename Client::Server;
 
-        using Clients = Array<Client, rank>;
+            using Clients = Array<Client, rank>;
 
-        using Shape = typename Clients::Shape;
+            using Shape = typename Clients::Shape;
 
-        using Iterator = typename Clients::Iterator;
+            using Iterator = typename Clients::Iterator;
 
-        using ConstIterator = typename Clients::ConstIterator;
-
-
-        ComponentArray():
-
-            _localities{},
-            _clients{}
-
-        {
-            assert_invariants();
-        }
+            using ConstIterator = typename Clients::ConstIterator;
 
 
-        ComponentArray(ComponentArray const& other)=delete;
+            ComponentArray():
 
-        ComponentArray(ComponentArray&& other)=default;
+                _localities{},
+                _clients{}
 
-
-        ComponentArray(
-            Localities<rank> const& localities,
-            Clients&& components):
-
-            _localities{localities},
-            _clients{std::move(components)}
-
-        {
-            assert_invariants();
-        }
+            {
+                assert_invariants();
+            }
 
 
-        ~ComponentArray()=default;
+            ComponentArray(ComponentArray const& other) = delete;
 
-        ComponentArray& operator=(ComponentArray const& other)=delete;
-
-        ComponentArray& operator=(ComponentArray&& other)=default;
+            ComponentArray(ComponentArray&& other) = default;
 
 
-        Localities<rank> const& localities() const
-        {
-            return _localities;
-        }
+            ComponentArray(Localities<rank> const& localities, Clients&& components):
+
+                _localities{localities},
+                _clients{std::move(components)}
+
+            {
+                assert_invariants();
+            }
 
 
-        Count nr_components() const
-        {
-            return _clients.nr_elements();
-        }
+            ~ComponentArray() = default;
+
+            ComponentArray& operator=(ComponentArray const& other) = delete;
+
+            ComponentArray& operator=(ComponentArray&& other) = default;
 
 
-        Clients& components()
-        {
-            return _clients;
-        }
+            Localities<rank> const& localities() const
+            {
+                return _localities;
+            }
 
 
-        Clients const& components() const
-        {
-            return _clients;
-        }
+            Count nr_components() const
+            {
+                return _clients.nr_elements();
+            }
 
 
-    private:
-
-        //! Localities the partitions are located in
-        Localities<rank> _localities;
-
-        //! Array of partitions
-        Clients     _clients;
+            Clients& components()
+            {
+                return _clients;
+            }
 
 
-        void assert_invariants() const
-        {
-            lue_hpx_assert(_clients.shape() == _localities.shape());
+            Clients const& components() const
+            {
+                return _clients;
+            }
 
-            // The array is either empty, or all localities are valid / known
-            lue_hpx_assert(
+
+        private:
+
+            //! Localities the partitions are located in
+            Localities<rank> _localities;
+
+            //! Array of partitions
+            Clients _clients;
+
+
+            void assert_invariants() const
+            {
+                lue_hpx_assert(_clients.shape() == _localities.shape());
+
+                // The array is either empty, or all localities are valid / known
+                lue_hpx_assert(
                     _localities.empty() ||
-                    std::all_of(_localities.begin(), _localities.end(),
+                    std::all_of(
+                        _localities.begin(),
+                        _localities.end(),
 
-                            [](hpx::id_type const locality_id)
-                            {
-                                return bool{locality_id};
-                            }
+                        [](hpx::id_type const locality_id) { return bool{locality_id}; }
 
-                        )
-                );
-        }
-
+                        ));
+            }
     };
 
 
     namespace detail {
 
-        template<
-            typename C,
-            Rank r>
+        template<typename C, Rank r>
         class ArrayTraits<ComponentArray<C, r>>
         {
 
@@ -149,16 +139,11 @@ namespace lue {
 
                 using Shape = typename ComponentArray<C, r>::Shape;
 
-                template<
-                    typename C_,
-                    Rank r_>
+                template<typename C_, Rank r_>
                 using Component = typename ComponentArray<C_, r_>::Client;
 
-                template<
-                    typename C_,
-                    Rank r_>
+                template<typename C_, Rank r_>
                 using Components = typename ComponentArray<C_, r_>::Clients;
-
         };
 
     }  // namespace detail

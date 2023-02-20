@@ -8,8 +8,7 @@ namespace lue::framework {
         Rank const rank{2};
         using FlowDirectionElement = std::uint8_t;
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         PartitionedArray<MaterialElement, rank> downstream(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<MaterialElement, rank> const& material)
@@ -22,8 +21,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_downstream(
-        pybind11::module& module)
+    void bind_downstream(pybind11::module& module)
     {
         module.def("downstream", downstream<std::uint8_t>);
         module.def("downstream", downstream<std::int32_t>);

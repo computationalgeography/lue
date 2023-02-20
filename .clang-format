@@ -28,7 +28,7 @@ AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:
-###   AfterCaseLabel:  false
+  AfterCaseLabel:  true
   AfterClass:      true
   AfterControlStatement: Always
 ###   AfterEnum:       false
@@ -77,7 +77,36 @@ AllowAllConstructorInitializersOnNextLine: true
 ### IfMacros:
 ###   - KJ_IF_MAYBE
 ### IncludeBlocks:   Preserve
-### IncludeCategories:  # TODO
+# Includes with lower priority magnitudes end up higher in the list of includes
+# More general / 3rd party / std headers must have higher priorities
+# More specific / local / lue headers must have lower priorities
+IncludeCategories:
+  - Regex:           '^"lue/view/'
+    Priority:        10
+  - Regex:           '^"lue/qa/'
+    Priority:        20
+  - Regex:           '^"lue/framework/'
+    Priority:        30
+  - Regex:           '^"lue/data_model/'
+    Priority:        40
+  - Regex:           '^"lue/test/'
+    Priority:        50
+  - Regex:           '^"lue/python/'
+    Priority:        60
+  - Regex:           '^"lue/imgui/'
+    Priority:        70
+  - Regex:           '^"lue/shared/'
+    Priority:        80
+  - Regex:           '^"lue/'
+    Priority:        90
+  - Regex:           '^<hpx/'
+    Priority:        100
+  - Regex:           '^<(boost|fmt|numpy|pybind11)/'
+    Priority:        110
+  - Regex:           '^<.*'
+    Priority:        120
+  - Regex:           '^".*'
+    Priority:        1
 ###   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
 ###     Priority:        2
 ###     SortPriority:    0
@@ -93,7 +122,7 @@ AllowAllConstructorInitializersOnNextLine: true
 ### IncludeIsMainRegex: '(Test)?$'
 ### IncludeIsMainSourceRegex: ''
 IndentAccessModifiers: true
-### IndentCaseLabels: false
+IndentCaseLabels: true
 ### IndentCaseBlocks: false
 ### IndentGotoLabels: true
 ### IndentPPDirectives: None
@@ -128,6 +157,7 @@ PointerAlignment: Left
 ### SeparateDefinitionBlocks: Leave
 ### ShortNamespaceLines: 1
 ### SortIncludes:    CaseSensitive  # TODO
+SortIncludes:    true
 ### SortJavaStaticImport: Before
 ### SortUsingDeclarations: true
 ### SpaceAfterCStyleCast: false

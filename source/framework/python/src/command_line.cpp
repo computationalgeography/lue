@@ -21,7 +21,7 @@ namespace lue {
         _argument_strings.resize(_argc);
         _argument_pointers.resize(_argument_strings.size() + 1);
 
-        for(int i = 0; i < _argc; ++i)
+        for (int i = 0; i < _argc; ++i)
         {
             pybind11::str arg_py{argv_py[i]};
             _argument_strings[i] = arg_py;

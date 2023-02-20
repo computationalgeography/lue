@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element, Zone)          \
-                                                          \
-    LUE_INSTANTIATE_ZONAL_SUM(                            \
-        ESC(policy::zonal_sum::Policies<Element, Zone>),  \
-        Element,                                          \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Element, Zone)                                                             \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_SUM(ESC(policy::zonal_sum::Policies<Element, Zone>), Element, Zone);
 
 
 namespace lue {

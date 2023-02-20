@@ -4,9 +4,7 @@
 
 namespace lue {
 
-    template<
-        typename InputElement,
-        Rank rank>
+    template<typename InputElement, Rank rank>
     PartitionedArray<std::uint64_t, rank> array_partition_id(
         PartitionedArray<InputElement, rank> const& input_array)
     {
@@ -35,13 +33,12 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for(Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index p = 0; p < nr_partitions(input_array); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies, p](
-                    InputPartition const& input_partition)
+                [locality_id = localities[p], action, policies, p](InputPartition const& input_partition)
                 {
                     AnnotateFunction annotation{"array_partition_id"};
 

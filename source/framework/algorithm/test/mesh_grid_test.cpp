@@ -1,10 +1,10 @@
 #define BOOST_TEST_MODULE lue framework algorithm mesh_grid
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/mesh_grid.hpp"
-#include "lue/framework/test/compare.hpp"
-#include "lue/framework/test/stream.hpp"
-#include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/test/compare.hpp"
+#include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework/test/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -31,13 +31,17 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Array result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     lue::wait_all(result_we_want.partitions());
-    result_we_want.partitions()(0).set_data(
-        PartitionData{
-                shape,
-                std::initializer_list<Element>{
-                        1.0, 1.5, 2.0, 2.5, 3.0,
-                    }
-            }).wait();
+    result_we_want.partitions()(0)
+        .set_data(PartitionData{
+            shape,
+            std::initializer_list<Element>{
+                1.0,
+                1.5,
+                2.0,
+                2.5,
+                3.0,
+            }})
+        .wait();
 
     lue::test::check_arrays_are_close(result_we_got, result_we_want);
 }
@@ -64,32 +68,55 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     Element first_value{1};
     Element step{0.5};
-    auto [result_we_got1, result_we_got2] =
-        lue::mesh_grid(input_array, first_value, step);
+    auto [result_we_got1, result_we_got2] = lue::mesh_grid(input_array, first_value, step);
 
     Array result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     lue::wait_all(result_we_want.partitions());
-    result_we_want.partitions()(0, 0).set_data(
-        PartitionData{
-                shape,
-                std::initializer_list<Element>{
-                        1.0, 1.0, 1.0, 1.0, 1.0,
-                        1.5, 1.5, 1.5, 1.5, 1.5,
-                        2.0, 2.0, 2.0, 2.0, 2.0,
-                    }
-            }).wait();
+    result_we_want.partitions()(0, 0)
+        .set_data(PartitionData{
+            shape,
+            std::initializer_list<Element>{
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.5,
+                1.5,
+                1.5,
+                1.5,
+                1.5,
+                2.0,
+                2.0,
+                2.0,
+                2.0,
+                2.0,
+            }})
+        .wait();
 
     lue::test::check_arrays_are_close(result_we_got1, result_we_want);
 
-    result_we_want.partitions()(0, 0).set_data(
-        PartitionData{
-                shape,
-                std::initializer_list<Element>{
-                        1.0, 1.5, 2.0, 2.5, 3.0,
-                        1.0, 1.5, 2.0, 2.5, 3.0,
-                        1.0, 1.5, 2.0, 2.5, 3.0,
-                    }
-            }).wait();
+    result_we_want.partitions()(0, 0)
+        .set_data(PartitionData{
+            shape,
+            std::initializer_list<Element>{
+                1.0,
+                1.5,
+                2.0,
+                2.5,
+                3.0,
+                1.0,
+                1.5,
+                2.0,
+                2.5,
+                3.0,
+                1.0,
+                1.5,
+                2.0,
+                2.5,
+                3.0,
+            }})
+        .wait();
 
     lue::test::check_arrays_are_close(result_we_got2, result_we_want);
 }

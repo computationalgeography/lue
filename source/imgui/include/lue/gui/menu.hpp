@@ -5,26 +5,22 @@
 
 namespace lue::gui {
 
-    class Menu:
-        public Selectable
+    class Menu: public Selectable
     {
 
         public:
 
-            explicit Menu(
-                std::string const& label,
-                bool enabled=true);
+            explicit Menu(std::string const& label, bool enabled = true);
 
-            Menu(Menu const&)=default;
+            Menu(Menu const&) = default;
 
-            Menu(Menu&&)=default;
+            Menu(Menu&&) = default;
 
             ~Menu() override;
 
-            Menu& operator=(Menu const&)=default;
+            Menu& operator=(Menu const&) = default;
 
-            Menu& operator=(Menu&&)=default;
-
+            Menu& operator=(Menu&&) = default;
     };
 
 }  // namespace lue::gui

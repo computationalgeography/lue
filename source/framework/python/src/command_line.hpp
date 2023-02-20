@@ -30,7 +30,6 @@ namespace lue {
             // Command line arguments, to be used by HPX runtime startup code
             int _argc;
             char** _argv;
-
     };
 
 }  // namespace lue

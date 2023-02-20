@@ -5,76 +5,65 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-/*!
-    @brief      Class for storing object tracking information for all
-                temporal object array kinds
+        /*!
+            @brief      Class for storing object tracking information for all
+                        temporal object array kinds
 
-    Object array kind | Tracking
-    ----------------- | --------
-    same_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectID
-    same_shape::variable_shape::Value | ActiveSetIndex, ActiveObjectID
-    different_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectIndex, ActiveObjectID
-    different_shape::variable_shape::Value | -
-*/
-class ObjectTracker:
-    public hdf5::Group
-{
+            Object array kind | Tracking
+            ----------------- | --------
+            same_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectID
+            same_shape::variable_shape::Value | ActiveSetIndex, ActiveObjectID
+            different_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectIndex, ActiveObjectID
+            different_shape::variable_shape::Value | -
+        */
+        class ObjectTracker: public hdf5::Group
+        {
 
-public:
+            public:
 
-    explicit       ObjectTracker       (hdf5::Group const& parent);
+                explicit ObjectTracker(hdf5::Group const& parent);
 
-    explicit       ObjectTracker       (hdf5::Group&& group);
+                explicit ObjectTracker(hdf5::Group&& group);
 
-                   ObjectTracker       (ObjectTracker const&)=default;
+                ObjectTracker(ObjectTracker const&) = default;
 
-                   ObjectTracker       (ObjectTracker&&)=default;
+                ObjectTracker(ObjectTracker&&) = default;
 
-                   ~ObjectTracker      () override =default;
+                ~ObjectTracker() override = default;
 
-    ObjectTracker& operator=           (ObjectTracker const&)=default;
+                ObjectTracker& operator=(ObjectTracker const&) = default;
 
-    ObjectTracker& operator=           (ObjectTracker&&)=default;
+                ObjectTracker& operator=(ObjectTracker&&) = default;
 
-    ActiveSetIndex const&
-                   active_set_index    () const;
+                ActiveSetIndex const& active_set_index() const;
 
-    ActiveSetIndex&
-                   active_set_index    ();
+                ActiveSetIndex& active_set_index();
 
-    ActiveObjectIndex const&
-                   active_object_index () const;
+                ActiveObjectIndex const& active_object_index() const;
 
-    ActiveObjectIndex&
-                   active_object_index ();
+                ActiveObjectIndex& active_object_index();
 
-    ActiveObjectID const&
-                   active_object_id    () const;
+                ActiveObjectID const& active_object_id() const;
 
-    ActiveObjectID&
-                   active_object_id    ();
+                ActiveObjectID& active_object_id();
 
-private:
+            private:
 
-    ActiveObjectID _active_object_id;
+                ActiveObjectID _active_object_id;
 
-    ActiveSetIndex _active_set_index;
+                ActiveSetIndex _active_set_index;
 
-    ActiveObjectIndex _active_object_index;
-
-};
+                ActiveObjectIndex _active_object_index;
+        };
 
 
-ObjectTracker      create_object_tracker(
-                                        hdf5::Group& parent);
+        ObjectTracker create_object_tracker(hdf5::Group& parent);
 
-void               link_object_tracker (hdf5::Group& parent,
-                                        ObjectTracker& object_tracker);
+        void link_object_tracker(hdf5::Group& parent, ObjectTracker& object_tracker);
 
-bool               has_linked_object_tracker(
-                                        hdf5::Group const& parent);
+        bool has_linked_object_tracker(hdf5::Group const& parent);
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

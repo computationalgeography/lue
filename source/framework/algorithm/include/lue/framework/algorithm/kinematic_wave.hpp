@@ -5,11 +5,7 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> kinematic_wave(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,

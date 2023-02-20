@@ -1,19 +1,16 @@
 #define BOOST_TEST_MODULE lue framework algorithm cast
-#include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/array_like.hpp"
+#include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/cast.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
 namespace detail {
 
-    template<
-        typename InputElement,
-        typename OutputElement,
-        std::size_t rank>
+    template<typename InputElement, typename OutputElement, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
@@ -37,15 +34,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                                                      \
-    rank,                                                               \
-    InputElement,                                                       \
-    OutputElement)                                                      \
-                                                                        \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##InputElement##_##OutputElement)  \
-{                                                                       \
-    detail::test_array<InputElement, OutputElement, rank>();            \
-}
+#define TEST_CASE(rank, InputElement, OutputElement)                                                         \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##InputElement##_##OutputElement)                                   \
+    {                                                                                                        \
+        detail::test_array<InputElement, OutputElement, rank>();                                             \
+    }
 
 // TEST_CASE(2, bool, int32_t)
 // TEST_CASE(2, bool, uint32_t)

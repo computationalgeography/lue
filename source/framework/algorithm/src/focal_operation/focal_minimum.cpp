@@ -1,14 +1,12 @@
 #include "lue/framework/algorithm/definition/focal_minimum.hpp"
-#include "lue/framework/algorithm/value_policies/focal_minimum.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/focal_minimum.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Element)              \
-                                                        \
-    LUE_INSTANTIATE_FOCAL_MINIMUM(                      \
-        ESC(policy::focal_minimum::Policies<Element>),  \
-        Element,                                        \
-        ESC(Kernel<std::uint8_t, 2>));
+#define LUE_INSTANTIATE(Policies, Element)                                                                   \
+                                                                                                             \
+    LUE_INSTANTIATE_FOCAL_MINIMUM(                                                                           \
+        ESC(policy::focal_minimum::Policies<Element>), Element, ESC(Kernel<std::uint8_t, 2>));
 
 
 namespace lue {

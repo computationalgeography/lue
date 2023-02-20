@@ -8,8 +8,7 @@ namespace lue::framework {
         Rank const rank{2};
         using FlowDirectionElement = std::uint8_t;
 
-        template<
-            typename CountElement>
+        template<typename CountElement>
         PartitionedArray<CountElement, rank> inflow_count3(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
         {
@@ -21,8 +20,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_inflow_count3(
-        pybind11::module& module)
+    void bind_inflow_count3(pybind11::module& module)
     {
         module.def("inflow_count3", inflow_count3<std::uint8_t>);
     }

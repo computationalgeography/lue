@@ -3,10 +3,7 @@
 
 namespace lue::gui {
 
-    Window::Window(
-        std::string const& title,
-        bool* open,
-        ImGuiWindowFlags flags):
+    Window::Window(std::string const& title, bool* open, ImGuiWindowFlags flags):
 
         Selectable{ImGui::Begin(title.c_str(), open, flags)}
 

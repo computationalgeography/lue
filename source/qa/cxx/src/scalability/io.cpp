@@ -1,6 +1,6 @@
 #include "lue/qa/scalability/io.hpp"
-#include <nlohmann/json.hpp>
 #include <fstream>
+#include <nlohmann/json.hpp>
 
 
 namespace lue::qa {
@@ -13,8 +13,7 @@ namespace lue::qa {
             The string is formatted according to ISO 8601: yyyy-mm-ddThh:mm:ss+zzzz.
             Example: 2018-10-11T15:55:59+0200
         */
-        std::string to_iso_string(
-            Stopwatch::SystemTimePoint const& time_point)
+        std::string to_iso_string(Stopwatch::SystemTimePoint const& time_point)
         {
             static std::size_t constexpr max_nr_characters{30};
             static std::array<char, max_nr_characters> buffer;
@@ -29,8 +28,7 @@ namespace lue::qa {
         }
 
 
-        std::string to_json(
-            ArrayExperiment const& experiment)
+        std::string to_json(ArrayExperiment const& experiment)
         {
             using json = nlohmann::json;
 
@@ -64,7 +62,7 @@ namespace lue::qa {
             {
                 json a = json::array();
 
-                for(Run const& run: experiment.runs())
+                for (Run const& run : experiment.runs())
                 {
                     json o = json::object();
 
@@ -88,9 +86,7 @@ namespace lue::qa {
     }  // Anonymous namespace
 
 
-    void save_results(
-        ArrayExperiment const& experiment,
-        std::string const& pathname)
+    void save_results(ArrayExperiment const& experiment, std::string const& pathname)
     {
         // Create new json file and dump the information about this experiment
         std::ofstream stream{pathname};

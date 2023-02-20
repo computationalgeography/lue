@@ -5,25 +5,20 @@
 namespace lue {
     namespace policy::accu3 {
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         class DomainPolicy
         {
 
             public:
 
-                static constexpr bool within_domain(
-                    MaterialElement const inflow) noexcept
+                static constexpr bool within_domain(MaterialElement const inflow) noexcept
                 {
                     return inflow >= 0;
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<MaterialElement>,
             OutputElements<MaterialElement>,
@@ -34,10 +29,7 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            Rank rank>
+        template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
         PartitionedArray<MaterialElement, rank> accu3(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<MaterialElement, rank> const& external_inflow)

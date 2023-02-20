@@ -1,8 +1,8 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
 #include "lue/framework/core/offset.hpp"
 #include "lue/framework/core/shape.hpp"
-#include "lue/framework/core/assert.hpp"
 #include <hpx/serialization/map.hpp>
 #include <hpx/serialization/set.hpp>
 #include <hpx/synchronization/mutex.hpp>
@@ -12,25 +12,22 @@
 
 namespace lue::detail {
 
-    template<
-        typename Index,
-        typename Count,
-        Rank rank>
+    template<typename Index, typename Count, Rank rank>
     bool is_within_partition(
-        lue::Indices<Index, rank> const& indices,
-        lue::Shape<Count, rank> const& partition_shape)
+        lue::Indices<Index, rank> const& indices, lue::Shape<Count, rank> const& partition_shape)
     {
-        return std::all_of(indices.begin(), indices.end(),
+        return std::all_of(
+            indices.begin(),
+            indices.end(),
 
-                [extent_it=partition_shape.begin()](
-                    auto const idx) mutable
-                {
-                    bool const result = idx >= 0 && idx < *extent_it;
-                    ++extent_it;
-                    return result;
-                }
+            [extent_it = partition_shape.begin()](auto const idx) mutable
+            {
+                bool const result = idx >= 0 && idx < *extent_it;
+                ++extent_it;
+                return result;
+            }
 
-            );
+        );
     }
 
 
@@ -47,10 +44,7 @@ namespace lue::detail {
         The input cells are set upon construction and cannot added
         to afterwards.
     */
-    template<
-        typename Index,
-        Rank rank,
-        typename Value_>
+    template<typename Index, Rank rank, typename Value_>
     class ArrayPartitionIO
     {
 
@@ -81,9 +75,7 @@ namespace lue::detail {
             }
 
 
-            ArrayPartitionIO(
-                Shape const& partition_shape,
-                CellsIdxs const&& input_cells_idxs):
+            ArrayPartitionIO(Shape const& partition_shape, CellsIdxs const&& input_cells_idxs):
 
                 _partition_shape{partition_shape},
                 _input_cells_idxs{input_cells_idxs},
@@ -101,9 +93,7 @@ namespace lue::detail {
 
             {
                 std::scoped_lock lock{
-                    other._input_cells_idxs_mutex,
-                    other._offsets_mutex,
-                    other._values_mutex};
+                    other._input_cells_idxs_mutex, other._offsets_mutex, other._values_mutex};
 
                 _input_cells_idxs = other._input_cells_idxs;
                 _offsets = other._offsets;
@@ -127,9 +117,9 @@ namespace lue::detail {
             }
 
 
-            ArrayPartitionIO& operator=(ArrayPartitionIO const&)=delete;
+            ArrayPartitionIO& operator=(ArrayPartitionIO const&) = delete;
 
-            ArrayPartitionIO& operator=(ArrayPartitionIO&&)=delete;
+            ArrayPartitionIO& operator=(ArrayPartitionIO&&) = delete;
 
 
             /*!
@@ -141,10 +131,7 @@ namespace lue::detail {
                             partition, relative to the output cell
                 @param      value Value related to output cell
             */
-            void add_output_cell(
-                Indices const& output_cell_idxs,
-                Offset&& offset,
-                Value&& value)
+            void add_output_cell(Indices const& output_cell_idxs, Offset&& offset, Value&& value)
             {
                 std::scoped_lock lock{_offsets_mutex, _values_mutex};
 
@@ -161,10 +148,7 @@ namespace lue::detail {
             }
 
 
-            void add_output_cell(
-                Indices const& output_cell_idxs,
-                Offset const& offset,
-                Value const& value)
+            void add_output_cell(Indices const& output_cell_idxs, Offset const& offset, Value const& value)
             {
                 std::scoped_lock lock{_offsets_mutex, _values_mutex};
 
@@ -181,19 +165,16 @@ namespace lue::detail {
             }
 
 
-            bool contains_input_cell(
-                Indices const& input_cell_idxs)
+            bool contains_input_cell(Indices const& input_cell_idxs)
             {
                 std::scoped_lock lock{_input_cells_idxs_mutex};
 
-                return
-                    std::find(_input_cells_idxs.begin(), _input_cells_idxs.end(), input_cell_idxs) !=
-                    _input_cells_idxs.end();
+                return std::find(_input_cells_idxs.begin(), _input_cells_idxs.end(), input_cell_idxs) !=
+                       _input_cells_idxs.end();
             }
 
 
-            void remove_input_cell(
-                Indices const& input_cell_idxs)
+            void remove_input_cell(Indices const& input_cell_idxs)
             {
                 std::scoped_lock lock{_input_cells_idxs_mutex};
 
@@ -290,7 +271,7 @@ namespace lue::detail {
 
                 std::scoped_lock lock{_offsets_mutex};
 
-                for(auto const& [output_cell_idxs, cell_offset]: _offsets)
+                for (auto const& [output_cell_idxs, cell_offset] : _offsets)
                 {
                     result.insert(partition_offset(output_cell_idxs, cell_offset));
                 }
@@ -308,13 +289,13 @@ namespace lue::detail {
                     Offset offset;
                     std::scoped_lock lock{_offsets_mutex};
 
-                    for(auto const& [output_cell_idxs, cell_offset]: _offsets)
+                    for (auto const& [output_cell_idxs, cell_offset] : _offsets)
                     {
                         offset = partition_offset(output_cell_idxs, cell_offset);
 
                         auto it = std::find(offsets.begin(), offsets.end(), offset);
 
-                        if(it == offsets.end())
+                        if (it == offsets.end())
                         {
                             offsets.push_back(std::move(offset));
                             counts.push_back(1);
@@ -328,7 +309,7 @@ namespace lue::detail {
 
                 PartitionOffsetCounts offset_counts(offsets.size());
 
-                for(std::size_t i = 0; i < offsets.size(); ++i)
+                for (std::size_t i = 0; i < offsets.size(); ++i)
                 {
                     offset_counts[i] = std::make_tuple(offsets[i], counts[i]);
                 }
@@ -338,8 +319,7 @@ namespace lue::detail {
 
 
             std::vector<std::tuple<Indices, Value>> drain(
-                Offset const& partition_offset,
-                Shape const& partition_shape)
+                Offset const& partition_offset, Shape const& partition_shape)
             {
                 // For each solved output cell that drains to the
                 // partition at the offset passed in:
@@ -356,11 +336,10 @@ namespace lue::detail {
                 // lue_hpx_assert(is_solved());
 
                 lue_hpx_assert(!is_drained());
-                lue_hpx_assert(std::all_of(partition_offset.begin(), partition_offset.end(),
-                    [](auto const& idx)
-                    {
-                        return idx == -1 || idx == 0 || idx == 1;
-                    }));
+                lue_hpx_assert(std::all_of(
+                    partition_offset.begin(),
+                    partition_offset.end(),
+                    [](auto const& idx) { return idx == -1 || idx == 0 || idx == 1; }));
 
                 std::vector<std::tuple<Indices, Value>> input_cells;
                 std::vector<Indices> output_cells;
@@ -368,22 +347,21 @@ namespace lue::detail {
                 std::scoped_lock lock{_input_cells_idxs_mutex, _offsets_mutex, _values_mutex};
 
                 // Iterate over all output cells
-                for(auto const& [output_cell_idxs, cell_offset]: _offsets)
+                for (auto const& [output_cell_idxs, cell_offset] : _offsets)
                 {
                     // If partition drains to the partition at the offset passed in ...
-                    if(this->partition_offset(output_cell_idxs, cell_offset) == partition_offset)
+                    if (this->partition_offset(output_cell_idxs, cell_offset) == partition_offset)
                     {
                         // ... determine the input cell indices in the
                         // neighbouring partition, and copy the value.
                         input_cells.push_back(std::make_tuple(
-                            input_cell(output_cell_idxs, partition_shape),
-                            value(output_cell_idxs)));
+                            input_cell(output_cell_idxs, partition_shape), value(output_cell_idxs)));
                         output_cells.push_back(output_cell_idxs);
                     }
                 }
 
                 // Remove all output cells found from the instance
-                for(auto const& output_cell_idxs: output_cells)
+                for (auto const& output_cell_idxs : output_cells)
                 {
                     remove_output_cell(output_cell_idxs);
                 }
@@ -436,15 +414,14 @@ namespace lue::detail {
 
 
             void serialize(
-                hpx::serialization::input_archive& archive,
-                [[maybe_unused]] unsigned int const version)
+                hpx::serialization::input_archive& archive, [[maybe_unused]] unsigned int const version)
             {
                 // std::scoped_lock lock{
                 //     _input_cells_idxs_mutex,
                 //     _offsets_mutex,
                 //     _values_mutex};
 
-                archive & _partition_shape & _input_cells_idxs & _offsets & _values;
+                archive& _partition_shape& _input_cells_idxs& _offsets& _values;
 
                 assert_invariants();
             }
@@ -461,19 +438,17 @@ namespace lue::detail {
 
                 assert_invariants();
 
-                archive & _partition_shape & _input_cells_idxs & _offsets & _values;
+                archive& _partition_shape& _input_cells_idxs& _offsets& _values;
             }
 
 
-            bool has_offset(
-                Indices const& output_cell_idxs) const
+            bool has_offset(Indices const& output_cell_idxs) const
             {
                 return _offsets.find(output_cell_idxs) != _offsets.end();
             }
 
 
-            Offset const& offset(
-                Indices const output_cell_idxs) const
+            Offset const& offset(Indices const output_cell_idxs) const
             {
                 lue_hpx_assert(has_offset(output_cell_idxs));
 
@@ -481,15 +456,13 @@ namespace lue::detail {
             }
 
 
-            bool has_value(
-                Indices const& output_cell_idxs) const
+            bool has_value(Indices const& output_cell_idxs) const
             {
                 return _values.find(output_cell_idxs) != _values.end();
             }
 
 
-            Value const& value(
-                Indices const output_cell_idxs) const
+            Value const& value(Indices const output_cell_idxs) const
             {
                 lue_hpx_assert(has_value(output_cell_idxs));
 
@@ -497,22 +470,20 @@ namespace lue::detail {
             }
 
 
-            Indices input_cell(
-                Indices const output_cell_idxs,
-                Shape const& partition_shape)
+            Indices input_cell(Indices const output_cell_idxs, Shape const& partition_shape)
             {
                 Offset const& offset{this->offset(output_cell_idxs)};
                 Indices result{};
 
-                for(Rank d = 0; d < rank; ++d)
+                for (Rank d = 0; d < rank; ++d)
                 {
-                    if(output_cell_idxs[d] == 0 && offset[d] == -1)
+                    if (output_cell_idxs[d] == 0 && offset[d] == -1)
                     {
                         // Along this dimension the offset points into
                         // the previous partition. Jump to it.
                         result[d] = partition_shape[d] - 1;
                     }
-                    else if(output_cell_idxs[d] == _partition_shape[d] - 1 && offset[d] == 1)
+                    else if (output_cell_idxs[d] == _partition_shape[d] - 1 && offset[d] == 1)
                     {
                         // Along this dimension the offset points into
                         // the next partition. Jump to it.
@@ -530,8 +501,7 @@ namespace lue::detail {
             }
 
 
-            void remove_output_cell(
-                Indices const& output_cell_idxs)
+            void remove_output_cell(Indices const& output_cell_idxs)
             {
                 [[maybe_unused]] std::size_t nr_erased;
 
@@ -545,20 +515,17 @@ namespace lue::detail {
             }
 
 
-            Offset partition_offset(
-                Indices const& output_cell_idxs,
-                Offset const& cell_offset) const
+            Offset partition_offset(Indices const& output_cell_idxs, Offset const& cell_offset) const
             {
                 Offset partition_offset{};
 
-                for(Rank d = 0; d < rank; ++d)
+                for (Rank d = 0; d < rank; ++d)
                 {
-                    if((output_cell_idxs[d] == 0) && cell_offset[d] == -1)
+                    if ((output_cell_idxs[d] == 0) && cell_offset[d] == -1)
                     {
                         partition_offset[d] = -1;
-
                     }
-                    else if((output_cell_idxs[d] == _partition_shape[d] - 1) && cell_offset[d] == 1)
+                    else if ((output_cell_idxs[d] == _partition_shape[d] - 1) && cell_offset[d] == 1)
                     {
                         partition_offset[d] = 1;
                     }
@@ -572,8 +539,7 @@ namespace lue::detail {
             }
 
 
-            Offset partition_offset(
-                Indices const& output_cell_idxs) const
+            Offset partition_offset(Indices const& output_cell_idxs) const
             {
                 return partition_offset(output_cell_idxs, offset(output_cell_idxs));
             }
@@ -584,8 +550,10 @@ namespace lue::detail {
 #ifndef NDEBUG
                 lue_hpx_assert(_offsets.size() == _values.size());
 
-                if(std::all_of(_partition_shape.begin(), _partition_shape.end(),
-                    [](Count const extent) { return extent == 0; }))
+                if (std::all_of(
+                        _partition_shape.begin(),
+                        _partition_shape.end(),
+                        [](Count const extent) { return extent == 0; }))
                 {
                     lue_hpx_assert(_input_cells_idxs.empty());
                     lue_hpx_assert(_offsets.empty());
@@ -593,25 +561,24 @@ namespace lue::detail {
                 }
 
 
-                auto on_partition_border =
-                    [partition_shape=_partition_shape](
-                        Indices const& indices)
-                    {
-                        return std::any_of(indices.begin(), indices.end(),
+                auto on_partition_border = [partition_shape = _partition_shape](Indices const& indices)
+                {
+                    return std::any_of(
+                        indices.begin(),
+                        indices.end(),
 
-                                [extent_it=partition_shape.begin()](
-                                    auto const idx) mutable
-                                {
-                                    bool const result = idx == 0 || idx == (*extent_it) - 1;
-                                    ++extent_it;
-                                    return result;
-                                }
+                        [extent_it = partition_shape.begin()](auto const idx) mutable
+                        {
+                            bool const result = idx == 0 || idx == (*extent_it) - 1;
+                            ++extent_it;
+                            return result;
+                        }
 
-                            );
-                    };
+                    );
+                };
 
 
-                for(auto const& input_cell_idxs: _input_cells_idxs)
+                for (auto const& input_cell_idxs : _input_cells_idxs)
                 {
                     lue_hpx_assert(is_within_partition(input_cell_idxs, _partition_shape));
                     lue_hpx_assert(on_partition_border(input_cell_idxs));
@@ -619,27 +586,24 @@ namespace lue::detail {
 
 
                 auto points_towards_neighbour =
-                    [partition_shape=_partition_shape](
-                        Indices const& indices,
-                        Offset const& offset)
+                    [partition_shape = _partition_shape](Indices const& indices, Offset const& offset)
+                {
+                    for (Rank d = 0; d < rank; ++d)
                     {
-                        for(Rank d = 0; d < rank; ++d)
+                        // Along at least one of the dimensions the
+                        // offset must be pointing towards a
+                        // neighbouring partition
+                        if ((indices[d] == 0 && offset[d] < 0) ||
+                            (indices[d] == partition_shape[d] - 1 && offset[d] > 0))
                         {
-                            // Along at least one of the dimensions the
-                            // offset must be pointing towards a
-                            // neighbouring partition
-                            if(
-                                (indices[d] == 0 && offset[d] < 0) ||
-                                (indices[d] == partition_shape[d] - 1 && offset[d] > 0))
-                            {
-                                return true;
-                            }
+                            return true;
                         }
+                    }
 
-                        return false;
-                    };
+                    return false;
+                };
 
-                for(auto const& [output_cell, offset]: _offsets)
+                for (auto const& [output_cell, offset] : _offsets)
                 {
                     // Verify that the offset is pointing outwards,
                     // towards a neighbouring partition
@@ -663,7 +627,6 @@ namespace lue::detail {
             mutable hpx::mutex _input_cells_idxs_mutex;
             mutable hpx::mutex _offsets_mutex;
             mutable hpx::mutex _values_mutex;
-
     };
 
 }  // namespace lue::detail

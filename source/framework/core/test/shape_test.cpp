@@ -1,15 +1,14 @@
 #define BOOST_TEST_MODULE lue framework core shape
-#include <boost/test/unit_test.hpp>
 #include "lue/framework/core/shape.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace {
 
-using Index = std::uint32_t;
+    using Index = std::uint32_t;
 
-template<
-    lue::Rank rank>
-using Shape = lue::Shape<Index, rank>;
+    template<lue::Rank rank>
+    using Shape = lue::Shape<Index, rank>;
 
 }  // Anonymous namespace
 

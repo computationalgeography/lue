@@ -10,7 +10,8 @@
 namespace lue::view {
     namespace {
 
-        std::string const usage = fmt::format(R"(
+        std::string const usage = fmt::format(
+            R"(
 View LUE datasets
 
 usage:
@@ -21,24 +22,24 @@ usage:
 options:
     -h --help   Show this screen
     --version   Show version
-)", "lue_view");
+)",
+            "lue_view");
 
 
-        void show_about_window(
-            bool* show_about)
+        void show_about_window(bool* show_about)
         {
             ImGui::OpenPopup("About...");
 
-            if(ImGui::BeginPopupModal(
-                    "About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-                ImGui::Text("LUE version %s (build %s)",
-                    BuildOptions::version, Git::short_sha1);
+            if (ImGui::BeginPopupModal("About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("LUE version %s (build %s)", BuildOptions::version, Git::short_sha1);
                 ImGui::Separator();
                 ImGui::Text("By the Computational Geography research and development team");
                 ImGui::Text("LUE is licensed under the MIT License");
                 ImGui::Text("More info at https://lue.computationalgeography.org");
 
-                if(ImGui::Button("Close")) {
+                if (ImGui::Button("Close"))
+                {
                     ImGui::CloseCurrentPopup();
                     *show_about = false;
                 }
@@ -47,8 +48,7 @@ options:
         }
 
 
-        bool show_main_menu_bar(
-            Configuration& configuration)
+        bool show_main_menu_bar(Configuration& configuration)
         {
             static bool show_about = false;
 #ifndef NDEBUG
@@ -57,33 +57,34 @@ options:
 
             bool quit{false};
 
-            if(ImGui::BeginMainMenuBar())
+            if (ImGui::BeginMainMenuBar())
             {
-                if(auto file_menu = gui::Menu("File"))
+                if (auto file_menu = gui::Menu("File"))
                 {
                     // TODO
                     // - open file
 
-                    if(ImGui::MenuItem("Quit"))
+                    if (ImGui::MenuItem("Quit"))
                     {
                         quit = true;
                     }
                 }
 
-                if(auto view_menu = gui::Menu("View"))
+                if (auto view_menu = gui::Menu("View"))
                 {
                     ImGui::MenuItem(
                         "Show details",
                         // configuration.show_details()
-                            // ? ICON_FA_EYE_SLASH "Show details"
-                            // : ICON_FA_EYE "Show details",
-                        nullptr, &configuration.show_details());
+                        // ? ICON_FA_EYE_SLASH "Show details"
+                        // : ICON_FA_EYE "Show details",
+                        nullptr,
+                        &configuration.show_details());
 #ifndef NDEBUG
                     ImGui::MenuItem("ImGui Demo", nullptr, &show_imgui_demo);
 #endif
                 }
 
-                if(auto help_menu = gui::Menu("Help"))
+                if (auto help_menu = gui::Menu("Help"))
                 {
                     ImGui::MenuItem("About...", nullptr, &show_about);
                 }
@@ -92,13 +93,13 @@ options:
             }
 
 #ifndef NDEBUG
-            if(show_imgui_demo)
+            if (show_imgui_demo)
             {
                 ImGui::ShowDemoWindow(&show_imgui_demo);
             }
 #endif
 
-            if(show_about)
+            if (show_about)
             {
                 show_about_window(&show_about);
             }
@@ -109,13 +110,10 @@ options:
     }  // Anonymous namespace
 
 
-    void show_datasets(
-        Datasets& datasets,
-        bool const show_details);
+    void show_datasets(Datasets& datasets, bool const show_details);
 
 
-    Application::Application(
-        std::vector<std::string> const& arguments):
+    Application::Application(std::vector<std::string> const& arguments):
 
         utility::Application{usage, arguments}
 
@@ -175,7 +173,7 @@ options:
         // TODO How to keep the loop efficient. When nothing changes,
         // the loop should not take a lot of resources...
 
-        while(!quit)
+        while (!quit)
         {
             glfwPollEvents();
 
@@ -187,7 +185,7 @@ options:
             static Configuration configuration{};
             quit = show_main_menu_bar(configuration);
 
-            if(!quit)
+            if (!quit)
             {
                 show_datasets(datasets_to_visualize, configuration.show_details());
             }

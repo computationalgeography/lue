@@ -16,20 +16,17 @@ namespace lue::qa {
 
         public:
 
-            ArrayExperiment(
-                Count const nr_workers,
-                Shape const& array_shape,
-                Shape const& partition_shape);
+            ArrayExperiment(Count const nr_workers, Shape const& array_shape, Shape const& partition_shape);
 
-            ArrayExperiment(ArrayExperiment const&)=default;
+            ArrayExperiment(ArrayExperiment const&) = default;
 
-            ArrayExperiment(ArrayExperiment&&)=default;
+            ArrayExperiment(ArrayExperiment&&) = default;
 
-            ~ArrayExperiment()=default;
+            ~ArrayExperiment() = default;
 
-            ArrayExperiment& operator=(ArrayExperiment const&)=default;
+            ArrayExperiment& operator=(ArrayExperiment const&) = default;
 
-            ArrayExperiment& operator=(ArrayExperiment&&)=default;
+            ArrayExperiment& operator=(ArrayExperiment&&) = default;
 
             Shape const& array_shape() const;
 
@@ -40,7 +37,6 @@ namespace lue::qa {
             Shape _array_shape;
 
             Shape _partition_shape;
-
     };
 
 }  // namespace lue::qa

@@ -1,20 +1,17 @@
 #pragma once
 
 
-namespace lue::policy{
+namespace lue::policy {
 
-    template<
-        typename... InputElement>
+    template<typename... InputElement>
     class AllValuesWithinDomain
     {
         public:
 
-            constexpr static bool within_domain(
-                [[maybe_unused]] InputElement const... element)
+            constexpr static bool within_domain([[maybe_unused]] InputElement const... element)
             {
                 return true;
             }
-
     };
 
 }  // namespace lue::policy

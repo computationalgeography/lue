@@ -3,41 +3,37 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-ActiveSetIndex::ActiveSetIndex(
-    hdf5::Group const& parent):
+        ActiveSetIndex::ActiveSetIndex(hdf5::Group const& parent):
 
-    same_shape::constant_shape::Value{parent, active_set_index_tag}
+            same_shape::constant_shape::Value{parent, active_set_index_tag}
 
-{
-}
-
-
-ActiveSetIndex::ActiveSetIndex(
-    same_shape::constant_shape::Value&& value):
-
-    same_shape::constant_shape::Value{std::move(value)}
-
-{
-}
+        {
+        }
 
 
-Count ActiveSetIndex::nr_indices() const
-{
-    return nr_arrays();
-}
+        ActiveSetIndex::ActiveSetIndex(same_shape::constant_shape::Value&& value):
+
+            same_shape::constant_shape::Value{std::move(value)}
+
+        {
+        }
 
 
-ActiveSetIndex create_active_set_index(
-    hdf5::Group& parent)
-{
-    same_shape::constant_shape::Value value{
-        same_shape::constant_shape::create_value(
-            parent, active_set_index_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+        Count ActiveSetIndex::nr_indices() const
+        {
+            return nr_arrays();
+        }
 
-    return ActiveSetIndex{std::move(value)};
-}
 
-}  // namespace data_model
+        ActiveSetIndex create_active_set_index(hdf5::Group& parent)
+        {
+            same_shape::constant_shape::Value value{same_shape::constant_shape::create_value(
+                parent, active_set_index_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+
+            return ActiveSetIndex{std::move(value)};
+        }
+
+    }  // namespace data_model
 }  // namespace lue

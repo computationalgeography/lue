@@ -5,75 +5,73 @@
 
 
 namespace lue {
-namespace benchmark {
+    namespace benchmark {
 
-class Environment
-{
+        class Environment
+        {
 
-public:
+            public:
 
-                   // Environment         (// std::string const& system_name,
-                   //                      std::size_t count,
-                   //                      std::size_t nr_threads,
-                   //                      std::optional<std::size_t> const&
-                   //                          max_tree_depth);
-                   //                      // std::size_t work_size);
+                // Environment         (// std::string const& system_name,
+                //                      std::size_t count,
+                //                      std::size_t nr_threads,
+                //                      std::optional<std::size_t> const&
+                //                          max_tree_depth);
+                //                      // std::size_t work_size);
 
-                   // Environment         (// std::string const& system_name,
-                   //                      std::size_t count,
-                   //                      std::size_t nr_localities,
-                   //                      std::size_t nr_threads,
-                   //                      std::optional<std::size_t> const&
-                   //                          max_tree_depth);
-                   //                      // std::size_t work_size);
+                // Environment         (// std::string const& system_name,
+                //                      std::size_t count,
+                //                      std::size_t nr_localities,
+                //                      std::size_t nr_threads,
+                //                      std::optional<std::size_t> const&
+                //                          max_tree_depth);
+                //                      // std::size_t work_size);
 
-                   Environment         (std::size_t count,
-                                        std::size_t nr_workers,
-                                        std::optional<std::size_t> const&
-                                            max_tree_depth);
+                Environment(
+                    std::size_t count,
+                    std::size_t nr_workers,
+                    std::optional<std::size_t> const& max_tree_depth);
 
-                   Environment         (Environment const&)=default;
+                Environment(Environment const&) = default;
 
-                   Environment         (Environment&&)=default;
+                Environment(Environment&&) = default;
 
-                   ~Environment        ()=default;
+                ~Environment() = default;
 
-    Environment&   operator=           (Environment const&)=default;
+                Environment& operator=(Environment const&) = default;
 
-    Environment&   operator=           (Environment&&)=default;
+                Environment& operator=(Environment&&) = default;
 
-    // std::string const& system_name     () const;
+                // std::string const& system_name     () const;
 
-    std::size_t    count               () const;
+                std::size_t count() const;
 
-    std::size_t    nr_workers          () const;
+                std::size_t nr_workers() const;
 
-    // std::size_t    nr_localities       () const;
+                // std::size_t    nr_localities       () const;
 
-    // std::size_t    nr_threads          () const;
+                // std::size_t    nr_threads          () const;
 
-    std::optional<std::size_t> const&
-                   max_tree_depth      () const;
+                std::optional<std::size_t> const& max_tree_depth() const;
 
-    // std::size_t    work_size           () const;
+                // std::size_t    work_size           () const;
 
-private:
+            private:
 
-    // std::string const _system_name;
+                // std::string const _system_name;
 
-    std::size_t const _count;
+                std::size_t const _count;
 
-    std::size_t const _nr_workers;
+                std::size_t const _nr_workers;
 
-    // std::size_t const _nr_localities;
+                // std::size_t const _nr_localities;
 
-    // std::size_t const _nr_threads;
+                // std::size_t const _nr_threads;
 
-    std::optional<std::size_t> const _max_tree_depth;
+                std::optional<std::size_t> const _max_tree_depth;
 
-    // std::size_t const _work_size;
+                // std::size_t const _work_size;
+        };
 
-};
-
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue

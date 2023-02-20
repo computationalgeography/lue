@@ -7,12 +7,8 @@
 
 namespace lue::benchmark {
 
-    template<
-        typename Element,
-        Rank rank>
-    BenchmarkModel<Element, rank>::BenchmarkModel(
-        Task const& task,
-        std::size_t const max_tree_depth):
+    template<typename Element, Rank rank>
+    BenchmarkModel<Element, rank>::BenchmarkModel(Task const& task, std::size_t const max_tree_depth):
 
         Model{},
         _count{0},
@@ -25,41 +21,29 @@ namespace lue::benchmark {
     {
         lue_hpx_assert(_state_ptr);
 
-        std::copy(
-            task.array_shape().begin(), task.array_shape().end(),
-            _array_shape.begin());
+        std::copy(task.array_shape().begin(), task.array_shape().end(), _array_shape.begin());
 
-        std::copy(
-            task.partition_shape().begin(), task.partition_shape().end(),
-            _partition_shape.begin());
+        std::copy(task.partition_shape().begin(), task.partition_shape().end(), _partition_shape.begin());
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename BenchmarkModel<Element, rank>::Shape const&
-        BenchmarkModel<Element, rank>::array_shape() const
+    template<typename Element, Rank rank>
+    typename BenchmarkModel<Element, rank>::Shape const& BenchmarkModel<Element, rank>::array_shape() const
     {
         return _array_shape;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename BenchmarkModel<Element, rank>::Shape const&
-        BenchmarkModel<Element, rank>::partition_shape() const
+    template<typename Element, Rank rank>
+    typename BenchmarkModel<Element, rank>::Shape const& BenchmarkModel<Element, rank>::partition_shape()
+        const
     {
         return _partition_shape;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void BenchmarkModel<Element, rank>::set_result(
-        Result const& result)
+    template<typename Element, Rank rank>
+    void BenchmarkModel<Element, rank>::set_result(Result const& result)
     {
         lue_hpx_assert(result.shape_in_partitions().size() == rank);
 
@@ -67,11 +51,8 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename BenchmarkModel<Element, rank>::Result const&
-        BenchmarkModel<Element, rank>::result() const
+    template<typename Element, Rank rank>
+    typename BenchmarkModel<Element, rank>::Result const& BenchmarkModel<Element, rank>::result() const
     {
         lue_hpx_assert(_result.shape_in_partitions().size() == rank);
 
@@ -79,9 +60,7 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::preprocess()
     {
         state() = create_partitioned_array<Element>(this->array_shape(), this->partition_shape());
@@ -92,16 +71,14 @@ namespace lue::benchmark {
         // benchmark. Compare this to reading from a dataset. Leave I/O out.
         hpx::wait_all_n(state().partitions().begin(), state().nr_partitions());
 
-        if(_count == 0)
+        if (_count == 0)
         {
             hpx::cout << describe(state()) << std::endl;
         }
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::initialize()
     {
         hpx::cout << '[' << std::flush;
@@ -110,11 +87,8 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void BenchmarkModel<Element, rank>::simulate(
-        Count const time_step)
+    template<typename Element, Rank rank>
+    void BenchmarkModel<Element, rank>::simulate(Count const time_step)
     {
         do_simulate(time_step);
 
@@ -124,7 +98,7 @@ namespace lue::benchmark {
         // which will trigger the semaphore once computation has reached
         // this point
         // if(((time_step + 1) % _max_tree_depth) == 0)
-        if((time_step % _max_tree_depth) == 0)
+        if ((time_step % _max_tree_depth) == 0)
         {
             lue_hpx_assert(state().nr_partitions() > 0);
 
@@ -148,9 +122,7 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::terminate()
     {
         do_terminate();
@@ -164,9 +136,7 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::postprocess()
     {
         do_postprocess();
@@ -177,42 +147,31 @@ namespace lue::benchmark {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::do_preprocess()
     {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::do_initialize()
     {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    void BenchmarkModel<Element, rank>::do_simulate(
-        Count const /* time_step */)
+    template<typename Element, Rank rank>
+    void BenchmarkModel<Element, rank>::do_simulate(Count const /* time_step */)
     {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::do_terminate()
     {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void BenchmarkModel<Element, rank>::do_postprocess()
     {
     }

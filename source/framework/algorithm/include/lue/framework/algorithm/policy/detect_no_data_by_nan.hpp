@@ -7,8 +7,7 @@
 
 namespace lue::policy {
 
-    template<
-        typename Element>
+    template<typename Element>
     class DetectNoDataByNaN
     {
 
@@ -24,18 +23,14 @@ namespace lue::policy {
             }
 
 
-            bool is_no_data(
-                Element const& element) const
+            bool is_no_data(Element const& element) const
             {
                 return std::isnan(element);
             }
 
 
-            template<
-                typename Data>
-            bool is_no_data(
-                Data const& data,
-                Index const idx) const
+            template<typename Data>
+            bool is_no_data(Data const& data, Index const idx) const
             {
                 static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
@@ -43,18 +38,13 @@ namespace lue::policy {
             }
 
 
-            template<
-                typename Data,
-                typename... Idxs>
-            bool is_no_data(
-                Data const& data,
-                Idxs const... idxs) const
+            template<typename Data, typename... Idxs>
+            bool is_no_data(Data const& data, Idxs const... idxs) const
             {
                 static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
                 return std::isnan(data(idxs...));
             }
-
     };
 
 }  // namespace lue::policy

@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::cast {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -18,12 +16,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename OutputElement,
-            typename InputElement,
-            Rank rank>
-        PartitionedArray<OutputElement, rank> cast(
-            PartitionedArray<InputElement, rank> const& array)
+        template<typename OutputElement, typename InputElement, Rank rank>
+        PartitionedArray<OutputElement, rank> cast(PartitionedArray<InputElement, rank> const& array)
         {
             using Policies = policy::cast::DefaultPolicies<OutputElement, InputElement>;
 

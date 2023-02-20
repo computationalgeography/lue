@@ -8,26 +8,17 @@
 
 namespace {
 
-    template<
-        typename Element,
-        lue::Rank rank>
+    template<typename Element, lue::Rank rank>
     using Array = lue::PartitionedArray<Element, rank>;
 
-    template<
-        typename Element,
-        lue::Rank rank>
+    template<typename Element, lue::Rank rank>
     using Partition = lue::PartitionT<Array<Element, rank>>;
 
-    template<
-        typename Element,
-        lue::Rank rank>
+    template<typename Element, lue::Rank rank>
     using PartitionData = lue::DataT<Partition<Element, rank>>;
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -35,7 +26,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -55,10 +47,7 @@ namespace {
     }
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -66,7 +55,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -81,10 +71,7 @@ namespace {
     }
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -93,7 +80,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -118,10 +106,7 @@ namespace {
     }
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -130,7 +115,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -150,10 +136,7 @@ namespace {
     }
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -162,7 +145,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -182,10 +166,7 @@ namespace {
     }
 
 
-    template<
-        typename ConditionElement,
-        typename Element,
-        lue::Rank rank>
+    template<typename ConditionElement, typename Element, lue::Rank rank>
     void test_where(
         lue::ShapeT<Array<Element, rank>> const& shape,
         std::initializer_list<ConditionElement>&& condition_values,
@@ -194,7 +175,8 @@ namespace {
         std::initializer_list<Element>&& result_values_we_want)
     {
         PartitionData<ConditionElement, rank> condition_data{shape, condition_values};
-        Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
+        Array<ConditionElement, rank> condition{
+            lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).wait();
         condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
@@ -234,25 +216,29 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Shape shape{nr_rows, nr_cols};
 
     PartitionData<std::uint8_t, rank> condition_data{
-            shape,
-            std::initializer_list<std::uint8_t>{
-                1, 0,
-                0, 1,
-                1, 0,
-            }
-        };
+        shape,
+        std::initializer_list<std::uint8_t>{
+            1,
+            0,
+            0,
+            1,
+            1,
+            0,
+        }};
     Array<std::uint8_t, rank> condition{lue::create_partitioned_array<std::uint8_t>(shape, shape)};
     condition.partitions()(0, 0).wait();
     condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
     PartitionData<Element, rank> true_data{
-            shape,
-            std::initializer_list<Element>{
-                1, 2,
-                3, 4,
-                5, 6,
-            }
-        };
+        shape,
+        std::initializer_list<Element>{
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+        }};
     Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
     true_array.partitions()(0, 0).wait();
     true_array.partitions()(0, 0).set_data(std::move(true_data)).wait();
@@ -262,13 +248,15 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     auto result_we_got = lue::default_policies::where(condition, true_array, false_value);
 
     PartitionData<Element, rank> result_we_want_data{
-            shape,
-            std::initializer_list<Element>{
-                1, 9,
-                9, 4,
-                5, 9,
-            }
-        };
+        shape,
+        std::initializer_list<Element>{
+            1,
+            9,
+            9,
+            4,
+            5,
+            9,
+        }};
     Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     result_we_want.partitions()(0, 0).wait();
     result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).wait();
@@ -317,25 +305,29 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     Shape shape{nr_rows, nr_cols};
 
     PartitionData<ConditionElement, rank> condition_data{
-            shape,
-            std::initializer_list<ConditionElement>{
-                ind1, 0,
-                   0, 1,
-                   1, ind1,
-            }
-        };
+        shape,
+        std::initializer_list<ConditionElement>{
+            ind1,
+            0,
+            0,
+            1,
+            1,
+            ind1,
+        }};
     Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
     condition.partitions()(0, 0).wait();
     condition.partitions()(0, 0).set_data(std::move(condition_data)).wait();
 
     PartitionData<Element, rank> true_data{
-            shape,
-            std::initializer_list<Element>{
-                1, ind2,
-                3, 4,
-                5, 6,
-            }
-        };
+        shape,
+        std::initializer_list<Element>{
+            1,
+            ind2,
+            3,
+            4,
+            5,
+            6,
+        }};
     Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
     true_array.partitions()(0, 0).wait();
     true_array.partitions()(0, 0).set_data(std::move(true_data)).wait();
@@ -343,13 +335,15 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     auto result_we_got = lue::value_policies::where(condition, true_array);
 
     PartitionData<Element, rank> result_we_want_data{
-            shape,
-            std::initializer_list<Element>{
-                ond, ond,
-                ond,   4,
-                  5, ond,
-            }
-        };
+        shape,
+        std::initializer_list<Element>{
+            ond,
+            ond,
+            ond,
+            4,
+            5,
+            ond,
+        }};
     Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     result_we_want.partitions()(0, 0).wait();
     result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).wait();
@@ -375,23 +369,32 @@ BOOST_AUTO_TEST_CASE(where_array_array)
     // - False in condition expression
     // - No-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 1 ,
-            },
-            std::initializer_list<Element>{
-                1 , 2 ,
-                xe, 4 ,
-                5 , 6 ,
-            },
-            std::initializer_list<Element>{
-                xe, xe,
-                xe, 4 ,
-                5 , 6 ,
-            }
-        );
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            1,
+        },
+        std::initializer_list<Element>{
+            1,
+            2,
+            xe,
+            4,
+            5,
+            6,
+        },
+        std::initializer_list<Element>{
+            xe,
+            xe,
+            xe,
+            4,
+            5,
+            6,
+        });
 }
 
 
@@ -412,33 +415,45 @@ BOOST_AUTO_TEST_CASE(where_array_value)
     // - False in condition expression
     // - No-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 1 ,
-            },
-            5,
-            std::initializer_list<Element>{
-                xe, xe,
-                5 , 5 ,
-                5 , 5 ,
-            }
-        );
-
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 1 ,
-            },
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            1,
+        },
+        5,
+        std::initializer_list<Element>{
             xe,
-            std::initializer_list<Element>{
-                xe, xe,
-                xe, xe,
-                xe, xe,
-            }
-        );
+            xe,
+            5,
+            5,
+            5,
+            5,
+        });
+
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            1,
+        },
+        xe,
+        std::initializer_list<Element>{
+            xe,
+            xe,
+            xe,
+            xe,
+            xe,
+            xe,
+        });
 }
 
 
@@ -463,28 +478,40 @@ BOOST_AUTO_TEST_CASE(where_array_array_array)
     // - True in condition and no-data in false expression
     // - False in condition and no-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
-            std::initializer_list<Element>{
-                11, 12,
-                13, xe,
-                15, xe,
-            },
-            std::initializer_list<Element>{
-                21, 22,
-                23, 24,
-                xe, 26,
-            },
-            std::initializer_list<Element>{
-                xe, 22,
-                13, xe,
-                15, 26,
-            }
-        );
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        std::initializer_list<Element>{
+            11,
+            12,
+            13,
+            xe,
+            15,
+            xe,
+        },
+        std::initializer_list<Element>{
+            21,
+            22,
+            23,
+            24,
+            xe,
+            26,
+        },
+        std::initializer_list<Element>{
+            xe,
+            22,
+            13,
+            xe,
+            15,
+            26,
+        });
 }
 
 
@@ -509,43 +536,61 @@ BOOST_AUTO_TEST_CASE(where_array_array_value)
     // - True in condition and no-data in false expression
     // - False in condition and no-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
-            std::initializer_list<Element>{
-                11, 12,
-                13, xe,
-                15, xe,
-            },
-            5,
-            std::initializer_list<Element>{
-                xe,  5,
-                13, xe,
-                15,  5,
-            }
-        );
-
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
-            std::initializer_list<Element>{
-                11, 12,
-                13, xe,
-                15, xe,
-            },
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        std::initializer_list<Element>{
+            11,
+            12,
+            13,
             xe,
-            std::initializer_list<Element>{
-                xe, xe,
-                13, xe,
-                15, xe,
-            }
-        );
+            15,
+            xe,
+        },
+        5,
+        std::initializer_list<Element>{
+            xe,
+            5,
+            13,
+            xe,
+            15,
+            5,
+        });
+
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        std::initializer_list<Element>{
+            11,
+            12,
+            13,
+            xe,
+            15,
+            xe,
+        },
+        xe,
+        std::initializer_list<Element>{
+            xe,
+            xe,
+            13,
+            xe,
+            15,
+            xe,
+        });
 }
 
 
@@ -570,43 +615,61 @@ BOOST_AUTO_TEST_CASE(where_array_value_array)
     // - True in condition and no-data in false expression
     // - False in condition and no-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
-            5,
-            std::initializer_list<Element>{
-                21, 22,
-                23, 24,
-                xe, xe,
-            },
-            std::initializer_list<Element>{
-                xe, 22,
-                 5,  5,
-                 5, xe,
-            }
-        );
-
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        5,
+        std::initializer_list<Element>{
+            21,
+            22,
+            23,
+            24,
             xe,
-            std::initializer_list<Element>{
-                21, 22,
-                23, 24,
-                xe, xe,
-            },
-            std::initializer_list<Element>{
-                xe, 22,
-                xe, xe,
-                xe, xe,
-            }
-        );
+            xe,
+        },
+        std::initializer_list<Element>{
+            xe,
+            22,
+            5,
+            5,
+            5,
+            xe,
+        });
+
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        xe,
+        std::initializer_list<Element>{
+            21,
+            22,
+            23,
+            24,
+            xe,
+            xe,
+        },
+        std::initializer_list<Element>{
+            xe,
+            22,
+            xe,
+            xe,
+            xe,
+            xe,
+        });
 }
 
 
@@ -631,48 +694,66 @@ BOOST_AUTO_TEST_CASE(where_array_value_value)
     // - True in condition and no-data in false expression
     // - False in condition and no-data in true expression
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
-            5,
-            6,
-            std::initializer_list<Element>{
-                xe, 6 ,
-                 5, 5 ,
-                 5, 6 ,
-            }
-        );
-
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        5,
+        6,
+        std::initializer_list<Element>{
             xe,
             6,
-            std::initializer_list<Element>{
-                xe,  6,
-                xe, xe,
-                xe,  6,
-            }
-        );
+            5,
+            5,
+            5,
+            6,
+        });
 
-    test_where<ConditionElement, Element, rank>({nr_rows, nr_cols},
-            std::initializer_list<ConditionElement>{
-                xc, 0 ,
-                1 , 1 ,
-                1 , 0 ,
-            },
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        xe,
+        6,
+        std::initializer_list<Element>{
+            xe,
+            6,
+            xe,
+            xe,
+            xe,
+            6,
+        });
+
+    test_where<ConditionElement, Element, rank>(
+        {nr_rows, nr_cols},
+        std::initializer_list<ConditionElement>{
+            xc,
+            0,
+            1,
+            1,
+            1,
+            0,
+        },
+        5,
+        xe,
+        std::initializer_list<Element>{
+            xe,
+            xe,
+            5,
+            5,
             5,
             xe,
-            std::initializer_list<Element>{
-                xe, xe,
-                 5,  5,
-                 5, xe,
-            }
-        );
+        });
 }

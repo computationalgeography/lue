@@ -8,8 +8,7 @@
 
 namespace lue::detail {
 
-    template<
-        typename FlowDirectionData>
+    template<typename FlowDirectionData>
     bool downstream_cell(
         FlowDirectionData const& flow_direction_data,
         Count nr_elements0,
@@ -27,45 +26,45 @@ namespace lue::detail {
         offset1 = 0;
         bool is_output_cell{false};  // Default is OK for sinks
 
-        if(flow_direction == north_west<FlowDirectionElement>)
+        if (flow_direction == north_west<FlowDirectionElement>)
         {
             offset0 = -1;
             offset1 = -1;
             is_output_cell = idx0 == 0 || idx1 == 0;
         }
-        else if(flow_direction == north<FlowDirectionElement>)
+        else if (flow_direction == north<FlowDirectionElement>)
         {
             offset0 = -1;
             is_output_cell = idx0 == 0;
         }
-        else if(flow_direction == north_east<FlowDirectionElement>)
+        else if (flow_direction == north_east<FlowDirectionElement>)
         {
             offset0 = -1;
             offset1 = 1;
             is_output_cell = idx0 == 0 || idx1 == nr_elements1 - 1;
         }
-        else if(flow_direction == west<FlowDirectionElement>)
+        else if (flow_direction == west<FlowDirectionElement>)
         {
             offset1 = -1;
             is_output_cell = idx1 == 0;
         }
-        else if(flow_direction == east<FlowDirectionElement>)
+        else if (flow_direction == east<FlowDirectionElement>)
         {
             offset1 = 1;
             is_output_cell = idx1 == nr_elements1 - 1;
         }
-        else if(flow_direction == south_west<FlowDirectionElement>)
+        else if (flow_direction == south_west<FlowDirectionElement>)
         {
             offset0 = 1;
             offset1 = -1;
             is_output_cell = idx0 == nr_elements0 - 1 || idx1 == 0;
         }
-        else if(flow_direction == south<FlowDirectionElement>)
+        else if (flow_direction == south<FlowDirectionElement>)
         {
             offset0 = 1;
             is_output_cell = idx0 == nr_elements0 - 1;
         }
-        else if(flow_direction == south_east<FlowDirectionElement>)
+        else if (flow_direction == south_east<FlowDirectionElement>)
         {
             offset0 = 1;
             offset1 = 1;
@@ -76,12 +75,9 @@ namespace lue::detail {
     }
 
 
-    template<
-        typename FlowDirectionData>
+    template<typename FlowDirectionData>
     std::tuple<Index, Index> downstream_cell(
-        FlowDirectionData const& flow_direction_data,
-        Index const idx0,
-        Index const idx1)
+        FlowDirectionData const& flow_direction_data, Index const idx0, Index const idx1)
     {
         using FlowDirectionElement = ElementT<FlowDirectionData>;
 
@@ -90,38 +86,38 @@ namespace lue::detail {
         Index offset0{0};
         Index offset1{0};
 
-        if(flow_direction == north_west<FlowDirectionElement>)
+        if (flow_direction == north_west<FlowDirectionElement>)
         {
             offset0 = -1;
             offset1 = -1;
         }
-        else if(flow_direction == north<FlowDirectionElement>)
+        else if (flow_direction == north<FlowDirectionElement>)
         {
             offset0 = -1;
         }
-        else if(flow_direction == north_east<FlowDirectionElement>)
+        else if (flow_direction == north_east<FlowDirectionElement>)
         {
             offset0 = -1;
             offset1 = 1;
         }
-        else if(flow_direction == west<FlowDirectionElement>)
+        else if (flow_direction == west<FlowDirectionElement>)
         {
             offset1 = -1;
         }
-        else if(flow_direction == east<FlowDirectionElement>)
+        else if (flow_direction == east<FlowDirectionElement>)
         {
             offset1 = 1;
         }
-        else if(flow_direction == south_west<FlowDirectionElement>)
+        else if (flow_direction == south_west<FlowDirectionElement>)
         {
             offset0 = 1;
             offset1 = -1;
         }
-        else if(flow_direction == south<FlowDirectionElement>)
+        else if (flow_direction == south<FlowDirectionElement>)
         {
             offset0 = 1;
         }
-        else if(flow_direction == south_east<FlowDirectionElement>)
+        else if (flow_direction == south_east<FlowDirectionElement>)
         {
             offset0 = 1;
             offset1 = 1;

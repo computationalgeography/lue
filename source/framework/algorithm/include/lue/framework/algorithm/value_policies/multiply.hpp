@@ -6,9 +6,7 @@
 namespace lue {
     namespace policy::multiply {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         class RangePolicy
         {
 
@@ -17,39 +15,24 @@ namespace lue {
                 static_assert(std::is_same_v<InputElement, OutputElement>);
 
                 constexpr static bool within_range(
-                    InputElement const& argument1,
-                    InputElement const& argument2,
-                    OutputElement const& result)
+                    InputElement const& argument1, InputElement const& argument2, OutputElement const& result)
                 {
                     return multiply_within_range(argument1, argument2, result);
                 }
-
         };
 
 
-        template<
-            typename OutputElement,
-            typename InputElement>
-        using DefaultValuePolicies =
-            policy::Policies<
-                    AllValuesWithinDomain<InputElement, InputElement>,
-                    OutputsPolicies<
-                            OutputPolicies<
-                                    DefaultOutputNoDataPolicy<OutputElement>,
-                                    RangePolicy<OutputElement, InputElement>
-                                >
-                        >,
-                    InputsPolicies<
-                            InputPolicies<
-                                    DefaultInputNoDataPolicy<InputElement>
-                                >,
-                            InputPolicies<
-                                    DefaultInputNoDataPolicy<InputElement>
-                                >
-                        >
-                >;
+        template<typename OutputElement, typename InputElement>
+        using DefaultValuePolicies = policy::Policies<
+            AllValuesWithinDomain<InputElement, InputElement>,
+            OutputsPolicies<OutputPolicies<
+                DefaultOutputNoDataPolicy<OutputElement>,
+                RangePolicy<OutputElement, InputElement>>>,
+            InputsPolicies<
+                InputPolicies<DefaultInputNoDataPolicy<InputElement>>,
+                InputPolicies<DefaultInputNoDataPolicy<InputElement>>>>;
 
-    }  // namespace multiply::policy
+    }  // namespace policy::multiply
 
 
     namespace value_policies {

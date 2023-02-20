@@ -4,8 +4,7 @@
 
 namespace lue::framework {
 
-    void bind_abs(
-        pybind11::module& module)
+    void bind_abs(pybind11::module& module)
     {
         module.def("abs", abs<std::int32_t, 2>);
         module.def("abs", abs<std::int64_t, 2>);

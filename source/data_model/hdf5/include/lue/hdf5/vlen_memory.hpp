@@ -4,36 +4,33 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-class VLenMemory
-{
+        class VLenMemory
+        {
 
-public:
+            public:
 
-                   VLenMemory          (Datatype const& datatype,
-                                        Dataspace const& dataspace,
-                                        void* buffer);
+                VLenMemory(Datatype const& datatype, Dataspace const& dataspace, void* buffer);
 
-                   VLenMemory          (VLenMemory const&)=delete;
+                VLenMemory(VLenMemory const&) = delete;
 
-                   VLenMemory          (VLenMemory&&)=delete;
+                VLenMemory(VLenMemory&&) = delete;
 
-                   ~VLenMemory         ();
+                ~VLenMemory();
 
-    VLenMemory&    operator=           (VLenMemory const&)=delete;
+                VLenMemory& operator=(VLenMemory const&) = delete;
 
-    VLenMemory&    operator=           (VLenMemory&&)=delete;
+                VLenMemory& operator=(VLenMemory&&) = delete;
 
-private:
+            private:
 
-    Datatype       _datatype;
+                Datatype _datatype;
 
-    Dataspace      _dataspace;
+                Dataspace _dataspace;
 
-    void*          _buffer;
+                void* _buffer;
+        };
 
-};
-
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

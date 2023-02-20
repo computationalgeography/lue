@@ -9,61 +9,55 @@
 
 
 namespace lue {
-namespace view {
+    namespace view {
 
-class Cache
-{
+        class Cache
+        {
 
-public:
+            public:
 
-    using Key = hdf5::Identifier;
+                using Key = hdf5::Identifier;
 
-                   Cache               ()=default;
+                Cache() = default;
 
-                   Cache               (Cache const&)=default;
+                Cache(Cache const&) = default;
 
-                   Cache               (Cache&&)=default;
+                Cache(Cache&&) = default;
 
-                   ~Cache              ()=default;
+                ~Cache() = default;
 
-    Cache&         operator=           (Cache const&)=default;
+                Cache& operator=(Cache const&) = default;
 
-    Cache&         operator=           (Cache&&)=default;
+                Cache& operator=(Cache&&) = default;
 
-    bool           contains            (Key const& key) const;
+                bool contains(Key const& key) const;
 
-    template<
-        typename Object>
-    void insert(
-        Key const& key,
-        Object const& object)
-    {
-        assert(!contains(key));
+                template<typename Object>
+                void insert(Key const& key, Object const& object)
+                {
+                    assert(!contains(key));
 
-        _objects[key] = std::make_any<Object>(object);
+                    _objects[key] = std::make_any<Object>(object);
 
-        assert(contains(key));
-        assert(_objects[key].has_value());
-    }
+                    assert(contains(key));
+                    assert(_objects[key].has_value());
+                }
 
-    template<
-        typename Object>
-    Object& retrieve(
-        Key const& key)
-    {
-        assert(contains(key));
-        assert(_objects[key].has_value());
+                template<typename Object>
+                Object& retrieve(Key const& key)
+                {
+                    assert(contains(key));
+                    assert(_objects[key].has_value());
 
-        std::cout << "->-> " << &_objects.at(key) << std::endl;
+                    std::cout << "->-> " << &_objects.at(key) << std::endl;
 
-        return std::any_cast<Object&>(_objects.at(key));
-    }
+                    return std::any_cast<Object&>(_objects.at(key));
+                }
 
-private:
+            private:
 
-    std::map<Key, std::any> _objects;
+                std::map<Key, std::any> _objects;
+        };
 
-};
-
-}  // namespace view
+    }  // namespace view
 }  // namespace lue

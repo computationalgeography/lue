@@ -10,9 +10,7 @@
 namespace lue::utility {
     namespace {
 
-        hl::RasterDomain raster_domain(
-            GDALDataset& dataset,
-            hl::RasterDiscretization const& discretization)
+        hl::RasterDomain raster_domain(GDALDataset& dataset, hl::RasterDiscretization const& discretization)
         {
             std::string const crs = dataset.GetProjectionRef();
 
@@ -32,8 +30,7 @@ namespace lue::utility {
         }
 
 
-        hl::RasterDiscretization raster_discretization(
-            GDALDataset& dataset)
+        hl::RasterDiscretization raster_discretization(GDALDataset& dataset)
         {
             int const nr_rows = dataset.GetRasterYSize();
             assert(nr_rows > 0);
@@ -47,51 +44,61 @@ namespace lue::utility {
     }  // Anonymous namespace
 
 
-    hdf5::Datatype gdal_datatype_to_memory_datatype(
-        GDALDataType const datatype)
+    hdf5::Datatype gdal_datatype_to_memory_datatype(GDALDataType const datatype)
     {
         hid_t type_id = -1;
 
-        switch(datatype) {
-            case GDT_Byte: {
+        switch (datatype)
+        {
+            case GDT_Byte:
+            {
                 type_id = H5T_NATIVE_UINT8;
                 break;
             }
-            case GDT_UInt16: {
+            case GDT_UInt16:
+            {
                 type_id = H5T_NATIVE_UINT16;
                 break;
             }
-            case GDT_Int16: {
+            case GDT_Int16:
+            {
                 type_id = H5T_NATIVE_INT16;
                 break;
             }
-            case GDT_UInt32: {
+            case GDT_UInt32:
+            {
                 type_id = H5T_NATIVE_UINT32;
                 break;
             }
-            case GDT_Int32: {
+            case GDT_Int32:
+            {
                 type_id = H5T_NATIVE_INT32;
                 break;
             }
-     #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
-            case GDT_UInt64: {
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+            case GDT_UInt64:
+            {
                 type_id = H5T_NATIVE_UINT64;
                 break;
             }
-            case GDT_Int64: {
+            case GDT_Int64:
+            {
                 type_id = H5T_NATIVE_INT64;
                 break;
             }
-     #endif
-            case GDT_Float32: {
+#endif
+            case GDT_Float32:
+            {
                 type_id = H5T_NATIVE_FLOAT;
                 break;
             }
-            case GDT_Float64: {
+            case GDT_Float64:
+            {
                 type_id = H5T_NATIVE_DOUBLE;
                 break;
             }
-            default: {
+            default:
+            {
                 assert(false);
             }
         }
@@ -102,10 +109,10 @@ namespace lue::utility {
     }
 
 
-    GDALRaster::Band::Band(
-        GDALRasterBand* band)
+    GDALRaster::Band::Band(GDALRasterBand* band)
 
-        : _band{band}
+        :
+        _band{band}
 
     {
         assert(_band);
@@ -157,33 +164,28 @@ namespace lue::utility {
     }
 
 
-    void GDALRaster::Band::read_block(
-        std::size_t block_x,
-        std::size_t block_y,
-        void* buffer)
+    void GDALRaster::Band::read_block(std::size_t block_x, std::size_t block_y, void* buffer)
     {
         auto cpl_status = _band->ReadBlock(block_x, block_y, buffer);
 
-        if(cpl_status != CE_None) {
+        if (cpl_status != CE_None)
+        {
             throw std::runtime_error("Cannot read block from GDAL raster band");
         }
     }
 
 
-    void GDALRaster::Band::read(
-        void* buffer)
+    void GDALRaster::Band::read(void* buffer)
     {
         int const nr_rows = _band->GetYSize();
         int const nr_cols = _band->GetXSize();
         auto const datatype = this->gdal_datatype();
 
-        auto cpl_status =
-            _band->RasterIO(
-                GF_Read, 0, 0, nr_cols, nr_rows,
-                buffer, nr_cols, nr_rows,
-                datatype, 0, 0, nullptr);
+        auto cpl_status = _band->RasterIO(
+            GF_Read, 0, 0, nr_cols, nr_rows, buffer, nr_cols, nr_rows, datatype, 0, 0, nullptr);
 
-        if(cpl_status != CE_None) {
+        if (cpl_status != CE_None)
+        {
             throw std::runtime_error("Cannot read from GDAL raster band");
         }
     }
@@ -271,26 +273,26 @@ namespace lue::utility {
     // }
 
 
-    GDALRaster::GDALRaster(
-        GDALDatasetPtr dataset)
+    GDALRaster::GDALRaster(GDALDatasetPtr dataset)
 
-        : _dataset{std::move(dataset)},
-          // _dataset_name{"meh"},
-          _domain{},
-          _discretization{}
+        :
+        _dataset{std::move(dataset)},
+        // _dataset_name{"meh"},
+        _domain{},
+        _discretization{}
 
     {
         init();
     }
 
 
-    GDALRaster::GDALRaster(
-        std::string const& dataset_name)
+    GDALRaster::GDALRaster(std::string const& dataset_name)
 
-        : _dataset{open_gdal_raster_dataset_for_read(dataset_name)},
-          // _dataset_name{dataset_name},
-          _domain{},
-          _discretization{}
+        :
+        _dataset{open_gdal_raster_dataset_for_read(dataset_name)},
+        // _dataset_name{dataset_name},
+        _domain{},
+        _discretization{}
 
     {
         // // Open the stack and read the domain and discretization information
@@ -329,8 +331,7 @@ namespace lue::utility {
     }
 
 
-    GDALRaster::Band GDALRaster::band(
-        int const nr) const
+    GDALRaster::Band GDALRaster::band(int const nr) const
     {
         assert(nr > 0);
         assert(nr <= int(nr_bands()));
@@ -339,93 +340,93 @@ namespace lue::utility {
     }
 
 
-
-
     template<
         typename RasterView,
         typename T>  // In-file GDAL element type
-    void write(
-        GDALRaster::Band& gdal_raster_band,
-        typename RasterView::Layer& lue_raster_layer)
+    void write(GDALRaster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
     {
         auto const blocks = gdal_raster_band.blocks();
         std::vector<T> values(blocks.block_size());
         size_t nr_valid_cells_x;
         size_t nr_valid_cells_y;
 
-        for(size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y) {
-            for(size_t block_x = 0; block_x < blocks.nr_blocks_x(); ++block_x)
+        for (size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y)
         {
+            for (size_t block_x = 0; block_x < blocks.nr_blocks_x(); ++block_x)
+            {
                 gdal_raster_band.read_block(block_x, block_y, values.data());
 
-                std::tie(nr_valid_cells_x, nr_valid_cells_y) =
-                    blocks.nr_valid_cells(block_x, block_y);
+                std::tie(nr_valid_cells_x, nr_valid_cells_y) = blocks.nr_valid_cells(block_x, block_y);
 
-                hdf5::Shape const shape = { nr_valid_cells_x * nr_valid_cells_y };
+                hdf5::Shape const shape = {nr_valid_cells_x * nr_valid_cells_y};
                 auto memory_dataspace = hdf5::create_dataspace(shape);
 
-                hdf5::Offset offset{
-                    block_y * blocks.block_size_y(),
-                    block_x * blocks.block_size_x()};
+                hdf5::Offset offset{block_y * blocks.block_size_y(), block_x * blocks.block_size_x()};
                 hdf5::Count count{nr_valid_cells_y, nr_valid_cells_x};
                 hdf5::Hyperslab hyperslab{std::move(offset), std::move(count)};
 
-                lue_raster_layer.write(
-                    std::move(memory_dataspace), std::move(hyperslab), values.data());
+                lue_raster_layer.write(std::move(memory_dataspace), std::move(hyperslab), values.data());
             }
         }
     }
 
 
-    template<
-        typename RasterView>
-    void write(
-        GDALRaster::Band& gdal_raster_band,
-        typename RasterView::Layer& lue_raster_layer)
+    template<typename RasterView>
+    void write(GDALRaster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
     {
         GDALDataType const datatype{gdal_raster_band.gdal_datatype()};
 
-        switch(datatype)
+        switch (datatype)
         {
-            case GDT_Byte: {
+            case GDT_Byte:
+            {
                 write<RasterView, uint8_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_UInt16: {
+            case GDT_UInt16:
+            {
                 write<RasterView, uint16_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_Int16: {
+            case GDT_Int16:
+            {
                 write<RasterView, int16_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_UInt32: {
+            case GDT_UInt32:
+            {
                 write<RasterView, uint32_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_Int32: {
+            case GDT_Int32:
+            {
                 write<RasterView, int32_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-     #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
-            case GDT_UInt64: {
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+            case GDT_UInt64:
+            {
                 write<RasterView, uint64_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_Int64: {
+            case GDT_Int64:
+            {
                 write<RasterView, int64_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-     #endif
-            case GDT_Float32: {
+#endif
+            case GDT_Float32:
+            {
                 write<RasterView, float>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            case GDT_Float64: {
+            case GDT_Float64:
+            {
                 write<RasterView, double>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-            default: {
+            default:
+            {
                 throw std::runtime_error("Unsupported GDAL datatype");
                 break;
             }
@@ -438,15 +439,18 @@ namespace lue::utility {
         @return     A pointer to a ::GDALDataset instance if the dataset can be
                     opened. Otherwise a pointer containing nullptr.
     */
-    GDALDatasetPtr try_open_gdal_raster_dataset_for_read(
-        std::string const& dataset_name)
+    GDALDatasetPtr try_open_gdal_raster_dataset_for_read(std::string const& dataset_name)
     {
         CPLPushErrorHandler(CPLQuietErrorHandler);
 
         auto result = GDALDatasetPtr(
-            static_cast<::GDALDataset*>(::GDALOpenEx(dataset_name.c_str(),
+            static_cast<::GDALDataset*>(::GDALOpenEx(
+                dataset_name.c_str(),
                 // NOLINTNEXTLINE(hicpp-signed-bitwise)
-                GDAL_OF_READONLY | GDAL_OF_RASTER, nullptr, nullptr, nullptr)),
+                GDAL_OF_READONLY | GDAL_OF_RASTER,
+                nullptr,
+                nullptr,
+                nullptr)),
             GDALDatasetDeleter{});
 
         CPLPopErrorHandler();
@@ -455,12 +459,12 @@ namespace lue::utility {
     }
 
 
-    GDALDatasetPtr open_gdal_raster_dataset_for_read(
-        std::string const& dataset_name)
+    GDALDatasetPtr open_gdal_raster_dataset_for_read(std::string const& dataset_name)
     {
         auto result = try_open_gdal_raster_dataset_for_read(dataset_name);
 
-        if(!result) {
+        if (!result)
+        {
             throw std::runtime_error("Cannot open raster " + dataset_name);
         }
 
@@ -478,22 +482,17 @@ namespace lue::utility {
         namespace ldm = lue::data_model;
 
         // Create / open dataset
-        auto create_dataset =
-            [lue_dataset_name]()
-            {
-                return ldm::create_dataset(lue_dataset_name);
-            };
+        auto create_dataset = [lue_dataset_name]() { return ldm::create_dataset(lue_dataset_name); };
 
-        auto open_dataset =
-            [lue_dataset_name, add]()
+        auto open_dataset = [lue_dataset_name, add]()
+        {
+            if (!add)
             {
-                if(!add)
-                {
-                    throw std::runtime_error(fmt::format("Dataset {} already exists", lue_dataset_name));
-                }
+                throw std::runtime_error(fmt::format("Dataset {} already exists", lue_dataset_name));
+            }
 
-                return ldm::open_dataset(lue_dataset_name);
-            };
+            return ldm::open_dataset(lue_dataset_name);
+        };
 
         ldm::Dataset dataset{!ldm::dataset_exists(lue_dataset_name) ? create_dataset() : open_dataset()};
 
@@ -516,53 +515,45 @@ namespace lue::utility {
         lh5::Shape const grid_shape{
             gdal_raster.discretization().nr_rows(), gdal_raster.discretization().nr_cols()};
         SpaceBox const space_box{
-                gdal_raster.domain().west(), gdal_raster.domain().south(),
-                gdal_raster.domain().east(), gdal_raster.domain().north()
-            };
+            gdal_raster.domain().west(),
+            gdal_raster.domain().south(),
+            gdal_raster.domain().east(),
+            gdal_raster.domain().north()};
 
         // TODO For now, we use default names. These could also be obtained
         //     from the metadata passed in.
         std::string const phenomenon_name{"area"};
         std::string const property_set_name{"raster"};
 
-        auto contains_raster =
-            [dataset, phenomenon_name, property_set_name]()
-            {
-                return
-                    dataset.phenomena().contains(phenomenon_name) &&
-                    dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
-                    ldm::constant::contains_raster(dataset, phenomenon_name, property_set_name);
-            };
+        auto contains_raster = [dataset, phenomenon_name, property_set_name]()
+        {
+            return dataset.phenomena().contains(phenomenon_name) &&
+                   dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
+                   ldm::constant::contains_raster(dataset, phenomenon_name, property_set_name);
+        };
 
         RasterView raster_view{
-                !contains_raster()
-                    ? ldm::constant::create_raster_view(
-                            &dataset, phenomenon_name, property_set_name, grid_shape, space_box)
-                    : ldm::constant::open_raster_view(
-                            &dataset, phenomenon_name, property_set_name)
-            };
+            !contains_raster()
+                ? ldm::constant::create_raster_view(
+                      &dataset, phenomenon_name, property_set_name, grid_shape, space_box)
+                : ldm::constant::open_raster_view(&dataset, phenomenon_name, property_set_name)};
 
         // Add raster layers from input raster(s)
         using RasterLayer = RasterView::Layer;
 
-        for(std::string const& gdal_dataset_name: gdal_dataset_names)
+        for (std::string const& gdal_dataset_name : gdal_dataset_names)
         {
             GDALRaster const gdal_raster{gdal_dataset_name};
 
-            std::string const raster_layer_name{
-                std::filesystem::path(gdal_dataset_name).stem().string()};
+            std::string const raster_layer_name{std::filesystem::path(gdal_dataset_name).stem().string()};
 
-            auto band_name =
-                [raster_layer_name, nr_bands=gdal_raster.nr_bands()](
-                    int const band_idx) -> std::string
-                {
-                    return nr_bands == 1
-                        ? raster_layer_name
-                        : fmt::format("{}-{}", raster_layer_name, band_idx + 1)
-                        ;
-                };
+            auto band_name = [raster_layer_name,
+                              nr_bands = gdal_raster.nr_bands()](int const band_idx) -> std::string {
+                return nr_bands == 1 ? raster_layer_name
+                                     : fmt::format("{}-{}", raster_layer_name, band_idx + 1);
+            };
 
-            for(std::size_t band_idx = 0; band_idx < gdal_raster.nr_bands(); ++band_idx)
+            for (std::size_t band_idx = 0; band_idx < gdal_raster.nr_bands(); ++band_idx)
             {
                 GDALRaster::Band gdal_raster_band{gdal_raster.band(band_idx + 1)};
 

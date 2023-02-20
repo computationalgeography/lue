@@ -4,16 +4,15 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-/*!
-    @brief      Unique pointer to a dataset
-*/
-using LUEDatasetPtr = std::unique_ptr<data_model::Dataset>;
+        /*!
+            @brief      Unique pointer to a dataset
+        */
+        using LUEDatasetPtr = std::unique_ptr<data_model::Dataset>;
 
 
-LUEDatasetPtr      try_open_lue_dataset_for_read(
-                                        std::string const& dataset_name);
+        LUEDatasetPtr try_open_lue_dataset_for_read(std::string const& dataset_name);
 
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

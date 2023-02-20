@@ -1,7 +1,7 @@
-#include "submodule.hpp"
 #include "lue/info/property/different_shape/variable_shape/property.hpp"
-#include <pybind11/pybind11.h>
+#include "submodule.hpp"
 #include <fmt/format.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -9,67 +9,52 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace different_shape {
-namespace variable_shape {
-namespace {
+    namespace data_model {
+        namespace different_shape {
+            namespace variable_shape {
+                namespace {
 
-static std::string formal_string_representation(
-    Property const& property)
-{
-    return fmt::format(
-            "Property(pathname='{}')",
-            property.id().pathname()
-        );
-}
+                    static std::string formal_string_representation(Property const& property)
+                    {
+                        return fmt::format("Property(pathname='{}')", property.id().pathname());
+                    }
 
 
-static std::string informal_string_representation(
-    Property const& property)
-{
-    return fmt::format(
-            "{}",
-            formal_string_representation(property)
-        );
-}
+                    static std::string informal_string_representation(Property const& property)
+                    {
+                        return fmt::format("{}", formal_string_representation(property));
+                    }
 
-}  // Anonymous namespace
+                }  // Anonymous namespace
 
 
-void init_property(
-    py::module& module)
-{
+                void init_property(py::module& module)
+                {
 
-    py::class_<Property, PropertyGroup>(
-        module,
-        "Property",
-        R"(
+                    py::class_<Property, PropertyGroup>(
+                        module,
+                        "Property",
+                        R"(
     Property docstring...
 )")
 
-        .def(
-            "__repr__",
-            [](Property const& property) {
-                return formal_string_representation(property);
-            }
-        )
+                        .def(
+                            "__repr__",
+                            [](Property const& property) { return formal_string_representation(property); })
 
-        .def(
-            "__str__",
-            [](Property const& property) {
-                return informal_string_representation(property);
-            }
-        )
+                        .def(
+                            "__str__",
+                            [](Property const& property) { return informal_string_representation(property); })
 
-        .def_property_readonly("value",
-            py::overload_cast<>(&Property::value),
-            py::return_value_policy::reference_internal)
+                        .def_property_readonly(
+                            "value",
+                            py::overload_cast<>(&Property::value),
+                            py::return_value_policy::reference_internal)
 
-        ;
+                        ;
+                }
 
-}
-
-}  // namespace variable_shape
-}  // namespace different_shape
-}  // namespace data_model
+            }  // namespace variable_shape
+        }      // namespace different_shape
+    }          // namespace data_model
 }  // namespace lue

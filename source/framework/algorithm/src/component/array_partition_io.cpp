@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
-#include "lue/framework/algorithm/definition/flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/accu_info.hpp"
+#include "lue/framework/algorithm/definition/flow_accumulation.hpp"
 #include "lue/framework/algorithm/inter_partition_stream.hpp"
 #include <hpx/serialization/std_tuple.hpp>
 
@@ -18,9 +18,7 @@ LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, lue_FlowAccumu
 LUE_REGISTER_ARRAY_PARTITION_IO_ACTION_DECLARATIONS(lue_Index, 2, lue_AccuInfoMaterial)
 
 
-#define LUE_REGISTER(Value)                                   \
-                                                              \
-LUE_REGISTER_ARRAY_PARTITION_IO_ACTIONS(lue_Index, 2, Value)
+#define LUE_REGISTER(Value) LUE_REGISTER_ARRAY_PARTITION_IO_ACTIONS(lue_Index, 2, Value)
 
 LUE_REGISTER(/* std:: */ uint64_t)
 LUE_REGISTER(float)

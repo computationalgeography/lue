@@ -15,9 +15,7 @@ namespace lue::detail {
         Index const offset0,
         Index const offset1)
     {
-        lue_hpx_assert(
-            (idx0 == 0 || idx0 == extent0 - 1) ||
-            (idx1 == 0 || idx1 == extent1 - 1));
+        lue_hpx_assert((idx0 == 0 || idx0 == extent0 - 1) || (idx1 == 0 || idx1 == extent1 - 1));
         lue_hpx_assert(offset0 >= -1 && offset0 <= 1);
         lue_hpx_assert(offset1 >= -1 && offset1 <= 1);
 
@@ -27,19 +25,19 @@ namespace lue::detail {
         // Idx of cell in the neighbouring partition
         Index idx{-1};
 
-        if(idx0 == 0)
+        if (idx0 == 0)
         {
             // north border
-            if(idx1 == 0)
+            if (idx1 == 0)
             {
                 // north-west source cell → determine destination
-                if(offset0 >= 0)
+                if (offset0 >= 0)
                 {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
                     idx = idx0 + offset0;
                 }
-                else if(offset1 >= 0)
+                else if (offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
@@ -53,16 +51,16 @@ namespace lue::detail {
                     idx = -1;  // Whatever
                 }
             }
-            else if(idx1 == extent1 - 1)
+            else if (idx1 == extent1 - 1)
             {
                 // north-east source cell → determine destination
-                if(offset0 >= 0)
+                if (offset0 >= 0)
                 {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
                     idx = idx0 + offset0;
                 }
-                else if(offset1 <= 0)
+                else if (offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == -1);
                     direction = accu::Direction::north;
@@ -84,19 +82,19 @@ namespace lue::detail {
                 idx = idx1 + offset1;
             }
         }
-        else if(idx0 == extent0 - 1)
+        else if (idx0 == extent0 - 1)
         {
             // south border
-            if(idx1 == 0)
+            if (idx1 == 0)
             {
                 // south-west source cell → determine destination
-                if(offset0 <= 0)
+                if (offset0 <= 0)
                 {
                     lue_hpx_assert(offset1 == -1);
                     direction = accu::Direction::west;
                     idx = idx0 + offset0;
                 }
-                else if(offset1 >= 0)
+                else if (offset1 >= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
@@ -110,16 +108,16 @@ namespace lue::detail {
                     idx = -1;  // Whatever
                 }
             }
-            else if(idx1 == extent1 - 1)
+            else if (idx1 == extent1 - 1)
             {
                 // south-east source cell → determine destination
-                if(offset0 <= 0)
+                if (offset0 <= 0)
                 {
                     lue_hpx_assert(offset1 == 1);
                     direction = accu::Direction::east;
                     idx = idx0 + offset0;
                 }
-                else if(offset1 <= 0)
+                else if (offset1 <= 0)
                 {
                     lue_hpx_assert(offset0 == 1);
                     direction = accu::Direction::south;
@@ -141,14 +139,14 @@ namespace lue::detail {
                 idx = idx1 + offset1;
             }
         }
-        else if(idx1 == 0)
+        else if (idx1 == 0)
         {
             // west source cell → determine destination
             lue_hpx_assert(offset1 == -1);
             direction = accu::Direction::west;
             idx = idx0 + offset0;
         }
-        else if(idx1 == extent1 - 1)
+        else if (idx1 == extent1 - 1)
         {
             // east source cell → determine destination
             lue_hpx_assert(offset1 == 1);
@@ -160,10 +158,8 @@ namespace lue::detail {
     }
 
 
-    template<
-        Rank rank>
-    class InflowCountCommunicator:
-        public Communicator<std::vector<Index>, rank>
+    template<Rank rank>
+    class InflowCountCommunicator: public Communicator<std::vector<Index>, rank>
     {
 
         public:
@@ -171,7 +167,7 @@ namespace lue::detail {
             using Base = Communicator<std::vector<Index>, rank>;
 
 
-            InflowCountCommunicator()=default;
+            InflowCountCommunicator() = default;
 
 
             InflowCountCommunicator(
@@ -192,13 +188,10 @@ namespace lue::detail {
 
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                unsigned int const version)
+            void serialize(Archive& archive, unsigned int const version)
             {
                 Base::serialize(archive, version);
             }
-
     };
 
 }  // namespace lue::detail

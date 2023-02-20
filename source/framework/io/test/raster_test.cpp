@@ -1,9 +1,9 @@
 #define BOOST_TEST_MODULE lue framework io raster
-#include <hpx/config.hpp>
-#include "lue/framework/io/raster.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/io/raster.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include <hpx/config.hpp>
 
 
 BOOST_AUTO_TEST_CASE(round_trip_1)

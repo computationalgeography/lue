@@ -2,12 +2,9 @@
 #include "lue/framework/algorithm/value_policies/zonal_area.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, Count, Zone)           \
-                                                         \
-    LUE_INSTANTIATE_ZONAL_AREA(                          \
-        ESC(policy::zonal_area::Policies<Count, Zone>),  \
-        Count,                                           \
-        Zone);
+#define LUE_INSTANTIATE(Policies, Count, Zone)                                                               \
+                                                                                                             \
+    LUE_INSTANTIATE_ZONAL_AREA(ESC(policy::zonal_area::Policies<Count, Zone>), Count, Zone);
 
 
 namespace lue {

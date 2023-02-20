@@ -9,77 +9,65 @@
 
 
 namespace lue {
-namespace detail {
+    namespace detail {
 
-inline bool empty(
-    char const* string)
-{
-    return std::strlen(string) == 0;
-}
-
-
-template<
-    typename String>
-bool empty(
-    String const& string)
-{
-    return string.empty();
-}
-
-}  // namespace detail
+        inline bool empty(char const* string)
+        {
+            return std::strlen(string) == 0;
+        }
 
 
-template<
-    typename Condition,
-    typename String,
-    typename... Arguments>
-void _lue_assert(
-    [[maybe_unused]] char const* filename,
-    [[maybe_unused]] int const line_nr,
-    [[maybe_unused]] Condition const& condition,
-    [[maybe_unused]] char const* condition_as_string,
-    [[maybe_unused]] String const& format_string,
-    [[maybe_unused]] Arguments&&... arguments)
-{
-    if constexpr(BuildOptions::assert_conditions)
+        template<typename String>
+        bool empty(String const& string)
+        {
+            return string.empty();
+        }
+
+    }  // namespace detail
+
+
+    template<typename Condition, typename String, typename... Arguments>
+    void _lue_assert(
+        [[maybe_unused]] char const* filename,
+        [[maybe_unused]] int const line_nr,
+        [[maybe_unused]] Condition const& condition,
+        [[maybe_unused]] char const* condition_as_string,
+        [[maybe_unused]] String const& format_string,
+        [[maybe_unused]] Arguments&&... arguments)
     {
-        if(!condition) {
-            if(detail::empty(format_string))
+        if constexpr (BuildOptions::assert_conditions)
+        {
+            if (!condition)
             {
-                throw std::logic_error(fmt::format(
-                    "{}:{}: assertion failed: {}",
-                    filename, line_nr,
-                    condition_as_string));
-            }
-            else
-            {
-                throw std::logic_error(fmt::format(
-                    "{}:{}: assertion failed: {}: {}",
-                    filename, line_nr,
-                    condition_as_string,
-                    fmt::format(format_string, arguments...)));
+                if (detail::empty(format_string))
+                {
+                    throw std::logic_error(
+                        fmt::format("{}:{}: assertion failed: {}", filename, line_nr, condition_as_string));
+                }
+                else
+                {
+                    throw std::logic_error(fmt::format(
+                        "{}:{}: assertion failed: {}: {}",
+                        filename,
+                        line_nr,
+                        condition_as_string,
+                        fmt::format(format_string, arguments...)));
+                }
             }
         }
     }
-}
 
 
-template<
-    typename Condition>
-void _lue_assert(
-    char const* filename,
-    int const line_nr,
-    Condition const& condition,
-    char const* condition_as_string)
-{
-    _lue_assert(filename, line_nr, condition, condition_as_string, "");
-}
+    template<typename Condition>
+    void _lue_assert(
+        char const* filename, int const line_nr, Condition const& condition, char const* condition_as_string)
+    {
+        _lue_assert(filename, line_nr, condition, condition_as_string, "");
+    }
 
 }  // namespace lue
 
 
 // https://en.wikipedia.org/wiki/Variadic_macro
 // FIXME This is not portable, update when using C++20
-#define lue_assert(condition, ...)  \
-_lue_assert(                   \
-    __FILE__, __LINE__, condition, #condition, ##__VA_ARGS__);
+#define lue_assert(condition, ...) _lue_assert(__FILE__, __LINE__, condition, #condition, ##__VA_ARGS__);

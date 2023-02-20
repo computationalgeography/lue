@@ -1,79 +1,77 @@
 #pragma once
+#include "lue/array/different_shape/variable_shape/value.hpp"
 #include "lue/info/property/property_group.hpp"
 #include "lue/info/property/property_traits.hpp"
-#include "lue/array/different_shape/variable_shape/value.hpp"
 
 
 namespace lue {
-namespace data_model {
-namespace different_shape {
-namespace variable_shape {
+    namespace data_model {
+        namespace different_shape {
+            namespace variable_shape {
 
-class Property:
-    public PropertyGroup
-{
+                class Property: public PropertyGroup
+                {
 
-public:
+                    public:
 
-    using Value = different_shape::variable_shape::Value;
+                        using Value = different_shape::variable_shape::Value;
 
-                   Property            (hdf5::Group const& parent,
-                                        std::string const& name);
+                        Property(hdf5::Group const& parent, std::string const& name);
 
-                   Property            (hdf5::Group const& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype);
+                        Property(
+                            hdf5::Group const& parent,
+                            std::string const& name,
+                            hdf5::Datatype const& memory_datatype);
 
-                   Property            (PropertyGroup&& group,
-                                        Value&& value);
+                        Property(PropertyGroup&& group, Value&& value);
 
-                   Property            (Property const&)=default;
+                        Property(Property const&) = default;
 
-                   Property            (Property&&)=default;
+                        Property(Property&&) = default;
 
-                   ~Property           () override =default;
+                        ~Property() override = default;
 
-    Property&      operator=           (Property const&)=default;
+                        Property& operator=(Property const&) = default;
 
-    Property&      operator=           (Property&&)=default;
+                        Property& operator=(Property&&) = default;
 
-    Value const&   value               () const;
+                        Value const& value() const;
 
-    Value&         value               ();
+                        Value& value();
 
-private:
+                    private:
 
-    Value          _value;
-
-};
+                        Value _value;
+                };
 
 
-Property           create_property     (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& memory_datatype,
-                                        Rank rank,
-                                        std::string const& description="");
+                Property create_property(
+                    hdf5::Group& parent,
+                    std::string const& name,
+                    hdf5::Datatype const& memory_datatype,
+                    Rank rank,
+                    std::string const& description = "");
 
-Property           create_property     (hdf5::Group& parent,
-                                        std::string const& name,
-                                        hdf5::Datatype const& file_datatype,
-                                        hdf5::Datatype const& memory_datatype,
-                                        Rank rank,
-                                        std::string const& description="");
+                Property create_property(
+                    hdf5::Group& parent,
+                    std::string const& name,
+                    hdf5::Datatype const& file_datatype,
+                    hdf5::Datatype const& memory_datatype,
+                    Rank rank,
+                    std::string const& description = "");
 
-}  // namespace variable_shape
-}  // namespace different_shape
+            }  // namespace variable_shape
+        }      // namespace different_shape
 
 
-template<>
-class PropertyTraits<different_shape::variable_shape::Property>
-{
+        template<>
+        class PropertyTraits<different_shape::variable_shape::Property>
+        {
 
-public:
+            public:
 
-    using Value = different_shape::variable_shape::Property::Value;
+                using Value = different_shape::variable_shape::Property::Value;
+        };
 
-};
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

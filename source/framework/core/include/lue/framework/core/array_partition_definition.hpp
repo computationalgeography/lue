@@ -4,158 +4,126 @@
 
 namespace lue {
 
-template<
-    typename Index,
-    Rank rank>
-class ArrayPartitionDefinition
-{
+    template<typename Index, Rank rank>
+    class ArrayPartitionDefinition
+    {
 
-public:
+        public:
 
-    using Start = lue::Shape<Index, rank>;
+            using Start = lue::Shape<Index, rank>;
 
-    using Shape = lue::Shape<Index, rank>;
+            using Shape = lue::Shape<Index, rank>;
 
-                   ArrayPartitionDefinition();
+            ArrayPartitionDefinition();
 
-    explicit       ArrayPartitionDefinition(
-                                        Shape const& shape);
+            explicit ArrayPartitionDefinition(Shape const& shape);
 
-                   ArrayPartitionDefinition(
-                                        Start const& start,
-                                        Shape const& shape);
+            ArrayPartitionDefinition(Start const& start, Shape const& shape);
 
-                   ArrayPartitionDefinition (
-                                    ArrayPartitionDefinition const&)=default;
+            ArrayPartitionDefinition(ArrayPartitionDefinition const&) = default;
 
-                   ArrayPartitionDefinition (
-                                    ArrayPartitionDefinition&&)=default;
+            ArrayPartitionDefinition(ArrayPartitionDefinition&&) = default;
 
-                   ~ArrayPartitionDefinition()=default;
+            ~ArrayPartitionDefinition() = default;
 
-    ArrayPartitionDefinition& operator=(
-                                    ArrayPartitionDefinition const&)=default;
+            ArrayPartitionDefinition& operator=(ArrayPartitionDefinition const&) = default;
 
-    ArrayPartitionDefinition& operator=(
-                                    ArrayPartitionDefinition&&)=default;
+            ArrayPartitionDefinition& operator=(ArrayPartitionDefinition&&) = default;
 
-    bool           operator==          (
-                                ArrayPartitionDefinition const& other) const;
+            bool operator==(ArrayPartitionDefinition const& other) const;
 
-    Start const&   start               () const;
+            Start const& start() const;
 
-    Start&         start               ();
+            Start& start();
 
-    Shape const&   shape               () const;
+            Shape const& shape() const;
 
-    Shape&         shape               ();
+            Shape& shape();
 
-    Count          nr_elements         () const;
+            Count nr_elements() const;
 
-private:
+        private:
 
-    Start          _start;
+            Start _start;
 
-    Shape          _shape;
-
-};
+            Shape _shape;
+    };
 
 
-template<
-    typename Index,
-    Rank rank>
-inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition():
+    template<typename Index, Rank rank>
+    inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition():
 
-    _start{},
-    _shape{}
+        _start{},
+        _shape{}
 
-{
-}
+    {
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
-    Shape const& shape):
+    template<typename Index, Rank rank>
+    inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(Shape const& shape):
 
-    _start{},
-    _shape{shape}
+        _start{},
+        _shape{shape}
 
-{
-}
+    {
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
-    Start const& start,
-    Shape const& shape):
+    template<typename Index, Rank rank>
+    inline ArrayPartitionDefinition<Index, rank>::ArrayPartitionDefinition(
+        Start const& start, Shape const& shape):
 
-    _start{start},
-    _shape{shape}
+        _start{start},
+        _shape{shape}
 
-{
-}
+    {
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline bool ArrayPartitionDefinition<Index, rank>::operator==(
-    ArrayPartitionDefinition const& other) const
-{
-    return _start == other._start && _shape == other._shape;
-}
+    template<typename Index, Rank rank>
+    inline bool ArrayPartitionDefinition<Index, rank>::operator==(ArrayPartitionDefinition const& other) const
+    {
+        return _start == other._start && _shape == other._shape;
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline typename ArrayPartitionDefinition<Index, rank>::Start const&
+    template<typename Index, Rank rank>
+    inline typename ArrayPartitionDefinition<Index, rank>::Start const&
     ArrayPartitionDefinition<Index, rank>::start() const
-{
-    return _start;
-}
+    {
+        return _start;
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline typename ArrayPartitionDefinition<Index, rank>::Start&
+    template<typename Index, Rank rank>
+    inline typename ArrayPartitionDefinition<Index, rank>::Start&
     ArrayPartitionDefinition<Index, rank>::start()
-{
-    return _start;
-}
+    {
+        return _start;
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline typename ArrayPartitionDefinition<Index, rank>::Shape const&
+    template<typename Index, Rank rank>
+    inline typename ArrayPartitionDefinition<Index, rank>::Shape const&
     ArrayPartitionDefinition<Index, rank>::shape() const
-{
-    return _shape;
-}
+    {
+        return _shape;
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline typename ArrayPartitionDefinition<Index, rank>::Shape&
+    template<typename Index, Rank rank>
+    inline typename ArrayPartitionDefinition<Index, rank>::Shape&
     ArrayPartitionDefinition<Index, rank>::shape()
-{
-    return _shape;
-}
+    {
+        return _shape;
+    }
 
 
-template<
-    typename Index,
-    Rank rank>
-inline Count ArrayPartitionDefinition<Index, rank>::nr_elements() const
-{
-    return lue::nr_elements(_shape);
-}
+    template<typename Index, Rank rank>
+    inline Count ArrayPartitionDefinition<Index, rank>::nr_elements() const
+    {
+        return lue::nr_elements(_shape);
+    }
 
 }  // namespace lue

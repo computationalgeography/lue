@@ -1,7 +1,7 @@
-#include "python_extension.hpp"
 #include "lue/info/space/mobile_space_box.hpp"
-#include <pybind11/pybind11.h>
+#include "python_extension.hpp"
 #include <fmt/format.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -9,60 +9,42 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace {
+    namespace data_model {
+        namespace {
 
-static std::string formal_string_representation(
-    MobileSpaceBox const& box)
-{
-    return fmt::format(
-            "MobileSpaceBox(pathname='{}')",
-            box.id().pathname()
-        );
-}
+            static std::string formal_string_representation(MobileSpaceBox const& box)
+            {
+                return fmt::format("MobileSpaceBox(pathname='{}')", box.id().pathname());
+            }
 
 
-static std::string informal_string_representation(
-    MobileSpaceBox const& box)
-{
-    return fmt::format(
-            "{}\n"
-            "    nr_boxes: {}",
-            formal_string_representation(box),
-            box.nr_boxes()
-        );
-}
+            static std::string informal_string_representation(MobileSpaceBox const& box)
+            {
+                return fmt::format(
+                    "{}\n"
+                    "    nr_boxes: {}",
+                    formal_string_representation(box),
+                    box.nr_boxes());
+            }
 
-}  // Anonymous namespace
+        }  // Anonymous namespace
 
-void init_mobile_space_box(
-    py::module& module)
-{
+        void init_mobile_space_box(py::module& module)
+        {
 
-    py::class_<MobileSpaceBox, same_shape::constant_shape::Value>(
-        module,
-        "MobileSpaceBox",
-        R"(
+            py::class_<MobileSpaceBox, same_shape::constant_shape::Value>(
+                module,
+                "MobileSpaceBox",
+                R"(
     TODO
 )")
 
-        .def(
-            "__repr__",
-            [](MobileSpaceBox const& box) {
-                return formal_string_representation(box);
-            }
-        )
+                .def("__repr__", [](MobileSpaceBox const& box) { return formal_string_representation(box); })
 
-        .def(
-            "__str__",
-            [](MobileSpaceBox const& box) {
-                return informal_string_representation(box);
-            }
-        )
+                .def("__str__", [](MobileSpaceBox const& box) { return informal_string_representation(box); })
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

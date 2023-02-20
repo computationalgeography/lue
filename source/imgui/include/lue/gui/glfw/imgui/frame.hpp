@@ -11,20 +11,19 @@ namespace glfw::imgui {
 
             explicit Frame(glfw::Window& window);
 
-            Frame(Frame const&)=delete;
+            Frame(Frame const&) = delete;
 
-            Frame(Frame&&)=delete;
+            Frame(Frame&&) = delete;
 
             ~Frame();
 
-            Frame& operator=(Frame const&)=delete;
+            Frame& operator=(Frame const&) = delete;
 
-            Frame& operator=(Frame&&)=delete;
+            Frame& operator=(Frame&&) = delete;
 
         private:
 
-            glfw::Window&  _window;
-
+            glfw::Window& _window;
     };
 
 }  // namespace glfw::imgui

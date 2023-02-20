@@ -3,8 +3,7 @@
 
 namespace lue::qa {
 
-    Experiment::Experiment(
-        Count const nr_workers):
+    Experiment::Experiment(Count const nr_workers):
 
         Run{},
         _nr_workers{nr_workers}

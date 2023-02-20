@@ -3,60 +3,48 @@
 
 
 namespace lue {
-namespace policy {
+    namespace policy {
 
-/*!
-    @brief      Output no-data policy that does nothing
+        /*!
+            @brief      Output no-data policy that does nothing
 
-    Use this policy if you do not want to mark no-data values in
-    the output.
-*/
-template<
-    typename Element>
-class DontMarkNoData:
-    public SkipNoData<Element>
-{
-
-    public:
-
-        template<
-            typename Data>
-        static constexpr void mark_no_data(
-            Data& /* data */)
+            Use this policy if you do not want to mark no-data values in
+            the output.
+        */
+        template<typename Element>
+        class DontMarkNoData: public SkipNoData<Element>
         {
-        }
 
-        template<
-            typename Data>
-        static constexpr void mark_no_data(
-            Data& /* data */,
-            Index /* idx */ ...)
-        {
-        }
+            public:
 
-};
+                template<typename Data>
+                static constexpr void mark_no_data(Data& /* data */)
+                {
+                }
+
+                template<typename Data>
+                static constexpr void mark_no_data(Data& /* data */, Index /* idx */...)
+                {
+                }
+        };
 
 
-namespace detail {
+        namespace detail {
 
-template<
-    typename E>
-class TypeTraits<
-    DontMarkNoData<E>>
-{
+            template<typename E>
+            class TypeTraits<DontMarkNoData<E>>
+            {
 
-    public:
+                public:
 
-        using Element = E;
+                    using Element = E;
 
-        template<
-            typename E_>
-        using Policy = DontMarkNoData<E_>;
+                    template<typename E_>
+                    using Policy = DontMarkNoData<E_>;
 
-        using InputNoDataPolicy = SkipNoData<Element>;
+                    using InputNoDataPolicy = SkipNoData<Element>;
+            };
 
-};
-
-}  // namespace detail
-}  // namespace policy
+        }  // namespace detail
+    }      // namespace policy
 }  // namespace lue

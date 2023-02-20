@@ -4,8 +4,7 @@
 
 namespace lue::framework {
 
-    void bind_logical_inclusive_or(
-        pybind11::module& module)
+    void bind_logical_inclusive_or(pybind11::module& module)
     {
         module.def("logical_inclusive_or", logical_inclusive_or<std::uint8_t, 2>);
         module.def("logical_inclusive_or", logical_inclusive_or<std::int32_t, 2>);

@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> tan(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> tan(PartitionedArray<Element, rank> const& array)
         {
             return value_policies::tan(array);
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_tan(
-        pybind11::module& module)
+    void bind_tan(pybind11::module& module)
     {
         module.def("tan", tan<float, 2>);
         module.def("tan", tan<double, 2>);

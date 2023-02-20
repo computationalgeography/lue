@@ -6,28 +6,28 @@
     The purpose of this module is to be able to verify whether the
     stencil example scales well, using our benchmark support code.
 */
-#include "lue/framework/core/math.hpp"
+#include "print_time_results.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
+#include "lue/framework/core/math.hpp"
 #include "lue/assert.hpp"
 #include <hpx/hpx.hpp>
 #include <hpx/serialization/serialize_buffer.hpp>
-#include "print_time_results.hpp"
 #include <iostream>
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Command-line variables
-bool header = true; // print csv heading
-double k = 0.5;     // heat transfer coefficient
-double dt = 1.;     // time step
-double dx = 1.;     // grid spacing
+bool header = true;  // print csv heading
+double k = 0.5;      // heat transfer coefficient
+double dt = 1.;      // time step
+double dx = 1.;      // grid spacing
 
 inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 {
-    if(i == 0 && dir == -1)
-        return size-1;
-    if(i == size-1 && dir == +1)
+    if (i == 0 && dir == -1)
+        return size - 1;
+    if (i == size - 1 && dir == +1)
         return 0;
 
     HPX_ASSERT((i + dir) < size);
@@ -37,79 +37,95 @@ inline std::size_t idx(std::size_t i, int dir, std::size_t size)
 
 inline std::size_t locidx(std::size_t i, std::size_t np, std::size_t nl)
 {
-    return static_cast<std::size_t>(std::floor(i / ((double)np/nl)));
+    return static_cast<std::size_t>(std::floor(i / ((double)np / nl)));
     // return i / (np/nl);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 struct partition_data
 {
-private:
-    typedef hpx::serialization::serialize_buffer<double> buffer_type;
+    private:
 
-public:
-    partition_data()
-      : size_(0)
-      , min_index_(0)
-    {}
+        typedef hpx::serialization::serialize_buffer<double> buffer_type;
 
-    // Create a new (uninitialized) partition of the given size.
-    explicit partition_data(std::size_t size)
-      : data_(std::allocator<double>().allocate(size), size, buffer_type::take)
-      , size_(size)
-      , min_index_(0)
-    {}
+    public:
 
-    // Create a new (initialized) partition of the given size.
-    partition_data(std::size_t size, double initial_value)
-      : data_(std::allocator<double>().allocate(size), size, buffer_type::take)
-      , size_(size)
-      , min_index_(0)
-    {
-        double base_value = double(initial_value * size);
-        for (std::size_t i = 0; i != size; ++i)
-            data_[i] = base_value + double(i);
-    }
+        partition_data():
+            size_(0),
+            min_index_(0)
+        {
+        }
 
-    // Create a partition which acts as a proxy to a part of the embedded array.
-    // The proxy is assumed to refer to either the left or the right boundary
-    // element.
-    partition_data(partition_data const& base, std::size_t min_index)
-      : data_(base.data_.data()+min_index, 1, buffer_type::reference),
-        size_(base.size()),
-        min_index_(min_index)
-    {
-        HPX_ASSERT(min_index < base.size());
-    }
+        // Create a new (uninitialized) partition of the given size.
+        explicit partition_data(std::size_t size):
+            data_(std::allocator<double>().allocate(size), size, buffer_type::take),
+            size_(size),
+            min_index_(0)
+        {
+        }
 
-    double& operator[](std::size_t idx) { return data_[index(idx)]; }
-    double operator[](std::size_t idx) const { return data_[index(idx)]; }
+        // Create a new (initialized) partition of the given size.
+        partition_data(std::size_t size, double initial_value):
+            data_(std::allocator<double>().allocate(size), size, buffer_type::take),
+            size_(size),
+            min_index_(0)
+        {
+            double base_value = double(initial_value * size);
+            for (std::size_t i = 0; i != size; ++i)
+                data_[i] = base_value + double(i);
+        }
 
-    std::size_t size() const { return size_; }
+        // Create a partition which acts as a proxy to a part of the embedded array.
+        // The proxy is assumed to refer to either the left or the right boundary
+        // element.
+        partition_data(partition_data const& base, std::size_t min_index):
+            data_(base.data_.data() + min_index, 1, buffer_type::reference),
+            size_(base.size()),
+            min_index_(min_index)
+        {
+            HPX_ASSERT(min_index < base.size());
+        }
 
-private:
-    std::size_t index(std::size_t idx) const
-    {
-        HPX_ASSERT(idx >= min_index_ && idx < size_);
-        return idx - min_index_;
-    }
+        double& operator[](std::size_t idx)
+        {
+            return data_[index(idx)];
+        }
+        double operator[](std::size_t idx) const
+        {
+            return data_[index(idx)];
+        }
 
-private:
-    // Serialization support: even if all of the code below runs on one
-    // locality only, we need to provide an (empty) implementation for the
-    // serialization as all arguments passed to actions have to support this.
-    friend class hpx::serialization::access;
+        std::size_t size() const
+        {
+            return size_;
+        }
 
-    template <typename Archive>
-    void serialize(Archive& ar, const unsigned int /* version */)
-    {
-        ar & data_ & size_ & min_index_;
-    }
+    private:
 
-private:
-    buffer_type data_;
-    std::size_t size_;
-    std::size_t min_index_;
+        std::size_t index(std::size_t idx) const
+        {
+            HPX_ASSERT(idx >= min_index_ && idx < size_);
+            return idx - min_index_;
+        }
+
+    private:
+
+        // Serialization support: even if all of the code below runs on one
+        // locality only, we need to provide an (empty) implementation for the
+        // serialization as all arguments passed to actions have to support this.
+        friend class hpx::serialization::access;
+
+        template<typename Archive>
+        void serialize(Archive& ar, const unsigned int /* version */)
+        {
+            ar& data_& size_& min_index_;
+        }
+
+    private:
+
+        buffer_type data_;
+        std::size_t size_;
+        std::size_t min_index_;
 };
 
 std::ostream& operator<<(std::ostream& os, partition_data const& c)
@@ -129,57 +145,58 @@ std::ostream& operator<<(std::ostream& os, partition_data const& c)
 // This is the server side representation of the data. We expose this as a HPX
 // component which allows for it to be created and accessed remotely through
 // a global address (hpx::id_type).
-struct partition_server
-  : hpx::components::component_base<partition_server>
+struct partition_server: hpx::components::component_base<partition_server>
 {
-    enum partition_type
-    {
-        left_partition, middle_partition, right_partition
-    };
+        enum partition_type { left_partition, middle_partition, right_partition };
 
-    // construct new instances
-    partition_server() {}
-
-    explicit partition_server(partition_data const& data)
-      : data_(data)
-    {}
-
-    partition_server(std::size_t size, double initial_value)
-      : data_(size, initial_value)
-    {}
-
-    // Access data. The parameter specifies what part of the data should be
-    // accessed. As long as the result is used locally, no data is copied,
-    // however as soon as the result is requested from another locality only
-    // the minimally required amount of data will go over the wire.
-    partition_data get_data(partition_type t) const
-    {
-        switch (t)
+        // construct new instances
+        partition_server()
         {
-        case left_partition:
-            return partition_data(data_, data_.size()-1);
-
-        case middle_partition:
-            break;
-
-        case right_partition:
-            return partition_data(data_, 0);
-
-        default:
-            HPX_ASSERT(false);
-            break;
         }
-        return data_;
-    }
 
-    // Every member function which has to be invoked remotely needs to be
-    // wrapped into a component action. The macro below defines a new type
-    // 'get_data_action' which represents the (possibly remote) member function
-    // partition::get_data().
-    HPX_DEFINE_COMPONENT_DIRECT_ACTION(partition_server, get_data, get_data_action);
+        explicit partition_server(partition_data const& data):
+            data_(data)
+        {
+        }
 
-private:
-    partition_data data_;
+        partition_server(std::size_t size, double initial_value):
+            data_(size, initial_value)
+        {
+        }
+
+        // Access data. The parameter specifies what part of the data should be
+        // accessed. As long as the result is used locally, no data is copied,
+        // however as soon as the result is requested from another locality only
+        // the minimally required amount of data will go over the wire.
+        partition_data get_data(partition_type t) const
+        {
+            switch (t)
+            {
+                case left_partition:
+                    return partition_data(data_, data_.size() - 1);
+
+                case middle_partition:
+                    break;
+
+                case right_partition:
+                    return partition_data(data_, 0);
+
+                default:
+                    HPX_ASSERT(false);
+                    break;
+            }
+            return data_;
+        }
+
+        // Every member function which has to be invoked remotely needs to be
+        // wrapped into a component action. The macro below defines a new type
+        // 'get_data_action' which represents the (possibly remote) member function
+        // partition::get_data().
+        HPX_DEFINE_COMPONENT_DIRECT_ACTION(partition_server, get_data, get_data_action);
+
+    private:
+
+        partition_data data_;
 };
 
 // The macros below are necessary to generate the code required for exposing
@@ -198,70 +215,74 @@ HPX_REGISTER_ACTION(get_data_action);
 ///////////////////////////////////////////////////////////////////////////////
 // This is a client side helper class allowing to hide some of the tedious
 // boilerplate.
-struct partition : hpx::components::client_base<partition, partition_server>
+struct partition: hpx::components::client_base<partition, partition_server>
 {
-    typedef hpx::components::client_base<partition, partition_server> base_type;
+        typedef hpx::components::client_base<partition, partition_server> base_type;
 
-    partition() {}
+        partition()
+        {
+        }
 
-    // Create new component on locality 'where' and initialize the held data
-    partition(hpx::id_type where, std::size_t size, double initial_value)
-      : base_type(hpx::new_<partition_server>(where, size, initial_value))
-    {}
+        // Create new component on locality 'where' and initialize the held data
+        partition(hpx::id_type where, std::size_t size, double initial_value):
+            base_type(hpx::new_<partition_server>(where, size, initial_value))
+        {
+        }
 
-    // Create a new component on the locality co-located to the id 'where'. The
-    // new instance will be initialized from the given partition_data.
-    partition(hpx::id_type where, partition_data const& data)
-      : base_type(hpx::new_<partition_server>(hpx::colocated(where), data))
-    {}
+        // Create a new component on the locality co-located to the id 'where'. The
+        // new instance will be initialized from the given partition_data.
+        partition(hpx::id_type where, partition_data const& data):
+            base_type(hpx::new_<partition_server>(hpx::colocated(where), data))
+        {
+        }
 
-    // Attach a future representing a (possibly remote) partition.
-    explicit partition(hpx::future<hpx::id_type> && id)
-      : base_type(std::move(id))
-    {}
+        // Attach a future representing a (possibly remote) partition.
+        explicit partition(hpx::future<hpx::id_type>&& id):
+            base_type(std::move(id))
+        {
+        }
 
-    // Unwrap a future<partition> (a partition already holds a future to the
-    // id of the referenced object, thus unwrapping accesses this inner future).
-    partition(hpx::future<partition> && c)
-      : base_type(std::move(c))
-    {}
+        // Unwrap a future<partition> (a partition already holds a future to the
+        // id of the referenced object, thus unwrapping accesses this inner future).
+        partition(hpx::future<partition>&& c):
+            base_type(std::move(c))
+        {
+        }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Invoke the (remote) member function which gives us access to the data.
-    // This is a pure helper function hiding the async.
-    hpx::future<partition_data> get_data(partition_server::partition_type t) const
-    {
-        partition_server::get_data_action act;
-        return hpx::async(act, get_id(), t);
-    }
+        ///////////////////////////////////////////////////////////////////////////
+        // Invoke the (remote) member function which gives us access to the data.
+        // This is a pure helper function hiding the async.
+        hpx::future<partition_data> get_data(partition_server::partition_type t) const
+        {
+            partition_server::get_data_action act;
+            return hpx::async(act, get_id(), t);
+        }
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 struct stepper
 {
-    // Our data for one time step
-    typedef std::vector<partition> space;
+        // Our data for one time step
+        typedef std::vector<partition> space;
 
-    // Our operator
-    static double heat(double left, double middle, double right)
-    {
-        return middle + (k*dt/(dx*dx)) * (left - 2*middle + right);
-    }
+        // Our operator
+        static double heat(double left, double middle, double right)
+        {
+            return middle + (k * dt / (dx * dx)) * (left - 2 * middle + right);
+        }
 
-    //[stepper_7
-    // The partitioned operator, it invokes the heat operator above on all elements
-    // of a partition.
-    static partition heat_part(partition const& left,
-        partition const& middle, partition const& right)
-    {
-        using hpx::dataflow;
-        using hpx::unwrapping;
+        //[stepper_7
+        // The partitioned operator, it invokes the heat operator above on all elements
+        // of a partition.
+        static partition heat_part(partition const& left, partition const& middle, partition const& right)
+        {
+            using hpx::dataflow;
+            using hpx::unwrapping;
 
-        hpx::shared_future<partition_data> middle_data =
-            middle.get_data(partition_server::middle_partition);
+            hpx::shared_future<partition_data> middle_data =
+                middle.get_data(partition_server::middle_partition);
 
-        hpx::future<partition_data> next_middle = middle_data.then(
-            unwrapping(
+            hpx::future<partition_data> next_middle = middle_data.then(unwrapping(
                 [middle](partition_data const& m) -> partition_data
                 {
                     HPX_UNUSED(middle);
@@ -270,44 +291,43 @@ struct stepper
                     // the previous time step becomes available.
                     std::size_t size = m.size();
                     partition_data next(size);
-                    for (std::size_t i = 1; i != size-1; ++i)
-                        next[i] = heat(m[i-1], m[i], m[i+1]);
+                    for (std::size_t i = 1; i != size - 1; ++i)
+                        next[i] = heat(m[i - 1], m[i], m[i + 1]);
                     return next;
-                }
-            )
-        );
+                }));
 
-        return dataflow(
-            hpx::launch::async,
-            unwrapping(
-                [left, middle, right](partition_data next, partition_data const& l,
-                    partition_data const& m, partition_data const& r) -> partition
-                {
-                    HPX_UNUSED(left);
-                    HPX_UNUSED(right);
+            return dataflow(
+                hpx::launch::async,
+                unwrapping(
+                    [left, middle, right](
+                        partition_data next,
+                        partition_data const& l,
+                        partition_data const& m,
+                        partition_data const& r) -> partition
+                    {
+                        HPX_UNUSED(left);
+                        HPX_UNUSED(right);
 
-                    // Calculate the missing boundary elements once the
-                    // corresponding data has become available.
-                    std::size_t size = m.size();
-                    next[0] = heat(l[size-1], m[0], m[1]);
-                    next[size-1] = heat(m[size-2], m[size-1], r[0]);
+                        // Calculate the missing boundary elements once the
+                        // corresponding data has become available.
+                        std::size_t size = m.size();
+                        next[0] = heat(l[size - 1], m[0], m[1]);
+                        next[size - 1] = heat(m[size - 2], m[size - 1], r[0]);
 
-                    // The new partition_data will be allocated on the same locality
-                    // as 'middle'.
-                    return partition(middle.get_id(), next);
-                }
-            ),
-            std::move(next_middle),
-            left.get_data(partition_server::left_partition),
-            middle_data,
-            right.get_data(partition_server::right_partition)
-        );
-    }
-    //]
+                        // The new partition_data will be allocated on the same locality
+                        // as 'middle'.
+                        return partition(middle.get_id(), next);
+                    }),
+                std::move(next_middle),
+                left.get_data(partition_server::left_partition),
+                middle_data,
+                right.get_data(partition_server::right_partition));
+        }
+        //]
 
-    // do all the work on 'np' partitions, 'nx' data points each, for 'nt'
-    // time steps
-    space do_work(std::size_t np, std::size_t nx, std::size_t nt);
+        // do all the work on 'np' partitions, 'nx' data points each, for 'nt'
+        // time steps
+        space do_work(std::size_t np, std::size_t nx, std::size_t nt);
 };
 
 // Global functions can be exposed as actions as well. That allows to invoke
@@ -324,11 +344,11 @@ stepper::space stepper::do_work(std::size_t np, std::size_t nx, std::size_t nt)
     using hpx::dataflow;
 
     std::vector<hpx::id_type> localities = hpx::find_all_localities();
-    std::size_t nl = localities.size();                    // Number of localities
+    std::size_t nl = localities.size();  // Number of localities
 
     // U[t][i] is the state of position i at time t.
     std::vector<space> U(2);
-    for (space& s: U)
+    for (space& s : U)
         s.resize(np);
 
     // Initial conditions: f(0, i) = i
@@ -349,9 +369,7 @@ stepper::space stepper::do_work(std::size_t np, std::size_t nx, std::size_t nt)
             using hpx::util::placeholders::_3;
             auto Op = hpx::util::bind(act, localities[locidx(i, np, nl)], _1, _2, _3);
             next[i] = dataflow(
-                    hpx::launch::async, Op,
-                    current[idx(i, -1, np)], current[i], current[idx(i, +1, np)]
-                );
+                hpx::launch::async, Op, current[idx(i, -1, np)], current[i], current[idx(i, +1, np)]);
         }
     }
 
@@ -376,104 +394,97 @@ stepper::space stepper::do_work(std::size_t np, std::size_t nx, std::size_t nt)
 
 
 namespace lue {
-namespace benchmark {
-namespace detail {
+    namespace benchmark {
+        namespace detail {
 
-template<
-    typename Element,
-    std::size_t rank>
-void heat_ring(
-    Task const& task,
-    std::size_t const max_tree_depth)
-{
-    static_assert(rank == 1);
-    lue_assert(max_tree_depth > 0);
-    lue_assert(task.array_shape()[0] % task.partition_shape()[0] == 0);
+            template<typename Element, std::size_t rank>
+            void heat_ring(Task const& task, std::size_t const max_tree_depth)
+            {
+                static_assert(rank == 1);
+                lue_assert(max_tree_depth > 0);
+                lue_assert(task.array_shape()[0] % task.partition_shape()[0] == 0);
 
-    // Number of partitions.
-    std::uint64_t np = task.array_shape()[0] / task.partition_shape()[0];
-    std::uint64_t nx = task.partition_shape()[0];  // Number of grid points.
-    std::uint64_t nt = task.nr_time_steps();  // Number of steps.
+                // Number of partitions.
+                std::uint64_t np = task.array_shape()[0] / task.partition_shape()[0];
+                std::uint64_t nx = task.partition_shape()[0];  // Number of grid points.
+                std::uint64_t nt = task.nr_time_steps();       // Number of steps.
 
-    std::vector<hpx::id_type> localities = hpx::find_all_localities();
-    std::size_t nl = localities.size();                    // Number of localities
+                std::vector<hpx::id_type> localities = hpx::find_all_localities();
+                std::size_t nl = localities.size();  // Number of localities
 
-    if (np < nl)
-    {
-        throw std::runtime_error(
-            "The number of partitions should not be smaller than "
-            "the number of localities");
-        // std::cout << "The number of partitions should not be smaller than "
-        //              "the number of localities" << std::endl;
-        // return hpx::finalize();
-    }
+                if (np < nl)
+                {
+                    throw std::runtime_error("The number of partitions should not be smaller than "
+                                             "the number of localities");
+                    // std::cout << "The number of partitions should not be smaller than "
+                    //              "the number of localities" << std::endl;
+                    // return hpx::finalize();
+                }
 
-    // Create the stepper object
-    stepper step;
+                // Create the stepper object
+                stepper step;
 
-    // Measure execution time.
-    std::uint64_t t = hpx::util::high_resolution_clock::now();
+                // Measure execution time.
+                std::uint64_t t = hpx::util::high_resolution_clock::now();
 
-    // Execute nt time steps on nx grid points and print the final solution.
-    stepper::space solution = step.do_work(np, nx, nt);
-    for (std::size_t i = 0; i != np; ++i)
-        solution[i].get_data(partition_server::middle_partition).wait();
+                // Execute nt time steps on nx grid points and print the final solution.
+                stepper::space solution = step.do_work(np, nx, nt);
+                for (std::size_t i = 0; i != np; ++i)
+                    solution[i].get_data(partition_server::middle_partition).wait();
 
-    std::uint64_t elapsed = hpx::util::high_resolution_clock::now() - t;
+                std::uint64_t elapsed = hpx::util::high_resolution_clock::now() - t;
 
-///     // Print the final solution
-///     if (vm.count("results"))
-///     {
-///         for (std::size_t i = 0; i != np; ++i)
-///         {
-///             std::cout << "U[" << i << "] = "
-///                       << solution[i].get_data(partition_server::middle_partition).get()
-///                       << std::endl;
-///         }
-///     }
-    std::uint64_t const num_worker_threads = hpx::get_num_worker_threads();
-    hpx::future<std::uint32_t> locs = hpx::get_num_localities();
-    print_time_results(locs.get(),num_worker_threads, elapsed, nx, np, nt, header);
-}
+                ///     // Print the final solution
+                ///     if (vm.count("results"))
+                ///     {
+                ///         for (std::size_t i = 0; i != np; ++i)
+                ///         {
+                ///             std::cout << "U[" << i << "] = "
+                ///                       << solution[i].get_data(partition_server::middle_partition).get()
+                ///                       << std::endl;
+                ///         }
+                ///     }
+                std::uint64_t const num_worker_threads = hpx::get_num_worker_threads();
+                hpx::future<std::uint32_t> locs = hpx::get_num_localities();
+                print_time_results(locs.get(), num_worker_threads, elapsed, nx, np, nt, header);
+            }
 
-}  // namespace detail
+        }  // namespace detail
 
 
-void heat_ring(
-    Task const& task,
-    std::size_t const max_tree_depth)
-{
-    if(task.rank() != 1) {
-        throw std::runtime_error("rank must be 1");
-    }
+        void heat_ring(Task const& task, std::size_t const max_tree_depth)
+        {
+            if (task.rank() != 1)
+            {
+                throw std::runtime_error("rank must be 1");
+            }
 
-    using Element = double;
+            using Element = double;
 
-    switch(task.rank()) {
-        case 1: {
-            detail::heat_ring<Element, 1>(task, max_tree_depth);
-            break;
+            switch (task.rank())
+            {
+                case 1:
+                {
+                    detail::heat_ring<Element, 1>(task, max_tree_depth);
+                    break;
+                }
+            }
         }
-    }
-}
 
-}  // namespace benchmark
+    }  // namespace benchmark
 }  // namespace lue
 
 
 auto setup_benchmark(
-        int /* argc */,
-        char* /* argv */[],
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+    int /* argc */,
+    char* /* argv */[],
+    lue::benchmark::Environment const& environment,
+    lue::benchmark::Task const& task)
 {
-    auto callable = [](
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+    auto callable = [](lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
     {
-        std::size_t const max_tree_depth = environment.max_tree_depth()
-            ? *environment.max_tree_depth()
-            : task.nr_time_steps();
+        std::size_t const max_tree_depth =
+            environment.max_tree_depth() ? *environment.max_tree_depth() : task.nr_time_steps();
 
         lue::benchmark::heat_ring(task, max_tree_depth);
     };

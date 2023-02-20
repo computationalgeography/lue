@@ -6,22 +6,12 @@
 namespace lue {
     namespace policy::accu_fraction {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            typename FractionElement>
+        template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement>
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement, FractionElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >,
-                    OutputPolicies<
-                            DontMarkNoData<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >
-                >,
+                OutputPolicies<DontMarkNoData<MaterialElement>, AllValuesWithinRange<MaterialElement>>,
+                OutputPolicies<DontMarkNoData<MaterialElement>, AllValuesWithinRange<MaterialElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     SkipNoData<FlowDirectionElement>,
@@ -34,10 +24,7 @@ namespace lue {
                     FillHaloWithConstantValue<FractionElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            typename FractionElement>
+        template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement>
         class DefaultPolicies:
             public DefaultPoliciesBase<FlowDirectionElement, MaterialElement, FractionElement>
         {
@@ -56,37 +43,25 @@ namespace lue {
                 DefaultPolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            StateOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
-                            FractionInputPolicies{FillHaloWithConstantValue<FractionElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FluxOutputPolicies{},
+                        StateOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
+                        FractionInputPolicies{FillHaloWithConstantValue<FractionElement>{0}}}
 
                 {
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            typename FractionElement>
+        template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement>
         using DefaultValuePoliciesBase = Policies<
             // TODO Only accept non-negative material values!!!
             AllValuesWithinDomain<FlowDirectionElement, MaterialElement, FractionElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            MarkNoDataByNaN<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >,
-                    OutputPolicies<
-                            MarkNoDataByNaN<MaterialElement>,
-                            AllValuesWithinRange<MaterialElement>
-                        >
-                >,
+                OutputPolicies<MarkNoDataByNaN<MaterialElement>, AllValuesWithinRange<MaterialElement>>,
+                OutputPolicies<MarkNoDataByNaN<MaterialElement>, AllValuesWithinRange<MaterialElement>>>,
             InputsPolicies<
                 SpatialOperationInputPolicies<
                     DetectNoDataByValue<FlowDirectionElement>,
@@ -99,10 +74,7 @@ namespace lue {
                     FillHaloWithConstantValue<FractionElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            typename FractionElement>
+        template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement>
         class DefaultValuePolicies:
             public DefaultValuePoliciesBase<FlowDirectionElement, MaterialElement, FractionElement>
         {
@@ -121,17 +93,15 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            FluxOutputPolicies{},
-                            StateOutputPolicies{},
-                            FlowDirectionInputPolicies{},
-                            MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
-                            FractionInputPolicies{FillHaloWithConstantValue<FractionElement>{0}}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        FluxOutputPolicies{},
+                        StateOutputPolicies{},
+                        FlowDirectionInputPolicies{},
+                        MaterialInputPolicies{FillHaloWithConstantValue<MaterialElement>{0}},
+                        FractionInputPolicies{FillHaloWithConstantValue<FractionElement>{0}}}
 
                 {
                 }
-
         };
 
     }  // namespace policy::accu_fraction
@@ -143,28 +113,20 @@ namespace lue {
         typename MaterialElement,
         typename FractionElement,
         Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_fraction(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<FractionElement, rank> const& fraction);
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_fraction(
+        Policies const& policies,
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<FractionElement, rank> const& fraction);
 
 
-    template<
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        typename FractionElement,
-        Rank rank>
-    std::tuple<
-        PartitionedArray<MaterialElement, rank>,
-        PartitionedArray<MaterialElement, rank>>
-            accu_fraction(
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                PartitionedArray<MaterialElement, rank> const& material,
-                PartitionedArray<FractionElement, rank> const& fraction)
+    template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement, Rank rank>
+    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
+    accu_fraction(
+        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+        PartitionedArray<MaterialElement, rank> const& material,
+        PartitionedArray<FractionElement, rank> const& fraction)
     {
         using Policies =
             policy::accu_fraction::DefaultPolicies<FlowDirectionElement, MaterialElement, FractionElement>;

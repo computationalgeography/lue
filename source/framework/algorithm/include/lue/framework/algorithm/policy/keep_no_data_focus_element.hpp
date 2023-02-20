@@ -3,8 +3,8 @@
 
 namespace lue {
 
-class KeepNoDataFocusElement
-{
-};
+    class KeepNoDataFocusElement
+    {
+    };
 
 }  // namespace lue

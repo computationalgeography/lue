@@ -5,12 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> cos(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array);
+        Policies const& policies, PartitionedArray<Element, rank> const& array);
 
 }  // namespace lue

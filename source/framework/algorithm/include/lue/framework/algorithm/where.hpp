@@ -6,9 +6,7 @@
 namespace lue {
     namespace policy::where {
 
-        template<
-            typename ConditionElement,
-            typename... ExpressionElement>
+        template<typename ConditionElement, typename... ExpressionElement>
         class DomainPolicy
         {
 
@@ -32,17 +30,12 @@ namespace lue {
                         return true;
                     }
                 }
-
         };
 
     }  // namespace policy::where
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -50,11 +43,7 @@ namespace lue {
         PartitionedArray<Element, rank> const& false_array);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -62,11 +51,7 @@ namespace lue {
         hpx::shared_future<Element> const false_value);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -74,11 +59,7 @@ namespace lue {
         PartitionedArray<Element, rank> const& false_array);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -86,11 +67,7 @@ namespace lue {
         hpx::shared_future<Element> const false_value);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -105,33 +82,21 @@ namespace lue {
     // -----------------------------------------------------------------------------
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         PartitionedArray<Element, rank> const& true_array);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
         hpx::shared_future<Element> const true_value);
 
 
-    template<
-        typename Policies,
-        typename ConditionElement,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
     PartitionedArray<Element, rank> where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,

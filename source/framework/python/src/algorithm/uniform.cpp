@@ -1,5 +1,5 @@
-#include "shape.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
+#include "shape.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
@@ -11,9 +11,7 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         pybind11::object uniform1(
             PartitionedArray<Element, rank> const& array,
             pybind11::object const& dtype_args,
@@ -28,21 +26,23 @@ namespace lue::framework {
             auto const size = dtype.itemsize();  // bytes
             pybind11::object result;
 
-            switch(kind)
+            switch (kind)
             {
                 case 'i':
                 {
                     // Signed integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::uniform(
                                 array,
                                 pybind11::cast<std::int32_t>(min_value),
                                 pybind11::cast<std::int32_t>(max_value)));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::uniform(
                                 array,
                                 pybind11::cast<std::int64_t>(min_value),
@@ -56,16 +56,18 @@ namespace lue::framework {
                 case 'u':
                 {
                     // Unsigned integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::uniform(
                                 array,
                                 pybind11::cast<std::uint32_t>(min_value),
                                 pybind11::cast<std::uint32_t>(max_value)));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::uniform(
                                 array,
                                 pybind11::cast<std::uint64_t>(min_value),
@@ -79,20 +81,18 @@ namespace lue::framework {
                 case 'f':
                 {
                     // Floating-point
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<float>(min_value),
-                                pybind11::cast<float>(max_value)));
+                                array, pybind11::cast<float>(min_value), pybind11::cast<float>(max_value)));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<double>(min_value),
-                                pybind11::cast<double>(max_value)));
+                                array, pybind11::cast<double>(min_value), pybind11::cast<double>(max_value)));
                             break;
                         }
                     }
@@ -101,10 +101,9 @@ namespace lue::framework {
                 }
             }
 
-            if(!result)
+            if (!result)
             {
-                throw std::runtime_error(
-                    fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
             }
 
             return result;
@@ -112,23 +111,23 @@ namespace lue::framework {
 
 
         // Step 3: Call the algorithm
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         pybind11::object uniform(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::object const& min_value,
             pybind11::object const& max_value)
         {
-            return pybind11::cast(value_policies::uniform(array_shape, partition_shape,
-                   pybind11::cast<Element>(min_value), pybind11::cast<Element>(max_value)));
+            return pybind11::cast(value_policies::uniform(
+                array_shape,
+                partition_shape,
+                pybind11::cast<Element>(min_value),
+                pybind11::cast<Element>(max_value)));
         }
 
 
         // Step 2: Determine the type of the element type of the result array
-        template<
-            Rank rank>
+        template<Rank rank>
         pybind11::object uniform(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
@@ -142,19 +141,21 @@ namespace lue::framework {
             auto const size = dtype.itemsize();  // bytes
             pybind11::object result;
 
-            switch(kind)
+            switch (kind)
             {
                 case 'i':
                 {
                     // Signed integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = uniform<std::int32_t, rank>(
                                 array_shape, partition_shape, min_value, max_value);
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = uniform<std::int64_t, rank>(
                                 array_shape, partition_shape, min_value, max_value);
                             break;
@@ -166,14 +167,16 @@ namespace lue::framework {
                 case 'u':
                 {
                     // Unsigned integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = uniform<std::uint32_t, rank>(
                                 array_shape, partition_shape, min_value, max_value);
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = uniform<std::uint64_t, rank>(
                                 array_shape, partition_shape, min_value, max_value);
                             break;
@@ -185,16 +188,17 @@ namespace lue::framework {
                 case 'f':
                 {
                     // Floating-point
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
-                            result = uniform<float, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                        case 4:
+                        {
+                            result = uniform<float, rank>(array_shape, partition_shape, min_value, max_value);
                             break;
                         }
-                        case 8: {
-                            result = uniform<double, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                        case 8:
+                        {
+                            result =
+                                uniform<double, rank>(array_shape, partition_shape, min_value, max_value);
                             break;
                         }
                     }
@@ -203,10 +207,9 @@ namespace lue::framework {
                 }
             }
 
-            if(!result)
+            if (!result)
             {
-                throw std::runtime_error(
-                    fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
             }
 
             return result;
@@ -223,29 +226,34 @@ namespace lue::framework {
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
-            if(array_shape.size() != partition_shape.size())
+            if (array_shape.size() != partition_shape.size())
             {
                 throw std::runtime_error(fmt::format(
                     "Rank of array shape and partition shape must be equal ({} != {})",
-                    array_shape.size(), partition_shape.size()));
+                    array_shape.size(),
+                    partition_shape.size()));
             }
 
             Rank const rank{array_shape.size()};
             pybind11::object result;
 
-            if(rank == 1)
+            if (rank == 1)
             {
                 result = uniform<1>(
                     dynamic_shape_to_static_shape<1>(array_shape),
                     dynamic_shape_to_static_shape<1>(partition_shape),
-                    dtype, min_value, max_value);
+                    dtype,
+                    min_value,
+                    max_value);
             }
-            else if(rank == 2)
+            else if (rank == 2)
             {
                 result = uniform<2>(
                     dynamic_shape_to_static_shape<2>(array_shape),
                     dynamic_shape_to_static_shape<2>(partition_shape),
-                    dtype, min_value, max_value);
+                    dtype,
+                    min_value,
+                    max_value);
             }
             else
             {
@@ -260,8 +268,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_uniform(
-        pybind11::module& module)
+    void bind_uniform(pybind11::module& module)
     {
         module.def("uniform", uniform1<std::uint32_t, 2>);
         module.def("uniform", uniform1<std::uint64_t, 2>);

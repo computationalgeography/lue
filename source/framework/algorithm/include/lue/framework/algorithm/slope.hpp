@@ -5,12 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element>
+    template<typename Policies, typename Element>
     PartitionedArray<Element, 2> slope(
-        Policies const& policies,
-        PartitionedArray<Element, 2> const& elevation,
-        Element const cell_size);
+        Policies const& policies, PartitionedArray<Element, 2> const& elevation, Element const cell_size);
 
 }  // namespace lue

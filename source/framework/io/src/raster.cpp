@@ -1,8 +1,8 @@
 #include "lue/framework/io/raster.hpp"
-#include "lue/framework/core/assert.hpp"
-#include "lue/framework/io/gdal.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/core/assert.hpp"
+#include "lue/framework/io/gdal.hpp"
 // #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 // #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <hpx/async_colocated/get_colocation_id.hpp>
@@ -15,42 +15,27 @@
 namespace lue {
     namespace policy::read {
 
-        template<
-            typename Element>
-        using DefaultPolicies = policy::DefaultPolicies<
-                AllValuesWithinDomain<Element>,
-                OutputElements<Element>,
-                InputElements<Element>
-            >;
+        template<typename Element>
+        using DefaultPolicies = policy::
+            DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
 
-        template<
-            typename Element>
+        template<typename Element>
         using ValuePolicies = policy::DefaultValuePolicies<
-                AllValuesWithinDomain<Element>,
-                OutputElements<Element>,
-                InputElements<Element>
-            >;
+            AllValuesWithinDomain<Element>,
+            OutputElements<Element>,
+            InputElements<Element>>;
 
 
-        template<
-            typename Element>
+        template<typename Element>
         class SpecialValuePolicy:
 
             public policy::Policies<
-                    policy::AllValuesWithinDomain<Element>,
-                    policy::OutputsPolicies<
-                            policy::OutputPolicies<
-                                    policy::DefaultOutputNoDataPolicy<Element>,
-                                    policy::AllValuesWithinRange<Element, Element>
-                                >
-                        >,
-                    policy::InputsPolicies<
-                            policy::InputPolicies<
-                                    policy::DetectNoDataByValue<Element>
-                                >
-                        >
-                >
+                policy::AllValuesWithinDomain<Element>,
+                policy::OutputsPolicies<policy::OutputPolicies<
+                    policy::DefaultOutputNoDataPolicy<Element>,
+                    policy::AllValuesWithinRange<Element, Element>>>,
+                policy::InputsPolicies<policy::InputPolicies<policy::DetectNoDataByValue<Element>>>>
 
         {
 
@@ -58,19 +43,11 @@ namespace lue {
 
                 // MSVC requires that these templates are qualified by their namespaces
                 using Base = policy::Policies<
-                        policy::AllValuesWithinDomain<Element>,
-                        policy::OutputsPolicies<
-                                policy::OutputPolicies<
-                                    policy::DefaultOutputNoDataPolicy<Element>,
-                                    policy::AllValuesWithinRange<Element, Element>
-                                >
-                            >,
-                        policy::InputsPolicies<
-                                policy::InputPolicies<
-                                        policy::DetectNoDataByValue<Element>
-                                    >
-                            >
-                    >;
+                    policy::AllValuesWithinDomain<Element>,
+                    policy::OutputsPolicies<policy::OutputPolicies<
+                        policy::DefaultOutputNoDataPolicy<Element>,
+                        policy::AllValuesWithinRange<Element, Element>>>,
+                    policy::InputsPolicies<policy::InputPolicies<policy::DetectNoDataByValue<Element>>>>;
 
             public:
 
@@ -85,25 +62,19 @@ namespace lue {
                 SpecialValuePolicy(Element const no_data_value):
 
                     Base{
-                            policy::AllValuesWithinDomain<Element>{},
-                            policy::OutputPolicies<
-                                    policy::DefaultOutputNoDataPolicy<Element>,
-                                    policy::AllValuesWithinRange<Element, Element>
-                                >{},
-                            policy::InputPolicies<
-                                    policy::DetectNoDataByValue<Element>
-                                >{policy::DetectNoDataByValue<Element>{no_data_value}}
-                        }
+                        policy::AllValuesWithinDomain<Element>{},
+                        policy::OutputPolicies<
+                            policy::DefaultOutputNoDataPolicy<Element>,
+                            policy::AllValuesWithinRange<Element, Element>>{},
+                        policy::InputPolicies<policy::DetectNoDataByValue<Element>>{
+                            policy::DetectNoDataByValue<Element>{no_data_value}}}
 
                 {
                 }
-
         };
 
 
-
     }  // namespace policy::read
-
 
 
     namespace {
@@ -126,41 +97,40 @@ namespace lue {
                 }
 
 
-                Band(Band const&)=delete;
+                Band(Band const&) = delete;
 
 
-                Band(Band&&)=delete;
+                Band(Band&&) = delete;
 
 
-                Band& operator=(Band const&)=delete;
+                Band& operator=(Band const&) = delete;
 
 
-                Band& operator=(Band&&)=delete;
+                Band& operator=(Band&&) = delete;
 
 
-                template<
-                    typename Element>
-                void read_partition(
-                    Offset<Index, 2> const& offset,
-                    ArrayPartitionData<Element, 2>& data)
+                template<typename Element>
+                void read_partition(Offset<Index, 2> const& offset, ArrayPartitionData<Element, 2>& data)
                 {
                     // Blocks if someone else is writing to the band. Otherwise this does
                     // not block.
                     ReadLock read_lock{_mutex};
 
-                    CPLErr const status{
-                            _band_ptr->RasterIO(
-                                    GF_Read,
-                                    offset[1], offset[0],
-                                    data.shape()[1], data.shape()[0],
-                                    data.data(),
-                                    data.shape()[1], data.shape()[0],
-                                    GDALTypeTraits<Element>::type_id,
-                                    0, 0, nullptr
-                                )
-                        };
+                    CPLErr const status{_band_ptr->RasterIO(
+                        GF_Read,
+                        offset[1],
+                        offset[0],
+                        data.shape()[1],
+                        data.shape()[0],
+                        data.data(),
+                        data.shape()[1],
+                        data.shape()[0],
+                        GDALTypeTraits<Element>::type_id,
+                        0,
+                        0,
+                        nullptr)};
 
-                    if(status != CE_None)
+                    if (status != CE_None)
                     {
                         throw std::runtime_error("Cannot read partition data");
                     }
@@ -172,17 +142,14 @@ namespace lue {
                 Mutex _mutex;
 
                 GDALBandPtr _band_ptr;
-
         };
 
 
         using BandPtr = std::shared_ptr<Band>;
 
 
-        template<
-            typename Element>
-        std::tuple<Element, bool> no_data_value(
-            ::GDALRasterBand& band)
+        template<typename Element>
+        std::tuple<Element, bool> no_data_value(::GDALRasterBand& band)
         {
             int success;
 
@@ -192,16 +159,13 @@ namespace lue {
         }
 
 
-        template<
-            typename Element>
+        template<typename Element>
         class ReadPartition
         {
 
             public:
 
-                ReadPartition(
-                    GDALDatasetPtr&& dataset_ptr,
-                    BandPtr&& band_ptr):
+                ReadPartition(GDALDatasetPtr&& dataset_ptr, BandPtr&& band_ptr):
 
                     _dataset_ptr{std::move(dataset_ptr)},
                     _band_ptr{std::move(band_ptr)}
@@ -211,15 +175,15 @@ namespace lue {
                     HPX_ASSERT(_band_ptr);
                 }
 
-                ReadPartition(ReadPartition const&)=default;
+                ReadPartition(ReadPartition const&) = default;
 
-                ReadPartition(ReadPartition&&)=delete;
+                ReadPartition(ReadPartition&&) = delete;
 
-                ~ReadPartition()=default;
+                ~ReadPartition() = default;
 
-                ReadPartition& operator=(ReadPartition const&)=default;
+                ReadPartition& operator=(ReadPartition const&) = default;
 
-                ReadPartition& operator=(ReadPartition&&)=delete;
+                ReadPartition& operator=(ReadPartition&&) = delete;
 
 
                 static constexpr Rank rank{2};
@@ -231,9 +195,7 @@ namespace lue {
                 using Data = DataT<Partition>;
 
 
-                template<
-                    typename InputNoDataPolicy,
-                    typename OutputNoDataPolicy>
+                template<typename InputNoDataPolicy, typename OutputNoDataPolicy>
                 Partition instantiate(
                     InputNoDataPolicy const indp,
                     OutputNoDataPolicy const ondp,
@@ -244,17 +206,19 @@ namespace lue {
 
                     _band_ptr->read_partition(offset, data);
 
-                    std::transform(data.begin(), data.end(), data.begin(),
-                            [indp, ondp](Element value)
+                    std::transform(
+                        data.begin(),
+                        data.end(),
+                        data.begin(),
+                        [indp, ondp](Element value)
+                        {
+                            if (indp.is_no_data(value))
                             {
-                                if(indp.is_no_data(value))
-                                {
-                                    ondp.mark_no_data(value);
-                                }
-
-                                return value;
+                                ondp.mark_no_data(value);
                             }
-                        );
+
+                            return value;
+                        });
 
                     return Partition{hpx::find_here(), offset, std::move(data)};
                 }
@@ -264,36 +228,24 @@ namespace lue {
                 GDALDatasetPtr _dataset_ptr;
 
                 BandPtr _band_ptr;
-
         };
 
 
-        template<
-            typename Element>
+        template<typename Element>
         class WritePolicies:
 
             public policy::Policies<
-                    policy::AllValuesWithinDomain<Element>,
-                    policy::OutputsPolicies<
-                            policy::OutputPolicies<
-                                    policy::DefaultOutputNoDataPolicy<Element>,
-                                    policy::AllValuesWithinRange<Element, Element>
-                                >
-                        >,
-                    policy::InputsPolicies<
-                            policy::InputPolicies<
-                                    policy::DefaultInputNoDataPolicy<Element>
-                                >
-                        >
-                >
+                policy::AllValuesWithinDomain<Element>,
+                policy::OutputsPolicies<policy::OutputPolicies<
+                    policy::DefaultOutputNoDataPolicy<Element>,
+                    policy::AllValuesWithinRange<Element, Element>>>,
+                policy::InputsPolicies<policy::InputPolicies<policy::DefaultInputNoDataPolicy<Element>>>>
 
         {
         };
 
 
-        template<
-            typename Policies,
-            typename Partition>
+        template<typename Policies, typename Partition>
         std::vector<Partition> read_partition_per_locality(
             Policies const& policies,
             std::string const& name,
@@ -312,49 +264,46 @@ namespace lue {
             auto ondp{std::get<0>(policies.outputs_policies()).output_no_data_policy()};
 
             ReadPartition<Element> partition_reader{
-                    std::move(dataset_ptr),
-                    std::make_shared<Band>(std::move(band_ptr))
-                };
+                std::move(dataset_ptr), std::make_shared<Band>(std::move(band_ptr))};
 
             partitions[0] = hpx::async(
 
-                    [indp, ondp, partition_reader, offset=offsets[0], partition_shape=partition_shapes[0]]() mutable
-                    {
-                        return partition_reader.instantiate(indp, ondp, offset, partition_shape);
-                    }
-                );
+                [indp,
+                 ondp,
+                 partition_reader,
+                 offset = offsets[0],
+                 partition_shape = partition_shapes[0]]() mutable
+                { return partition_reader.instantiate(indp, ondp, offset, partition_shape); });
 
-            for(std::size_t idx = 1; idx < nr_partitions; ++idx)
+            for (std::size_t idx = 1; idx < nr_partitions; ++idx)
             {
-                partitions[idx] = partitions[idx-1].then(
+                partitions[idx] = partitions[idx - 1].then(
 
-                        [indp, ondp, partition_reader, offset=offsets[idx], partition_shape=partition_shapes[idx]](
-                            auto const& /* previous_partition */) mutable
-                        {
-                            return partition_reader.instantiate(indp, ondp, offset, partition_shape);
-                        }
+                    [indp,
+                     ondp,
+                     partition_reader,
+                     offset = offsets[idx],
+                     partition_shape = partition_shapes[idx]](auto const& /* previous_partition */) mutable
+                    { return partition_reader.instantiate(indp, ondp, offset, partition_shape); }
 
-                    );
+                );
             }
 
             return partitions;
         }
 
 
-        template<
-            typename Policies,
-            typename Partition>
+        template<typename Policies, typename Partition>
         struct ReadPartitionsPerLocalityAction:
             hpx::actions::make_action<
-                    decltype(&read_partition_per_locality<Policies, Partition>),
-                    &read_partition_per_locality<Policies, Partition>,
-                    ReadPartitionsPerLocalityAction<Policies, Partition>
-                >::type
-        {};
+                decltype(&read_partition_per_locality<Policies, Partition>),
+                &read_partition_per_locality<Policies, Partition>,
+                ReadPartitionsPerLocalityAction<Policies, Partition>>::type
+        {
+        };
 
 
-        template<
-            typename Element>
+        template<typename Element>
         class ReadPartitionsPerLocality
         {
 
@@ -370,8 +319,7 @@ namespace lue {
                 static constexpr bool instantiate_per_locality{true};
 
 
-                ReadPartitionsPerLocality(
-                    std::string const& name):
+                ReadPartitionsPerLocality(std::string const& name):
 
                     _name{name}
 
@@ -379,8 +327,7 @@ namespace lue {
                 }
 
 
-                template<
-                    typename Policies>
+                template<typename Policies>
                 hpx::future<std::vector<Partition>> instantiate(
                     hpx::id_type const locality_id,
                     [[maybe_unused]] Policies const& policies,
@@ -393,29 +340,26 @@ namespace lue {
 
                     return hpx::async(
 
-                            [locality_id, action=std::move(action), policies, name=_name,
-                                offsets=std::move(offsets), partition_shapes=std::move(partition_shapes)]()
-                            {
-                                return action(locality_id, policies, name, offsets, partition_shapes);
-                            }
+                        [locality_id,
+                         action = std::move(action),
+                         policies,
+                         name = _name,
+                         offsets = std::move(offsets),
+                         partition_shapes = std::move(partition_shapes)]()
+                        { return action(locality_id, policies, name, offsets, partition_shapes); }
 
-                        );
+                    );
                 }
 
             private:
 
                 std::string _name;
-
         };
 
 
-        template<
-            typename Policies,
-            typename Partition>
+        template<typename Policies, typename Partition>
         void write_partition(
-            [[maybe_unused]] Policies const& policies,
-            std::string const& name,
-            Partition const& partition)
+            [[maybe_unused]] Policies const& policies, std::string const& name, Partition const& partition)
         {
             using Element = ElementT<Partition>;
 
@@ -432,44 +376,41 @@ namespace lue {
             auto data{partition_server_ptr->data()};
             auto offset{partition_server_ptr->offset()};
 
-            CPLErr const status{
-                    band_ptr->RasterIO(
-                            GF_Write,
-                            offset[1], offset[0],
-                            data.shape()[1], data.shape()[0],
-                            data.data(),
-                            data.shape()[1], data.shape()[0],
-                            GDALTypeTraits<Element>::type_id,
-                            0, 0, nullptr
-                        )
-                };
+            CPLErr const status{band_ptr->RasterIO(
+                GF_Write,
+                offset[1],
+                offset[0],
+                data.shape()[1],
+                data.shape()[0],
+                data.data(),
+                data.shape()[1],
+                data.shape()[0],
+                GDALTypeTraits<Element>::type_id,
+                0,
+                0,
+                nullptr)};
 
-            if(status != CE_None)
+            if (status != CE_None)
             {
                 throw std::runtime_error("Cannot write partition data");
             }
         }
 
 
-        template<
-            typename Policies,
-            typename Partition>
+        template<typename Policies, typename Partition>
         struct WritePartitionAction:
             hpx::actions::make_action<
-                    decltype(&write_partition<Policies, Partition>),
-                    &write_partition<Policies, Partition>,
-                    WritePartitionAction<Policies, Partition>
-                >::type
-        {};
+                decltype(&write_partition<Policies, Partition>),
+                &write_partition<Policies, Partition>,
+                WritePartitionAction<Policies, Partition>>::type
+        {
+        };
 
     }  // Anonymous namespace
 
 
-    template<
-        typename Element>
-    PartitionedArray<Element, 2> read(
-        std::string const& name,
-        Shape<Count, 2> const& partition_shape)
+    template<typename Element>
+    PartitionedArray<Element, 2> read(std::string const& name, Shape<Count, 2> const& partition_shape)
     {
         // Create a new partitioned array. Each partition is filled with the corresponding
         // subset of raster cells found in the raster pointed to by the name passed in.
@@ -502,7 +443,7 @@ namespace lue {
 
         using Functor = ReadPartitionsPerLocality<Element>;
 
-        if(!no_data_value_is_valid)
+        if (!no_data_value_is_valid)
         {
             // No no-data value is set in the band. Don't bother with no-data.
 
@@ -515,7 +456,7 @@ namespace lue {
             // A no-data value is set in the band. Let's be nice and use it. Upon reading,
             // it will be converted to our own conventions for handling no-data.
 
-            if(std::is_floating_point_v<Element> && std::isnan(no_data_value))
+            if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
             {
                 // No-data value is a NaN. This is what LUE uses as no-data for floating point
                 // by default.
@@ -534,12 +475,9 @@ namespace lue {
     }
 
 
-    template<
-        typename Element>
+    template<typename Element>
     hpx::future<void> write(
-        PartitionedArray<Element, 2> const& array,
-        std::string const& name,
-        std::string const& clone_name)
+        PartitionedArray<Element, 2> const& array, std::string const& name, std::string const& clone_name)
     {
         using Policies = WritePolicies<Element>;
         using Array = PartitionedArray<Element, 2>;
@@ -570,7 +508,7 @@ namespace lue {
 
             set_no_data_value(*band_ptr, no_data_value);
 
-            if(!clone_name.empty())
+            if (!clone_name.empty())
             {
                 // Copy stuff from clone dataset
 
@@ -579,19 +517,19 @@ namespace lue {
                 Shape<Count, 2> const shape{
                     clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
 
-                if(shape != array.shape())
+                if (shape != array.shape())
                 {
                     throw std::runtime_error("Shapes of clone raster and raster to write differ");
                 }
 
                 double geo_transform[6];
 
-                if(clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
+                if (clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
                 {
                     dataset_ptr->SetGeoTransform(geo_transform);
                 }
 
-                if(OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
+                if (OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
                 {
                     dataset_ptr->SetSpatialRef(spatial_reference);
                 }
@@ -604,39 +542,38 @@ namespace lue {
         std::vector<Partition> partitions(array.partitions().begin(), array.partitions().end());
 
         hpx::future<void> result = hpx::async(
-                [name, partitions=std::move(partitions)]() mutable
+            [name, partitions = std::move(partitions)]() mutable
+            {
+                using Action = WritePartitionAction<Policies, Partition>;
+
+                std::size_t nr_partitions_to_write{partitions.size()};
+                Action action{};
+                hpx::when_any_result<std::vector<Partition>> when_any_result;
+                std::size_t idx;
+
+                while (nr_partitions_to_write > 0)
                 {
-                    using Action = WritePartitionAction<Policies, Partition>;
+                    // Find a ready partition. Wait for it if necessary.
+                    when_any_result =
+                        hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write).get();
+                    partitions = std::move(when_any_result.futures);
+                    idx = when_any_result.index;
 
-                    std::size_t nr_partitions_to_write{partitions.size()};
-                    Action action{};
-                    hpx::when_any_result<std::vector<Partition>> when_any_result;
-                    std::size_t idx;
+                    // Write the ready partition to the dataset. Wait for it to finish.
+                    hpx::id_type const locality{
+                        hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
+                    action(locality, Policies{}, name, partitions[idx]);
 
-                    while(nr_partitions_to_write > 0)
-                    {
-                        // Find a ready partition. Wait for it if necessary.
-                        when_any_result = hpx::when_any(
-                            partitions.begin(), partitions.begin() + nr_partitions_to_write).get();
-                        partitions = std::move(when_any_result.futures);
-                        idx = when_any_result.index;
+                    // Move the ready and written partition to just after the range with still
+                    // not written partitions
+                    std::rotate(
+                        partitions.begin() + idx,
+                        partitions.begin() + idx + 1,
+                        partitions.begin() + nr_partitions_to_write);
 
-                        // Write the ready partition to the dataset. Wait for it to finish.
-                        hpx::id_type const locality{
-                            hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
-                        action(locality, Policies{}, name, partitions[idx]);
-
-                        // Move the ready and written partition to just after the range with still
-                        // not written partitions
-                        std::rotate(
-                            partitions.begin() + idx,
-                            partitions.begin() + idx + 1,
-                            partitions.begin() + nr_partitions_to_write);
-
-                        --nr_partitions_to_write;
-                    }
+                    --nr_partitions_to_write;
                 }
-            );
+            });
 
         return result;
     }
@@ -644,26 +581,23 @@ namespace lue {
 }  // namespace lue
 
 
-#define INSTANTIATE(type)                               \
-                                                        \
-    template lue::PartitionedArray<type, 2> lue::read(  \
-        std::string const&,                             \
-        lue::Shape<lue::Count, 2> const&);              \
-                                                        \
-    template hpx::future<void> lue::write(              \
-        lue::PartitionedArray<type, 2> const&,          \
-        std::string const&, std::string const&);
+#define INSTANTIATE(type)                                                                                    \
+                                                                                                             \
+    template lue::PartitionedArray<type, 2> lue::read(std::string const&, lue::Shape<lue::Count, 2> const&); \
+                                                                                                             \
+    template hpx::future<void> lue::write(                                                                   \
+        lue::PartitionedArray<type, 2> const&, std::string const&, std::string const&);
 
 
-    INSTANTIATE(uint8_t)
-    INSTANTIATE(uint32_t)
-    INSTANTIATE(int32_t)
+INSTANTIATE(uint8_t)
+INSTANTIATE(uint32_t)
+INSTANTIATE(int32_t)
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
-    INSTANTIATE(uint64_t)
-    INSTANTIATE(int64_t)
+INSTANTIATE(uint64_t)
+INSTANTIATE(int64_t)
 #endif
-    INSTANTIATE(float)
-    INSTANTIATE(double)
+INSTANTIATE(float)
+INSTANTIATE(double)
 
 
 #undef INSTANTIATE

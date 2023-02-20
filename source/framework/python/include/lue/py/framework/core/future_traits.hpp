@@ -4,15 +4,13 @@
 
 namespace lue::detail {
 
-    template<
-        typename E>
+    template<typename E>
     class ArrayTraits<hpx::shared_future<E>>
     {
 
         public:
 
             using Element = E;
-
     };
 
 }  // namespace lue::detail

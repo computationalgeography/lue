@@ -7,8 +7,7 @@ namespace lue {
 
         // The min/max values are the input arguments whose values are
         // relevant. These have the same element type as the output element.
-        template<
-            typename OutputElement>
+        template<typename OutputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<OutputElement, OutputElement>,
             OutputElements<OutputElement>,
@@ -19,10 +18,7 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename InputElement,
-            typename OutputElement,
-            Rank rank>
+        template<typename InputElement, typename OutputElement, Rank rank>
         PartitionedArray<OutputElement, rank> uniform(
             PartitionedArray<InputElement, rank> const& input_array,
             hpx::shared_future<OutputElement> const& min_value,
@@ -34,10 +30,7 @@ namespace lue {
         }
 
 
-        template<
-            typename InputElement,
-            typename OutputElement,
-            Rank rank>
+        template<typename InputElement, typename OutputElement, Rank rank>
         PartitionedArray<OutputElement, rank> uniform(
             PartitionedArray<InputElement, rank> const& input_array,
             OutputElement const min_value,
@@ -50,10 +43,7 @@ namespace lue {
         }
 
 
-        template<
-            typename Element,
-            typename Count,
-            Rank rank>
+        template<typename Element, typename Count, Rank rank>
         PartitionedArray<Element, rank> uniform(
             Shape<Count, rank> const& array_shape,
             Shape<Count, rank> const& partition_shape,
@@ -62,8 +52,7 @@ namespace lue {
         {
             using Policies = policy::uniform::DefaultPolicies<Element>;
 
-            return lue::uniform<Element>(
-                Policies{}, array_shape, partition_shape, min_value, max_value);
+            return lue::uniform<Element>(Policies{}, array_shape, partition_shape, min_value, max_value);
         }
 
     }  // namespace default_policies

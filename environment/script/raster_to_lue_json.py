@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-import docopt
 import json
 import os.path
 import sys
+
+import docopt
 
 
 usage = """\

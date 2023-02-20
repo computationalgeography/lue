@@ -4,11 +4,7 @@
 
 namespace lue {
 
-template<
-    typename Value>
-using SpatialIndex = boost::geometry::index::rtree<
-    Value,
-    boost::geometry::index::quadratic<16>
->;
+    template<typename Value>
+    using SpatialIndex = boost::geometry::index::rtree<Value, boost::geometry::index::quadratic<16>>;
 
 }  // namespace lue

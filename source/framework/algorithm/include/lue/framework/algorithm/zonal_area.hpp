@@ -5,13 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename Count,
-        typename Policies,
-        typename Zone,
-        Rank rank>
+    template<typename Count, typename Policies, typename Zone, Rank rank>
     PartitionedArray<Count, rank> zonal_area(
-        Policies const& policies,
-        PartitionedArray<Zone, rank> const& zones);
+        Policies const& policies, PartitionedArray<Zone, rank> const& zones);
 
 }  // namespace lue

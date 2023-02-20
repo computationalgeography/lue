@@ -1,58 +1,57 @@
 #define BOOST_TEST_MODULE lue hdf5 attribute
-#include <boost/test/unit_test.hpp>
 #include "lue/hdf5/attribute.hpp"
 #include "lue/hdf5/file.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 namespace {
 
-class Fixture
-{
-
-public:
-
-    explicit Fixture(
-        std::string const& dataset_name)
-
-        : _filename(dataset_name)
-
+    class Fixture
     {
-        // Guarantees:
-        // - File does not exist after setup
-        remove_file();
 
-        BOOST_REQUIRE(!lue::hdf5::file_exists(_filename));
-    }
+        public:
 
-    Fixture(Fixture const&)=delete;
+            explicit Fixture(std::string const& dataset_name):
 
-    Fixture(Fixture&&)=delete;
+                _filename(dataset_name)
 
-    ~Fixture()
-    {
-        // Guarantees:
-        // - File does not exist after teardown
-        remove_file();
+            {
+                // Guarantees:
+                // - File does not exist after setup
+                remove_file();
 
-        BOOST_CHECK(!lue::hdf5::file_exists(_filename));
-    }
+                BOOST_REQUIRE(!lue::hdf5::file_exists(_filename));
+            }
 
-    Fixture& operator=(Fixture const&)=delete;
+            Fixture(Fixture const&) = delete;
 
-    Fixture& operator=(Fixture&&)=delete;
+            Fixture(Fixture&&) = delete;
 
-private:
+            ~Fixture()
+            {
+                // Guarantees:
+                // - File does not exist after teardown
+                remove_file();
 
-    std::string const _filename;
+                BOOST_CHECK(!lue::hdf5::file_exists(_filename));
+            }
 
-    void remove_file()
-    {
-        if(lue::hdf5::file_exists(_filename)) {
-            lue::hdf5::remove_file(_filename);
-        }
-    }
+            Fixture& operator=(Fixture const&) = delete;
 
-};
+            Fixture& operator=(Fixture&&) = delete;
+
+        private:
+
+            std::string const _filename;
+
+            void remove_file()
+            {
+                if (lue::hdf5::file_exists(_filename))
+                {
+                    lue::hdf5::remove_file(_filename);
+                }
+            }
+    };
 
 }  // Anonymous namespace
 
@@ -67,8 +66,7 @@ BOOST_AUTO_TEST_CASE(string_attribute)
     std::string const attribute_value = "my_attribute_value";
 
     {
-        auto attribute = lue::hdf5::create_attribute(file.id(),
-            attribute_name, attribute_value);
+        auto attribute = lue::hdf5::create_attribute(file.id(), attribute_name, attribute_value);
 
         attribute.write<std::string>(attribute_value);
     }

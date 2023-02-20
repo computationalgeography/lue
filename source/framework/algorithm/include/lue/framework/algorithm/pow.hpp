@@ -10,9 +10,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_=InputElement>
+        template<typename InputElement, typename OutputElement_ = InputElement>
         class Pow
         {
 
@@ -24,12 +22,10 @@ namespace lue {
 
 
                 OutputElement operator()(
-                    InputElement const input_element,
-                    InputElement const exponent) const noexcept
+                    InputElement const input_element, InputElement const exponent) const noexcept
                 {
                     return std::pow(input_element, exponent);
                 }
-
         };
 
     }  // namespace detail
@@ -37,21 +33,16 @@ namespace lue {
 
     namespace policy::pow {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         using DomainPolicy = AllValuesWithinDomain<InputElement, InputElement>;
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             DomainPolicy<InputElement>,
             OutputElements<OutputElement>,
             InputElements<InputElement, InputElement>>;
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<InputElement>,
             OutputElements<OutputElement>,

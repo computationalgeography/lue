@@ -4,8 +4,7 @@
 
 namespace lue::framework {
 
-    void bind_logical_not(
-        pybind11::module& module)
+    void bind_logical_not(pybind11::module& module)
     {
         module.def("logical_not", logical_not<std::uint8_t, 2>);
         module.def("logical_not", logical_not<std::int32_t, 2>);

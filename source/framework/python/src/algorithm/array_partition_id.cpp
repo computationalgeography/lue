@@ -7,10 +7,8 @@ namespace lue::framework {
 
         Rank const rank{2};
 
-        template<
-            typename Element>
-        PartitionedArray<std::uint64_t, rank> array_partition_id(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element>
+        PartitionedArray<std::uint64_t, rank> array_partition_id(PartitionedArray<Element, rank> const& array)
         {
             return lue::array_partition_id(array);
         }
@@ -18,8 +16,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_array_partition_id(
-        pybind11::module& module)
+    void bind_array_partition_id(pybind11::module& module)
     {
         module.def("array_partition_id", array_partition_id<std::uint8_t>);
         module.def("array_partition_id", array_partition_id<std::uint32_t>);

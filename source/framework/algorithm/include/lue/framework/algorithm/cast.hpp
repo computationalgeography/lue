@@ -5,13 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename OutputElement,
-        typename Policies,
-        typename InputElement,
-        Rank rank>
+    template<typename OutputElement, typename Policies, typename InputElement, Rank rank>
     PartitionedArray<OutputElement, rank> cast(
-        Policies const& policies,
-        PartitionedArray<InputElement, rank> const& array);
+        Policies const& policies, PartitionedArray<InputElement, rank> const& array);
 
 }  // namespace lue

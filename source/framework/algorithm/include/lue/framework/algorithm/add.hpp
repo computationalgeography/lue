@@ -7,9 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_=InputElement>
+        template<typename InputElement, typename OutputElement_ = InputElement>
         class Add
         {
 
@@ -18,12 +16,10 @@ namespace lue {
                 using OutputElement = OutputElement_;
 
                 constexpr OutputElement operator()(
-                    InputElement const& input_element1,
-                    InputElement const& input_element2) const noexcept
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
                 {
                     return input_element1 + input_element2;
                 }
-
         };
 
     }  // namespace detail
@@ -31,8 +27,7 @@ namespace lue {
 
     namespace policy::add {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         using DomainPolicy = AllValuesWithinDomain<InputElement, InputElement>;
 
     }  // namespace policy::add

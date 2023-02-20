@@ -1,19 +1,16 @@
 #pragma once
-#include "lue/framework/partitioned_array/array_partition.hpp"
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/debug.hpp"  // describe
+#include "lue/framework/partitioned_array/array_partition.hpp"
 
 
 namespace lue {
 
-    template<
-        Rank rank>
+    template<Rank rank>
     using Localities = Array<hpx::id_type, rank>;
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     class PartitionedArray
     {
 
@@ -39,65 +36,59 @@ namespace lue {
 
             using ConstIterator = typename Partitions::ConstIterator;
 
-                           PartitionedArray    ();
+            PartitionedArray();
 
-                           PartitionedArray    (PartitionedArray const& other)=delete;
+            PartitionedArray(PartitionedArray const& other) = delete;
 
-                           PartitionedArray    (PartitionedArray&& other)=default;
+            PartitionedArray(PartitionedArray&& other) = default;
 
-                           PartitionedArray    (Shape const& shape,
-                                                Localities<rank> const& localities,
-                                                Partitions&& partitions);
+            PartitionedArray(Shape const& shape, Localities<rank> const& localities, Partitions&& partitions);
 
-                           ~PartitionedArray   ()=default;
+            ~PartitionedArray() = default;
 
-            PartitionedArray& operator=        (PartitionedArray const& other)=delete;
+            PartitionedArray& operator=(PartitionedArray const& other) = delete;
 
-            PartitionedArray& operator=        (PartitionedArray&& other)=default;
+            PartitionedArray& operator=(PartitionedArray&& other) = default;
 
-            Count          nr_elements         () const;
+            Count nr_elements() const;
 
-            Shape const&   shape               () const;
+            Shape const& shape() const;
 
-            Localities<rank> const&
-                           localities          () const;
+            Localities<rank> const& localities() const;
 
-            Count          nr_partitions       () const;
+            Count nr_partitions() const;
 
-            Partitions&    partitions          ();
+            Partitions& partitions();
 
-            Partitions const& partitions       () const;
+            Partitions const& partitions() const;
 
-            ConstIterator  begin               () const;
+            ConstIterator begin() const;
 
-            Iterator       begin               ();
+            Iterator begin();
 
-            ConstIterator  end                 () const;
+            ConstIterator end() const;
 
-            Iterator       end                 ();
+            Iterator end();
 
         private:
 
             //! Shape of the partitioned array
-            Shape          _shape;
+            Shape _shape;
 
             //! Localities the partitions are located in
             Localities<rank> _localities;
 
             //! Array of partitions
-            Partitions     _partitions;
+            Partitions _partitions;
 
-            void           assert_invariants   () const;
-
+            void assert_invariants() const;
     };
 
 
     namespace detail {
 
         // Specialization for PartitionedArray
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<PartitionedArray<E, r>>
         {
 
@@ -111,43 +102,28 @@ namespace lue {
 
                 using Shape = typename PartitionedArray<E, r>::Shape;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Partition = typename PartitionedArray<E_, r_>::Partition;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Partitions = typename PartitionedArray<E_, r_>::Partitions;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using PartitionedArray = PartitionedArray<E_, r_>;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Data = typename Partition<E_, r_>::Data;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Component = typename PartitionedArray<E_, r_>::Partition;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Components = typename PartitionedArray<E_, r_>::Partitions;
-
         };
 
 
         // Specialization for PartitionedArray::Partitions
-        template<
-            typename E,
-            Rank r>
+        template<typename E, Rank r>
         class ArrayTraits<ArrayPartitionData<ArrayPartition<E, r>, r>>
         {
 
@@ -159,29 +135,20 @@ namespace lue {
 
                 using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Partition = ArrayPartition<E_, r_>;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Partitions = ArrayPartitionData<ArrayPartition<E_, r_>, r_>;
 
-                template<
-                    typename E_,
-                    Rank r_>
+                template<typename E_, Rank r_>
                 using Component = ArrayPartition<E_, r_>;
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank>::PartitionedArray():
 
         _shape{},
@@ -205,13 +172,9 @@ namespace lue {
 
         The shape of the partitions together must equal the shape passed in
     */
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     PartitionedArray<Element, rank>::PartitionedArray(
-        Shape const& shape,
-        Localities<rank> const& localities,
-        Partitions&& partitions):
+        Shape const& shape, Localities<rank> const& localities, Partitions&& partitions):
 
         _shape{shape},
         _localities{localities},
@@ -222,178 +185,128 @@ namespace lue {
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     void PartitionedArray<Element, rank>::assert_invariants() const
     {
         lue_hpx_assert(_partitions.shape() == _localities.shape());
 
         // The array is either empty, or all localities are valid / known
         lue_hpx_assert(
-            _localities.empty() ||
-            std::all_of(_localities.begin(), _localities.end(),
-                [](hpx::id_type const locality_id)
-                {
-                    return bool{locality_id};
-                }));
+            _localities.empty() || std::all_of(
+                                       _localities.begin(),
+                                       _localities.end(),
+                                       [](hpx::id_type const locality_id) { return bool{locality_id}; }));
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Count
-        PartitionedArray<Element, rank>::nr_elements() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Count PartitionedArray<Element, rank>::nr_elements() const
     {
         return lue::nr_elements(_shape);
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Shape const&
-        PartitionedArray<Element, rank>::shape() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Shape const& PartitionedArray<Element, rank>::shape() const
     {
         return _shape;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Count
-        PartitionedArray<Element, rank>::nr_partitions() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Count PartitionedArray<Element, rank>::nr_partitions() const
     {
         return _partitions.nr_elements();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Partitions&
-        PartitionedArray<Element, rank>::partitions()
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Partitions& PartitionedArray<Element, rank>::partitions()
     {
         return _partitions;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Partitions const&
-        PartitionedArray<Element, rank>::partitions() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Partitions const& PartitionedArray<Element, rank>::partitions()
+        const
     {
         return _partitions;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::ConstIterator
-        PartitionedArray<Element, rank>::begin() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::ConstIterator PartitionedArray<Element, rank>::begin() const
     {
         return _partitions.begin();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Iterator
-        PartitionedArray<Element, rank>::begin()
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Iterator PartitionedArray<Element, rank>::begin()
     {
         return _partitions.begin();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::ConstIterator
-        PartitionedArray<Element, rank>::end() const
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::ConstIterator PartitionedArray<Element, rank>::end() const
     {
         return _partitions.end();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Iterator
-        PartitionedArray<Element, rank>::end()
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Iterator PartitionedArray<Element, rank>::end()
     {
         return _partitions.end();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
+    template<typename Element, Rank rank>
     Localities<rank> const& PartitionedArray<Element, rank>::localities() const
     {
         return _localities;
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ShapeT<PartitionedArray<Element, rank>> shape(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    ShapeT<PartitionedArray<Element, rank>> shape(PartitionedArray<Element, rank> const& array)
     {
         return array.shape();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(PartitionedArray<Element, rank> const& array)
     {
         return array.partitions().shape();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    Count nr_partitions(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    Count nr_partitions(PartitionedArray<Element, rank> const& array)
     {
         return array.nr_partitions();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    Count nr_partitions(
-        ArrayPartitionData<ArrayPartition<Element, rank>, rank> const& partitions)
+    template<typename Element, Rank rank>
+    Count nr_partitions(ArrayPartitionData<ArrayPartition<Element, rank>, rank> const& partitions)
     {
         return partitions.nr_elements();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    typename PartitionedArray<Element, rank>::Count nr_elements(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    typename PartitionedArray<Element, rank>::Count nr_elements(PartitionedArray<Element, rank> const& array)
     {
         return array.nr_elements();
     }
 
 
-    template<
-        typename Element,
-        Rank rank>
-    std::string describe(
-        Shape<Element, rank> const& shape)
+    template<typename Element, Rank rank>
+    std::string describe(Shape<Element, rank> const& shape)
     {
         // FIXME Requires fmt >= 6
         // return fmt::format("({})", shape);
@@ -403,7 +316,8 @@ namespace lue {
         auto it = shape.begin();
         std::string result = fmt::format("({}", *it);
 
-        for(++it; it < shape.end(); ++it) {
+        for (++it; it < shape.end(); ++it)
+        {
             result += fmt::format(", {}", *it);
         }
 
@@ -414,22 +328,17 @@ namespace lue {
 
 
     // TODO Move this elsewhere
-    template<
-        typename Element,
-        Rank rank>
-    std::string describe(
-        PartitionedArray<Element, rank> const& array)
+    template<typename Element, Rank rank>
+    std::string describe(PartitionedArray<Element, rank> const& array)
     {
         return fmt::format(
             "- PartitionedArray:\n"
             "    - array of elements  : {} ({} elements)\n"
-            "    - array of partitions: {} ({} partitions)\n"
-            ,
+            "    - array of partitions: {} ({} partitions)\n",
             describe(array.shape()),
             array.nr_elements(),
             describe(array.partitions().shape()),
-            array.partitions().nr_elements()
-        );
+            array.partitions().nr_elements());
     }
 
 }  // namespace lue

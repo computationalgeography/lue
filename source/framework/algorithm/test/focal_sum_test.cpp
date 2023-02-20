@@ -40,18 +40,20 @@ BOOST_AUTO_TEST_CASE(focal_sum_2d_int32)
     Element const nd{lue::policy::no_data_value<Element>};
 
     Array array_we_want = lue::test::create_partitioned_array<Array>(
-        array_shape, partition_shape, {
-            {  nd,  nd,  nd,  nd,  99, 108,  nd, 180, 189 },
-            {  nd,  nd,  nd, 117, 126, 135, 198, 207, 216 },
-            {  nd,  nd,  nd, 144, 153,  nd, 225, 234,  nd },
+        array_shape,
+        partition_shape,
+        {
+            {nd, nd, nd, nd, 99, 108, nd, 180, 189},
+            {nd, nd, nd, 117, 126, 135, 198, 207, 216},
+            {nd, nd, nd, 144, 153, nd, 225, 234, nd},
 
-            {  nd, 261, 270,  nd, 342, 351,  nd, 423, 432 },
-            { 279, 288, 297, 360, 369, 378, 441, 450, 459 },
-            { 306, 315,  nd, 387, 396,  nd, 468, 477,  nd },
+            {nd, 261, 270, nd, 342, 351, nd, 423, 432},
+            {279, 288, 297, 360, 369, 378, 441, 450, 459},
+            {306, 315, nd, 387, 396, nd, 468, 477, nd},
 
-            {  nd, 504, 513,  nd, 585, 594,  nd,  nd,  nd },
-            { 522, 531, 540, 603, 612, 621,  nd,  nd,  nd },
-            { 549, 558,  nd, 630, 639,  nd,  nd,  nd,  nd },
+            {nd, 504, 513, nd, 585, 594, nd, nd, nd},
+            {522, 531, 540, 603, 612, 621, nd, nd, nd},
+            {549, 558, nd, 630, 639, nd, nd, nd, nd},
         });
 
     lue::test::check_arrays_are_equal(focal_sum, array_we_want);

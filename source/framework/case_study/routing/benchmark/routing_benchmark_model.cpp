@@ -1,8 +1,8 @@
 #include "routing_benchmark_model.hpp"
-#include "lue/framework/algorithm/value_policies/algorithm.hpp"
 #include "lue/framework/algorithm/copy.hpp"
-#include "lue/framework/io/read_into.hpp"
+#include "lue/framework/algorithm/value_policies/algorithm.hpp"
 #include "lue/framework/benchmark/data_model.hpp"
+#include "lue/framework/io/read_into.hpp"
 
 
 namespace lue::benchmark {
@@ -69,8 +69,7 @@ namespace lue::benchmark {
     }
 
 
-    void RoutingBenchmarkModel::do_simulate(
-        [[maybe_unused]] Count const time_step)
+    void RoutingBenchmarkModel::do_simulate([[maybe_unused]] Count const time_step)
     {
         using namespace lue::value_policies;
         auto const& array_shape{this->array_shape()};
@@ -88,8 +87,7 @@ namespace lue::benchmark {
         ScalarRaster precipitation =
             (10.0f + uniform<ScalarElement>(array_shape, partition_shape, -3, 3)) / 1000.0f;
 
-        all(precipitation >= 0.0f).then(
-            []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
+        all(precipitation >= 0.0f).then([]([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
 
         // Simulate the calculation of the actual infiltration capacity
         {
@@ -99,7 +97,7 @@ namespace lue::benchmark {
             infiltration_capacity = infiltration_capacity * (infiltration_storage / infiltration_storage);
 
             // Add a number of local operations to update the infiltration capacity
-            for(std::size_t n = 0; n < nr_iterations; ++n)
+            for (std::size_t n = 0; n < nr_iterations; ++n)
             {
                 // - nr_iterations * 5 * 4 b/c
                 // - nr_iterations * 5 local operations
@@ -109,8 +107,7 @@ namespace lue::benchmark {
             }
         }
 
-        all(infiltration_capacity >= 0.0f).then(
-            []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
+        all(infiltration_capacity >= 0.0f).then([]([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
 
         // - 2 * 1 b/c (inflow counts)
         // - 2 * 4 b/c
@@ -120,7 +117,7 @@ namespace lue::benchmark {
 
         // Simulation the calculation of infiltration
         // Add a number of local operations to update the infiltrated precipitation
-        for(std::size_t n = 0; n < nr_iterations; ++n)
+        for (std::size_t n = 0; n < nr_iterations; ++n)
         {
             // - nr_iterations * 5 * 4 b/c
             // - nr_iterations * 5 local operations
@@ -129,10 +126,10 @@ namespace lue::benchmark {
                 sqrt(more_or_less_one);
         }
 
-        all(infiltrated_precipitation >= 0.0f).then(
-            []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
-        all(infiltrated_precipitation >= infiltration_storage).then(
-            []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
+        all(infiltrated_precipitation >= 0.0f)
+            .then([]([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
+        all(infiltrated_precipitation >= infiltration_storage)
+            .then([]([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
 
         // Update infiltration storage by adding new infiltrated precipitation and account for
         // losses by subtracting the same amount.
@@ -141,8 +138,7 @@ namespace lue::benchmark {
         // - 2 local operations
         infiltration_storage = infiltration_storage + infiltrated_precipitation - infiltrated_precipitation;
 
-        all(infiltration_storage >= 0.0f).then(
-            []([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
+        all(infiltration_storage >= 0.0f).then([]([[maybe_unused]] auto&& f) { lue_hpx_assert(f.get()); });
 
         // Per timestep:
         // - 7 local operations + (2 * nr_iterations * 5 local operations)

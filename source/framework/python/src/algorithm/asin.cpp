@@ -5,11 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<Element, rank> asin(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<Element, rank> asin(PartitionedArray<Element, rank> const& array)
         {
             return value_policies::asin(array);
         }
@@ -17,8 +14,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_asin(
-        pybind11::module& module)
+    void bind_asin(pybind11::module& module)
     {
         module.def("asin", asin<float, 2>);
         module.def("asin", asin<double, 2>);

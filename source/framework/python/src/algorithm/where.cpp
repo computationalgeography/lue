@@ -5,24 +5,15 @@
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Condition,
-            Rank rank,
-            typename... Expression>
+        template<typename Condition, Rank rank, typename... Expression>
         class Where
         {
         };
 
 
         // where(condition_array, true_array)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            PartitionedArray<ExpressionElement, rank>>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
+        class Where<PartitionedArray<ConditionElement, rank>, rank, PartitionedArray<ExpressionElement, rank>>
         {
 
             public:
@@ -35,19 +26,12 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_array);
                 }
-
         };
 
 
         // where(condition_array, true_value_f)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            hpx::shared_future<ExpressionElement>>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
+        class Where<PartitionedArray<ConditionElement, rank>, rank, hpx::shared_future<ExpressionElement>>
         {
 
             public:
@@ -60,19 +44,12 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value_f);
                 }
-
         };
 
 
         // where(condition_array, true_value)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
+        class Where<PartitionedArray<ConditionElement, rank>, rank, ExpressionElement>
         {
 
             public:
@@ -85,15 +62,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value);
                 }
-
         };
 
 
         // where(condition_array, true_array, false_array)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -112,15 +85,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_array, false_array);
                 }
-
         };
 
 
         // where(condition_array, true_array, false_value_f)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -139,15 +108,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_array, false_value_f);
                 }
-
         };
 
 
         // where(condition_array, true_array, false_value)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -166,15 +131,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_array, false_value);
                 }
-
         };
 
 
         // where(condition_array, true_value_f, false_array)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -193,15 +154,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value_f, false_array);
                 }
-
         };
 
 
         // where(condition_array, true_value, false_array)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -220,15 +177,11 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value, false_array);
                 }
-
         };
 
 
         // where(condition_array, true_value_f, false_value_f)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
         class Where<
             PartitionedArray<ConditionElement, rank>,
             rank,
@@ -247,20 +200,12 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value_f, false_value_f);
                 }
-
         };
 
 
         // where(condition_array, true_value, false_value)
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            ExpressionElement,
-            ExpressionElement>
+        template<typename ConditionElement, Rank rank, typename ExpressionElement>
+        class Where<PartitionedArray<ConditionElement, rank>, rank, ExpressionElement, ExpressionElement>
         {
 
             public:
@@ -274,19 +219,15 @@ namespace lue::framework {
                 {
                     return lue::value_policies::where(condition_array, true_value, false_value);
                 }
-
         };
 
 
-        template<
-            typename ConditionElement,
-            Rank rank,
-            typename... Expression>
+        template<typename ConditionElement, Rank rank, typename... Expression>
         PartitionedArray<
-            typename Where<PartitionedArray<ConditionElement, rank>, rank, Expression...>::OutputElement, rank>
-                where(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    Expression const&... expression)
+            typename Where<PartitionedArray<ConditionElement, rank>, rank, Expression...>::OutputElement,
+            rank>
+        where(
+            PartitionedArray<ConditionElement, rank> const& condition_array, Expression const&... expression)
         {
             using ConditionArray = PartitionedArray<ConditionElement, rank>;
 
@@ -296,31 +237,25 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-#define WHERE_OVERLOADS(Element, rank) \
-    module.def("where",  \
-        where<std::uint8_t, rank, PartitionedArray<Element, rank>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, hpx::shared_future<Element>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, Element>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, PartitionedArray<Element, rank>, hpx::shared_future<Element>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, PartitionedArray<Element, rank>, Element>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, hpx::shared_future<Element>, PartitionedArray<Element, rank>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, Element, PartitionedArray<Element, rank>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, hpx::shared_future<Element>, hpx::shared_future<Element>>);  \
-    module.def("where",  \
-        where<std::uint8_t, rank, Element, Element>);
+#define WHERE_OVERLOADS(Element, rank)                                                                       \
+    module.def("where", where<std::uint8_t, rank, PartitionedArray<Element, rank>>);                         \
+    module.def("where", where<std::uint8_t, rank, hpx::shared_future<Element>>);                             \
+    module.def("where", where<std::uint8_t, rank, Element>);                                                 \
+    module.def(                                                                                              \
+        "where",                                                                                             \
+        where<std::uint8_t, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);        \
+    module.def(                                                                                              \
+        "where", where<std::uint8_t, rank, PartitionedArray<Element, rank>, hpx::shared_future<Element>>);   \
+    module.def("where", where<std::uint8_t, rank, PartitionedArray<Element, rank>, Element>);                \
+    module.def(                                                                                              \
+        "where", where<std::uint8_t, rank, hpx::shared_future<Element>, PartitionedArray<Element, rank>>);   \
+    module.def("where", where<std::uint8_t, rank, Element, PartitionedArray<Element, rank>>);                \
+    module.def(                                                                                              \
+        "where", where<std::uint8_t, rank, hpx::shared_future<Element>, hpx::shared_future<Element>>);       \
+    module.def("where", where<std::uint8_t, rank, Element, Element>);
 
 
-    void bind_where(
-        pybind11::module& module)
+    void bind_where(pybind11::module& module)
     {
         // TODO How to document these?
         WHERE_OVERLOADS(std::uint8_t, 2);

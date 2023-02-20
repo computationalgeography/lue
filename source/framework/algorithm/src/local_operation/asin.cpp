@@ -3,17 +3,11 @@
 #include "lue/framework/algorithm/value_policies/asin.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                     \
-                                                           \
-    LUE_INSTANTIATE_ASIN(                                  \
-        ESC(policy::asin::DefaultPolicies<Element>),       \
-        Element,                                           \
-        rank);                                             \
-                                                           \
-    LUE_INSTANTIATE_ASIN(                                  \
-        ESC(policy::asin::DefaultValuePolicies<Element>),  \
-        Element,                                           \
-        rank);
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_ASIN(ESC(policy::asin::DefaultPolicies<Element>), Element, rank);                        \
+                                                                                                             \
+    LUE_INSTANTIATE_ASIN(ESC(policy::asin::DefaultValuePolicies<Element>), Element, rank);
 
 
 namespace lue {

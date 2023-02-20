@@ -3,17 +3,11 @@
 #include "lue/framework/algorithm/value_policies/sqrt.hpp"
 
 
-#define LUE_INSTANTIATE(Element, rank)                     \
-                                                           \
-    LUE_INSTANTIATE_SQRT(                                  \
-        ESC(policy::sqrt::DefaultPolicies<Element>),       \
-        Element,                                           \
-        rank);                                             \
-                                                           \
-    LUE_INSTANTIATE_SQRT(                                  \
-        ESC(policy::sqrt::DefaultValuePolicies<Element>),  \
-        Element,                                           \
-        rank);
+#define LUE_INSTANTIATE(Element, rank)                                                                       \
+                                                                                                             \
+    LUE_INSTANTIATE_SQRT(ESC(policy::sqrt::DefaultPolicies<Element>), Element, rank);                        \
+                                                                                                             \
+    LUE_INSTANTIATE_SQRT(ESC(policy::sqrt::DefaultValuePolicies<Element>), Element, rank);
 
 
 namespace lue {

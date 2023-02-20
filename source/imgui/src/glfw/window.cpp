@@ -5,12 +5,7 @@
 
 namespace glfw {
 
-    Window::Window(
-        std::string const& title,
-        int w,
-        int h,
-        GLFWmonitor* monitor,
-        GLFWwindow* share):
+    Window::Window(std::string const& title, int w, int h, GLFWmonitor* monitor, GLFWwindow* share):
 
         _window{nullptr}
 

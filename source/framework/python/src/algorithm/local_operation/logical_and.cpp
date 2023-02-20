@@ -4,8 +4,7 @@
 
 namespace lue::framework {
 
-    void bind_logical_and(
-        pybind11::module& module)
+    void bind_logical_and(pybind11::module& module)
     {
         module.def("logical_and", logical_and<std::uint8_t, 2>);
         module.def("logical_and", logical_and<std::int32_t, 2>);

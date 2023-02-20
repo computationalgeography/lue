@@ -8,11 +8,10 @@ HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
 HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_uint8);
 
 
-#define LUE_INSTANTIATE(FlowDirectionElement)                                 \
-                                                                              \
-    LUE_INSTANTIATE_ACCU_INFO3(                                               \
-        ESC(policy::accu_info3::DefaultValuePolicies<FlowDirectionElement>),  \
-        FlowDirectionElement);
+#define LUE_INSTANTIATE(FlowDirectionElement)                                                                \
+                                                                                                             \
+    LUE_INSTANTIATE_ACCU_INFO3(                                                                              \
+        ESC(policy::accu_info3::DefaultValuePolicies<FlowDirectionElement>), FlowDirectionElement);
 
 
 namespace lue {

@@ -4,79 +4,71 @@
 
 namespace lue {
 
-template<
-    typename Partitions>
-class PartitionVisitor:
-    public ArrayVisitor<ShapeT<Partitions>>
-{
-
-private:
-
-    using Base = ArrayVisitor<ShapeT<Partitions>>;
-
-public:
-
-    explicit PartitionVisitor(
-        Partitions& partitions):
-
-        Base{partitions.shape()},
-        _partitions{partitions}
-
+    template<typename Partitions>
+    class PartitionVisitor: public ArrayVisitor<ShapeT<Partitions>>
     {
-    }
 
-protected:
+        private:
 
-    PartitionT<Partitions>& partition()
+            using Base = ArrayVisitor<ShapeT<Partitions>>;
+
+        public:
+
+            explicit PartitionVisitor(Partitions& partitions):
+
+                Base{partitions.shape()},
+                _partitions{partitions}
+
+            {
+            }
+
+        protected:
+
+            PartitionT<Partitions>& partition()
+            {
+                lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
+
+                return _partitions[this->cursor().linear_idx()];
+            }
+
+        private:
+
+            //! Array containing partitions being visited
+            Partitions& _partitions;
+    };
+
+
+    template<typename Partitions>
+    class ConstPartitionVisitor: public ArrayVisitor<ShapeT<Partitions>>
     {
-        lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
 
-        return _partitions[this->cursor().linear_idx()];
-    }
+        private:
 
-private:
+            using Base = ArrayVisitor<ShapeT<Partitions>>;
 
-    //! Array containing partitions being visited
-    Partitions&    _partitions;
+        public:
 
-};
+            explicit ConstPartitionVisitor(Partitions const& partitions):
 
+                Base{partitions.shape()},
+                _partitions{partitions}
 
-template<
-    typename Partitions>
-class ConstPartitionVisitor:
-    public ArrayVisitor<ShapeT<Partitions>>
-{
+            {
+            }
 
-private:
+        protected:
 
-    using Base = ArrayVisitor<ShapeT<Partitions>>;
+            PartitionT<Partitions> const& partition() const
+            {
+                lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
 
-public:
+                return _partitions[this->cursor().linear_idx()];
+            }
 
-    explicit ConstPartitionVisitor(
-        Partitions const& partitions):
+        private:
 
-        Base{partitions.shape()},
-        _partitions{partitions}
-
-    {
-    }
-
-protected:
-
-    PartitionT<Partitions> const& partition() const
-    {
-        lue_hpx_assert(this->cursor().linear_idx() < _partitions.nr_elements());
-
-        return _partitions[this->cursor().linear_idx()];
-    }
-
-private:
-
-    //! Array containing partitions being visited
-    Partitions const& _partitions;
-
-};
+            //! Array containing partitions being visited
+            Partitions const& _partitions;
+    };
 
 }  // namespace lue

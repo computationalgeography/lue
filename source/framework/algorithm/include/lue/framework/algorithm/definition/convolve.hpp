@@ -6,9 +6,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename OutputElement_,
-            typename InputElement>
+        template<typename OutputElement_, typename InputElement>
         class Convolve
         {
 
@@ -20,14 +18,10 @@ namespace lue {
                 static_assert(std::is_convertible_v<InputElement, OutputElement>);
 
 
-                Convolve()=default;
+                Convolve() = default;
 
 
-                template<
-                    typename Kernel,
-                    typename OutputPolicies,
-                    typename InputPolicies,
-                    typename Subspan>
+                template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
                 OutputElement operator()(
                     Kernel const& kernel,
                     [[maybe_unused]] OutputPolicies const& output_policies,
@@ -47,18 +41,22 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
 
-                    for(Index r = 0; r < window.extent(0); ++r) {
-                        for(Index c = 0; c < window.extent(1); ++c)
+                    for (Index r = 0; r < window.extent(0); ++r)
+                    {
+                        for (Index c = 0; c < window.extent(1); ++c)
                         {
                             Weight const weight{kernel(r, c)};
                             InputElement const value{window(r, c)};
 
-                            if constexpr(std::is_same_v<Weight, bool>) {
-                                if(weight) {
+                            if constexpr (std::is_same_v<Weight, bool>)
+                            {
+                                if (weight)
+                                {
                                     sum += value;
                                 }
                             }
-                            else {
+                            else
+                            {
                                 sum += weight * value;
                             }
                         }
@@ -66,21 +64,14 @@ namespace lue {
 
                     return sum;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename OutputElement,
-        typename ConvolvePolicies,
-        typename Array,
-        typename Kernel>
+    template<typename OutputElement, typename ConvolvePolicies, typename Array, typename Kernel>
     PartitionedArrayT<Array, OutputElement> convolve(
-        ConvolvePolicies const& policies,
-        Array const& array,
-        Kernel const& kernel)
+        ConvolvePolicies const& policies, Array const& array, Kernel const& kernel)
     {
         using Functor = detail::Convolve<OutputElement, ElementT<Array>>;
 

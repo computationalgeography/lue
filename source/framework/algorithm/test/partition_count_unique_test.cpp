@@ -48,9 +48,8 @@ BOOST_AUTO_TEST_CASE(different_values)
     Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
     lue::range(array, Element{0}).get();
 
-    OutputArray result_we_want{
-        lue::create_partitioned_array(lue::shape_in_partitions(array), {{1, 1}},
-        Count{lue::nr_elements(partition_shape)})};
+    OutputArray result_we_want{lue::create_partitioned_array(
+        lue::shape_in_partitions(array), {{1, 1}}, Count{lue::nr_elements(partition_shape)})};
     OutputArray result_we_got{lue::partition_count_unique(array)};
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
@@ -62,8 +61,8 @@ BOOST_AUTO_TEST_CASE(all_no_data)
     // Create an array filled with no-data. In the result, for each
     // partition there must be a no-data value stored.
 
-    Array array{lue::create_partitioned_array(
-        array_shape, partition_shape, lue::policy::no_data_value<Element>)};
+    Array array{
+        lue::create_partitioned_array(array_shape, partition_shape, lue::policy::no_data_value<Element>)};
 
     OutputArray result_we_want{lue::create_partitioned_array(
         lue::shape_in_partitions(array), {{1, 1}}, lue::policy::no_data_value<Count>)};

@@ -1,9 +1,9 @@
 #include "hl/submodule.hpp"
-#include "lue/py/data_model/submodule.hpp"
-#include "python_extension.hpp"
-#include "lue/configure.hpp"  // LUE_BUILD_QA and LUE_QA_WITH_TESTS
 #include "different_shape/submodule.hpp"
+#include "python_extension.hpp"
 #include "same_shape/submodule.hpp"
+#include "lue/configure.hpp"  // LUE_BUILD_QA and LUE_QA_WITH_TESTS
+#include "lue/py/data_model/submodule.hpp"
 
 #if defined(LUE_BUILD_QA) && defined(LUE_QA_WITH_TESTS)
 #include "test/submodule.hpp"
@@ -19,8 +19,7 @@ namespace py = pybind11;
 namespace lue::data_model {
 
 
-    void init_submodule(
-        py::module& module)
+    void init_submodule(py::module& module)
     {
         py::module submodule = module.def_submodule(
             "data_model",

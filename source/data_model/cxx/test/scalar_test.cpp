@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue scalar
-#include <boost/test/unit_test.hpp>
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
@@ -11,8 +11,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 
     lue::data_model::Count const nr_planets = 15;
     using ValueType = double;
-    lue::hdf5::Datatype const datatype{
-        lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
+    lue::hdf5::Datatype const datatype{lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
 
     std::vector<lue::data_model::ID> ids(nr_planets);
     lue::data_model::test::generate_random_ids(ids);
@@ -44,17 +43,13 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
 
         BOOST_REQUIRE(constants.properties().contains(property_name));
 
-        auto shape_per_object =
-            constants.properties().shape_per_object(property_name);
-        auto value_variability =
-            constants.properties().value_variability(property_name);
+        auto shape_per_object = constants.properties().shape_per_object(property_name);
+        auto value_variability = constants.properties().value_variability(property_name);
 
         BOOST_REQUIRE_EQUAL(shape_per_object, lue::data_model::ShapePerObject::same);
-        BOOST_REQUIRE_EQUAL(
-            value_variability, lue::data_model::ValueVariability::constant);
+        BOOST_REQUIRE_EQUAL(value_variability, lue::data_model::ValueVariability::constant);
 
-        auto const& properties =
-            constants.properties().collection<lue::data_model::same_shape::Properties>();
+        auto const& properties = constants.properties().collection<lue::data_model::same_shape::Properties>();
 
         auto const& gravity = properties[property_name];
         auto const& value = gravity.value();
@@ -65,8 +60,6 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         std::vector<ValueType> values_read(nr_planets);
         value.read(values_read.data());
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                values_read.begin(), values_read.end(),
-                values.begin(), values.end());
+        BOOST_CHECK_EQUAL_COLLECTIONS(values_read.begin(), values_read.end(), values.begin(), values.end());
     }
 }

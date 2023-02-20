@@ -7,10 +7,8 @@ namespace lue::framework {
 
         Rank const rank{2};
 
-        template<
-            typename Element>
-        PartitionedArray<std::uint32_t, rank> locality_id(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element>
+        PartitionedArray<std::uint32_t, rank> locality_id(PartitionedArray<Element, rank> const& array)
         {
             return lue::locality_id(array);
         }
@@ -18,8 +16,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_locality_id(
-        pybind11::module& module)
+    void bind_locality_id(pybind11::module& module)
     {
         module.def("locality_id", locality_id<std::uint8_t>);
         module.def("locality_id", locality_id<std::uint32_t>);

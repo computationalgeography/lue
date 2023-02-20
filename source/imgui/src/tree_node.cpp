@@ -3,9 +3,7 @@
 
 namespace lue::gui {
 
-    TreeNode::TreeNode(
-        std::string const& name,
-        ImGuiTreeNodeFlags const flags):
+    TreeNode::TreeNode(std::string const& name, ImGuiTreeNodeFlags const flags):
 
         Selectable{ImGui::TreeNodeEx(name.c_str(), flags)}
 
@@ -15,7 +13,7 @@ namespace lue::gui {
 
     TreeNode::~TreeNode()
     {
-        if(was_selected())
+        if (was_selected())
         {
             ImGui::TreePop();
         }

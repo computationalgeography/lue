@@ -3,47 +3,45 @@
 
 
 namespace lue {
-namespace data_model {
-namespace different_shape {
-namespace variable_shape {
+    namespace data_model {
+        namespace different_shape {
+            namespace variable_shape {
 
-Properties::Properties(
-    hdf5::Group const& parent):
+                Properties::Properties(hdf5::Group const& parent):
 
-    Collection<Property>{parent, different_shape_variable_shape_tag}
+                    Collection<Property>{parent, different_shape_variable_shape_tag}
 
-{
-}
-
-
-Properties::Properties(
-    Collection<Property>&& collection):
-
-    Collection<Property>{std::move(collection)}
-
-{
-}
+                {
+                }
 
 
-Property& Properties::add(
-    std::string const& name,
-    hdf5::Datatype const& datatype,
-    Rank const rank,
-    std::string const& description)
-{
-    return Collection::add(name, create_property(*this, name, datatype, rank, description));
-}
+                Properties::Properties(Collection<Property>&& collection):
+
+                    Collection<Property>{std::move(collection)}
+
+                {
+                }
 
 
-Properties create_properties(
-    hdf5::Group& parent)
-{
-    Collection<Property> collection{create_collection<Property>(parent, different_shape_variable_shape_tag)};
+                Property& Properties::add(
+                    std::string const& name,
+                    hdf5::Datatype const& datatype,
+                    Rank const rank,
+                    std::string const& description)
+                {
+                    return Collection::add(name, create_property(*this, name, datatype, rank, description));
+                }
 
-    return Properties{std::move(collection)};
-}
 
-}  // namespace variable_shape
-}  // namespace different_shape
-}  // namespace data_model
+                Properties create_properties(hdf5::Group& parent)
+                {
+                    Collection<Property> collection{
+                        create_collection<Property>(parent, different_shape_variable_shape_tag)};
+
+                    return Properties{std::move(collection)};
+                }
+
+            }  // namespace variable_shape
+        }      // namespace different_shape
+    }          // namespace data_model
 }  // namespace lue

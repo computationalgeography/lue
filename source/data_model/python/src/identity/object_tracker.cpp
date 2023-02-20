@@ -1,7 +1,7 @@
-#include "../python_extension.hpp"
 #include "lue/object/identity/object_tracker.hpp"
-#include <pybind11/pybind11.h>
+#include "../python_extension.hpp"
 #include <fmt/format.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -9,36 +9,30 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace {
+    namespace data_model {
+        namespace {
 
-static std::string formal_string_representation(
-    ObjectTracker const& tracker)
-{
-    return fmt::format(
-            "ObjectTracker(pathname='{}')",
-            tracker.id().pathname()
-        );
-}
+            static std::string formal_string_representation(ObjectTracker const& tracker)
+            {
+                return fmt::format("ObjectTracker(pathname='{}')", tracker.id().pathname());
+            }
 
 
-static std::string informal_string_representation(
-    ObjectTracker const& tracker)
-{
-    return formal_string_representation(tracker);
-}
+            static std::string informal_string_representation(ObjectTracker const& tracker)
+            {
+                return formal_string_representation(tracker);
+            }
 
-}  // Anonymous namespace
+        }  // Anonymous namespace
 
 
-void init_object_tracker(
-    py::module& module)
-{
+        void init_object_tracker(py::module& module)
+        {
 
-    py::class_<ObjectTracker, hdf5::Group>(
-        module,
-        "ObjectTracker",
-        R"(
+            py::class_<ObjectTracker, hdf5::Group>(
+                module,
+                "ObjectTracker",
+                R"(
     A class for storing IDs of objects in active sets and indices of
     information related to those objects and stored elsewhere
 
@@ -49,50 +43,43 @@ void init_object_tracker(
     where information about these objects is stored in the value arrays.
 )")
 
-        .def(
-            "__repr__",
-            [](ObjectTracker const& tracker) {
-                return formal_string_representation(tracker);
-            }
-        )
+                .def(
+                    "__repr__",
+                    [](ObjectTracker const& tracker) { return formal_string_representation(tracker); })
 
-        .def(
-            "__str__",
-            [](ObjectTracker const& tracker) {
-                return informal_string_representation(tracker);
-            }
-        )
+                .def(
+                    "__str__",
+                    [](ObjectTracker const& tracker) { return informal_string_representation(tracker); })
 
-        .def_property_readonly(
-            "active_set_index",
-            py::overload_cast<>(&ObjectTracker::active_set_index),
-            R"(
+                .def_property_readonly(
+                    "active_set_index",
+                    py::overload_cast<>(&ObjectTracker::active_set_index),
+                    R"(
     Return active set indices
 
     :rtype: ActiveSetIndex
 )")
 
-        .def_property_readonly(
-            "active_object_index",
-            py::overload_cast<>(&ObjectTracker::active_object_index),
-            R"(
+                .def_property_readonly(
+                    "active_object_index",
+                    py::overload_cast<>(&ObjectTracker::active_object_index),
+                    R"(
     Return active object indices
 
     :rtype: ActiveObjectIndex
 )")
 
-        .def_property_readonly(
-            "active_object_id",
-            py::overload_cast<>(&ObjectTracker::active_object_id),
-            R"(
+                .def_property_readonly(
+                    "active_object_id",
+                    py::overload_cast<>(&ObjectTracker::active_object_id),
+                    R"(
     Return active object IDs
 
     :rtype: ActiveObjectID
 )")
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

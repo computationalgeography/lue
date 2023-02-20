@@ -36,16 +36,18 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // vx vx vx | 76 77 78 | 79 80 81
 
     ValueArray value_array = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {
-            {  1,  2,  3, 10, 11, 12, 19, 20, 21 },
-            {  4,  5,  6, 13, 14, 15, 22, 23, 24 },
-            {  7,  8,  9, 16, 17, 18, 25, 26, 27 },
-            { 28, 29, 30, 37, 38, 39, 46, 47, 48 },
-            { vx, 32, 33, 40, 41, 42, 49, 50, vx },
-            { 34, 35, 36, 43, 44, 45, 52, 53, 54 },
-            { vx, vx, vx, vx, vx, vx, vx, vx, vx },
-            { 58, 59, 60, 67, 68, 69, 76, 77, 78 },
-            { 61, 62, 63, 70, 71, 72, 79, 80, 81 },
+        array_shape,
+        partition_shape,
+        {
+            {1, 2, 3, 10, 11, 12, 19, 20, 21},
+            {4, 5, 6, 13, 14, 15, 22, 23, 24},
+            {7, 8, 9, 16, 17, 18, 25, 26, 27},
+            {28, 29, 30, 37, 38, 39, 46, 47, 48},
+            {vx, 32, 33, 40, 41, 42, 49, 50, vx},
+            {34, 35, 36, 43, 44, 45, 52, 53, 54},
+            {vx, vx, vx, vx, vx, vx, vx, vx, vx},
+            {58, 59, 60, 67, 68, 69, 76, 77, 78},
+            {61, 62, 63, 70, 71, 72, 79, 80, 81},
         });
 
     ClassArray class_array = lue::array_partition_id(value_array);
@@ -53,16 +55,18 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     auto zonal_minimum = lue::value_policies::zonal_minimum(value_array, class_array);
 
     ValueArray array_we_want = lue::test::create_partitioned_array<ValueArray>(
-        array_shape, partition_shape, {
-            {  1,  1,  1,  1,  1,  1,  1,  1,  1 },
-            {  4,  4,  4,  4,  4,  4,  4,  4,  4 },
-            {  7,  7,  7,  7,  7,  7,  7,  7,  7 },
-            { 28, 28, 28, 28, 28, 28, 28, 28, 28 },
-            { 32, 32, 32, 32, 32, 32, 32, 32, 32 },
-            { 34, 34, 34, 34, 34, 34, 34, 34, 34 },
-            { vx, vx, vx, vx, vx, vx, vx, vx, vx },
-            { 58, 58, 58, 58, 58, 58, 58, 58, 58 },
-            { 61, 61, 61, 61, 61, 61, 61, 61, 61 },
+        array_shape,
+        partition_shape,
+        {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {4, 4, 4, 4, 4, 4, 4, 4, 4},
+            {7, 7, 7, 7, 7, 7, 7, 7, 7},
+            {28, 28, 28, 28, 28, 28, 28, 28, 28},
+            {32, 32, 32, 32, 32, 32, 32, 32, 32},
+            {34, 34, 34, 34, 34, 34, 34, 34, 34},
+            {vx, vx, vx, vx, vx, vx, vx, vx, vx},
+            {58, 58, 58, 58, 58, 58, 58, 58, 58},
+            {61, 61, 61, 61, 61, 61, 61, 61, 61},
         });
 
     lue::test::check_arrays_are_equal(zonal_minimum, array_we_want);

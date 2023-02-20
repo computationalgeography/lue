@@ -6,9 +6,7 @@
 namespace lue {
     namespace policy::logical_not {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -19,11 +17,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
-        PartitionedArray<std::uint8_t, rank> logical_not(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        PartitionedArray<std::uint8_t, rank> logical_not(PartitionedArray<Element, rank> const& array)
         {
             using Policies = policy::logical_not::DefaultValuePolicies<std::uint8_t, Element>;
 

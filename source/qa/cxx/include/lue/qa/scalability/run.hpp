@@ -11,15 +11,15 @@ namespace lue::qa {
 
             Run();
 
-            Run(Run const&)=default;
+            Run(Run const&) = default;
 
-            Run(Run&&)=default;
+            Run(Run&&) = default;
 
-            virtual ~Run()=default;
+            virtual ~Run() = default;
 
-            Run& operator=(Run const&)=default;
+            Run& operator=(Run const&) = default;
 
-            Run& operator=(Run&&)=default;
+            Run& operator=(Run&&) = default;
 
             void start();
 
@@ -27,8 +27,7 @@ namespace lue::qa {
 
             Stopwatch::SystemTimePoint const& start_time_point() const;
 
-            template<
-                typename ToDuration>
+            template<typename ToDuration>
             ToDuration duration() const
             {
                 return _stopwatch.duration<ToDuration>();
@@ -37,7 +36,6 @@ namespace lue::qa {
         private:
 
             Stopwatch _stopwatch;
-
     };
 
 }  // namespace lue::qa

@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue data_model_hl
 #include "lue/data_model/hl/raster_view.hpp"
-#include "lue/validate.hpp"
 #include "lue/test/print.hpp"
+#include "lue/validate.hpp"
 #include <boost/test/unit_test.hpp>
 
 
@@ -27,19 +27,19 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     lh5::Shape grid_shape{nr_rows, nr_cols};
 
     // -------------------------------------------------------------------------
-    auto dataset_ptr = std::make_shared<ldm::Dataset>(
-        ldm::create_in_memory_dataset(dataset_pathname));
+    auto dataset_ptr = std::make_shared<ldm::Dataset>(ldm::create_in_memory_dataset(dataset_pathname));
 
-    ldm::variable::RasterView<DatasetPtr> view =
-        ldm::variable::create_raster_view(
-            dataset_ptr,
-            phenomenon_name, property_set_name,
-            clock, nr_time_steps, {10, 10 + nr_time_steps},
-            grid_shape, {0, 0, 400, 600});
-    BOOST_REQUIRE( ldm::variable::contains_raster(
-        *dataset_ptr, phenomenon_name, property_set_name));
-    BOOST_REQUIRE(!ldm::constant::contains_raster(
-        *dataset_ptr, phenomenon_name, property_set_name));
+    ldm::variable::RasterView<DatasetPtr> view = ldm::variable::create_raster_view(
+        dataset_ptr,
+        phenomenon_name,
+        property_set_name,
+        clock,
+        nr_time_steps,
+        {10, 10 + nr_time_steps},
+        grid_shape,
+        {0, 0, 400, 600});
+    BOOST_REQUIRE(ldm::variable::contains_raster(*dataset_ptr, phenomenon_name, property_set_name));
+    BOOST_REQUIRE(!ldm::constant::contains_raster(*dataset_ptr, phenomenon_name, property_set_name));
 
     // Details
     {
@@ -71,22 +71,17 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             BOOST_REQUIRE(property_set.has_time_domain());
 
             ldm::TimeDomain const& time_domain{property_set.time_domain()};
-            ldm::TimeConfiguration const& configuration{
-                time_domain.configuration()};
+            ldm::TimeConfiguration const& configuration{time_domain.configuration()};
 
-            BOOST_REQUIRE_EQUAL(
-                configuration.value<ldm::TimeDomainItemType>(),
-                ldm::TimeDomainItemType::box);
+            BOOST_REQUIRE_EQUAL(configuration.value<ldm::TimeDomainItemType>(), ldm::TimeDomainItemType::box);
 
             BOOST_CHECK(time_domain.clock() == clock);
 
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-            ldm::TimeBox value{const_cast<ldm::TimeDomain&>(time_domain)
-                .value<ldm::TimeBox>()};
+            ldm::TimeBox value{const_cast<ldm::TimeDomain&>(time_domain).value<ldm::TimeBox>()};
 
             BOOST_REQUIRE_EQUAL(value.nr_locations(), 1);
-            BOOST_REQUIRE_EQUAL(
-                value.file_datatype(), lh5::std_uint64_le);
+            BOOST_REQUIRE_EQUAL(value.file_datatype(), lh5::std_uint64_le);
             BOOST_REQUIRE_EQUAL(value.array_shape(), (lh5::Shape{2}));
 
             std::vector<ldm::time::DurationCount> durations(2);
@@ -108,27 +103,20 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
             BOOST_CHECK(!space_domain.presence_is_discretized());
 
-            ldm::SpaceConfiguration const& configuration{
-                space_domain.configuration()};
+            ldm::SpaceConfiguration const& configuration{space_domain.configuration()};
 
+            BOOST_REQUIRE_EQUAL(configuration.value<ldm::Mobility>(), ldm::Mobility::stationary);
             BOOST_REQUIRE_EQUAL(
-                configuration.value<ldm::Mobility>(),
-                ldm::Mobility::stationary);
-            BOOST_REQUIRE_EQUAL(
-                configuration.value<ldm::SpaceDomainItemType>(),
-                ldm::SpaceDomainItemType::box);
+                configuration.value<ldm::SpaceDomainItemType>(), ldm::SpaceDomainItemType::box);
 
             ldm::StationarySpaceBox value{
                 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                const_cast<ldm::SpaceDomain&>(space_domain)
-                    .value<ldm::StationarySpaceBox>()};
+                const_cast<ldm::SpaceDomain&>(space_domain).value<ldm::StationarySpaceBox>()};
 
             BOOST_REQUIRE_EQUAL(value.nr_boxes(), 1);
-            BOOST_REQUIRE_EQUAL(
-                value.file_datatype(), lh5::ieee_float64_le);
+            BOOST_REQUIRE_EQUAL(value.file_datatype(), lh5::ieee_float64_le);
 
-            BOOST_REQUIRE_EQUAL(
-                value.array_shape(), (lh5::Shape{4}));
+            BOOST_REQUIRE_EQUAL(value.array_shape(), (lh5::Shape{4}));
 
             std::vector<double> box(4);
             value.read(0, box.data());
@@ -149,13 +137,10 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         BOOST_CHECK_EQUAL(view.property_set_name(), property_set_name);
 
         BOOST_CHECK(
-            view.time_box() ==
-            (ldm::variable::RasterView<DatasetPtr>::TimeBox{10, 10 + nr_time_steps}));
+            view.time_box() == (ldm::variable::RasterView<DatasetPtr>::TimeBox{10, 10 + nr_time_steps}));
         BOOST_CHECK_EQUAL(view.nr_time_steps(), nr_time_steps);
 
-        BOOST_CHECK(
-            view.space_box() ==
-            (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
+        BOOST_CHECK(view.space_box() == (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
         auto const& grid_shape_{view.grid_shape()};
         BOOST_REQUIRE_EQUAL(grid_shape_.size(), 2);
         BOOST_CHECK_EQUAL(grid_shape_[0], nr_rows);
@@ -165,8 +150,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
         {
             BOOST_CHECK(!view.contains("elevation"));
-            ldm::variable::RasterView<DatasetPtr>::Layer layer{
-                view.add_layer<double>("elevation")};
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{view.add_layer<double>("elevation")};
             BOOST_CHECK(view.contains("elevation"));
             BOOST_CHECK_EQUAL(layer.rank(), 3);
 
@@ -175,8 +159,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
         {
             BOOST_CHECK(!view.contains("soil"));
-            ldm::variable::RasterView<DatasetPtr>::Layer layer{
-                view.add_layer<std::uint32_t>("soil")};
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{view.add_layer<std::uint32_t>("soil")};
             BOOST_CHECK(view.contains("soil"));
             BOOST_CHECK_EQUAL(layer.rank(), 3);
 
@@ -190,8 +173,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     {
         // Open a second view on the just created dataset
-        ldm::variable::RasterView<DatasetPtr> view_{
-            dataset_ptr, phenomenon_name, property_set_name};
+        ldm::variable::RasterView<DatasetPtr> view_{dataset_ptr, phenomenon_name, property_set_name};
 
         BOOST_CHECK_EQUAL(view_.nr_layers(), 2);
         BOOST_CHECK(view_.contains("elevation"));
@@ -217,18 +199,12 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lh5::Shape grid_shape{nr_rows, nr_cols};
 
     // -------------------------------------------------------------------------
-    auto dataset_ptr = std::make_shared<ldm::Dataset>(
-        ldm::create_in_memory_dataset(dataset_pathname));
+    auto dataset_ptr = std::make_shared<ldm::Dataset>(ldm::create_in_memory_dataset(dataset_pathname));
 
-    ldm::constant::RasterView<DatasetPtr> view =
-        ldm::constant::create_raster_view(
-            dataset_ptr,
-            phenomenon_name, property_set_name,
-            grid_shape, {0, 0, 400, 600});
-    BOOST_REQUIRE( ldm::constant::contains_raster(
-        *dataset_ptr, phenomenon_name, property_set_name));
-    BOOST_REQUIRE(!ldm::variable::contains_raster(
-        *dataset_ptr, phenomenon_name, property_set_name));
+    ldm::constant::RasterView<DatasetPtr> view = ldm::constant::create_raster_view(
+        dataset_ptr, phenomenon_name, property_set_name, grid_shape, {0, 0, 400, 600});
+    BOOST_REQUIRE(ldm::constant::contains_raster(*dataset_ptr, phenomenon_name, property_set_name));
+    BOOST_REQUIRE(!ldm::variable::contains_raster(*dataset_ptr, phenomenon_name, property_set_name));
 
     // Details
     {
@@ -268,27 +244,20 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
             BOOST_CHECK(!space_domain.presence_is_discretized());
 
-            ldm::SpaceConfiguration const& configuration{
-                space_domain.configuration()};
+            ldm::SpaceConfiguration const& configuration{space_domain.configuration()};
 
+            BOOST_REQUIRE_EQUAL(configuration.value<ldm::Mobility>(), ldm::Mobility::stationary);
             BOOST_REQUIRE_EQUAL(
-                configuration.value<ldm::Mobility>(),
-                ldm::Mobility::stationary);
-            BOOST_REQUIRE_EQUAL(
-                configuration.value<ldm::SpaceDomainItemType>(),
-                ldm::SpaceDomainItemType::box);
+                configuration.value<ldm::SpaceDomainItemType>(), ldm::SpaceDomainItemType::box);
 
             ldm::StationarySpaceBox value{
                 // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-                const_cast<ldm::SpaceDomain&>(space_domain)
-                    .value<ldm::StationarySpaceBox>()};
+                const_cast<ldm::SpaceDomain&>(space_domain).value<ldm::StationarySpaceBox>()};
 
             BOOST_REQUIRE_EQUAL(value.nr_boxes(), 1);
-            BOOST_REQUIRE_EQUAL(
-                value.file_datatype(), lh5::ieee_float64_le);
+            BOOST_REQUIRE_EQUAL(value.file_datatype(), lh5::ieee_float64_le);
 
-            BOOST_REQUIRE_EQUAL(
-                value.array_shape(), (lh5::Shape{4}));
+            BOOST_REQUIRE_EQUAL(value.array_shape(), (lh5::Shape{4}));
 
             std::vector<double> box(4);
             value.read(0, box.data());
@@ -308,9 +277,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         BOOST_CHECK_EQUAL(view.phenomenon_name(), phenomenon_name);
         BOOST_CHECK_EQUAL(view.property_set_name(), property_set_name);
 
-        BOOST_CHECK(
-            view.space_box() ==
-            (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
+        BOOST_CHECK(view.space_box() == (ldm::variable::RasterView<DatasetPtr>::SpaceBox{0, 0, 400, 600}));
         auto const& grid_shape_{view.grid_shape()};
         BOOST_REQUIRE_EQUAL(grid_shape_.size(), 2);
         BOOST_CHECK_EQUAL(grid_shape_[0], nr_rows);
@@ -320,8 +287,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
         {
             BOOST_CHECK(!view.contains("elevation"));
-            ldm::variable::RasterView<DatasetPtr>::Layer layer{
-                view.add_layer<double>("elevation")};
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{view.add_layer<double>("elevation")};
             BOOST_CHECK(view.contains("elevation"));
             // BOOST_CHECK_EQUAL(layer.rank(), 2);
 
@@ -330,8 +296,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
         {
             BOOST_CHECK(!view.contains("soil"));
-            ldm::variable::RasterView<DatasetPtr>::Layer layer{
-                view.add_layer<std::uint32_t>("soil")};
+            ldm::variable::RasterView<DatasetPtr>::Layer layer{view.add_layer<std::uint32_t>("soil")};
             BOOST_CHECK(view.contains("soil"));
             // BOOST_CHECK_EQUAL(layer.rank(), 2);
 
@@ -345,8 +310,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     {
         // Open a second view on the just created dataset
-        ldm::constant::RasterView<DatasetPtr> view_{
-            dataset_ptr, phenomenon_name, property_set_name};
+        ldm::constant::RasterView<DatasetPtr> view_{dataset_ptr, phenomenon_name, property_set_name};
 
         BOOST_CHECK_EQUAL(view_.nr_layers(), 2);
         BOOST_CHECK(view_.contains("elevation"));

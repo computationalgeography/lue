@@ -5,14 +5,8 @@
 
 namespace lue {
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank,
-        typename Kernel>
+    template<typename Policies, typename Element, Rank rank, typename Kernel>
     PartitionedArray<Element, rank> focal_maximum(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array,
-        Kernel const& kernel);
+        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel);
 
 }  // namespace lue

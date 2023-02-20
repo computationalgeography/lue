@@ -2,18 +2,14 @@
 #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
-#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/annotate.hpp"
+#include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename Policies,
-            typename InputElement,
-            typename OutputElement,
-            Rank rank>
+        template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
         ArrayPartition<OutputElement, rank> array_like_partition(
             Policies const& policies,
             ArrayPartition<InputElement, rank> const& input_partition,
@@ -32,38 +28,36 @@ namespace lue {
                 hpx::launch::async,
                 hpx::unwrapping(
 
-                        [policies, input_partition, fill_value](
-                            Offset const& offset,
-                            Shape const& shape)
+                    [policies, input_partition, fill_value](Offset const& offset, Shape const& shape)
+                    {
+                        AnnotateFunction annotation{"array_like_partition"};
+
+                        HPX_UNUSED(input_partition);
+
+                        OutputData output_partition_data{shape};
+
+                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                        Count const nr_elements{lue::nr_elements(output_partition_data)};
+
+                        if (indp.is_no_data(fill_value))
                         {
-                            AnnotateFunction annotation{"array_like_partition"};
-
-                            HPX_UNUSED(input_partition);
-
-                            OutputData output_partition_data{shape};
-
-                            auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                            auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                            Count const nr_elements{lue::nr_elements(output_partition_data)};
-
-                            if(indp.is_no_data(fill_value))
+                            for (Index i = 0; i < nr_elements; ++i)
                             {
-                                for(Index i = 0; i < nr_elements; ++i)
-                                {
-                                    ondp.mark_no_data(output_partition_data, i);
-                                }
+                                ondp.mark_no_data(output_partition_data, i);
                             }
-                            else
-                            {
-                                for(Index i = 0; i < nr_elements; ++i)
-                                {
-                                    output_partition_data[i] = fill_value;
-                                }
-                            }
-
-                            return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                         }
+                        else
+                        {
+                            for (Index i = 0; i < nr_elements; ++i)
+                            {
+                                output_partition_data[i] = fill_value;
+                            }
+                        }
+
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    }
 
                     ),
                 input_partition.offset(),
@@ -75,17 +69,13 @@ namespace lue {
 
     namespace policy::array_like {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
             InputElements<InputElement>>;
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -94,24 +84,17 @@ namespace lue {
     }  // namespace policy::array_like
 
 
-    template<
-        typename Policies,
-        typename InputElement,
-        typename OutputElement,
-        Rank rank>
+    template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
     struct ArrayLikePartitionAction:
         hpx::actions::make_action<
             decltype(&detail::array_like_partition<Policies, InputElement, OutputElement, rank>),
             &detail::array_like_partition<Policies, InputElement, OutputElement, rank>,
             ArrayLikePartitionAction<Policies, InputElement, OutputElement, rank>>::type
-    {};
+    {
+    };
 
 
-    template<
-        typename OutputElement,
-        typename Policies,
-        typename InputElement,
-        Rank rank>
+    template<typename OutputElement, typename Policies, typename InputElement, Rank rank>
     PartitionedArray<OutputElement, rank> array_like(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
@@ -130,12 +113,12 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for(Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index p = 0; p < nr_partitions(input_array); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
 
-                [locality_id=localities[p], action, policies](
+                [locality_id = localities[p], action, policies](
                     InputPartition const& input_partition,
                     hpx::shared_future<OutputElement> const& fill_value)
                 {
@@ -152,11 +135,7 @@ namespace lue {
     }
 
 
-    template<
-        typename OutputElement,
-        typename Policies,
-        typename InputElement,
-        Rank rank>
+    template<typename OutputElement, typename Policies, typename InputElement, Rank rank>
     PartitionedArray<OutputElement, rank> array_like(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
@@ -166,13 +145,9 @@ namespace lue {
     }
 
 
-    template<
-        typename OutputElement,
-        typename InputElement,
-        Rank rank>
+    template<typename OutputElement, typename InputElement, Rank rank>
     PartitionedArray<OutputElement, rank> array_like(
-        PartitionedArray<InputElement, rank> const& input_array,
-        OutputElement const fill_value)
+        PartitionedArray<InputElement, rank> const& input_array, OutputElement const fill_value)
     {
         using Policies = policy::array_like::DefaultPolicies<OutputElement, InputElement>;
 

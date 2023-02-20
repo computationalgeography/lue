@@ -10,11 +10,9 @@ namespace lue::framework {
 
         Rank const rank{2};
 
-        template<
-            typename ConditionElement>
+        template<typename ConditionElement>
         pybind11::object unique_id(
-            PartitionedArray<ConditionElement, rank> const& condition,
-            pybind11::object const& dtype_args)
+            PartitionedArray<ConditionElement, rank> const& condition, pybind11::object const& dtype_args)
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -24,18 +22,20 @@ namespace lue::framework {
             auto const size = dtype.itemsize();  // bytes
             pybind11::object result;
 
-            switch(kind)
+            switch (kind)
             {
                 case 'i':
                 {
                     // Signed integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::unique_id<std::int32_t>(condition));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::unique_id<std::int64_t>(condition));
                             break;
                         }
@@ -46,17 +46,20 @@ namespace lue::framework {
                 case 'u':
                 {
                     // Unsigned integer
-                    switch(size)
+                    switch (size)
                     {
-                        case 1: {
+                        case 1:
+                        {
                             result = pybind11::cast(value_policies::unique_id<std::uint8_t>(condition));
                             break;
                         }
-                        case 4: {
+                        case 4:
+                        {
                             result = pybind11::cast(value_policies::unique_id<std::uint32_t>(condition));
                             break;
                         }
-                        case 8: {
+                        case 8:
+                        {
                             result = pybind11::cast(value_policies::unique_id<std::uint64_t>(condition));
                             break;
                         }
@@ -66,12 +69,13 @@ namespace lue::framework {
                 }
             }
 
-            if(!result)
+            if (!result)
             {
                 throw std::runtime_error(fmt::format(
                     "Operation expects dtype representing uint8, uint{{32,64}}, or int{{32,64}}, "
                     "but got: kind={}, itemsize={}",
-                    kind, size));
+                    kind,
+                    size));
             }
 
             return result;
@@ -80,8 +84,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_unique_id(
-        pybind11::module& module)
+    void bind_unique_id(pybind11::module& module)
     {
         module.def("unique_id", unique_id<std::uint8_t>, "condition"_a, "dtype"_a);
     }

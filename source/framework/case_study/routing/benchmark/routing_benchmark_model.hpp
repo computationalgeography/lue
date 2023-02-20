@@ -5,8 +5,7 @@
 
 namespace lue::benchmark {
 
-    class RoutingBenchmarkModel:
-        public BenchmarkModel<float, 2>
+    class RoutingBenchmarkModel: public BenchmarkModel<float, 2>
     {
 
         public:
@@ -18,15 +17,15 @@ namespace lue::benchmark {
                 std::string const& array_pathname,
                 std::vector<Index> center_cell);
 
-            RoutingBenchmarkModel(RoutingBenchmarkModel const&)=default;
+            RoutingBenchmarkModel(RoutingBenchmarkModel const&) = default;
 
-            RoutingBenchmarkModel(RoutingBenchmarkModel&&)=default;
+            RoutingBenchmarkModel(RoutingBenchmarkModel&&) = default;
 
-            ~RoutingBenchmarkModel()=default;
+            ~RoutingBenchmarkModel() = default;
 
-            RoutingBenchmarkModel& operator=(RoutingBenchmarkModel const&)=default;
+            RoutingBenchmarkModel& operator=(RoutingBenchmarkModel const&) = default;
 
-            RoutingBenchmarkModel& operator=(RoutingBenchmarkModel&&)=default;
+            RoutingBenchmarkModel& operator=(RoutingBenchmarkModel&&) = default;
 
 
         private:
@@ -59,7 +58,6 @@ namespace lue::benchmark {
             PartitionedArray<ScalarElement, 2> more_or_less_one;
 
             PartitionedArray<ScalarElement, 2> infiltration_capacity;
-
     };
 
 }  // namespace lue::benchmark

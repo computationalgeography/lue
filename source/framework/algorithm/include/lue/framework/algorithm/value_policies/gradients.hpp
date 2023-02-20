@@ -5,24 +5,20 @@
 namespace lue {
     namespace policy::gradients {
 
-        template<
-            typename Element>
+        template<typename Element>
         using DefaultValuePolicies = policy::DefaultSpatialOperationValuePolicies<
             AllValuesWithinDomain<Element, Element>,
             OutputElements<Element>,
             InputElements<Element, Element>>;
 
-    }  // namespace gradients::policy
+    }  // namespace policy::gradients
 
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            Rank rank>
+        template<typename Element, Rank rank>
         Gradients<Element> gradients(
-            PartitionedArray<Element, rank> const& elevation,
-            Element const cell_size)
+            PartitionedArray<Element, rank> const& elevation, Element const cell_size)
         {
             using Policies = policy::gradients::DefaultValuePolicies<Element>;
 

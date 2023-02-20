@@ -7,9 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement,
-            typename OutputElement_=InputElement>
+        template<typename InputElement, typename OutputElement_ = InputElement>
         class Divide
         {
 
@@ -21,12 +19,10 @@ namespace lue {
 
 
                 constexpr OutputElement operator()(
-                    InputElement const& input_element1,
-                    InputElement const& input_element2) const noexcept
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
                 {
                     return input_element1 / input_element2;
                 }
-
         };
 
     }  // namespace detail
@@ -34,23 +30,20 @@ namespace lue {
 
     namespace policy::divide {
 
-        template<
-            typename Element>
+        template<typename Element>
         class DomainPolicy
         {
 
             public:
 
                 static constexpr bool within_domain(
-                    [[maybe_unused]] Element const numerator,
-                    Element const denominator) noexcept
+                    [[maybe_unused]] Element const numerator, Element const denominator) noexcept
                 {
                     return denominator != 0;
                 }
-
         };
 
-    }  // namespace divide::policy
+    }  // namespace policy::divide
 
 
     LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(divide, detail::Divide)

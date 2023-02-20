@@ -3,91 +3,81 @@
 
 
 namespace lue {
-namespace hdf5 {
+    namespace hdf5 {
 
-/*!
-    @brief      This class represents the collection of attributes attached
-                to an object
-*/
-class Attributes
-{
+        /*!
+            @brief      This class represents the collection of attributes attached
+                        to an object
+        */
+        class Attributes
+        {
 
-public:
+            public:
 
-    explicit       Attributes          (Identifier const& id);
+                explicit Attributes(Identifier const& id);
 
-                   Attributes          (Attributes const&)=default;
+                Attributes(Attributes const&) = default;
 
-                   Attributes          (Attributes&&)=default;
+                Attributes(Attributes&&) = default;
 
-                   ~Attributes         ()=default;
+                ~Attributes() = default;
 
-    Attributes&    operator=           (Attributes const&)=default;
+                Attributes& operator=(Attributes const&) = default;
 
-    Attributes&    operator=           (Attributes&&)=default;
+                Attributes& operator=(Attributes&&) = default;
 
-    Attribute      add                 (std::string const& name,
-                                        Datatype const& file_datatype,
-                                        Dataspace const& dataspace);
+                Attribute add(
+                    std::string const& name, Datatype const& file_datatype, Dataspace const& dataspace);
 
-    template<
-        typename T>
-    void           write               (std::string const& name,
-                                        T const& value);
+                template<typename T>
+                void write(std::string const& name, T const& value);
 
-    template<
-        typename T>
-    T              read                (std::string const& name) const;
+                template<typename T>
+                T read(std::string const& name) const;
 
-    bool           exists              (std::string const& name) const;
+                bool exists(std::string const& name) const;
 
-    Attribute      attribute           (std::string const& name) const;
+                Attribute attribute(std::string const& name) const;
 
-    Datatype       datatype            (std::string const& name) const;
+                Datatype datatype(std::string const& name) const;
 
-private:
+            private:
 
-    //! Identifier of object owning the attributes
-    Identifier     _id;
-
-};
+                //! Identifier of object owning the attributes
+                Identifier _id;
+        };
 
 
-/*!
-    @brief      Return value of attribute @a name
-    @sa         Attribute::read(std::string const&)
-*/
-template<
-    typename T>
-inline T Attributes::read(
-    std::string const& name) const
-{
-    return attribute(name).read<T>();
-}
+        /*!
+            @brief      Return value of attribute @a name
+            @sa         Attribute::read(std::string const&)
+        */
+        template<typename T>
+        inline T Attributes::read(std::string const& name) const
+        {
+            return attribute(name).read<T>();
+        }
 
 
-/*!
-    @brief      Store @a value of attribute @a name
+        /*!
+            @brief      Store @a value of attribute @a name
 
-    In case no attribute named @a name exists, it is created.
-*/
-template<
-    typename T>
-inline void Attributes::write(
-    std::string const& name,
-    T const& value)
-{
-    assert(_id.is_valid());
+            In case no attribute named @a name exists, it is created.
+        */
+        template<typename T>
+        inline void Attributes::write(std::string const& name, T const& value)
+        {
+            assert(_id.is_valid());
 
-    if(!exists(name))
-    {
-        create_attribute(_id, name, value);
-    }
-    else
-    {
-        attribute(name).write<T>(value);
-    }
-}
+            if (!exists(name))
+            {
+                create_attribute(_id, name, value);
+            }
+            else
+            {
+                attribute(name).write<T>(value);
+            }
+        }
 
-} // namespace hdf5
-} // namespace lue
+    }  // namespace hdf5
+}  // namespace lue

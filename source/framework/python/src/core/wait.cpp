@@ -1,16 +1,13 @@
-#include "lue/framework/partitioned_array.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array.hpp"
 #include <pybind11/pybind11.h>
 
 
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Element,
-            Rank rank>
-        void wait(
-            PartitionedArray<Element, rank> const& array)
+        template<typename Element, Rank rank>
+        void wait(PartitionedArray<Element, rank> const& array)
         {
             wait_all(array);
 
@@ -21,8 +18,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_wait(
-        pybind11::module& module)
+    void bind_wait(pybind11::module& module)
     {
         module.def("wait", wait<std::uint8_t, 2>);
         module.def("wait", wait<std::uint32_t, 2>);

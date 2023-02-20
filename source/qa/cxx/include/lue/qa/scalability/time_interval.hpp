@@ -22,19 +22,19 @@ namespace lue::qa {
 
             using Duration = Clock::duration;
 
-            TimeInterval()=default;
+            TimeInterval() = default;
 
             TimeInterval(TimePoint const& start, TimePoint const& stop);
 
-            TimeInterval(TimeInterval const&)=default;
+            TimeInterval(TimeInterval const&) = default;
 
-            TimeInterval(TimeInterval&&)=default;
+            TimeInterval(TimeInterval&&) = default;
 
-            ~TimeInterval()=default;
+            ~TimeInterval() = default;
 
-            TimeInterval& operator=(TimeInterval const&)=default;
+            TimeInterval& operator=(TimeInterval const&) = default;
 
-            TimeInterval& operator=(TimeInterval&&)=default;
+            TimeInterval& operator=(TimeInterval&&) = default;
 
             void set_stop(TimePoint const& time_point);
 
@@ -46,8 +46,7 @@ namespace lue::qa {
                 Use this function to convert the duration to some courser unit,
                 like seconds.
             */
-            template<
-                typename ToDuration>
+            template<typename ToDuration>
             ToDuration duration() const
             {
                 return std::chrono::duration_cast<ToDuration>(duration());
@@ -60,7 +59,6 @@ namespace lue::qa {
 
             //! End of interval
             TimePoint _stop;
-
     };
 
 }  // namespace lue::qa

@@ -1,4 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm create_partitioned_array
+#include "boost/smart_ptr/make_shared.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
@@ -9,11 +10,10 @@
 #include "lue/framework/algorithm/sum.hpp"
 #include "lue/framework/algorithm/value_policies/logical_not.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/core/component.hpp"
-#include "boost/smart_ptr/make_shared.hpp"
 
 
 namespace {
@@ -29,9 +29,7 @@ namespace {
     Shape const partition_shape{{10, 10}};
 
 
-    template<
-        typename Element,
-        lue::Rank rank>
+    template<typename Element, lue::Rank rank>
     class NumberPartitionsIndividually
 
     {
@@ -46,8 +44,7 @@ namespace {
             static constexpr bool instantiate_per_locality{false};
 
 
-            template<
-                typename Policies>
+            template<typename Policies>
             Partition instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
@@ -60,16 +57,14 @@ namespace {
 
                 return hpx::async(
 
-                        [locality_id, offset, partition_shape, fill_value]()
-                        {
-                            return Partition{locality_id, offset, partition_shape, fill_value};
-                        }
+                    [locality_id, offset, partition_shape, fill_value]() {
+                        return Partition{locality_id, offset, partition_shape, fill_value};
+                    }
 
-                    );
+                );
             }
 
         private:
-
     };
 
 
@@ -94,24 +89,22 @@ namespace {
 
         partitions[0] = hpx::async(
 
-                [locality_id, offset=offsets[0], partition_shape=partition_shapes[0], fill_value]()
-                {
+            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]() {
+                return Partition{locality_id, offset, partition_shape, fill_value};
+            }
+
+        );
+
+        for (std::size_t idx = 1; idx < nr_partitions; ++idx)
+        {
+            partitions[idx] = partitions[idx - 1].then(
+
+                [locality_id, offset = offsets[idx], partition_shape = partition_shapes[idx], fill_value](
+                    auto const& /* previous_partition */) {
                     return Partition{locality_id, offset, partition_shape, fill_value};
                 }
 
             );
-
-        for(std::size_t idx = 1; idx < nr_partitions; ++idx)
-        {
-            partitions[idx] = partitions[idx-1].then(
-
-                    [locality_id, offset=offsets[idx], partition_shape=partition_shapes[idx], fill_value](
-                        auto const& /* previous_partition */)
-                    {
-                        return Partition{locality_id, offset, partition_shape, fill_value};
-                    }
-
-                );
         }
 
         return partitions;
@@ -123,16 +116,14 @@ namespace {
         typename Partition>
     struct NumberPartitionsPerLocalityAction:
         hpx::actions::make_action<
-                decltype(&number_partition_per_locality</* Policies, */ Partition>),
-                &number_partition_per_locality</* Policies, */ Partition>,
-                NumberPartitionsPerLocalityAction</* Policies, */ Partition>
-            >::type
-    {};
+            decltype(&number_partition_per_locality</* Policies, */ Partition>),
+            &number_partition_per_locality</* Policies, */ Partition>,
+            NumberPartitionsPerLocalityAction</* Policies, */ Partition>>::type
+    {
+    };
 
 
-    template<
-        typename Element,
-        lue::Rank rank>
+    template<typename Element, lue::Rank rank>
     class NumberPartitionsPerLocality
     {
 
@@ -146,8 +137,7 @@ namespace {
             static constexpr bool instantiate_per_locality{true};
 
 
-            template<
-                typename Policies>
+            template<typename Policies>
             hpx::future<std::vector<Partition>> instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
@@ -164,17 +154,16 @@ namespace {
 
                 return hpx::async(
 
-                        [locality_id, action=std::move(action),
-                            offsets=std::move(offsets), partition_shapes=std::move(partition_shapes)]()
-                        {
-                            return action(locality_id, offsets, partition_shapes);
-                        }
+                    [locality_id,
+                     action = std::move(action),
+                     offsets = std::move(offsets),
+                     partition_shapes = std::move(partition_shapes)]()
+                    { return action(locality_id, offsets, partition_shapes); }
 
-                    );
+                );
             }
 
         private:
-
     };
 
 }  // Anonymous namespace
@@ -182,17 +171,13 @@ namespace {
 
 namespace lue {
 
-    template<
-        typename Element,
-        Rank rank>
-    class FunctorTraits<
-        NumberPartitionsIndividually<Element, rank>>
+    template<typename Element, Rank rank>
+    class FunctorTraits<NumberPartitionsIndividually<Element, rank>>
     {
 
         public:
 
             static constexpr bool const is_functor{true};
-
     };
 
 }  // namespace lue
@@ -200,17 +185,13 @@ namespace lue {
 
 namespace lue {
 
-    template<
-        typename Element,
-        Rank rank>
-    class FunctorTraits<
-        NumberPartitionsPerLocality<Element, rank>>
+    template<typename Element, Rank rank>
+    class FunctorTraits<NumberPartitionsPerLocality<Element, rank>>
     {
 
         public:
 
             static constexpr bool const is_functor{true};
-
     };
 
 }  // namespace lue
@@ -288,7 +269,7 @@ BOOST_AUTO_TEST_CASE(clamp_mode_merge)
     lue::wait_all(partitions);
 
     BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), array_shape);
-    BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
+    BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({0, 0}));
 }
 
 
@@ -325,29 +306,23 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
 namespace lue::detail {
 
-    template<
-        typename T>
-    class ArrayTraits<
-        std::shared_ptr<std::vector<T>>>
+    template<typename T>
+    class ArrayTraits<std::shared_ptr<std::vector<T>>>
     {
 
         public:
 
             using Element = T;
-
     };
 
 
-    template<
-        typename T>
-    class ArrayTraits<
-        boost::shared_ptr<T[]>>
+    template<typename T>
+    class ArrayTraits<boost::shared_ptr<T[]>>
     {
 
         public:
 
             using Element = T;
-
     };
 
 }  // namespace lue::detail
@@ -377,13 +352,10 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
 
     Functor functor{
-            buffer_handle,  // Copy: increments reference count
-            [](BufferHandle const& handle) -> Element*
-            {
-                return handle->data();
-            }
+        buffer_handle,  // Copy: increments reference count
+        [](BufferHandle const& handle) -> Element* { return handle->data(); }
 
-        };
+    };
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, functor);
     BOOST_CHECK_GE(buffer_handle.use_count(), 2);
@@ -402,9 +374,9 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
 
-    for(lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
+    for (lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
     {
-        for(lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
+        for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
         {
             BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
             {
@@ -412,9 +384,9 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                 auto const data{partition.data().get()};
                 auto const [nr_cells0, nr_cells1] = data.shape();
 
-                for(lue::Index cell0 = 0; cell0 < nr_cells0; ++cell0)
+                for (lue::Index cell0 = 0; cell0 < nr_cells0; ++cell0)
                 {
-                    for(lue::Index cell1 = 0; cell1 < nr_cells1; ++cell1)
+                    for (lue::Index cell1 = 0; cell1 < nr_cells1; ++cell1)
                     {
                         BOOST_TEST_CONTEXT(fmt::format("Cell {}, {}", cell0, cell1))
                         {
@@ -422,8 +394,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                                 data(cell0, cell1),
                                 // previous rows:
                                 ((partition0 * partition_shape[0]) + cell0) * array_shape[1] +
-                                // previous cols:
-                                (partition1 * partition_shape[1]) + cell1);
+                                    // previous cols:
+                                    (partition1 * partition_shape[1]) + cell1);
                         }
                     }
                 }
@@ -452,9 +424,9 @@ BOOST_AUTO_TEST_CASE(use_case_3)
     std::fill_n(buffer_handle.get(), nr_values, 5);
 
     // Put a special no-data value in the first cell of each partition
-    for(lue::Index i0 = 0; i0 < 6; ++i0)
+    for (lue::Index i0 = 0; i0 < 6; ++i0)
     {
-        for(lue::Index i1 = 0; i1 < 4; ++i1)
+        for (lue::Index i1 = 0; i1 < 4; ++i1)
         {
             buffer_handle.get()[i0 * 10 * nr_cols + i1 * 10] = 999;
         }
@@ -467,13 +439,9 @@ BOOST_AUTO_TEST_CASE(use_case_3)
     using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
 
     Functor functor{
-            buffer_handle,  // Copy: increments reference count
-            [](BufferHandle const& handle) -> Element*
-            {
-                return handle.get();
-            },
-            999
-        };
+        buffer_handle,  // Copy: increments reference count
+        [](BufferHandle const& handle) -> Element* { return handle.get(); },
+        999};
 
     using CreatePartitionedArrayPolicies =
         lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
@@ -489,9 +457,9 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 
     lue::policy::DefaultOutputNoDataPolicy<Element> ondp{};
 
-    for(lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
+    for (lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
     {
-        for(lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
+        for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
         {
             BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
             {

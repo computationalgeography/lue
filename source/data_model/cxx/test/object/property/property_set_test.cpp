@@ -1,84 +1,77 @@
 #define BOOST_TEST_MODULE lue object property property_set
-#include <boost/test/unit_test.hpp>
 #include "lue/object/property/property_set.hpp"
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
-class Fixture:
-    public lue::data_model::test::FileFixture
+class Fixture: public lue::data_model::test::FileFixture
 {
 
-public:
+    public:
 
-    Fixture():
-        FileFixture{"property.h5"},
-        _filename{"property.h5"},
-        _file{std::make_unique<lue::hdf5::File>(
-            lue::hdf5::create_file(_filename))},
-        _property_set_name{"my_property_set"},
-        _time_configuration{
-            lue::data_model::TimeDomainItemType::box
-        },
-        _clock{lue::data_model::time::Unit::day, 1},
-        _space_configuration{
-            lue::data_model::Mobility::stationary,
-            lue::data_model::SpaceDomainItemType::point
-        },
-        _space_coordinate_datatype{
-            lue::hdf5::NativeDatatypeTraits<double>::type_id()},
-        _space_rank{2},
-        _property_set{std::make_unique<lue::data_model::PropertySet>(
-                lue::data_model::create_property_set(
-                    *_file, _property_set_name,
-                    _time_configuration, _clock,
-                    _space_configuration, _space_coordinate_datatype,
-                        _space_rank)
-            )}
-    {
-    }
+        Fixture():
+            FileFixture{"property.h5"},
+            _filename{"property.h5"},
+            _file{std::make_unique<lue::hdf5::File>(lue::hdf5::create_file(_filename))},
+            _property_set_name{"my_property_set"},
+            _time_configuration{lue::data_model::TimeDomainItemType::box},
+            _clock{lue::data_model::time::Unit::day, 1},
+            _space_configuration{
+                lue::data_model::Mobility::stationary, lue::data_model::SpaceDomainItemType::point},
+            _space_coordinate_datatype{lue::hdf5::NativeDatatypeTraits<double>::type_id()},
+            _space_rank{2},
+            _property_set{std::make_unique<lue::data_model::PropertySet>(lue::data_model::create_property_set(
+                *_file,
+                _property_set_name,
+                _time_configuration,
+                _clock,
+                _space_configuration,
+                _space_coordinate_datatype,
+                _space_rank))}
+        {
+        }
 
-    Fixture(Fixture const&)=delete;
+        Fixture(Fixture const&) = delete;
 
-    Fixture(Fixture&&)=delete;
+        Fixture(Fixture&&) = delete;
 
-    ~Fixture() override =default;
+        ~Fixture() override = default;
 
-    Fixture& operator=(Fixture const&)=delete;
+        Fixture& operator=(Fixture const&) = delete;
 
-    Fixture& operator=(Fixture&&)=delete;
+        Fixture& operator=(Fixture&&) = delete;
 
-    auto const& property_set_name() const
-    {
-        return _property_set_name;
-    }
+        auto const& property_set_name() const
+        {
+            return _property_set_name;
+        }
 
-    auto const& time_configuration() const
-    {
-        return _time_configuration;
-    }
+        auto const& time_configuration() const
+        {
+            return _time_configuration;
+        }
 
-    auto const& space_configuration() const
-    {
-        return _space_configuration;
-    }
+        auto const& space_configuration() const
+        {
+            return _space_configuration;
+        }
 
-    auto& property_set()
-    {
-        return *_property_set;
-    }
+        auto& property_set()
+        {
+            return *_property_set;
+        }
 
-private:
+    private:
 
-    std::string const _filename;
-    std::unique_ptr<lue::hdf5::File> _file;
-    std::string const _property_set_name;
-    lue::data_model::TimeConfiguration _time_configuration;
-    lue::data_model::Clock const _clock;
-    lue::data_model::SpaceConfiguration _space_configuration;
-    lue::hdf5::Datatype const _space_coordinate_datatype;
-    std::size_t const _space_rank;
-    std::unique_ptr<lue::data_model::PropertySet> _property_set;
-
+        std::string const _filename;
+        std::unique_ptr<lue::hdf5::File> _file;
+        std::string const _property_set_name;
+        lue::data_model::TimeConfiguration _time_configuration;
+        lue::data_model::Clock const _clock;
+        lue::data_model::SpaceConfiguration _space_configuration;
+        lue::hdf5::Datatype const _space_coordinate_datatype;
+        std::size_t const _space_rank;
+        std::unique_ptr<lue::data_model::PropertySet> _property_set;
 };
 
 

@@ -7,8 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         class ATan2
         {
 
@@ -19,21 +18,16 @@ namespace lue {
                 using OutputElement = InputElement;
 
                 OutputElement operator()(
-                    InputElement const input_element1,
-                    InputElement const input_element2) const noexcept
+                    InputElement const input_element1, InputElement const input_element2) const noexcept
                 {
                     return std::atan2(input_element1, input_element2);
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     PartitionedArray<Element, rank> atan2(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array1,
@@ -45,10 +39,10 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ATAN2(Policies, Element, rank)                                   \
-                                                                                         \
-    template LUE_LOCAL_OPERATION_EXPORT                                                  \
-    PartitionedArray<Element, rank> atan2<ArgumentType<void(Policies)>, Element, rank>(  \
-        ArgumentType<void(Policies)> const&,                                             \
-        PartitionedArray<Element, rank> const&,                                          \
+#define LUE_INSTANTIATE_ATAN2(Policies, Element, rank)                                                       \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<Element, rank>                                      \
+    atan2<ArgumentType<void(Policies)>, Element, rank>(                                                      \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<Element, rank> const&,                                                              \
         PartitionedArray<Element, rank> const&);

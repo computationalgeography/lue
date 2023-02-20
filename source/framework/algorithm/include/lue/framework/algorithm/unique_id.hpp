@@ -23,13 +23,8 @@ namespace lue {
         of IDs over the array. This depends on the order in which work gets scheduled, which
         depends on too many things to describe here.
     */
-    template<
-        typename IDElement,
-        typename Policies,
-        typename ConditionElement,
-        Rank rank>
+    template<typename IDElement, typename Policies, typename ConditionElement, Rank rank>
     PartitionedArray<IDElement, rank> unique_id(
-        Policies const& policies,
-        PartitionedArray<ConditionElement, rank> const& array);
+        Policies const& policies, PartitionedArray<ConditionElement, rank> const& array);
 
 }  // namespace lue

@@ -9,9 +9,7 @@
 
 namespace detail {
 
-    template<
-        typename Element,
-        std::size_t rank>
+    template<typename Element, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
@@ -33,14 +31,12 @@ namespace detail {
 }  // namespace detail
 
 
-#define TEST_CASE(                               \
-    rank,                                        \
-    Element)                                     \
-                                                 \
-BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)  \
-{                                                \
-    detail::test_array<Element, rank>();         \
-}
+#define TEST_CASE(rank, Element)                                                                             \
+                                                                                                             \
+    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
+    {                                                                                                        \
+        detail::test_array<Element, rank>();                                                                 \
+    }
 
 // TEST_CASE(1, double)
 TEST_CASE(2, double)

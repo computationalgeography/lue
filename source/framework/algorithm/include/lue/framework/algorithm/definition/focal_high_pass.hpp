@@ -1,14 +1,13 @@
 #pragma once
+#include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/focal_high_pass.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
-#include "lue/framework/algorithm/definition/focal_operation.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<
-            typename InputElement>
+        template<typename InputElement>
         class FocalHighPass
         {
 
@@ -20,11 +19,7 @@ namespace lue {
                 using OutputElement = InputElement;
 
 
-                template<
-                    typename Kernel,
-                    typename OutputPolicies,
-                    typename InputPolicies,
-                    typename Subspan>
+                template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
                 OutputElement operator()(
                     Kernel const& kernel,
                     OutputPolicies const& output_policies,
@@ -49,19 +44,20 @@ namespace lue {
                     OutputElement sum_of_neighbours{0};
                     Count nr_neighbours{0};
 
-                    for(Index r = 0; r < window.extent(0); ++r) {
-                        for(Index c = 0; c < window.extent(1); ++c)
+                    for (Index r = 0; r < window.extent(0); ++r)
+                    {
+                        for (Index c = 0; c < window.extent(1); ++c)
                         {
                             InputElement const value{window(r, c)};
 
-                            if(r == radius && c == radius)
+                            if (r == radius && c == radius)
                             {
                                 // Remember the focal value. Its kernel weight is irrelevant.
                                 focal_value = value;
                             }
                             else
                             {
-                                if(indp.is_no_data(value))
+                                if (indp.is_no_data(value))
                                 {
                                     // In case one of the cells within the window contains a no-data
                                     // value, the result is marked as no-data
@@ -73,7 +69,7 @@ namespace lue {
                                 {
                                     Weight const weight{kernel(r, c)};
 
-                                    if(weight)
+                                    if (weight)
                                     {
                                         sum_of_neighbours += value;
                                         ++nr_neighbours;
@@ -86,7 +82,7 @@ namespace lue {
                     OutputElement high_pass;
 
                     {
-                        if(nr_neighbours == 0)
+                        if (nr_neighbours == 0)
                         {
                             ondp.mark_no_data(high_pass);
                         }
@@ -98,21 +94,14 @@ namespace lue {
 
                     return high_pass;
                 }
-
         };
 
     }  // namespace detail
 
 
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank,
-        typename Kernel>
+    template<typename Policies, typename Element, Rank rank, typename Kernel>
     PartitionedArray<Element, rank> focal_high_pass(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array,
-        Kernel const& kernel)
+        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)
     {
         using Functor = detail::FocalHighPass<Element>;
 
@@ -122,12 +111,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_FOCAL_HIGH_PASS(                        \
-    Policies, Element, Kernel)                                  \
-                                                                \
-    template LUE_FOCAL_OPERATION_EXPORT                         \
-    PartitionedArray<Element, 2> focal_high_pass<               \
-            ArgumentType<void(Policies)>, Element, 2, Kernel>(  \
-        ArgumentType<void(Policies)> const&,                    \
-        PartitionedArray<Element, 2> const&,                    \
-        Kernel const&);
+#define LUE_INSTANTIATE_FOCAL_HIGH_PASS(Policies, Element, Kernel)                                           \
+                                                                                                             \
+    template LUE_FOCAL_OPERATION_EXPORT PartitionedArray<Element, 2>                                         \
+    focal_high_pass<ArgumentType<void(Policies)>, Element, 2, Kernel>(                                       \
+        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&, Kernel const&);

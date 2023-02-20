@@ -16,44 +16,27 @@ namespace lue {
 
     using PartitionClass = std::uint8_t;
     static constexpr PartitionClass ready = 31;  // Partition is ready
-    static constexpr PartitionClass hot = 32;  // Partition is (partly) being solved
-    static constexpr PartitionClass cold = 33;  // Partition is not used
+    static constexpr PartitionClass hot = 32;    // Partition is (partly) being solved
+    static constexpr PartitionClass cold = 33;   // Partition is not used
 
 
     namespace policy::accu_info {
 
-        template<
-            typename FlowDirectionElement>
+        template<typename FlowDirectionElement>
         using DefaultPoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            DontMarkNoData<CellClass>,
-                            AllValuesWithinRange<CellClass>
-                        >,
-                    OutputPolicies<
-                            DontMarkNoData<PartitionClass>,
-                            AllValuesWithinRange<PartitionClass>
-                        >,
-                    OutputPolicies<
-                            DontMarkNoData<double>,
-                            AllValuesWithinRange<double>
-                        >,
-                    OutputPolicies<
-                            DontMarkNoData<std::uint32_t>,
-                            AllValuesWithinRange<std::uint32_t>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    SkipNoData<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>>>;
+                OutputPolicies<DontMarkNoData<CellClass>, AllValuesWithinRange<CellClass>>,
+                OutputPolicies<DontMarkNoData<PartitionClass>, AllValuesWithinRange<PartitionClass>>,
+                OutputPolicies<DontMarkNoData<double>, AllValuesWithinRange<double>>,
+                OutputPolicies<DontMarkNoData<std::uint32_t>, AllValuesWithinRange<std::uint32_t>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                SkipNoData<FlowDirectionElement>,
+                FlowDirectionHalo<FlowDirectionElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement>
-        class DefaultPolicies:
-            public DefaultPoliciesBase<FlowDirectionElement>
+        template<typename FlowDirectionElement>
+        class DefaultPolicies: public DefaultPoliciesBase<FlowDirectionElement>
         {
 
             public:
@@ -69,52 +52,37 @@ namespace lue {
                 DefaultPolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            CellClassOutputPolicies{},
-                            PartitionClassOutputPolicies{},
-                            SolvableFractionOutputPolicies{},
-                            NrInputCellsToSolveOutputPolicies{},
-                            FlowDirectionInputPolicies{}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        CellClassOutputPolicies{},
+                        PartitionClassOutputPolicies{},
+                        SolvableFractionOutputPolicies{},
+                        NrInputCellsToSolveOutputPolicies{},
+                        FlowDirectionInputPolicies{}}
 
                 {
                 }
-
         };
 
 
-        template<
-            typename FlowDirectionElement>
+        template<typename FlowDirectionElement>
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<FlowDirectionElement>,
             OutputsPolicies<
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<CellClass>,
-                            AllValuesWithinRange<CellClass>
-                        >,
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<PartitionClass>,
-                            AllValuesWithinRange<PartitionClass>
-                        >,
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<double>,
-                            AllValuesWithinRange<double>
-                        >,
-                    OutputPolicies<
-                            DefaultOutputNoDataPolicy<std::uint32_t>,
-                            AllValuesWithinRange<std::uint32_t>
-                        >
-                >,
-            InputsPolicies<
-                SpatialOperationInputPolicies<
-                    DetectNoDataByValue<FlowDirectionElement>,
-                    FlowDirectionHalo<FlowDirectionElement>>>>;
+                OutputPolicies<DefaultOutputNoDataPolicy<CellClass>, AllValuesWithinRange<CellClass>>,
+                OutputPolicies<
+                    DefaultOutputNoDataPolicy<PartitionClass>,
+                    AllValuesWithinRange<PartitionClass>>,
+                OutputPolicies<DefaultOutputNoDataPolicy<double>, AllValuesWithinRange<double>>,
+                OutputPolicies<
+                    DefaultOutputNoDataPolicy<std::uint32_t>,
+                    AllValuesWithinRange<std::uint32_t>>>,
+            InputsPolicies<SpatialOperationInputPolicies<
+                DetectNoDataByValue<FlowDirectionElement>,
+                FlowDirectionHalo<FlowDirectionElement>>>>;
 
 
-        template<
-            typename FlowDirectionElement>
-        class DefaultValuePolicies:
-            public DefaultValuePoliciesBase<FlowDirectionElement>
+        template<typename FlowDirectionElement>
+        class DefaultValuePolicies: public DefaultValuePoliciesBase<FlowDirectionElement>
         {
 
             public:
@@ -130,48 +98,36 @@ namespace lue {
                 DefaultValuePolicies():
 
                     PoliciesBase{
-                            DomainPolicyT<PoliciesBase>{},
-                            CellClassOutputPolicies{},
-                            PartitionClassOutputPolicies{},
-                            SolvableFractionOutputPolicies{},
-                            NrInputCellsToSolveOutputPolicies{},
-                            FlowDirectionInputPolicies{}
-                        }
+                        DomainPolicyT<PoliciesBase>{},
+                        CellClassOutputPolicies{},
+                        PartitionClassOutputPolicies{},
+                        SolvableFractionOutputPolicies{},
+                        NrInputCellsToSolveOutputPolicies{},
+                        FlowDirectionInputPolicies{}}
 
                 {
                 }
-
         };
 
     }  // namespace policy::accu_info
 
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, Rank rank>
     std::tuple<
-            PartitionedArray<CellClass, rank>,
-            hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-            hpx::future<std::vector<PartitionedArray<double, rank>>>,
-            hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>
-        >
-            accu_info(
-                Policies const& policies,
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
+        PartitionedArray<CellClass, rank>,
+        hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+        hpx::future<std::vector<PartitionedArray<double, rank>>>,
+        hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
+    accu_info(Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
 
 
-    template<
-        typename FlowDirectionElement,
-        Rank rank>
+    template<typename FlowDirectionElement, Rank rank>
     std::tuple<
-            PartitionedArray<CellClass, rank>,
-            hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-            hpx::future<std::vector<PartitionedArray<double, rank>>>,
-            hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>
-        >
-            accu_info(
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        PartitionedArray<CellClass, rank>,
+        hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+        hpx::future<std::vector<PartitionedArray<double, rank>>>,
+        hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
+    accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
     {
         using Policies = policy::accu_info::DefaultPolicies<FlowDirectionElement>;
 

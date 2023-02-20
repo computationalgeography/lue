@@ -1,62 +1,54 @@
 #pragma once
-#include "lue/framework/model/model.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
+#include "lue/framework/model/model.hpp"
 
 
 namespace lue {
 
-class LandUseChangeModelBase:
-    public Model
-{
+    class LandUseChangeModelBase: public Model
+    {
 
-public:
+        public:
 
-    using NominalElement = std::int32_t;
+            using NominalElement = std::int32_t;
 
-    using ScalarElement = double;
+            using ScalarElement = double;
 
-    using ScalarRaster = PartitionedArray<ScalarElement, 2>;
+            using ScalarRaster = PartitionedArray<ScalarElement, 2>;
 
-    using NominalRaster = PartitionedArray<NominalElement, 2>;
+            using NominalRaster = PartitionedArray<NominalElement, 2>;
 
-    using RasterShape = Shape<Count, 2>;
+            using RasterShape = Shape<Count, 2>;
 
-    void           initialize          () final;
+            void initialize() final;
 
-    void           simulate            () final;
+            void simulate() final;
 
-    void           postprocess         () final;
+            void postprocess() final;
 
-protected:
+        protected:
 
-                   LandUseChangeModelBase();
+            LandUseChangeModelBase();
 
-                   LandUseChangeModelBase(
-                                        LandUseChangeModelBase const&)=default;
+            LandUseChangeModelBase(LandUseChangeModelBase const&) = default;
 
-                   LandUseChangeModelBase(
-                                        LandUseChangeModelBase&&)=default;
+            LandUseChangeModelBase(LandUseChangeModelBase&&) = default;
 
-                   ~LandUseChangeModelBase()=default;
+            ~LandUseChangeModelBase() = default;
 
-    LandUseChangeModelBase&
-                   operator=           (LandUseChangeModelBase const&)=default;
+            LandUseChangeModelBase& operator=(LandUseChangeModelBase const&) = default;
 
-    LandUseChangeModelBase&
-                   operator=           (LandUseChangeModelBase&&)=default;
+            LandUseChangeModelBase& operator=(LandUseChangeModelBase&&) = default;
 
-    virtual NominalRaster
-                   land_use            () const=0;
+            virtual NominalRaster land_use() const = 0;
 
-    virtual ScalarRaster
-                   elevation           () const=0;
+            virtual ScalarRaster elevation() const = 0;
 
-private:
+        private:
 
-    NominalRaster  _land_use;
+            NominalRaster _land_use;
 
-    ScalarRaster   _elevation;
-
-};
+            ScalarRaster _elevation;
+    };
 
 }  // namespace lue

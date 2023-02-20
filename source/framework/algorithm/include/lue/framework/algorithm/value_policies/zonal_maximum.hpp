@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::zonal_maximum {
 
-        template<
-            typename Element,
-            typename Zone>
+        template<typename Element, typename Zone>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element, Zone>,
             OutputElements<Element>,
@@ -18,13 +16,9 @@ namespace lue {
 
     namespace value_policies {
 
-        template<
-            typename Element,
-            typename Zone,
-            Rank rank>
+        template<typename Element, typename Zone, Rank rank>
         PartitionedArray<Element, rank> zonal_maximum(
-            PartitionedArray<Element, rank> const& array,
-            PartitionedArray<Zone, rank> const& zones)
+            PartitionedArray<Element, rank> const& array, PartitionedArray<Zone, rank> const& zones)
         {
             using Policies = policy::zonal_maximum::DefaultValuePolicies<Element, Zone>;
 

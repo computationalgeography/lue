@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework core index_util
+#include "lue/framework/core/index_util.hpp"
 #include <hpx/config.hpp>
 #include <boost/test/unit_test.hpp>
-#include "lue/framework/core/index_util.hpp"
 
 
 BOOST_AUTO_TEST_CASE(d2)

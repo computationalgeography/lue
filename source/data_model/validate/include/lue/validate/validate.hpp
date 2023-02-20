@@ -3,23 +3,20 @@
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-class Validate:
-    public Application
+        class Validate: public Application
 
-{
+        {
 
-public:
+            public:
 
-    explicit       Validate            (std::vector<std::string> const&
-                                            arguments);
+                explicit Validate(std::vector<std::string> const& arguments);
 
-    int            run_implementation  () final;
+                int run_implementation() final;
 
-private:
+            private:
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

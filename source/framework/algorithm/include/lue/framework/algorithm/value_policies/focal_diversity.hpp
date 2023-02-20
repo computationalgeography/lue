@@ -6,44 +6,30 @@
 namespace lue {
     namespace policy::focal_diversity {
 
-        template<
-            typename Count>
-        using DefaultValueOutputPolicies = policy::OutputPolicies<
-                DefaultOutputNoDataPolicy<Count>,
-                AllValuesWithinRange<Count>
-            >;
+        template<typename Count>
+        using DefaultValueOutputPolicies =
+            policy::OutputPolicies<DefaultOutputNoDataPolicy<Count>, AllValuesWithinRange<Count>>;
 
 
-        template<
-            typename Element>
-        using DefaultValueInputPolicies = policy::SpatialOperationInputPolicies<
-                DetectNoDataByValue<Element>,
-                FillHaloWithConstantValue<Element>
-            >;
+        template<typename Element>
+        using DefaultValueInputPolicies = policy::
+            SpatialOperationInputPolicies<DetectNoDataByValue<Element>, FillHaloWithConstantValue<Element>>;
 
 
-        template<
-            typename Count,
-            typename Element>
+        template<typename Count, typename Element>
         using DefaultValuePolicies = policy::Policies<
-                DomainPolicy<Element>,
-                OutputsPolicies<DefaultValueOutputPolicies<Count>>,
-                InputsPolicies<DefaultValueInputPolicies<Element>>
-            >;
+            DomainPolicy<Element>,
+            OutputsPolicies<DefaultValueOutputPolicies<Count>>,
+            InputsPolicies<DefaultValueInputPolicies<Element>>>;
 
     }  // namespace policy::focal_diversity
 
 
     namespace value_policies {
 
-        template<
-            typename Count,
-            typename Element,
-            Rank rank,
-            typename Kernel>
+        template<typename Count, typename Element, Rank rank, typename Kernel>
         PartitionedArray<Count, rank> focal_diversity(
-            PartitionedArray<Element, rank> const& array,
-            Kernel const& kernel)
+            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
         {
             // TODO This one should be policy-based
             Element const fill_value{policy::no_data_value<Element>};

@@ -3,40 +3,37 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-ObjectID::ObjectID(
-    hdf5::Group const& parent):
+        ObjectID::ObjectID(hdf5::Group const& parent):
 
-    same_shape::Value{parent, object_id_tag}
+            same_shape::Value{parent, object_id_tag}
 
-{
-}
-
-
-ObjectID::ObjectID(
-    same_shape::Value&& value):
-
-    same_shape::Value{std::move(value)}
-
-{
-}
+        {
+        }
 
 
-Count ObjectID::nr_objects() const
-{
-    return nr_arrays();
-}
+        ObjectID::ObjectID(same_shape::Value&& value):
+
+            same_shape::Value{std::move(value)}
+
+        {
+        }
 
 
-ObjectID create_object_id(
-    hdf5::Group& parent)
-{
-    same_shape::Value value{
-        same_shape::create_value(parent, object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+        Count ObjectID::nr_objects() const
+        {
+            return nr_arrays();
+        }
 
-    return ObjectID{std::move(value)};
-}
 
-}  // namespace data_model
+        ObjectID create_object_id(hdf5::Group& parent)
+        {
+            same_shape::Value value{
+                same_shape::create_value(parent, object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+
+            return ObjectID{std::move(value)};
+        }
+
+    }  // namespace data_model
 }  // namespace lue

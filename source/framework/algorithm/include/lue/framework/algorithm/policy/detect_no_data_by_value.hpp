@@ -8,31 +8,30 @@
 
 namespace lue::policy {
 
-    template<
-        typename Element>
+    template<typename Element>
     class DetectNoDataByValue
     {
 
         public:
 
             static constexpr Element no_data_value{
-                    []()
-                    {
-                        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
+                []()
+                {
+                    static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
-                        if constexpr (std::is_signed_v<Element>)
-                        {
-                            return std::numeric_limits<Element>::min();
-                        }
-                        else if constexpr (std::is_unsigned_v<Element>)
-                        {
-                            return std::numeric_limits<Element>::max();
-                        }
-                        else if constexpr (std::is_floating_point_v<Element>)
-                        {
-                            return std::numeric_limits<Element>::lowest();
-                        }
-                    }()};
+                    if constexpr (std::is_signed_v<Element>)
+                    {
+                        return std::numeric_limits<Element>::min();
+                    }
+                    else if constexpr (std::is_unsigned_v<Element>)
+                    {
+                        return std::numeric_limits<Element>::max();
+                    }
+                    else if constexpr (std::is_floating_point_v<Element>)
+                    {
+                        return std::numeric_limits<Element>::lowest();
+                    }
+                }()};
 
 
             DetectNoDataByValue():
@@ -43,8 +42,7 @@ namespace lue::policy {
             }
 
 
-            DetectNoDataByValue(
-                Element const value):
+            DetectNoDataByValue(Element const value):
 
                 _value{value}
 
@@ -60,11 +58,8 @@ namespace lue::policy {
             }
 
 
-            template<
-                typename Data>
-            bool is_no_data(
-                Data const& data,
-                Index const idx) const
+            template<typename Data>
+            bool is_no_data(Data const& data, Index const idx) const
             {
                 static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
@@ -72,14 +67,10 @@ namespace lue::policy {
             }
 
 
-            template<
-                typename Data,
-                typename... Idxs>
-            bool is_no_data(
-                Data const& data,
-                Idxs const... idxs) const
+            template<typename Data, typename... Idxs>
+            bool is_no_data(Data const& data, Idxs const... idxs) const
             {
-                if constexpr(sizeof...(Idxs) == 0)
+                if constexpr (sizeof...(Idxs) == 0)
                 {
                     static_assert(std::is_arithmetic_v<Data>);
 
@@ -108,16 +99,13 @@ namespace lue::policy {
 
 
             template<typename Archive>
-            void serialize(
-                Archive& archive,
-                [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive & _value;
+                archive& _value;
             }
 
 
             Element _value;
-
     };
 
 }  // namespace lue::policy

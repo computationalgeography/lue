@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_operation
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
+#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/array.hpp"
@@ -9,9 +9,7 @@
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
-template<
-    typename OutputElement_,
-    typename... InputElements>
+template<typename OutputElement_, typename... InputElements>
 class Functor
 {
 
@@ -19,13 +17,9 @@ class Functor
 
         using OutputElement = OutputElement_;
 
-        Functor()=default;
+        Functor() = default;
 
-        template<
-            typename Kernel,
-            typename OutputPolicies,
-            typename InputPolicies,
-            typename Subspan1>
+        template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan1>
         OutputElement operator()(
             Kernel const& kernel,
             [[maybe_unused]] OutputPolicies const& output_policies,
@@ -58,13 +52,10 @@ class Functor
 
             return window2(radius, radius);
         }
-
 };
 
 
-template<
-    typename OutputElement,
-    typename... InputElement>
+template<typename OutputElement, typename... InputElement>
 using DefaultPolicies = lue::policy::DefaultSpatialOperationPolicies<
     lue::policy::AllValuesWithinDomain<InputElement...>,
     lue::policy::OutputElements<OutputElement>,
@@ -93,20 +84,21 @@ BOOST_AUTO_TEST_CASE(unary_focal_operation_2d)
     InputArray1 input_array1{lue::create_partitioned_array(array_shape, partition_shape, 1)};
 
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
-    OutputArray output_array =
-        lue::focal_operation(Policies{fill_value1}, input_array1, kernel, Functor{});
+    OutputArray output_array = lue::focal_operation(Policies{fill_value1}, input_array1, kernel, Functor{});
 
     auto array_we_want = lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-            { 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+        array_shape,
+        partition_shape,
+        {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1},
         });
 
     lue::test::check_arrays_are_equal(output_array, array_we_want);
@@ -139,22 +131,22 @@ BOOST_AUTO_TEST_CASE(binary_focal_operation_2d)
     InputArray2 input_array2{lue::create_partitioned_array(array_shape, partition_shape, 2.0f)};
 
     auto const kernel = lue::box_kernel<bool, rank>(1, true);
-    OutputArray output_array =
-        lue::focal_operation(
-            Policies{fill_value1, fill_value2},
-            input_array1, input_array2, kernel, Functor{});
+    OutputArray output_array = lue::focal_operation(
+        Policies{fill_value1, fill_value2}, input_array1, input_array2, kernel, Functor{});
 
     auto array_we_want = lue::test::create_partitioned_array<OutputArray>(
-        array_shape, partition_shape, {
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
-            { 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f },
+        array_shape,
+        partition_shape,
+        {
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
+            {2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f, 2.0f},
         });
 
     lue::test::check_arrays_are_equal(output_array, array_we_want);

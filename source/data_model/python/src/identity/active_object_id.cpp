@@ -1,7 +1,7 @@
-#include "../python_extension.hpp"
 #include "lue/info/identity/active_object_id.hpp"
-#include <pybind11/pybind11.h>
+#include "../python_extension.hpp"
 #include <fmt/format.h>
+#include <pybind11/pybind11.h>
 
 
 namespace py = pybind11;
@@ -9,41 +9,34 @@ using namespace pybind11::literals;
 
 
 namespace lue {
-namespace data_model {
-namespace {
+    namespace data_model {
+        namespace {
 
-static std::string formal_string_representation(
-    ActiveObjectID const& id)
-{
-    return fmt::format(
-            "ActiveObjectID(pathname='{}')",
-            id.id().pathname()
-        );
-}
+            static std::string formal_string_representation(ActiveObjectID const& id)
+            {
+                return fmt::format("ActiveObjectID(pathname='{}')", id.id().pathname());
+            }
 
 
-static std::string informal_string_representation(
-    ActiveObjectID const& id)
-{
-    return fmt::format(
-            "{}\n"
-            "   nr_ids: {}",
-            formal_string_representation(id),
-            id.nr_ids()
-        );
-}
+            static std::string informal_string_representation(ActiveObjectID const& id)
+            {
+                return fmt::format(
+                    "{}\n"
+                    "   nr_ids: {}",
+                    formal_string_representation(id),
+                    id.nr_ids());
+            }
 
-}  // Anonymous namespace
+        }  // Anonymous namespace
 
 
-void init_active_object_id(
-    py::module& module)
-{
+        void init_active_object_id(py::module& module)
+        {
 
-    py::class_<ActiveObjectID, same_shape::constant_shape::Value>(
-        module,
-        "ActiveObjectID",
-        R"(
+            py::class_<ActiveObjectID, same_shape::constant_shape::Value>(
+                module,
+                "ActiveObjectID",
+                R"(
     A class for storing the IDs of active objects
 
     For each location in time, :class:`ActiveObjectID` instances store
@@ -61,30 +54,19 @@ void init_active_object_id(
     yourself. :class:`ObjectTracker` instances provide one.
 )")
 
-        .def_property_readonly(
-            "nr_ids",
-            &ActiveObjectID::nr_ids,
-            R"(
+                .def_property_readonly(
+                    "nr_ids",
+                    &ActiveObjectID::nr_ids,
+                    R"(
     Return the total number of object IDs stored
 )")
 
-        .def(
-            "__repr__",
-            [](ActiveObjectID const& id) {
-                return formal_string_representation(id);
-            }
-        )
+                .def("__repr__", [](ActiveObjectID const& id) { return formal_string_representation(id); })
 
-        .def(
-            "__str__",
-            [](ActiveObjectID const& id) {
-                return informal_string_representation(id);
-            }
-        )
+                .def("__str__", [](ActiveObjectID const& id) { return informal_string_representation(id); })
 
-        ;
+                ;
+        }
 
-}
-
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

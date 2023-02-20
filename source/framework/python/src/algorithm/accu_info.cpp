@@ -10,13 +10,11 @@ namespace lue::framework {
 
 
         std::tuple<
-                PartitionedArray<CellClass, rank>,
-                hpx::shared_future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-                hpx::shared_future<std::vector<PartitionedArray<double, rank>>>,
-                hpx::shared_future<std::vector<PartitionedArray<std::uint32_t, rank>>>
-            >
-            accu_info(
-                PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+            PartitionedArray<CellClass, rank>,
+            hpx::shared_future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+            hpx::shared_future<std::vector<PartitionedArray<double, rank>>>,
+            hpx::shared_future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
+        accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
         {
             using Policies = policy::accu_info::DefaultValuePolicies<FlowDirectionElement>;
 
@@ -26,8 +24,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_accu_info(
-        pybind11::module& module)
+    void bind_accu_info(pybind11::module& module)
     {
         module.def("accu_info", accu_info);
     }

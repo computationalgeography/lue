@@ -22,8 +22,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    ClassArray class_array{lue::array_partition_id(
-        lue::create_partitioned_array<Class>(array_shape, partition_shape))};
+    ClassArray class_array{
+        lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
     auto zonal_uniform = lue::value_policies::zonal_uniform<Element>(class_array);
 

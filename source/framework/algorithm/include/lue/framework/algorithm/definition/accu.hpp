@@ -1,21 +1,18 @@
 #pragma once
 #include "lue/framework/algorithm/accu.hpp"
-#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation.hpp"
+#include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail::accu {
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         using Material = MaterialElement;
 
 
-        template<
-            typename InputMaterialNoDataPolicy,
-            typename OutputFluxNoDataPolicy>
+        template<typename InputMaterialNoDataPolicy, typename OutputFluxNoDataPolicy>
         class CellAccumulator
         {
 
@@ -29,8 +26,7 @@ namespace lue {
 
 
                 CellAccumulator(
-                    InputMaterialNoDataPolicy const& indp_material,
-                    OutputFluxNoDataPolicy const& ondp_flux):
+                    InputMaterialNoDataPolicy const& indp_material, OutputFluxNoDataPolicy const& ondp_flux):
 
                     _indp_material{indp_material},
                     _ondp_flux{ondp_flux}
@@ -39,13 +35,11 @@ namespace lue {
                 }
 
 
-                void accumulate_input(
-                    InputElement const& input_element,
-                    OutputElement& output_element) const
+                void accumulate_input(InputElement const& input_element, OutputElement& output_element) const
                 {
-                    if(!_ondp_flux.is_no_data(output_element))
+                    if (!_ondp_flux.is_no_data(output_element))
                     {
-                        if(_indp_material.is_no_data(input_element))
+                        if (_indp_material.is_no_data(input_element))
                         {
                             _ondp_flux.mark_no_data(output_element);
                         }
@@ -61,9 +55,9 @@ namespace lue {
                     OutputElement const& upstream_material_element,
                     OutputElement& downstream_material_element) const
                 {
-                    if(!_ondp_flux.is_no_data(downstream_material_element))
+                    if (!_ondp_flux.is_no_data(downstream_material_element))
                     {
-                        if(_ondp_flux.is_no_data(upstream_material_element))
+                        if (_ondp_flux.is_no_data(upstream_material_element))
                         {
                             _ondp_flux.mark_no_data(downstream_material_element);
                         }
@@ -80,22 +74,18 @@ namespace lue {
                 InputMaterialNoDataPolicy _indp_material;
 
                 OutputFluxNoDataPolicy _ondp_flux;
-
         };
 
 
-        template<
-            typename MaterialCells>
+        template<typename MaterialCells>
         using InputMaterial = MaterialCells;
 
 
-        template<
-            typename MaterialCells>
+        template<typename MaterialCells>
         using OutputMaterial = MaterialCells;
 
 
-        template<
-            typename MaterialElement>
+        template<typename MaterialElement>
         class Accumulator
         {
 
@@ -111,31 +101,21 @@ namespace lue {
 
                 using Material = accu::Material<MaterialElement>;
 
-                template<
-                    typename InputMaterialNoDataPolicy,
-                    typename OutputFluxNoDataPolicy>
-                using CellAccumulator = accu::CellAccumulator<
-                    InputMaterialNoDataPolicy,
-                    OutputFluxNoDataPolicy>;
+                template<typename InputMaterialNoDataPolicy, typename OutputFluxNoDataPolicy>
+                using CellAccumulator =
+                    accu::CellAccumulator<InputMaterialNoDataPolicy, OutputFluxNoDataPolicy>;
 
-                template<
-                    typename MaterialCells>
+                template<typename MaterialCells>
                 using InputMaterial = accu::InputMaterial<MaterialCells>;
 
-                template<
-                    typename MaterialCells>
+                template<typename MaterialCells>
                 using OutputMaterial = accu::OutputMaterial<MaterialCells>;
-
         };
 
     }  // namespace detail::accu
 
 
-    template<
-        typename Policies,
-        typename FlowDirectionElement,
-        typename MaterialElement,
-        Rank rank>
+    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
     PartitionedArray<MaterialElement, rank> accu(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
@@ -152,12 +132,10 @@ namespace lue {
 
 #define STRIP_PARENS(X) X
 
-#define LUE_INSTANTIATE_ACCU(                                                         \
-    Policies, FlowDirectionElement, MaterialElement)                                  \
-                                                                                      \
-    template LUE_ROUTING_OPERATION_EXPORT                                             \
-    PartitionedArray<MaterialElement, 2> accu<                                        \
-            ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(  \
-        ArgumentType<void(Policies)> const&,                                          \
-        PartitionedArray<FlowDirectionElement, 2> const&,                             \
+#define LUE_INSTANTIATE_ACCU(Policies, FlowDirectionElement, MaterialElement)                                \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<MaterialElement, 2>                               \
+    accu<ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(                            \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<FlowDirectionElement, 2> const&,                                                    \
         PartitionedArray<MaterialElement, 2> const&);

@@ -1,11 +1,9 @@
-#include <hpx/hpx_init.hpp>
-#include "lue/framework/core/configuration_entry.hpp"
 #include "polute_air.hpp"
+#include "lue/framework/core/configuration_entry.hpp"
+#include <hpx/hpx_init.hpp>
 
 
-int hpx_main(
-    int const /* argc */,
-    char* /* argv */ [])
+int hpx_main(int const /* argc */, char* /* argv */[])
 {
     // using Shape = std::vector<std::uint64_t>;
     using Shape = lue::Shape<lue::Count, 2>;
@@ -15,24 +13,18 @@ int hpx_main(
     //     lue::required_configuration_entry<std::uint64_t>("max_tree_depth");
 
     // Simulation configuration
-    lue::Count const nr_time_steps =
-        lue::required_configuration_entry<lue::Count>("nr_time_steps");
+    lue::Count const nr_time_steps = lue::required_configuration_entry<lue::Count>("nr_time_steps");
 
-    Shape const array_shape = lue::required_configuration_entry<Shape>(
-        "array_shape");
-    Shape const partition_shape = lue::required_configuration_entry<Shape>(
-        "partition_shape");
+    Shape const array_shape = lue::required_configuration_entry<Shape>("array_shape");
+    Shape const partition_shape = lue::required_configuration_entry<Shape>("partition_shape");
 
-    lue::polute_air(
-        nr_time_steps, array_shape, partition_shape);
+    lue::polute_air(nr_time_steps, array_shape, partition_shape);
 
     return hpx::finalize();
 }
 
 
-int main(
-    int const argc,
-    char* argv[])
+int main(int const argc, char* argv[])
 {
     // // Turn off error stack traversal. The default functions prints
     // // lots of messages we usually don't care about.

@@ -5,15 +5,9 @@
 
 namespace lue::framework {
 
-    template<
-        typename InputElement,
-        typename OutputElement,
-        Rank rank,
-        typename Argument1,
-        typename Argument2>
+    template<typename InputElement, typename OutputElement, Rank rank, typename Argument1, typename Argument2>
     PartitionedArray<OutputElement, rank> less_than_equal_to(
-        Argument1 const& argument1,
-        Argument2 const& argument2)
+        Argument1 const& argument1, Argument2 const& argument2)
     {
         if constexpr (!std::is_same_v<Argument1, InputElement>)
         {

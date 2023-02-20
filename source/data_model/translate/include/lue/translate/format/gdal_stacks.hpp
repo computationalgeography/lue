@@ -1,63 +1,60 @@
 #pragma once
-#include "lue/translate/format/gdal_stack.hpp"
 #include "lue/hl/raster_domain.hpp"
 #include "lue/hl/raster_stack_discretization.hpp"
+#include "lue/translate/format/gdal_stack.hpp"
 #include <vector>
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-/*!
-    @brief      This class models a collection of raster stacks with the same
-                domain and discretization
-*/
-class GDALStacks
-{
+        /*!
+            @brief      This class models a collection of raster stacks with the same
+                        domain and discretization
+        */
+        class GDALStacks
+        {
 
-public:
+            public:
 
-   using Collection = std::vector<GDALStack>;
-   using Iterator = Collection::iterator;
-   using ConstIterator = Collection::const_iterator;
+                using Collection = std::vector<GDALStack>;
+                using Iterator = Collection::iterator;
+                using ConstIterator = Collection::const_iterator;
 
-   explicit        GDALStacks          (std::vector<std::string> const& dataset_names);
+                explicit GDALStacks(std::vector<std::string> const& dataset_names);
 
-                   GDALStacks          (GDALStacks const& other)=default;
+                GDALStacks(GDALStacks const& other) = default;
 
-                   GDALStacks          (GDALStacks&& other)=default;
+                GDALStacks(GDALStacks&& other) = default;
 
-                   ~GDALStacks         ()=default;
+                ~GDALStacks() = default;
 
-   GDALStacks&     operator=           (GDALStacks const& other)=default;
+                GDALStacks& operator=(GDALStacks const& other) = default;
 
-   GDALStacks&     operator=           (GDALStacks&& other)=default;
+                GDALStacks& operator=(GDALStacks&& other) = default;
 
-   hl::RasterDomain
-                   domain              () const;
+                hl::RasterDomain domain() const;
 
-   hl::RasterStackDiscretization
-                   discretization      () const;
+                hl::RasterStackDiscretization discretization() const;
 
-   std::size_t     size                () const;
+                std::size_t size() const;
 
-   Iterator        begin               ();
+                Iterator begin();
 
-   Iterator        end                 ();
+                Iterator end();
 
-   ConstIterator   begin               () const;
+                ConstIterator begin() const;
 
-   ConstIterator   end                 () const;
+                ConstIterator end() const;
 
-private:
+            private:
 
-   std::vector<GDALStack> _stacks;
+                std::vector<GDALStack> _stacks;
 
-   hl::RasterDomain _domain;
+                hl::RasterDomain _domain;
 
-   hl::RasterStackDiscretization _discretization;
+                hl::RasterStackDiscretization _discretization;
+        };
 
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue

@@ -10,15 +10,13 @@
 
 namespace lue::benchmark {
 
-    template<
-        typename MaterialElement>
-    class AccuBenchmarkModel final:
-        public BenchmarkModel<MaterialElement, 2>
+    template<typename MaterialElement>
+    class AccuBenchmarkModel final: public BenchmarkModel<MaterialElement, 2>
     {
 
         private:
 
-               using FlowDirectionElement = std::uint8_t;
+            using FlowDirectionElement = std::uint8_t;
 
         public:
 
@@ -34,7 +32,8 @@ namespace lue::benchmark {
                 _hyperslab{}
 
             {
-                std::tie(_object_id, _hyperslab) = array_info(array_pathname, center_cell, this->array_shape());
+                std::tie(_object_id, _hyperslab) =
+                    array_info(array_pathname, center_cell, this->array_shape());
             }
 
 
@@ -45,8 +44,8 @@ namespace lue::benchmark {
                 auto const& partition_shape{this->partition_shape()};
 
                 // 1 byte / cell
-                _flow_direction = read<FlowDirectionElement, 2>(
-                    _array_pathname, _hyperslab, partition_shape, _object_id);
+                _flow_direction =
+                    read<FlowDirectionElement, 2>(_array_pathname, _hyperslab, partition_shape, _object_id);
                 // 4 bytes / cell
                 _material = create_partitioned_array<MaterialElement>(array_shape, partition_shape, 1);
 
@@ -57,8 +56,7 @@ namespace lue::benchmark {
             }
 
 
-            void do_simulate(
-                [[maybe_unused]] Count const time_step) override
+            void do_simulate([[maybe_unused]] Count const time_step) override
             {
                 // We are assuming a single time step is requested,
                 // so feedback is not required
@@ -81,7 +79,6 @@ namespace lue::benchmark {
             PartitionedArray<FlowDirectionElement, 2> _flow_direction;
 
             PartitionedArray<MaterialElement, 2> _material;
-
     };
 
 
@@ -107,10 +104,7 @@ namespace {
 
 
 auto setup_benchmark(
-    int argc,
-    char* argv[],
-    lue::benchmark::Environment const& environment,
-    lue::benchmark::Task const& task)
+    int argc, char* argv[], lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
 {
     std::map<std::string, docopt::value> arguments{
         docopt::docopt(fmt::format(usage, argv[0]), {argv + 1, argv + argc}, true)};
@@ -118,22 +112,19 @@ auto setup_benchmark(
     std::string const array_pathname{arguments.at("<flow_direction>").asString()};
     std::vector<lue::Index> center_cell;
 
-    if(arguments.find("--center") != arguments.end())
+    if (arguments.find("--center") != arguments.end())
     {
         center_cell = lue::benchmark::parse_idxs(arguments.at("--center").asString());
     }
 
 
     auto callable = [array_pathname, center_cell](
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+                        lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
     {
-        std::size_t const max_tree_depth = environment.max_tree_depth()
-            ? *environment.max_tree_depth()
-            : task.nr_time_steps();
+        std::size_t const max_tree_depth =
+            environment.max_tree_depth() ? *environment.max_tree_depth() : task.nr_time_steps();
 
-        return lue::benchmark::AccuBenchmarkModel<float>{
-            task, max_tree_depth, array_pathname, center_cell};
+        return lue::benchmark::AccuBenchmarkModel<float>{task, max_tree_depth, array_pathname, center_cell};
     };
 
     return lue::benchmark::ModelBenchmark<decltype(callable), lue::benchmark::AlgorithmBenchmarkResult>{

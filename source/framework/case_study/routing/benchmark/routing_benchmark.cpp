@@ -26,10 +26,7 @@ namespace {
 
 
 auto setup_benchmark(
-        int argc,
-        char* argv[],
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+    int argc, char* argv[], lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
 {
     std::map<std::string, docopt::value> arguments{
         docopt::docopt(fmt::format(usage, argv[0]), {argv + 1, argv + argc}, true)};
@@ -37,21 +34,19 @@ auto setup_benchmark(
     std::string const array_pathname{arguments.at("<flow_direction>").asString()};
     std::vector<lue::Index> center_cell;
 
-    if(arguments.find("--center") != arguments.end())
+    if (arguments.find("--center") != arguments.end())
     {
         center_cell = lue::benchmark::parse_idxs(arguments.at("--center").asString());
     }
 
 
     auto callable = [array_pathname, center_cell](
-        lue::benchmark::Environment const& environment,
-        lue::benchmark::Task const& task)
+                        lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
     {
-        std::size_t const max_tree_depth = environment.max_tree_depth()
-            ? *environment.max_tree_depth()
-            : task.nr_time_steps();
+        std::size_t const max_tree_depth =
+            environment.max_tree_depth() ? *environment.max_tree_depth() : task.nr_time_steps();
 
-        if(task.rank() != 2)
+        if (task.rank() != 2)
         {
             throw std::runtime_error("rank must be 2");
         }

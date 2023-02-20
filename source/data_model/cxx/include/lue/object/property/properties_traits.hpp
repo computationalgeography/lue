@@ -3,11 +3,10 @@
 
 
 namespace lue {
-namespace data_model {
+    namespace data_model {
 
-template<
-    typename Properties>
-using PropertyT = typename PropertyTraits<Properties>::Property;
+        template<typename Properties>
+        using PropertyT = typename PropertyTraits<Properties>::Property;
 
-}  // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

@@ -5,9 +5,7 @@
 namespace lue {
     namespace policy::accu3 {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement>
+        template<typename FlowDirectionElement, typename MaterialElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<MaterialElement>,
             OutputElements<MaterialElement>,
@@ -18,10 +16,7 @@ namespace lue {
 
     namespace default_policies {
 
-        template<
-            typename FlowDirectionElement,
-            typename MaterialElement,
-            Rank rank>
+        template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
         PartitionedArray<MaterialElement, rank> accu3(
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
             PartitionedArray<MaterialElement, rank> const& external_inflow)

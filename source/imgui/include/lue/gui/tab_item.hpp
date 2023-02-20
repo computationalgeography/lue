@@ -5,24 +5,22 @@
 
 namespace lue::gui {
 
-    class TabItem:
-        public Selectable
+    class TabItem: public Selectable
     {
 
         public:
 
             explicit TabItem(std::string const& name);
 
-            TabItem(TabItem const&)=default;
+            TabItem(TabItem const&) = default;
 
-            TabItem(TabItem&&)=default;
+            TabItem(TabItem&&) = default;
 
             ~TabItem() override;
 
-            TabItem& operator=(TabItem const&)=default;
+            TabItem& operator=(TabItem const&) = default;
 
-            TabItem& operator=(TabItem&&)=default;
-
+            TabItem& operator=(TabItem&&) = default;
     };
 
 }  // namespace lue::gui

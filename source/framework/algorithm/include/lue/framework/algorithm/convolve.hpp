@@ -7,9 +7,7 @@
 namespace lue {
     namespace policy::convolve {
 
-        template<
-            typename OutputElement,
-            typename InputElement>
+        template<typename OutputElement, typename InputElement>
         using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -40,24 +38,13 @@ namespace lue {
     // };
 
 
-    template<
-        typename OutputElement,
-        typename ConvolvePolicies,
-        typename Array,
-        typename Kernel>
+    template<typename OutputElement, typename ConvolvePolicies, typename Array, typename Kernel>
     PartitionedArrayT<Array, OutputElement> convolve(
-        ConvolvePolicies const& policies,
-        Array const& array,
-        Kernel const& kernel);
+        ConvolvePolicies const& policies, Array const& array, Kernel const& kernel);
 
 
-    template<
-        typename OutputElement,
-        typename Array,
-        typename Kernel>
-    PartitionedArrayT<Array, OutputElement> convolve(
-        Array const& array,
-        Kernel const& kernel)
+    template<typename OutputElement, typename Array, typename Kernel>
+    PartitionedArrayT<Array, OutputElement> convolve(Array const& array, Kernel const& kernel)
     {
         using InputElement = ElementT<Array>;
         using Policies = policy::convolve::DefaultPolicies<OutputElement, InputElement>;

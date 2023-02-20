@@ -8,12 +8,8 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<
-            typename Count,
-            typename Zone,
-            Rank rank>
-        PartitionedArray<Count, rank> zonal_area(
-            PartitionedArray<Zone, rank> const& zones)
+        template<typename Count, typename Zone, Rank rank>
+        PartitionedArray<Count, rank> zonal_area(PartitionedArray<Zone, rank> const& zones)
         {
             return value_policies::zonal_area<Count>(zones);
         }
@@ -21,8 +17,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_zonal_area(
-        pybind11::module& module)
+    void bind_zonal_area(pybind11::module& module)
     {
         module.def("zonal_area", zonal_area<std::uint64_t, std::uint8_t, 2>, "zones"_a);
         module.def("zonal_area", zonal_area<std::uint64_t, std::uint32_t, 2>, "zones"_a);

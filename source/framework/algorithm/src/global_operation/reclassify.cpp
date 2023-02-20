@@ -3,12 +3,10 @@
 #include "lue/framework/algorithm/value_policies/reclassify.hpp"
 
 
-#define LUE_INSTANTIATE(Policies, FromElement, ToElement)           \
-                                                                    \
-    LUE_INSTANTIATE_RECLASSIFY(                                     \
-        ESC(policy::reclassify::Policies<FromElement, ToElement>),  \
-        FromElement,                                                \
-        ToElement);
+#define LUE_INSTANTIATE(Policies, FromElement, ToElement)                                                    \
+                                                                                                             \
+    LUE_INSTANTIATE_RECLASSIFY(                                                                              \
+        ESC(policy::reclassify::Policies<FromElement, ToElement>), FromElement, ToElement);
 
 
 namespace lue {

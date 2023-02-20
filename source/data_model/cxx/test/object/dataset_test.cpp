@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue object dataset
-#include <boost/test/unit_test.hpp>
 #include "lue/object/dataset.hpp"
 #include "lue/test.hpp"
+#include <boost/test/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(create_new_dataset)
@@ -25,8 +25,7 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
     BOOST_CHECK_EQUAL(phenomena.size(), 0);
 
     // Add phenomenon with description containing UTF8 characters
-    auto const& phenomenon1 = dataset.add_phenomenon(
-        "my_næme1", "my_dæscriptiøn");
+    auto const& phenomenon1 = dataset.add_phenomenon("my_næme1", "my_dæscriptiøn");
 
     BOOST_CHECK_EQUAL(phenomena.size(), 1);
     BOOST_CHECK_EQUAL(phenomenon1.description(), "my_dæscriptiøn");

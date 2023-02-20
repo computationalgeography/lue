@@ -14,12 +14,8 @@ namespace lue {
         @return     Future to a set with the unique values that becomes
                     ready once the algorithm has finished
     */
-    template<
-        typename Policies,
-        typename Element,
-        Rank rank>
+    template<typename Policies, typename Element, Rank rank>
     hpx::future<std::set<Element>> unique(
-        Policies const& policies,
-        PartitionedArray<Element, rank> const& array);
+        Policies const& policies, PartitionedArray<Element, rank> const& array);
 
 }  // namespace lue

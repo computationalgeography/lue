@@ -1,169 +1,158 @@
 #pragma once
+#include "lue/hl/raster_stack.hpp"
 #include "lue/translate/format/gdal_raster.hpp"
 #include "lue/utility/progress_indicator.hpp"
-#include "lue/hl/raster_stack.hpp"
 #include <string>
 
 
 namespace lue {
-namespace utility {
+    namespace utility {
 
-GDALDatasetPtr     try_open_gdal_raster_stack_dataset_for_read(
-                                        std::string const& dataset_name);
+        GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name);
 
-class GDALStack
-{
+        class GDALStack
+        {
 
-public:
+            public:
 
-    enum class NamingConvention
-    {
+                enum class NamingConvention {
 
-        underscore // ,
+                    underscore  // ,
 
-        // dos_8_3
+                    // dos_8_3
 
-    };
+                };
 
-    static NamingConvention
-                   stack_naming_convention(
-                                        std::string const& dataset_name);
+                static NamingConvention stack_naming_convention(std::string const& dataset_name);
 
 
-    using SliceIndex = std::size_t;
+                using SliceIndex = std::size_t;
 
-    class Slices
-    {
+                class Slices
+                {
 
-    public:
+                    public:
 
-        using Indices = std::vector<SliceIndex>;
+                        using Indices = std::vector<SliceIndex>;
 
-        using ConstIterator = Indices::const_iterator;
+                        using ConstIterator = Indices::const_iterator;
 
-                   Slices              ()=default;
+                        Slices() = default;
 
-        explicit   Slices              (Indices indices);
+                        explicit Slices(Indices indices);
 
-        bool       empty               () const;
+                        bool empty() const;
 
-        ConstIterator begin            () const;
+                        ConstIterator begin() const;
 
-        ConstIterator end              () const;
+                        ConstIterator end() const;
 
-        SliceIndex first_index         () const;
+                        SliceIndex first_index() const;
 
-        SliceIndex last_index          () const;
+                        SliceIndex last_index() const;
 
-        SliceIndex index               (std::size_t step_idx) const;
+                        SliceIndex index(std::size_t step_idx) const;
 
-        std::size_t size               () const;
+                        std::size_t size() const;
 
-        std::size_t nr_steps           () const;
+                        std::size_t nr_steps() const;
 
-        bool       step_available      (std::size_t step_idx) const;
+                        bool step_available(std::size_t step_idx) const;
 
-    private:
+                    private:
 
-        Indices _indices;
+                        Indices _indices;
+                };
 
-    };
 
+                class Band
+                {
 
-    class Band
-    {
+                    public:
 
-    public:
+                        Band(
+                            std::string const& dataset_name,
+                            NamingConvention naming_convention,
+                            Slices const& slices,
+                            int band_nr);
 
-                   Band                (std::string const& dataset_name,
-                                        NamingConvention naming_convention,
-                                        Slices const& slices,
-                                        int band_nr);
+                        Band(Band const&) = delete;
 
-                   Band                (Band const&)=delete;
+                        Band(Band&&) = default;
 
-                   Band                (Band&&)=default;
+                        ~Band() = default;
 
-                   ~Band               ()=default;
+                        Band& operator=(Band const&) = delete;
 
-        Band&      operator=           (Band const&)=delete;
+                        Band& operator=(Band&&) = default;
 
-        Band&      operator=           (Band&&)=default;
+                        hdf5::Datatype datatype() const;
 
-        hdf5::Datatype datatype        () const;
+                        GDALBlock const& slice_blocks() const;
 
-        GDALBlock const& slice_blocks  () const;
+                        std::size_t nr_blocks() const;
 
-        std::size_t nr_blocks          () const;
+                        void write(hl::RasterStack::Band& raster_band, ProgressIndicator& progress_indicator);
 
-        void       write               (hl::RasterStack::Band& raster_band,
-                                        ProgressIndicator& progress_indicator);
+                    private:
 
-    private:
+                        template<typename T>
+                        void write(hl::RasterStack::Band& raster_band, ProgressIndicator& progress_indicator);
 
-        template<
-            typename T>
-        void       write               (hl::RasterStack::Band& raster_band,
-                                        ProgressIndicator& progress_indicator);
+                        std::string _dataset_name;
 
-        std::string _dataset_name;
+                        NamingConvention _naming_convention;
 
-        NamingConvention _naming_convention;
+                        Slices _slices;
 
-        Slices     _slices;
+                        int _band_nr;
 
-        int        _band_nr;
+                        GDALDataType _gdal_datatype;
 
-        GDALDataType _gdal_datatype;
+                        GDALBlock _slice_blocks;
+                };
 
-        GDALBlock  _slice_blocks;
 
-    };
+                explicit GDALStack(std::string const& dataset_name);
 
+                GDALStack(GDALStack const& other) = default;
 
-   explicit        GDALStack           (std::string const& dataset_name);
+                GDALStack(GDALStack&& other) = default;
 
-                   GDALStack           (GDALStack const& other)=default;
+                ~GDALStack() = default;
 
-                   GDALStack           (GDALStack&& other)=default;
+                GDALStack& operator=(GDALStack const& other) = default;
 
-                   ~GDALStack          ()=default;
+                GDALStack& operator=(GDALStack&& other) = default;
 
-   GDALStack&      operator=           (GDALStack const& other)=default;
+                std::string const& dataset_name() const;
 
-   GDALStack&      operator=           (GDALStack&& other)=default;
+                std::string const& name() const;
 
-   std::string const& dataset_name     () const;
+                std::size_t nr_bands() const;
 
-   std::string const& name             () const;
+                hl::RasterDomain const& domain() const;
 
-   std::size_t     nr_bands            () const;
+                hl::RasterStackDiscretization const& discretization() const;
 
-   hl::RasterDomain const&
-                   domain              () const;
+                Band band(int nr) const;
 
-   hl::RasterStackDiscretization const&
-                   discretization      () const;
+            private:
 
-   Band            band                (int nr) const;
+                std::string _dataset_name;
 
-private:
+                std::string _name;
 
-   std::string     _dataset_name;
+                NamingConvention _naming_convention;
 
-   std::string     _name;
+                Slices _slices;
 
-   NamingConvention _naming_convention;
+                std::size_t _nr_bands;
 
-   Slices          _slices;
+                hl::RasterDomain _domain;
 
-   std::size_t     _nr_bands;
+                hl::RasterStackDiscretization _discretization;
+        };
 
-   hl::RasterDomain _domain;
-
-   hl::RasterStackDiscretization _discretization;
-
-};
-
-}  // namespace utility
+    }  // namespace utility
 }  // namespace lue
