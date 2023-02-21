@@ -22,6 +22,9 @@ used are the PCRaster ones:
 - float32 for scalar and directional values
 
 LUE itself supports additional cell represenations (uint32, int64, uint64, float64).
+
+LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
+arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
 import numpy as np
 import lue.framework as lfr
@@ -46,6 +49,15 @@ Global variable that contains information required by some of the LUE operations
 wrappers
 """
 configuration = Configuration()
+
+
+def setclone(*args):
+    raise NotImplementedError(
+        "Please assign to this module's configuration variable. E.g.:\n"
+        "lue.pcraster.configuration.array_shape = array_shape\n"
+        "lue.pcraster.configuration.partition_shape = partition_shape\n"
+        "lue.pcraster.configuration.cell_size = 10"
+    )
 
 
 def is_spatial(argument):
@@ -112,6 +124,29 @@ def non_spatial_to_spatial(fill_value, template=None):
     return lfr.create_array(
         array_shape, partition_shape, np.dtype(fill_value), fill_value
     )
+
+
+def translate_window_length(pcraster_window_length):
+    """
+    Translate PCRaster window lengths in real distance units, to LUE window lengths, in whole
+    number of cells
+
+    The assumption here is that @a pcraster_window_length passed in:
+    - is dividable by the cell size
+    - corresponds with an odd number of cells (odd_number * cell_size)
+    - is possitive
+    """
+    assert is_non_spatial(pcraster_window_length), pcraster_window_length
+
+    window_length = pcraster_window_length / configuration.cell_size
+
+    assert window_length % 1 == 0, window_length  # Must not be fractional
+    assert window_length % 2 == 1, window_length  # Must be odd
+    assert window_length > 0, window_length  # Must be positive
+
+    window_length = int(window_length)
+
+    return window_length
 
 
 def readmap(pathname):
@@ -406,7 +441,7 @@ def eq(expression1, expression2):
 
 def exp(power):
     if is_non_spatial(power):
-        power = non_spatial_to_spatial(fill_value=power)
+        power = non_spatial_to_spatial(fill_value=np.float32(power))
 
     return lfr.exp(power)
 
@@ -504,7 +539,7 @@ def le(expression1, expression2):
 
 def ln(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return lfr.log(expression)
 
@@ -593,10 +628,12 @@ def normal(*args):
     raise NotImplementedError("normal")
 
 
-# def not, ~, pcrnot(*args):
+def pcrnot(expression):
+    return ~expression
 
 
-# def or, |, pcror(*args):
+def pcror(expression1, expression2):
+    return expression1 | expression2
 
 
 def order(*args):
@@ -657,17 +694,26 @@ def shift0(*args):
     raise NotImplementedError("shift0")
 
 
-# def sin(*args):
+def sin(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.sin(expression)
 
 
-# def slope(*args):
+def slope(dem):
+    return lfr.slope(dem, configuration.cell_size)
 
 
 def slopelength(*args):
     raise NotImplementedError("slopelenght")
 
 
-# def spatial(*args):
+def spatial(expression):
+    if not is_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
+
+    return expression
 
 
 def spread(*args):
@@ -696,12 +742,16 @@ def spreadzone(*args):
 
 def sqr(expression):
     if is_non_spatial(expression):
-        expression = non_spatial_to_spatial(fill_value=expression)
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
 
     return expression * expression
 
 
-# def sqrt(*args):
+def sqrt(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.log(expression)
 
 
 def streamorder(*args):
@@ -716,7 +766,11 @@ def succ(*args):
     raise NotImplementedError("succ")
 
 
-# def tan(*args):
+def tan(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.tan(expression)
 
 
 def time(*args):
@@ -784,40 +838,76 @@ def view(*args):
     raise NotImplementedError("view")
 
 
-# def window4total(*args):
+def window4total(expression):
+    # fmt:off
+    window = np.array(
+        [
+            [ 0, 1, 0, ],
+            [ 1, 1, 1, ],
+            [ 0, 1, 0, ],
+        ],
+        dtype=np.uint8,
+    )
+    # fmt:on
+    return lfr.focal_sum(expression, window)
 
 
-# def windowaverage(*args):
+def windowaverage(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_mean(expression, window)
 
 
-# def windowdiversity(*args):
+def windowdiversity(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_diversity(expression, window)
 
 
-# def windowhighpass(*args):
+def windowhighpass(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_high_pass(expression, window)
 
 
-# def windowmajority(*args):
+def windowmajority(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_majority(expression, window)
 
 
-# def windowmaximum(*args):
+def windowmaximum(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_maximum(expression, window)
 
 
-# def windowminimum(*args):
+def windowminimum(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_minimum(expression, window)
 
 
-# def windowtotal(*args):
+def windowtotal(expression, window_length):
+    window_length = translate_window_length(window_length)
+    window = np.full((window_length, window_length), 1, dtype=np.uint8)
+
+    return lfr.focal_sum(expression, window)
 
 
 def xcoordinate(*args):
     raise NotImplementedError("xcoordinate")
 
 
-# def xor, ^, pcrxor(*args):
+def pcrxor(expression1, expression2):
+    return expression1 ^ expression2
 
 
 def ycoordinate(*args):
     raise NotImplementedError("ycoordinate")
-
-
-def setclone(*args):
-    pass
