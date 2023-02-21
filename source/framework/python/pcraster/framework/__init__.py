@@ -15,19 +15,22 @@ class StaticModel(lfr.StaticModel):
     """
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def setDebug(self):
+        # Skip for now
         pass
 
     def readmap(self, name):
+        # TODO
         pass
 
     def report(self, variable, name):
+        # TODO
         pass
 
     def initial(self):
-        pass
+        raise NotImplementedError
 
 
 class StaticFramework(lfr.StaticModelRunner):
@@ -35,11 +38,11 @@ class StaticFramework(lfr.StaticModelRunner):
     Class for running static models
     """
 
-    def __init__(self, userModel):
-        pass
+    def __init__(self, model):
+        super().__init__(model)
 
     def run(self):
-        pass
+        return super().run()
 
 
 class DynamicModel(lfr.DynamicModel):
@@ -48,37 +51,45 @@ class DynamicModel(lfr.DynamicModel):
     """
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def setDebug(self):
+        # Skip for now
         pass
 
     def setQuiet(self, quiet=True):
+        # Skip for now
         pass
 
     def currentTimeStep(self):
+        # TODO
         pass
 
     def firstTimeStep(self):
+        # TODO
         pass
 
     def nrTimeSteps(self):
+        # TODO
         pass
 
     def timeSteps(self):
+        # TODO
         pass
 
     def readmap(self, name):
+        # TODO
         pass
 
     def report(self, variable, name):
+        # TODO
         pass
 
     def initial(self):
-        pass
+        raise NotImplementedError
 
     def dynamic(self):
-        pass
+        raise NotImplementedError
 
 
 class DynamicFramework(lfr.DynamicModelRunner):
@@ -86,11 +97,12 @@ class DynamicFramework(lfr.DynamicModelRunner):
     Class for running dynamic models
     """
 
-    def __init__(self, userModel, lastTimeStep=0, firstTimeStep=1):
-        pass
+    def __init__(self, model, last_time_step=0, first_time_step=1):
+        super().__init__(model, last_time_step)
 
     def setQuiet(self, quiet=True):
+        # Skip for now
         pass
 
     def run(self):
-        pass
+        return super().run()
