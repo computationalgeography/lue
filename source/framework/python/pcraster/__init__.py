@@ -27,6 +27,7 @@ LUE does not have the notion of non-spatial. This is relevant when passing two "
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
 import numpy as np
+
 import lue.framework as lfr
 
 
