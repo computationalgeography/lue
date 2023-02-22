@@ -26,7 +26,7 @@ requirements:
     - {{ compiler('cxx') }}
     - make                                       # [unix]
     - git
-    - conan
+    - conan <2
     - cmake
     - ninja                                      # [not win]
 

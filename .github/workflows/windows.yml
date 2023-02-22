@@ -42,7 +42,7 @@ jobs:
               conda install docopt matplotlib
 
               # Use conan from pypi to get the latest version
-              pip install conan
+              pip install "conan<2"
 
         - name: configure lue
           shell: bash -l {0}
