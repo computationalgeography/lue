@@ -1,6 +1,8 @@
+import numpy as np
+
 import lue.pcraster as lpr
 import lue_test
-import numpy as np
+
 from .operation_test import OperationTest, setUpModule, tearDownModule
 
 
