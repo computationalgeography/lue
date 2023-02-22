@@ -1,5 +1,5 @@
 breathe
-conan
+conan<2
 graphviz
 ipython
 matplotlib
