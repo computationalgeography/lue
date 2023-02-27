@@ -28,7 +28,6 @@ requirements:
     - git
     - conan <2
     - cmake
-    - docopt  # templatize.py
     - jinja2
     - ninja                                      # [not win]
 
@@ -43,6 +42,7 @@ requirements:
     - libgdal
     - pybind11
     - fmt
+    - docopt  # templatize.py
     - docopt.cpp
     - nlohmann_json
 
