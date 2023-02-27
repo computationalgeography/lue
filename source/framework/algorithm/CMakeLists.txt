@@ -124,16 +124,279 @@ target_link_libraries(lue_framework_focal_operation
 )
 
 
+# TODO A global project configuration setting. Move to LueConfiguration.cmake
+list(APPEND LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
+
+# TODO A setting specific for zonal operation. Maybe also global?
+set(Counts std::uint64_t)
+
+# TODO A setting specific for zonal operation. Maybe also global?
+set(Zones std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
+
+# TODO A setting specific for zonal operation. Maybe also global?
+set(IntegralElements std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
+
+# TODO A setting specific for zonal operation. Maybe also global?
+set(FloatingPointElements float double)
+
+# TODO A setting specific for zonal operation. Maybe also global?
+set(Elements ${IntegralElements} ${FloatingPointElements})
+
+# TODO Global variable. Move to LueConfiguration or so.
+set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
+
+
+# Instantiate zonal operations -------------------------------------------------
+set(generated_source_files "")
+
+block()
+    # Instantiate zonal_area
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Count IN LISTS Counts)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_area-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_area.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Count":"${Count}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_diversity
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Count IN LISTS Counts)
+            foreach(Element IN LISTS IntegralElements)
+                foreach(Zone IN LISTS Zones)
+                    math(EXPR count "${count} + 1")
+
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_diversity-${count}.cpp")
+
+                    generate_template_instantiation(
+                        INPUT_PATHNAME
+                            "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_diversity.cpp.in"
+                        OUTPUT_PATHNAME
+                            "${output_pathname}"
+                        DICTIONARY
+                        '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Zone":"${Zone}"}'
+                    )
+                    list(APPEND generated_source_files "${output_pathname}")
+                endforeach()
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_majority
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS IntegralElements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_majority-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_majority.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_maximum
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS Elements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_maximum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_maximum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_mean
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS FloatingPointElements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_mean-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_mean.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_minimum
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS Elements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_minimum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_minimum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_normal
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS FloatingPointElements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_normal-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_normal.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_sum
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS Elements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_sum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_sum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    # Instantiate zonal_uniform
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS FloatingPointElements)
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_uniform-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_uniform.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+# /Instantiate zonal operations ------------------------------------------------
+
 add_library(lue_framework_zonal_operation SHARED
-    src/zonal_operation/zonal_area.cpp
-    src/zonal_operation/zonal_diversity.cpp
-    src/zonal_operation/zonal_majority.cpp
-    src/zonal_operation/zonal_maximum.cpp
-    src/zonal_operation/zonal_mean.cpp
-    src/zonal_operation/zonal_minimum.cpp
-    src/zonal_operation/zonal_normal.cpp
-    src/zonal_operation/zonal_sum.cpp
-    src/zonal_operation/zonal_uniform.cpp
+    ${generated_source_files}
 )
 
 add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)

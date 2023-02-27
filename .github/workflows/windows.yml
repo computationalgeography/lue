@@ -36,7 +36,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install conda-build boost-cpp gdal hdf5 libhwloc numpy pip
+              conda install conda-build boost-cpp gdal hdf5 jinja2 libhwloc numpy pip
 
               # Needed by lue_scalability test below
               conda install docopt matplotlib
@@ -84,7 +84,7 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build --parallel 1
+              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build
 
         - name: test lue
           shell: bash -l {0}

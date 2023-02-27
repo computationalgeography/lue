@@ -2,6 +2,7 @@ breathe
 conan<2
 graphviz
 ipython
+jinja2
 matplotlib
 rasterio
 scipy
