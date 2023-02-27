@@ -592,7 +592,7 @@ function(generate_template_instantiation)
 
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_PATHNAME}
-        COMMAND ${Python_EXECUTABLE} ${LUE_TEMPLATIZE}
+        COMMAND ${Python3_EXECUTABLE} ${LUE_TEMPLATIZE}
             ${ARG_INPUT_PATHNAME} ${ARG_OUTPUT_PATHNAME}
             ${ARG_DICTIONARY}
         DEPENDS ${ARG_INPUT_PATHNAME}
