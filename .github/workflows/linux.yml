@@ -39,8 +39,8 @@ jobs:
         - name: configure system
           run: |
               sudo apt-get update
-              sudo apt-get upgrade
-              sudo apt-get remove libunwind-14-dev
+              # sudo apt-get upgrade
+              # sudo apt-get remove libunwind-14-dev
               sudo apt install \
                   cmake \
                   doxygen \
@@ -68,10 +68,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install docopt breathe jinja2 markupsafe numpy pip sphinx
-
-              # Needed by lue_scalability test below
-              conda install docopt matplotlib
+              conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"

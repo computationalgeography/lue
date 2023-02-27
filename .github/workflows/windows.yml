@@ -36,10 +36,8 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install conda-build boost-cpp gdal hdf5 jinja2 libhwloc numpy pip
-
-              # Needed by lue_scalability test below
-              conda install docopt matplotlib
+              # conda-build needed?
+              conda install boost-cpp docopt gdal hdf5 jinja2 libhwloc matplotlib numpy pip
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
