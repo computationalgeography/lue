@@ -1,23 +1,52 @@
 add_test_conditionally(test)
 
+
+# Instantiate array partition classes ------------------------------------------
+set(ranks 0 1 2)
+set(generated_source_files "")
+
+block()
+    set(counter "0")
+
+    # Only locally add bool to the list of element types
+    list(APPEND LUE_FRAMEWORK_ELEMENTS bool)
+
+    foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+        foreach(rank IN LISTS ranks)
+            math(EXPR count "${count} + 1")
+
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/array_partition-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/array_partition.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Element":"${Element}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/array_partition-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/server/array_partition.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Element":"${Element}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
 add_library(lue_framework_partitioned_array SHARED
     src/server/array_partition.cpp
-    src/server/array_partition_bool.cpp
-    src/server/array_partition_uint8.cpp
-    src/server/array_partition_uint32.cpp
-    src/server/array_partition_uint64.cpp
-    src/server/array_partition_int32.cpp
-    src/server/array_partition_int64.cpp
-    src/server/array_partition_float.cpp
-    src/server/array_partition_double.cpp
-    src/array_partition_bool.cpp
-    src/array_partition_uint8.cpp
-    src/array_partition_uint32.cpp
-    src/array_partition_uint64.cpp
-    src/array_partition_int32.cpp
-    src/array_partition_int64.cpp
-    src/array_partition_float.cpp
-    src/array_partition_double.cpp
+    ${generated_source_files}
 )
 
 add_library(lue::framework_partitioned_array ALIAS lue_framework_partitioned_array)

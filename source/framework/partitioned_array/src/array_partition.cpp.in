@@ -1,0 +1,8 @@
+#include "lue/framework/partitioned_array/array_partition_impl.hpp"
+
+
+namespace lue {
+
+    template class ArrayPartition<{{ Element }}, {{ rank }}>;
+
+}  // namespace lue
