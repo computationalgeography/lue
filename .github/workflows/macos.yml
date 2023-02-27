@@ -52,8 +52,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              pip3 install "conan<2" jinja2 matplotlib
-              pip3 install -use-pep517 docopt
+              pip3 install "conan<2" docopt jinja2 matplotlib
 
 
         - name: configure lue
