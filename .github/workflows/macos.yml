@@ -53,7 +53,7 @@ jobs:
         - shell: bash -l {0}
           run: |
               # Use conan from pypi to get the latest version
-              pip3 install "conan<2"
+              pip3 install "conan<2" jinja2
 
               # Needed by lue_scalability test below
               pip3 install docopt matplotlib

@@ -570,3 +570,31 @@ function(lue_install_python_modules)
             COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()
+
+
+function(generate_template_instantiation)
+    set(prefix ARG)
+    set(no_values "")
+    set(single_values
+        INPUT_PATHNAME
+        OUTPUT_PATHNAME
+        DICTIONARY
+    )
+    set(multi_values "")
+
+    cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
+
+    if(${prefix}_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "Function called with unrecognized arguments: "
+            "${${prefix}_UNPARSED_ARGUMENTS}")
+    endif()
+
+    add_custom_command(
+        OUTPUT ${ARG_OUTPUT_PATHNAME}
+        COMMAND ${Python_EXECUTABLE} ${LUE_TEMPLATIZE}
+            ${ARG_INPUT_PATHNAME} ${ARG_OUTPUT_PATHNAME}
+            ${ARG_DICTIONARY}
+        DEPENDS ${ARG_INPUT_PATHNAME}
+    )
+endfunction()
