@@ -124,26 +124,10 @@ target_link_libraries(lue_framework_focal_operation
 )
 
 
-# TODO A global project configuration setting. Move to LueConfiguration.cmake
+# TODO Maybe set these at a higher level?
 list(APPEND LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
-
-# TODO A setting specific for zonal operation. Maybe also global?
 set(Counts std::uint64_t)
-
-# TODO A setting specific for zonal operation. Maybe also global?
 set(Zones std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
-
-# TODO A setting specific for zonal operation. Maybe also global?
-set(IntegralElements std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
-
-# TODO A setting specific for zonal operation. Maybe also global?
-set(FloatingPointElements float double)
-
-# TODO A setting specific for zonal operation. Maybe also global?
-set(Elements ${IntegralElements} ${FloatingPointElements})
-
-# TODO Global variable. Move to LueConfiguration or so.
-set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
 
 # Instantiate zonal operations -------------------------------------------------
@@ -166,7 +150,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Count":"${Count}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Count":"${Count}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -182,7 +166,7 @@ block()
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Count IN LISTS Counts)
-            foreach(Element IN LISTS IntegralElements)
+            foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
                 foreach(Zone IN LISTS Zones)
                     math(EXPR count "${count} + 1")
 
@@ -194,7 +178,7 @@ block()
                         OUTPUT_PATHNAME
                             "${output_pathname}"
                         DICTIONARY
-                        '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Zone":"${Zone}"}'
+                            '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Zone":"${Zone}"}'
                     )
                     list(APPEND generated_source_files "${output_pathname}")
                 endforeach()
@@ -210,7 +194,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS IntegralElements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -222,7 +206,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -237,7 +221,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS Elements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -249,7 +233,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -264,7 +248,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS FloatingPointElements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -276,7 +260,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -291,7 +275,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS Elements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -303,7 +287,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -318,7 +302,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS FloatingPointElements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -330,7 +314,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -345,7 +329,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS Elements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -357,7 +341,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -372,7 +356,7 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS FloatingPointElements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
 
@@ -384,7 +368,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()

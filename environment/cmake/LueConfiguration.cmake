@@ -169,6 +169,16 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
+# TODO This assumes a Python interpreter is installed...
+#      We need it to generate modules with template instantiations.
+set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
+
+# NOTE These can be made configurable later on
+set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
+set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS float double)
+set(LUE_FRAMEWORK_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS} ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+
 # Handle external dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
     set(LUE_HDF5_REQUIRED TRUE)
