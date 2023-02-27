@@ -596,5 +596,6 @@ function(generate_template_instantiation)
             ${ARG_INPUT_PATHNAME} ${ARG_OUTPUT_PATHNAME}
             ${ARG_DICTIONARY}
         DEPENDS ${ARG_INPUT_PATHNAME}
+        VERBATIM
     )
 endfunction()
