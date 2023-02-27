@@ -32,7 +32,10 @@ Options:
     assert os.path.isfile(source_pathname), source_pathname
 
     destination_pathname = arguments["<destination>"]
-    values = dict(ast.literal_eval(arguments["<value>"]))
+    # When this script is called from CMake, we enclose it by single quotes.
+    # The VERBATIM option (recommended) of add_custom_command does not strip
+    # the quotes from the string. We do it here. This can probably be improved.
+    values = dict(ast.literal_eval(arguments["<value>"].strip("'")))
 
     with open(source_pathname) as source_file:
         template = jinja2.Template(source_file.read())
