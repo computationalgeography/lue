@@ -87,7 +87,7 @@ jobs:
                   -D HPX_WITH_PKGCONFIG=FALSE \
                   -D HPX_WITH_EXAMPLES=FALSE \
                   -D HPX_WITH_TESTS=FALSE \
-                  -D Python_EXECUTABLE="/usr/local/bin/python3"
+                  -D Python3_EXECUTABLE="/usr/local/bin/python3"
 
         - name: build lue
           shell: bash -l {0}
