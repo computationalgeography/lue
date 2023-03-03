@@ -34,21 +34,238 @@ target_link_libraries(lue_framework_algorithm
 )
 
 
+# TODO Maybe set these at a higher level?
+set(LUE_FRAMEWORK_POLICIES "DefaultPolicies" "DefaultValuePolicies")
+set(ranks 2)
+
+
+# Instantiate local operations -------------------------------------------------
+set(generated_source_files "")
+set(offset "src/local_operation")
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
+
+                # Instantiate add
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/add-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/add.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate valid
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/valid-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/valid.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate where2
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where2-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/where2.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate where3
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where3-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/where3.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS
+                LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
+                LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+            )
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
+
+                # Instantiate abs
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/abs-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/abs.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS
+                LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+            )
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
+
+                # acos
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/acos-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/acos.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # asin
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/asin-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/asin.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # atan
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/atan.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # atan2
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan2-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/atan2.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # cos
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cos-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/cos.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # sin
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sin-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/sin.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # tan
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/tan-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/tan.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
+
+
+
+
+
+
+
+# / Instantiate local operations -----------------------------------------------
+
+
 # Libraries containing explicit instantiations of modelling operations
 # supporting map algebra:
 # - 2D arrays
 # - Common element types
 # - Common policies
 add_library(lue_framework_local_operation SHARED
-    src/local_operation/abs.cpp
-    src/local_operation/add.cpp
-    src/local_operation/acos.cpp
-    src/local_operation/asin.cpp
-    src/local_operation/atan.cpp
-    src/local_operation/atan2.cpp
+    ${generated_source_files}
     src/local_operation/cast.cpp
     src/local_operation/close_to.cpp
-    src/local_operation/cos.cpp
     src/local_operation/divide.cpp
     src/local_operation/equal_to.cpp
     src/local_operation/exp.cpp
@@ -64,14 +281,9 @@ add_library(lue_framework_local_operation SHARED
     src/local_operation/multiply.cpp
     src/local_operation/not_equal_to.cpp
     src/local_operation/pow.cpp
-    src/local_operation/sin.cpp
     src/local_operation/sqrt.cpp
     src/local_operation/subtract.cpp
-    src/local_operation/tan.cpp
     src/local_operation/unique_id.cpp
-    src/local_operation/valid.cpp
-    src/local_operation/default_policies/where.cpp
-    src/local_operation/value_policies/where.cpp
 )
 
 add_library(lue::framework_local_operation ALIAS lue_framework_local_operation)
@@ -125,7 +337,7 @@ target_link_libraries(lue_framework_focal_operation
 
 
 # TODO Maybe set these at a higher level?
-list(APPEND LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
+set(LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
 set(Counts std::uint64_t)
 set(Zones std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
 
