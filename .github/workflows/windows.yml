@@ -36,22 +36,21 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc matplotlib numpy pip
+              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc matplotlib ninja numpy pip
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
 
+        - uses: ilammy/msvc-dev-cmd@v1
+
         - name: configure lue
           shell: bash -l {0}
           run: |
-              python -c "import docopt; print(docopt.__version__)"
-              python -c "import jinja2; print(jinja2.__version__)"
               mkdir $GITHUB_WORKSPACE/../build
-              # -D FETCHCONTENT_QUIET=FALSE
               cmake \
                   -S . \
                   -B $GITHUB_WORKSPACE/../build \
-                  -G "Visual Studio 17 2022" -A x64 \
+                  -G "Ninja" \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
