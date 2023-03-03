@@ -51,20 +51,12 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              type python3
-              type pip3
               pip3 install "conan<2" docopt jinja2 matplotlib
-              python3 -c "import docopt; print(docopt.__version__)"
-              python3 -c "import jinja2; print(jinja2.__version__)"
 
 
         - name: configure lue
           shell: bash -l {0}
           run: |
-              type python3
-              python3 --version
-              python3 -c "import docopt; print(docopt.__version__)"
-              python3 -c "import jinja2; print(jinja2.__version__)"
               mkdir $GITHUB_WORKSPACE/../build
               cmake \
                   -S . \
@@ -92,10 +84,6 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              type python3
-              python3 --version
-              python3 -c "import docopt; print(docopt.__version__)"
-              python3 -c "import jinja2; print(jinja2.__version__)"
               cmake --build $GITHUB_WORKSPACE/../build --target all
 
         - name: test lue
