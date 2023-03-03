@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/logical_not.hpp"
+#include "lue/framework/algorithm/definition/logical_not.hpp"
+#include "lue/framework/algorithm/value_policies/logical_not.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_LOGICAL_NOT(
+            ESC(policy::logical_not::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
+            {{ ExpressionElement }},
+            {{ rank }}
+        );
+
+}  // namespace lue

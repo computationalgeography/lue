@@ -1,0 +1,17 @@
+#include "lue/framework/algorithm/default_policies/logical_and.hpp"
+#include "lue/framework/algorithm/definition/logical_and.hpp"
+#include "lue/framework/algorithm/value_policies/logical_and.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(
+            ESC(policy::logical_and::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
+            {{ BooleanElement }},
+            {{ ExpressionElement }},
+            {{ ExpressionElement }},
+            {{ rank }},
+            ESC(detail::LogicalAnd<{{ ExpressionElement }}, {{ BooleanElement }}>)
+        );
+
+}  // namespace lue

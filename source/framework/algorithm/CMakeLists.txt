@@ -64,6 +64,84 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # Instantiate equal_to
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/equal_to-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/equal_to.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate greater_than
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/greater_than.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate greater_than_equal_to
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than_equal_to-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/greater_than_equal_to.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate less_than
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/less_than.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate less_than_equal_to
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than_equal_to-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/less_than_equal_to.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate not_equal_to
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/not_equal_to-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/not_equal_to.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # Instantiate valid
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/valid-${count}.cpp")
 
@@ -74,6 +152,32 @@ block()
                         "${output_pathname}"
                     DICTIONARY
                         '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate multiply
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/multiply-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/multiply.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate subtract
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/subtract-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/subtract.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
@@ -201,6 +305,19 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # Instantiate close_to
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/close_to-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/close_to.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # cos
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cos-${count}.cpp")
 
@@ -214,12 +331,77 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # divide
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/divide-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/divide.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # exp
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/exp-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/exp.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # log
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/log.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # pow
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/pow-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/pow.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # sin
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sin-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/sin.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # sqrt
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sqrt-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/sqrt.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -246,44 +428,117 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
+block()
+    set(counter "0")
 
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                foreach(rank IN LISTS ranks)
+                    math(EXPR count "${count} + 1")
 
+                    # Instantiate cast
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cast-${count}.cpp")
 
+                    generate_template_instantiation(
+                        INPUT_PATHNAME
+                            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/cast.cpp.in"
+                        OUTPUT_PATHNAME
+                            "${output_pathname}"
+                        DICTIONARY
+                            '{"Policies":"${Policies}","OutputElement":"${OutputElement}","InputElement":"${InputElement}","rank":"${rank}"}'
+                    )
+                    list(APPEND generated_source_files "${output_pathname}")
+                endforeach()
+            endforeach()
+        endforeach()
+    endforeach()
 
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
 
+block()
+    set(counter "0")
 
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
 
+                # Instantiate logical_and
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_and-${count}.cpp")
 
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/logical_and.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate logical_exclusive_or
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_exclusive_or-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/logical_exclusive_or.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate logical_inclusive_or
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_inclusive_or-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/logical_inclusive_or.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate logical_not
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_not-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/logical_not.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate unique_id
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique_id-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/unique_id.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","IDElement":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
 # / Instantiate local operations -----------------------------------------------
 
-
-# Libraries containing explicit instantiations of modelling operations
-# supporting map algebra:
-# - 2D arrays
-# - Common element types
-# - Common policies
 add_library(lue_framework_local_operation SHARED
     ${generated_source_files}
-    src/local_operation/cast.cpp
-    src/local_operation/close_to.cpp
-    src/local_operation/divide.cpp
-    src/local_operation/equal_to.cpp
-    src/local_operation/exp.cpp
-    src/local_operation/greater_than.cpp
-    src/local_operation/greater_than_equal_to.cpp
-    src/local_operation/less_than.cpp
-    src/local_operation/less_than_equal_to.cpp
-    src/local_operation/log.cpp
-    src/local_operation/logical_and.cpp
-    src/local_operation/logical_exclusive_or.cpp
-    src/local_operation/logical_inclusive_or.cpp
-    src/local_operation/logical_not.cpp
-    src/local_operation/multiply.cpp
-    src/local_operation/not_equal_to.cpp
-    src/local_operation/pow.cpp
-    src/local_operation/sqrt.cpp
-    src/local_operation/subtract.cpp
-    src/local_operation/unique_id.cpp
 )
 
 add_library(lue::framework_local_operation ALIAS lue_framework_local_operation)

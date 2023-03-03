@@ -1,0 +1,17 @@
+#include "lue/framework/algorithm/default_policies/unique_id.hpp"
+#include "lue/framework/algorithm/definition/unique_id.hpp"
+#include "lue/framework/algorithm/value_policies/unique_id.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_UNIQUE_ID(
+            ESC(policy::unique_id::{{ Policies }}<
+                {{ IDElement }},
+                {{ ConditionElement }}>),
+            {{ IDElement }},
+            {{ ConditionElement }},
+            {{ rank }}
+        );
+
+}  // namespace lue

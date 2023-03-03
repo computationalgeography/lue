@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/cast.hpp"
+#include "lue/framework/algorithm/definition/cast.hpp"
+#include "lue/framework/algorithm/value_policies/cast.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_CAST(
+        ESC(policy::cast::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+        {{ OutputElement }},
+        {{ InputElement }},
+        {{ rank }});
+
+}  // namespace lue
