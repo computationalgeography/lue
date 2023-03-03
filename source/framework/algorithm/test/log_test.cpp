@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/definition/log.hpp"
+#include "lue/framework/algorithm/default_policies/log.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -21,9 +21,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{25})};
 
-        auto log = lue::log(array);
-
-        BOOST_CHECK(all(log == std::log(Element{25})).get());
+        BOOST_CHECK(all(log(array) == std::log(Element{25})).get());
     }
 
 }  // namespace detail

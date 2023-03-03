@@ -1,0 +1,16 @@
+#include "lue/framework/algorithm/default_policies/not_equal_to.hpp"
+#include "lue/framework/algorithm/definition/not_equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(
+            ESC(policy::not_equal_to::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
+            {{ BooleanElement }},
+            {{ ExpressionElement }},
+            {{ ExpressionElement }},
+            {{ rank }},
+            ESC(detail::NotEqualTo<{{ ExpressionElement }}, {{ BooleanElement }}>)
+        );
+}  // namespace lue

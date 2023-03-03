@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/log.hpp"
+#include "lue/framework/algorithm/value_policies/log.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,9 +8,7 @@ namespace lue::framework {
         template<typename Element, Rank rank>
         PartitionedArray<Element, rank> log(PartitionedArray<Element, rank> const& array)
         {
-            using Policies = policy::log::DefaultValuePolicies<Element>;
-
-            return log(Policies{}, array);
+            return value_policies::log(array);
         }
 
     }  // Anonymous namespace

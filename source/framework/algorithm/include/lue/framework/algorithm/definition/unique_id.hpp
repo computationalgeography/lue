@@ -260,8 +260,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_UNIQUE_ID(Policies, IDElement, ConditionElement)                                     \
+#define LUE_INSTANTIATE_UNIQUE_ID(Policies, IDElement, ConditionElement, rank)                               \
                                                                                                              \
-    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<IDElement, 2>                                       \
-    unique_id<IDElement, ArgumentType<void(Policies)>, ConditionElement, 2>(                                 \
-        ArgumentType<void(Policies)> const&, PartitionedArray<ConditionElement, 2> const&);
+    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<IDElement, rank>                                    \
+    unique_id<IDElement, ArgumentType<void(Policies)>, ConditionElement, rank>(                              \
+        ArgumentType<void(Policies)> const&, PartitionedArray<ConditionElement, rank> const&);
