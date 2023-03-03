@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/asin.hpp"
+#include "lue/framework/algorithm/definition/asin.hpp"
+#include "lue/framework/algorithm/value_policies/asin.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ASIN(
+            ESC(policy::asin::{{ Policies }}<{{ Element }}>),
+            {{ Element }},
+            {{ rank }}
+        );
+
+}  // namespace lue

@@ -1,0 +1,15 @@
+#include "lue/framework/algorithm/default_policies/valid.hpp"
+#include "lue/framework/algorithm/definition/valid.hpp"
+#include "lue/framework/algorithm/value_policies/valid.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_VALID(
+            ESC(policy::valid::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
+            {{ BooleanElement }},
+            {{ ExpressionElement }},
+            {{ rank }}
+        );
+
+}  // namespace lue

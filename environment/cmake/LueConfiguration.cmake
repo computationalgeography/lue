@@ -174,9 +174,17 @@ endif()
 set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
 # NOTE These can be made configurable later on
-set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS std::uint8_t std::uint32_t std::uint64_t std::int32_t std::int64_t)
+set(LUE_FRAMEWORK_CONDITION_ELEMENT std::uint8_t)
+set(LUE_FRAMEWORK_BOOLEAN_ELEMENT std::uint8_t)
+set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS std::int32_t std::int64_t)
+set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS std::uint8_t std::uint32_t std::uint64_t)
+set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
+    ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
+    ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
 set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS float double)
-set(LUE_FRAMEWORK_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS} ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+set(LUE_FRAMEWORK_ELEMENTS
+    ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
+    ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 
 
 # Handle external dependencies -------------------------------------------------
