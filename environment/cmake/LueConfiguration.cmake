@@ -608,13 +608,9 @@ if(LUE_HPX_REQUIRED)
                 set(hpx_git_shallow ON)
             endif()
 
-            # Obtain HPX from GIT repository. This is useful when we
-            # need to use a specific HPX commit.
-            if(LUE_REPOSITORY_CACHE AND EXISTS "${LUE_REPOSITORY_CACHE}/hpx")
-                # Use local repository
-                set(hpx_repository "file://${LUE_REPOSITORY_CACHE}/hpx")
+            if(LUE_HPX_REPOSITORY)
+                set(hpx_repository "${LUE_HPX_REPOSITORY}")
             else()
-                # Use remote repository
                 set(hpx_repository "https://github.com/STEllAR-GROUP/hpx")
             endif()
 
@@ -634,7 +630,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try 1.8.1 1.8.0)
+                list(APPEND hpx_versions_to_try v1.9.0-rc1)
             endif()
 
             # First see if an HPX archive is available in a local cache
