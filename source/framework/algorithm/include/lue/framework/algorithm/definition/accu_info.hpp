@@ -904,7 +904,7 @@ namespace lue {
             // During the calculations, the promises of the individual
             // partition server instance IDs will be fulfilled, as soon
             // as possible. Fire and forget.
-            hpx::apply(
+            hpx::post(
                 solve_inter_partition_stream_cells<
                     Policies,
                     Localities,
