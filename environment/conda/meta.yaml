@@ -60,10 +60,10 @@ requirements:
 
 
 test:
-    commands:
-       - lue_translate -h
-       - lue_validate -h
-       - lue_scalability -h                      # [not win]
+  commands:
+    - lue_translate -h
+    - lue_validate -h
+    - lue_scalability -h                      # [not win]
 
 
 about:
@@ -72,27 +72,19 @@ about:
   license_file: LICENSE.txt
   summary: LUE scientific database and environmental modelling framework.
   description: |
-    LUE is software for storing and manipulating large amounts of information
-    for large amounts of objects. This information can optionally have a
-    reference in time and space. For example, LUE can represent collections of
-    wandering animals and their properties, some of which are changing through
-    time, or the elevation of the surface of one or multiple areas. The software
-    is useful, and currently mainly used, in the context of environmental
-    modelling of biological and physical systems, represented by agents and
-    fields, but we make sure that the software is as generic as possible,
-    allowing it to be useful in other contexts as well.
+    LUE is software supporting the representation and numerical simulation of geographical
+    systems. Using LUE, model developers can develop models using a syntax that looks very
+    similar to map algebra, in either Python or C++. Given such a model, modellers can simulate
+    real-world geographical systems with a large extent and at high resolutions. LUE models
+    can be executed on small laptops and on large cluster partitions.
 
-    Currently, LUE contains two main parts: *LUE data model* and *LUE
-    framework*. LUE data model is an implementation of the LUE physical data
-    model, which allows users to perform I/O to the "LUE Scientific Database".
-    It allows for the storage of large amounts of objects and their location
-    in time and space, and their properties.
+    LUE is the result of multiple research projects performed by the Computational Geography
+    group at Utrecht University in the Netherlands. One of the focus areas of this group is
+    to improve on the concepts and design of numerical simulation frameworks for geographical
+    systems, with respect to their functionality and performance.
 
-    LUE framework is a collection of data types and algorithms that can be
-    combined to translate large amounts of information. It allows computations
-    to be performed on hardware ranging from laptops to compute clusters,
-    without the user having to know about high-performance computing and
-    the related technology.
+    LUE supports both agent-based and field-based modelling of geographical systems, with the
+    support for field-based modelling currently being the most mature.
   doc_url: https://lue.computationalgeography.org/doc/
   dev_url: https://github.com/computationalgeography/lue/
 
