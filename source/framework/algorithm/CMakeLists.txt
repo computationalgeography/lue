@@ -1050,9 +1050,72 @@ target_link_libraries(lue_framework_zonal_operation
 )
 
 
+
+# Instantiate global operations ------------------------------------------------
+set(generated_source_files "")
+set(offset "src/global_operation")
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
+
+                # Instantiate unique
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/unique.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+                foreach(rank IN LISTS ranks)
+                    math(EXPR count "${count} + 1")
+
+                    # Instantiate reclassify
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/reclassify-${count}.cpp")
+
+                    generate_template_instantiation(
+                        INPUT_PATHNAME
+                            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/reclassify.cpp.in"
+                        OUTPUT_PATHNAME
+                            "${output_pathname}"
+                        DICTIONARY
+                            '{"Policies":"${Policies}","InputElement":"${InputElement}","OutputElement":"${OutputElement}","rank":"${rank}"}'
+                    )
+                    list(APPEND generated_source_files "${output_pathname}")
+                endforeach()
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+# / Instantiate global operations ----------------------------------------------
+
+
 add_library(lue_framework_global_operation SHARED
-    src/global_operation/reclassify.cpp
-    src/global_operation/unique.cpp
+    ${generated_source_files}
 )
 
 add_library(lue::framework_global_operation ALIAS lue_framework_global_operation)

@@ -140,10 +140,10 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_RECLASSIFY(Policies, FromElement, ToElement)                                         \
+#define LUE_INSTANTIATE_RECLASSIFY(Policies, FromElement, ToElement, rank)                                   \
                                                                                                              \
-    template LUE_GLOBAL_OPERATION_EXPORT PartitionedArray<ToElement, 2>                                      \
-    reclassify<ArgumentType<void(Policies)>, FromElement, ToElement, 2>(                                     \
+    template LUE_GLOBAL_OPERATION_EXPORT PartitionedArray<ToElement, rank>                                   \
+    reclassify<ArgumentType<void(Policies)>, FromElement, ToElement, rank>(                                  \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<FromElement, 2> const&,                                                             \
+        PartitionedArray<FromElement, rank> const&,                                                          \
         LookupTable<FromElement, ToElement> const&);
