@@ -121,8 +121,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_UNIQUE(Policies, Element)                                                            \
+#define LUE_INSTANTIATE_UNIQUE(Policies, Element, rank)                                                      \
                                                                                                              \
     template LUE_GLOBAL_OPERATION_EXPORT hpx::future<std::set<Element>>                                      \
-    unique<ArgumentType<void(Policies)>, Element, 2>(                                                        \
-        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&);
+    unique<ArgumentType<void(Policies)>, Element, rank>(                                                     \
+        ArgumentType<void(Policies)> const&, PartitionedArray<Element, rank> const&);

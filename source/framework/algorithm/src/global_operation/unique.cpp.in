@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/unique.hpp"
+#include "lue/framework/algorithm/definition/unique.hpp"
+#include "lue/framework/algorithm/value_policies/unique.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_UNIQUE(
+            ESC(policy::unique::{{ Policies }}<{{ Element }}>),
+            {{ Element }},
+            {{ rank }}
+        );
+
+}  // namespace lue
