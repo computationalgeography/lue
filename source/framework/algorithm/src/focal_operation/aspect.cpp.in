@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/aspect.hpp"
+#include "lue/framework/algorithm/value_policies/aspect.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ASPECT(
+            ESC(policy::aspect::{{ Policies }}<{{ Element }}>),
+            {{ Element }}
+        );
+
+}  // namespace lue

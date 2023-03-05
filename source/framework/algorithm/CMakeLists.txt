@@ -559,18 +559,199 @@ target_link_libraries(lue_framework_local_operation
 )
 
 
+# Instantiate focal operations -------------------------------------------------
+set(generated_source_files "")
+set(offset "src/focal_operation")
+set(LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES "DefaultValuePolicies")
+set(Counts std::uint64_t)
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            math(EXPR count "${count} + 1")
+
+            # Instantiate focal_maximum
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_maximum-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_maximum.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate focal_minimum
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_minimum-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_minimum.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate focal_sum
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_sum-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_sum.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            math(EXPR count "${count} + 1")
+
+            # Instantiate aspect
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/aspect-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/aspect.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate focal_high_pass
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_high_pass-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_high_pass.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate focal_mean
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_mean-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_mean.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate gradients
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/gradients-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/gradients.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate slope
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/slope-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/slope.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            math(EXPR count "${count} + 1")
+
+            # Instantiate focal_majority
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_majority-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_majority.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+        foreach(Count IN LISTS Counts)
+            foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+                math(EXPR count "${count} + 1")
+
+                # Instantiate focal_diversity
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_diversity-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_diversity.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
 add_library(lue_framework_focal_operation SHARED
-    src/focal_operation/aspect.cpp
-    src/focal_operation/convolve.cpp
-    src/focal_operation/focal_diversity.cpp
-    src/focal_operation/focal_high_pass.cpp
-    src/focal_operation/focal_majority.cpp
-    src/focal_operation/focal_maximum.cpp
-    src/focal_operation/focal_mean.cpp
-    src/focal_operation/focal_minimum.cpp
-    src/focal_operation/focal_sum.cpp
-    src/focal_operation/gradients.cpp
-    src/focal_operation/slope.cpp
+    ${generated_source_files}
 )
 
 add_library(lue::framework_focal_operation ALIAS lue_framework_focal_operation)
