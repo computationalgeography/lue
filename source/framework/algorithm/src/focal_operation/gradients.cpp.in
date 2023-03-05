@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/gradients.hpp"
+#include "lue/framework/algorithm/value_policies/gradients.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_GRADIENTS(
+            ESC(policy::gradients::{{ Policies }}<{{ Element }}>),
+            {{ Element }}
+        );
+
+}  // namespace lue
