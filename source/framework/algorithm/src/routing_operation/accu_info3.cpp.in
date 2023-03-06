@@ -1,6 +1,13 @@
 #include "lue/framework/algorithm/definition/accu_info3.hpp"
 
 
+using lue_CellsIdxs = std::vector<lue::Index>;
+using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ FlowDirectionElement }}, 2>;
+
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
+
+
 namespace lue {
 
     LUE_INSTANTIATE_ACCU_INFO3(
