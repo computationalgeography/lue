@@ -1163,6 +1163,7 @@ block()
         list(APPEND generated_source_files "${output_pathname}")
 
         # Instantiate accu_info3
+        string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
         set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info3-${count}.cpp")
 
         generate_template_instantiation(
@@ -1171,7 +1172,7 @@ block()
             OUTPUT_PATHNAME
                 "${output_pathname}"
             DICTIONARY
-                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
+                '{"name:":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
         )
         list(APPEND generated_source_files "${output_pathname}")
     endforeach()
@@ -1237,6 +1238,7 @@ block()
     foreach(Policies IN LISTS all_policies)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" name ${Element})
 
             # Instantiate accu3
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu3-${count}.cpp")
@@ -1247,7 +1249,7 @@ block()
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
         endforeach()
@@ -1263,6 +1265,7 @@ block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" name ${Element})
 
             # Instantiate accu_fraction
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_fraction-${count}.cpp")
@@ -1299,7 +1302,7 @@ block()
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
 
@@ -1325,7 +1328,7 @@ block()
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
         endforeach()
@@ -1341,11 +1344,10 @@ block()
 
     foreach(Element IN LISTS materials)
         math(EXPR count "${count} + 1")
+        string(REPLACE "::" "_" name ${Element})
 
         # Instantiate channel_material
         set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/channel_material-${count}.cpp")
-
-        string(REPLACE "::" "_" name ${Element})
 
         generate_template_instantiation(
             INPUT_PATHNAME
