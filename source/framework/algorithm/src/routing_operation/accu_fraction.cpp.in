@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/definition/accu_fraction.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ACCU_FRACTION(
+            ESC(policy::accu_fraction::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}, {{ Element }}>),
+            {{ FlowDirectionElement }},
+            {{ Element }},
+            {{ Element }}
+        );
+
+}  // namespace lue

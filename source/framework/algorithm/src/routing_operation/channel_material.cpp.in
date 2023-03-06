@@ -1,0 +1,6 @@
+#include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+
+
+using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
+
+HPX_REGISTER_CHANNEL(ChannelMaterial_{{ name }});

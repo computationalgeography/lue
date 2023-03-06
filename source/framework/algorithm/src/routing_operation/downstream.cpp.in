@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/downstream.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_DOWNSTREAM(
+            ESC(policy::downstream::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
+            {{ FlowDirectionElement }},
+            {{ Element }}
+        );
+
+}  // namespace lue

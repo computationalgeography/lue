@@ -1,0 +1,11 @@
+#include "lue/framework/algorithm/definition/accu_info3.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ACCU_INFO3(
+            ESC(policy::accu_info3::{{ Policies }}<{{ FlowDirectionElement }}>),
+            {{ FlowDirectionElement }}
+        );
+
+}  // namespace lue
