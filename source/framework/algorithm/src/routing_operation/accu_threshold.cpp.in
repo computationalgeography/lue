@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/accu_threshold.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ACCU_THRESHOLD(
+            ESC(policy::accu_threshold::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
+            {{ FlowDirectionElement }},
+            {{ Element }}
+        );
+
+}  // namespace lue

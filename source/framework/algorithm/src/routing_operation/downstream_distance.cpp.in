@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/downstream_distance.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_DOWNSTREAM_DISTANCE(
+            ESC(policy::downstream_distance::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
+            {{ FlowDirectionElement }},
+            {{ Element }}
+        );
+
+}  // namespace lue
