@@ -55,7 +55,7 @@ requirements:
     - hdf5
     - hpx
     - libgdal
-    - matplotlib  # lue.qa
+    - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
     - python
     - python-dateutil  # lue.qa
