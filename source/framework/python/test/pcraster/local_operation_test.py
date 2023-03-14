@@ -21,6 +21,32 @@ class LocalOperationTest(OperationTest):
             _ = non_spatial + non_spatial
 
     @lue_test.framework_test_case
+    def test_max(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.max(spatial, spatial)
+            _ = lpr.max(spatial, non_spatial)
+            _ = lpr.max(non_spatial, spatial)
+            _ = lpr.max(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_min(self):
+        for expression_type in [np.uint8, np.int32, np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.min(spatial, spatial)
+            _ = lpr.min(spatial, non_spatial)
+            _ = lpr.min(non_spatial, spatial)
+            _ = lpr.min(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
     def test_subtract(self):
         for expression_type in [np.float32]:
             spatial, non_spatial = (
@@ -444,6 +470,28 @@ class LocalOperationTest(OperationTest):
 
             _ = lpr.tan(spatial)
             _ = lpr.tan(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_uniform(self):
+        for expression_type in [np.uint8]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.uniform(spatial)
+            _ = lpr.uniform(non_spatial)
+
+    @lue_test.framework_test_case
+    def test_uniqueid(self):
+        for expression_type in [np.uint8]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type].item(),
+            )
+
+            _ = lpr.uniqueid(spatial)
+            _ = lpr.uniqueid(non_spatial)
 
     @lue_test.framework_test_case
     def test_xor(self):

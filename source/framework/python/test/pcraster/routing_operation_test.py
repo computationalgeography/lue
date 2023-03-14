@@ -102,3 +102,16 @@ class RoutingOperationTest(OperationTest):
                 non_spatial,
                 non_spatial,
             )
+
+    @lue_test.framework_test_case
+    def test_upstream(self):
+        ldd = self.ldd
+
+        for type_ in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[type_],
+                self.non_spatial[type_].item(),
+            )
+
+            _ = lpr.upstream(ldd, non_spatial)
+            _ = lpr.upstream(ldd, spatial)

@@ -98,6 +98,9 @@ namespace lue::framework {
 
     void bind_cast(pybind11::module& module)
     {
+        module.def("cast", cast<std::uint8_t, 2>);
+        module.def("cast", cast<std::uint32_t, 2>);
+        module.def("cast", cast<std::int32_t, 2>);
         module.def("cast", cast<std::uint64_t, 2>);
         module.def("cast", cast<std::int64_t, 2>);
     }

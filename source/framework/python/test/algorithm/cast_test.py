@@ -20,7 +20,7 @@ class CastTest(lue_test.TestCase):
         partition_shape = (10, 10)
         fill_value = 5
 
-        for input_type in [np.uint64, np.int64]:
+        for input_type in [np.uint8, np.uint32, np.int32, np.uint64, np.int64]:
             input_array = lfr.create_array(
                 array_shape, partition_shape, input_type, fill_value
             )

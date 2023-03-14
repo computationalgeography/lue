@@ -26,6 +26,8 @@ LUE itself supports additional cell represenations (uint32, int64, uint64, float
 LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
+import ctypes
+
 import numpy as np
 
 import lue.framework as lfr
@@ -59,6 +61,22 @@ def setclone(*args):
         "lue.pcraster.configuration.partition_shape = partition_shape\n"
         "lue.pcraster.configuration.cell_size = 10"
     )
+
+
+def numpy_scalar_type(expression):
+    element_type_by_type = {
+        lfr.PartitionedArray_uint8_2: np.uint8,
+        lfr.PartitionedArray_int32_2: np.int32,
+        lfr.PartitionedArray_float32_2: np.float32,
+        int: np.int32,
+        float: np.float32,
+        np.uint8: np.uint8,
+        np.int32: np.int32,
+        np.float32: np.float32,
+        np.float64: np.float32,  # Yes, downcasting to PCRaster's cell representation
+    }
+
+    return element_type_by_type[type(expression)]
 
 
 def is_spatial(argument):
@@ -115,6 +133,8 @@ def is_non_spatial(argument):
 
 def non_spatial_to_spatial(fill_value, template=None):
 
+    scalar_type = numpy_scalar_type(fill_value)
+
     if template is None:
         array_shape = configuration.array_shape
     else:
@@ -122,9 +142,11 @@ def non_spatial_to_spatial(fill_value, template=None):
 
     partition_shape = configuration.partition_shape
 
-    return lfr.create_array(
-        array_shape, partition_shape, np.dtype(fill_value), fill_value
-    )
+    return lfr.create_array(array_shape, partition_shape, scalar_type, fill_value)
+
+
+def read_if_necessary(*args) -> tuple:
+    return tuple(map(lambda arg: readmap(arg) if isinstance(arg, str) else arg, args))
 
 
 def translate_window_length(pcraster_window_length):
@@ -154,8 +176,11 @@ def readmap(pathname):
     return lfr.from_gdal(pathname, configuration.partition_shape)
 
 
-def report(array, pathname):
-    lfr.to_gdal(array, pathname)
+def report(expression, pathname):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
+
+    lfr.to_gdal(expression, pathname)
 
 
 def div(expression1, expression2):
@@ -182,6 +207,10 @@ def accuflux(ldd, material):
 
 
 def accufraction(ldd, material, transportcapacity):
+    ldd, material, transportcapacity = read_if_necessary(
+        ldd, material, transportcapacity
+    )
+
     assert is_spatial(ldd), type(ldd)
 
     if is_non_spatial(material):
@@ -204,6 +233,9 @@ def accufractionstate(ldd, material, transportcapacity):
 
 
 def accuthreshold(ldd, material, threshold):
+    if isinstance(ldd, str):
+        ldd = readmap(ldd)
+
     assert is_spatial(ldd), type(ldd)
 
     if is_non_spatial(material):
@@ -343,16 +375,14 @@ def atan(expression):
 
 
 def boolean(expression):
-    if is_spatial(expression) and is_boolean(expression):
-        return expression
+    if is_spatial(expression):
+        return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
+    elif is_non_spatial(expression):
+        return np.uint8(expression)
+    elif isinstance(expression, str):
+        return readmap(expression)
 
-    raise NotImplementedError("boolean")
-
-    # TODO Results in an int32 array, not uint8 array
-    # if is_non_spatial(expression):
-    #     expression = non_spatial_to_spatial(fill_value=expression)
-
-    # return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def catchment(*args):
@@ -364,11 +394,11 @@ def catchmenttotal(*args):
 
 
 def cellarea(*args):
-    raise NotImplementedError("cellarea")
+    return configuration.cell_size**2
 
 
 def celllength(*args):
-    raise NotImplementedError("celllength")
+    return configuration.cell_size
 
 
 def clump(*args):
@@ -395,6 +425,9 @@ def cover(expression1, expression2, *expressions):
 
 
 def defined(expression):
+    if isinstance(expression, str):
+        expression = readmap(expression)
+
     if not is_spatial(expression):
         return non_spatial_to_spatial(fill_value=np.uint8(1))
 
@@ -409,10 +442,16 @@ def directional(expression):
 
 
 def downstream(ldd, expression):
+    if isinstance(ldd, str):
+        ldd = readmap(ldd)
+
     return lfr.downstream(ldd, expression)
 
 
 def downstreamdist(ldd):
+    if isinstance(ldd, str):
+        ldd = readmap(ldd)
+
     return lfr.downstream_distance(ldd, configuration.cell_size, np.float32)
 
 
@@ -476,6 +515,9 @@ def ifthen(condition, expression):
         assert condition < np.iinfo(np.uint8).max, condition
         condition = non_spatial_to_spatial(fill_value=np.uint8(condition))
 
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
+
     return lfr.where(condition, expression)
 
 
@@ -483,6 +525,23 @@ def ifthenelse(condition, expression1, expression2):
     if is_non_spatial(condition):
         assert condition < np.iinfo(np.uint8).max, condition
         condition = non_spatial_to_spatial(fill_value=np.uint8(condition))
+
+    if is_spatial(expression1):
+        expression_dtype = expression1.dtype
+    elif is_spatial(expression2):
+        expression_dtype = expression2.dtype
+    else:
+        expression_dtype = np.dtype(numpy_scalar_type(expression1))
+
+    if is_non_spatial(expression1):
+        expression1 = non_spatial_to_spatial(
+            fill_value=expression_dtype.type(expression1)
+        )
+
+    if is_non_spatial(expression2):
+        expression2 = non_spatial_to_spatial(
+            fill_value=expression_dtype.type(expression2)
+        )
 
     return lfr.where(condition, expression1, expression2)
 
@@ -599,11 +658,47 @@ def markwhilesumge(*args):
 
 
 def max(*args):
-    raise NotImplementedError("max")
+    if len(args) == 1:
+        return args[0]
+
+    if len(args) != 2:
+        raise NotImplementedError("max with more than 2 arguments")
+
+    expression1, expression2 = args
+    type1 = numpy_scalar_type(expression1)
+    type2 = numpy_scalar_type(expression2)
+
+    if is_non_spatial(expression1):
+        expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
+
+    if is_non_spatial(expression2):
+        expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
+
+    condition = lfr.greater_than_equal_to(expression1, expression2)
+
+    return lfr.where(condition, expression1, expression2)
 
 
 def min(*args):
-    raise NotImplementedError("min")
+    if len(args) == 1:
+        return args[0]
+
+    if len(args) != 2:
+        raise NotImplementedError("min with more than 2 arguments")
+
+    expression1, expression2 = args
+    type1 = numpy_scalar_type(expression1)
+    type2 = numpy_scalar_type(expression2)
+
+    if is_non_spatial(expression1):
+        expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
+
+    if is_non_spatial(expression2):
+        expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
+
+    condition = lfr.less_than_equal_to(expression1, expression2)
+
+    return lfr.where(condition, expression1, expression2)
 
 
 def mod(*args):
@@ -621,8 +716,12 @@ def nodirection(*args):
 def nominal(expression):
     if is_spatial(expression) and is_nominal(expression):
         return expression
+    elif is_non_spatial(expression):
+        return np.int32(expression)
+    elif isinstance(expression, str):
+        return readmap(expression)
 
-    raise NotImplementedError("nominal")
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def normal(*args):
@@ -681,10 +780,17 @@ def roundup(*args):
 
 
 def scalar(expression):
-    if is_spatial(expression) and is_scalar(expression):
-        return expression
+    expression = read_if_necessary(expression)[0]
 
-    raise NotImplementedError("scalar")
+    if is_spatial(expression):
+        if is_scalar(expression):
+            return expression
+        else:
+            return lfr.cast(expression, np.float32)
+    elif is_non_spatial(expression):
+        return np.float32(expression)
+
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def shift(*args):
@@ -826,13 +932,27 @@ def transient(*args):
     raise NotImplementedError("transient")
 
 
-# def uniform(*args):
+def uniform(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.uint8(expression))
+
+    return lfr.where(expression, lfr.uniform(expression, np.float32, 0, 1))
 
 
-# def uniqueid(*args):
+def uniqueid(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.uint8(expression))
+
+    return lfr.where(expression, lfr.unique_id(expression, dtype=np.int32), 0)
 
 
-# def upstream(*args):
+def upstream(ldd, material):
+    ldd, material = read_if_necessary(ldd, material)
+
+    if is_non_spatial(material):
+        material = non_spatial_to_spatial(fill_value=np.float32(material))
+
+    return lfr.upstream(ldd, material)
 
 
 def view(*args):

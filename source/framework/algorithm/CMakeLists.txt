@@ -433,7 +433,7 @@ block()
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
                 foreach(rank IN LISTS ranks)
                     math(EXPR count "${count} + 1")
 
