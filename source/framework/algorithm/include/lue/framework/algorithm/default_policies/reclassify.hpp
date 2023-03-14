@@ -26,5 +26,16 @@ namespace lue {
             return reclassify(Policies{}, array, lookup_table);
         }
 
+
+        template<typename FromElement, typename ToElement, Rank rank>
+        PartitionedArray<ToElement, rank> reclassify(
+            PartitionedArray<FromElement, rank> const& array,
+            LookupTable<FromElement, ToElement> const& lookup_table)
+        {
+            using Policies = policy::reclassify::DefaultPolicies<FromElement, ToElement>;
+
+            return reclassify(Policies{}, array, lookup_table);
+        }
+
     }  // namespace default_policies
 }  // namespace lue

@@ -146,4 +146,4 @@ namespace lue {
     reclassify<ArgumentType<void(Policies)>, FromElement, ToElement, rank>(                                  \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<FromElement, rank> const&,                                                          \
-        LookupTable<FromElement, ToElement> const&);
+        hpx::shared_future<LookupTable<FromElement, ToElement>> const&);
