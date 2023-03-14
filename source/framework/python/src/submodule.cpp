@@ -47,6 +47,7 @@ namespace lue::framework {
     void bind_create_array(pybind11::module& module);
     void bind_wait(pybind11::module& module);
     void bind_focal_operations(pybind11::module& module);
+    void bind_global_operations(pybind11::module& module);
     void bind_local_operations(pybind11::module& module);
     void bind_routing_operations(pybind11::module& module);
     void bind_zonal_operations(pybind11::module& module);
@@ -87,6 +88,7 @@ namespace lue::framework {
         bind_create_array(submodule);
         bind_wait(submodule);
         bind_focal_operations(submodule);
+        bind_global_operations(submodule);
         bind_local_operations(submodule);
         bind_routing_operations(submodule);
         bind_zonal_operations(submodule);

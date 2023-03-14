@@ -85,6 +85,9 @@ add_library(lue_py_framework SHARED
     src/algorithm/focal_operation/focal_minimum.cpp
     src/algorithm/focal_operation/focal_sum.cpp
 
+    src/algorithm/global_operation.cpp
+    src/algorithm/global_operation/reclassify.cpp
+
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/logical_and.cpp
     src/algorithm/local_operation/logical_exclusive_or.cpp
@@ -164,6 +167,7 @@ target_include_directories(lue_py_framework
 target_link_libraries(lue_py_framework
     PRIVATE
         lue::framework_focal_operation
+        lue::framework_global_operation
         lue::framework_local_operation
         lue::framework_routing_operation
         lue::framework_zonal_operation

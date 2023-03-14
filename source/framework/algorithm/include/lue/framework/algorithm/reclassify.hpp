@@ -14,7 +14,7 @@ namespace lue {
     PartitionedArray<ToElement, rank> reclassify(
         Policies const& policies,
         PartitionedArray<FromElement, rank> const& array,
-        hpx::future<LookupTable<FromElement, ToElement>> const& lookup_table);
+        hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table);
 
 
     template<typename Policies, typename FromElement, typename ToElement, Rank rank>
