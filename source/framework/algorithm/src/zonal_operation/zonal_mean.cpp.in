@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/definition/zonal_mean.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_mean.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ZONAL_MEAN(
+            ESC(policy::zonal_mean::{{ Policies }}<{{ Element }}, {{ Zone }}>),
+            {{ Element }},
+            {{ Zone }}
+        );
+
+}  // namespace lue

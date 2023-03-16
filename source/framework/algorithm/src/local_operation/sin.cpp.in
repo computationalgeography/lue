@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/sin.hpp"
+#include "lue/framework/algorithm/definition/sin.hpp"
+#include "lue/framework/algorithm/value_policies/sin.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_SIN(
+            ESC(policy::sin::{{ Policies }}<{{ Element }}>),
+            {{ Element }},
+            {{ rank }}
+        );
+
+}  // namespace lue

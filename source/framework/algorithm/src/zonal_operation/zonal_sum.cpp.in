@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/definition/zonal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ZONAL_SUM(
+            ESC(policy::zonal_sum::{{ Policies }}<{{ Element }}, {{ Zone }}>),
+            {{ Element }},
+            {{ Zone }}
+        );
+
+}  // namespace lue

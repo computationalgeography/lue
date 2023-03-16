@@ -39,9 +39,9 @@ jobs:
         - name: configure system
           run: |
               sudo apt-get update
-              sudo apt-get upgrade
+              # sudo apt-get upgrade
               sudo apt-get remove libunwind-14-dev
-              sudo apt install \
+              sudo apt-get install \
                   cmake \
                   doxygen \
                   graphviz \
@@ -68,10 +68,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install docopt breathe markupsafe numpy pip sphinx
-
-              # Needed by lue_scalability test below
-              conda install docopt matplotlib
+              conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
@@ -120,8 +117,7 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              # For now, don't use both cores. One of the CI builds runs out of memory.
-              cmake --build $GITHUB_WORKSPACE/../build --target all --parallel 1
+              cmake --build $GITHUB_WORKSPACE/../build --target all
 
         - name: test lue
           shell: bash -l {0}

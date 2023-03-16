@@ -1,0 +1,14 @@
+#include "lue/framework/algorithm/default_policies/tan.hpp"
+#include "lue/framework/algorithm/definition/tan.hpp"
+#include "lue/framework/algorithm/value_policies/tan.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_TAN(
+            ESC(policy::tan::{{ Policies }}<{{ Element }}>),
+            {{ Element }},
+            {{ rank }}
+        );
+
+}  // namespace lue

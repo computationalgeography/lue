@@ -41,7 +41,9 @@ requirements:
     - libgdal
     - pybind11
     - fmt
+    - docopt  # templatize.py
     - docopt.cpp
+    - jinja2  # templatize.py
     - nlohmann_json
 
   run:
@@ -53,7 +55,7 @@ requirements:
     - hdf5
     - hpx
     - libgdal
-    - matplotlib  # lue.qa
+    - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
     - python
     - python-dateutil  # lue.qa

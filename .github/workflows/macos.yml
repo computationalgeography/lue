@@ -31,7 +31,6 @@ jobs:
           run: |
               brew update  # > /dev/null || true
               # brew upgrade
-              # HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK
               brew install \
                   asio \
                   boost \
@@ -52,11 +51,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              # Use conan from pypi to get the latest version
-              pip3 install "conan<2"
-
-              # Needed by lue_scalability test below
-              pip3 install docopt matplotlib
+              pip3 install "conan<2" docopt jinja2 matplotlib
 
 
         - name: configure lue
@@ -83,7 +78,8 @@ jobs:
                   -D HPX_WITH_MALLOC="tcmalloc" \
                   -D HPX_WITH_PKGCONFIG=FALSE \
                   -D HPX_WITH_EXAMPLES=FALSE \
-                  -D HPX_WITH_TESTS=FALSE
+                  -D HPX_WITH_TESTS=FALSE \
+                  -D Python3_EXECUTABLE="/usr/local/bin/python3"
 
         - name: build lue
           shell: bash -l {0}
