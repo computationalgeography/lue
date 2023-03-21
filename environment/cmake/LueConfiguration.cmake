@@ -386,6 +386,7 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+        SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
 
@@ -466,6 +467,7 @@ if(LUE_PYBIND11_REQUIRED)
         FetchContent_Declare(pybind11
             GIT_REPOSITORY https://github.com/pybind/pybind11
             GIT_TAG "v2.9.2"
+            SYSTEM
         )
 
         # This should pick up the Python found above
@@ -533,6 +535,7 @@ if(LUE_HPX_REQUIRED)
                         URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
                         PATCH_COMMAND ${otf2_patch_command}
                         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+                        SYSTEM
                     )
 
                     FetchContent_GetProperties(otf2)
@@ -622,6 +625,7 @@ if(LUE_HPX_REQUIRED)
                 GIT_REPOSITORY ${hpx_repository}
                 GIT_TAG ${LUE_HPX_GIT_TAG}
                 GIT_SHALLOW ${hpx_git_shallow}
+                SYSTEM
             )
         else()
             # Obtain HPX from archive. This has the advantage of being
@@ -666,6 +670,7 @@ if(LUE_HPX_REQUIRED)
                 URL ${hpx_url}
                 PATCH_COMMAND ${hpx_patch_command}
                 DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+                SYSTEM
             )
         endif()
 

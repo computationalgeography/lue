@@ -7,7 +7,6 @@ add_library(lue_translate_lib STATIC
     src/command/export.cpp
     src/command/import.cpp
 
-    # src/format/csv.cpp
     src/format/dot.cpp
     src/format/gdal.cpp
     src/format/gdal_block.cpp
@@ -20,7 +19,6 @@ add_library(lue_translate_lib STATIC
     src/format/lue.cpp
     src/format/raster_discretization.cpp
     src/format/raster_domain.cpp
-    # src/format/vtk.cpp
 )
 
 add_library(lue::translate ALIAS lue_translate_lib)
