@@ -50,3 +50,24 @@ repos:
   hooks:
   - id: clang-format
     args: [--style=file, -i]
+  - id: clang-tidy
+    # Skipping lue/framework for now because of issues with using clang icw build setup for gcc
+    # Also skipping a few other files (unused ones, ...)
+    exclude: |
+      (?x)^(
+        source/command/.*|
+        source/data_model/test/include/lue/test/print.hpp|
+        source/data_model/translate/include/lue/translate/command.hpp|
+        source/data_model/translate/include/lue/translate/format.hpp|
+        source/data_model/translate/include/lue/translate/format/gdal_stack.hpp|
+        source/data_model/translate/include/lue/translate/format/gdal_stacks.hpp|
+        source/data_model/translate/src/format/gdal_stack.cpp|
+        source/data_model/translate/src/format/gdal_stacks.cpp|
+        source/data_model/translate/src/format/geo_eas.cpp|
+        source/data_model/utility/include/lue/utility/utility.hpp|
+        source/framework/.*|
+        source/framework/algorithm/benchmark/.*|
+        source/framework/benchmark/.*|
+        source/framework/case_study/.*|
+        source/imgui/main.cpp|
+      )$

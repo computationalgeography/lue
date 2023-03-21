@@ -1,0 +1,134 @@
+---
+# List checkers:
+# clang-tidy --list-checks -checks='*' | grep "modernize"
+
+# Here we:
+# - Disable all checks
+# - Enable the ones that seem reasonable
+# - Disable the ones we don't want to obbey (yet)
+# clang-diagnostic-*,
+
+Checks: >-
+    -*,
+    bugprone-*,
+    clang-analyzer-*,
+    concurrency-*,
+    cppcoreguidelines-*,
+    misc-*,
+    modernize-*,
+    performance-*,
+    portability-*,
+    readability-*,
+    -bugprone-easily-swappable-parameters,
+    -bugprone-macro-parentheses,
+    -bugprone-narrowing-conversions,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-init-variables,
+    -cppcoreguidelines-macro-usage,
+    -cppcoreguidelines-narrowing-conversions,
+    -misc-unused-parameters,
+    -modernize-concat-nested-namespaces,
+    -modernize-pass-by-value,
+    -modernize-return-braced-init-list,
+    -modernize-use-nodiscard,
+    -modernize-use-trailing-return-type,
+    -performance-no-automatic-move,
+    -readability-function-cognitive-complexity,
+    -readability-identifier-length,
+    -readability-magic-numbers,
+    -readability-redundant-member-init,
+    -readability-static-definition-in-anonymous-namespace,
+    -clang-analyzer-cplusplus.Move,
+    -clang-analyzer-cplusplus.NewDeleteLeaks,
+    -clang-analyzer-deadcode.DeadStores,
+    -clang-diagnostic-unused-lambda-capture,
+    -cppcoreguidelines-avoid-c-arrays,
+    -modernize-avoid-c-arrays,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -cppcoreguidelines-explicit-virtual-functions,
+    -modernize-use-override,
+    -cppcoreguidelines-owning-memory,
+    -cppcoreguidelines-prefer-member-initializer,
+    -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+    -cppcoreguidelines-pro-type-cstyle-cast,
+    -cppcoreguidelines-pro-type-member-init,
+    -modernize-use-auto,
+    -modernize-use-default-member-init,
+    -performance-move-const-arg,
+    -performance-noexcept-move-constructor,
+    -performance-unnecessary-value-param,
+    -readability-avoid-const-params-in-decls,
+    -readability-implicit-bool-conversion,
+    -readability-isolate-declaration,
+    -readability-qualified-auto,
+    -readability-redundant-declaration,
+    -bugprone-implicit-widening-of-multiplication-result,
+    -bugprone-move-forwarding-reference,
+    -bugprone-use-after-move,
+    -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+    -modernize-avoid-c-arrays,
+    -modernize-use-override,
+    -performance-unnecessary-copy-initialization,
+    -bugprone-branch-clone,
+    -concurrency-mt-unsafe,
+    -cppcoreguidelines-pro-type-vararg,
+    -cppcoreguidelines-special-member-functions,
+    -misc-definitions-in-headers,
+    -modernize-use-equals-default,
+    -modernize-use-transparent-functors,
+    -readability-braces-around-statements,
+    -readability-named-parameter,
+    -readability-uppercase-literal-suffix,
+    -cppcoreguidelines-pro-bounds-constant-array-index,
+    -misc-unused-alias-decls,
+    -modernize-use-emplace,
+    -readability-else-after-return,
+    -readability-inconsistent-declaration-parameter-name,
+    -readability-make-member-function-const,
+    -readability-redundant-access-specifiers,
+    -bugprone-unused-raii,
+    -cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes,
+    -cppcoreguidelines-pro-type-const-cast
+
+### Checks:          'clang-diagnostic-*,clang-analyzer-*'
+### WarningsAsErrors: ''
+### HeaderFilterRegex: ''
+### AnalyzeTemporaryDtors: false
+### CheckOptions:
+###   - key:             llvm-else-after-return.WarnOnConditionVariables
+###     value:           'false'
+###   - key:             modernize-loop-convert.MinConfidence
+###     value:           reasonable
+###   - key:             modernize-replace-auto-ptr.IncludeStyle
+###     value:           llvm
+###   - key:             cert-str34-c.DiagnoseSignedUnsignedCharComparisons
+###     value:           'false'
+###   - key:             google-readability-namespace-comments.ShortNamespaceLines
+###     value:           '10'
+###   - key:             cert-err33-c.CheckedFunctions
+###     value:           '::aligned_alloc;::asctime_s;::at_quick_exit;::atexit;::bsearch;::bsearch_s;::btowc;::c16rtomb;::c32rtomb;::calloc;::clock;::cnd_broadcast;::cnd_init;::cnd_signal;::cnd_timedwait;::cnd_wait;::ctime_s;::fclose;::fflush;::fgetc;::fgetpos;::fgets;::fgetwc;::fopen;::fopen_s;::fprintf;::fprintf_s;::fputc;::fputs;::fputwc;::fputws;::fread;::freopen;::freopen_s;::fscanf;::fscanf_s;::fseek;::fsetpos;::ftell;::fwprintf;::fwprintf_s;::fwrite;::fwscanf;::fwscanf_s;::getc;::getchar;::getenv;::getenv_s;::gets_s;::getwc;::getwchar;::gmtime;::gmtime_s;::localtime;::localtime_s;::malloc;::mbrtoc16;::mbrtoc32;::mbsrtowcs;::mbsrtowcs_s;::mbstowcs;::mbstowcs_s;::memchr;::mktime;::mtx_init;::mtx_lock;::mtx_timedlock;::mtx_trylock;::mtx_unlock;::printf_s;::putc;::putwc;::raise;::realloc;::remove;::rename;::scanf;::scanf_s;::setlocale;::setvbuf;::signal;::snprintf;::snprintf_s;::sprintf;::sprintf_s;::sscanf;::sscanf_s;::strchr;::strerror_s;::strftime;::strpbrk;::strrchr;::strstr;::strtod;::strtof;::strtoimax;::strtok;::strtok_s;::strtol;::strtold;::strtoll;::strtoul;::strtoull;::strtoumax;::strxfrm;::swprintf;::swprintf_s;::swscanf;::swscanf_s;::thrd_create;::thrd_detach;::thrd_join;::thrd_sleep;::time;::timespec_get;::tmpfile;::tmpfile_s;::tmpnam;::tmpnam_s;::tss_create;::tss_get;::tss_set;::ungetc;::ungetwc;::vfprintf;::vfprintf_s;::vfscanf;::vfscanf_s;::vfwprintf;::vfwprintf_s;::vfwscanf;::vfwscanf_s;::vprintf_s;::vscanf;::vscanf_s;::vsnprintf;::vsnprintf_s;::vsprintf;::vsprintf_s;::vsscanf;::vsscanf_s;::vswprintf;::vswprintf_s;::vswscanf;::vswscanf_s;::vwprintf_s;::vwscanf;::vwscanf_s;::wcrtomb;::wcschr;::wcsftime;::wcspbrk;::wcsrchr;::wcsrtombs;::wcsrtombs_s;::wcsstr;::wcstod;::wcstof;::wcstoimax;::wcstok;::wcstok_s;::wcstol;::wcstold;::wcstoll;::wcstombs;::wcstombs_s;::wcstoul;::wcstoull;::wcstoumax;::wcsxfrm;::wctob;::wctrans;::wctype;::wmemchr;::wprintf_s;::wscanf;::wscanf_s;'
+###   - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
+###     value:           'false'
+###   - key:             cert-dcl16-c.NewSuffixes
+###     value:           'L;LL;LU;LLU'
+###   - key:             google-readability-braces-around-statements.ShortStatementLines
+###     value:           '1'
+###   - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+###     value:           'true'
+###   - key:             google-readability-namespace-comments.SpacesBeforeComments
+###     value:           '2'
+###   - key:             modernize-loop-convert.MaxCopySize
+###     value:           '16'
+###   - key:             modernize-pass-by-value.IncludeStyle
+###     value:           llvm
+###   - key:             modernize-use-nullptr.NullMacros
+###     value:           'NULL'
+###   - key:             llvm-qualified-auto.AddConstToQualified
+###     value:           'false'
+###   - key:             modernize-loop-convert.NamingStyle
+###     value:           CamelCase
+###   - key:             llvm-else-after-return.WarnOnUnfixable
+###     value:           'false'
+###   - key:             google-readability-function-size.StatementThreshold
+###     value:           '800'
+...
