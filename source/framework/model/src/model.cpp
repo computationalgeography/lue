@@ -8,7 +8,7 @@ namespace lue {
 
         The default does nothing.
     */
-    void Model::preprocess()
+    void Model::preprocess([[maybe_unused]] Count const sample_nr)
     {
     }
 
@@ -36,8 +36,9 @@ namespace lue {
 
         The default does nothing.
     */
-    void Model::simulate(Count const /* time_step */)
+    hpx::shared_future<void> Model::simulate([[maybe_unused]] Count const time_step)
     {
+        return hpx::make_ready_future<void>();
     }
 
 
@@ -46,7 +47,7 @@ namespace lue {
 
         The default does nothing.
     */
-    void Model::terminate()
+    void Model::finalize()
     {
     }
 
@@ -66,9 +67,9 @@ namespace lue {
     /*!
         @brief      Call Model.preprocess()
     */
-    void preprocess(Model& model)
+    void preprocess(Model& model, Count const sample_nr)
     {
-        model.preprocess();
+        model.preprocess(sample_nr);
     }
 
 
@@ -84,18 +85,18 @@ namespace lue {
     /*!
         @brief      Call Model.simulate(Count const)
     */
-    void simulate(Model& model, Count const time_step)
+    hpx::shared_future<void> simulate(Model& model, Count const time_step)
     {
-        model.simulate(time_step);
+        return model.simulate(time_step);
     }
 
 
     /*!
-        @brief      Call Model.terminate()
+        @brief      Call Model.finalize()
     */
-    void terminate(Model& model)
+    void finalize(Model& model)
     {
-        model.terminate();
+        model.finalize();
     }
 
 

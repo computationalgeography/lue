@@ -17,8 +17,8 @@ class StaticModel(lfr.StaticModel):
     Base class for static models
     """
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def setDebug(self):
         # Skip for now
@@ -44,8 +44,8 @@ class StaticFramework(lfr.StaticModelRunner):
     def __init__(self, model):
         super().__init__(model)
 
-    def run(self):
-        return super().run()
+    # def run(self):
+    #     return super().run()
 
 
 class DynamicModel(lfr.DynamicModel):
@@ -53,8 +53,8 @@ class DynamicModel(lfr.DynamicModel):
     Base class for dynamic models
     """
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def setDebug(self):
         # Skip for now
@@ -115,8 +115,8 @@ class MonteCarloModel(lfr.MonteCarloModel):
     Base class for stochastic models
     """
 
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     def pre_monte_carlo(self):
         self.premcloop()
@@ -199,8 +199,8 @@ class MonteCarloFramework(lfr.MonteCarloModelRunner):
         # Skip for now
         pass
 
-    def run(self):
-        return super().run()
+    # def run(self):
+    #     return super().run()
 
 
 #     Return the class provided by the user.

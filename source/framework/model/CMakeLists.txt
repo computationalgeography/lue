@@ -2,6 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue_framework_model
     src/model.cpp
+    src/progressor.cpp
 )
 
 add_library(lue::framework_model ALIAS lue_framework_model)

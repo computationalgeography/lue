@@ -131,6 +131,10 @@ add_library(lue_py_framework SHARED
     src/hpx.cpp
     src/hpx_runtime.cpp
 
+    src/model/model.cpp
+    src/model/progressor.cpp
+    src/model/simulate.cpp
+
     src/numpy/from_numpy.cpp
     src/numpy/to_numpy.cpp
 
@@ -172,6 +176,7 @@ target_link_libraries(lue_py_framework
         lue::framework_routing_operation
         lue::framework_zonal_operation
         lue::framework_io
+        lue::framework_model
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size

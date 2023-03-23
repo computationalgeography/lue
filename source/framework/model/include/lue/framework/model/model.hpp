@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include <hpx/future.hpp>
 
 
 namespace lue {
@@ -28,13 +29,13 @@ namespace lue {
 
             Model& operator=(Model&&) = default;
 
-            virtual void preprocess();
+            virtual void preprocess(Count const sample_nr);
 
             virtual void initialize();
 
-            virtual void simulate(Count time_step);
+            virtual hpx::shared_future<void> simulate(Count const time_step);
 
-            virtual void terminate();
+            virtual void finalize();
 
             virtual void postprocess();
 
@@ -42,13 +43,13 @@ namespace lue {
     };
 
 
-    void preprocess(Model& model);
+    void preprocess(Model& model, Count const sample_nr);
 
     void initialize(Model& model);
 
-    void simulate(Model& model, Count time_step);
+    hpx::shared_future<void> simulate(Model& model, Count const time_step);
 
-    void terminate(Model& model);
+    void finalize(Model& model);
 
     void postprocess(Model& model);
 

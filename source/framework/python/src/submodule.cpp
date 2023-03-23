@@ -56,6 +56,10 @@ namespace lue::framework {
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
 
+    void bind_model(pybind11::module& module);
+    void bind_progressor(pybind11::module& module);
+    void bind_simulate(pybind11::module& module);
+
     void bind_from_numpy(pybind11::module& module);
     void bind_to_numpy(pybind11::module& module);
 
@@ -94,6 +98,11 @@ namespace lue::framework {
         bind_zonal_operations(submodule);
         bind_read_array(submodule);
         bind_write_array(submodule);
+
+        bind_model(submodule);
+        bind_progressor(submodule);
+        bind_simulate(submodule);
+
         bind_from_numpy(submodule);
         bind_to_numpy(submodule);
         bind_from_gdal(submodule);

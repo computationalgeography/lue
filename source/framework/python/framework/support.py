@@ -1,9 +1,43 @@
 import os
 import shutil
+import sys
+
+import lue.framework as lfr
 
 
-class StaticModel(object):
-    def run_initial(self):
+class Progressor(lfr.Progressor):
+    def __init__(self):
+        lfr.Progressor.__init__(self)
+
+    def preprocess(self, sample_nr):
+        sys.stdout.write("[")
+        sys.stdout.flush()
+
+    def initialize(self):
+        sys.stdout.write("[")
+        sys.stdout.flush()
+
+    def simulate(self, time_step):
+        sys.stdout.write(".")
+        sys.stdout.flush()
+
+    def finalize(self):
+        sys.stdout.write("]")
+        sys.stdout.flush()
+
+    def postprocess(self):
+        sys.stdout.write("]")
+        sys.stdout.flush()
+
+
+class StaticModel(lfr.Model):
+    def __init__(self):
+        lfr.Model.__init__(self)
+
+    # def run_initial(self):
+    #     self.initial()
+
+    def initialize(self):
         self.initial()
 
 
@@ -12,32 +46,51 @@ class StaticModelRunner(object):
         self.model = model
 
     def run(self):
-        self.model.run_initial()
+        # self.model.run_initial()
+        lfr.run_deterministic(self.model, Progressor(), 0)
 
 
-class DynamicModel(object):
+class DynamicModel(lfr.Model):
     def __init__(self):
+        lfr.Model.__init__(self)
+
         self._current_time_step = 0
 
-    def run_initial(self):
+    def preprocess(self, sample_nr):
+        self._current_sample_nr = sample_nr
+        self.pre_monte_carlo()
+
+    def initialize(self):
         self.initial()
 
-    def run_dynamic(self):
-        self.dynamic()
+    def simulate(self, time_step):
+        self._current_time_step = time_step
+        return self.dynamic()
+
+    def postprocess(self):
+        self.post_monte_carlo()
+
+    # def run_initial(self):
+    #     self.initial()
+
+    # def run_dynamic(self):
+    #     self.dynamic()
 
     @property
     def current_time_step(self) -> int:
         return self._current_time_step
 
-    @current_time_step.setter
-    def current_time_step(self, time_step: int):
-        assert 0 < time_step, time_step
-        self._current_time_step = time_step
+    # @current_time_step.setter
+    # def current_time_step(self, time_step: int):
+    #     assert 0 < time_step, time_step
+    #     self._current_time_step = time_step
 
 
 class DynamicModelRunner(object):
     def __init__(self, model, last_time_step, first_time_step=1):
-        self.model = model
+        assert first_time_step == 1, first_time_step
+
+        self.model = model  # Inherits from lfr.Model
         self.last_time_step = last_time_step
         self.first_time_step = first_time_step
         assert (
@@ -45,18 +98,22 @@ class DynamicModelRunner(object):
         ), f"{first_time_step}, {last_time_step}"
 
     def run(self):
-        self.model.run_initial()
+        assert self.first_time_step == 1, self.first_time_step
+        lfr.run_deterministic(model, Progressor(), self.last_time_step)
 
-        for time_step in range(self.first_time_step, self.last_time_step + 1):
-            self.model.current_time_step = time_step
-            self.model.run_dynamic()
+        # self.model.run_initial()
+
+        # for time_step in range(self.first_time_step, self.last_time_step + 1):
+        #     self.model.current_time_step = time_step
+        #     self.model.run_dynamic()
 
 
-class MonteCarloModel(object):
+class MonteCarloModel(object):  # (lfr.Model):
     def __init__(self):
         self.first_sample_nr = 0
         self.last_sample_nr = 0
         self._current_sample_nr = 1
+
         # self.in_sample = False
         # self.in_stochastic = True
         # self.in_premc = False
@@ -67,17 +124,30 @@ class MonteCarloModel(object):
         self.last_sample_nr = first_sample_nr + nr_samples - 1
         self.current_sample_nr = self.first_sample_nr
 
-    def run_initial(self):
-        self.initial()
+    ### def preprocess(self, sample_nr):
+    ###     self._current_sample_nr = sample_nr
+    ###     self.pre_monte_carlo()
 
-    def run_dynamic(self):
-        self.dynamic()
+    ### def initialize(self):
+    ###     self.initial()
 
-    def run_pre_monte_carlo(self):
-        self.pre_monte_carlo()
+    ### def simulate(self, time_step):
+    ###     return self.dynamic()
 
-    def run_post_monte_carlo(self):
-        self.post_monte_carlo()
+    ### def postprocess(self, sample_nr):
+    ###     self.post_monte_carlo()
+
+    # def run_initial(self):
+    #     self.initial()
+
+    # def run_dynamic(self):
+    #     self.dynamic()
+
+    # def run_pre_monte_carlo(self):
+    #     self.pre_monte_carlo()
+
+    # def run_post_monte_carlo(self):
+    #     self.post_monte_carlo()
 
     @property
     def current_sample_nr(self) -> int:
@@ -159,22 +229,36 @@ class MonteCarloModelRunner(object):
                 shutil.rmtree(directory_pathname)
                 os.mkdir(directory_pathname)
 
-    def __init__(self, model, nr_samples, remove_existing_directories):
-        self.model = model
+    def __init__(self, framework_model, nr_samples, remove_existing_directories):
+        self.framework_model = framework_model
         self.nr_samples = nr_samples
 
-        self.model.model.set_sample_nrs(1, self.nr_samples)
+        self.framework_model.model.set_sample_nrs(1, self.nr_samples)
         self.initialize_sample_directories(
-            self.model.model, remove_existing_directories
+            self.framework_model.model, remove_existing_directories
         )
 
-    def run(self):
-        self.model.model.run_pre_monte_carlo()
+    def run(self, rate_limit=0):
 
-        for sample_nr in range(
-            self.model.model.first_sample_nr, self.model.model.last_sample_nr + 1
-        ):
-            self.model.current_sample_nr = sample_nr
-            self.model.run()
+        assert rate_limit >= 0, rate_limit
+        assert (
+            self.framework_model.first_time_step == 1
+        ), self.framework_model.first_time_step
 
-        self.model.model.run_post_monte_carlo()
+        lfr.run_stochastic(
+            self.framework_model.model,
+            Progressor(),
+            self.nr_samples,
+            self.framework_model.last_time_step,
+            rate_limit,
+        )
+
+        # self.model.model.run_pre_monte_carlo()
+
+        # for sample_nr in range(
+        #     self.model.model.first_sample_nr, self.model.model.last_sample_nr + 1
+        # ):
+        #     self.model.current_sample_nr = sample_nr
+        #     self.model.run()
+
+        # self.model.model.run_post_monte_carlo()
