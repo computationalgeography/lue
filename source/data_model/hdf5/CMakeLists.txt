@@ -37,7 +37,7 @@ target_compile_definitions(lue_hdf5
         H5_USE_110_API
 )
 
-target_compile_definitions(
+target_compile_definitions(lue_hdf5
     PUBLIC
         ${HDF5_C_DEFINITIONS}  # Remove once linking to hdf5::hdf5 target works again
 )
