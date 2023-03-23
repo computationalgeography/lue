@@ -757,6 +757,7 @@ endif()
 
 
 if(LUE_HDF5_REQUIRED)
+    set(HDF5_FIND_DEBUG TRUE)
     find_package(HDF5 REQUIRED COMPONENTS C)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
 endif()
