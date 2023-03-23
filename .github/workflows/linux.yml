@@ -3,7 +3,7 @@ name: Linux CI
 on:
   push:
     branches-ignore:
-      - ghxyz
+      - "gh548"
     paths:
       - ".github/workflows/linux.yml"
       - "environment/cmake/**"
