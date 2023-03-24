@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
+#include <hpx/future.hpp>
 #include <hpx/synchronization/sliding_semaphore.hpp>
 
 
