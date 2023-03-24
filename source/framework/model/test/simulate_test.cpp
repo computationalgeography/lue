@@ -3,8 +3,6 @@
 #include "lue/framework/model/progressor.hpp"
 #include "lue/framework/model/simulate.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-// #include <hpx/config.hpp>
-// #include <boost/test/unit_test.hpp>
 
 
 namespace {

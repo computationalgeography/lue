@@ -44,9 +44,6 @@ class StaticFramework(lfr.StaticModelRunner):
     def __init__(self, model):
         super().__init__(model)
 
-    # def run(self):
-    #     return super().run()
-
 
 class DynamicModel(lfr.DynamicModel):
     """
@@ -105,9 +102,6 @@ class DynamicFramework(lfr.DynamicModelRunner):
     def setQuiet(self, quiet=True):
         # Skip for now
         pass
-
-    # def run(self):
-    #     return super().run()
 
 
 class MonteCarloModel(lfr.MonteCarloModel):
