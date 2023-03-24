@@ -99,7 +99,7 @@ class DynamicModelRunner(object):
 
     def run(self):
         assert self.first_time_step == 1, self.first_time_step
-        lfr.run_deterministic(model, Progressor(), self.last_time_step)
+        lfr.run_deterministic(self.model, Progressor(), self.last_time_step)
 
         # self.model.run_initial()
 
