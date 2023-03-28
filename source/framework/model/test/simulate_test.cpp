@@ -124,9 +124,10 @@ BOOST_AUTO_TEST_CASE(run_deterministic)
     {
         MyModel model{};
         MyProgressor progressor{};
-        lue::Count const nr_time_steps = 5;
+        lue::Count const nr_time_steps = 10;
+        lue::Count const rate_limit = 2;
 
-        lue::run_deterministic(model, progressor, nr_time_steps);
+        lue::run_deterministic(model, progressor, nr_time_steps, rate_limit);
 
         BOOST_CHECK_EQUAL(model.preprocess_called, 0);
         BOOST_CHECK_EQUAL(model.initialize_called, 1);
@@ -172,9 +173,10 @@ BOOST_AUTO_TEST_CASE(run_stochastic)
         MyModel model{};
         MyProgressor progressor{};
         lue::Count const nr_samples = 5;
-        lue::Count const nr_time_steps = 5;
+        lue::Count const nr_time_steps = 10;
+        lue::Count const rate_limit = 2;
 
-        lue::run_stochastic(model, progressor, nr_samples, nr_time_steps);
+        lue::run_stochastic(model, progressor, nr_samples, nr_time_steps, rate_limit);
 
         BOOST_CHECK_EQUAL(model.preprocess_called, nr_samples);
         BOOST_CHECK_EQUAL(model.initialize_called, nr_samples);
@@ -187,5 +189,20 @@ BOOST_AUTO_TEST_CASE(run_stochastic)
         BOOST_CHECK_EQUAL(progressor.simulate_called, nr_samples * nr_time_steps);
         BOOST_CHECK_EQUAL(progressor.finalize_called, nr_samples);
         BOOST_CHECK_EQUAL(progressor.postprocess_called, nr_samples);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(rate_limit)
+{
+    lue::Count const nr_time_steps = 10;
+
+    for (lue::Count rate_limit = 0; rate_limit < nr_time_steps + 1; ++rate_limit)
+    {
+        MyModel model{};
+        MyProgressor progressor{};
+
+        // This should just work without crashing
+        lue::run_deterministic(model, progressor, nr_time_steps, rate_limit);
     }
 }

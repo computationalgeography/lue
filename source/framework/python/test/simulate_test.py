@@ -1,5 +1,3 @@
-import time
-
 import numpy as np
 
 import lue.framework as lfr
@@ -30,9 +28,6 @@ class MyModel(lfr.Model):
         self.initialize_called += 1
 
     def simulate(self, time_step):
-        # This sleep is relevant. Otherwise things go bad in the simulate function.
-        # Possibly tasks get shuffled(?).
-        time.sleep(0.1)
         self.simulate_called += 1
 
     def finalize(self):

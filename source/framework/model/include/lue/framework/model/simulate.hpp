@@ -6,6 +6,35 @@
 
 
 namespace lue {
+    namespace detail {
+
+        auto attach_signaller = [](hpx::sliding_semaphore& semaphore,
+                                   auto&& previous_state,
+                                   auto&& current_state,
+                                   Count const lower_limit)
+        {
+            // To prevent states to overtake each other, we order them explicitly here
+
+            // Once the previous state is ready ...
+            return previous_state.then(
+                [&semaphore, current_state = std::move(current_state), lower_limit](
+                    [[maybe_unused]] auto const& previous_state)
+                {
+                    // ... and once the current state is ready...
+                    return current_state.then(
+                        [&semaphore, lower_limit](auto const& current_state)
+                        {
+                            HPX_UNUSED(current_state);  // Silence compiler in non-Debug build
+                            lue_hpx_assert(current_state.is_ready());
+
+                            // ... notify the semaphore about the new lower limit
+                            semaphore.signal(lower_limit);
+                        });
+                });
+        };
+
+    }  // namespace detail
+
 
     template<typename Model, typename Progressor>
     void simulate(
@@ -18,43 +47,47 @@ namespace lue {
         lue_hpx_assert(rate_limit >= 0);
         lue_hpx_assert(first_time_step <= last_time_step);
 
-        rate_limit = rate_limit > 0 ? rate_limit : last_time_step - first_time_step + 1;
+        Count const nr_time_steps{last_time_step - first_time_step + 1};
+        rate_limit = rate_limit > 0 ? rate_limit : nr_time_steps;
 
-        std::int64_t const max_difference{first_time_step + rate_limit - 1};
+        std::int64_t const max_difference{rate_limit};
         std::int64_t const lower_limit{first_time_step};
         hpx::sliding_semaphore semaphore{max_difference, lower_limit};
 
-        hpx::shared_future<void> future{};
+        using State = hpx::shared_future<void>;
 
-        for (Count time_step = first_time_step; time_step <= last_time_step; ++time_step)
         {
-            future = simulate(model, time_step);
+            State previous_state{hpx::make_ready_future<void>()};
+            Count time_step{first_time_step};
 
-            // Every rate_limit time steps, attach an additional continuation which will
-            // trigger the semaphore once computation has reached this point
-            if ((time_step % rate_limit) == 0)
+            for (Index time_step_idx = 0; time_step_idx < nr_time_steps; ++time_step_idx, ++time_step)
             {
-                future.then(
-                    [&semaphore, time_step](hpx::shared_future<void> const& future)
-                    {
-                        HPX_UNUSED(future);
-                        lue_hpx_assert(future.is_ready());
+                State current_state = simulate(model, time_step);
 
-                        // The future is ready. Now set the new lower limit.
-                        semaphore.signal(time_step);
-                    });
+                // Every rate_limit time steps, attach an additional continuation which will
+                // trigger the semaphore once computation has reached this point.
+                if (((time_step_idx + 1) % rate_limit) == 0)
+                {
+                    previous_state = detail::attach_signaller(
+                        semaphore, std::move(previous_state), std::move(current_state), time_step);
+                }
+
+                // Set the new upper limit. Wait if necessary. Continue if / once the difference
+                // between the lower and upper limits is not larger than max_difference set.
+                semaphore.wait(time_step);
+
+                if (time_step == last_time_step)
+                {
+                    // This will make sure this function does not return before the last state is
+                    // ready. Returning too early results in dangling references to the semaphore.
+                    // Wait explicitly here, because the semaphore only waits conditionally. The
+                    // last state may or may not be already ready.
+                    previous_state.wait();
+                }
+
+                simulate(progressor, time_step);
             }
-
-            // Set the new upper limit. Wait if necessary. Continue if / once the difference
-            // between the lower and upper limits if not larger than rate_limit.
-            semaphore.wait(time_step);
-
-            simulate(progressor, time_step);
         }
-
-        // Wait for the last result to be ready. Otherwise the process in many cases will
-        // not finish.
-        future.wait();
     }
 
 
