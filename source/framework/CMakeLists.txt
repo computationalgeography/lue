@@ -21,9 +21,6 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/io)
 add_subdirectory(model)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/model)
 
-# add_subdirectory(snippet)
-# list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/snippet)
-
 # if(LUE_FRAMEWORK_WITH_DASHBOARD)
 #     add_subdirectory(dashboard)
 #     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/dashboard)
