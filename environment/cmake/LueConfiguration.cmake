@@ -388,15 +388,6 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
-
-    # TODO Remove
-    # # Turn off warning messages by marking the headers as system headers
-    # set_property(
-    #     TARGET mdspan
-    #     APPEND
-    #         PROPERTY
-    #             INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${MDSpan_SOURCE_DIR}/include
-    # )
 endif()
 
 
@@ -631,7 +622,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try v1.9.0-rc1)
+                list(APPEND hpx_versions_to_try v1.9.0-rc2)
             endif()
 
             # First see if an HPX archive is available in a local cache
@@ -669,14 +660,6 @@ if(LUE_HPX_REQUIRED)
                 SYSTEM
             )
         endif()
-
-        # TODO Remove
-        # # HPX-[1.9.0-rc1 - ...]
-        # target_compile_options(HPX::hpx
-        #     PUBLIC
-        #         # support for attribute 'msvc::no_unique_address' in C++17 and earlier is a vendor extension
-        #         $<$<CXX_COMPILER_ID:MSVC>:/wd4848>
-        # )
 
         FetchContent_MakeAvailable(hpx)
         set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Unspecified")
