@@ -21,19 +21,19 @@ namespace lue::policy {
                     {
                         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
 
-                        if constexpr (std::is_integral_v<T>)
-                        {
-                            // Silly, working around compiler bug (VS, 202303)
-                            static_assert(std::is_integral_v<T>);
-
-                            return DetectNoDataByValue<T>::no_data_value;
-                        }
-                        else if constexpr (std::is_floating_point_v<T>)
+                        if constexpr (std::is_floating_point_v<T>)
                         {
                             // Silly, working around compiler bug (VS, 202303)
                             static_assert(std::is_floating_point_v<T>);
 
                             return DetectNoDataByNaN<T>::no_data_value;
+                        }
+                        else if constexpr (std::is_integral_v<T>)
+                        {
+                            // Silly, working around compiler bug (VS, 202303)
+                            static_assert(std::is_integral_v<T>);
+
+                            return DetectNoDataByValue<T>::no_data_value;
                         }
                     }()};
         };
