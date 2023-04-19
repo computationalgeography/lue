@@ -36,7 +36,7 @@ requirements:
     - python
     - numpy >1.17
     - boost-cpp
-    - hdf5
+    - hdf5 <1.14
     - hpx
     - libgdal
     - pybind11
@@ -52,7 +52,7 @@ requirements:
     - docopt  # lue.qa
     - docopt.cpp
     - fmt
-    - hdf5
+    - hdf5 <1.14
     - hpx
     - libgdal
     - matplotlib-base  # lue.qa

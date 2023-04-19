@@ -191,7 +191,6 @@ set(LUE_FRAMEWORK_ELEMENTS
 # Handle external dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
     set(LUE_HDF5_REQUIRED TRUE)
-    # list(APPEND LUE_REQUIRED_HDF5_COMPONENTS C)  # HL
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_BOOST_REQUIRED TRUE)
 
@@ -757,7 +756,7 @@ endif()
 
 
 if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED COMPONENTS C)
+    find_package(HDF5 REQUIRED COMPONENTS C CXX)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
 endif()
 
