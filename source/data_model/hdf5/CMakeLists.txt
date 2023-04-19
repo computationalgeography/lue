@@ -37,6 +37,11 @@ target_compile_definitions(lue_hdf5
         H5_USE_110_API
 )
 
+target_compile_options(lue_hdf5
+    PRIVATE
+       $<$<CXX_COMPILER_ID:MSVC>:/W4005>>
+)
+
 target_include_directories(lue_hdf5
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -46,8 +51,7 @@ target_include_directories(lue_hdf5
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
-        hdf5::hdf5
-        hdf5::hdf5_cpp
+        HDF5::HDF5
     PRIVATE
         Boost::headers
         fmt::fmt
