@@ -530,8 +530,8 @@ namespace lue {
     void ArrayPartitionData<Element, rank>::assert_invariants() const
     {
         lue_hpx_assert(lue::nr_elements(_shape) == _elements.size());
-        lue_hpx_assert(_span.size() == _elements.size());
-        lue_hpx_assert(_span.data() == _elements.data());
+        lue_hpx_assert(static_cast<Count>(_span.size()) == _elements.size());
+        lue_hpx_assert(_span.data_handle() == _elements.data());
     }
 
 

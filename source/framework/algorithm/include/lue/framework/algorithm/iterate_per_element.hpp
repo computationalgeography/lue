@@ -26,7 +26,8 @@ namespace lue {
 
                     while (nr_iterations > InputElement{0})
                     {
-                        nr_iterations -= 1;
+                        // Use of -= is deprecated for 'volatile'-qualified left operands
+                        nr_iterations = nr_iterations - 1;
                     }
 
                     return input_element;

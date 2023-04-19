@@ -70,7 +70,7 @@ namespace lue {
                     std::get<1>(partition_block_offset),
                     std::get<1>(partition_block_offset) + std::get<1>(partition_shape)};
 
-                copy(subspan(block.span(), partition_row_slice, partition_col_slice), partition_buffer);
+                copy(submdspan(block.span(), partition_row_slice, partition_col_slice), partition_buffer);
             }
         }
 

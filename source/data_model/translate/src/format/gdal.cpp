@@ -1020,7 +1020,7 @@ namespace lue {
         {
             // Figure out which property-sets are selected
             auto const& root_json = metadata.object();
-            std::string const lue_dataset_name = std::filesystem::path(dataset.pathname()).stem().u8string();
+            std::string const lue_dataset_name = std::filesystem::path(dataset.pathname()).stem().string();
 
             // Dataset -----------------------------------------------------------------
             if (!json::has_key(root_json, lue_dataset_name))
@@ -1102,7 +1102,7 @@ namespace lue {
             }
             else
             {
-                property_name = std::filesystem::path{raster_name}.stem().u8string();
+                property_name = std::filesystem::path{raster_name}.stem().string();
             }
 
             // If the constant raster view finds a raster with the property name

@@ -315,7 +315,7 @@ namespace lue {
                     lue_hpx_assert(std::get<1>(partition_row_slice) <= max_nr_rows_block);
                     lue_hpx_assert(std::get<1>(partition_col_slice) <= max_nr_cols_block);
 
-                    copy(partition_buffer, subspan(block.span(), partition_row_slice, partition_col_slice));
+                    copy(partition_buffer, submdspan(block.span(), partition_row_slice, partition_col_slice));
 
                     // Update offset for next partition. Only update the column.
                     std::get<1>(partition_block_offset) += std::get<1>(partition_shape);
@@ -347,7 +347,7 @@ namespace lue {
 
                         copy(
                             partition_buffer,
-                            subspan(block.span(), partition_row_slice, partition_col_slice));
+                            submdspan(block.span(), partition_row_slice, partition_col_slice));
 
                         // Update offset for next partition
                         current_partition_col += std::get<1>(partition_shape);

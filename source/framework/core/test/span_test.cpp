@@ -29,14 +29,14 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single cell
     {
-        auto const cell = lue::subspan(raster, 3, 4);
+        auto const cell = lue::submdspan(raster, 3, 4);
         BOOST_CHECK_EQUAL(cell.rank(), 0);
         BOOST_CHECK_EQUAL(cell(), idx(3, 4));
     }
 
     // Select a single row
     {
-        auto const row = lue::subspan(raster, 3, std::experimental::all);
+        auto const row = lue::submdspan(raster, 3, std::experimental::full_extent);
         BOOST_CHECK_EQUAL(row.rank(), 1);
         BOOST_REQUIRE_EQUAL(row.extent(0), nr_cols);
         BOOST_CHECK_EQUAL(row(0), idx(3, 0));
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single column
     {
-        auto const col = lue::subspan(raster, std::experimental::all, 4);
+        auto const col = lue::submdspan(raster, std::experimental::full_extent, 4);
         BOOST_CHECK_EQUAL(col.rank(), 1);
         BOOST_REQUIRE_EQUAL(col.extent(0), nr_rows);
         BOOST_CHECK_EQUAL(col(0), idx(0, 4));
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
     {
         lue::Count const radius = 1;
         lue::Count const window_size = 2 * radius + 1;
-        auto const window = lue::subspan(
+        auto const window = lue::submdspan(
             raster,
             std::pair<lue::Index, lue::Index>{3, 3 + window_size},
             std::pair<lue::Index, lue::Index>{4, 4 + window_size});
