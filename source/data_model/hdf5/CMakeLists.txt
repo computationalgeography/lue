@@ -39,7 +39,7 @@ target_compile_definitions(lue_hdf5
 
 target_compile_options(lue_hdf5
     PRIVATE
-       $<$<CXX_COMPILER_ID:MSVC>:/W4005>>
+       $<$<CXX_COMPILER_ID:MSVC>:/W4005>
 )
 
 target_include_directories(lue_hdf5
