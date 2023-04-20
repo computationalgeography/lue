@@ -153,7 +153,7 @@ namespace lue {
 
         auto format_message = [this_locality_nr,
                                initial_nr_localities,
-                               numa_domains{move(numa_domains)},
+                               numa_domains{std::move(numa_domains)},
                                nr_os_threads,
                                thread_name,
                                this_worker_thread_nr](
