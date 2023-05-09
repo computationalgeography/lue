@@ -42,11 +42,8 @@ jobs:
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
 
-        - shell: bash -l {0}
-          run: |
-              conda install boa
-
         - name: Build
           shell: bash -l {0}
           run: |
+              conda install boa
               conda mambabuild environment/conda --override-channels --channel conda-forge
