@@ -500,14 +500,6 @@ endif()
 if(LUE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
-
-        # When not specifying an install component, by default we get all files necessary for
-        # HPX runtime and development. We want to be able to only install the runtime files. For
-        # that we rename the default component name. For some reason, this prevents the
-        # development files from being installed. Below we set the default component name back
-        # to its default value.
-        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "hpx_runtime")
-
         if(HPX_WITH_APEX)
             if(APEX_WITH_OTF2)
                 if(LUE_BUILD_OTF2)
@@ -662,7 +654,6 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
-        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Unspecified")
     else()
         find_package(HPX REQUIRED)
 
