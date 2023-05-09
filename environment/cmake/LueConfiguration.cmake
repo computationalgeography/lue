@@ -355,11 +355,11 @@ if(LUE_IMGUI_REQUIRED)
     if(NOT LUE_HAVE_IMGUI)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.88)
         list(APPEND LUE_CONAN_IMPORTS
-            "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
-            "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
-            "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
-            "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/imgui/src"
-            "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/imgui/src"
+            "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
         )
     endif()
 endif()

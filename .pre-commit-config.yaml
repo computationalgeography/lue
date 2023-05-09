@@ -7,7 +7,7 @@ exclude: |
     environment/cmake/UseLATEX\.cmake|
     environment/cmake/conan-.*\.cmake|
     # environment/conda/meta\.yaml|
-    source/imgui/include/lue/gui/font/.*
+    source/view/imgui/include/lue/imgui/font/.*
   )$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
