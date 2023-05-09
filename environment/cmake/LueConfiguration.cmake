@@ -622,7 +622,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try v1.9.0-rc2)
+                list(APPEND hpx_versions_to_try v1.9.0)
             endif()
 
             # First see if an HPX archive is available in a local cache
