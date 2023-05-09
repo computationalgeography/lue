@@ -23,16 +23,10 @@ namespace lue::policy {
 
                         if constexpr (std::is_floating_point_v<T>)
                         {
-                            // Silly, working around compiler bug (VS, 202303)
-                            static_assert(std::is_floating_point_v<T>);
-
                             return DetectNoDataByNaN<T>::no_data_value;
                         }
                         else if constexpr (std::is_integral_v<T>)
                         {
-                            // Silly, working around compiler bug (VS, 202303)
-                            static_assert(std::is_integral_v<T>);
-
                             return DetectNoDataByValue<T>::no_data_value;
                         }
                     }()};
@@ -211,6 +205,7 @@ namespace lue::policy {
 
 
     template<typename Element>
-    Element no_data_value = detail::TypeTraits<lue::detail::remove_cvref_t<Element>>::no_data_value;
+    inline constexpr Element no_data_value =
+        detail::TypeTraits<lue::detail::remove_cvref_t<Element>>::no_data_value;
 
 }  //  namespace lue::policy
