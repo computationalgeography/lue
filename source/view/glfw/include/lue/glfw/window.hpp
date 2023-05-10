@@ -1,5 +1,5 @@
 #pragma once
-#include <GLFW/glfw3.h>
+#include "lue/glfw/monitor.hpp"
 #include <string>
 
 
@@ -10,12 +10,13 @@ namespace lue::glfw {
 
         public:
 
-            explicit Window(
-                std::string const& title,
-                int w = 640,
-                int h = 480,
-                GLFWmonitor* monitor = nullptr,
-                GLFWwindow* share = nullptr);
+            static void hint(int hint, int value);
+
+            Window(std::string const& title, int width, int height);
+
+            Window(std::string const& title, int width, int height, Monitor& monitor);
+
+            // Window(std::string const& title, Monitor& monitor);
 
             Window(Window const&) = delete;
 
@@ -28,6 +29,8 @@ namespace lue::glfw {
             Window& operator=(Window&&) = delete;
 
             operator GLFWwindow*();
+
+            void make_context_current();
 
         private:
 

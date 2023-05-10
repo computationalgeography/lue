@@ -1,5 +1,7 @@
 add_library(lue_glfw STATIC
     src/library.cpp
+    src/monitor.cpp
+    src/video_mode.cpp
     src/window.cpp
 )
 
