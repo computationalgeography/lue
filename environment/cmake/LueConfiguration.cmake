@@ -353,7 +353,8 @@ endif()
 
 if(LUE_IMGUI_REQUIRED)
     if(NOT LUE_HAVE_IMGUI)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.88)
+        # set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.88)
+        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.89.4)
         list(APPEND LUE_CONAN_IMPORTS
             "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
             "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
