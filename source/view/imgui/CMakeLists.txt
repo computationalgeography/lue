@@ -11,8 +11,9 @@ add_library(lue_imgui STATIC
     src/glfw/frame.cpp
 
     # Imgui binding modules copied by Conan
-    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_glfw.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_vulkan.cpp
 )
 
 target_include_directories(lue_imgui

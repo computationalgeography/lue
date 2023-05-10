@@ -361,6 +361,8 @@ if(LUE_IMGUI_REQUIRED)
             "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
             "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
             "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_vulkan.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
+            "./res/bindings, imgui_impl_vulkan.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
         )
     endif()
 endif()

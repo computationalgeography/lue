@@ -5,6 +5,7 @@
 #include "lue/git.hpp"
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
+// #include "imgui_impl_opengl3.h"
 #include <fmt/format.h>
 
 
@@ -210,6 +211,7 @@ options:
         // the loop should not take a lot of resources...
 
         bool quit = glfwWindowShouldClose(glfw_window);
+        // ImVec4 const clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
         while (!quit)
         {
@@ -227,6 +229,20 @@ options:
             {
                 show_datasets(datasets_to_visualize, configuration.show_details());
             }
+
+            /// // Rendering
+            /// ImGui::Render();
+            /// auto const [display_width, display_height] = glfw_window.framebuffer_size();
+            /// glViewport(0, 0, display_width, display_height);
+            /// glClearColor(
+            ///     clear_color.x * clear_color.w,
+            ///     clear_color.y * clear_color.w,
+            ///     clear_color.z * clear_color.w,
+            ///     clear_color.w);
+            /// glClear(GL_COLOR_BUFFER_BIT);
+            /// ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            /// glfwSwapBuffers(glfw_window);
 
             quit = quit || glfwWindowShouldClose(glfw_window);
         }

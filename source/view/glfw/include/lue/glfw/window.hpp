@@ -32,6 +32,8 @@ namespace lue::glfw {
 
             void make_context_current();
 
+            std::tuple<int, int> framebuffer_size() const;
+
         private:
 
             GLFWwindow* _window;

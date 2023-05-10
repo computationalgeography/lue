@@ -63,4 +63,14 @@ namespace lue::glfw {
         glfwMakeContextCurrent(_window);
     }
 
+
+    std::tuple<int, int> Window::framebuffer_size() const
+    {
+        int width, height;
+
+        glfwGetFramebufferSize(_window, &width, &height);
+
+        return {width, height};
+    }
+
 }  // namespace lue::glfw
