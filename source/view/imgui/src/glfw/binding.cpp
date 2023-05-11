@@ -1,16 +1,14 @@
-#include "lue/imgui/glfw/imgui_binding.hpp"
+#include "lue/imgui/glfw/binding.hpp"
 #include "lue/imgui/font/IconsFontAwesome5.h"
 #include "lue/imgui/font/fa-solid-900.hpp"
 #include "lue/imgui/font/roboto-medium.hpp"
 #include <array>
 #include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-#include <stdexcept>
 
 
 namespace lue::imgui::glfw {
 
-    ImGuiBinding::ImGuiBinding(std::string const& glsl_version, lue::glfw::Window& window)
+    Binding::Binding()
     {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -21,10 +19,6 @@ namespace lue::imgui::glfw {
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
         // ImGui::StyleColorsLight();
-
-        // Setup Platform/Renderer bindings
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init(glsl_version.c_str());
 
         io.Fonts->AddFontFromMemoryCompressedTTF(
             roboto_medium_compressed_data, roboto_medium_compressed_size, 20.0);
@@ -39,12 +33,15 @@ namespace lue::imgui::glfw {
         static std::array<ImWchar, 3> const icon_ranges{ICON_MIN_FA, ICON_MAX_FA, 0};
         io.Fonts->AddFontFromMemoryCompressedTTF(
             fa_solid_900_compressed_data, fa_solid_900_compressed_size, 16.0, &config, icon_ranges.data());
+
+        // // Setup Platform/Renderer bindings
+        // ImGui_ImplGlfw_InitForOpenGL(window, true);
+        // ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     }
 
 
-    ImGuiBinding::~ImGuiBinding()
+    Binding::~Binding()
     {
-        ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }

@@ -17,5 +17,4 @@ target_link_libraries(lue_glfw
         fmt::fmt
     PUBLIC
         glfw::glfw
-        OpenGL::GL
 )

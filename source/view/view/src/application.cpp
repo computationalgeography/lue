@@ -197,12 +197,12 @@ options:
         // TODO This must be moved elsewhere
         glfwSwapInterval(1);  // Enable vsync
 
-        imgui::glfw::ImGuiBinding binding{glsl_version, glfw_window};
+        imgui::glfw::OpenGLBinding binding{glsl_version, glfw_window};
 
         // static std::string const ini_pathname{
         //     expand_environment_variables("${HOME}/.lue_view.ini")};
         // binding.io().IniFilename = ini_pathname.c_str();
-        imgui::glfw::ImGuiBinding::io().IniFilename = nullptr;  // Skip for now
+        imgui::glfw::OpenGLBinding::io().IniFilename = nullptr;  // Skip for now
 
         // Open datasets
         Datasets datasets_to_visualize{dataset_names.begin(), dataset_names.end()};
@@ -220,7 +220,7 @@ options:
             // Draw stuff on window
             // TODO(KDJ)
 
-            imgui::glfw::Frame frame{glfw_window};
+            imgui::glfw::OpenGLFrame frame{glfw_window};
 
             static Configuration configuration{};
             quit = show_main_menu_bar(configuration);

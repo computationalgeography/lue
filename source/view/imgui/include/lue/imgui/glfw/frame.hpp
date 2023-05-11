@@ -9,17 +9,24 @@ namespace lue::imgui::glfw {
 
         public:
 
-            explicit Frame(lue::glfw::Window& window);
-
             Frame(Frame const&) = delete;
 
             Frame(Frame&&) = delete;
 
-            ~Frame();
+            virtual ~Frame();
 
             Frame& operator=(Frame const&) = delete;
 
             Frame& operator=(Frame&&) = delete;
+
+        protected:
+
+            Frame(lue::glfw::Window& window);
+
+            inline lue::glfw::Window& window()
+            {
+                return _window;
+            };
 
         private:
 

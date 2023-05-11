@@ -137,6 +137,10 @@ lue_have_option(PYBIND11)
 # target. It assumes the Conan package of ImGui is being used.
 set(LUE_HAVE_IMGUI FALSE)
 
+# Update / remove once we've got Vulkan sorted out.
+# Whether or not to use Vulkan, instead of OpenGL.
+set(LUE_VIEW_USE_VULKAN FALSE)
+
 
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_FRAMEWORK)
@@ -353,7 +357,6 @@ endif()
 
 if(LUE_IMGUI_REQUIRED)
     if(NOT LUE_HAVE_IMGUI)
-        # set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.88)
         set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.89.4)
         list(APPEND LUE_CONAN_IMPORTS
             "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
@@ -685,7 +688,11 @@ if(LUE_IMGUI_REQUIRED)
         add_library(glfw::glfw ALIAS glfw)
     endif()
 
-    find_package(OpenGL REQUIRED)
+    if(LUE_VIEW_USE_VULKAN)
+        find_package(Vulkan REQUIRED)
+    else()
+        find_package(OpenGL REQUIRED)
+    endif()
 endif()
 
 

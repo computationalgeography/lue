@@ -1,23 +1,24 @@
 #pragma once
-#include "lue/glfw/window.hpp"
 #include <imgui.h>
 
 
 namespace lue::imgui::glfw {
 
-    class ImGuiBinding
+    class Binding
     {
 
         public:
-
-            ImGuiBinding(std::string const& glsl_version, lue::glfw::Window& window);
-
-            ~ImGuiBinding();
 
             static ImGuiIO& io()
             {
                 return ImGui::GetIO();
             }
+
+            virtual ~Binding();
+
+        protected:
+
+            Binding();
     };
 
 }  // namespace lue::imgui::glfw
