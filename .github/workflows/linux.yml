@@ -55,6 +55,7 @@ jobs:
                   libgdal-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
+                  libvulkan-dev \
                   ${{ matrix.compiler.package }} \
                   ninja-build \
                   nlohmann-json3-dev \

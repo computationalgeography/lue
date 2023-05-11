@@ -46,7 +46,8 @@ jobs:
                   nlohmann-json \
                   numpy \
                   pybind11 \
-                  tree
+                  tree \
+                  vulkan-headers
 
 
         - shell: bash -l {0}
