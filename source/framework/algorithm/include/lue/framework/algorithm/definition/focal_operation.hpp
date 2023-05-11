@@ -577,7 +577,7 @@ namespace lue {
                 Slice const& slice1,
                 Slice const& slice2)
             {
-                return subspan(partition_data.span(), slice1, slice2);
+                return submdspan(partition_data.span(), slice1, slice2);
             }
 
 
@@ -599,7 +599,7 @@ namespace lue {
                     subspans.begin(),
 
                     [](DynamicSpan<Element, rank> const& span, std::array<Slice, rank> const& slices)
-                    { return subspan(span, slices[0], slices[1]); }
+                    { return submdspan(span, slices[0], slices[1]); }
 
                 );
 

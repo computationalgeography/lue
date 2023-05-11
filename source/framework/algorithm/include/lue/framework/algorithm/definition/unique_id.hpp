@@ -206,7 +206,7 @@ namespace lue {
             // unique IDs. While this work is being executed, the promises of the individual
             // partition server instance IDs will be fulfilled, as soon as possible. Fire
             // and forget.
-            hpx::apply(
+            hpx::post(
                 unique_id_partitions2<IDElement, Policies, ConditionElement, rank>,
                 policies,
                 localities,

@@ -384,18 +384,10 @@ endif()
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
-        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+        GIT_TAG mdspan-0.6.0
         SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
-
-    # Turn off warning messages by marking the headers as system headers
-    set_property(
-        TARGET mdspan
-        APPEND
-            PROPERTY
-                INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${MDSpan_SOURCE_DIR}/include
-    )
 endif()
 
 
@@ -508,14 +500,6 @@ endif()
 if(LUE_HPX_REQUIRED)
     if(LUE_BUILD_HPX)
         # Build HPX ourselves
-
-        # When not specifying an install component, by default we get all files necessary for
-        # HPX runtime and development. We want to be able to only install the runtime files. For
-        # that we rename the default component name. For some reason, this prevents the
-        # development files from being installed. Below we set the default component name back
-        # to its default value.
-        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "hpx_runtime")
-
         if(HPX_WITH_APEX)
             if(APEX_WITH_OTF2)
                 if(LUE_BUILD_OTF2)
@@ -608,13 +592,9 @@ if(LUE_HPX_REQUIRED)
                 set(hpx_git_shallow ON)
             endif()
 
-            # Obtain HPX from GIT repository. This is useful when we
-            # need to use a specific HPX commit.
-            if(LUE_REPOSITORY_CACHE AND EXISTS "${LUE_REPOSITORY_CACHE}/hpx")
-                # Use local repository
-                set(hpx_repository "file://${LUE_REPOSITORY_CACHE}/hpx")
+            if(LUE_HPX_REPOSITORY)
+                set(hpx_repository "${LUE_HPX_REPOSITORY}")
             else()
-                # Use remote repository
                 set(hpx_repository "https://github.com/STEllAR-GROUP/hpx")
             endif()
 
@@ -634,7 +614,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
-                list(APPEND hpx_versions_to_try 1.8.1 1.8.0)
+                list(APPEND hpx_versions_to_try v1.9.0)
             endif()
 
             # First see if an HPX archive is available in a local cache
@@ -674,7 +654,6 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
-        set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "Unspecified")
     else()
         find_package(HPX REQUIRED)
 

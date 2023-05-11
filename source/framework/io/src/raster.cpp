@@ -583,9 +583,10 @@ namespace lue {
 
 #define INSTANTIATE(type)                                                                                    \
                                                                                                              \
-    template lue::PartitionedArray<type, 2> lue::read(std::string const&, lue::Shape<lue::Count, 2> const&); \
+    template lue::PartitionedArray<type, 2> lue::read<type>(                                                 \
+        std::string const&, lue::Shape<lue::Count, 2> const&);                                               \
                                                                                                              \
-    template hpx::future<void> lue::write(                                                                   \
+    template hpx::future<void> lue::write<type>(                                                             \
         lue::PartitionedArray<type, 2> const&, std::string const&, std::string const&);
 
 

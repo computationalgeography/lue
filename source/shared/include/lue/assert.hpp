@@ -46,12 +46,24 @@ namespace lue {
                 }
                 else
                 {
-                    throw std::logic_error(fmt::format(
-                        "{}:{}: assertion failed: {}: {}",
-                        filename,
-                        line_nr,
-                        condition_as_string,
-                        fmt::format(format_string, arguments...)));
+                    if constexpr (sizeof...(Arguments) == 0)
+                    {
+                        throw std::logic_error(fmt::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            format_string));
+                    }
+                    else
+                    {
+                        throw std::logic_error(fmt::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            fmt::format(format_string, arguments...)));
+                    }
                 }
             }
         }

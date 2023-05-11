@@ -226,7 +226,7 @@ namespace lue {
                     if (ImGui::MenuItem((ICON_FA_COPY "Copy " + label).c_str()))
                     {
                         ImGui::LogToClipboard();
-                        ImGui::LogText(string.c_str());
+                        ImGui::LogText("%s", string.c_str());
                         ImGui::LogFinish();
                     }
                     ImGui::EndPopup();
@@ -283,7 +283,7 @@ namespace lue {
             {
                 ImGui::Text("HDF5 version: ");
                 ImGui::SameLine();
-                ImGui::Text(file.hdf5_version().c_str());
+                ImGui::TextUnformatted(file.hdf5_version().c_str());
                 ImGui::SameLine();
                 help_marker("The version of HDF5 used to create the file");
 
@@ -295,7 +295,7 @@ namespace lue {
             {
                 ImGui::Text("file datatype: ");
                 ImGui::SameLine();
-                ImGui::Text(hdf5::standard_datatype_as_string(datatype).c_str());
+                ImGui::TextUnformatted(hdf5::standard_datatype_as_string(datatype).c_str());
                 ImGui::SameLine();
                 help_marker("The type used to store the array elements in the file.");
             }
@@ -305,7 +305,7 @@ namespace lue {
             {
                 ImGui::Text("memory datatype: ");
                 ImGui::SameLine();
-                ImGui::Text(hdf5::native_datatype_as_string(datatype).c_str());
+                ImGui::TextUnformatted(hdf5::native_datatype_as_string(datatype).c_str());
                 ImGui::SameLine();
                 help_marker("The type used to store the array elements in memory.");
             }
@@ -315,7 +315,7 @@ namespace lue {
             {
                 ImGui::Text("rank: ");
                 ImGui::SameLine();
-                ImGui::Text(fmt::format("{}", rank).c_str());
+                ImGui::TextUnformatted(fmt::format("{}", rank).c_str());
                 ImGui::SameLine();
                 help_marker("The rank of each array stored per object.");
             }
@@ -325,7 +325,7 @@ namespace lue {
             {
                 ImGui::Text("nr objects: ");
                 ImGui::SameLine();
-                ImGui::Text(fmt::format("{}", nr_objects).c_str());
+                ImGui::TextUnformatted(fmt::format("{}", nr_objects).c_str());
                 ImGui::SameLine();
                 help_marker("The number of objects for which arrays are stored.");
             }
@@ -373,13 +373,13 @@ namespace lue {
             {
                 ImGui::Text("nr arrays: ");
                 ImGui::SameLine();
-                ImGui::Text(fmt::format("{}", value.nr_arrays()).c_str());
+                ImGui::TextUnformatted(fmt::format("{}", value.nr_arrays()).c_str());
                 ImGui::SameLine();
                 help_marker("For each object an nD array is stored.");
 
                 ImGui::Text("array shape: ");
                 ImGui::SameLine();
-                ImGui::Text(shape_as_string(value.array_shape()).c_str());
+                ImGui::TextUnformatted(shape_as_string(value.array_shape()).c_str());
                 ImGui::SameLine();
                 help_marker(array_shape_doc);
 
@@ -478,13 +478,13 @@ namespace lue {
             {
                 ImGui::Text("nr arrays: ");
                 ImGui::SameLine();
-                ImGui::Text(fmt::format("{}", value.nr_arrays()).c_str());
+                ImGui::TextUnformatted(fmt::format("{}", value.nr_arrays()).c_str());
                 ImGui::SameLine();
                 help_marker("For each active object an nD array is stored.");
 
                 ImGui::Text("array shape: ");
                 ImGui::SameLine();
-                ImGui::Text(shape_as_string(value.array_shape()).c_str());
+                ImGui::TextUnformatted(shape_as_string(value.array_shape()).c_str());
                 ImGui::SameLine();
                 help_marker(array_shape_doc);
 
@@ -585,7 +585,7 @@ namespace lue {
 
                     ImGui::Text("item type: ");
                     ImGui::SameLine();
-                    ImGui::Text(
+                    ImGui::TextUnformatted(
                         data_model::aspect_to_string(configuration.value<data_model::TimeDomainItemType>())
                             .c_str());
                 }
@@ -596,15 +596,15 @@ namespace lue {
 
                     ImGui::Text("epoch: ");
                     ImGui::SameLine();
-                    ImGui::Text(epoch_to_string(clock.epoch()).c_str());
+                    ImGui::TextUnformatted(epoch_to_string(clock.epoch()).c_str());
 
                     ImGui::Text("unit: ");
                     ImGui::SameLine();
-                    ImGui::Text(data_model::aspect_to_string(clock.unit()).c_str());
+                    ImGui::TextUnformatted(data_model::aspect_to_string(clock.unit()).c_str());
 
                     ImGui::Text("nr_units: ");
                     ImGui::SameLine();
-                    ImGui::Text(fmt::format("{}", clock.nr_units()).c_str());
+                    ImGui::TextUnformatted(fmt::format("{}", clock.nr_units()).c_str());
                 }
 
                 // Value
@@ -629,12 +629,12 @@ namespace lue {
 
                     ImGui::Text("mobility: ");
                     ImGui::SameLine();
-                    ImGui::Text(
+                    ImGui::TextUnformatted(
                         data_model::aspect_to_string(configuration.value<data_model::Mobility>()).c_str());
 
                     ImGui::Text("item type: ");
                     ImGui::SameLine();
-                    ImGui::Text(
+                    ImGui::TextUnformatted(
                         data_model::aspect_to_string(configuration.value<data_model::SpaceDomainItemType>())
                             .c_str());
                 }
@@ -645,7 +645,7 @@ namespace lue {
                     {
                         ImGui::Text("discretized presence property: ");
                         ImGui::SameLine();
-                        ImGui::Text(
+                        ImGui::TextUnformatted(
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
                             const_cast<data_model::SpaceDomain&>(domain)
                                 .discretized_presence_property()
@@ -784,25 +784,26 @@ namespace lue {
                         {
                             ImGui::Text("shape per object: ");
                             ImGui::SameLine();
-                            ImGui::Text(data_model::aspect_to_string(data_model::shape_per_object<Collection>)
-                                            .c_str());
+                            ImGui::TextUnformatted(
+                                data_model::aspect_to_string(data_model::shape_per_object<Collection>)
+                                    .c_str());
 
                             ImGui::Text("value variability: ");
                             ImGui::SameLine();
-                            ImGui::Text(
+                            ImGui::TextUnformatted(
                                 data_model::aspect_to_string(data_model::value_variability<Collection>)
                                     .c_str());
 
                             ImGui::Text("shape variability: ");
                             ImGui::SameLine();
-                            ImGui::Text(
+                            ImGui::TextUnformatted(
                                 data_model::aspect_to_string(data_model::shape_variability<Collection>)
                                     .c_str());
                         }
 
                         if (!collection[property_name].description().empty())
                         {
-                            ImGui::TextWrapped(collection[property_name].description().c_str());
+                            ImGui::TextWrapped("%s", collection[property_name].description().c_str());
                         }
                         show_property(collection[property_name], show_details);
 
@@ -947,7 +948,7 @@ namespace lue {
             {
                 if (!phenomenon.description().empty())
                 {
-                    ImGui::TextWrapped(phenomenon.description().c_str());
+                    ImGui::TextWrapped("%s", phenomenon.description().c_str());
                 }
 
                 {
@@ -1069,7 +1070,7 @@ namespace lue {
 
                 if (!source.description().empty())
                 {
-                    ImGui::TextWrapped(source.description().c_str());
+                    ImGui::TextWrapped("%s", source.description().c_str());
                 }
 
                 if (show_details)
@@ -1077,7 +1078,7 @@ namespace lue {
 
                     ImGui::Text("LUE version: ");
                     ImGui::SameLine();
-                    ImGui::Text(source.lue_version().c_str());
+                    ImGui::TextUnformatted(source.lue_version().c_str());
                     ImGui::SameLine();
                     help_marker("The version of LUE used to create the dataset");
 

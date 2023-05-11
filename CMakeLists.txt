@@ -1,11 +1,11 @@
 cmake_minimum_required(
-    VERSION 3.25)
+    VERSION 3.26)
 project(LUE
     VERSION 0.3.7
     LANGUAGES C CXX)
 
 set(${PROJECT_NAME}_ORGANISATION_NAME "Computational Geography")
-set(${PROJECT_NAME}_COPYRIGHT "2015-now Kor de Jong")
+set(${PROJECT_NAME}_COPYRIGHT "2015-now LUE developers")
 set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
 set(${PROJECT_NAME}_HOMEPAGE "https://lue.computationalgeography.org")
 set(${PROJECT_NAME}_EMAIL "https://lue@computationalgeography.org")

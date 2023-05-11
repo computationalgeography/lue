@@ -90,11 +90,9 @@ jobs:
               cd $GITHUB_WORKSPACE/../build
               ctest --output-on-failure --build-config Release
 
-        - name: install lue lue_runtime component
+        - name: install lue runtime component
           shell: bash -l {0}
           run: |
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component core
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component parallelism
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 

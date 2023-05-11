@@ -38,8 +38,8 @@ namespace lue {
 
                     OutputElement sum{0};
 
-                    lue_hpx_assert(window.extent(0) == kernel.size());
-                    lue_hpx_assert(window.extent(1) == kernel.size());
+                    lue_hpx_assert(static_cast<Count>(window.extent(0)) == kernel.size());
+                    lue_hpx_assert(static_cast<Count>(window.extent(1)) == kernel.size());
 
                     for (Index r = 0; r < window.extent(0); ++r)
                     {

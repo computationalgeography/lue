@@ -16,20 +16,35 @@ namespace lue::policy {
 
             public:
 
-                static constexpr T no_data_value{
-                    []()
-                    {
-                        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
+                inline static constexpr T no_data_value()
+                {
+                    static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
 
-                        if constexpr (std::is_floating_point_v<T>)
-                        {
-                            return DetectNoDataByNaN<T>::no_data_value;
-                        }
-                        else if constexpr (std::is_integral_v<T>)
-                        {
-                            return DetectNoDataByValue<T>::no_data_value;
-                        }
-                    }()};
+                    if constexpr (std::is_floating_point_v<T>)
+                    {
+                        return DetectNoDataByNaN<T>::no_data_value;
+                    }
+                    else if constexpr (std::is_integral_v<T>)
+                    {
+                        return DetectNoDataByValue<T>::no_data_value;
+                    }
+                }
+
+                // This stopped working in Github workflow + Windows + MSVC
+                // static constexpr T no_data_value =
+                //     []()
+                //     {
+                //         static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
+
+                //         if constexpr (std::is_floating_point_v<T>)
+                //         {
+                //             return DetectNoDataByNaN<T>::no_data_value;
+                //         }
+                //         else if constexpr (std::is_integral_v<T>)
+                //         {
+                //             return DetectNoDataByValue<T>::no_data_value;
+                //         }
+                //     }();
         };
 
 
@@ -205,6 +220,7 @@ namespace lue::policy {
 
 
     template<typename Element>
-    Element no_data_value = detail::TypeTraits<lue::detail::remove_cvref_t<Element>>::no_data_value;
+    inline constexpr Element no_data_value =
+        detail::TypeTraits<lue::detail::remove_cvref_t<Element>>::no_data_value();
 
 }  //  namespace lue::policy

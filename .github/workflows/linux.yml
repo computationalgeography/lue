@@ -132,10 +132,10 @@ jobs:
               cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
               cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
 
-        - name: install lue_runtime component
+        - name: install runtime component
           shell: bash -l {0}
           run: |
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component hpx_runtime
+              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
               install/bin/lue_translate --version
