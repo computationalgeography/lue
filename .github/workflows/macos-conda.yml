@@ -3,7 +3,7 @@ name: macOS Conda package
 on:
   push:
     branches-ignore:
-      - "**"
+      - "ghxyz"
     paths:
       - ".github/workflows/macos-conda.yml"
       - "source/**"
