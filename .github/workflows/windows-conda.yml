@@ -10,6 +10,7 @@ on:
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
       - "environment/conda/bld.bat"
+      - "environment/conda/conda_build_config.yaml"
       - "environment/conda/meta.yaml"
       - "environment/conda/run_test.py"
 
