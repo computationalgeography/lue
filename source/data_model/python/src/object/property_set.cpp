@@ -83,16 +83,16 @@ namespace lue {
                         {
                             using Collection = same_shape::Properties;
                             using Property = same_shape::Property;
-                            property = py::cast(
-                                new Property{properties.collection<Collection>()[name].parent(), name});
+                            property =
+                                py::cast(Property{properties.collection<Collection>()[name].parent(), name});
                             break;
                         }
                         case ShapePerObject::different:
                         {
                             using Collection = different_shape::Properties;
                             using Property = different_shape::Property;
-                            property = py::cast(
-                                new Property{properties.collection<Collection>()[name].parent(), name});
+                            property =
+                                py::cast(Property{properties.collection<Collection>()[name].parent(), name});
                             break;
                         }
                     }
@@ -114,16 +114,16 @@ namespace lue {
                                 {
                                     using Collection = same_shape::constant_shape::Properties;
                                     using Property = same_shape::constant_shape::Property;
-                                    property = py::cast(new Property{
-                                        properties.collection<Collection>()[name].parent(), name});
+                                    property = py::cast(
+                                        Property{properties.collection<Collection>()[name].parent(), name});
                                     break;
                                 }
                                 case ShapeVariability::variable:
                                 {
                                     using Collection = same_shape::variable_shape::Properties;
                                     using Property = same_shape::variable_shape::Property;
-                                    property = py::cast(new Property{
-                                        properties.collection<Collection>()[name].parent(), name});
+                                    property = py::cast(
+                                        Property{properties.collection<Collection>()[name].parent(), name});
                                     break;
                                 }
                             }
@@ -139,16 +139,16 @@ namespace lue {
                                 {
                                     using Collection = different_shape::constant_shape::Properties;
                                     using Property = different_shape::constant_shape::Property;
-                                    property = py::cast(new Property{
-                                        properties.collection<Collection>()[name].parent(), name});
+                                    property = py::cast(
+                                        Property{properties.collection<Collection>()[name].parent(), name});
                                     break;
                                 }
                                 case ShapeVariability::variable:
                                 {
                                     using Collection = different_shape::variable_shape::Properties;
                                     using Property = different_shape::variable_shape::Property;
-                                    property = py::cast(new Property{
-                                        properties.collection<Collection>()[name].parent(), name});
+                                    property = py::cast(
+                                        Property{properties.collection<Collection>()[name].parent(), name});
                                     break;
                                 }
                             }
