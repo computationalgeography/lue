@@ -17,11 +17,12 @@ jobs:
             matrix:
                 os: ["windows-2022"]
                 python-version: ["3.9"]
+                toolset: ["v142", "v143"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }} / toolset - ${{ matrix.toolset }} / python - ${{ matrix.python-version }}
 
         steps:
 
@@ -36,7 +37,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc matplotlib ninja numpy pip
+              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc matplotlib numpy pip
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
@@ -50,7 +51,7 @@ jobs:
               cmake \
                   -S . \
                   -B $GITHUB_WORKSPACE/../build \
-                  -G "Ninja" \
+                  -G "Visual Studio 17 2022" -T ${{ matrix.toolset }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
