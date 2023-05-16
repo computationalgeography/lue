@@ -1,22 +1,19 @@
 #pragma once
+#include "lue/view/show_main_menu_bar.hpp"
 #include "lue/utility/application.hpp"
 
 
-namespace lue {
-    namespace view {
+namespace lue::view {
 
-        class Application: public utility::Application
+    class Application: public utility::Application
 
-        {
+    {
 
-            public:
+        public:
 
-                explicit Application(std::vector<std::string> const& arguments);
+        protected:
 
-                int run_implementation() final;
+            Application(std::vector<std::string> const& arguments);
+    };
 
-            private:
-        };
-
-    }  // namespace view
-}  // namespace lue
+}  // namespace lue::view

@@ -5,6 +5,12 @@ add_executable(lue_view
     src/dataset.cpp
     src/main.cpp
     src/show_dataset.cpp
+    src/show_main_menu_bar.cpp
+
+    $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,
+        src/vulkan_application.cpp,
+        src/opengl_application.cpp
+    >
 )
 
 target_compile_options(lue_view

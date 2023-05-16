@@ -34,6 +34,8 @@ namespace lue::glfw {
 
             std::tuple<int, int> framebuffer_size() const;
 
+            bool should_close() const;
+
         private:
 
             GLFWwindow* _window;

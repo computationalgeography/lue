@@ -7,13 +7,13 @@ namespace lue::glfw {
 
     void Window::hint(int hint, int value)
     {
-        glfwWindowHint(hint, value);
+        ::glfwWindowHint(hint, value);
     }
 
 
     Window::Window(std::string const& title, int const width, int const height):
 
-        _window{glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr)}
+        _window{::glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr)}
 
     {
         // Windowed mode window
@@ -23,7 +23,7 @@ namespace lue::glfw {
 
     Window::Window(std::string const& title, int const width, int const height, Monitor& monitor):
 
-        _window{glfwCreateWindow(width, height, title.c_str(), monitor, nullptr)}
+        _window{::glfwCreateWindow(width, height, title.c_str(), monitor, nullptr)}
 
     {
         // Windowed full screen window
@@ -48,7 +48,7 @@ namespace lue::glfw {
 
     Window::~Window()
     {
-        glfwDestroyWindow(_window);
+        ::glfwDestroyWindow(_window);
     }
 
 
@@ -60,7 +60,7 @@ namespace lue::glfw {
 
     void Window::make_context_current()
     {
-        glfwMakeContextCurrent(_window);
+        ::glfwMakeContextCurrent(_window);
     }
 
 
@@ -68,9 +68,15 @@ namespace lue::glfw {
     {
         int width, height;
 
-        glfwGetFramebufferSize(_window, &width, &height);
+        ::glfwGetFramebufferSize(_window, &width, &height);
 
         return {width, height};
+    }
+
+
+    bool Window::should_close() const
+    {
+        return ::glfwWindowShouldClose(_window);
     }
 
 }  // namespace lue::glfw

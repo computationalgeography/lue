@@ -70,4 +70,6 @@ repos:
   #       source/framework/benchmark/.*|
   #       source/framework/case_study/.*|
   #       source/imgui/main.cpp|
+  #       source/view/vulkan/.*|
+  #       source/view/view/src/vulkan_application.cpp|
   #     )$

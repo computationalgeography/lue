@@ -10,13 +10,14 @@ namespace lue::imgui::glfw {
         Binding{}
 
     {
-        // TODO
+        // Setup Platform/Renderer backends
+        ImGui_ImplGlfw_InitForVulkan(window, true);
     }
 
 
     VulkanBinding::~VulkanBinding()
     {
-        // TODO
+        ImGui_ImplVulkan_Shutdown();
     }
 
 }  // namespace lue::imgui::glfw
