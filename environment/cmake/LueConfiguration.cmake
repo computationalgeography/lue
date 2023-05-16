@@ -384,7 +384,8 @@ endif()
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
-        GIT_TAG mdspan-0.6.0
+        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+        # GIT_TAG mdspan-0.6.0
         SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)

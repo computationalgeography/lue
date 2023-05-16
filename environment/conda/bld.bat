@@ -1,9 +1,9 @@
 mkdir build
 cd build
-if %errorlevel% neq 0 exit /b %errorlevel%
+if errorlevel 1 exit 1
 
-cmake %SRC_DIR% ^
-    -G "Visual Studio 16 2019" -A x64 ^
+cmake .. ^
+    -G "Visual Studio 17 2022" -A x64 ^
     -D CMAKE_BUILD_TYPE=Release ^
     -D CMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
     -D CMAKE_INSTALL_LIBDIR=lib ^
@@ -22,10 +22,10 @@ cmake %SRC_DIR% ^
     -D LUE_HAVE_PYBIND11=TRUE ^
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE ^
     -D Python3_EXECUTABLE="%PYTHON%"
-if %errorlevel% neq 0 exit /b %errorlevel%
+if errorlevel 1 exit 1
 
 cmake --build . --config Release --target all_build
-if %errorlevel% neq 0 exit /b %errorlevel%
+if errorlevel 1 exit 1
 
 cmake --install . --component lue_runtime
-if %errorlevel% neq 0 exit /b %errorlevel%
+if errorlevel 1 exit 1
