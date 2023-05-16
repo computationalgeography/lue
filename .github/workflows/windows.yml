@@ -83,7 +83,9 @@ jobs:
         - name: build lue
           shell: bash -l {0}
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all
+              cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build -- \
+                  -verbosity:minimal -nologo
+              # -maxcpucount:2
 
         - name: test lue
           shell: bash -l {0}
