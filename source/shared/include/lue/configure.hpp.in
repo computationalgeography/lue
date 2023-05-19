@@ -2,8 +2,7 @@
 #include <string_view>
 
 
-#cmakedefine LUE_VERSION "${LUE_VERSION}"
-// #cmakedefine LUE_VERSION_TWEAK "${LUE_VERSION_TWEAK}"
+#define LUE_VERSION "${LUE_VERSION}"
 
 #cmakedefine LUE_BUILD_DATA_MODEL
 #cmakedefine LUE_DATA_MODEL_WITH_PYTHON_API
@@ -33,7 +32,9 @@ namespace lue {
             // modernize-avoid-c-arrays)
             static constexpr char const* version{LUE_VERSION};
 
-            // static constexpr char const* version_tweak{LUE_VERSION_TWEAK};
+            static constexpr std::uint32_t major_version{${LUE_VERSION_MAJOR}};
+            static constexpr std::uint32_t minor_version{${LUE_VERSION_MINOR}};
+            static constexpr std::uint32_t patch_version{${LUE_VERSION_PATCH}};
 
             static constexpr bool build_framework{
 #ifdef LUE_BUILD_FRAMEWORK

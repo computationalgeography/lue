@@ -1,9 +1,14 @@
 #pragma once
 #include <string>
+#include <tuple>
+#include <vector>
 #include <vulkan/vulkan.h>
 
 
 namespace lue::vulkan {
+
+    using Names = std::vector<char const*>;
+
 
     /*!
         @brief      .
@@ -17,21 +22,28 @@ namespace lue::vulkan {
 
         public:
 
-            ApplicationInfo(std::string const& application_name, std::string const& engine_name);
+            ApplicationInfo(
+                std::string const& application_name,
+                std::tuple<std::uint32_t, std::uint32_t, std::uint32_t> const& version,
+                std::uint32_t const api_version);
 
             ApplicationInfo(ApplicationInfo const&) = delete;
 
             ApplicationInfo(ApplicationInfo&&) = default;
 
-            ~ApplicationInfo();
+            ~ApplicationInfo() = default;
 
             ApplicationInfo& operator=(ApplicationInfo const&) = delete;
 
             ApplicationInfo& operator=(ApplicationInfo&&) = default;
 
-            operator VkApplicationInfo const*();
+            operator VkApplicationInfo const*() const;
 
         private:
+
+            std::string _application_name;
+
+            std::string _engine_name;
 
             VkApplicationInfo _application_info;
     };

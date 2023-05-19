@@ -1,6 +1,8 @@
 #include "lue/view/vulkan_application.hpp"
+#include "lue/configure.hpp"
 #include "lue/glfw.hpp"
 #include "lue/vulkan.hpp"
+#include <fmt/format.h>
 #include <cassert>
 #include <cmath>
 
@@ -37,6 +39,7 @@
 // {
 //     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 // }
+
 // static void check_vk_result(VkResult err)
 // {
 //     if (err == 0)
@@ -45,19 +48,27 @@
 //     if (err < 0)
 //         abort();
 // }
-//
-// #ifdef IMGUI_VULKAN_DEBUG_REPORT
-// static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT
-// objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char*
-// pMessage, void* pUserData)
-// {
-//     (void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; //
-//     Unused arguments fprintf(stderr, "[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n",
-//     objectType, pMessage); return VK_FALSE;
-// }
-// #endif // IMGUI_VULKAN_DEBUG_REPORT
-//
-//
+
+
+#ifndef NDEBUG
+static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
+    [[maybe_unused]] VkDebugReportFlagsEXT flags,
+    VkDebugReportObjectTypeEXT object_type,
+    [[maybe_unused]] std::uint64_t object,
+    [[maybe_unused]] std::size_t location,
+    [[maybe_unused]] std::int32_t message_code,
+    [[maybe_unused]] char const* layer_prefix,
+    char const* message,
+    [[maybe_unused]] void* user_data)
+{
+    std::cerr << fmt::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
+              << std::endl;
+
+    return VK_FALSE;
+}
+#endif
+
+
 // static bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension)
 // {
 //     for (const VkExtensionProperties& p : properties)
@@ -418,7 +429,7 @@ namespace lue::view {
         // Initialize window ---------------------------------------------------
         // Create window with Vulkan context
         glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
 
         glfw::VideoMode const video_mode{monitor.video_mode()};
         glfw::Window::hint(GLFW_RED_BITS, video_mode.red_bits());
@@ -436,36 +447,72 @@ namespace lue::view {
 
         // Initialize Vulkan ---------------------------------------------------
 
-        std::string const application_name{"LUE View"};
-        std::string const engine_name{"LUE View"};
+        std::string const application_name{"lue_view"};
 
-        // vulkan::InstanceCreateInfo instance_create_info{
-        //     vulkan::ApplicationInfo{application_name, engine_name}
-        // };
+        // #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+        //         // macOS (only?)
+        //         if(IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))
+        //         {
+        //             instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        //             create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+        //         }
+        // #endif
+        //         vulkan_extension_names.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        //         create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+
+        {
+            vulkan::Names vulkan_extension_names{glfw::Library::required_instance_extensions()};
+
+            std::cout << "GLFW required Vulkan extension names:";
+
+            for (auto const& name : vulkan_extension_names)
+            {
+                std::cout << " " << name;
+            }
+
+            std::cout << std::endl;
+
+            auto const [variant, major, minor, patch] = vulkan::Instance::version();
+
+            std::cout << "Vulkan API version: " << major << "." << minor << "." << patch;
+
+            if (variant != 0)
+            {
+                std::cout << " (variant: " << variant << ")";
+            }
+
+            std::cout << std::endl;
+        }
+
+        vulkan::Names instance_layer_names{
+#ifndef NDEBUG
+            "VK_LAYER_KHRONOS_validation"
+#endif
+        };
+        vulkan::Names instance_extension_names{
+#ifndef NDEBUG
+            "VK_EXT_debug_report"
+#endif
+        };
+
+        vulkan::Instance instance{vulkan::Instance::CreateInfo{
+            vulkan::ApplicationInfo{
+                application_name,
+                std::make_tuple(
+                    BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
+                VK_API_VERSION_1_2},
+            instance_layer_names,
+            instance_extension_names}};
 
 
-        std::vector<char const*> vulkan_extension_names{glfw::Library::required_instance_extensions()};
-
-        /// // #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-        /// //         // macOS (only?)
-        /// //         if(IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))
-        /// //         {
-        /// //             instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        /// //             create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-        /// //         }
-        /// // #endif
-        /// //         vulkan_extension_names.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        /// //         create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-        ///
-        ///         create_info.enabledLayerCount = vulkan_extension_names.size();
-        ///         create_info.ppEnabledExtensionNames = vulkan_extension_names.data();
-        ///         create_info.enabledLayerCount = 0;
-
-
-        // vulkan::Instance instance{std::move(instance_create_info)};
-
-        vulkan::Instance instance{
-            vulkan::InstanceCreateInfo{vulkan::ApplicationInfo{application_name, engine_name}}};
+#ifndef NDEBUG
+        vulkan::DebugReportCallback debug_callback{
+            instance,
+            vulkan::DebugReportCallback::CreateInfo{
+                VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                    VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
+                debug_report}};
+#endif
 
 
         //         ImVector<const char*> extensions;
@@ -573,9 +620,24 @@ namespace lue::view {
         //         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
         // Main loop
-        while (!glfw_window.should_close())
+        bool quit = glfw_window.should_close();
+
+        while (!quit)
         {
             glfw::Library::poll_events();
+
+            // imgui::glfw::VulkanFrame frame{glfw_window};
+
+            // static Configuration configuration{};
+            // quit = show_main_menu_bar(configuration);
+
+            // if (!quit)
+            // {
+            //     show_datasets(datasets_to_visualize, configuration.show_details());
+            // }
+
+            quit = quit || glfw_window.should_close();
+
 
             //             // Resize swap chain?
             //             if (g_SwapChainRebuild)

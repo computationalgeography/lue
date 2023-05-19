@@ -1,8 +1,10 @@
 add_library(lue_vulkan STATIC
     src/application_info.cpp
+    src/debug_report_callback.cpp
+    src/error.cpp
     src/extension.cpp
     src/instance.cpp
-    src/instance_create_info.cpp
+    src/physical_device.cpp
     src/queue_family.cpp
 )
 
