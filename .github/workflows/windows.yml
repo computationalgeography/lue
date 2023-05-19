@@ -56,7 +56,6 @@ jobs:
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
                   -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
-                  -D LUE_BUILD_VIEW:BOOL=TRUE \
                   -D LUE_BUILD_QA:BOOL=TRUE \
                   -D LUE_QA_WITH_PYTHON_API=TRUE \
                   -D LUE_QA_WITH_TESTS=TRUE \

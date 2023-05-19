@@ -30,7 +30,7 @@ option(LUE_FRAMEWORK_WITH_PYTHON_API
 
 option(LUE_BUILD_VIEW
     "Build LUE data model viewer"
-    FALSE)
+    TRUE)
 
 option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
