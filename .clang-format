@@ -101,6 +101,8 @@ IncludeCategories:
     Priority:        90
   - Regex:           '^<hpx/'
     Priority:        100
+  - Regex:           '^<vulkan/'
+    Priority:        105
   - Regex:           '^<(boost|fmt|numpy|pybind11)/'
     Priority:        110
   - Regex:           '^<.*'
