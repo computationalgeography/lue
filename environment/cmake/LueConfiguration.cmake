@@ -139,7 +139,7 @@ set(LUE_HAVE_IMGUI FALSE)
 
 # Update / remove once we've got Vulkan sorted out.
 # Whether or not to use Vulkan, instead of OpenGL.
-set(LUE_VIEW_USE_VULKAN FALSE)
+set(LUE_VIEW_USE_VULKAN TRUE)
 
 
 # Handle internal dependencies -------------------------------------------------
