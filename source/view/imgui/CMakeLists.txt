@@ -32,7 +32,6 @@ target_include_directories(lue_imgui
 target_compile_definitions(lue_imgui
     PUBLIC
         IMGUI_DISABLE_OBSOLETE_FUNCTIONS
-        $<$<BOOL:${LUE_VIEW_USE_VULKAN}>:GLFW_INCLUDE_NONE GLFW_INCLUDE_VULKAN>
 )
 
 add_library(lue::imgui ALIAS lue_imgui)
