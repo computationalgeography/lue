@@ -47,7 +47,7 @@ jobs:
                   numpy \
                   pybind11 \
                   tree \
-                  vulkan-headers
+                  vulkan-loader
 
 
         - shell: bash -l {0}

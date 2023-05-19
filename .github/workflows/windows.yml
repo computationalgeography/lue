@@ -37,7 +37,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc libvulkan-headers matplotlib numpy pip
+              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc libvulkan-loader matplotlib numpy pip
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
