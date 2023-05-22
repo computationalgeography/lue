@@ -3,7 +3,7 @@ name: Linux Conda package
 on:
   push:
     branches-ignore:
-      - "gh571"
+      - "ghxyz"
     paths:
       - ".github/workflows/linux-conda.yml"
       - "source/**"
