@@ -3,7 +3,7 @@ cd build
 if errorlevel 1 exit 1
 
 cmake .. ^
-    -G "Visual Studio 17 2022" -A x64 ^
+    -G "NMake Makefiles" ^
     -D CMAKE_BUILD_TYPE=Release ^
     -D CMAKE_INSTALL_PREFIX:PATH="%LIBRARY_PREFIX%" ^
     -D CMAKE_INSTALL_LIBDIR=lib ^
