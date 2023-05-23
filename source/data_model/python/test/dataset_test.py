@@ -162,3 +162,84 @@ class DatasetTest(lue_test.TestCase):
     #     dataset = self.create_dataset(dataset_name)
 
     #     self.assertEqual(dataset.log, [])
+
+    def test_release_dataset2(self):
+        # gh570: Similar problem as with gh431, tested above in test_release_dataset
+
+        dataset_name = "dataset_release_dataset2.lue"
+        lue_test.remove_file_if_existant(dataset_name)
+
+        def create_dataset():
+            dataset = self.create_dataset(dataset_name)
+
+        def update_dataset():
+            dataset = ldm.open_dataset(dataset_name, "w")
+            my_phenomenon = dataset.add_phenomenon("my_phenomenon")
+
+            clock = ldm.Clock(
+                ldm.Epoch(
+                    ldm.Epoch.Kind.common_era,
+                    "2000-01-02T12:34:00",
+                    ldm.Calendar.gregorian,
+                ),
+                ldm.Unit.month,
+                4,
+            )
+            time_configuration = ldm.TimeConfiguration(ldm.TimeDomainItemType.box)
+
+            space_configuration = ldm.SpaceConfiguration(
+                ldm.Mobility.stationary, ldm.SpaceDomainItemType.point
+            )
+
+            my_property_set = my_phenomenon.add_property_set(
+                "my_property_set",
+                time_configuration,
+                clock,
+                space_configuration,
+                np.dtype(np.float64),
+                rank=2,
+            )
+
+            time_box = 1
+
+            my_property_set.object_tracker.active_set_index.expand(time_box)[:] = 0.6
+            my_property_set.time_domain.value.expand(time_box)[:] = np.array([0, 5])
+
+            my_phenomenon.add_property_set(
+                "space", space_configuration, np.dtype(np.float64), rank=2
+            )
+            my_property_set.add_property(
+                "discretization", dtype=ldm.dtype.Count, shape=(2,)
+            )
+
+            my_property = my_property_set.add_property(
+                "my_property",
+                dtype=np.dtype(np.float32),
+                shape=(100, 1),
+                value_variability=ldm.ValueVariability.variable,
+            )
+
+            my_property.set_space_discretization(
+                ldm.SpaceDiscretization.regular_grid, my_property_set.discretization
+            )
+
+            discretization_property = (
+                my_property.space_discretization_property()
+            )  # <--- Used to dangle
+
+            # All variables will now go out of scope. The result must be that nobody is preventing
+            # the dataset from being used again.
+
+        # Create dataset and do not refer to it anymore
+        create_dataset()
+        self.assertTrue(os.path.exists(dataset_name))
+
+        # Update dataset and do not refer to it anymore
+        update_dataset()
+
+        # Since nobody is referring to the dataset anymore, we should be able to delete it.
+        # Before the fix:
+        # PermissionError: [WinError 32] The process cannot access the file because it is being
+        # used by another process: 'dataset_release_dataset2.lue'
+        os.remove(dataset_name)
+        self.assertFalse(os.path.exists(dataset_name))
