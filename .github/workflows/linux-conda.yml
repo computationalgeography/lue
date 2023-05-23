@@ -21,7 +21,7 @@ jobs:
             matrix:
                 os: ["ubuntu-22.04"]
                 python-version: ["3.9"]
-            fail-fast: false
+            fail-fast: true
 
         runs-on: ${{ matrix.os }}
 
