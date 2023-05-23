@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import ast
 import os.path
+import pathlib
 import sys
 
 import docopt
@@ -39,6 +40,9 @@ Options:
 
     with open(source_pathname) as source_file:
         template = jinja2.Template(source_file.read())
+        pathlib.Path(os.path.dirname(destination_pathname)).mkdir(
+            parents=True, exist_ok=True
+        )
         open(destination_pathname, "w").write(template.render(values))
 
 
