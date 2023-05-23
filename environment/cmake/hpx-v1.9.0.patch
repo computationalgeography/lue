@@ -1,0 +1,120 @@
+diff --git a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+index 98faa50275..a60c1243f5 100644
+--- a/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
++++ b/libs/core/datastructures/include/hpx/datastructures/detail/optional.hpp
+@@ -18,6 +18,8 @@
+ #include <type_traits>
+ #include <utility>
+ 
++#include <hpx/config/warnings_prefix.hpp>
++
+ namespace hpx::optional_ns {
+ 
+     struct nullopt_t
+@@ -347,7 +349,7 @@ namespace hpx::optional_ns {
+                 std::destroy_at(reinterpret_cast<T*>(&storage_));
+                 empty_ = true;
+             }
+-            std::construct_at(reinterpret_cast<T*>(&storage_),
++            hpx::construct_at(reinterpret_cast<T*>(&storage_),
+                 HPX_FORWARD(F, f)(HPX_FORWARD(Ts, ts)...));
+             empty_ = false;
+         }
+@@ -779,15 +781,14 @@ namespace hpx::optional_ns {
+ }    // namespace hpx::optional_ns
+ 
+ ///////////////////////////////////////////////////////////////////////////////
+-namespace std {
+-
+-    template <typename T>
+-    struct hash<::hpx::optional_ns::optional<T>>
++template <typename T>
++struct std::hash<::hpx::optional_ns::optional<T>>
++{
++    constexpr std::size_t operator()(
++        ::hpx::optional_ns::optional<T> const& arg) const
+     {
+-        constexpr std::size_t operator()(
+-            ::hpx::optional_ns::optional<T> const& arg) const
+-        {
+-            return arg ? std::hash<T>{}(*arg) : std::size_t{};
+-        }
+-    };
+-}    // namespace std
++        return arg ? std::hash<T>{}(*arg) : std::size_t{};
++    }
++};
++
++#include <hpx/config/warnings_suffix.hpp>
+diff --git a/libs/core/datastructures/include/hpx/datastructures/optional.hpp b/libs/core/datastructures/include/hpx/datastructures/optional.hpp
+index 5785ac589a..b038240082 100644
+--- a/libs/core/datastructures/include/hpx/datastructures/optional.hpp
++++ b/libs/core/datastructures/include/hpx/datastructures/optional.hpp
+@@ -27,6 +27,8 @@ namespace hpx {
+ 
+ #include <hpx/datastructures/detail/optional.hpp>
+ 
++#include <hpx/config/warnings_prefix.hpp>
++
+ namespace hpx {
+ 
+     using hpx::optional_ns::bad_optional_access;
+@@ -36,6 +38,8 @@ namespace hpx {
+     using hpx::optional_ns::optional;
+ }    // namespace hpx
+ 
++#include <hpx/config/warnings_suffix.hpp>
++
+ #endif
+ 
+ namespace hpx::util {
+diff --git a/libs/core/execution/include/hpx/execution/algorithms/make_future.hpp b/libs/core/execution/include/hpx/execution/algorithms/make_future.hpp
+index e65e5c65e6..9d4fb92e1c 100644
+--- a/libs/core/execution/include/hpx/execution/algorithms/make_future.hpp
++++ b/libs/core/execution/include/hpx/execution/algorithms/make_future.hpp
+@@ -43,13 +43,15 @@ namespace hpx::execution::experimental {
+             hpx::intrusive_ptr<Data> data;
+ 
+         protected:
++            // Note: MSVC toolset v142 fails compiling 'data->' below, using
++            // '(*data).' instead
+             template <typename U>
+             void set_value(U&& u) && noexcept
+             {
+                 hpx::detail::try_catch_exception_ptr(
+-                    [&]() { data->set_value(HPX_FORWARD(U, u)); },
++                    [&]() { (*data).set_value(HPX_FORWARD(U, u)); },
+                     [&](std::exception_ptr ep) {
+-                        data->set_exception(HPX_MOVE(ep));
++                        (*data).set_exception(HPX_MOVE(ep));
+                     });
+                 data.reset();
+             }
+diff --git a/libs/core/execution/include/hpx/execution/algorithms/when_all_vector.hpp b/libs/core/execution/include/hpx/execution/algorithms/when_all_vector.hpp
+index 61f2f47dfd..3e1d5ac934 100644
+--- a/libs/core/execution/include/hpx/execution/algorithms/when_all_vector.hpp
++++ b/libs/core/execution/include/hpx/execution/algorithms/when_all_vector.hpp
+@@ -280,7 +280,6 @@ namespace hpx::when_all_vector_detail {
+                     op_states[i].template emplace_f<operation_state_type>(
+                         hpx::execution::experimental::connect, HPX_MOVE(sender),
+                         when_all_vector_receiver{*this, i});
+-                    );
+ #endif
+                     ++i;
+                 }
+diff --git a/libs/core/schedulers/include/hpx/schedulers/background_scheduler.hpp b/libs/core/schedulers/include/hpx/schedulers/background_scheduler.hpp
+index 01f12dc38d..f3c64d8e12 100644
+--- a/libs/core/schedulers/include/hpx/schedulers/background_scheduler.hpp
++++ b/libs/core/schedulers/include/hpx/schedulers/background_scheduler.hpp
+@@ -69,9 +69,8 @@ namespace hpx::threads::policies {
+             // needs to enable background work
+             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing);
+             mode = scheduler_mode(mode & ~scheduler_mode::enable_stealing_numa);
+-            mode = scheduler_mode(mode | ~scheduler_mode::do_background_work);
+-            mode =
+-                scheduler_mode(mode | ~scheduler_mode::do_background_work_only);
++            mode = mode | ~scheduler_mode::do_background_work;
++            mode = mode | ~scheduler_mode::do_background_work_only;
+             scheduler_base::set_scheduler_mode(mode);
+         }
+ 

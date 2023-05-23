@@ -130,7 +130,7 @@ namespace lue {
             typename MaterialPartitions,
             typename Accumulator>
         hpx::tuple<PartitionIOComponent, InflowCountPartition, PartitionT<MaterialPartitions>>
-        solve_intra_partition_stream_cells(
+        solve_intra_partition_stream_cells_1(
             Policies const& policies,
             OffsetT<PartitionT<FlowDirectionPartitions>> const& partition_offset,
             FlowDirectionPartitions const& flow_direction_partitions,
@@ -286,7 +286,7 @@ namespace lue {
             InflowCountPartition,
             PartitionT<MaterialPartitions>,
             PartitionT<MaterialPartitions>>
-        solve_intra_partition_stream_cells(
+        solve_intra_partition_stream_cells_2(
             Policies const& policies,
             OffsetT<PartitionT<FlowDirectionPartitions>> const& partition_offset,
             FlowDirectionPartitions const& flow_direction_partitions,
@@ -453,34 +453,68 @@ namespace lue {
             typename InflowCountPartition,
             typename FlowDirectionPartitions,
             typename MaterialPartitions,
-            typename Accumulator,
-            typename... CriterionPartitions>
-        struct IntraPartitionStreamCellsAction:
+            typename Accumulator>
+        struct IntraPartitionStreamCellsAction1:
             hpx::actions::make_action<
-                decltype(&solve_intra_partition_stream_cells<
+                decltype(&solve_intra_partition_stream_cells_1<
+                         Policies,
+                         PartitionIOComponent,
+                         InflowCountPartition,
+                         FlowDirectionPartitions,
+                         MaterialPartitions,
+                         Accumulator>),
+                &solve_intra_partition_stream_cells_1<
+                    Policies,
+                    PartitionIOComponent,
+                    InflowCountPartition,
+                    FlowDirectionPartitions,
+                    MaterialPartitions,
+                    Accumulator>,
+                IntraPartitionStreamCellsAction1<
+                    Policies,
+                    PartitionIOComponent,
+                    InflowCountPartition,
+                    FlowDirectionPartitions,
+                    MaterialPartitions,
+                    Accumulator>>::type
+        {
+        };
+
+
+        template<
+            typename Policies,
+            typename PartitionIOComponent,
+            typename InflowCountPartition,
+            typename FlowDirectionPartitions,
+            typename MaterialPartitions,
+            typename Accumulator,
+            typename CriterionPartitions>
+        struct IntraPartitionStreamCellsAction2:
+            hpx::actions::make_action<
+                decltype(&solve_intra_partition_stream_cells_2<
                          Policies,
                          PartitionIOComponent,
                          InflowCountPartition,
                          FlowDirectionPartitions,
                          MaterialPartitions,
                          Accumulator,
-                         CriterionPartitions...>),
-                &solve_intra_partition_stream_cells<
+                         CriterionPartitions>),
+                &solve_intra_partition_stream_cells_2<
                     Policies,
                     PartitionIOComponent,
                     InflowCountPartition,
                     FlowDirectionPartitions,
                     MaterialPartitions,
                     Accumulator,
-                    CriterionPartitions...>,
-                IntraPartitionStreamCellsAction<
+                    CriterionPartitions>,
+                IntraPartitionStreamCellsAction2<
                     Policies,
                     PartitionIOComponent,
                     InflowCountPartition,
                     FlowDirectionPartitions,
                     MaterialPartitions,
                     Accumulator,
-                    CriterionPartitions...>>::type
+                    CriterionPartitions>>::type
         {
         };
 
@@ -492,7 +526,7 @@ namespace lue {
             typename InflowCountPartition,
             typename MaterialPartition,
             typename Accumulator>
-        void flow_accumulation_inter_partition_stream_cells(
+        void flow_accumulation_inter_partition_stream_cells_1(
             Policies const& policies,
             FlowDirectionPartition const& flow_direction_partition,
             InflowCountPartition const& inflow_count_partition,
@@ -631,7 +665,7 @@ namespace lue {
             typename MaterialPartition,
             typename Accumulator,
             typename CriterionPartition>
-        void flow_accumulation_inter_partition_stream_cells(
+        void flow_accumulation_inter_partition_stream_cells_2(
             Policies const& policies,
             FlowDirectionPartition const& flow_direction_partition,
             InflowCountPartition const& inflow_count_partition,
@@ -784,34 +818,68 @@ namespace lue {
             typename PartitionIOComponent,
             typename InflowCountPartition,
             typename MaterialPartition,
-            typename Accumulator,
-            typename... CriterionPartition>
-        struct InterPartitionStreamCellsAction:
+            typename Accumulator>
+        struct InterPartitionStreamCellsAction1:
             hpx::actions::make_action<
-                decltype(&flow_accumulation_inter_partition_stream_cells<
+                decltype(&flow_accumulation_inter_partition_stream_cells_1<
+                         Policies,
+                         FlowDirectionPartition,
+                         PartitionIOComponent,
+                         InflowCountPartition,
+                         MaterialPartition,
+                         Accumulator>),
+                &flow_accumulation_inter_partition_stream_cells_1<
+                    Policies,
+                    FlowDirectionPartition,
+                    PartitionIOComponent,
+                    InflowCountPartition,
+                    MaterialPartition,
+                    Accumulator>,
+                InterPartitionStreamCellsAction1<
+                    Policies,
+                    FlowDirectionPartition,
+                    PartitionIOComponent,
+                    InflowCountPartition,
+                    MaterialPartition,
+                    Accumulator>>::type
+        {
+        };
+
+
+        template<
+            typename Policies,
+            typename FlowDirectionPartition,
+            typename PartitionIOComponent,
+            typename InflowCountPartition,
+            typename MaterialPartition,
+            typename Accumulator,
+            typename CriterionPartition>
+        struct InterPartitionStreamCellsAction2:
+            hpx::actions::make_action<
+                decltype(&flow_accumulation_inter_partition_stream_cells_2<
                          Policies,
                          FlowDirectionPartition,
                          PartitionIOComponent,
                          InflowCountPartition,
                          MaterialPartition,
                          Accumulator,
-                         CriterionPartition...>),
-                &flow_accumulation_inter_partition_stream_cells<
+                         CriterionPartition>),
+                &flow_accumulation_inter_partition_stream_cells_2<
                     Policies,
                     FlowDirectionPartition,
                     PartitionIOComponent,
                     InflowCountPartition,
                     MaterialPartition,
                     Accumulator,
-                    CriterionPartition...>,
-                InterPartitionStreamCellsAction<
+                    CriterionPartition>,
+                InterPartitionStreamCellsAction2<
                     Policies,
                     FlowDirectionPartition,
                     PartitionIOComponent,
                     InflowCountPartition,
                     MaterialPartition,
                     Accumulator,
-                    CriterionPartition...>>::type
+                    CriterionPartition>>::type
         {
         };
 
@@ -856,7 +924,7 @@ namespace lue {
             Count nr_iterations{0};
             std::vector<hpx::future<void>> accu_futures;
 
-            using Action = detail::InterPartitionStreamCellsAction<
+            using Action = detail::InterPartitionStreamCellsAction1<
                 Policies,
                 FlowDirectionPartition,
                 PartitionIOComponent,
@@ -1029,7 +1097,7 @@ namespace lue {
             Count nr_iterations{0};
             std::vector<hpx::future<void>> accu_futures;
 
-            using Action = detail::InterPartitionStreamCellsAction<
+            using Action = detail::InterPartitionStreamCellsAction2<
                 Policies,
                 FlowDirectionPartition,
                 PartitionIOComponent,
@@ -1371,7 +1439,7 @@ namespace lue {
         using PartitionIOArray =
             ComponentArray<ArrayPartitionIO<lue::Index, rank, typename Accumulator::Material>, rank>;
 
-        using Action = detail::IntraPartitionStreamCellsAction<
+        using Action = detail::IntraPartitionStreamCellsAction1<
             Policies,
             ElementT<PartitionIOArray>,
             PartitionT<InflowCountArray>,
@@ -1450,7 +1518,7 @@ namespace lue {
             ComponentArray<ArrayPartitionIO<lue::Index, rank, typename Accumulator::Material>, rank>;
         using CriterionArray = PartitionedArray<CriterionElement, rank>;
 
-        using Action = detail::IntraPartitionStreamCellsAction<
+        using Action = detail::IntraPartitionStreamCellsAction2<
             Policies,
             ElementT<PartitionIOArray>,
             PartitionT<InflowCountArray>,
