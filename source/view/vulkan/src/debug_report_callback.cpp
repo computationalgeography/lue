@@ -23,6 +23,11 @@ namespace lue::vulkan {
     }
 
 
+    PFN_vkCreateDebugReportCallbackEXT DebugReportCallback::_create_callback{nullptr};
+
+    PFN_vkDestroyDebugReportCallbackEXT DebugReportCallback::_destroy_callback{nullptr};
+
+
     /*!
         @brief      .
         @param      .
@@ -35,27 +40,32 @@ namespace lue::vulkan {
     DebugReportCallback::DebugReportCallback(Instance const& instance, CreateInfo&& create_info):
 
         _instance{instance},
-        _callback{},
-        _destroy_callback{}
+        _callback{}
 
     {
-        // Function to create the callback instance
-        auto create_callback =
-            instance.function_pointer<PFN_vkCreateDebugReportCallbackEXT>("vkCreateDebugReportCallbackEXT");
+        if (!_create_callback)
+        {
+            _create_callback = instance.function_pointer<PFN_vkCreateDebugReportCallbackEXT>(
+                "vkCreateDebugReportCallbackEXT");
+            assert(_create_callback);
+        }
+
+        if (!_destroy_callback)
+        {
+            _destroy_callback = instance.function_pointer<PFN_vkDestroyDebugReportCallbackEXT>(
+                "vkDestroyDebugReportCallbackEXT");
+            assert(_destroy_callback);
+        }
 
         // Create the callback instance
-        VkResult result{create_callback(*_instance, create_info, nullptr, &_callback)};
+        VkResult result{_create_callback(_instance, create_info, nullptr, &_callback)};
         assert_result_is_ok(result);
-
-        // Function to destroy the callback instance
-        _destroy_callback =
-            instance.function_pointer<PFN_vkDestroyDebugReportCallbackEXT>("vkDestroyDebugReportCallbackEXT");
     }
 
 
     DebugReportCallback::~DebugReportCallback()
     {
-        _destroy_callback(*_instance, _callback, nullptr);
+        _destroy_callback(_instance, _callback, nullptr);
     }
 
 }  // namespace lue::vulkan

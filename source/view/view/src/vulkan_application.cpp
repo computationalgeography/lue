@@ -1,6 +1,7 @@
 #include "lue/view/vulkan_application.hpp"
 #include "lue/configure.hpp"
 #include "lue/glfw.hpp"
+#include "lue/imgui.hpp"
 #include "lue/vulkan.hpp"
 #include <fmt/format.h>
 #include <cassert>
@@ -108,65 +109,6 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
 //         return gpus[0];
 //     return VK_NULL_HANDLE;
 // }
-//
-//
-//
-// static void SetupVulkan(ImVector<const char*> instance_extensions)
-// {
-//     VkResult err;
-//
-//     // Create Vulkan Instance
-//     {
-//         VkInstanceCreateInfo create_info = {};
-//         create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-//
-//         // Enumerate available extensions
-//         uint32_t properties_count;
-//         ImVector<VkExtensionProperties> properties;
-//         vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, nullptr);
-//         properties.resize(properties_count);
-//         err = vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, properties.Data);
-//         check_vk_result(err);
-//
-//         // Enable required extensions
-//         if (IsExtensionAvailable(properties, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
-//             instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-// #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-//         if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))
-//         {
-//             instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-//             create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-//         }
-// #endif
-//
-//         // Enabling validation layers
-// #ifdef IMGUI_VULKAN_DEBUG_REPORT
-//         const char* layers[] = { "VK_LAYER_KHRONOS_validation" };
-//         create_info.enabledLayerCount = 1;
-//         create_info.ppEnabledLayerNames = layers;
-//         instance_extensions.push_back("VK_EXT_debug_report");
-// #endif
-//
-//         // Create Vulkan Instance
-//         create_info.enabledExtensionCount = (uint32_t)instance_extensions.Size;
-//         create_info.ppEnabledExtensionNames = instance_extensions.Data;
-//         err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
-//         check_vk_result(err);
-//
-//         // Setup the debug report callback
-// #ifdef IMGUI_VULKAN_DEBUG_REPORT
-//         auto vkCreateDebugReportCallbackEXT =
-//         (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance,
-//         "vkCreateDebugReportCallbackEXT"); IM_ASSERT(vkCreateDebugReportCallbackEXT != nullptr);
-//         VkDebugReportCallbackCreateInfoEXT debug_report_ci = {};
-//         debug_report_ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-//         debug_report_ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
-//         VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT; debug_report_ci.pfnCallback = debug_report;
-//         debug_report_ci.pUserData = nullptr;
-//         err = vkCreateDebugReportCallbackEXT(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport);
-//         check_vk_result(err);
-// #endif
-//     }
 //
 //     // Select Physical Device (GPU)
 //     g_PhysicalDevice = SetupVulkan_SelectPhysicalDevice();
@@ -417,48 +359,33 @@ namespace lue::view {
 
     int VulkanApplication::run_implementation()
     {
-        // TODO Do this in a separate function
+        // TODO Make sure that creating a window is optional. We also want to support off-screen
+        //      rendering. The imgui stuff is only used to interact with the visualizations,
+        //      and to gain insight into the contents of data sets.
+        //      - init_window (optional)
+        //      - init_vulkan
+        //      - enter main loop, and either(?)
+        //          - allow user interaction, using glfw / imgui / vulkan stuff, ...
+        //          - render and save, using only vulkan stuff
+        //      - command line interface must make it easy to switch between these modes
+        //      - To keep things separated, this function can call different functions, depending
+        //        on the mode
+
+        // TODO Move this elsewhere
         auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
 
         // Initialize GLFW -----------------------------------------------------
+        // TODO Optional, if a window is needed
         glfw::Library library{};
         glfw::Monitor monitor{};
 
-
-        // Initialize window ---------------------------------------------------
-        // Create window with Vulkan context
-        glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
-
-        glfw::VideoMode const video_mode{monitor.video_mode()};
-        glfw::Window::hint(GLFW_RED_BITS, video_mode.red_bits());
-        glfw::Window::hint(GLFW_GREEN_BITS, video_mode.green_bits());
-        glfw::Window::hint(GLFW_BLUE_BITS, video_mode.blue_bits());
-        glfw::Window::hint(GLFW_REFRESH_RATE, video_mode.refresh_rate());
-
-        glfw::Window glfw_window{
-            "LUE view",
-            static_cast<int>(std::ceil(0.9 * video_mode.width())),
-            static_cast<int>(std::ceil(0.9 * video_mode.height()))};
-
         assert(glfwVulkanSupported());
+        // / Optional, if a window is needed
 
 
         // Initialize Vulkan ---------------------------------------------------
-
         std::string const application_name{"lue_view"};
-
-        // #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-        //         // macOS (only?)
-        //         if(IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME))
-        //         {
-        //             instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        //             create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-        //         }
-        // #endif
-        //         vulkan_extension_names.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-        //         create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 
         {
             vulkan::Names vulkan_extension_names{glfw::Library::required_instance_extensions()};
@@ -482,28 +409,86 @@ namespace lue::view {
             }
 
             std::cout << std::endl;
+
+            vulkan::ExtensionProperties const extension_properties{vulkan::Instance::extension_properties()};
+
+            std::cout << "Available extensions:" << std::endl;
+
+            for (auto const& properties : extension_properties)
+            {
+                std::cout << "    " << properties.extensionName << std::endl;
+            }
+
+            vulkan::Instance::LayerProperties const layer_properties{vulkan::Instance::layer_properties()};
+
+            std::cout << "Available layers:" << std::endl;
+
+            for (auto const& properties : layer_properties)
+            {
+                std::cout << "    " << properties.layerName << ": " << properties.description << std::endl;
+            }
         }
 
-        vulkan::Names instance_layer_names{
+        // TODO Optional, if a window is needed
+        vulkan::Names required_extension_names{glfw::Library::required_instance_extensions()};
+        // / Optional, if a window is needed
+
 #ifndef NDEBUG
+        // required_extension_names.push_back("VK_EXT_debug_report");
+        // required_extension_names.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+        required_extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+#endif
+
+
+        // On macOS / Molten, creating an instance may result in VK_ERROR_INCOMPATIBLE_DRIVER. This
+        // can be solved:
+        // If using MacOS with the latest MoltenVK sdk, you may get VK_ERROR_INCOMPATIBLE_DRIVER
+        // returned from vkCreateInstance. According to the Getting Start Notes. Be-
+        // ginning with the 1.3.216 Vulkan SDK, the VK_KHR_PORTABILITY_subset
+        // extension is mandatory.
+        // - Add VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR to CreateInfo's flags
+        // - Add VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME to required_extension_names
+        // TODO Can we know beforehand if doing this is required and do it conditionally?
+
+
+        /// vulkan::ExtensionProperties const available_extension_properties{
+        ///     vulkan::Instance::extension_properties()};
+
+        /// assert(std::all_of(required_extension_names.begin(), required_extension_names.end(),
+        ///         [&available_extension_properties](auto const& required_extension_name)
+        ///         {
+        ///             return vulkan::Instance::extension_available(
+        ///                 available_extension_properties, required_extension_name);
+        ///         }
+        ///     ));
+
+        vulkan::Names required_layer_names{
+#ifndef NDEBUG
+            // Only available when the LunarG Vulkan SDK is installed
             "VK_LAYER_KHRONOS_validation"
 #endif
         };
-        vulkan::Names instance_extension_names{
-#ifndef NDEBUG
-            "VK_EXT_debug_report"
-#endif
-        };
 
+        /// vulkan::Instance::LayerProperties const
+        /// available_layer_properties{vulkan::Instance::layer_properties()};
+
+        /// assert(std::all_of(required_layer_names.begin(), required_layer_names.end(),
+        ///         [&available_layer_properties](auto const& required_layer_name)
+        ///         {
+        ///             return vulkan::Instance::layer_available(
+        ///                 available_layer_properties, required_layer_name);
+        ///         }
+        ///     ));
+
+        // TODO Add debug print callback to validate create/destroy the instance itself
         vulkan::Instance instance{vulkan::Instance::CreateInfo{
             vulkan::ApplicationInfo{
                 application_name,
                 std::make_tuple(
                     BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
                 VK_API_VERSION_1_2},
-            instance_layer_names,
-            instance_extension_names}};
-
+            required_layer_names,
+            required_extension_names}};
 
 #ifndef NDEBUG
         vulkan::DebugReportCallback debug_callback{
@@ -514,34 +499,57 @@ namespace lue::view {
                 debug_report}};
 #endif
 
+        // Look for and select the graphics card(s) that support(s) the features that we need
 
-        //         ImVector<const char*> extensions;
-        //         uint32_t extensions_count = 0;
-        //         const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
-        //         for (uint32_t i = 0; i < extensions_count; i++)
-        //             extensions.push_back(glfw_extensions[i]);
-        //         SetupVulkan(extensions);
-        //
-        //
-        //
-        //         // Create Window Surface
-        //         VkSurfaceKHR surface;
-        //         VkResult err = glfwCreateWindowSurface(g_Instance, glfw_window, g_Allocator, &surface);
-        //         check_vk_result(err);
-        //
-        //
-        //
+        vulkan::PhysicalDevices physical_devices{instance.physical_devices()};
+
+        if (physical_devices.empty())
+        {
+            throw std::runtime_error("Failed to find GPUs with Vulkan support");
+        }
+
+        std::cout << "Physical devices:" << std::endl;
+
+        for (auto const& device : physical_devices)
+        {
+            auto const properties{device.properties()};
+
+            // std::cout << "    " << properties.TODO << std::endl;
+            std::cout << "    TODO" << std::endl;
+        }
+
+
+        // Initialize window ---------------------------------------------------
+        // Create window with Vulkan context
+        glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
+
+        glfw::VideoMode const video_mode{monitor.video_mode()};
+        glfw::Window::hint(GLFW_RED_BITS, video_mode.red_bits());
+        glfw::Window::hint(GLFW_GREEN_BITS, video_mode.green_bits());
+        glfw::Window::hint(GLFW_BLUE_BITS, video_mode.blue_bits());
+        glfw::Window::hint(GLFW_REFRESH_RATE, video_mode.refresh_rate());
+
+        glfw::Window glfw_window{
+            "LUE view",
+            static_cast<int>(std::ceil(0.9 * video_mode.width())),
+            static_cast<int>(std::ceil(0.9 * video_mode.height()))};
+
+        imgui::glfw::VulkanSurface glfw_surface{instance, glfw_window};
+
+
         //         // Create Framebuffers
         //         int w, h;
         //         glfwGetFramebufferSize(glfw_window, &w, &h);
+        //
+        //
         //         ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
         //         SetupVulkanWindow(wd, surface, w, h);
-        //
-        //
-        //         imgui::glfw::VulkanBinding binding{glfw_window};
-        //
-        //
-        //
+
+
+        // Vulkan_Init
+        // imgui::glfw::VulkanBinding binding{glfw_window};
+
         //         ImGui_ImplVulkan_InitInfo init_info = {};
         //         init_info.Instance = g_Instance;
         //         init_info.PhysicalDevice = g_PhysicalDevice;
@@ -557,8 +565,8 @@ namespace lue::view {
         //         init_info.Allocator = g_Allocator;
         //         init_info.CheckVkResultFn = check_vk_result;
         //         ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
-        //
-        //
+
+
         //         // Load Fonts
         //         // - If no fonts are loaded, dear imgui will use the default font. You can also load
         //         multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -612,12 +620,13 @@ namespace lue::view {
         //             check_vk_result(err);
         //             ImGui_ImplVulkan_DestroyFontUploadObjects();
         //         }
-        //
-        //
+
+
         //         // Our state
         //         bool show_demo_window = true;
         //         bool show_another_window = false;
         //         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 
         // Main loop
         bool quit = glfw_window.should_close();
@@ -718,9 +727,6 @@ namespace lue::view {
             //                 FramePresent(wd);
             //             }
         }
-
-
-        // vkDestroyInstance(instance, nullptr);
 
 
         //         // Cleanup

@@ -33,10 +33,6 @@ namespace lue::imgui::glfw {
         static std::array<ImWchar, 3> const icon_ranges{ICON_MIN_FA, ICON_MAX_FA, 0};
         io.Fonts->AddFontFromMemoryCompressedTTF(
             fa_solid_900_compressed_data, fa_solid_900_compressed_size, 16.0, &config, icon_ranges.data());
-
-        // // Setup Platform/Renderer bindings
-        // ImGui_ImplGlfw_InitForOpenGL(window, true);
-        // ImGui_ImplOpenGL3_Init(glsl_version.c_str());
     }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include <type_traits>
 
 
 namespace lue::vulkan {
@@ -34,7 +35,7 @@ namespace lue::vulkan {
 
             PhysicalDevice() = default;
 
-            PhysicalDevice(VkPhysicalDevice&& physical_device);
+            PhysicalDevice(VkPhysicalDevice physical_device);
 
             PhysicalDevice(PhysicalDevice const&) = delete;
 
@@ -49,6 +50,8 @@ namespace lue::vulkan {
             Properties properties() const;
 
         private:
+
+            static_assert(std::is_pointer_v<VkPhysicalDevice>);
 
             VkPhysicalDevice _physical_device;
     };

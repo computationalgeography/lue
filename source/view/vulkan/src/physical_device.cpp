@@ -12,9 +12,9 @@ namespace lue::vulkan {
     }
 
 
-    PhysicalDevice::PhysicalDevice(VkPhysicalDevice&& physical_device):
+    PhysicalDevice::PhysicalDevice(VkPhysicalDevice physical_device):
 
-        _physical_device{std::move(physical_device)}
+        _physical_device{physical_device}
 
     {
     }

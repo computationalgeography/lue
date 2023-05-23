@@ -9,17 +9,30 @@ namespace lue::vulkan {
 
     using PhysicalDevices = std::vector<PhysicalDevice>;
 
+    using ExtensionProperties = std::vector<VkExtensionProperties>;
+
 
     /*!
         @brief      Class for all per-application state
-        @param      .
-        @return     .
-        @exception  .
+
+        This class wraps a VkInstance, which is a pointer to the actual instance object. Copying
+        Instance instances is not supported, because the one and only instance is responsible
+        for destroying it. The wrapped VkInstance can be obtained. This will happen automatically
+        due to the conversion operator. The one and only Instance instance must outlive all
+        copies and pointers to its wrapped VkInstance instance.
+
+        Pattern:
+        - Create Instance instance
+        - Use instance in other API functions
+        - Once all is really done, allow the Instance instance to go out of scope
     */
     class Instance
     {
 
         public:
+
+            using LayerProperties = std::vector<VkLayerProperties>;
+
 
             /*!
                 @brief      .
@@ -30,6 +43,8 @@ namespace lue::vulkan {
             */
             class CreateInfo
             {
+
+                    // TODO Support adding a debug print callback
 
                 public:
 
@@ -65,6 +80,15 @@ namespace lue::vulkan {
                     VkInstanceCreateInfo _create_info;
             };
 
+            static ExtensionProperties extension_properties();
+
+            static ExtensionProperties extension_properties(std::string const& layer_name);
+
+            static bool extension_available(ExtensionProperties const& properties, std::string const& name);
+
+            static LayerProperties layer_properties();
+
+            static bool layer_available(LayerProperties const& properties, std::string const& name);
 
             static std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> version();
 
@@ -80,9 +104,7 @@ namespace lue::vulkan {
 
             Instance& operator=(Instance&&) = default;
 
-            operator VkInstance const*() const;
-
-            // operator VkInstance const&() const;
+            operator VkInstance() const;
 
             PhysicalDevices physical_devices() const;
 
@@ -97,6 +119,9 @@ namespace lue::vulkan {
 
         private:
 
+            static_assert(std::is_pointer_v<VkInstance>);
+
+            //! Handle to underlying instance object
             VkInstance _instance;
     };
 

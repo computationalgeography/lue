@@ -4,6 +4,9 @@
 
 namespace lue::vulkan {
 
+    // TODO What is the difference between VkDebugUtilsMessengerCreateInfoExt etc and the stuff
+    //      used here?
+
     class DebugReportCallback
     {
 
@@ -47,11 +50,15 @@ namespace lue::vulkan {
 
         private:
 
-            VkInstance const* _instance;
+            //! Function to create callback instances
+            static PFN_vkCreateDebugReportCallbackEXT _create_callback;
+
+            //! Function to destroy the callback instance
+            static PFN_vkDestroyDebugReportCallbackEXT _destroy_callback;
+
+            VkInstance _instance;
 
             VkDebugReportCallbackEXT _callback;
-
-            PFN_vkDestroyDebugReportCallbackEXT _destroy_callback;
     };
 
 }  // namespace lue::vulkan

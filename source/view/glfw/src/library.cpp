@@ -48,6 +48,10 @@ namespace lue::glfw {
     }
 
 
+    /*!
+        @brief      Return names of Vulkan extensions GLFW needs to be able to interact with
+                    the window system
+    */
     std::vector<char const*> Library::required_instance_extensions()
     {
         std::uint32_t nr_extensions;

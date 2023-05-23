@@ -1,5 +1,7 @@
 #include "lue/vulkan/instance.hpp"
 #include "lue/vulkan/error.hpp"
+#include <algorithm>
+#include <cstring>
 
 
 namespace lue::vulkan {
@@ -47,6 +49,144 @@ namespace lue::vulkan {
         Instance::CreateInfo{VkInstanceCreateFlags{}, std::move(application_info), Names{}, Names{}}
 
     {
+    }
+
+
+    // Instance::ExtensionProperties::ExtensionProperties():
+
+    //     _properties{}
+
+    // {
+    //     std::uint32_t nr_extensions{0};
+
+    //     ::vkEnumerateInstanceExtensionProperties(nullptr, &nr_extensions, nullptr);
+
+    //     _properties.resize(nr_extensions);
+
+    //     VkResult result{
+    //         ::vkEnumerateInstanceExtensionProperties(nullptr, &nr_extensions, _properties.data())};
+
+    //     // VK_ERROR_OUT_OF_HOST_MEMORY
+    //     // VK_ERROR_OUT_OF_DEVICE_MEMORY
+    //     // VK_ERROR_LAYER_NOT_PRESENT
+    //     assert_result_is_ok(result);
+    // }
+
+
+    // Names Instance::ExtensionProperties::extension_names() const
+    // {
+    //     Names names(_properties.size());
+
+    //     std::transform(_properties.begin(), _properties.end(), names.begin(),
+    //             [](auto const& properties)
+    //             {
+    //                 return properties.extensionName;
+    //             }
+    //         );
+
+    //     return names;
+    // }
+
+
+    // bool Instance::ExtensionProperties::extension_available(std::string const& name) const
+    // {
+    //     for (auto const& properties: _properties)
+    //     {
+    //         if (std::strcmp(properties.extensionName, name.c_str()) == 0)
+    //         {
+    //             return true;
+    //         }
+    //     }
+
+    //     return false;
+    // }
+
+
+    namespace {
+
+        ExtensionProperties extension_properties(char const* layer_name)
+        {
+            std::uint32_t nr_properties{0};
+
+            ::vkEnumerateInstanceExtensionProperties(layer_name, &nr_properties, nullptr);
+
+            ExtensionProperties properties(nr_properties);
+
+            VkResult result{
+                ::vkEnumerateInstanceExtensionProperties(nullptr, &nr_properties, properties.data())};
+
+            // VK_ERROR_OUT_OF_HOST_MEMORY
+            // VK_ERROR_OUT_OF_DEVICE_MEMORY
+            // VK_ERROR_LAYER_NOT_PRESENT
+            assert_result_is_ok(result);
+
+            return properties;
+        }
+
+    }  // Anonymous namespace
+
+
+    ExtensionProperties Instance::extension_properties()
+    {
+        return vulkan::extension_properties(nullptr);
+    }
+
+
+    ExtensionProperties Instance::extension_properties(std::string const& layer_name)
+    {
+        return vulkan::extension_properties(layer_name.c_str());
+    }
+
+
+    bool Instance::extension_available(ExtensionProperties const& properties, std::string const& name)
+    {
+        bool is_available{false};
+
+        for (auto const& p : properties)
+        {
+            if (std::strcmp(p.extensionName, name.c_str()) == 0)
+            {
+                is_available = true;
+                break;
+            }
+        }
+
+        return is_available;
+    }
+
+
+    Instance::LayerProperties Instance::layer_properties()
+    {
+        std::uint32_t nr_properties{0};
+
+        ::vkEnumerateInstanceLayerProperties(&nr_properties, nullptr);
+
+        LayerProperties properties(nr_properties);
+
+        VkResult result{::vkEnumerateInstanceLayerProperties(&nr_properties, properties.data())};
+
+        // VK_ERROR_OUT_OF_HOST_MEMORY
+        // VK_ERROR_OUT_OF_DEVICE_MEMORY
+        assert_result_is_ok(result);
+
+        return properties;
+    }
+
+
+    bool Instance::layer_available(LayerProperties const& properties, std::string const& name)
+    {
+        bool is_available{false};
+
+        for (auto const& p : properties)
+        {
+            if (std::strcmp(p.layerName, name.c_str()) == 0)
+            {
+                is_available = true;
+                break;
+            }
+        }
+
+        return is_available;
     }
 
 
@@ -104,16 +244,10 @@ namespace lue::vulkan {
     }
 
 
-    Instance::operator VkInstance const*() const
+    Instance::operator VkInstance() const
     {
-        return &_instance;
+        return _instance;
     }
-
-
-    // Instance::operator VkInstance const&() const
-    // {
-    //     return _instance;
-    // }
 
 
     PhysicalDevices Instance::physical_devices() const
