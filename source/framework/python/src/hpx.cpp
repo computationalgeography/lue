@@ -143,6 +143,40 @@ namespace lue::framework {
         bind_shared_future<std::vector<PartitionedArray<std::int32_t, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<std::int64_t, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<double, 2>>>(module);
+
+
+        pybind11::class_<hpx::shared_future<void>>(
+            module, fmt::format("shared_future<{}>", as_string<void>()).c_str())
+
+            .def(pybind11::init<hpx::shared_future<uint8_t>>())
+            .def(pybind11::init<hpx::shared_future<uint32_t>>())
+            .def(pybind11::init<hpx::shared_future<uint64_t>>())
+            .def(pybind11::init<hpx::shared_future<int32_t>>())
+            .def(pybind11::init<hpx::shared_future<int64_t>>())
+            .def(pybind11::init<hpx::shared_future<float>>())
+            .def(pybind11::init<hpx::shared_future<double>>())
+            .def(pybind11::init([](pybind11::none const&) { return hpx::make_ready_future<void>(); }))
+
+            .def(
+                "__repr__",
+                [](hpx::shared_future<void> const& future) { return formal_string_representation(future); })
+
+            .def(
+                "__str__",
+                [](hpx::shared_future<void> const& future) { return informal_string_representation(future); })
+
+            .def("wait", [](hpx::shared_future<void> const& future) { return future.wait(); })
+
+            ;
+
+        pybind11::implicitly_convertible<pybind11::none, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<uint8_t>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<uint32_t>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<uint64_t>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<int32_t>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<int64_t>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<float>, hpx::shared_future<void>>();
+        pybind11::implicitly_convertible<hpx::shared_future<double>, hpx::shared_future<void>>();
     }
 
 }  // namespace lue::framework

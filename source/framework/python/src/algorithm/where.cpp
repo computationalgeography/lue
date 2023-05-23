@@ -2,6 +2,9 @@
 #include <pybind11/pybind11.h>
 
 
+using namespace pybind11::literals;
+
+
 namespace lue::framework {
     namespace {
 
@@ -237,10 +240,12 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
+    // TODO Add overloads for numpy scalar types
+
 #define WHERE_OVERLOADS(Element, rank)                                                                       \
     module.def("where", where<std::uint8_t, rank, PartitionedArray<Element, rank>>);                         \
     module.def("where", where<std::uint8_t, rank, hpx::shared_future<Element>>);                             \
-    module.def("where", where<std::uint8_t, rank, Element>);                                                 \
+    module.def("where", where<std::uint8_t, rank, Element>, "condition"_a, "true_expression"_a.noconvert()); \
     module.def(                                                                                              \
         "where",                                                                                             \
         where<std::uint8_t, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);        \

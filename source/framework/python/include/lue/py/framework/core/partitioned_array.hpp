@@ -90,6 +90,14 @@ namespace lue::framework {
                     },
                     "shape_in_partitions docstring...")
 
+                .def(
+                    "future",
+                    [](Array const& array) -> hpx::shared_future<void>
+                    {
+                        return hpx::when_all(array.partitions().begin(), array.partitions().end())
+                            .then([](auto&&) { return hpx::make_ready_future<void>(); });
+                    })
+
                 .def("__repr__", [](Array const& array) { return formal_string_representation(array); })
 
                 .def("__str__", [](Array const& array) { return informal_string_representation(array); })

@@ -95,7 +95,7 @@ class FrameworkTest(lue_test.TestCase):
             def __init__(self):
                 super().__init__()
                 self.initialized = False
-                self.nr_iterations = 1
+                self.nr_iterations = 0
 
             def initial(self):
                 self.initialized = True

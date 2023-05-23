@@ -93,7 +93,7 @@ namespace lue {
                             //      We need access to the ondp.
                             lue_hpx_assert(!frequencies.empty());
 
-                            OutputElement majority_value;
+                            OutputElement majority_value{};
 
                             Count majority_value_frequency{0};
 

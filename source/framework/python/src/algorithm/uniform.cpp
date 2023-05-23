@@ -270,6 +270,7 @@ namespace lue::framework {
 
     void bind_uniform(pybind11::module& module)
     {
+        module.def("uniform", uniform1<std::uint8_t, 2>);
         module.def("uniform", uniform1<std::uint32_t, 2>);
         module.def("uniform", uniform1<std::uint64_t, 2>);
         module.def("uniform", uniform1<std::int32_t, 2>);

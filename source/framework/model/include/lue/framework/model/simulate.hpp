@@ -1,61 +1,131 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
-#include <hpx/iostream.hpp>
+#include <hpx/future.hpp>
+#include <hpx/synchronization/sliding_semaphore.hpp>
 
 
 namespace lue {
+    namespace detail {
 
-    /*!
-        @brief      Simulate a process by running a model
-        @param      model Model to use
-        @param      nr_time_steps Number of time-steps to simulate
-
-        This function template is implemented in terms of customization
-        points. They are called in order:
-
-        - preprocess()
-        - initialize()
-        - simulate(), for each time step
-        - terminate()
-        - postprocess()
-
-        These customization points must be implemented for the @a Model type
-        of the model passed in.
-
-        - preprocess() / postprocess() are not part of the actual simulation
-            model. They do what needs to be done before and after the model
-            has run.
-        - initialize() / terminate() do what needs to be done before and
-            after the simulation through time, like initialize the state at
-            the start of the simulation (initialize()) and waiting for all
-            tasks to finish (terminate()).
-    */
-    template<typename Model>
-    void simulate_process(Model& model, Count const nr_time_steps)
-    {
-        hpx::cout << "[preprocess... " << std::flush;
-        preprocess(model);
-        hpx::cout << ']' << std::endl;
-
-        hpx::cout << "[initialize... " << std::flush;
-        initialize(model);
-        hpx::cout << ']' << std::endl;
-
-        hpx::cout << "[simulate" << std::flush;
-        for (Count t = 0; t < nr_time_steps; ++t)
+        auto attach_signaller = [](hpx::sliding_semaphore& semaphore,
+                                   auto&& previous_state,
+                                   auto&& current_state,
+                                   Count const lower_limit)
         {
-            simulate(model, t);
-            hpx::cout << '.' << std::flush;
+            // To prevent states to overtake each other, we order them explicitly here
+
+            // Once the previous state is ready ...
+            return previous_state.then(
+                [&semaphore, current_state = std::move(current_state), lower_limit](
+                    [[maybe_unused]] auto const& previous_state)
+                {
+                    // ... and once the current state is ready...
+                    return current_state.then(
+                        [&semaphore, lower_limit](auto const& current_state)
+                        {
+                            HPX_UNUSED(current_state);  // Silence compiler in non-Debug build
+                            lue_hpx_assert(current_state.is_ready());
+
+                            // ... notify the semaphore about the new lower limit
+                            semaphore.signal(lower_limit);
+                        });
+                });
+        };
+
+    }  // namespace detail
+
+
+    template<typename Model, typename Progressor>
+    void simulate(
+        Model& model,
+        Progressor& progressor,
+        Count const first_time_step,
+        Count const last_time_step,
+        Count rate_limit = 0)
+    {
+        lue_hpx_assert(rate_limit >= 0);
+        lue_hpx_assert(first_time_step <= last_time_step);
+
+        Count const nr_time_steps{last_time_step - first_time_step + 1};
+        rate_limit = rate_limit > 0 ? rate_limit : nr_time_steps;
+
+        std::int64_t const max_difference{rate_limit};
+        std::int64_t const lower_limit{first_time_step};
+        hpx::sliding_semaphore semaphore{max_difference, lower_limit};
+
+        using State = hpx::shared_future<void>;
+
+        {
+            State previous_state{hpx::make_ready_future<void>()};
+            Count time_step{first_time_step};
+
+            for (Index time_step_idx = 0; time_step_idx < nr_time_steps; ++time_step_idx, ++time_step)
+            {
+                State current_state = simulate(model, time_step);
+
+                // Every rate_limit time steps, attach an additional continuation which will
+                // trigger the semaphore once computation has reached this point.
+                if (((time_step_idx + 1) % rate_limit) == 0)
+                {
+                    previous_state = detail::attach_signaller(
+                        semaphore, std::move(previous_state), std::move(current_state), time_step);
+                }
+
+                // Set the new upper limit. Wait if necessary. Continue if / once the difference
+                // between the lower and upper limits is not larger than max_difference set.
+                semaphore.wait(time_step);
+
+                if (time_step == last_time_step)
+                {
+                    // This will make sure this function does not return before the last state is
+                    // ready. Returning too early results in dangling references to the semaphore.
+                    // Wait explicitly here, because the semaphore only waits conditionally. The
+                    // last state may or may not be already ready.
+                    previous_state.wait();
+                }
+
+                simulate(progressor, time_step);
+            }
         }
-        hpx::cout << ']' << std::endl;
+    }
 
-        hpx::cout << "[terminate... " << std::flush;
-        terminate(model);
-        hpx::cout << ']' << std::endl;
 
-        hpx::cout << "[postprocess..." << std::flush;
-        postprocess(model);
-        hpx::cout << ']' << std::endl;
+    template<typename Model, typename Progressor>
+    void run_deterministic(
+        Model& model, Progressor& progressor, Count const nr_time_steps, Count const rate_limit = 0)
+    {
+        initialize(progressor);
+        initialize(model);
+
+        if (nr_time_steps > 0)
+        {
+            simulate(model, progressor, 1, nr_time_steps, rate_limit);
+        }
+
+        finalize(model);
+        finalize(progressor);
+    }
+
+
+    template<typename Model, typename Progressor>
+    void run_stochastic(
+        Model& model,
+        Progressor& progressor,
+        Count const nr_samples,
+        Count const nr_time_steps,
+        Count const rate_limit = 0)
+    {
+        for (Count sample_nr = 1; sample_nr <= nr_samples; ++sample_nr)
+        {
+            preprocess(progressor, sample_nr);
+            preprocess(model, sample_nr);
+
+            run_deterministic(model, progressor, nr_time_steps, rate_limit);
+
+            postprocess(model);
+            postprocess(progressor);
+        }
     }
 
 }  // namespace lue
