@@ -1,5 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
+#include <string>
 #include <type_traits>
 
 
@@ -27,9 +28,61 @@ namespace lue::vulkan {
 
                     Properties& operator=(Properties&&) = default;
 
+                    std::string device_name() const;
+
+                    VkPhysicalDeviceType device_type() const;
+
                 private:
 
                     VkPhysicalDeviceProperties _properties;
+            };
+
+
+            class Features
+            {
+
+                public:
+
+                    Features(VkPhysicalDeviceFeatures&& properties);
+
+                    Features(Features const&) = delete;
+
+                    Features(Features&&) = default;
+
+                    ~Features() = default;
+
+                    Features& operator=(Features const&) = delete;
+
+                    Features& operator=(Features&&) = default;
+
+                    bool has_geometry_shader() const;
+
+                private:
+
+                    VkPhysicalDeviceFeatures _features;
+            };
+
+
+            class QueueFamily
+            {
+
+                public:
+
+                    class Properties
+                    {
+
+                        public:
+
+                            Properties(VkQueueFamilyProperties&& properties);
+
+                            bool graphics() const;
+
+                        private:
+
+                            static_assert(!std::is_pointer_v<VkQueueFamilyProperties>);
+
+                            VkQueueFamilyProperties _properties;
+                    };
             };
 
 
@@ -48,6 +101,8 @@ namespace lue::vulkan {
             PhysicalDevice& operator=(PhysicalDevice&&) = default;
 
             Properties properties() const;
+
+            Features features() const;
 
         private:
 

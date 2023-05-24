@@ -42,7 +42,6 @@ target_link_libraries(lue_imgui
         fmt::fmt
     PUBLIC
         lue::glfw
+        $<$<BOOL:${LUE_VIEW_USE_VULKAN}>:lue::vulkan>
         imgui::imgui
-        # dl API is used in imgui_impl_opengl3_loader.h
-        $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,lue::vulkan,${CMAKE_DL_LIBS} OpenGL::GL>
 )

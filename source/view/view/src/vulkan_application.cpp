@@ -387,6 +387,7 @@ namespace lue::view {
         // Initialize Vulkan ---------------------------------------------------
         std::string const application_name{"lue_view"};
 
+#ifndef NDEBUG
         {
             vulkan::Names vulkan_extension_names{glfw::Library::required_instance_extensions()};
 
@@ -428,6 +429,7 @@ namespace lue::view {
                 std::cout << "    " << properties.layerName << ": " << properties.description << std::endl;
             }
         }
+#endif
 
         // TODO Optional, if a window is needed
         vulkan::Names required_extension_names{glfw::Library::required_instance_extensions()};
@@ -508,16 +510,18 @@ namespace lue::view {
             throw std::runtime_error("Failed to find GPUs with Vulkan support");
         }
 
+#ifndef NDEBUG
         std::cout << "Physical devices:" << std::endl;
 
         for (auto const& device : physical_devices)
         {
             auto const properties{device.properties()};
+            auto const features{device.features()};
 
-            // std::cout << "    " << properties.TODO << std::endl;
-            std::cout << "    TODO" << std::endl;
+            std::cout << "    " << properties.device_name() << std::endl;
+            std::cout << "        has geometry shader: " << features.has_geometry_shader() << std::endl;
         }
-
+#endif
 
         // Initialize window ---------------------------------------------------
         // Create window with Vulkan context
