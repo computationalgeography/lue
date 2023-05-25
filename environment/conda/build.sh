@@ -14,7 +14,7 @@ if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; th
 fi
 
 cmake \
-    ..
+    .. \
     -G "Ninja" \
     ${CMAKE_ARGS} \
     -D CMAKE_BUILD_TYPE="Release" \
