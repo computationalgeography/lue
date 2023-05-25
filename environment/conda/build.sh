@@ -27,5 +27,6 @@ cmake $SRC_DIR \
     -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
     -D Python3_EXECUTABLE="${PYTHON}"
+
 cmake --build . --target all
 cmake --install . --component lue_runtime
