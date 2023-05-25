@@ -37,7 +37,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc matplotlib numpy pip
+              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc libvulkan-headers libvulkan-loader matplotlib numpy pip
 
               # Use conan from pypi to get the latest version
               pip install "conan<2"
@@ -56,7 +56,6 @@ jobs:
                   -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
                   -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
                   -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
-                  -D LUE_BUILD_VIEW:BOOL=TRUE \
                   -D LUE_BUILD_QA:BOOL=TRUE \
                   -D LUE_QA_WITH_PYTHON_API=TRUE \
                   -D LUE_QA_WITH_TESTS=TRUE \

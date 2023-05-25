@@ -55,6 +55,7 @@ jobs:
                   libgdal-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
+                  libvulkan-dev \
                   ${{ matrix.compiler.package }} \
                   ninja-build \
                   nlohmann-json3-dev \
@@ -107,7 +108,6 @@ jobs:
                   -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                   -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                   -D LUE_BUILD_HPX=TRUE \
-                  -D LUE_BUILD_VIEW=TRUE \
                   -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
                   -D HPX_WITH_MALLOC="tcmalloc" \
                   -D HPX_WITH_PKGCONFIG=FALSE \

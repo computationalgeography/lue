@@ -37,8 +37,11 @@ requirements:
     - numpy >1.17
     - boost-cpp
     - hdf5 >=1.10,<1.14
+    - glfw
     - hpx
     - libgdal >=3
+    - libvulkan-headers
+    - libvulkan-loader
     - pybind11
     - fmt
     - docopt  # templatize.py
@@ -51,10 +54,11 @@ requirements:
     # Stuff required when using LUE.
     - docopt  # lue.qa
     - docopt.cpp
-    - fmt
     - hdf5 >=1.10,<1.14
+    - glfw
     - hpx
     - libgdal >=3
+    - libvulkan-loader
     - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
     - python

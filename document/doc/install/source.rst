@@ -16,7 +16,7 @@ Variable                         Default Effect
 ================================ ======= ===========================
 `LUE_BUILD_DATA_MODEL`           `TRUE`  Build data model C++ API
 `LUE_BUILD_FRAMEWORK`            `TRUE`  Build modelling framework
-`LUE_BUILD_VIEW`                 `FALSE` Build data model viewer
+`LUE_BUILD_VIEW`                 `TRUE`  Build data model viewer
 `LUE_BUILD_DOCUMENTATION`        `FALSE` Build API documentation
 `LUE_BUILD_QA`                   `FALSE` Build QA targets
 ================================ ======= ===========================
