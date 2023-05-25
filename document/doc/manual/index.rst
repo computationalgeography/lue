@@ -5,5 +5,6 @@ Manual
    :maxdepth: 1
    :caption: Contents:
 
-   data_model <data_model/index>
+   data model <data_model/index>
    framework <framework/index>
+   view <view/index>

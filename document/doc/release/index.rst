@@ -2,6 +2,11 @@ Releases
 ========
 
 
+0.3.7
++++++
+- `Full list of closed issues on Github <https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.7+>`_
+
+
 0.3.6
 +++++
 - New operations: ``kinematic_wave``, ``unique_id`` ``zonal_area``, ``zonal_average``,
