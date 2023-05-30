@@ -31,6 +31,8 @@ this location. Example workflow:
    # Update for actual tag associated with release
    git clone --depth 1 https://github.com/computationalgeography/lue.git --branch 0.3.4 --single-branch
    tar cjf lue-0.3.4.tar.bz2 lue
+   # Determine hash, to store in meta.yaml
+   openssl sha256 lue-0.3.4.tar.bz2
    # ... ftp zip to ftp server ...
 
 It may take a few hours for Conda-Forge to detect the new release. Once it has, a pull request
