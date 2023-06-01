@@ -3,8 +3,8 @@ add_library(lue_vulkan STATIC
     src/debug_report_callback.cpp
     src/error.cpp
     src/instance.cpp
+    src/device.cpp
     src/physical_device.cpp
-    src/queue_family.cpp
 )
 
 target_include_directories(lue_vulkan

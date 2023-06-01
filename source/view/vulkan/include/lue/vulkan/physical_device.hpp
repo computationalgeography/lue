@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 
 namespace lue::vulkan {
@@ -34,14 +35,24 @@ namespace lue::vulkan {
 
                 private:
 
+                    static_assert(!std::is_pointer_v<VkPhysicalDeviceProperties>);
+
                     VkPhysicalDeviceProperties _properties;
             };
 
 
+            /*!
+                @brief      Class for querying for optional features
+                @param      .
+                @return     .
+                @exception  .
+            */
             class Features
             {
 
                 public:
+
+                    Features() = default;
 
                     Features(VkPhysicalDeviceFeatures&& properties);
 
@@ -55,9 +66,13 @@ namespace lue::vulkan {
 
                     Features& operator=(Features&&) = default;
 
+                    operator VkPhysicalDeviceFeatures const*() const;
+
                     bool has_geometry_shader() const;
 
                 private:
+
+                    static_assert(!std::is_pointer_v<VkPhysicalDeviceFeatures>);
 
                     VkPhysicalDeviceFeatures _features;
             };
@@ -73,7 +88,19 @@ namespace lue::vulkan {
 
                         public:
 
+                            Properties();
+
                             Properties(VkQueueFamilyProperties&& properties);
+
+                            Properties(Properties const&) = default;
+
+                            Properties(Properties&&) = default;
+
+                            ~Properties() = default;
+
+                            Properties& operator=(Properties const&) = delete;
+
+                            Properties& operator=(Properties&&) = default;
 
                             bool graphics() const;
 
@@ -83,7 +110,21 @@ namespace lue::vulkan {
 
                             VkQueueFamilyProperties _properties;
                     };
+
+
+                    QueueFamily();
+
+                    explicit QueueFamily(std::uint32_t const idx);
+
+                    std::uint32_t idx() const;
+
+                private:
+
+                    std::uint32_t _idx;
             };
+
+
+            using QueueFamilyProperties = std::vector<QueueFamily::Properties>;
 
 
             PhysicalDevice() = default;
@@ -100,9 +141,13 @@ namespace lue::vulkan {
 
             PhysicalDevice& operator=(PhysicalDevice&&) = default;
 
+            operator VkPhysicalDevice() const;
+
             Properties properties() const;
 
             Features features() const;
+
+            QueueFamilyProperties queue_family_properties() const;
 
         private:
 

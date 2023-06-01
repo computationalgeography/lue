@@ -6,6 +6,7 @@
 #include <fmt/format.h>
 #include <cassert>
 #include <cmath>
+#include <iterator>
 
 #include <iostream>
 
@@ -344,6 +345,95 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
 
 namespace lue::view {
 
+    namespace {
+
+        static int rate_physical_device(vulkan::PhysicalDevice const& device)
+        {
+            int score{0};
+
+            vulkan::PhysicalDevice::Properties const properties{device.properties()};
+
+            // TODO Figure out which devices the expect here and whether the ranking here
+            //      is correct
+            // TODO Figure out which devices are actually connected to a screen. This is (only)
+            //      relevant when we need to present something on the screen.
+            if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+            {
+                score += 1000;
+            }
+            else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+            {
+                score += 100;
+            }
+            else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
+            {
+                score += 10;
+            }
+
+            return score;
+        }
+
+
+        static vulkan::PhysicalDevice::QueueFamilyProperties::const_iterator suitable_physical_device(
+            vulkan::PhysicalDevice::QueueFamilyProperties const& queue_family_properties)
+        {
+            return std::find_if(
+                queue_family_properties.begin(),
+                queue_family_properties.end(),
+                [](auto const& properties) { return properties.graphics(); });
+        }
+
+
+        static std::tuple<vulkan::PhysicalDevice, vulkan::PhysicalDevice::QueueFamily> select_physical_device(
+            vulkan::PhysicalDevices&& devices)
+        {
+            std::multimap<int, vulkan::PhysicalDevice> candidates{};
+
+            for (auto& device : devices)
+            {
+                int const score{rate_physical_device(device)};
+
+                candidates.insert(std::make_pair(score, std::move(device)));
+            }
+
+            auto it = candidates.rend();
+            vulkan::PhysicalDevice::QueueFamily queue_family{};
+
+            for (it = candidates.rbegin(); it != candidates.rend(); ++it)
+            {
+                if (it->first == 0)
+                {
+                    // Candidates are orderd by score. We now reached the ones that are not
+                    // suitable by definition.
+                    it = candidates.rend();
+                }
+                else
+                {
+                    vulkan::PhysicalDevice::QueueFamilyProperties queue_family_properties{
+                        it->second.queue_family_properties()};
+
+                    auto queue_family_properties_it = suitable_physical_device(queue_family_properties);
+
+                    if (queue_family_properties_it != queue_family_properties.end())
+                    {
+                        queue_family = vulkan::PhysicalDevice::QueueFamily{static_cast<std::uint32_t>(
+                            std::distance(queue_family_properties.cbegin(), queue_family_properties_it))};
+                        break;
+                    }
+                }
+            }
+
+            if (it == candidates.rend())
+            {
+                throw std::runtime_error("Failed to find a suitable GPU");
+            }
+
+            return {std::move(candidates.rbegin()->second), queue_family};
+        }
+
+    }  // Anonymous namespace
+
+
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
         Application{arguments}
@@ -374,6 +464,8 @@ namespace lue::view {
         // TODO Move this elsewhere
         auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
+
+        // SETUP
 
         // Initialize GLFW -----------------------------------------------------
         // TODO Optional, if a window is needed
@@ -523,6 +615,28 @@ namespace lue::view {
         }
 #endif
 
+        auto [physical_device, queue_family] = select_physical_device(std::move(physical_devices));
+
+#ifndef NDEBUG
+        std::cout << "Physical device selected:" << std::endl;
+
+        auto const properties{physical_device.properties()};
+        auto const features{physical_device.features()};
+
+        std::cout << "    " << properties.device_name() << std::endl;
+        std::cout << "        has geometry shader: " << features.has_geometry_shader() << std::endl;
+#endif
+
+        // Create logical device
+        vulkan::Device device{
+            physical_device, vulkan::Device::CreateInfo{vulkan::Device::QueueCreateInfo{queue_family}}};
+
+        vulkan::Device::Queue queue{device.queue(queue_family)};
+
+
+        // PRESENTATION
+
+
         // Initialize window ---------------------------------------------------
         // Create window with Vulkan context
         glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -630,6 +744,9 @@ namespace lue::view {
         //         bool show_demo_window = true;
         //         bool show_another_window = false;
         //         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
+        // DRAWING
 
 
         // Main loop

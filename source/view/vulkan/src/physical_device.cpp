@@ -1,4 +1,6 @@
 #include "lue/vulkan/physical_device.hpp"
+#include <algorithm>
+#include <cassert>
 #include <utility>
 
 
@@ -32,9 +34,23 @@ namespace lue::vulkan {
     }
 
 
+    PhysicalDevice::Features::operator VkPhysicalDeviceFeatures const*() const
+    {
+        return &_features;
+    }
+
+
     bool PhysicalDevice::Features::has_geometry_shader() const
     {
         return _features.geometryShader;
+    }
+
+
+    PhysicalDevice::QueueFamily::Properties::Properties():
+
+        _properties{}
+
+    {
     }
 
 
@@ -52,11 +68,39 @@ namespace lue::vulkan {
     }
 
 
+    PhysicalDevice::QueueFamily::QueueFamily():
+
+        _idx{(std::uint32_t)-1}
+
+    {
+    }
+
+
+    PhysicalDevice::QueueFamily::QueueFamily(std::uint32_t const idx):
+
+        _idx{idx}
+
+    {
+    }
+
+
+    std::uint32_t PhysicalDevice::QueueFamily::idx() const
+    {
+        return _idx;
+    }
+
+
     PhysicalDevice::PhysicalDevice(VkPhysicalDevice physical_device):
 
         _physical_device{physical_device}
 
     {
+    }
+
+
+    PhysicalDevice::operator VkPhysicalDevice() const
+    {
+        return _physical_device;
     }
 
 
@@ -77,6 +121,28 @@ namespace lue::vulkan {
         ::vkGetPhysicalDeviceFeatures(_physical_device, &features);
 
         return features;
+    }
+
+
+    PhysicalDevice::QueueFamilyProperties PhysicalDevice::queue_family_properties() const
+    {
+        std::uint32_t nr_queue_families;
+
+        ::vkGetPhysicalDeviceQueueFamilyProperties(_physical_device, &nr_queue_families, nullptr);
+
+        std::vector<VkQueueFamilyProperties> properties1(nr_queue_families);
+
+        ::vkGetPhysicalDeviceQueueFamilyProperties(_physical_device, &nr_queue_families, properties1.data());
+
+        PhysicalDevice::QueueFamilyProperties properties2(nr_queue_families);
+
+        std::transform(
+            properties1.begin(),
+            properties1.end(),
+            properties2.begin(),
+            [](auto const& properties) { return properties; });
+
+        return properties2;
     }
 
 }  // namespace lue::vulkan
