@@ -1,8 +1,8 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "lue/vulkan/queue_family.hpp"
+#include "lue/vulkan/surface.hpp"
+#include "lue/vulkan/type.hpp"
 #include <string>
-#include <type_traits>
-#include <vector>
 
 
 namespace lue::vulkan {
@@ -78,53 +78,42 @@ namespace lue::vulkan {
             };
 
 
-            class QueueFamily
+            class SurfaceProperties
             {
 
                 public:
 
-                    class Properties
-                    {
+                    using Formats = std::vector<VkSurfaceFormatKHR>;
 
-                        public:
+                    using PresentModes = std::vector<VkPresentModeKHR>;
 
-                            Properties();
+                    SurfaceProperties() = default;
 
-                            Properties(VkQueueFamilyProperties&& properties);
+                    SurfaceProperties(
+                        VkSurfaceCapabilitiesKHR&& capabilities,
+                        Formats&& formats,
+                        PresentModes&& present_modes);
 
-                            Properties(Properties const&) = default;
+                    VkSurfaceCapabilitiesKHR const& capabilities() const;
 
-                            Properties(Properties&&) = default;
+                    Formats const& formats() const;
 
-                            ~Properties() = default;
-
-                            Properties& operator=(Properties const&) = delete;
-
-                            Properties& operator=(Properties&&) = default;
-
-                            bool graphics() const;
-
-                        private:
-
-                            static_assert(!std::is_pointer_v<VkQueueFamilyProperties>);
-
-                            VkQueueFamilyProperties _properties;
-                    };
-
-
-                    QueueFamily();
-
-                    explicit QueueFamily(std::uint32_t const idx);
-
-                    std::uint32_t idx() const;
+                    PresentModes const& present_modes() const;
 
                 private:
 
-                    std::uint32_t _idx;
+                    static_assert(!std::is_pointer_v<VkSurfaceCapabilitiesKHR>);
+
+                    VkSurfaceCapabilitiesKHR _capabilities;
+
+                    static_assert(!std::is_pointer_v<VkSurfaceFormatKHR>);
+
+                    Formats _formats;
+
+                    static_assert(!std::is_pointer_v<VkPresentModeKHR>);
+
+                    PresentModes _present_modes;
             };
-
-
-            using QueueFamilyProperties = std::vector<QueueFamily::Properties>;
 
 
             PhysicalDevice() = default;
@@ -133,13 +122,15 @@ namespace lue::vulkan {
 
             PhysicalDevice(PhysicalDevice const&) = delete;
 
-            PhysicalDevice(PhysicalDevice&&) = default;
+            PhysicalDevice(PhysicalDevice&& other);
 
             ~PhysicalDevice() = default;
 
             PhysicalDevice& operator=(PhysicalDevice const&) = delete;
 
-            PhysicalDevice& operator=(PhysicalDevice&&) = default;
+            PhysicalDevice& operator=(PhysicalDevice&& other);
+
+            operator bool() const;
 
             operator VkPhysicalDevice() const;
 
@@ -149,7 +140,17 @@ namespace lue::vulkan {
 
             QueueFamilyProperties queue_family_properties() const;
 
+            bool extensions_available(Names const& names) const;
+
+            bool has_surface_support(QueueFamily const& queue_family, Surface const& surface) const;
+
+            SurfaceProperties surface_properties(Surface const& surface) const;
+
         private:
+
+            ExtensionProperties extension_properties() const;
+
+            static bool extension_available(ExtensionProperties const& properties, std::string const& name);
 
             static_assert(std::is_pointer_v<VkPhysicalDevice>);
 

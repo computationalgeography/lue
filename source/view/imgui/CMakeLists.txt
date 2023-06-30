@@ -10,8 +10,7 @@ add_library(lue_imgui STATIC
     $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,
         ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_vulkan.cpp
         src/glfw/vulkan_binding.cpp
-        src/glfw/vulkan_frame.cpp
-        src/glfw/vulkan_surface.cpp,
+        src/glfw/vulkan_frame.cpp,
         ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
         src/glfw/opengl_binding.cpp
         src/glfw/opengl_frame.cpp

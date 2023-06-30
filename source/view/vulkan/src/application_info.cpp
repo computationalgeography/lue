@@ -37,6 +37,9 @@ namespace lue::vulkan {
     }
 
 
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
     ApplicationInfo::operator VkApplicationInfo const*() const
     {
         return &_application_info;

@@ -1,6 +1,8 @@
 #include "lue/vulkan/physical_device.hpp"
+#include "lue/vulkan/error.hpp"
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <utility>
 
 
@@ -34,6 +36,9 @@ namespace lue::vulkan {
     }
 
 
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
     PhysicalDevice::Features::operator VkPhysicalDeviceFeatures const*() const
     {
         return &_features;
@@ -46,47 +51,33 @@ namespace lue::vulkan {
     }
 
 
-    PhysicalDevice::QueueFamily::Properties::Properties():
+    PhysicalDevice::SurfaceProperties::SurfaceProperties(
+        VkSurfaceCapabilitiesKHR&& capabilities, Formats&& formats, PresentModes&& present_modes):
 
-        _properties{}
-
-    {
-    }
-
-
-    PhysicalDevice::QueueFamily::Properties::Properties(VkQueueFamilyProperties&& properties):
-
-        _properties{std::move(properties)}
+        _capabilities{std::move(capabilities)},
+        _formats{std::move(formats)},
+        _present_modes{std::move(present_modes)}
 
     {
     }
 
 
-    bool PhysicalDevice::QueueFamily::Properties::graphics() const
+    VkSurfaceCapabilitiesKHR const& PhysicalDevice::SurfaceProperties::capabilities() const
     {
-        return _properties.queueFlags & VK_QUEUE_GRAPHICS_BIT;
+        return _capabilities;
     }
 
 
-    PhysicalDevice::QueueFamily::QueueFamily():
-
-        _idx{(std::uint32_t)-1}
-
+    PhysicalDevice::SurfaceProperties::Formats const& PhysicalDevice::SurfaceProperties::formats() const
     {
+        return _formats;
     }
 
 
-    PhysicalDevice::QueueFamily::QueueFamily(std::uint32_t const idx):
-
-        _idx{idx}
-
+    PhysicalDevice::SurfaceProperties::PresentModes const& PhysicalDevice::SurfaceProperties::present_modes()
+        const
     {
-    }
-
-
-    std::uint32_t PhysicalDevice::QueueFamily::idx() const
-    {
-        return _idx;
+        return _present_modes;
     }
 
 
@@ -98,6 +89,38 @@ namespace lue::vulkan {
     }
 
 
+    PhysicalDevice::PhysicalDevice(PhysicalDevice&& other):
+
+        _physical_device{std::move(other)}
+
+    {
+        other._physical_device = VkPhysicalDevice{};
+
+        assert(!other);
+    }
+
+
+    PhysicalDevice& PhysicalDevice::operator=(PhysicalDevice&& other)
+    {
+        _physical_device = std::move(other._physical_device);
+
+        other._physical_device = VkPhysicalDevice{};
+
+        assert(!other);
+
+        return *this;
+    }
+
+
+    PhysicalDevice::operator bool() const
+    {
+        return _physical_device != VK_NULL_HANDLE;
+    }
+
+
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
     PhysicalDevice::operator VkPhysicalDevice() const
     {
         return _physical_device;
@@ -124,7 +147,7 @@ namespace lue::vulkan {
     }
 
 
-    PhysicalDevice::QueueFamilyProperties PhysicalDevice::queue_family_properties() const
+    QueueFamilyProperties PhysicalDevice::queue_family_properties() const
     {
         std::uint32_t nr_queue_families;
 
@@ -134,7 +157,7 @@ namespace lue::vulkan {
 
         ::vkGetPhysicalDeviceQueueFamilyProperties(_physical_device, &nr_queue_families, properties1.data());
 
-        PhysicalDevice::QueueFamilyProperties properties2(nr_queue_families);
+        QueueFamilyProperties properties2(nr_queue_families);
 
         std::transform(
             properties1.begin(),
@@ -143,6 +166,101 @@ namespace lue::vulkan {
             [](auto const& properties) { return properties; });
 
         return properties2;
+    }
+
+
+    ExtensionProperties PhysicalDevice::extension_properties() const
+    {
+        std::uint32_t nr_properties{0};
+
+        ::vkEnumerateDeviceExtensionProperties(_physical_device, nullptr, &nr_properties, nullptr);
+
+        ExtensionProperties properties(nr_properties);
+
+        VkResult result{::vkEnumerateDeviceExtensionProperties(
+            _physical_device, nullptr, &nr_properties, properties.data())};
+        assert_result_is_ok(result);
+
+        return properties;
+    }
+
+
+    bool PhysicalDevice::extension_available(ExtensionProperties const& properties, std::string const& name)
+    {
+        bool is_available{false};
+
+        for (auto const& p : properties)
+        {
+            if (std::strcmp(p.extensionName, name.c_str()) == 0)
+            {
+                is_available = true;
+                break;
+            }
+        }
+
+        return is_available;
+    }
+
+
+    bool PhysicalDevice::extensions_available(Names const& names) const
+    {
+        ExtensionProperties const properties{extension_properties()};
+
+        bool are_available{true};
+
+        for (auto const& name : names)
+        {
+            if (!extension_available(properties, name))
+            {
+                are_available = false;
+                break;
+            }
+        }
+
+        return are_available;
+    }
+
+
+    bool PhysicalDevice::has_surface_support(QueueFamily const& queue_family, Surface const& surface) const
+    {
+        VkBool32 support = false;
+
+        ::vkGetPhysicalDeviceSurfaceSupportKHR(_physical_device, queue_family, surface, &support);
+
+        return support;
+    }
+
+
+    PhysicalDevice::SurfaceProperties PhysicalDevice::surface_properties(Surface const& surface) const
+    {
+        VkSurfaceCapabilitiesKHR capabilities;
+
+        ::vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, surface, &capabilities);
+
+        std::uint32_t nr_formats{};
+        SurfaceProperties::Formats formats;
+
+        ::vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, surface, &nr_formats, nullptr);
+
+        if (nr_formats > 0)
+        {
+            formats.resize(nr_formats);
+            ::vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, surface, &nr_formats, formats.data());
+        }
+
+        std::uint32_t nr_present_modes{};
+        SurfaceProperties::PresentModes present_modes;
+
+        ::vkGetPhysicalDeviceSurfacePresentModesKHR(_physical_device, surface, &nr_present_modes, nullptr);
+
+        if (nr_present_modes > 0)
+        {
+            present_modes.resize(nr_present_modes);
+            ::vkGetPhysicalDeviceSurfacePresentModesKHR(
+                _physical_device, surface, &nr_present_modes, present_modes.data());
+        }
+
+        return {std::move(capabilities), std::move(formats), std::move(present_modes)};
     }
 
 }  // namespace lue::vulkan

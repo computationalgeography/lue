@@ -17,6 +17,9 @@ namespace lue::vulkan {
     }
 
 
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
     DebugReportCallback::CreateInfo::operator VkDebugReportCallbackCreateInfoEXT const*() const
     {
         return &_create_info;
@@ -26,6 +29,18 @@ namespace lue::vulkan {
     PFN_vkCreateDebugReportCallbackEXT DebugReportCallback::_create_callback{nullptr};
 
     PFN_vkDestroyDebugReportCallbackEXT DebugReportCallback::_destroy_callback{nullptr};
+
+
+    // DebugReportCallback::DebugReportCallback():
+
+    //     _instance{VK_NULL_HANDLE},
+    //     _callback{VK_NULL_HANDLE}
+
+    // {
+    //     assert(!_instance);
+    //     assert(!_callback);
+    //     assert(!*this);
+    // }
 
 
     /*!
@@ -60,12 +75,55 @@ namespace lue::vulkan {
         // Create the callback instance
         VkResult result{_create_callback(_instance, create_info, nullptr, &_callback)};
         assert_result_is_ok(result);
+
+        assert(*this);
+    }
+
+
+    DebugReportCallback::DebugReportCallback(DebugReportCallback&& other):
+
+        _instance{std::move(other._instance)},
+        _callback{std::move(other._callback)}
+
+    {
+        other._instance = VkInstance{};
+        other._callback = VkDebugReportCallbackEXT{};
+
+        assert(!other);
     }
 
 
     DebugReportCallback::~DebugReportCallback()
     {
-        _destroy_callback(_instance, _callback, nullptr);
+        if (*this)
+        {
+            _destroy_callback(_instance, _callback, nullptr);
+        }
+    }
+
+
+    DebugReportCallback& DebugReportCallback::operator=(DebugReportCallback&& other)
+    {
+        if (*this)
+        {
+            _destroy_callback(_instance, _callback, nullptr);
+        }
+
+        _instance = std::move(other._instance);
+        _callback = std::move(other._callback);
+
+        other._instance = VkInstance{};
+        other._callback = VkDebugReportCallbackEXT{};
+
+        assert(!other);
+
+        return *this;
+    }
+
+
+    DebugReportCallback::operator bool() const
+    {
+        return _callback != VK_NULL_HANDLE;
     }
 
 }  // namespace lue::vulkan

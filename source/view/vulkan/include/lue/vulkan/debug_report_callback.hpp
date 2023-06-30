@@ -33,22 +33,28 @@ namespace lue::vulkan {
 
                 private:
 
+                    static_assert(!std::is_pointer_v<VkDebugReportCallbackCreateInfoEXT>);
+
                     VkDebugReportCallbackCreateInfoEXT _create_info;
             };
+
+            DebugReportCallback() = default;
 
             DebugReportCallback(Instance const& instance, CreateInfo&& create_info);
 
             DebugReportCallback(DebugReportCallback const&) = delete;
 
-            DebugReportCallback(DebugReportCallback&&) = default;
+            DebugReportCallback(DebugReportCallback&& other);
 
             ~DebugReportCallback();
 
             DebugReportCallback& operator=(DebugReportCallback const&) = delete;
 
-            DebugReportCallback& operator=(DebugReportCallback&&) = default;
+            DebugReportCallback& operator=(DebugReportCallback&& other);
 
         private:
+
+            operator bool() const;
 
             //! Function to create callback instances
             static PFN_vkCreateDebugReportCallbackEXT _create_callback;
@@ -56,7 +62,11 @@ namespace lue::vulkan {
             //! Function to destroy the callback instance
             static PFN_vkDestroyDebugReportCallbackEXT _destroy_callback;
 
+            static_assert(std::is_pointer_v<VkInstance>);
+
             VkInstance _instance;
+
+            static_assert(std::is_pointer_v<VkDebugReportCallbackEXT>);
 
             VkDebugReportCallbackEXT _callback;
     };

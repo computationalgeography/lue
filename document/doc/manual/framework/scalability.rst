@@ -46,7 +46,7 @@ A good way to express strong scalability is the relative strong scalability effi
 =============== ========================================
 :math:`P`        Number of workers
 :math:`T_{S,1}`  Latency when using one worker
-:math:`T_{S,P}`  Latency when working :math:`P` workers
+:math:`T_{S,P}`  Latency when using :math:`P` workers
 =============== ========================================
 
 For a strong scalability experiment you have to run the model multiple times, at least once
@@ -80,7 +80,7 @@ A good way to express scalability is the relative weak scalability efficiency (:
 =============== ======================================
 :math:`P`       Number of workers
 :math:`T_{W,1}` Latency when using one worker
-:math:`T_{W,P}` Latency when working :math:`P` workers
+:math:`T_{W,P}` Latency when using :math:`P` workers
 =============== ======================================
 
 For a strong scalability experiment you have to run the model multiple times, at least once

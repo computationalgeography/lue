@@ -238,12 +238,52 @@ namespace lue::vulkan {
     }
 
 
-    Instance::~Instance()
+    Instance::Instance(Instance&& other):
+
+        _instance{std::move(other._instance)}
+
     {
-        ::vkDestroyInstance(_instance, nullptr);
+        other._instance = VkInstance{};
+
+        assert(!other);
     }
 
 
+    Instance::~Instance()
+    {
+        if (*this)
+        {
+            ::vkDestroyInstance(_instance, nullptr);
+        }
+    }
+
+
+    Instance& Instance::operator=(Instance&& other)
+    {
+        if (*this)
+        {
+            ::vkDestroyInstance(_instance, nullptr);
+        }
+
+        _instance = std::move(other._instance);
+
+        other._instance = VkInstance{};
+
+        assert(!other);
+
+        return *this;
+    }
+
+
+    Instance::operator bool() const
+    {
+        return _instance != VK_NULL_HANDLE;
+    }
+
+
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
     Instance::operator VkInstance() const
     {
         return _instance;

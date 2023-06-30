@@ -1,10 +1,12 @@
+add_subdirectory(script)
+
+
 # TODO No command line arguments end up in HPX runtime...
 add_test_conditionally(test)
 
 
 # framework/*
 foreach(module_name __init__.py support.py)
-    message(DEBUG ${module_name})
     file(GENERATE
         OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/framework/${module_name}
         INPUT framework/${module_name}
@@ -141,11 +143,6 @@ add_library(lue_py_framework SHARED
     src/python_extension.cpp
     src/submodule.cpp
 )
-
-# if(LUE_FRAMEWORK_WITH_DASHBOARD)
-#     list(APPEND sources
-#        src/dashboard/dashboard.cpp)
-# endif()
 
 add_library(lue::py_framework ALIAS lue_py_framework)
 

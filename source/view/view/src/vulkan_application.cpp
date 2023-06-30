@@ -6,50 +6,9 @@
 #include <fmt/format.h>
 #include <cassert>
 #include <cmath>
-#include <iterator>
+#include <set>
 
 #include <iostream>
-
-
-// #include "imgui_impl_glfw.h"
-// #include "imgui_impl_vulkan.h"
-//
-//
-//
-//
-//
-// #ifdef _DEBUG
-// #define IMGUI_VULKAN_DEBUG_REPORT
-// #endif
-//
-// // Data
-// static VkAllocationCallbacks*   g_Allocator = nullptr;
-// static VkInstance               g_Instance = VK_NULL_HANDLE;
-// static VkPhysicalDevice         g_PhysicalDevice = VK_NULL_HANDLE;
-// static VkDevice                 g_Device = VK_NULL_HANDLE;
-// static uint32_t                 g_QueueFamily = (uint32_t)-1;
-// static VkQueue                  g_Queue = VK_NULL_HANDLE;
-// static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
-// static VkPipelineCache          g_PipelineCache = VK_NULL_HANDLE;
-// static VkDescriptorPool         g_DescriptorPool = VK_NULL_HANDLE;
-//
-// static ImGui_ImplVulkanH_Window g_MainWindowData;
-// static int                      g_MinImageCount = 2;
-// static bool                     g_SwapChainRebuild = false;
-//
-// static void glfw_error_callback(int error, const char* description)
-// {
-//     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-// }
-
-// static void check_vk_result(VkResult err)
-// {
-//     if (err == 0)
-//         return;
-//     fprintf(stderr, "[vulkan] Error: VkResult = %d\n", err);
-//     if (err < 0)
-//         abort();
-// }
 
 
 #ifndef NDEBUG
@@ -71,364 +30,205 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
 #endif
 
 
-// static bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension)
-// {
-//     for (const VkExtensionProperties& p : properties)
-//         if (strcmp(p.extensionName, extension) == 0)
-//             return true;
-//     return false;
-// }
-//
-//
-// static VkPhysicalDevice SetupVulkan_SelectPhysicalDevice()
-// {
-//     uint32_t gpu_count;
-//     VkResult err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, nullptr);
-//     check_vk_result(err);
-//     IM_ASSERT(gpu_count > 0);
-//
-//     ImVector<VkPhysicalDevice> gpus;
-//     gpus.resize(gpu_count);
-//     err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, gpus.Data);
-//     check_vk_result(err);
-//
-//     // If a number >1 of GPUs got reported, find discrete GPU if present, or use first one available. This
-//     covers
-//     // most common cases (multi-gpu/integrated+dedicated graphics). Handling more complicated setups
-//     (multiple
-//     // dedicated GPUs) is out of scope of this sample.
-//     for (VkPhysicalDevice& device : gpus)
-//     {
-//         VkPhysicalDeviceProperties properties;
-//         vkGetPhysicalDeviceProperties(device, &properties);
-//         if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-//             return device;
-//     }
-//
-//     // Use first GPU (Integrated) is a Discrete one is not available.
-//     if (gpu_count > 0)
-//         return gpus[0];
-//     return VK_NULL_HANDLE;
-// }
-//
-//     // Select Physical Device (GPU)
-//     g_PhysicalDevice = SetupVulkan_SelectPhysicalDevice();
-//
-//     // Select graphics queue family
-//     {
-//         uint32_t count;
-//         vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, nullptr);
-//         VkQueueFamilyProperties* queues = (VkQueueFamilyProperties*)malloc(sizeof(VkQueueFamilyProperties)
-//         * count); vkGetPhysicalDeviceQueueFamilyProperties(g_PhysicalDevice, &count, queues); for (uint32_t
-//         i = 0; i < count; i++)
-//             if (queues[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-//             {
-//                 g_QueueFamily = i;
-//                 break;
-//             }
-//         free(queues);
-//         IM_ASSERT(g_QueueFamily != (uint32_t)-1);
-//     }
-//
-//     // Create Logical Device (with 1 queue)
-//     {
-//         ImVector<const char*> device_extensions;
-//         device_extensions.push_back("VK_KHR_swapchain");
-//
-//         // Enumerate physical device extension
-//         uint32_t properties_count;
-//         ImVector<VkExtensionProperties> properties;
-//         vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, nullptr, &properties_count, nullptr);
-//         properties.resize(properties_count);
-//         vkEnumerateDeviceExtensionProperties(g_PhysicalDevice, nullptr, &properties_count,
-//         properties.Data);
-// #ifdef VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
-//         if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME))
-//             device_extensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
-// #endif
-//
-//         const float queue_priority[] = { 1.0f };
-//         VkDeviceQueueCreateInfo queue_info[1] = {};
-//         queue_info[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-//         queue_info[0].queueFamilyIndex = g_QueueFamily;
-//         queue_info[0].queueCount = 1;
-//         queue_info[0].pQueuePriorities = queue_priority;
-//         VkDeviceCreateInfo create_info = {};
-//         create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-//         create_info.queueCreateInfoCount = sizeof(queue_info) / sizeof(queue_info[0]);
-//         create_info.pQueueCreateInfos = queue_info;
-//         create_info.enabledExtensionCount = (uint32_t)device_extensions.Size;
-//         create_info.ppEnabledExtensionNames = device_extensions.Data;
-//         err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
-//         check_vk_result(err);
-//         vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
-//     }
-//
-//     // Create Descriptor Pool
-//     {
-//         VkDescriptorPoolSize pool_sizes[] =
-//         {
-//             { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-//             { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-//             { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-//             { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-//             { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-//             { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
-//         };
-//         VkDescriptorPoolCreateInfo pool_info = {};
-//         pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-//         pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-//         pool_info.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
-//         pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
-//         pool_info.pPoolSizes = pool_sizes;
-//         err = vkCreateDescriptorPool(g_Device, &pool_info, g_Allocator, &g_DescriptorPool);
-//         check_vk_result(err);
-//     }
-// }
-//
-//
-// // All the ImGui_ImplVulkanH_XXX structures/functions are optional helpers used by the demo.
-// // Your real engine/app may not use them.
-// static void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height)
-// {
-//     wd->Surface = surface;
-//
-//     // Check for WSI support
-//     VkBool32 res;
-//     vkGetPhysicalDeviceSurfaceSupportKHR(g_PhysicalDevice, g_QueueFamily, wd->Surface, &res);
-//     if (res != VK_TRUE)
-//     {
-//         fprintf(stderr, "Error no WSI support on physical device 0\n");
-//         exit(-1);
-//     }
-//
-//     // Select Surface Format
-//     const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM,
-//     VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM }; const VkColorSpaceKHR requestSurfaceColorSpace =
-//     VK_COLORSPACE_SRGB_NONLINEAR_KHR; wd->SurfaceFormat =
-//     ImGui_ImplVulkanH_SelectSurfaceFormat(g_PhysicalDevice, wd->Surface, requestSurfaceImageFormat,
-//     (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
-//
-//     // Select Present Mode
-// #ifdef IMGUI_UNLIMITED_FRAME_RATE
-//     VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_MAILBOX_KHR, VK_PRESENT_MODE_IMMEDIATE_KHR,
-//     VK_PRESENT_MODE_FIFO_KHR };
-// #else
-//     VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
-// #endif
-//     wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(g_PhysicalDevice, wd->Surface, &present_modes[0],
-//     IM_ARRAYSIZE(present_modes));
-//     //printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
-//
-//     // Create SwapChain, RenderPass, Framebuffer, etc.
-//     IM_ASSERT(g_MinImageCount >= 2);
-//     ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily,
-//     g_Allocator, width, height, g_MinImageCount);
-// }
-//
-// static void CleanupVulkan()
-// {
-//     vkDestroyDescriptorPool(g_Device, g_DescriptorPool, g_Allocator);
-//
-// #ifdef IMGUI_VULKAN_DEBUG_REPORT
-//     // Remove the debug report callback
-//     auto vkDestroyDebugReportCallbackEXT =
-//     (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance,
-//     "vkDestroyDebugReportCallbackEXT"); vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport,
-//     g_Allocator);
-// #endif // IMGUI_VULKAN_DEBUG_REPORT
-//
-//     vkDestroyDevice(g_Device, g_Allocator);
-//     vkDestroyInstance(g_Instance, g_Allocator);
-// }
-//
-// static void CleanupVulkanWindow()
-// {
-//     ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &g_MainWindowData, g_Allocator);
-// }
-//
-//
-// static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
-// {
-//     VkResult err;
-//
-//     VkSemaphore image_acquired_semaphore  = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
-//     VkSemaphore render_complete_semaphore =
-//     wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore; err = vkAcquireNextImageKHR(g_Device,
-//     wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex); if (err ==
-//     VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-//     {
-//         g_SwapChainRebuild = true;
-//         return;
-//     }
-//     check_vk_result(err);
-//
-//     ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
-//     {
-//         err = vkWaitForFences(g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely
-//         instead of periodically checking check_vk_result(err);
-//
-//         err = vkResetFences(g_Device, 1, &fd->Fence);
-//         check_vk_result(err);
-//     }
-//     {
-//         err = vkResetCommandPool(g_Device, fd->CommandPool, 0);
-//         check_vk_result(err);
-//         VkCommandBufferBeginInfo info = {};
-//         info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-//         info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-//         err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-//         check_vk_result(err);
-//     }
-//     {
-//         VkRenderPassBeginInfo info = {};
-//         info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-//         info.renderPass = wd->RenderPass;
-//         info.framebuffer = fd->Framebuffer;
-//         info.renderArea.extent.width = wd->Width;
-//         info.renderArea.extent.height = wd->Height;
-//         info.clearValueCount = 1;
-//         info.pClearValues = &wd->ClearValue;
-//         vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-//     }
-//
-//     // Record dear imgui primitives into command buffer
-//     ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
-//
-//     // Submit command buffer
-//     vkCmdEndRenderPass(fd->CommandBuffer);
-//     {
-//         VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-//         VkSubmitInfo info = {};
-//         info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-//         info.waitSemaphoreCount = 1;
-//         info.pWaitSemaphores = &image_acquired_semaphore;
-//         info.pWaitDstStageMask = &wait_stage;
-//         info.commandBufferCount = 1;
-//         info.pCommandBuffers = &fd->CommandBuffer;
-//         info.signalSemaphoreCount = 1;
-//         info.pSignalSemaphores = &render_complete_semaphore;
-//
-//         err = vkEndCommandBuffer(fd->CommandBuffer);
-//         check_vk_result(err);
-//         err = vkQueueSubmit(g_Queue, 1, &info, fd->Fence);
-//         check_vk_result(err);
-//     }
-// }
-//
-//
-// static void FramePresent(ImGui_ImplVulkanH_Window* wd)
-// {
-//     if (g_SwapChainRebuild)
-//         return;
-//     VkSemaphore render_complete_semaphore =
-//     wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore; VkPresentInfoKHR info = {}; info.sType
-//     = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR; info.waitSemaphoreCount = 1; info.pWaitSemaphores =
-//     &render_complete_semaphore; info.swapchainCount = 1; info.pSwapchains = &wd->Swapchain;
-//     info.pImageIndices = &wd->FrameIndex;
-//     VkResult err = vkQueuePresentKHR(g_Queue, &info);
-//     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-//     {
-//         g_SwapChainRebuild = true;
-//         return;
-//     }
-//     check_vk_result(err);
-//     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of
-//     semaphores
-// }
-
-
 namespace lue::view {
 
     namespace {
 
-        static int rate_physical_device(vulkan::PhysicalDevice const& device)
+        /// static int rate_physical_device(vulkan::PhysicalDevice const& device)
+        /// {
+        ///     int score{0};
+
+        ///     vulkan::PhysicalDevice::Properties const properties{device.properties()};
+
+        ///     // TODO Figure out which devices the expect here and whether the ranking here
+        ///     //      is correct
+        ///     // TODO Figure out which devices are actually connected to a screen. This is (only)
+        ///     //      relevant when we need to present something on the screen.
+        ///     if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+        ///     {
+        ///         score += 1000;
+        ///     }
+        ///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+        ///     {
+        ///         score += 100;
+        ///     }
+        ///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
+        ///     {
+        ///         score += 10;
+        ///     }
+
+        ///     return score;
+        /// }
+
+
+        static vulkan::QueueFamilies find_queue_families(
+            vulkan::PhysicalDevice const& physical_device, vulkan::Surface const& surface)
         {
-            int score{0};
+            vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
+            vulkan::QueueFamilies queue_families{};
 
-            vulkan::PhysicalDevice::Properties const properties{device.properties()};
-
-            // TODO Figure out which devices the expect here and whether the ranking here
-            //      is correct
-            // TODO Figure out which devices are actually connected to a screen. This is (only)
-            //      relevant when we need to present something on the screen.
-            if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+            for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
             {
-                score += 1000;
-            }
-            else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-            {
-                score += 100;
-            }
-            else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
-            {
-                score += 10;
-            }
+                // TODO What if multiple families support graphics or presentation? Currently
+                //      an assertion will trigger in the QueueFamilies member functions.
 
-            return score;
-        }
-
-
-        static vulkan::PhysicalDevice::QueueFamilyProperties::const_iterator suitable_physical_device(
-            vulkan::PhysicalDevice::QueueFamilyProperties const& queue_family_properties)
-        {
-            return std::find_if(
-                queue_family_properties.begin(),
-                queue_family_properties.end(),
-                [](auto const& properties) { return properties.graphics(); });
-        }
-
-
-        static std::tuple<vulkan::PhysicalDevice, vulkan::PhysicalDevice::QueueFamily> select_physical_device(
-            vulkan::PhysicalDevices&& devices)
-        {
-            std::multimap<int, vulkan::PhysicalDevice> candidates{};
-
-            for (auto& device : devices)
-            {
-                int const score{rate_physical_device(device)};
-
-                candidates.insert(std::make_pair(score, std::move(device)));
-            }
-
-            auto it = candidates.rend();
-            vulkan::PhysicalDevice::QueueFamily queue_family{};
-
-            for (it = candidates.rbegin(); it != candidates.rend(); ++it)
-            {
-                if (it->first == 0)
+                if (queue_family_properties[i].graphics())
                 {
-                    // Candidates are orderd by score. We now reached the ones that are not
-                    // suitable by definition.
-                    it = candidates.rend();
+                    queue_families.set_graphics_family(vulkan::QueueFamily{i});
                 }
-                else
+
+                if (physical_device.has_surface_support(vulkan::QueueFamily{i}, surface))
                 {
-                    vulkan::PhysicalDevice::QueueFamilyProperties queue_family_properties{
-                        it->second.queue_family_properties()};
-
-                    auto queue_family_properties_it = suitable_physical_device(queue_family_properties);
-
-                    if (queue_family_properties_it != queue_family_properties.end())
-                    {
-                        queue_family = vulkan::PhysicalDevice::QueueFamily{static_cast<std::uint32_t>(
-                            std::distance(queue_family_properties.cbegin(), queue_family_properties_it))};
-                        break;
-                    }
+                    queue_families.set_present_family(vulkan::QueueFamily{i});
                 }
             }
 
-            if (it == candidates.rend())
+            return queue_families;
+        }
+
+
+        static VkSurfaceFormatKHR select_swap_surface_format(
+            vulkan::PhysicalDevice::SurfaceProperties::Formats const& formats)
+        {
+            assert(!formats.empty());
+
+            for (auto const& format : formats)
             {
-                throw std::runtime_error("Failed to find a suitable GPU");
+                if (format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+                    format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+                {
+                    return format;
+                }
             }
 
-            return {std::move(candidates.rbegin()->second), queue_family};
+            // Default, for now
+            return formats[0];
+        }
+
+
+        static VkPresentModeKHR select_swap_present_mode(
+            vulkan::PhysicalDevice::SurfaceProperties::PresentModes const& present_modes)
+        {
+            for (auto const& present_mode : present_modes)
+            {
+                if (present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
+                {
+                    return present_mode;
+                }
+            }
+
+            // Default, always available
+            return VK_PRESENT_MODE_FIFO_KHR;
+        }
+
+
+        static VkExtent2D select_swap_extent(
+            VkSurfaceCapabilitiesKHR const& capabilities, std::tuple<int, int> const& framebuffer_size)
+        {
+            VkExtent2D extent{};
+
+            if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+            {
+                // Current extent
+                return capabilities.currentExtent;
+            }
+            else
+            {
+                // Actual extent
+                // Bound the extent to the min/max extents supported by the implementation
+                extent = {
+                    std::clamp(
+                        static_cast<uint32_t>(std::get<0>(framebuffer_size)),
+                        capabilities.minImageExtent.width,
+                        capabilities.maxImageExtent.width),
+                    std::clamp(
+                        static_cast<uint32_t>(std::get<1>(framebuffer_size)),
+                        capabilities.minImageExtent.height,
+                        capabilities.maxImageExtent.height)};
+            }
+
+            return extent;
+        }
+
+
+        /// static std::tuple<vulkan::PhysicalDevice, vulkan::QueueFamilies,
+        /// vulkan::PhysicalDevice::SurfaceProperties> select_physical_device(
+        ///     vulkan::PhysicalDevices&& devices, vulkan::Surface const& surface,
+        ///     vulkan::Names const& extension_names)
+        /// {
+        ///     std::multimap<int, vulkan::PhysicalDevice> candidates{};
+
+        ///     for (auto& device : devices)
+        ///     {
+        ///         int const score{rate_physical_device(device)};
+
+        ///         candidates.insert(std::make_pair(score, std::move(device)));
+        ///     }
+
+        ///     auto it = candidates.rend();
+        ///     vulkan::QueueFamilies queue_families{};
+        ///     vulkan::PhysicalDevice::SurfaceProperties surface_properties{};
+
+        ///     for (it = candidates.rbegin(); it != candidates.rend(); ++it)
+        ///     {
+        ///         if (it->first == 0)
+        ///         {
+        ///             // Candidates are ordered by score. We now reached the ones that are not
+        ///             // suitable by definition.
+        ///             it = candidates.rend();
+        ///         }
+        ///         else
+        ///         {
+        ///             // Check whether the device is suitable
+        ///             queue_families = find_queue_families(it->second, surface);
+
+        ///             bool const extensions_supported = it->second.extensions_available(extension_names);
+
+        ///             bool swap_chain_is_adequate{false};
+
+        ///             if(extensions_supported)
+        ///             {
+        ///                 surface_properties = it->second.surface_properties(surface);
+        ///                 swap_chain_is_adequate =
+        ///                    !surface_properties.formats().empty() &&
+        ///                    !surface_properties.present_modes().empty();
+        ///             }
+
+        ///             if(queue_families.is_complete() && extensions_supported && swap_chain_is_adequate)
+        ///             {
+        ///                 break;
+        ///             }
+        ///         }
+        ///     }
+
+        ///     if (it == candidates.rend())
+        ///     {
+        ///         throw std::runtime_error("Failed to find a suitable GPU");
+        ///     }
+
+        ///     if (!queue_families.is_complete())
+        ///     {
+        ///         throw std::runtime_error("Failed to find a GPU supporting both graphics and
+        ///         presentation");
+        ///     }
+
+        ///     return {std::move(candidates.rbegin()->second), queue_families,
+        ///     std::move(surface_properties)};
+        /// }
+
+
+        static vulkan::Surface create_surface(vulkan::Instance const& instance, glfw::Window& window)
+        {
+            VkSurfaceKHR surface;
+
+            VkResult result{::glfwCreateWindowSurface(instance, window, nullptr, &surface)};
+
+            if (result != VK_SUCCESS)
+            {
+                throw std::runtime_error("Failed to create window surface");
+            }
+
+            return vulkan::Surface{instance, surface};
         }
 
     }  // Anonymous namespace
@@ -436,7 +236,16 @@ namespace lue::view {
 
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
-        Application{arguments}
+        Application{arguments},
+        _instance{},
+#ifndef NDEBUG
+        _debug_callback{},
+#endif
+        _surface{},
+        _physical_device{},
+        _device{},
+        _graphics_queue{},
+        _present_queue{}
 
     {
     }
@@ -447,36 +256,48 @@ namespace lue::view {
     }
 
 
-    int VulkanApplication::run_implementation()
+    void VulkanApplication::init_window()
     {
-        // TODO Make sure that creating a window is optional. We also want to support off-screen
-        //      rendering. The imgui stuff is only used to interact with the visualizations,
-        //      and to gain insight into the contents of data sets.
-        //      - init_window (optional)
-        //      - init_vulkan
-        //      - enter main loop, and either(?)
-        //          - allow user interaction, using glfw / imgui / vulkan stuff, ...
-        //          - render and save, using only vulkan stuff
-        //      - command line interface must make it easy to switch between these modes
-        //      - To keep things separated, this function can call different functions, depending
-        //        on the mode
+        // This stuff is needed to be able to draw to a window. When drawining to a file,
+        // this should not be needed.
 
-        // TODO Move this elsewhere
-        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
-
-
-        // SETUP
-
-        // Initialize GLFW -----------------------------------------------------
-        // TODO Optional, if a window is needed
-        glfw::Library library{};
-        glfw::Monitor monitor{};
+        _library = std::make_unique<glfw::Library>();
+        _monitor = std::make_unique<glfw::Monitor>();
 
         assert(glfwVulkanSupported());
-        // / Optional, if a window is needed
+
+        // Create window with Vulkan context
+        glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
+        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
+
+        glfw::VideoMode const video_mode{_monitor->video_mode()};
+
+        glfw::Window::hint(GLFW_RED_BITS, video_mode.red_bits());
+        glfw::Window::hint(GLFW_GREEN_BITS, video_mode.green_bits());
+        glfw::Window::hint(GLFW_BLUE_BITS, video_mode.blue_bits());
+        glfw::Window::hint(GLFW_REFRESH_RATE, video_mode.refresh_rate());
+
+        _window = std::make_unique<glfw::Window>(
+            "LUE view",
+            // Screen coordinates. Note that Vulkan works with pixels.
+            static_cast<int>(std::ceil(0.9 * video_mode.width())),
+            static_cast<int>(std::ceil(0.9 * video_mode.height())));
+    }
 
 
-        // Initialize Vulkan ---------------------------------------------------
+    void VulkanApplication::init_vulkan()
+    {
+        create_instance();
+        setup_debug_messenger();
+        create_surface();
+        pick_physical_device();
+        create_logical_device();
+        create_swapchain();
+    }
+
+
+    void VulkanApplication::create_instance()
+    {
         std::string const application_name{"lue_view"};
 
 #ifndef NDEBUG
@@ -533,7 +354,6 @@ namespace lue::view {
         required_extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 #endif
 
-
         // On macOS / Molten, creating an instance may result in VK_ERROR_INCOMPATIBLE_DRIVER. This
         // can be solved:
         // If using MacOS with the latest MoltenVK sdk, you may get VK_ERROR_INCOMPATIBLE_DRIVER
@@ -543,7 +363,6 @@ namespace lue::view {
         // - Add VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR to CreateInfo's flags
         // - Add VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME to required_extension_names
         // TODO Can we know beforehand if doing this is required and do it conditionally?
-
 
         /// vulkan::ExtensionProperties const available_extension_properties{
         ///     vulkan::Instance::extension_properties()};
@@ -559,6 +378,7 @@ namespace lue::view {
         vulkan::Names required_layer_names{
 #ifndef NDEBUG
             // Only available when the LunarG Vulkan SDK is installed
+            // TODO Replace by preprocess symbol
             "VK_LAYER_KHRONOS_validation"
 #endif
         };
@@ -575,7 +395,7 @@ namespace lue::view {
         ///     ));
 
         // TODO Add debug print callback to validate create/destroy the instance itself
-        vulkan::Instance instance{vulkan::Instance::CreateInfo{
+        _instance = vulkan::Instance{vulkan::Instance::CreateInfo{
             vulkan::ApplicationInfo{
                 application_name,
                 std::make_tuple(
@@ -583,19 +403,84 @@ namespace lue::view {
                 VK_API_VERSION_1_2},
             required_layer_names,
             required_extension_names}};
+    }
 
+
+    void VulkanApplication::setup_debug_messenger()
+    {
 #ifndef NDEBUG
-        vulkan::DebugReportCallback debug_callback{
-            instance,
+        _debug_callback = vulkan::DebugReportCallback{
+            _instance,
             vulkan::DebugReportCallback::CreateInfo{
                 VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
                     VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
                 debug_report}};
 #endif
+    }
 
+
+    void VulkanApplication::create_surface()
+    {
+        // Create surface, right after creating the instance and configuring the debugging
+        // messenger. Otherwise the other code may behave differently, given that we created
+        // a surface.
+
+        _surface = vulkan::Surface{lue::view::create_surface(_instance, *_window)};
+    }
+
+
+    vulkan::QueueFamilies VulkanApplication::find_queue_families(
+        vulkan::PhysicalDevice const& physical_device) const
+    {
+        vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
+        vulkan::QueueFamilies queue_families{};
+
+        for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
+        {
+            // TODO What if multiple families support graphics or presentation? Currently
+            //      an assertion will trigger in the QueueFamilies member functions.
+
+            if (queue_family_properties[i].graphics())
+            {
+                queue_families.set_graphics_family(vulkan::QueueFamily{i});
+            }
+
+            if (physical_device.has_surface_support(vulkan::QueueFamily{i}, _surface))
+            {
+                queue_families.set_present_family(vulkan::QueueFamily{i});
+            }
+        }
+
+        return queue_families;
+    }
+
+
+    bool VulkanApplication::physical_device_is_suitable(vulkan::PhysicalDevice const& device) const
+    {
+        vulkan::QueueFamilies queue_families = find_queue_families(device);
+
+        vulkan::Names required_extension_names{};
+        required_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+        bool const extensions_supported = device.extensions_available(required_extension_names);
+
+        bool swap_chain_is_adequate{false};
+
+        if (extensions_supported)
+        {
+            auto const surface_properties = device.surface_properties(_surface);
+            swap_chain_is_adequate =
+                !surface_properties.formats().empty() && !surface_properties.present_modes().empty();
+        }
+
+        return queue_families.is_complete() && extensions_supported && swap_chain_is_adequate;
+    }
+
+
+    void VulkanApplication::pick_physical_device()
+    {
         // Look for and select the graphics card(s) that support(s) the features that we need
-
-        vulkan::PhysicalDevices physical_devices{instance.physical_devices()};
+        vulkan::PhysicalDevices physical_devices{_instance.physical_devices()};
 
         if (physical_devices.empty())
         {
@@ -615,45 +500,122 @@ namespace lue::view {
         }
 #endif
 
-        auto [physical_device, queue_family] = select_physical_device(std::move(physical_devices));
+        for (auto& device : physical_devices)
+        {
+            if (physical_device_is_suitable(device))
+            {
+                _physical_device = std::move(device);
+                break;
+            }
+        }
+
+        if (!_physical_device)
+        {
+            throw std::runtime_error("Failed to find a suitable GPU!");
+        }
 
 #ifndef NDEBUG
         std::cout << "Physical device selected:" << std::endl;
 
-        auto const properties{physical_device.properties()};
-        auto const features{physical_device.features()};
+        auto const properties{_physical_device.properties()};
+        auto const features{_physical_device.features()};
 
         std::cout << "    " << properties.device_name() << std::endl;
         std::cout << "        has geometry shader: " << features.has_geometry_shader() << std::endl;
 #endif
+    }
 
-        // Create logical device
-        vulkan::Device device{
-            physical_device, vulkan::Device::CreateInfo{vulkan::Device::QueueCreateInfo{queue_family}}};
 
-        vulkan::Device::Queue queue{device.queue(queue_family)};
+    void VulkanApplication::create_logical_device()
+    {
+        vulkan::QueueFamilies queue_families = find_queue_families(_physical_device);
+        vulkan::PhysicalDevice::SurfaceProperties surface_properties =
+            _physical_device.surface_properties(_surface);
+
+
+        assert(queue_families.is_complete());
+
+
+        // Create logical device, for each unique queue family
+        std::set<vulkan::QueueFamily> unique_queue_families{
+            queue_families.graphics_family(), queue_families.present_family()};
+
+        std::vector<vulkan::Device::QueueCreateInfo> queue_create_infos(unique_queue_families.size());
+
+        std::transform(
+            unique_queue_families.begin(),
+            unique_queue_families.end(),
+            queue_create_infos.begin(),
+            [](vulkan::QueueFamily const& queue_family)
+            { return vulkan::Device::QueueCreateInfo{queue_family}; });
+
+        vulkan::Names required_extension_names{};
+        required_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+        _device = vulkan::Device{
+            _physical_device,
+            vulkan::Device::CreateInfo{std::move(queue_create_infos), std::move(required_extension_names)}};
+
+        // Possibly the same queue
+        _graphics_queue = vulkan::Device::Queue{_device.queue(queue_families.graphics_family())};
+        _present_queue = vulkan::Device::Queue{_device.queue(queue_families.present_family())};
+    }
+
+
+    void VulkanApplication::create_swapchain()
+    {
+    }
+
+
+    int VulkanApplication::run_implementation()
+    {
+        // TODO Make sure that creating a window is optional. We also want to support off-screen
+        //      rendering. The imgui stuff is only used to interact with the visualizations,
+        //      and to gain insight into the contents of data sets.
+        //      - init_window (optional)
+        //      - init_vulkan
+        //      - enter main loop, and either(?)
+        //          - allow user interaction, using glfw / imgui / vulkan stuff, ...
+        //          - render and save, using only vulkan stuff
+        //      - command line interface must make it easy to switch between these modes
+        //      - To keep things separated, this function can call different functions, depending
+        //        on the mode
+
+        // TODO Move this elsewhere
+        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
+
+
+        init_window();
+        init_vulkan();
+
+
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //         // Swap chains
+        //         VkSurfaceFormatKHR const
+        //         swap_surface_format{select_swap_surface_format(surface_properties.formats())};
+        //         VkPresentModeKHR const
+        //         swap_present_mode{select_swap_present_mode(surface_properties.present_modes())}; VkExtent2D
+        //         const swap_extent{select_swap_extent(surface_properties.capabilities(),
+        //         _window->framebuffer_size())};
+        //
+        //         // Create swap chain
+        //         std::uint32_t nr_images = surface_properties.capabilities().minImageCount + 1;
+        //
+        //         if(surface_properties.capabilities().maxImageCount > 0 && nr_images >
+        //         surface_properties.capabilities().maxImageCount)
+        //         {
+        //             nr_images = surface_properties.capabilities().maxImageCount;
+        //         }
 
 
         // PRESENTATION
-
-
-        // Initialize window ---------------------------------------------------
-        // Create window with Vulkan context
-        glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
-
-        glfw::VideoMode const video_mode{monitor.video_mode()};
-        glfw::Window::hint(GLFW_RED_BITS, video_mode.red_bits());
-        glfw::Window::hint(GLFW_GREEN_BITS, video_mode.green_bits());
-        glfw::Window::hint(GLFW_BLUE_BITS, video_mode.blue_bits());
-        glfw::Window::hint(GLFW_REFRESH_RATE, video_mode.refresh_rate());
-
-        glfw::Window glfw_window{
-            "LUE view",
-            static_cast<int>(std::ceil(0.9 * video_mode.width())),
-            static_cast<int>(std::ceil(0.9 * video_mode.height()))};
-
-        imgui::glfw::VulkanSurface glfw_surface{instance, glfw_window};
 
 
         //         // Create Framebuffers
@@ -750,7 +712,7 @@ namespace lue::view {
 
 
         // Main loop
-        bool quit = glfw_window.should_close();
+        bool quit = _window->should_close();
 
         while (!quit)
         {
@@ -766,7 +728,7 @@ namespace lue::view {
             //     show_datasets(datasets_to_visualize, configuration.show_details());
             // }
 
-            quit = quit || glfw_window.should_close();
+            quit = quit || _window->should_close();
 
 
             //             // Resize swap chain?

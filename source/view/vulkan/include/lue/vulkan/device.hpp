@@ -14,13 +14,13 @@ namespace lue::vulkan {
 
                 public:
 
-                    QueueCreateInfo() = delete;
+                    QueueCreateInfo() = default;
 
                     QueueCreateInfo(QueueCreateInfo const&) = delete;
 
                     QueueCreateInfo(QueueCreateInfo&&) = default;
 
-                    QueueCreateInfo(PhysicalDevice::QueueFamily const& queue_family);
+                    QueueCreateInfo(QueueFamily const& queue_family);
 
                     ~QueueCreateInfo() = default;
 
@@ -52,10 +52,12 @@ namespace lue::vulkan {
 
                     CreateInfo(CreateInfo&&) = default;
 
-                    CreateInfo(QueueCreateInfo&& queue_create_info);
+                    CreateInfo(std::vector<QueueCreateInfo>&& queue_create_infos, Names&& extension_names);
 
                     CreateInfo(
-                        QueueCreateInfo&& queue_create_info, PhysicalDevice::Features&& enabled_features);
+                        std::vector<QueueCreateInfo>&& queue_create_infos,
+                        PhysicalDevice::Features&& enabled_features,
+                        Names&& extension_names);
 
                     ~CreateInfo() = default;
 
@@ -67,7 +69,11 @@ namespace lue::vulkan {
 
                 private:
 
+                    std::vector<VkDeviceQueueCreateInfo> _queue_create_infos;
+
                     PhysicalDevice::Features _enabled_features;
+
+                    Names _extension_names;
 
                     static_assert(!std::is_pointer_v<VkDeviceCreateInfo>);
 
@@ -118,7 +124,9 @@ namespace lue::vulkan {
 
             Device& operator=(Device&&) = default;
 
-            Queue queue(PhysicalDevice::QueueFamily const& queue_family);
+            Queue queue(QueueFamily const& queue_family);
+
+            operator VkDevice() const;
 
         private:
 

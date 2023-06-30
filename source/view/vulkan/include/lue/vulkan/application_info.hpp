@@ -1,15 +1,10 @@
 #pragma once
-#include <vulkan/vulkan.h>
-#include <cstdint>
+#include "lue/vulkan/type.hpp"
 #include <string>
 #include <tuple>
-#include <vector>
 
 
 namespace lue::vulkan {
-
-    using Names = std::vector<char const*>;
-
 
     /*!
         @brief      .
@@ -45,6 +40,8 @@ namespace lue::vulkan {
             std::string _application_name;
 
             std::string _engine_name;
+
+            static_assert(!std::is_pointer_v<VkDeviceQueueCreateInfo>);
 
             VkApplicationInfo _application_info;
     };

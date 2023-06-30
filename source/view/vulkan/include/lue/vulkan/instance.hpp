@@ -9,8 +9,6 @@ namespace lue::vulkan {
 
     using PhysicalDevices = std::vector<PhysicalDevice>;
 
-    using ExtensionProperties = std::vector<VkExtensionProperties>;
-
 
     /*!
         @brief      Class for all per-application state
@@ -92,17 +90,21 @@ namespace lue::vulkan {
 
             static std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> version();
 
+            Instance() = default;
+
             Instance(CreateInfo const& create_info);
 
-            Instance(Instance const&) = delete;
+            Instance(Instance const& other) = delete;
 
-            Instance(Instance&&) = default;
+            Instance(Instance&& other);
 
             ~Instance();
 
             Instance& operator=(Instance const&) = delete;
 
-            Instance& operator=(Instance&&) = default;
+            Instance& operator=(Instance&& other);
+
+            operator bool() const;
 
             operator VkInstance() const;
 
