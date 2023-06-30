@@ -1,4 +1,5 @@
-# TODO No command line arguments end up in HPX runtime...
+add_subdirectory(script)
+
 add_test_conditionally(test)
 
 
