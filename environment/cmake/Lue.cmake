@@ -6,6 +6,9 @@ endif()
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(CompilerCache)
+useCompilerCache()
+
 include(FetchContent)
 include(GenerateExportHeader)
 
