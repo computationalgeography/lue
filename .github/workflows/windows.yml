@@ -40,7 +40,7 @@ jobs:
               conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc libvulkan-headers libvulkan-loader matplotlib numpy pip
 
               # Use conan from pypi to get the latest version
-              pip install "conan<2"
+              pip install "conan>=2"
 
         - uses: ilammy/msvc-dev-cmd@v1
 

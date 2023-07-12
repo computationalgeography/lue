@@ -72,7 +72,7 @@ jobs:
               conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
 
               # Use conan from pypi to get the latest version
-              pip install "conan<2"
+              pip install "conan>=2"
 
               conan profile new --detect default
               conan profile update settings.compiler=${{ matrix.compiler.name }} default
