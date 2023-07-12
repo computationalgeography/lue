@@ -9,9 +9,6 @@ import lue.framework as lfr
 from lue import __version__ as lue_version
 
 
-# TODO partition shape can be None
-# TODO nr_threads can be zero
-
 # TODO Use a smart default partition size. Add a function for that to the C++ code and use it
 #      everywhere as a default partition size.
 
@@ -37,13 +34,26 @@ def remove_extensions(basename: str) -> str:
     return basename
 
 
+def raster_exists(pathname: str) -> bool:
+    return os.path.exists(pathname)
+
+
 class NormalizePathnamesVisitor(ast.NodeTransformer):
+    default_extensions = ["tif", "map"]
+
     def visit_Constant(self, node):
         if isinstance(node.value, str):
             pathname = os.path.expandvars(node.value)
 
             if not has_extension(pathname):
-                pathname = f"{pathname}.tif"
+                # Try default extensions and use the first name that points to a raster that
+                # exists. If no such raster is found, assume that the original name is correct.
+                for extension in self.default_extensions:
+                    pathname_ = f"{pathname}.{extension}"
+
+                    if raster_exists(pathname_):
+                        pathname = pathname_
+                        break
 
             node.value = pathname
 
@@ -114,7 +124,8 @@ def statement_to_statement_block(
     """
 
     assert "=" in statement, statement
-    lhs, rhs = statement.split("=")
+    # Split statement on first equal sign. Equal signs can be used in the expression as well.
+    lhs, rhs = statement.split("=", maxsplit=1)
     lhs = lhs.strip()
     lhs = ", ".join(f'"{name.strip()}"' for name in lhs.split(","))
     rhs = rhs.strip()
