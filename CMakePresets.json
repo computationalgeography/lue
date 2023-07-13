@@ -1,0 +1,31 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "lue_ninja",
+            "hidden": true,
+            "generator": "Ninja"
+        },
+        {
+            "name": "lue_debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "lue_release",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "lue_relwithdebinfo",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        }
+    ]
+}
