@@ -1,8 +1,8 @@
 .. currentmodule:: lue.data_model
 
 
-lue.data_model reference
-========================
+lue.data_model
+==============
 .. toctree::
    :hidden:
    :maxdepth: 1

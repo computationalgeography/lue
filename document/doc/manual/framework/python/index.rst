@@ -7,6 +7,8 @@ Python
    :maxdepth: 1
    :caption: Contents:
 
+   model
+
 
 Example script for executing LUE framework modelling operations on one
 or more localities.

@@ -5,3 +5,4 @@ C++ reference
    :caption: Contents:
 
    dataset
+   model

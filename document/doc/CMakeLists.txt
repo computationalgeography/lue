@@ -1,23 +1,35 @@
 if(LUE_BUILD_DATA_MODEL)
-    set(data_model_root "${PROJECT_SOURCE_DIR}/source/data_model")
+    set(source_prefix "${PROJECT_SOURCE_DIR}/source/data_model")
 
     list(APPEND DOXYGEN_INPUT_DIR
-        ${data_model_root}/cxx
-        ${data_model_root}/doc
-        ${data_model_root}/hdf5
-        ${data_model_root}/hl)
+        ${source_prefix}/cxx
+        ${source_prefix}/doc
+        ${source_prefix}/hdf5
+        ${source_prefix}/hl
+    )
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
         list(APPEND DOXYGEN_INPUT_DIR
-            ${data_model_root}/translate
-            ${data_model_root}/utility
-            ${data_model_root}/validate)
+            ${source_prefix}/translate
+            ${source_prefix}/utility
+            ${source_prefix}/validate
+    )
     endif()
 
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
         list(APPEND DOXYGEN_INPUT_DIR
-            ${data_model_root}/python)
+            ${source_prefix}/python
+        )
     endif()
+endif()
+
+if(LUE_BUILD_FRAMEWORK)
+    set(source_prefix "${PROJECT_SOURCE_DIR}/source/framework")
+
+    list(APPEND DOXYGEN_INPUT_DIR
+        ${source_prefix}/doc
+        ${source_prefix}/model
+    )
 endif()
 
 
