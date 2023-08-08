@@ -30,6 +30,10 @@ namespace lue::view {
 
         private:
 
+            vulkan::Names required_extension_names() const;
+
+            vulkan::Names required_layer_names() const;
+
             vulkan::QueueFamilies find_queue_families(vulkan::PhysicalDevice const& physical_device) const;
 
             bool physical_device_is_suitable(vulkan::PhysicalDevice const& device) const;
@@ -50,17 +54,25 @@ namespace lue::view {
 
             void create_swapchain();
 
+            void create_image_views();
+
+            void create_render_pass();
+
+            void create_graphics_pipeline();
+
+            void create_framebuffers();
+
             std::unique_ptr<glfw::Library> _library;
 
             std::unique_ptr<glfw::Monitor> _monitor;
 
             std::unique_ptr<glfw::Window> _window;
 
+            bool _enable_validation_layers;
+
             vulkan::Instance _instance;
 
-#ifndef NDEBUG
             vulkan::DebugReportCallback _debug_callback;
-#endif
 
             vulkan::Surface _surface;
 
@@ -71,6 +83,24 @@ namespace lue::view {
             vulkan::Device::Queue _graphics_queue;
 
             vulkan::Device::Queue _present_queue;
+
+            vulkan::Swapchain _swapchain;
+
+            vulkan::Swapchain::Images _swapchain_images;
+
+            VkFormat _image_format;
+
+            VkExtent2D _image_extent;
+
+            vulkan::ImageViews _swapchain_image_views;
+
+            vulkan::RenderPass _render_pass;
+
+            vulkan::PipelineLayout _pipeline_layout;
+
+            vulkan::Pipeline _graphics_pipeline;
+
+            vulkan::Framebuffers _framebuffers;
     };
 
 }  // namespace lue::view

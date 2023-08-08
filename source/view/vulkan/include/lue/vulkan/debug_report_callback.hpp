@@ -38,7 +38,7 @@ namespace lue::vulkan {
                     VkDebugReportCallbackCreateInfoEXT _create_info;
             };
 
-            DebugReportCallback() = default;
+            DebugReportCallback();
 
             DebugReportCallback(Instance const& instance, CreateInfo&& create_info);
 
@@ -52,9 +52,9 @@ namespace lue::vulkan {
 
             DebugReportCallback& operator=(DebugReportCallback&& other);
 
-        private:
-
             operator bool() const;
+
+        private:
 
             //! Function to create callback instances
             static PFN_vkCreateDebugReportCallbackEXT _create_callback;

@@ -517,7 +517,8 @@ if(LUE_IMGUI_REQUIRED)
     find_package(glfw3 REQUIRED)
 
     if(LUE_VIEW_USE_VULKAN)
-        find_package(Vulkan REQUIRED)
+        # For glslc, see https://github.com/google/shaderc/tree/main#downloads
+        find_package(Vulkan REQUIRED COMPONENTS glslc)
     else()
         find_package(OpenGL REQUIRED)
     endif()

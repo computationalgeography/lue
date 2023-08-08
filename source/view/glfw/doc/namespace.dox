@@ -1,0 +1,9 @@
+namespace lue {
+
+/*!
+    @brief      Namespace containing C++ wrappers around the [GLFW C-API](https://www.glfw.org/docs/latest/)
+*/
+namespace glfw {
+}
+
+}

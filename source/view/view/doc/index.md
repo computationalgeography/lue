@@ -1,4 +1,3 @@
-
 # Visualization loop
 
 We must keep the application interactive / responsive. This requires polling for events

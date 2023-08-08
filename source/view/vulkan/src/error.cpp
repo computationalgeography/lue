@@ -5,8 +5,8 @@
 namespace lue::vulkan {
 
     /*!
-        @brief      Check whether @a result equal VK_SUCCESS
-        @exception  std::runtime_error In case @a result is not equal to VK_SUCCESS
+        @brief      Check whether @a result equals `VK_SUCCESS`
+        @exception  std::runtime_error In case @a result is not equal to `VK_SUCCESS`
     */
     void assert_result_is_ok(VkResult const result)
     {

@@ -8,17 +8,16 @@ namespace lue::vulkan {
 
     Instance::CreateInfo::CreateInfo(
         VkInstanceCreateFlags const flags,
-        ApplicationInfo&& application_info,
+        ApplicationInfo const& application_info,
         Names const& enabled_layer_names,
         Names const& enabled_extension_names):
 
-        _application_info{std::move(application_info)},
         _create_info{}
 
     {
         _create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
         _create_info.flags = flags;
-        _create_info.pApplicationInfo = _application_info;
+        _create_info.pApplicationInfo = application_info;
 
         // It is assumed that the character buffers themselves (not the vector) stay alive
         _create_info.enabledLayerCount = enabled_layer_names.size();
@@ -30,23 +29,20 @@ namespace lue::vulkan {
 
 
     Instance::CreateInfo::CreateInfo(
-        ApplicationInfo&& application_info,
+        ApplicationInfo const& application_info,
         Names const& enabled_layer_names,
         Names const& enabled_extension_names):
 
         Instance::CreateInfo{
-            VkInstanceCreateFlags{},
-            std::move(application_info),
-            enabled_layer_names,
-            enabled_extension_names}
+            VkInstanceCreateFlags{}, application_info, enabled_layer_names, enabled_extension_names}
 
     {
     }
 
 
-    Instance::CreateInfo::CreateInfo(ApplicationInfo&& application_info):
+    Instance::CreateInfo::CreateInfo(ApplicationInfo const& application_info):
 
-        Instance::CreateInfo{VkInstanceCreateFlags{}, std::move(application_info), Names{}, Names{}}
+        Instance::CreateInfo{VkInstanceCreateFlags{}, application_info, Names{}, Names{}}
 
     {
     }
@@ -214,11 +210,18 @@ namespace lue::vulkan {
     }
 
 
+    Instance::Instance():
+
+        _instance{}
+
+    {
+        assert(!*this);
+    }
+
+
     /*!
         @brief      Initialize the Vulkan library
-        @param      .
-        @return     .
-        @exception  .
+        @exception  std::runtime_error In case the instance cannot be created
 
     */
     Instance::Instance(CreateInfo const& create_info):
@@ -234,7 +237,10 @@ namespace lue::vulkan {
         // VK_ERROR_LAYER_NOT_PRESENT
         // VK_ERROR_EXTENSION_NOT_PRESENT
         // VK_ERROR_INCOMPATIBLE_DRIVER
+
         assert_result_is_ok(result);
+
+        assert(*this);
     }
 
 
@@ -254,7 +260,10 @@ namespace lue::vulkan {
         if (*this)
         {
             ::vkDestroyInstance(_instance, nullptr);
+            _instance = VkInstance{};
         }
+
+        assert(!*this);
     }
 
 
@@ -286,12 +295,16 @@ namespace lue::vulkan {
     */
     Instance::operator VkInstance() const
     {
+        assert(*this);
+
         return _instance;
     }
 
 
     PhysicalDevices Instance::physical_devices() const
     {
+        assert(*this);
+
         std::uint32_t nr_devices;
         ::vkEnumeratePhysicalDevices(_instance, &nr_devices, nullptr);
 

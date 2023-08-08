@@ -1,5 +1,12 @@
 #pragma once
+#include "lue/vulkan/framebuffer.hpp"
+#include "lue/vulkan/image_view.hpp"
 #include "lue/vulkan/physical_device.hpp"
+#include "lue/vulkan/pipeline.hpp"
+#include "lue/vulkan/pipeline_layout.hpp"
+#include "lue/vulkan/render_pass.hpp"
+#include "lue/vulkan/shader_module.hpp"
+#include "lue/vulkan/swapchain.hpp"
 
 
 namespace lue::vulkan {
@@ -86,11 +93,11 @@ namespace lue::vulkan {
 
                 public:
 
-                    Queue() = delete;
+                    Queue();
 
                     Queue(Queue const&) = delete;
 
-                    Queue(Queue&&) = default;
+                    Queue(Queue&& other);
 
                     Queue(VkQueue queue);
 
@@ -98,7 +105,9 @@ namespace lue::vulkan {
 
                     Queue& operator=(Queue const&) = delete;
 
-                    Queue& operator=(Queue&&) = default;
+                    Queue& operator=(Queue&& other);
+
+                    operator bool() const;
 
                     operator VkQueue() const;
 
@@ -110,11 +119,11 @@ namespace lue::vulkan {
             };
 
 
-            Device() = delete;
+            Device();
 
             Device(Device const&) = delete;
 
-            Device(Device&&) = default;
+            Device(Device&& other);
 
             Device(PhysicalDevice const& physical_device, CreateInfo const& create_info);
 
@@ -122,11 +131,27 @@ namespace lue::vulkan {
 
             Device& operator=(Device const&) = delete;
 
-            Device& operator=(Device&&) = default;
+            Device& operator=(Device&& other);
 
-            Queue queue(QueueFamily const& queue_family);
+            operator bool() const;
 
             operator VkDevice() const;
+
+            Queue queue(QueueFamily const& queue_family) const;
+
+            Swapchain swapchain(Swapchain::CreateInfo const& create_info) const;
+
+            ImageView image_view(ImageView::CreateInfo const& create_info) const;
+
+            ShaderModule shader_module(ShaderModule::CreateInfo const& create_info) const;
+
+            PipelineLayout pipeline_layout(PipelineLayout::CreateInfo const& create_info) const;
+
+            RenderPass render_pass(RenderPass::CreateInfo const& create_info) const;
+
+            Pipeline graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const;
+
+            Framebuffer framebuffer(Framebuffer::CreateInfo const& create_info) const;
 
         private:
 

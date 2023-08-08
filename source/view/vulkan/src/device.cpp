@@ -1,6 +1,7 @@
 #include "lue/vulkan/device.hpp"
 #include "lue/vulkan/error.hpp"
 #include <algorithm>
+#include <cassert>
 
 
 namespace lue::vulkan {
@@ -12,7 +13,7 @@ namespace lue::vulkan {
     Device::QueueCreateInfo::QueueCreateInfo(QueueFamily const& queue_family):
 
         _create_info{},
-        _queue_priorities{1}
+        _queue_priorities{1.0f}
 
     {
         _create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -75,11 +76,50 @@ namespace lue::vulkan {
     }
 
 
+    Device::Queue::Queue():
+
+        _queue{}
+
+    {
+        assert(!*this);
+    }
+
+
     Device::Queue::Queue(VkQueue queue):
 
         _queue{queue}
 
     {
+        assert(*this);
+    }
+
+
+    Device::Queue::Queue(Device::Queue&& other):
+
+        _queue{std::move(other._queue)}
+
+    {
+        other._queue = VkQueue{};
+
+        assert(!other);
+    }
+
+
+    Device::Queue& Device::Queue::operator=(Device::Queue&& other)
+    {
+        _queue = std::move(other._queue);
+
+        other._queue = VkQueue{};
+
+        assert(!other);
+
+        return *this;
+    }
+
+
+    Device::Queue::operator bool() const
+    {
+        return _queue != VK_NULL_HANDLE;
     }
 
 
@@ -88,16 +128,21 @@ namespace lue::vulkan {
     */
     Device::Queue::operator VkQueue() const
     {
+        assert(*this);
+
         return _queue;
     }
 
 
-    /*!
-        @brief      .
-        @param      .
-        @return     .
-        @sa         https://registry.khronos.org/vulkan/specs/1.3/html/chap5.html#vkCreateDevice
-    */
+    Device::Device():
+
+        _device{}
+
+    {
+        assert(!*this);
+    }
+
+
     Device::Device(PhysicalDevice const& physical_device, CreateInfo const& create_info):
 
         _device{}
@@ -113,30 +158,171 @@ namespace lue::vulkan {
         // VK_ERROR_TOO_MANY_OBJECTS
         // VK_ERROR_DEVICE_LOST
         assert_result_is_ok(result);
+
+        assert(*this);
+    }
+
+
+    Device::Device(Device&& other):
+
+        _device{std::move(other._device)}
+
+    {
+        other._device = VkDevice{};
+
+        assert(!other);
     }
 
 
     Device::~Device()
     {
-        ::vkDestroyDevice(_device, nullptr);
+        if (*this)
+        {
+            ::vkDestroyDevice(_device, nullptr);
+            _device = VkDevice{};
+        }
+
+        assert(!*this);
     }
 
 
-    Device::Queue Device::queue(QueueFamily const& queue_family)
+    Device& Device::operator=(Device&& other)
     {
-        VkQueue queue;
+        _device = std::move(other._device);
 
-        ::vkGetDeviceQueue(_device, queue_family, 0, &queue);
+        other._device = VkDevice{};
 
-        return queue;
+        assert(!other);
+
+        return *this;
     }
+
+
+    Device::operator bool() const
+    {
+        return _device != VK_NULL_HANDLE;
+    }
+
 
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
     Device::operator VkDevice() const
     {
+        assert(*this);
+
         return _device;
+    }
+
+
+    Device::Queue Device::queue(QueueFamily const& queue_family) const
+    {
+        assert(*this);
+
+        ::VkQueue queue;
+
+        ::vkGetDeviceQueue(_device, queue_family, 0, &queue);
+
+        return queue;
+    }
+
+
+    Swapchain Device::swapchain(Swapchain::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkSwapchainKHR swapchain;
+
+        VkResult result = vkCreateSwapchainKHR(_device, create_info, nullptr, &swapchain);
+
+        assert_result_is_ok(result);
+
+        return {_device, swapchain};
+    }
+
+
+    ImageView Device::image_view(ImageView::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkImageView image_view;
+
+        VkResult result{vkCreateImageView(_device, create_info, nullptr, &image_view)};
+
+        assert_result_is_ok(result);
+
+        return {_device, image_view};
+    }
+
+
+    ShaderModule Device::shader_module(ShaderModule::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkShaderModule shader_module;
+
+        VkResult result{vkCreateShaderModule(_device, create_info, nullptr, &shader_module)};
+
+        assert_result_is_ok(result);
+
+        return {_device, shader_module};
+    }
+
+
+    PipelineLayout Device::pipeline_layout(PipelineLayout::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkPipelineLayout pipeline_layout;
+
+        VkResult result{vkCreatePipelineLayout(_device, create_info, nullptr, &pipeline_layout)};
+
+        assert_result_is_ok(result);
+
+        return {_device, pipeline_layout};
+    }
+
+
+    RenderPass Device::render_pass(RenderPass::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkRenderPass render_pass;
+
+        VkResult result{vkCreateRenderPass(_device, create_info, nullptr, &render_pass)};
+
+        assert_result_is_ok(result);
+
+        return {_device, render_pass};
+    }
+
+
+    Pipeline Device::graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkPipeline graphics_pipeline;
+
+        VkResult result{
+            vkCreateGraphicsPipelines(_device, VK_NULL_HANDLE, 1, create_info, nullptr, &graphics_pipeline)};
+
+        assert_result_is_ok(result);
+
+        return {_device, graphics_pipeline};
+    }
+
+
+    Framebuffer Device::framebuffer(Framebuffer::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkFramebuffer framebuffer;
+
+        VkResult result{vkCreateFramebuffer(_device, create_info, nullptr, &framebuffer)};
+
+        assert_result_is_ok(result);
+
+        return {_device, framebuffer};
     }
 
 }  // namespace lue::vulkan

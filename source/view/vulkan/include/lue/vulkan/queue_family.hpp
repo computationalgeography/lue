@@ -8,6 +8,12 @@
 
 namespace lue::vulkan {
 
+    /*!
+        @brief      A queue family, represented by its index
+        @param      .
+        @return     .
+        @exception  .
+    */
     class QueueFamily
     {
 

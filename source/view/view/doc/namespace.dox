@@ -1,0 +1,9 @@
+namespace lue {
+
+/*!
+    @brief      Namespace containing code implementing the `lue_view` application
+*/
+namespace view {
+}
+
+}

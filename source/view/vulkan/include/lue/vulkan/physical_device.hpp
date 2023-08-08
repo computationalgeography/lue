@@ -116,7 +116,7 @@ namespace lue::vulkan {
             };
 
 
-            PhysicalDevice() = default;
+            PhysicalDevice();
 
             PhysicalDevice(VkPhysicalDevice physical_device);
 

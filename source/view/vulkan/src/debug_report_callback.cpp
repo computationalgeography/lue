@@ -31,16 +31,15 @@ namespace lue::vulkan {
     PFN_vkDestroyDebugReportCallbackEXT DebugReportCallback::_destroy_callback{nullptr};
 
 
-    // DebugReportCallback::DebugReportCallback():
+    DebugReportCallback::DebugReportCallback():
 
-    //     _instance{VK_NULL_HANDLE},
-    //     _callback{VK_NULL_HANDLE}
+        _instance{},
+        _callback{}
 
-    // {
-    //     assert(!_instance);
-    //     assert(!_callback);
-    //     assert(!*this);
-    // }
+    {
+        assert(!_instance);
+        assert(!*this);
+    }
 
 
     /*!
@@ -98,7 +97,10 @@ namespace lue::vulkan {
         if (*this)
         {
             _destroy_callback(_instance, _callback, nullptr);
+            _callback = VkDebugReportCallbackEXT{};
         }
+
+        assert(!*this);
     }
 
 

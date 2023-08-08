@@ -5,6 +5,16 @@
 
 namespace lue::vulkan {
 
+    Surface::Surface():
+
+        _instance{},
+        _surface{}
+
+    {
+        assert(!*this);
+    }
+
+
     Surface::Surface(VkInstance instance, VkSurfaceKHR surface):
 
         _instance{instance},
@@ -33,7 +43,10 @@ namespace lue::vulkan {
         if (*this)
         {
             ::vkDestroySurfaceKHR(_instance, _surface, nullptr);
+            _surface = VkSurfaceKHR{};
         }
+
+        assert(!*this);
     }
 
 
@@ -67,6 +80,8 @@ namespace lue::vulkan {
     */
     Surface::operator VkSurfaceKHR() const
     {
+        assert(*this);
+
         return _surface;
     }
 

@@ -11,79 +11,24 @@
 #include <iostream>
 
 
-#ifndef NDEBUG
-static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
-    [[maybe_unused]] VkDebugReportFlagsEXT flags,
-    VkDebugReportObjectTypeEXT object_type,
-    [[maybe_unused]] std::uint64_t object,
-    [[maybe_unused]] std::size_t location,
-    [[maybe_unused]] std::int32_t message_code,
-    [[maybe_unused]] char const* layer_prefix,
-    char const* message,
-    [[maybe_unused]] void* user_data)
-{
-    std::cerr << fmt::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
-              << std::endl;
-
-    return VK_FALSE;
-}
-#endif
-
-
 namespace lue::view {
-
     namespace {
 
-        /// static int rate_physical_device(vulkan::PhysicalDevice const& device)
-        /// {
-        ///     int score{0};
-
-        ///     vulkan::PhysicalDevice::Properties const properties{device.properties()};
-
-        ///     // TODO Figure out which devices the expect here and whether the ranking here
-        ///     //      is correct
-        ///     // TODO Figure out which devices are actually connected to a screen. This is (only)
-        ///     //      relevant when we need to present something on the screen.
-        ///     if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-        ///     {
-        ///         score += 1000;
-        ///     }
-        ///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-        ///     {
-        ///         score += 100;
-        ///     }
-        ///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
-        ///     {
-        ///         score += 10;
-        ///     }
-
-        ///     return score;
-        /// }
-
-
-        static vulkan::QueueFamilies find_queue_families(
-            vulkan::PhysicalDevice const& physical_device, vulkan::Surface const& surface)
+        static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
+            [[maybe_unused]] VkDebugReportFlagsEXT flags,
+            VkDebugReportObjectTypeEXT object_type,
+            [[maybe_unused]] std::uint64_t object,
+            [[maybe_unused]] std::size_t location,
+            [[maybe_unused]] std::int32_t message_code,
+            [[maybe_unused]] char const* layer_prefix,
+            char const* message,
+            [[maybe_unused]] void* user_data)
         {
-            vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
-            vulkan::QueueFamilies queue_families{};
+            std::cerr << fmt::format(
+                             "[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
+                      << std::endl;
 
-            for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
-            {
-                // TODO What if multiple families support graphics or presentation? Currently
-                //      an assertion will trigger in the QueueFamilies member functions.
-
-                if (queue_family_properties[i].graphics())
-                {
-                    queue_families.set_graphics_family(vulkan::QueueFamily{i});
-                }
-
-                if (physical_device.has_surface_support(vulkan::QueueFamily{i}, surface))
-                {
-                    queue_families.set_present_family(vulkan::QueueFamily{i});
-                }
-            }
-
-            return queue_families;
+            return VK_FALSE;
         }
 
 
@@ -151,72 +96,6 @@ namespace lue::view {
         }
 
 
-        /// static std::tuple<vulkan::PhysicalDevice, vulkan::QueueFamilies,
-        /// vulkan::PhysicalDevice::SurfaceProperties> select_physical_device(
-        ///     vulkan::PhysicalDevices&& devices, vulkan::Surface const& surface,
-        ///     vulkan::Names const& extension_names)
-        /// {
-        ///     std::multimap<int, vulkan::PhysicalDevice> candidates{};
-
-        ///     for (auto& device : devices)
-        ///     {
-        ///         int const score{rate_physical_device(device)};
-
-        ///         candidates.insert(std::make_pair(score, std::move(device)));
-        ///     }
-
-        ///     auto it = candidates.rend();
-        ///     vulkan::QueueFamilies queue_families{};
-        ///     vulkan::PhysicalDevice::SurfaceProperties surface_properties{};
-
-        ///     for (it = candidates.rbegin(); it != candidates.rend(); ++it)
-        ///     {
-        ///         if (it->first == 0)
-        ///         {
-        ///             // Candidates are ordered by score. We now reached the ones that are not
-        ///             // suitable by definition.
-        ///             it = candidates.rend();
-        ///         }
-        ///         else
-        ///         {
-        ///             // Check whether the device is suitable
-        ///             queue_families = find_queue_families(it->second, surface);
-
-        ///             bool const extensions_supported = it->second.extensions_available(extension_names);
-
-        ///             bool swap_chain_is_adequate{false};
-
-        ///             if(extensions_supported)
-        ///             {
-        ///                 surface_properties = it->second.surface_properties(surface);
-        ///                 swap_chain_is_adequate =
-        ///                    !surface_properties.formats().empty() &&
-        ///                    !surface_properties.present_modes().empty();
-        ///             }
-
-        ///             if(queue_families.is_complete() && extensions_supported && swap_chain_is_adequate)
-        ///             {
-        ///                 break;
-        ///             }
-        ///         }
-        ///     }
-
-        ///     if (it == candidates.rend())
-        ///     {
-        ///         throw std::runtime_error("Failed to find a suitable GPU");
-        ///     }
-
-        ///     if (!queue_families.is_complete())
-        ///     {
-        ///         throw std::runtime_error("Failed to find a GPU supporting both graphics and
-        ///         presentation");
-        ///     }
-
-        ///     return {std::move(candidates.rbegin()->second), queue_families,
-        ///     std::move(surface_properties)};
-        /// }
-
-
         static vulkan::Surface create_surface(vulkan::Instance const& instance, glfw::Window& window)
         {
             VkSurfaceKHR surface;
@@ -237,17 +116,28 @@ namespace lue::view {
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
         Application{arguments},
+        _enable_validation_layers{false},
         _instance{},
-#ifndef NDEBUG
         _debug_callback{},
-#endif
         _surface{},
         _physical_device{},
         _device{},
         _graphics_queue{},
-        _present_queue{}
+        _present_queue{},
+        _swapchain{},
+        _swapchain_images{},
+        _image_format{},
+        _image_extent{},
+        _swapchain_image_views{},
+        _render_pass{},
+        _pipeline_layout{},
+        _graphics_pipeline{},
+        _framebuffers{}
 
     {
+#ifndef NDEBUG
+        _enable_validation_layers = true;
+#endif
     }
 
 
@@ -288,11 +178,71 @@ namespace lue::view {
     void VulkanApplication::init_vulkan()
     {
         create_instance();
-        setup_debug_messenger();
+
+        if (_enable_validation_layers)
+        {
+            setup_debug_messenger();
+        }
+
         create_surface();
         pick_physical_device();
         create_logical_device();
         create_swapchain();
+        create_image_views();
+        create_render_pass();
+        create_graphics_pipeline();
+        create_framebuffers();
+    }
+
+
+    vulkan::Names VulkanApplication::required_extension_names() const
+    {
+        // TODO Optional, if a window is needed
+        vulkan::Names extension_names{glfw::Library::required_instance_extensions()};
+        // / Optional, if a window is needed
+
+        if (_enable_validation_layers)
+        {
+            extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+        }
+
+        // On macOS / Molten, creating an instance may result in VK_ERROR_INCOMPATIBLE_DRIVER. This
+        // can be solved:
+        // If using MacOS with the latest MoltenVK sdk, you may get VK_ERROR_INCOMPATIBLE_DRIVER
+        // returned from vkCreateInstance. According to the Getting Start Notes. Be-
+        // ginning with the 1.3.216 Vulkan SDK, the VK_KHR_PORTABILITY_subset
+        // extension is mandatory.
+        // - Add VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR to CreateInfo's flags
+        // - Add VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME to extension_names
+        // TODO Can we know beforehand if doing this is required and do it conditionally?
+        // - Test for macOS OS + MoltenVK SDK + Vulkan SDK version >= 1.3.216
+
+        return extension_names;
+    }
+
+
+    vulkan::Names VulkanApplication::required_layer_names() const
+    {
+        vulkan::Names layer_names{};
+
+        if (_enable_validation_layers)
+        {
+            vulkan::Instance::LayerProperties const available_layer_properties{
+                vulkan::Instance::layer_properties()};
+
+            // Only available when the LunarG Vulkan SDK is installed
+            if (vulkan::Instance::layer_available(available_layer_properties, "VK_LAYER_KHRONOS_validation"))
+            {
+                layer_names.push_back("VK_LAYER_KHRONOS_validation");
+            }
+            else
+            {
+                throw std::runtime_error{"Warning: VK_LAYER_KHRONOS_validation layer not available. "
+                                         "Install the LunarG Vulkan SDK and its validation layers."};
+            }
+        }
+
+        return layer_names;
     }
 
 
@@ -344,56 +294,6 @@ namespace lue::view {
         }
 #endif
 
-        // TODO Optional, if a window is needed
-        vulkan::Names required_extension_names{glfw::Library::required_instance_extensions()};
-        // / Optional, if a window is needed
-
-#ifndef NDEBUG
-        // required_extension_names.push_back("VK_EXT_debug_report");
-        // required_extension_names.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-        required_extension_names.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-#endif
-
-        // On macOS / Molten, creating an instance may result in VK_ERROR_INCOMPATIBLE_DRIVER. This
-        // can be solved:
-        // If using MacOS with the latest MoltenVK sdk, you may get VK_ERROR_INCOMPATIBLE_DRIVER
-        // returned from vkCreateInstance. According to the Getting Start Notes. Be-
-        // ginning with the 1.3.216 Vulkan SDK, the VK_KHR_PORTABILITY_subset
-        // extension is mandatory.
-        // - Add VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR to CreateInfo's flags
-        // - Add VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME to required_extension_names
-        // TODO Can we know beforehand if doing this is required and do it conditionally?
-
-        /// vulkan::ExtensionProperties const available_extension_properties{
-        ///     vulkan::Instance::extension_properties()};
-
-        /// assert(std::all_of(required_extension_names.begin(), required_extension_names.end(),
-        ///         [&available_extension_properties](auto const& required_extension_name)
-        ///         {
-        ///             return vulkan::Instance::extension_available(
-        ///                 available_extension_properties, required_extension_name);
-        ///         }
-        ///     ));
-
-        vulkan::Names required_layer_names{
-#ifndef NDEBUG
-            // Only available when the LunarG Vulkan SDK is installed
-            // TODO Replace by preprocess symbol
-            "VK_LAYER_KHRONOS_validation"
-#endif
-        };
-
-        /// vulkan::Instance::LayerProperties const
-        /// available_layer_properties{vulkan::Instance::layer_properties()};
-
-        /// assert(std::all_of(required_layer_names.begin(), required_layer_names.end(),
-        ///         [&available_layer_properties](auto const& required_layer_name)
-        ///         {
-        ///             return vulkan::Instance::layer_available(
-        ///                 available_layer_properties, required_layer_name);
-        ///         }
-        ///     ));
-
         // TODO Add debug print callback to validate create/destroy the instance itself
         _instance = vulkan::Instance{vulkan::Instance::CreateInfo{
             vulkan::ApplicationInfo{
@@ -401,21 +301,19 @@ namespace lue::view {
                 std::make_tuple(
                     BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
                 VK_API_VERSION_1_2},
-            required_layer_names,
-            required_extension_names}};
+            required_layer_names(),
+            required_extension_names()}};
     }
 
 
     void VulkanApplication::setup_debug_messenger()
     {
-#ifndef NDEBUG
         _debug_callback = vulkan::DebugReportCallback{
             _instance,
             vulkan::DebugReportCallback::CreateInfo{
                 VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
                     VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
                 debug_report}};
-#endif
     }
 
 
@@ -437,8 +335,8 @@ namespace lue::view {
 
         for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
         {
-            // TODO What if multiple families support graphics or presentation? Currently
-            //      an assertion will trigger in the QueueFamilies member functions.
+            // Queue family supporting graphics and presentation can be the same family, or
+            // not. Here, we don't care yet, but in the future we may want to prefer this.
 
             if (queue_family_properties[i].graphics())
             {
@@ -448,6 +346,11 @@ namespace lue::view {
             if (physical_device.has_surface_support(vulkan::QueueFamily{i}, _surface))
             {
                 queue_families.set_present_family(vulkan::QueueFamily{i});
+            }
+
+            if (queue_families.is_complete())
+            {
+                break;
             }
         }
 
@@ -528,15 +431,11 @@ namespace lue::view {
 
     void VulkanApplication::create_logical_device()
     {
-        vulkan::QueueFamilies queue_families = find_queue_families(_physical_device);
-        vulkan::PhysicalDevice::SurfaceProperties surface_properties =
-            _physical_device.surface_properties(_surface);
-
-
+        vulkan::QueueFamilies queue_families{find_queue_families(_physical_device)};
         assert(queue_families.is_complete());
 
-
-        // Create logical device, for each unique queue family
+        // Create logical device, for each unique queue family. The family supporting graphics
+        // and the one supporting presentation are likely to be the same. Use a set to merge them.
         std::set<vulkan::QueueFamily> unique_queue_families{
             queue_families.graphics_family(), queue_families.present_family()};
 
@@ -564,6 +463,260 @@ namespace lue::view {
 
     void VulkanApplication::create_swapchain()
     {
+        vulkan::PhysicalDevice::SurfaceProperties surface_properties{
+            _physical_device.surface_properties(_surface)};
+
+        VkSurfaceFormatKHR const swap_surface_format{
+            select_swap_surface_format(surface_properties.formats())};
+        VkPresentModeKHR const present_mode{select_swap_present_mode(surface_properties.present_modes())};
+        VkExtent2D const swap_extent{
+            select_swap_extent(surface_properties.capabilities(), _window->framebuffer_size())};
+
+        std::uint32_t nr_images = surface_properties.capabilities().minImageCount + 1;
+
+        if (surface_properties.capabilities().maxImageCount > 0 &&
+            nr_images > surface_properties.capabilities().maxImageCount)
+        {
+            nr_images = surface_properties.capabilities().maxImageCount;
+        }
+
+        VkSurfaceTransformFlagBitsKHR const transform{surface_properties.capabilities().currentTransform};
+
+        vulkan::QueueFamilies const queue_families{find_queue_families(_physical_device)};
+
+        _swapchain = _device.swapchain(vulkan::Swapchain::CreateInfo{
+            _surface, nr_images, swap_surface_format, swap_extent, queue_families, transform, present_mode});
+        _swapchain_images = _swapchain.images();
+        _image_format = swap_surface_format.format;
+        _image_extent = swap_extent;
+    }
+
+
+    void VulkanApplication::create_image_views()
+    {
+        _swapchain_image_views.resize(_swapchain_images.size());
+
+        for (std::size_t i = 0; i < _swapchain_images.size(); ++i)
+        {
+            vulkan::ImageView::CreateInfo create_info{};
+
+            (*create_info).image = _swapchain_images[i];
+            (*create_info).viewType = VK_IMAGE_VIEW_TYPE_2D;
+            (*create_info).format = _image_format;
+            (*create_info).components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            (*create_info).components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            (*create_info).components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            (*create_info).components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            (*create_info).subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            (*create_info).subresourceRange.baseMipLevel = 0;
+            (*create_info).subresourceRange.levelCount = 1;
+            (*create_info).subresourceRange.baseArrayLayer = 0;
+            (*create_info).subresourceRange.layerCount = 1;
+
+            _swapchain_image_views[i] = _device.image_view(create_info);
+        }
+    }
+
+
+    void VulkanApplication::create_render_pass()
+    {
+        // Attachment description
+        VkAttachmentDescription colorAttachment{};
+        colorAttachment.format = _image_format;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+        // Subpasses and attachment references
+        VkAttachmentReference colorAttachmentRef{};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+        VkSubpassDescription subpass{};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &colorAttachmentRef;
+
+        // Render pass
+        vulkan::RenderPass::CreateInfo create_info{};
+        (*create_info).attachmentCount = 1;
+        (*create_info).pAttachments = &colorAttachment;
+        (*create_info).subpassCount = 1;
+        (*create_info).pSubpasses = &subpass;
+
+        _render_pass = _device.render_pass(create_info);
+    }
+
+
+    void VulkanApplication::create_graphics_pipeline()
+    {
+        // TODO Where to put these files?
+        vulkan::ShaderModule::Bytes vertex_shader_code{
+            vulkan::ShaderModule::read_file("source/view/view/shader/shader.vert.spv")};
+        vulkan::ShaderModule::Bytes fragment_shader_code{
+            vulkan::ShaderModule::read_file("source/view/view/shader/shader.frag.spv")};
+
+        vulkan::ShaderModule vertex_shader_module{
+            _device.shader_module(vulkan::ShaderModule::CreateInfo{vertex_shader_code})};
+        vulkan::ShaderModule fragment_shader_module{
+            _device.shader_module(vulkan::ShaderModule::CreateInfo{fragment_shader_code})};
+
+        vulkan::Pipeline::ShaderStageCreateInfo vertex_shader_stage_info{
+            VK_SHADER_STAGE_VERTEX_BIT, vertex_shader_module};
+        vulkan::Pipeline::ShaderStageCreateInfo fragment_shader_stage_info{
+            VK_SHADER_STAGE_FRAGMENT_BIT, fragment_shader_module};
+
+        VkPipelineShaderStageCreateInfo shader_stages[] = {
+            *vertex_shader_stage_info, *fragment_shader_stage_info};
+
+        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+        vertexInputInfo.vertexBindingDescriptionCount = 0;
+        vertexInputInfo.pVertexBindingDescriptions = nullptr;  // Optional
+        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+        vertexInputInfo.pVertexAttributeDescriptions = nullptr;  // Optional
+
+        VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+        inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = (float)_image_extent.width;
+        viewport.height = (float)_image_extent.height;
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = _image_extent;
+
+        std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+
+        VkPipelineDynamicStateCreateInfo dynamicState{};
+        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+        dynamicState.pDynamicStates = dynamicStates.data();
+
+
+        VkPipelineViewportStateCreateInfo viewportState{};
+        viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewportState.viewportCount = 1;
+        viewportState.scissorCount = 1;
+
+
+        // Rasterizer
+        VkPipelineRasterizationStateCreateInfo rasterizer{};
+        rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterizer.depthClampEnable = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable = VK_FALSE;
+        rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterizer.lineWidth = 1.0f;
+        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+        rasterizer.depthBiasEnable = VK_FALSE;
+        rasterizer.depthBiasConstantFactor = 0.0f;  // Optional
+        rasterizer.depthBiasClamp = 0.0f;           // Optional
+        rasterizer.depthBiasSlopeFactor = 0.0f;     // Optional
+
+        // Multisampling
+        VkPipelineMultisampleStateCreateInfo multisampling{};
+        multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisampling.sampleShadingEnable = VK_FALSE;
+        multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        multisampling.minSampleShading = 1.0f;           // Optional
+        multisampling.pSampleMask = nullptr;             // Optional
+        multisampling.alphaToCoverageEnable = VK_FALSE;  // Optional
+        multisampling.alphaToOneEnable = VK_FALSE;       // Optional
+
+        // Color blending
+        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                              VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        colorBlendAttachment.blendEnable = VK_FALSE;
+        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+
+        // Computation:
+        //     finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
+        //     finalColor.a = newAlpha.a;
+        colorBlendAttachment.blendEnable = VK_TRUE;
+        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+
+        VkPipelineColorBlendStateCreateInfo colorBlending{};
+        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        colorBlending.logicOpEnable = VK_FALSE;
+        colorBlending.logicOp = VK_LOGIC_OP_COPY;  // Optional
+        colorBlending.attachmentCount = 1;
+        colorBlending.pAttachments = &colorBlendAttachment;
+        colorBlending.blendConstants[0] = 0.0f;  // Optional
+        colorBlending.blendConstants[1] = 0.0f;  // Optional
+        colorBlending.blendConstants[2] = 0.0f;  // Optional
+        colorBlending.blendConstants[3] = 0.0f;  // Optional
+
+
+        // Pipeline layout
+        _pipeline_layout = _device.pipeline_layout(vulkan::PipelineLayout::CreateInfo{});
+
+
+        vulkan::Pipeline::GraphicsPipelineCreateInfo create_info{};
+
+        (*create_info).stageCount = 2;
+        (*create_info).pStages = shader_stages;
+
+        (*create_info).pVertexInputState = &vertexInputInfo;
+        (*create_info).pInputAssemblyState = &inputAssembly;
+        (*create_info).pViewportState = &viewportState;
+        (*create_info).pRasterizationState = &rasterizer;
+        (*create_info).pMultisampleState = &multisampling;
+        (*create_info).pDepthStencilState = nullptr;  // Optional
+        (*create_info).pColorBlendState = &colorBlending;
+        (*create_info).pDynamicState = &dynamicState;
+
+        (*create_info).layout = _pipeline_layout;
+        (*create_info).renderPass = _render_pass;
+        (*create_info).subpass = 0;
+
+        (*create_info).basePipelineHandle = VK_NULL_HANDLE;  // Optional
+        (*create_info).basePipelineIndex = -1;               // Optional
+
+        _graphics_pipeline = _device.graphics_pipeline(create_info);
+    }
+
+
+    void VulkanApplication::create_framebuffers()
+    {
+        _framebuffers.resize(_swapchain_image_views.size());
+
+        for (std::size_t i = 0; i < _swapchain_image_views.size(); ++i)
+        {
+            VkImageView attachments[] = {_swapchain_image_views[i]};
+
+            vulkan::Framebuffer::CreateInfo create_info{};
+            (*create_info).renderPass = _render_pass;
+            (*create_info).attachmentCount = _render_pass;
+            (*create_info).pAttachments = attachments;
+            (*create_info).width = _image_extent.width;
+            (*create_info).height = _image_extent.height;
+            (*create_info).layers = 1;
+
+            _framebuffers[i] = _device.framebuffer(create_info);
+        }
     }
 
 
@@ -587,32 +740,6 @@ namespace lue::view {
 
         init_window();
         init_vulkan();
-
-
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //         // Swap chains
-        //         VkSurfaceFormatKHR const
-        //         swap_surface_format{select_swap_surface_format(surface_properties.formats())};
-        //         VkPresentModeKHR const
-        //         swap_present_mode{select_swap_present_mode(surface_properties.present_modes())}; VkExtent2D
-        //         const swap_extent{select_swap_extent(surface_properties.capabilities(),
-        //         _window->framebuffer_size())};
-        //
-        //         // Create swap chain
-        //         std::uint32_t nr_images = surface_properties.capabilities().minImageCount + 1;
-        //
-        //         if(surface_properties.capabilities().maxImageCount > 0 && nr_images >
-        //         surface_properties.capabilities().maxImageCount)
-        //         {
-        //             nr_images = surface_properties.capabilities().maxImageCount;
-        //         }
 
 
         // PRESENTATION
@@ -857,3 +984,122 @@ namespace lue::view {
     }
 
 }  // namespace lue::view
+
+
+/// static std::tuple<vulkan::PhysicalDevice, vulkan::QueueFamilies,
+/// vulkan::PhysicalDevice::SurfaceProperties> select_physical_device(
+///     vulkan::PhysicalDevices&& devices, vulkan::Surface const& surface,
+///     vulkan::Names const& extension_names)
+/// {
+///     std::multimap<int, vulkan::PhysicalDevice> candidates{};
+
+///     for (auto& device : devices)
+///     {
+///         int const score{rate_physical_device(device)};
+
+///         candidates.insert(std::make_pair(score, std::move(device)));
+///     }
+
+///     auto it = candidates.rend();
+///     vulkan::QueueFamilies queue_families{};
+///     vulkan::PhysicalDevice::SurfaceProperties surface_properties{};
+
+///     for (it = candidates.rbegin(); it != candidates.rend(); ++it)
+///     {
+///         if (it->first == 0)
+///         {
+///             // Candidates are ordered by score. We now reached the ones that are not
+///             // suitable by definition.
+///             it = candidates.rend();
+///         }
+///         else
+///         {
+///             // Check whether the device is suitable
+///             queue_families = find_queue_families(it->second, surface);
+
+///             bool const extensions_supported = it->second.extensions_available(extension_names);
+
+///             bool swap_chain_is_adequate{false};
+
+///             if(extensions_supported)
+///             {
+///                 surface_properties = it->second.surface_properties(surface);
+///                 swap_chain_is_adequate =
+///                    !surface_properties.formats().empty() &&
+///                    !surface_properties.present_modes().empty();
+///             }
+
+///             if(queue_families.is_complete() && extensions_supported && swap_chain_is_adequate)
+///             {
+///                 break;
+///             }
+///         }
+///     }
+
+///     if (it == candidates.rend())
+///     {
+///         throw std::runtime_error("Failed to find a suitable GPU");
+///     }
+
+///     if (!queue_families.is_complete())
+///     {
+///         throw std::runtime_error("Failed to find a GPU supporting both graphics and
+///         presentation");
+///     }
+
+///     return {std::move(candidates.rbegin()->second), queue_families,
+///     std::move(surface_properties)};
+/// }
+
+
+/// static int rate_physical_device(vulkan::PhysicalDevice const& device)
+/// {
+///     int score{0};
+
+///     vulkan::PhysicalDevice::Properties const properties{device.properties()};
+
+///     // TODO Figure out which devices the expect here and whether the ranking here
+///     //      is correct
+///     // TODO Figure out which devices are actually connected to a screen. This is (only)
+///     //      relevant when we need to present something on the screen.
+///     if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+///     {
+///         score += 1000;
+///     }
+///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+///     {
+///         score += 100;
+///     }
+///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
+///     {
+///         score += 10;
+///     }
+
+///     return score;
+/// }
+
+
+/// static vulkan::QueueFamilies find_queue_families(
+///     vulkan::PhysicalDevice const& physical_device, vulkan::Surface const& surface)
+/// {
+///     vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
+///     vulkan::QueueFamilies queue_families{};
+
+///     for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
+///     {
+///         // TODO What if multiple families support graphics or presentation? Currently
+///         //      an assertion will trigger in the QueueFamilies member functions.
+
+///         if (queue_family_properties[i].graphics())
+///         {
+///             queue_families.set_graphics_family(vulkan::QueueFamily{i});
+///         }
+
+///         if (physical_device.has_surface_support(vulkan::QueueFamily{i}, surface))
+///         {
+///             queue_families.set_present_family(vulkan::QueueFamily{i});
+///         }
+///     }
+
+///     return queue_families;
+/// }

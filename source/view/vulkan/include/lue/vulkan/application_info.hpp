@@ -6,13 +6,6 @@
 
 namespace lue::vulkan {
 
-    /*!
-        @brief      .
-        @param      .
-        @return     .
-        @exception  .
-        @sa         https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkApplicationInfo.html
-    */
     class ApplicationInfo
     {
 
@@ -41,7 +34,7 @@ namespace lue::vulkan {
 
             std::string _engine_name;
 
-            static_assert(!std::is_pointer_v<VkDeviceQueueCreateInfo>);
+            static_assert(!std::is_pointer_v<VkApplicationInfo>);
 
             VkApplicationInfo _application_info;
     };

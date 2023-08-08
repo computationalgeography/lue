@@ -81,6 +81,15 @@ namespace lue::vulkan {
     }
 
 
+    PhysicalDevice::PhysicalDevice():
+
+        _physical_device{}
+
+    {
+        assert(!*this);
+    }
+
+
     PhysicalDevice::PhysicalDevice(VkPhysicalDevice physical_device):
 
         _physical_device{physical_device}
@@ -91,7 +100,7 @@ namespace lue::vulkan {
 
     PhysicalDevice::PhysicalDevice(PhysicalDevice&& other):
 
-        _physical_device{std::move(other)}
+        _physical_device{std::move(other._physical_device)}
 
     {
         other._physical_device = VkPhysicalDevice{};
@@ -123,12 +132,16 @@ namespace lue::vulkan {
     */
     PhysicalDevice::operator VkPhysicalDevice() const
     {
+        assert(*this);
+
         return _physical_device;
     }
 
 
     PhysicalDevice::Properties PhysicalDevice::properties() const
     {
+        assert(*this);
+
         VkPhysicalDeviceProperties properties;
 
         ::vkGetPhysicalDeviceProperties(_physical_device, &properties);
@@ -139,6 +152,8 @@ namespace lue::vulkan {
 
     PhysicalDevice::Features PhysicalDevice::features() const
     {
+        assert(*this);
+
         VkPhysicalDeviceFeatures features;
 
         ::vkGetPhysicalDeviceFeatures(_physical_device, &features);
@@ -149,6 +164,8 @@ namespace lue::vulkan {
 
     QueueFamilyProperties PhysicalDevice::queue_family_properties() const
     {
+        assert(*this);
+
         std::uint32_t nr_queue_families;
 
         ::vkGetPhysicalDeviceQueueFamilyProperties(_physical_device, &nr_queue_families, nullptr);
@@ -171,6 +188,8 @@ namespace lue::vulkan {
 
     ExtensionProperties PhysicalDevice::extension_properties() const
     {
+        assert(*this);
+
         std::uint32_t nr_properties{0};
 
         ::vkEnumerateDeviceExtensionProperties(_physical_device, nullptr, &nr_properties, nullptr);
@@ -223,6 +242,8 @@ namespace lue::vulkan {
 
     bool PhysicalDevice::has_surface_support(QueueFamily const& queue_family, Surface const& surface) const
     {
+        assert(*this);
+
         VkBool32 support = false;
 
         ::vkGetPhysicalDeviceSurfaceSupportKHR(_physical_device, queue_family, surface, &support);
@@ -233,6 +254,8 @@ namespace lue::vulkan {
 
     PhysicalDevice::SurfaceProperties PhysicalDevice::surface_properties(Surface const& surface) const
     {
+        assert(*this);
+
         VkSurfaceCapabilitiesKHR capabilities;
 
         ::vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, surface, &capabilities);

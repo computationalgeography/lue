@@ -13,11 +13,11 @@ namespace lue::vulkan {
     /*!
         @brief      Class for all per-application state
 
-        This class wraps a VkInstance, which is a pointer to the actual instance object. Copying
+        This class wraps a `VkInstance`, which is a pointer to the actual instance object. Copying
         Instance instances is not supported, because the one and only instance is responsible
-        for destroying it. The wrapped VkInstance can be obtained. This will happen automatically
+        for destroying it. The wrapped `VkInstance` can be obtained. This will happen automatically
         due to the conversion operator. The one and only Instance instance must outlive all
-        copies and pointers to its wrapped VkInstance instance.
+        copies of and pointers to its wrapped `VkInstance` instance.
 
         Pattern:
         - Create Instance instance
@@ -32,13 +32,6 @@ namespace lue::vulkan {
             using LayerProperties = std::vector<VkLayerProperties>;
 
 
-            /*!
-                @brief      .
-                @param      .
-                @return     .
-                @exception  .
-                @sa         https://registry.khronos.org/vulkan/specs/1.3/html/chap4.html#VkInstance
-            */
             class CreateInfo
             {
 
@@ -48,16 +41,16 @@ namespace lue::vulkan {
 
                     CreateInfo(
                         VkInstanceCreateFlags const flags,
-                        ApplicationInfo&& application_info,
+                        ApplicationInfo const& application_info,
                         Names const& enabled_layer_names,
                         Names const& enabled_extension_names);
 
                     CreateInfo(
-                        ApplicationInfo&& application_info,
+                        ApplicationInfo const& application_info,
                         Names const& enabled_layer_names,
                         Names const& enabled_extension_names);
 
-                    CreateInfo(ApplicationInfo&& application_info);
+                    CreateInfo(ApplicationInfo const& application_info);
 
                     CreateInfo(CreateInfo const&) = delete;
 
@@ -73,7 +66,7 @@ namespace lue::vulkan {
 
                 private:
 
-                    ApplicationInfo _application_info;
+                    static_assert(!std::is_pointer_v<VkInstanceCreateInfo>);
 
                     VkInstanceCreateInfo _create_info;
             };
@@ -90,7 +83,7 @@ namespace lue::vulkan {
 
             static std::tuple<std::uint32_t, std::uint32_t, std::uint32_t, std::uint32_t> version();
 
-            Instance() = default;
+            Instance();
 
             Instance(CreateInfo const& create_info);
 

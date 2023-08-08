@@ -9,7 +9,7 @@ namespace lue::vulkan {
     {
         public:
 
-            Surface() = default;
+            Surface();
 
             Surface(VkInstance instance, VkSurfaceKHR surface);
 
