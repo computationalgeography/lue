@@ -5,7 +5,7 @@
 
 namespace lue::vulkan {
 
-    class RenderPass
+    class Fence
     {
         public:
 
@@ -26,33 +26,35 @@ namespace lue::vulkan {
 
                     CreateInfo& operator=(CreateInfo&&) = default;
 
-                    operator VkRenderPassCreateInfo const*() const;
+                    operator VkFenceCreateInfo const*() const;
 
-                    VkRenderPassCreateInfo& operator*();
+                    VkFenceCreateInfo& operator*();
 
                 private:
 
-                    VkRenderPassCreateInfo _create_info;
+                    VkFenceCreateInfo _create_info;
             };
 
 
-            RenderPass();
+            Fence();
 
-            RenderPass(VkDevice device, VkRenderPass render_pass);
+            Fence(VkDevice device, VkFence render_pass);
 
-            RenderPass(RenderPass const&) = delete;
+            Fence(Fence const&) = delete;
 
-            RenderPass(RenderPass&& other);
+            Fence(Fence&& other);
 
-            ~RenderPass();
+            ~Fence();
 
-            RenderPass& operator=(RenderPass const&) = delete;
+            Fence& operator=(Fence const&) = delete;
 
-            RenderPass& operator=(RenderPass&& other);
+            Fence& operator=(Fence&& other);
 
             operator bool() const;
 
-            operator VkRenderPass() const;
+            operator VkFence() const;
+
+            operator VkFence const*() const;
 
         private:
 
@@ -60,9 +62,9 @@ namespace lue::vulkan {
 
             VkDevice _device;
 
-            static_assert(std::is_pointer_v<VkRenderPass>);
+            static_assert(std::is_pointer_v<VkFence>);
 
-            VkRenderPass _render_pass;
+            VkFence _fence;
     };
 
 }  // namespace lue::vulkan

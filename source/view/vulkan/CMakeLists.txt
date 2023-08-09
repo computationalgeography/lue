@@ -8,9 +8,12 @@ add_test_conditionally(test)
 
 add_library(lue_vulkan STATIC
     src/application_info.cpp
+    src/command_buffer.cpp
+    src/command_pool.cpp
     src/debug_report_callback.cpp
     src/device.cpp
     src/error.cpp
+    src/fence.cpp
     src/framebuffer.cpp
     src/image_view.cpp
     src/instance.cpp
@@ -19,6 +22,7 @@ add_library(lue_vulkan STATIC
     src/pipeline_layout.cpp
     src/queue_family.cpp
     src/render_pass.cpp
+    src/semaphore.cpp
     src/shader_module.cpp
     src/surface.cpp
     src/swapchain.cpp

@@ -5,7 +5,7 @@
 
 namespace lue::vulkan {
 
-    class RenderPass
+    class Semaphore
     {
         public:
 
@@ -26,33 +26,33 @@ namespace lue::vulkan {
 
                     CreateInfo& operator=(CreateInfo&&) = default;
 
-                    operator VkRenderPassCreateInfo const*() const;
+                    operator VkSemaphoreCreateInfo const*() const;
 
-                    VkRenderPassCreateInfo& operator*();
+                    VkSemaphoreCreateInfo& operator*();
 
                 private:
 
-                    VkRenderPassCreateInfo _create_info;
+                    VkSemaphoreCreateInfo _create_info;
             };
 
 
-            RenderPass();
+            Semaphore();
 
-            RenderPass(VkDevice device, VkRenderPass render_pass);
+            Semaphore(VkDevice device, VkSemaphore render_pass);
 
-            RenderPass(RenderPass const&) = delete;
+            Semaphore(Semaphore const&) = delete;
 
-            RenderPass(RenderPass&& other);
+            Semaphore(Semaphore&& other);
 
-            ~RenderPass();
+            ~Semaphore();
 
-            RenderPass& operator=(RenderPass const&) = delete;
+            Semaphore& operator=(Semaphore const&) = delete;
 
-            RenderPass& operator=(RenderPass&& other);
+            Semaphore& operator=(Semaphore&& other);
 
             operator bool() const;
 
-            operator VkRenderPass() const;
+            operator VkSemaphore() const;
 
         private:
 
@@ -60,9 +60,9 @@ namespace lue::vulkan {
 
             VkDevice _device;
 
-            static_assert(std::is_pointer_v<VkRenderPass>);
+            static_assert(std::is_pointer_v<VkSemaphore>);
 
-            VkRenderPass _render_pass;
+            VkSemaphore _semaphore;
     };
 
 }  // namespace lue::vulkan

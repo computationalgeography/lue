@@ -132,7 +132,12 @@ namespace lue::view {
         _render_pass{},
         _pipeline_layout{},
         _graphics_pipeline{},
-        _framebuffers{}
+        _framebuffers{},
+        _command_pool{},
+        _command_buffer{},
+        _image_available_semaphore{},
+        _render_finished_semaphore{},
+        _in_flight_fence{}
 
     {
 #ifndef NDEBUG
@@ -192,6 +197,9 @@ namespace lue::view {
         create_render_pass();
         create_graphics_pipeline();
         create_framebuffers();
+        create_command_pool();
+        create_command_buffer();
+        create_sync_objects();
     }
 
 
@@ -541,12 +549,24 @@ namespace lue::view {
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &colorAttachmentRef;
 
+        // Subpass dependencies
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
         // Render pass
         vulkan::RenderPass::CreateInfo create_info{};
         (*create_info).attachmentCount = 1;
         (*create_info).pAttachments = &colorAttachment;
         (*create_info).subpassCount = 1;
         (*create_info).pSubpasses = &subpass;
+        (*create_info).dependencyCount = 1;
+        (*create_info).pDependencies = &dependency;
 
         _render_pass = _device.render_pass(create_info);
     }
@@ -720,8 +740,181 @@ namespace lue::view {
     }
 
 
+    void VulkanApplication::create_command_pool()
+    {
+        vulkan::QueueFamilies const queue_families{find_queue_families(_physical_device)};
+
+        vulkan::CommandPool::CreateInfo create_info{};
+
+        (*create_info).flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        (*create_info).queueFamilyIndex = queue_families.graphics_family();
+
+        _command_pool = _device.command_pool(create_info);
+    }
+
+
+    void VulkanApplication::create_command_buffer()
+    {
+        vulkan::CommandBuffer::AllocateInfo allocate_info{};
+
+        (*allocate_info).commandPool = _command_pool;
+        (*allocate_info).level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        (*allocate_info).commandBufferCount = 1;
+
+        _command_buffer = _device.command_buffer(allocate_info);
+    }
+
+
+    void VulkanApplication::create_sync_objects()
+    {
+        _image_available_semaphore = _device.semaphore(vulkan::Semaphore::CreateInfo{});
+        _render_finished_semaphore = _device.semaphore(vulkan::Semaphore::CreateInfo{});
+
+        vulkan::Fence::CreateInfo create_info{};
+
+        // Create the fence in the signaled state, so the first first wait in draw_frame
+        // returns immediately
+        (*create_info).flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+        _in_flight_fence = _device.fence(create_info);
+    }
+
+
+    void VulkanApplication::record_command_buffer(
+        vulkan::CommandBuffer& command_buffer, std::uint32_t image_idx)
+    {
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;                   // Optional
+        beginInfo.pInheritanceInfo = nullptr;  // Optional
+
+        if (vkBeginCommandBuffer(command_buffer, &beginInfo) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to begin recording command buffer!");
+        }
+
+
+        // Render pass
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = _render_pass;
+        renderPassInfo.framebuffer = _framebuffers[image_idx];
+
+
+        renderPassInfo.renderArea.offset = {0, 0};
+        renderPassInfo.renderArea.extent = _image_extent;
+
+        VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+        renderPassInfo.clearValueCount = 1;
+        renderPassInfo.pClearValues = &clearColor;
+
+
+        // TODO Make this a member of CommandBuffer
+        vkCmdBeginRenderPass(command_buffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+        // Basic drawing commands
+        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphics_pipeline);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(_image_extent.width);
+        viewport.height = static_cast<float>(_image_extent.height);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+
+        VkRect2D scissor{};
+        scissor.offset = {0, 0};
+        scissor.extent = _image_extent;
+        vkCmdSetScissor(command_buffer, 0, 1, &scissor);
+
+        // Draw the rectangle
+        vkCmdDraw(command_buffer, 3, 1, 0, 0);
+
+
+        vkCmdEndRenderPass(command_buffer);
+
+
+        if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to record command buffer!");
+        }
+    }
+
+
+    void VulkanApplication::main_loop()
+    {
+        while (!_window->should_close())
+        {
+            glfw::Library::poll_events();
+            draw_frame();
+        }
+
+        vkDeviceWaitIdle(_device);
+    }
+
+
+    void VulkanApplication::draw_frame()
+    {
+        // Wait for previous frame
+        vkWaitForFences(_device, 1, _in_flight_fence, VK_TRUE, UINT64_MAX);
+        vkResetFences(_device, 1, _in_flight_fence);
+
+        // Acquire image from the swapchain
+        uint32_t imageIndex;
+        vkAcquireNextImageKHR(
+            _device, _swapchain, UINT64_MAX, _image_available_semaphore, VK_NULL_HANDLE, &imageIndex);
+
+
+        // Record the command buffer
+        vkResetCommandBuffer(_command_buffer, 0);
+        record_command_buffer(_command_buffer, imageIndex);
+
+        // Submit the command buffer
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        VkSemaphore waitSemaphores[] = {_image_available_semaphore};
+
+        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = _command_buffer;
+
+        VkSemaphore signalSemaphores[] = {_render_finished_semaphore};
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+
+        if (vkQueueSubmit(_graphics_queue, 1, &submitInfo, _in_flight_fence) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to submit draw command buffer!");
+        }
+
+        // Presentation
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+
+        VkSwapchainKHR swapChains[] = {_swapchain};
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+        presentInfo.pImageIndices = &imageIndex;
+        presentInfo.pResults = nullptr;  // Optional
+
+        vkQueuePresentKHR(_present_queue, &presentInfo);
+    }
+
+
     int VulkanApplication::run_implementation()
     {
+
+
         // TODO Make sure that creating a window is optional. We also want to support off-screen
         //      rendering. The imgui stuff is only used to interact with the visualizations,
         //      and to gain insight into the contents of data sets.
@@ -740,6 +933,9 @@ namespace lue::view {
 
         init_window();
         init_vulkan();
+        main_loop();
+
+        return EXIT_SUCCESS;
 
 
         // PRESENTATION

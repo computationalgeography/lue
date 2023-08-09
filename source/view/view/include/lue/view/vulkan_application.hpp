@@ -62,6 +62,18 @@ namespace lue::view {
 
             void create_framebuffers();
 
+            void create_command_pool();
+
+            void create_command_buffer();
+
+            void create_sync_objects();
+
+            void record_command_buffer(vulkan::CommandBuffer& command_buffer, std::uint32_t image_idx);
+
+            void main_loop();
+
+            void draw_frame();
+
             std::unique_ptr<glfw::Library> _library;
 
             std::unique_ptr<glfw::Monitor> _monitor;
@@ -101,6 +113,16 @@ namespace lue::view {
             vulkan::Pipeline _graphics_pipeline;
 
             vulkan::Framebuffers _framebuffers;
+
+            vulkan::CommandPool _command_pool;
+
+            vulkan::CommandBuffer _command_buffer;
+
+            vulkan::Semaphore _image_available_semaphore;
+
+            vulkan::Semaphore _render_finished_semaphore;
+
+            vulkan::Fence _in_flight_fence;
     };
 
 }  // namespace lue::view

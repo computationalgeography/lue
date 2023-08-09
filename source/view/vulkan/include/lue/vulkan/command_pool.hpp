@@ -5,7 +5,7 @@
 
 namespace lue::vulkan {
 
-    class RenderPass
+    class CommandPool
     {
         public:
 
@@ -26,33 +26,33 @@ namespace lue::vulkan {
 
                     CreateInfo& operator=(CreateInfo&&) = default;
 
-                    operator VkRenderPassCreateInfo const*() const;
+                    operator VkCommandPoolCreateInfo const*() const;
 
-                    VkRenderPassCreateInfo& operator*();
+                    VkCommandPoolCreateInfo& operator*();
 
                 private:
 
-                    VkRenderPassCreateInfo _create_info;
+                    VkCommandPoolCreateInfo _create_info;
             };
 
 
-            RenderPass();
+            CommandPool();
 
-            RenderPass(VkDevice device, VkRenderPass render_pass);
+            CommandPool(VkDevice device, VkCommandPool command_pool);
 
-            RenderPass(RenderPass const&) = delete;
+            CommandPool(CommandPool const&) = delete;
 
-            RenderPass(RenderPass&& other);
+            CommandPool(CommandPool&& other);
 
-            ~RenderPass();
+            ~CommandPool();
 
-            RenderPass& operator=(RenderPass const&) = delete;
+            CommandPool& operator=(CommandPool const&) = delete;
 
-            RenderPass& operator=(RenderPass&& other);
+            CommandPool& operator=(CommandPool&& other);
 
             operator bool() const;
 
-            operator VkRenderPass() const;
+            operator VkCommandPool() const;
 
         private:
 
@@ -60,9 +60,9 @@ namespace lue::vulkan {
 
             VkDevice _device;
 
-            static_assert(std::is_pointer_v<VkRenderPass>);
+            static_assert(std::is_pointer_v<VkCommandPool>);
 
-            VkRenderPass _render_pass;
+            VkCommandPool _command_pool;
     };
 
 }  // namespace lue::vulkan

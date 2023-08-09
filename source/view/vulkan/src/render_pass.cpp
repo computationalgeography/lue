@@ -32,7 +32,7 @@ namespace lue::vulkan {
     RenderPass::RenderPass():
 
         _device{},
-        _pipeline_layout{}
+        _render_pass{}
 
     {
         assert(!*this);
@@ -42,7 +42,7 @@ namespace lue::vulkan {
     RenderPass::RenderPass(VkDevice device, VkRenderPass render_pass):
 
         _device{device},
-        _pipeline_layout{render_pass}
+        _render_pass{render_pass}
 
     {
         assert(*this);
@@ -52,11 +52,11 @@ namespace lue::vulkan {
     RenderPass::RenderPass(RenderPass&& other):
 
         _device{std::move(other._device)},
-        _pipeline_layout{std::move(other._pipeline_layout)}
+        _render_pass{std::move(other._render_pass)}
 
     {
         other._device = VkDevice{};
-        other._pipeline_layout = VkRenderPass{};
+        other._render_pass = VkRenderPass{};
 
         assert(!other);
     }
@@ -66,9 +66,9 @@ namespace lue::vulkan {
     {
         if (*this)
         {
-            vkDestroyRenderPass(_device, _pipeline_layout, nullptr);
+            vkDestroyRenderPass(_device, _render_pass, nullptr);
             _device = VkDevice{};
-            _pipeline_layout = VkRenderPass{};
+            _render_pass = VkRenderPass{};
         }
 
         assert(!*this);
@@ -79,14 +79,14 @@ namespace lue::vulkan {
     {
         if (*this)
         {
-            vkDestroyRenderPass(_device, _pipeline_layout, nullptr);
+            vkDestroyRenderPass(_device, _render_pass, nullptr);
         }
 
         _device = std::move(other._device);
-        _pipeline_layout = std::move(other._pipeline_layout);
+        _render_pass = std::move(other._render_pass);
 
         other._device = VkDevice{};
-        other._pipeline_layout = VkRenderPass{};
+        other._render_pass = VkRenderPass{};
 
         assert(!other);
 
@@ -96,7 +96,7 @@ namespace lue::vulkan {
 
     RenderPass::operator bool() const
     {
-        return _pipeline_layout != VK_NULL_HANDLE;
+        return _render_pass != VK_NULL_HANDLE;
     }
 
 
@@ -104,7 +104,7 @@ namespace lue::vulkan {
     {
         assert(*this);
 
-        return _pipeline_layout;
+        return _render_pass;
     }
 
 }  // namespace lue::vulkan

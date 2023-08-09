@@ -1,10 +1,14 @@
 #pragma once
+#include "lue/vulkan/command_buffer.hpp"
+#include "lue/vulkan/command_pool.hpp"
+#include "lue/vulkan/fence.hpp"
 #include "lue/vulkan/framebuffer.hpp"
 #include "lue/vulkan/image_view.hpp"
 #include "lue/vulkan/physical_device.hpp"
 #include "lue/vulkan/pipeline.hpp"
 #include "lue/vulkan/pipeline_layout.hpp"
 #include "lue/vulkan/render_pass.hpp"
+#include "lue/vulkan/semaphore.hpp"
 #include "lue/vulkan/shader_module.hpp"
 #include "lue/vulkan/swapchain.hpp"
 
@@ -152,6 +156,14 @@ namespace lue::vulkan {
             Pipeline graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const;
 
             Framebuffer framebuffer(Framebuffer::CreateInfo const& create_info) const;
+
+            CommandPool command_pool(CommandPool::CreateInfo const& create_info) const;
+
+            CommandBuffer command_buffer(CommandBuffer::AllocateInfo const& allocate_info) const;
+
+            Semaphore semaphore(Semaphore::CreateInfo const& create_info) const;
+
+            Fence fence(Fence::CreateInfo const& create_info) const;
 
         private:
 

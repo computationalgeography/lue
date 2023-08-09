@@ -325,4 +325,60 @@ namespace lue::vulkan {
         return {_device, framebuffer};
     }
 
+
+    CommandPool Device::command_pool(CommandPool::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkCommandPool command_pool;
+
+        VkResult result{vkCreateCommandPool(_device, create_info, nullptr, &command_pool)};
+
+        assert_result_is_ok(result);
+
+        return {_device, command_pool};
+    }
+
+
+    CommandBuffer Device::command_buffer(CommandBuffer::AllocateInfo const& allocate_info) const
+    {
+        assert(*this);
+
+        VkCommandBuffer command_buffer;
+
+        VkResult result{vkAllocateCommandBuffers(_device, allocate_info, &command_buffer)};
+
+        assert_result_is_ok(result);
+
+        return {_device, command_buffer};
+    }
+
+
+    Semaphore Device::semaphore(Semaphore::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkSemaphore semaphore;
+
+        VkResult result{vkCreateSemaphore(_device, create_info, nullptr, &semaphore)};
+
+        assert_result_is_ok(result);
+
+        return {_device, semaphore};
+    }
+
+
+    Fence Device::fence(Fence::CreateInfo const& create_info) const
+    {
+        assert(*this);
+
+        VkFence fence;
+
+        VkResult result{vkCreateFence(_device, create_info, nullptr, &fence)};
+
+        assert_result_is_ok(result);
+
+        return {_device, fence};
+    }
+
 }  // namespace lue::vulkan
