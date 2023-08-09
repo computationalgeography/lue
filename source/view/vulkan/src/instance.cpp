@@ -6,48 +6,6 @@
 
 namespace lue::vulkan {
 
-    Instance::CreateInfo::CreateInfo(
-        VkInstanceCreateFlags const flags,
-        ApplicationInfo const& application_info,
-        Names const& enabled_layer_names,
-        Names const& enabled_extension_names):
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        _create_info.flags = flags;
-        _create_info.pApplicationInfo = application_info;
-
-        // It is assumed that the character buffers themselves (not the vector) stay alive
-        _create_info.enabledLayerCount = enabled_layer_names.size();
-        _create_info.ppEnabledLayerNames = enabled_layer_names.data();
-
-        _create_info.enabledExtensionCount = enabled_extension_names.size();
-        _create_info.ppEnabledExtensionNames = enabled_extension_names.data();
-    }
-
-
-    Instance::CreateInfo::CreateInfo(
-        ApplicationInfo const& application_info,
-        Names const& enabled_layer_names,
-        Names const& enabled_extension_names):
-
-        Instance::CreateInfo{
-            VkInstanceCreateFlags{}, application_info, enabled_layer_names, enabled_extension_names}
-
-    {
-    }
-
-
-    Instance::CreateInfo::CreateInfo(ApplicationInfo const& application_info):
-
-        Instance::CreateInfo{VkInstanceCreateFlags{}, application_info, Names{}, Names{}}
-
-    {
-    }
-
-
     // Instance::ExtensionProperties::ExtensionProperties():
 
     //     _properties{}
@@ -183,12 +141,6 @@ namespace lue::vulkan {
         }
 
         return is_available;
-    }
-
-
-    Instance::CreateInfo::operator VkInstanceCreateInfo const*() const
-    {
-        return &_create_info;
     }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/vulkan/application_info.hpp"
 #include "lue/vulkan/physical_device.hpp"
+#include "lue/vulkan/structure.hpp"
 #include <cassert>
 #include <tuple>
 
@@ -31,45 +32,8 @@ namespace lue::vulkan {
 
             using LayerProperties = std::vector<VkLayerProperties>;
 
+            using CreateInfo = Structure<VkInstanceCreateInfo, VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO>;
 
-            class CreateInfo
-            {
-
-                    // TODO Support adding a debug print callback
-
-                public:
-
-                    CreateInfo(
-                        VkInstanceCreateFlags const flags,
-                        ApplicationInfo const& application_info,
-                        Names const& enabled_layer_names,
-                        Names const& enabled_extension_names);
-
-                    CreateInfo(
-                        ApplicationInfo const& application_info,
-                        Names const& enabled_layer_names,
-                        Names const& enabled_extension_names);
-
-                    CreateInfo(ApplicationInfo const& application_info);
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkInstanceCreateInfo const*() const;
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkInstanceCreateInfo>);
-
-                    VkInstanceCreateInfo _create_info;
-            };
 
             static ExtensionProperties extension_properties();
 

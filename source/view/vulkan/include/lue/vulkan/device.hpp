@@ -92,6 +92,35 @@ namespace lue::vulkan {
             };
 
 
+            class PresentInfo
+            {
+
+                public:
+
+                    PresentInfo();
+
+                    PresentInfo(PresentInfo const&) = delete;
+
+                    PresentInfo(PresentInfo&&) = default;
+
+                    ~PresentInfo() = default;
+
+                    PresentInfo& operator=(PresentInfo const&) = delete;
+
+                    PresentInfo& operator=(PresentInfo&&) = default;
+
+                    operator VkPresentInfoKHR const*() const;
+
+                    VkPresentInfoKHR& operator*();
+
+                private:
+
+                    static_assert(!std::is_pointer_v<VkPresentInfoKHR>);
+
+                    VkPresentInfoKHR _present_info;
+            };
+
+
             class Queue
             {
 
@@ -114,6 +143,8 @@ namespace lue::vulkan {
                     operator bool() const;
 
                     operator VkQueue() const;
+
+                    void present(PresentInfo const& present_info);
 
                 private:
 
@@ -140,6 +171,8 @@ namespace lue::vulkan {
             operator bool() const;
 
             operator VkDevice() const;
+
+            void wait_idle() const;
 
             Queue queue(QueueFamily const& queue_family) const;
 

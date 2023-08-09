@@ -5,30 +5,6 @@
 
 namespace lue::vulkan {
 
-    CommandPool::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    CommandPool::CreateInfo::operator VkCommandPoolCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkCommandPoolCreateInfo& CommandPool::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
     CommandPool::CommandPool():
 
         _device{},

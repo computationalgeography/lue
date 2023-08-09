@@ -36,6 +36,33 @@ namespace lue::vulkan {
             };
 
 
+            class BeginInfo
+            {
+
+                public:
+
+                    BeginInfo();
+
+                    BeginInfo(BeginInfo const&) = delete;
+
+                    BeginInfo(BeginInfo&&) = default;
+
+                    ~BeginInfo() = default;
+
+                    BeginInfo& operator=(BeginInfo const&) = delete;
+
+                    BeginInfo& operator=(BeginInfo&&) = default;
+
+                    operator VkRenderPassBeginInfo const*() const;
+
+                    VkRenderPassBeginInfo& operator*();
+
+                private:
+
+                    VkRenderPassBeginInfo _begin_info;
+            };
+
+
             RenderPass();
 
             RenderPass(VkDevice device, VkRenderPass render_pass);

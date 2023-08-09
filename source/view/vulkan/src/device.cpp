@@ -76,6 +76,30 @@ namespace lue::vulkan {
     }
 
 
+    Device::PresentInfo::PresentInfo():
+
+        _present_info{}
+
+    {
+        _present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    }
+
+
+    /*!
+        @warning    Do not use the returned pointer after this instance has gone out of scope
+    */
+    Device::PresentInfo::operator VkPresentInfoKHR const*() const
+    {
+        return &_present_info;
+    }
+
+
+    VkPresentInfoKHR& Device::PresentInfo::operator*()
+    {
+        return _present_info;
+    }
+
+
     Device::Queue::Queue():
 
         _queue{}
@@ -131,6 +155,14 @@ namespace lue::vulkan {
         assert(*this);
 
         return _queue;
+    }
+
+
+    void Device::Queue::present(PresentInfo const& present_info)
+    {
+        VkResult result = vkQueuePresentKHR(_queue, present_info);
+
+        assert_result_is_ok(result);
     }
 
 
@@ -212,6 +244,14 @@ namespace lue::vulkan {
         assert(*this);
 
         return _device;
+    }
+
+
+    void Device::wait_idle() const
+    {
+        VkResult result = vkDeviceWaitIdle(_device);
+
+        assert_result_is_ok(result);
     }
 
 

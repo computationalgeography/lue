@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 
@@ -10,56 +11,20 @@ namespace lue::vulkan {
 
         public:
 
-            class ShaderStageCreateInfo
-            {
+            using ShaderStageCreateInfo = Structure<
+                VkPipelineShaderStageCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO>;
 
-                public:
+            using GraphicsPipelineCreateInfo =
+                Structure<VkGraphicsPipelineCreateInfo, VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO>;
 
-                    ShaderStageCreateInfo(VkShaderStageFlagBits const stage, VkShaderModule module);
+            using VertexInputStateCreateInfo = Structure<
+                VkPipelineVertexInputStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO>;
 
-                    ShaderStageCreateInfo(ShaderStageCreateInfo const&) = delete;
-
-                    ShaderStageCreateInfo(ShaderStageCreateInfo&&) = default;
-
-                    ~ShaderStageCreateInfo() = default;
-
-                    ShaderStageCreateInfo& operator=(ShaderStageCreateInfo const&) = delete;
-
-                    ShaderStageCreateInfo& operator=(ShaderStageCreateInfo&&) = default;
-
-                    operator VkPipelineShaderStageCreateInfo const*() const;
-
-                private:
-
-                    VkPipelineShaderStageCreateInfo _create_info;
-            };
-
-
-            class GraphicsPipelineCreateInfo
-            {
-
-                public:
-
-                    GraphicsPipelineCreateInfo();
-
-                    GraphicsPipelineCreateInfo(GraphicsPipelineCreateInfo const&) = delete;
-
-                    GraphicsPipelineCreateInfo(GraphicsPipelineCreateInfo&&) = default;
-
-                    ~GraphicsPipelineCreateInfo() = default;
-
-                    GraphicsPipelineCreateInfo& operator=(GraphicsPipelineCreateInfo const&) = delete;
-
-                    GraphicsPipelineCreateInfo& operator=(GraphicsPipelineCreateInfo&&) = default;
-
-                    operator VkGraphicsPipelineCreateInfo const*() const;
-
-                    VkGraphicsPipelineCreateInfo& operator*();
-
-                private:
-
-                    VkGraphicsPipelineCreateInfo _create_info;
-            };
+            using InputAssemblyStateCreateInfo = Structure<
+                VkPipelineInputAssemblyStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO>;
 
 
             Pipeline();

@@ -303,25 +303,41 @@ namespace lue::view {
 #endif
 
         // TODO Add debug print callback to validate create/destroy the instance itself
-        _instance = vulkan::Instance{vulkan::Instance::CreateInfo{
-            vulkan::ApplicationInfo{
-                application_name,
-                std::make_tuple(
-                    BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
-                VK_API_VERSION_1_2},
-            required_layer_names(),
-            required_extension_names()}};
+
+        vulkan::ApplicationInfo application_info{
+            application_name,
+            std::make_tuple(
+                BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
+            VK_API_VERSION_1_2};
+
+        vulkan::Instance::CreateInfo instance_create_info{};
+
+        (*instance_create_info).flags = VkInstanceCreateFlags{};
+        (*instance_create_info).pApplicationInfo = application_info;
+
+        auto const layer_names = required_layer_names();
+
+        (*instance_create_info).enabledLayerCount = layer_names.size();
+        (*instance_create_info).ppEnabledLayerNames = layer_names.data();
+
+        auto const extension_names = required_extension_names();
+
+        (*instance_create_info).enabledExtensionCount = extension_names.size();
+        (*instance_create_info).ppEnabledExtensionNames = extension_names.data();
+
+        _instance = vulkan::Instance{instance_create_info};
     }
 
 
     void VulkanApplication::setup_debug_messenger()
     {
-        _debug_callback = vulkan::DebugReportCallback{
-            _instance,
-            vulkan::DebugReportCallback::CreateInfo{
-                VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
-                    VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT,
-                debug_report}};
+        vulkan::DebugReportCallback::CreateInfo create_info{};
+
+        (*create_info).flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                               VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+        (*create_info).pfnCallback = debug_report;
+
+        _debug_callback = vulkan::DebugReportCallback{_instance, std::move(create_info)};
     }
 
 
@@ -585,25 +601,28 @@ namespace lue::view {
         vulkan::ShaderModule fragment_shader_module{
             _device.shader_module(vulkan::ShaderModule::CreateInfo{fragment_shader_code})};
 
-        vulkan::Pipeline::ShaderStageCreateInfo vertex_shader_stage_info{
-            VK_SHADER_STAGE_VERTEX_BIT, vertex_shader_module};
-        vulkan::Pipeline::ShaderStageCreateInfo fragment_shader_stage_info{
-            VK_SHADER_STAGE_FRAGMENT_BIT, fragment_shader_module};
+        vulkan::Pipeline::ShaderStageCreateInfo vertex_shader_stage_info{};
+        (*vertex_shader_stage_info).stage = VK_SHADER_STAGE_VERTEX_BIT;
+        (*vertex_shader_stage_info).module = vertex_shader_module;
+        (*vertex_shader_stage_info).pName = "main";
+
+        vulkan::Pipeline::ShaderStageCreateInfo fragment_shader_stage_info{};
+        (*fragment_shader_stage_info).stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+        (*fragment_shader_stage_info).module = fragment_shader_module;
+        (*fragment_shader_stage_info).pName = "main";
 
         VkPipelineShaderStageCreateInfo shader_stages[] = {
             *vertex_shader_stage_info, *fragment_shader_stage_info};
 
-        VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-        vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;  // Optional
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;  // Optional
+        vulkan::Pipeline::VertexInputStateCreateInfo vertex_input_state_create_info{};
+        (*vertex_input_state_create_info).vertexBindingDescriptionCount = 0;
+        (*vertex_input_state_create_info).pVertexBindingDescriptions = nullptr;  // Optional
+        (*vertex_input_state_create_info).vertexAttributeDescriptionCount = 0;
+        (*vertex_input_state_create_info).pVertexAttributeDescriptions = nullptr;  // Optional
 
-        VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-        inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        inputAssembly.primitiveRestartEnable = VK_FALSE;
+        vulkan::Pipeline::InputAssemblyStateCreateInfo input_assembly_state_create_info{};
+        (*input_assembly_state_create_info).topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        (*input_assembly_state_create_info).primitiveRestartEnable = VK_FALSE;
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -617,96 +636,97 @@ namespace lue::view {
         scissor.offset = {0, 0};
         scissor.extent = _image_extent;
 
-        std::vector<VkDynamicState> dynamicStates = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 
-        VkPipelineDynamicStateCreateInfo dynamicState{};
-        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-        dynamicState.pDynamicStates = dynamicStates.data();
+        VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
+        dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+        dynamic_state_create_info.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
+        dynamic_state_create_info.pDynamicStates = dynamic_states.data();
 
-
-        VkPipelineViewportStateCreateInfo viewportState{};
-        viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportState.viewportCount = 1;
-        viewportState.scissorCount = 1;
+        VkPipelineViewportStateCreateInfo viewport_state_create_info{};
+        viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+        viewport_state_create_info.viewportCount = 1;
+        viewport_state_create_info.scissorCount = 1;
 
 
         // Rasterizer
-        VkPipelineRasterizationStateCreateInfo rasterizer{};
-        rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizer.depthClampEnable = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-        rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-        rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-        rasterizer.depthBiasEnable = VK_FALSE;
-        rasterizer.depthBiasConstantFactor = 0.0f;  // Optional
-        rasterizer.depthBiasClamp = 0.0f;           // Optional
-        rasterizer.depthBiasSlopeFactor = 0.0f;     // Optional
+        VkPipelineRasterizationStateCreateInfo rasterization_state_create_info{};
+        rasterization_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+        rasterization_state_create_info.depthClampEnable = VK_FALSE;
+        rasterization_state_create_info.rasterizerDiscardEnable = VK_FALSE;
+        rasterization_state_create_info.polygonMode = VK_POLYGON_MODE_FILL;
+        rasterization_state_create_info.lineWidth = 1.0f;
+        rasterization_state_create_info.cullMode = VK_CULL_MODE_BACK_BIT;
+        rasterization_state_create_info.frontFace = VK_FRONT_FACE_CLOCKWISE;
+        rasterization_state_create_info.depthBiasEnable = VK_FALSE;
+        rasterization_state_create_info.depthBiasConstantFactor = 0.0f;  // Optional
+        rasterization_state_create_info.depthBiasClamp = 0.0f;           // Optional
+        rasterization_state_create_info.depthBiasSlopeFactor = 0.0f;     // Optional
+
 
         // Multisampling
-        VkPipelineMultisampleStateCreateInfo multisampling{};
-        multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisampling.sampleShadingEnable = VK_FALSE;
-        multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        multisampling.minSampleShading = 1.0f;           // Optional
-        multisampling.pSampleMask = nullptr;             // Optional
-        multisampling.alphaToCoverageEnable = VK_FALSE;  // Optional
-        multisampling.alphaToOneEnable = VK_FALSE;       // Optional
+        VkPipelineMultisampleStateCreateInfo multisample_state_create_info{};
+        multisample_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+        multisample_state_create_info.sampleShadingEnable = VK_FALSE;
+        multisample_state_create_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        multisample_state_create_info.minSampleShading = 1.0f;           // Optional
+        multisample_state_create_info.pSampleMask = nullptr;             // Optional
+        multisample_state_create_info.alphaToCoverageEnable = VK_FALSE;  // Optional
+        multisample_state_create_info.alphaToOneEnable = VK_FALSE;       // Optional
+
 
         // Color blending
-        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
-                                              VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        colorBlendAttachment.blendEnable = VK_FALSE;
-        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
-        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
-        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
-        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
+        VkPipelineColorBlendAttachmentState color_blend_attachment_state{};
+        color_blend_attachment_state.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
+                                                      VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        color_blend_attachment_state.blendEnable = VK_FALSE;
+        color_blend_attachment_state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+        color_blend_attachment_state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+        color_blend_attachment_state.colorBlendOp = VK_BLEND_OP_ADD;              // Optional
+        color_blend_attachment_state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;   // Optional
+        color_blend_attachment_state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;  // Optional
+        color_blend_attachment_state.alphaBlendOp = VK_BLEND_OP_ADD;              // Optional
 
         // Computation:
         //     finalColor.rgb = newAlpha * newColor + (1 - newAlpha) * oldColor;
         //     finalColor.a = newAlpha.a;
-        colorBlendAttachment.blendEnable = VK_TRUE;
-        colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-        colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-        colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-        colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        color_blend_attachment_state.blendEnable = VK_TRUE;
+        color_blend_attachment_state.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+        color_blend_attachment_state.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        color_blend_attachment_state.colorBlendOp = VK_BLEND_OP_ADD;
+        color_blend_attachment_state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+        color_blend_attachment_state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+        color_blend_attachment_state.alphaBlendOp = VK_BLEND_OP_ADD;
 
-        VkPipelineColorBlendStateCreateInfo colorBlending{};
-        colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        colorBlending.logicOpEnable = VK_FALSE;
-        colorBlending.logicOp = VK_LOGIC_OP_COPY;  // Optional
-        colorBlending.attachmentCount = 1;
-        colorBlending.pAttachments = &colorBlendAttachment;
-        colorBlending.blendConstants[0] = 0.0f;  // Optional
-        colorBlending.blendConstants[1] = 0.0f;  // Optional
-        colorBlending.blendConstants[2] = 0.0f;  // Optional
-        colorBlending.blendConstants[3] = 0.0f;  // Optional
+
+        VkPipelineColorBlendStateCreateInfo color_blend_state_create_info{};
+        color_blend_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        color_blend_state_create_info.logicOpEnable = VK_FALSE;
+        color_blend_state_create_info.logicOp = VK_LOGIC_OP_COPY;  // Optional
+        color_blend_state_create_info.attachmentCount = 1;
+        color_blend_state_create_info.pAttachments = &color_blend_attachment_state;
+        color_blend_state_create_info.blendConstants[0] = 0.0f;  // Optional
+        color_blend_state_create_info.blendConstants[1] = 0.0f;  // Optional
+        color_blend_state_create_info.blendConstants[2] = 0.0f;  // Optional
+        color_blend_state_create_info.blendConstants[3] = 0.0f;  // Optional
 
 
         // Pipeline layout
         _pipeline_layout = _device.pipeline_layout(vulkan::PipelineLayout::CreateInfo{});
-
 
         vulkan::Pipeline::GraphicsPipelineCreateInfo create_info{};
 
         (*create_info).stageCount = 2;
         (*create_info).pStages = shader_stages;
 
-        (*create_info).pVertexInputState = &vertexInputInfo;
-        (*create_info).pInputAssemblyState = &inputAssembly;
-        (*create_info).pViewportState = &viewportState;
-        (*create_info).pRasterizationState = &rasterizer;
-        (*create_info).pMultisampleState = &multisampling;
+        (*create_info).pVertexInputState = vertex_input_state_create_info;
+        (*create_info).pInputAssemblyState = input_assembly_state_create_info;
+        (*create_info).pViewportState = &viewport_state_create_info;
+        (*create_info).pRasterizationState = &rasterization_state_create_info;
+        (*create_info).pMultisampleState = &multisample_state_create_info;
         (*create_info).pDepthStencilState = nullptr;  // Optional
-        (*create_info).pColorBlendState = &colorBlending;
-        (*create_info).pDynamicState = &dynamicState;
+        (*create_info).pColorBlendState = &color_blend_state_create_info;
+        (*create_info).pDynamicState = &dynamic_state_create_info;
 
         (*create_info).layout = _pipeline_layout;
         (*create_info).renderPass = _render_pass;
@@ -783,38 +803,29 @@ namespace lue::view {
     void VulkanApplication::record_command_buffer(
         vulkan::CommandBuffer& command_buffer, std::uint32_t image_idx)
     {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0;                   // Optional
-        beginInfo.pInheritanceInfo = nullptr;  // Optional
+        vulkan::CommandBuffer::BeginInfo command_buffer_begin_info{};
+        (*command_buffer_begin_info).flags = 0;                   // Optional
+        (*command_buffer_begin_info).pInheritanceInfo = nullptr;  // Optional
 
-        if (vkBeginCommandBuffer(command_buffer, &beginInfo) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to begin recording command buffer!");
-        }
-
+        command_buffer.begin(command_buffer_begin_info);
 
         // Render pass
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = _render_pass;
-        renderPassInfo.framebuffer = _framebuffers[image_idx];
+        vulkan::RenderPass::BeginInfo render_pass_begin_info{};
 
+        (*render_pass_begin_info).renderPass = _render_pass;
+        (*render_pass_begin_info).framebuffer = _framebuffers[image_idx];
 
-        renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = _image_extent;
+        (*render_pass_begin_info).renderArea.offset = {0, 0};
+        (*render_pass_begin_info).renderArea.extent = _image_extent;
 
         VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
+        (*render_pass_begin_info).clearValueCount = 1;
+        (*render_pass_begin_info).pClearValues = &clearColor;
 
-
-        // TODO Make this a member of CommandBuffer
-        vkCmdBeginRenderPass(command_buffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
+        command_buffer.begin_render_pass(render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
 
         // Basic drawing commands
-        vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _graphics_pipeline);
+        command_buffer.bind_pipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, _graphics_pipeline);
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -823,24 +834,20 @@ namespace lue::view {
         viewport.height = static_cast<float>(_image_extent.height);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(command_buffer, 0, 1, &viewport);
+
+        command_buffer.set_viewport(&viewport);
 
         VkRect2D scissor{};
         scissor.offset = {0, 0};
         scissor.extent = _image_extent;
-        vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
-        // Draw the rectangle
-        vkCmdDraw(command_buffer, 3, 1, 0, 0);
+        command_buffer.set_scissor(&scissor);
 
+        // Draw the triangle
+        command_buffer.draw(3, 1, 0, 0);
 
-        vkCmdEndRenderPass(command_buffer);
-
-
-        if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to record command buffer!");
-        }
+        command_buffer.end_render_pass();
+        command_buffer.end();
     }
 
 
@@ -852,7 +859,7 @@ namespace lue::view {
             draw_frame();
         }
 
-        vkDeviceWaitIdle(_device);
+        _device.wait_idle();
     }
 
 
@@ -866,7 +873,6 @@ namespace lue::view {
         uint32_t imageIndex;
         vkAcquireNextImageKHR(
             _device, _swapchain, UINT64_MAX, _image_available_semaphore, VK_NULL_HANDLE, &imageIndex);
-
 
         // Record the command buffer
         vkResetCommandBuffer(_command_buffer, 0);
@@ -895,19 +901,19 @@ namespace lue::view {
         }
 
         // Presentation
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        vulkan::Device::PresentInfo present_info{};
 
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
+        (*present_info).waitSemaphoreCount = 1;
+        (*present_info).pWaitSemaphores = signalSemaphores;
 
         VkSwapchainKHR swapChains[] = {_swapchain};
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
-        presentInfo.pImageIndices = &imageIndex;
-        presentInfo.pResults = nullptr;  // Optional
+        (*present_info).swapchainCount = 1;
+        (*present_info).pSwapchains = swapChains;
 
-        vkQueuePresentKHR(_present_queue, &presentInfo);
+        (*present_info).pImageIndices = &imageIndex;
+        (*present_info).pResults = nullptr;  // Optional
+
+        _present_queue.present(present_info);
     }
 
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
 #include <type_traits>
 
@@ -9,31 +10,7 @@ namespace lue::vulkan {
     {
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkCommandPoolCreateInfo const*() const;
-
-                    VkCommandPoolCreateInfo& operator*();
-
-                private:
-
-                    VkCommandPoolCreateInfo _create_info;
-            };
+            using CreateInfo = Structure<VkCommandPoolCreateInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO>;
 
 
             CommandPool();

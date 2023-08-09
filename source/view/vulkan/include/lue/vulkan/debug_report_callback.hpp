@@ -12,31 +12,10 @@ namespace lue::vulkan {
 
         public:
 
-            class CreateInfo
-            {
+            using CreateInfo = Structure<
+                VkDebugReportCallbackCreateInfoEXT,
+                VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT>;
 
-                public:
-
-                    CreateInfo(VkDebugReportFlagsEXT const flags, PFN_vkDebugReportCallbackEXT callback);
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkDebugReportCallbackCreateInfoEXT const*() const;
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkDebugReportCallbackCreateInfoEXT>);
-
-                    VkDebugReportCallbackCreateInfoEXT _create_info;
-            };
 
             DebugReportCallback();
 
