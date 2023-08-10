@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
-#include <type_traits>
 
 
 namespace lue::vulkan {
@@ -9,32 +9,7 @@ namespace lue::vulkan {
     {
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkFenceCreateInfo const*() const;
-
-                    VkFenceCreateInfo& operator*();
-
-                private:
-
-                    VkFenceCreateInfo _create_info;
-            };
-
+            using CreateInfo = Structure<VkFenceCreateInfo, VK_STRUCTURE_TYPE_FENCE_CREATE_INFO>;
 
             Fence();
 

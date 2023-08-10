@@ -5,30 +5,6 @@
 
 namespace lue::vulkan {
 
-    Semaphore::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    Semaphore::CreateInfo::operator VkSemaphoreCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkSemaphoreCreateInfo& Semaphore::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
     Semaphore::Semaphore():
 
         _device{},

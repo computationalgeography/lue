@@ -5,11 +5,14 @@
 
 namespace lue::vulkan {
 
-    template<typename Type, VkStructureType value>
+    template<typename VkStructure, VkStructureType value>
     class Structure
     {
 
         public:
+
+            using VkType = VkStructure;
+
 
             Structure():
 
@@ -34,7 +37,7 @@ namespace lue::vulkan {
             /*!
                 @warning    Do not use the returned pointer after this instance has gone out of scope
             */
-            operator Type const*() const
+            operator VkStructure const*() const
             {
                 return &_structure;
             }
@@ -43,7 +46,7 @@ namespace lue::vulkan {
             /*!
                 @warning    Do not use the returned reference after this instance has gone out of scope
             */
-            Type& operator*()
+            VkStructure& operator*()
             {
                 return _structure;
             }
@@ -51,9 +54,9 @@ namespace lue::vulkan {
 
         private:
 
-            static_assert(!std::is_pointer_v<Type>);
+            static_assert(!std::is_pointer_v<VkStructure>);
 
-            Type _structure;
+            VkStructure _structure;
     };
 
 }  // namespace lue::vulkan

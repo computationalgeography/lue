@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
-#include <type_traits>
 #include <vector>
 
 
@@ -10,31 +10,7 @@ namespace lue::vulkan {
     {
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkFramebufferCreateInfo const*() const;
-
-                    VkFramebufferCreateInfo& operator*();
-
-                private:
-
-                    VkFramebufferCreateInfo _create_info;
-            };
+            using CreateInfo = Structure<VkFramebufferCreateInfo, VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO>;
 
 
             Framebuffer();

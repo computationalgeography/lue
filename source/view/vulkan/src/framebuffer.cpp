@@ -5,30 +5,6 @@
 
 namespace lue::vulkan {
 
-    Framebuffer::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    Framebuffer::CreateInfo::operator VkFramebufferCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkFramebufferCreateInfo& Framebuffer::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
     Framebuffer::Framebuffer():
 
         _device{},

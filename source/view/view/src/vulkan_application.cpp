@@ -470,14 +470,35 @@ namespace lue::view {
             unique_queue_families.end(),
             queue_create_infos.begin(),
             [](vulkan::QueueFamily const& queue_family)
-            { return vulkan::Device::QueueCreateInfo{queue_family}; });
+            {
+                static float const queue_priority{1.0f};
+                vulkan::Device::QueueCreateInfo create_info{};
+
+                (*create_info).queueFamilyIndex = queue_family;
+                (*create_info).queueCount = 1;
+                (*create_info).pQueuePriorities = &queue_priority;
+
+                return create_info;
+            });
 
         vulkan::Names required_extension_names{};
         required_extension_names.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 
-        _device = vulkan::Device{
-            _physical_device,
-            vulkan::Device::CreateInfo{std::move(queue_create_infos), std::move(required_extension_names)}};
+        vulkan::Device::CreateInfo device_create_info{};
+
+        // We are passing a pointer to the Vulkan structure that is layered in our QueueCreateInfo
+        // type. Internally, this pointer will be moved to reach the next info instance. This
+        // should work when the Vulkan structure and our type have the same size. This is the case
+        // when our structure does not have additional data members.
+        static_assert(
+            sizeof(vulkan::Device::QueueCreateInfo) == sizeof(vulkan::Device::QueueCreateInfo::VkType));
+        (*device_create_info).pQueueCreateInfos = *queue_create_infos.data();
+        (*device_create_info).queueCreateInfoCount = queue_create_infos.size();
+        (*device_create_info).pEnabledFeatures = nullptr;
+        (*device_create_info).enabledExtensionCount = required_extension_names.size();
+        (*device_create_info).ppEnabledExtensionNames = required_extension_names.data();
+
+        _device = vulkan::Device{_physical_device, device_create_info};
 
         // Possibly the same queue
         _graphics_queue = vulkan::Device::Queue{_device.queue(queue_families.graphics_family())};
@@ -508,8 +529,41 @@ namespace lue::view {
 
         vulkan::QueueFamilies const queue_families{find_queue_families(_physical_device)};
 
-        _swapchain = _device.swapchain(vulkan::Swapchain::CreateInfo{
-            _surface, nr_images, swap_surface_format, swap_extent, queue_families, transform, present_mode});
+        vulkan::Swapchain::CreateInfo swapchain_create_info{};
+
+        (*swapchain_create_info).surface = _surface;
+        (*swapchain_create_info).minImageCount = nr_images;
+        (*swapchain_create_info).imageFormat = swap_surface_format.format;
+        (*swapchain_create_info).imageColorSpace = swap_surface_format.colorSpace;
+        (*swapchain_create_info).imageExtent = swap_extent;
+        (*swapchain_create_info).imageArrayLayers = 1;
+        (*swapchain_create_info).imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        assert(queue_families.is_complete());
+        std::uint32_t queue_family_indices[] = {
+            queue_families.graphics_family(), queue_families.present_family()};
+
+        if (queue_families.graphics_family() != queue_families.present_family())
+        {
+            (*swapchain_create_info).imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            (*swapchain_create_info).queueFamilyIndexCount = 2;
+            (*swapchain_create_info).pQueueFamilyIndices = queue_family_indices;
+        }
+        else
+        {
+            (*swapchain_create_info).imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            (*swapchain_create_info).queueFamilyIndexCount = 0;      // Optional
+            (*swapchain_create_info).pQueueFamilyIndices = nullptr;  // Optional
+        }
+
+        (*swapchain_create_info).preTransform = transform;
+        (*swapchain_create_info).compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        (*swapchain_create_info).presentMode = present_mode;
+        (*swapchain_create_info).clipped = VK_TRUE;
+        (*swapchain_create_info).oldSwapchain = VK_NULL_HANDLE;
+
+        _swapchain = _device.swapchain(swapchain_create_info);
+
         _swapchain_images = _swapchain.images();
         _image_format = swap_surface_format.format;
         _image_extent = swap_extent;
@@ -596,10 +650,24 @@ namespace lue::view {
         vulkan::ShaderModule::Bytes fragment_shader_code{
             vulkan::ShaderModule::read_file("source/view/view/shader/shader.frag.spv")};
 
-        vulkan::ShaderModule vertex_shader_module{
-            _device.shader_module(vulkan::ShaderModule::CreateInfo{vertex_shader_code})};
+        vulkan::ShaderModule::CreateInfo vertex_shader_module_create_info{};
+
+        (*vertex_shader_module_create_info).codeSize = vertex_shader_code.size();
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        (*vertex_shader_module_create_info).pCode =
+            reinterpret_cast<std::uint32_t const*>(vertex_shader_code.data());
+
+        vulkan::ShaderModule vertex_shader_module{_device.shader_module(vertex_shader_module_create_info)};
+
+        vulkan::ShaderModule::CreateInfo fragment_shader_module_create_info{};
+
+        (*fragment_shader_module_create_info).codeSize = fragment_shader_code.size();
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        (*fragment_shader_module_create_info).pCode =
+            reinterpret_cast<std::uint32_t const*>(fragment_shader_code.data());
+
         vulkan::ShaderModule fragment_shader_module{
-            _device.shader_module(vulkan::ShaderModule::CreateInfo{fragment_shader_code})};
+            _device.shader_module(fragment_shader_module_create_info)};
 
         vulkan::Pipeline::ShaderStageCreateInfo vertex_shader_stage_info{};
         (*vertex_shader_stage_info).stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -636,7 +704,6 @@ namespace lue::view {
         scissor.offset = {0, 0};
         scissor.extent = _image_extent;
 
-
         VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
         dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
         std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
@@ -647,7 +714,6 @@ namespace lue::view {
         viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewport_state_create_info.viewportCount = 1;
         viewport_state_create_info.scissorCount = 1;
-
 
         // Rasterizer
         VkPipelineRasterizationStateCreateInfo rasterization_state_create_info{};
@@ -673,7 +739,6 @@ namespace lue::view {
         multisample_state_create_info.pSampleMask = nullptr;             // Optional
         multisample_state_create_info.alphaToCoverageEnable = VK_FALSE;  // Optional
         multisample_state_create_info.alphaToOneEnable = VK_FALSE;       // Optional
-
 
         // Color blending
         VkPipelineColorBlendAttachmentState color_blend_attachment_state{};
@@ -710,32 +775,39 @@ namespace lue::view {
         color_blend_state_create_info.blendConstants[2] = 0.0f;  // Optional
         color_blend_state_create_info.blendConstants[3] = 0.0f;  // Optional
 
-
         // Pipeline layout
-        _pipeline_layout = _device.pipeline_layout(vulkan::PipelineLayout::CreateInfo{});
+        vulkan::PipelineLayout::CreateInfo pipeline_layout_create_info{};
 
-        vulkan::Pipeline::GraphicsPipelineCreateInfo create_info{};
+        (*pipeline_layout_create_info).setLayoutCount = 0;             // Optional
+        (*pipeline_layout_create_info).pSetLayouts = nullptr;          // Optional
+        (*pipeline_layout_create_info).pushConstantRangeCount = 0;     // Optional
+        (*pipeline_layout_create_info).pPushConstantRanges = nullptr;  // Optional
 
-        (*create_info).stageCount = 2;
-        (*create_info).pStages = shader_stages;
+        _pipeline_layout = _device.pipeline_layout(pipeline_layout_create_info);
 
-        (*create_info).pVertexInputState = vertex_input_state_create_info;
-        (*create_info).pInputAssemblyState = input_assembly_state_create_info;
-        (*create_info).pViewportState = &viewport_state_create_info;
-        (*create_info).pRasterizationState = &rasterization_state_create_info;
-        (*create_info).pMultisampleState = &multisample_state_create_info;
-        (*create_info).pDepthStencilState = nullptr;  // Optional
-        (*create_info).pColorBlendState = &color_blend_state_create_info;
-        (*create_info).pDynamicState = &dynamic_state_create_info;
+        // Graphics pipeline
+        vulkan::Pipeline::GraphicsPipelineCreateInfo graphics_pipeline_create_info{};
 
-        (*create_info).layout = _pipeline_layout;
-        (*create_info).renderPass = _render_pass;
-        (*create_info).subpass = 0;
+        (*graphics_pipeline_create_info).stageCount = 2;
+        (*graphics_pipeline_create_info).pStages = shader_stages;
 
-        (*create_info).basePipelineHandle = VK_NULL_HANDLE;  // Optional
-        (*create_info).basePipelineIndex = -1;               // Optional
+        (*graphics_pipeline_create_info).pVertexInputState = vertex_input_state_create_info;
+        (*graphics_pipeline_create_info).pInputAssemblyState = input_assembly_state_create_info;
+        (*graphics_pipeline_create_info).pViewportState = &viewport_state_create_info;
+        (*graphics_pipeline_create_info).pRasterizationState = &rasterization_state_create_info;
+        (*graphics_pipeline_create_info).pMultisampleState = &multisample_state_create_info;
+        (*graphics_pipeline_create_info).pDepthStencilState = nullptr;  // Optional
+        (*graphics_pipeline_create_info).pColorBlendState = &color_blend_state_create_info;
+        (*graphics_pipeline_create_info).pDynamicState = &dynamic_state_create_info;
 
-        _graphics_pipeline = _device.graphics_pipeline(create_info);
+        (*graphics_pipeline_create_info).layout = _pipeline_layout;
+        (*graphics_pipeline_create_info).renderPass = _render_pass;
+        (*graphics_pipeline_create_info).subpass = 0;
+
+        (*graphics_pipeline_create_info).basePipelineHandle = VK_NULL_HANDLE;  // Optional
+        (*graphics_pipeline_create_info).basePipelineIndex = -1;               // Optional
+
+        _graphics_pipeline = _device.graphics_pipeline(graphics_pipeline_create_info);
     }
 
 

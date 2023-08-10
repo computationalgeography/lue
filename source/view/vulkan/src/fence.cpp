@@ -5,30 +5,6 @@
 
 namespace lue::vulkan {
 
-    Fence::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    Fence::CreateInfo::operator VkFenceCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkFenceCreateInfo& Fence::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
     Fence::Fence():
 
         _device{},

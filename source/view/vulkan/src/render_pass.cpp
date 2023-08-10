@@ -5,54 +5,6 @@
 
 namespace lue::vulkan {
 
-    RenderPass::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    RenderPass::CreateInfo::operator VkRenderPassCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkRenderPassCreateInfo& RenderPass::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
-    RenderPass::BeginInfo::BeginInfo():
-
-        _begin_info{}
-
-    {
-        _begin_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    RenderPass::BeginInfo::operator VkRenderPassBeginInfo const*() const
-    {
-        return &_begin_info;
-    }
-
-
-    VkRenderPassBeginInfo& RenderPass::BeginInfo::operator*()
-    {
-        return _begin_info;
-    }
-
-
     RenderPass::RenderPass():
 
         _device{},

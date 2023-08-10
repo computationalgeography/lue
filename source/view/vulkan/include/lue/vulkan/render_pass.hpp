@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
-#include <type_traits>
 
 
 namespace lue::vulkan {
@@ -9,58 +9,9 @@ namespace lue::vulkan {
     {
         public:
 
-            class CreateInfo
-            {
+            using CreateInfo = Structure<VkRenderPassCreateInfo, VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO>;
 
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkRenderPassCreateInfo const*() const;
-
-                    VkRenderPassCreateInfo& operator*();
-
-                private:
-
-                    VkRenderPassCreateInfo _create_info;
-            };
-
-
-            class BeginInfo
-            {
-
-                public:
-
-                    BeginInfo();
-
-                    BeginInfo(BeginInfo const&) = delete;
-
-                    BeginInfo(BeginInfo&&) = default;
-
-                    ~BeginInfo() = default;
-
-                    BeginInfo& operator=(BeginInfo const&) = delete;
-
-                    BeginInfo& operator=(BeginInfo&&) = default;
-
-                    operator VkRenderPassBeginInfo const*() const;
-
-                    VkRenderPassBeginInfo& operator*();
-
-                private:
-
-                    VkRenderPassBeginInfo _begin_info;
-            };
+            using BeginInfo = Structure<VkRenderPassBeginInfo, VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO>;
 
 
             RenderPass();

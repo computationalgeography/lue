@@ -3,7 +3,6 @@
 #include "lue/vulkan/render_pass.hpp"
 #include <vulkan/vulkan.h>
 #include <cinttypes>
-#include <type_traits>
 
 
 namespace lue::vulkan {

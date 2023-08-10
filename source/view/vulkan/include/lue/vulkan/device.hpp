@@ -20,105 +20,12 @@ namespace lue::vulkan {
 
         public:
 
-            class QueueCreateInfo
-            {
+            using QueueCreateInfo =
+                Structure<VkDeviceQueueCreateInfo, VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO>;
 
-                public:
+            using CreateInfo = Structure<VkDeviceCreateInfo, VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO>;
 
-                    QueueCreateInfo() = default;
-
-                    QueueCreateInfo(QueueCreateInfo const&) = delete;
-
-                    QueueCreateInfo(QueueCreateInfo&&) = default;
-
-                    QueueCreateInfo(QueueFamily const& queue_family);
-
-                    ~QueueCreateInfo() = default;
-
-                    QueueCreateInfo& operator=(QueueCreateInfo const&) = delete;
-
-                    QueueCreateInfo& operator=(QueueCreateInfo&&) = default;
-
-                    operator VkDeviceQueueCreateInfo const*() const;
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkDeviceQueueCreateInfo>);
-
-                    //! The number of queues we want for a single queue family
-                    VkDeviceQueueCreateInfo _create_info;
-
-                    std::vector<float> _queue_priorities;
-            };
-
-
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo() = delete;
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    CreateInfo(std::vector<QueueCreateInfo>&& queue_create_infos, Names&& extension_names);
-
-                    CreateInfo(
-                        std::vector<QueueCreateInfo>&& queue_create_infos,
-                        PhysicalDevice::Features&& enabled_features,
-                        Names&& extension_names);
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkDeviceCreateInfo const*() const;
-
-                private:
-
-                    std::vector<VkDeviceQueueCreateInfo> _queue_create_infos;
-
-                    PhysicalDevice::Features _enabled_features;
-
-                    Names _extension_names;
-
-                    static_assert(!std::is_pointer_v<VkDeviceCreateInfo>);
-
-                    VkDeviceCreateInfo _create_info;
-            };
-
-
-            class PresentInfo
-            {
-
-                public:
-
-                    PresentInfo();
-
-                    PresentInfo(PresentInfo const&) = delete;
-
-                    PresentInfo(PresentInfo&&) = default;
-
-                    ~PresentInfo() = default;
-
-                    PresentInfo& operator=(PresentInfo const&) = delete;
-
-                    PresentInfo& operator=(PresentInfo&&) = default;
-
-                    operator VkPresentInfoKHR const*() const;
-
-                    VkPresentInfoKHR& operator*();
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkPresentInfoKHR>);
-
-                    VkPresentInfoKHR _present_info;
-            };
+            using PresentInfo = Structure<VkPresentInfoKHR, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR>;
 
 
             class Queue

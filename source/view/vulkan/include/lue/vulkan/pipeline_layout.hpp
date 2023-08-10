@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
-#include <type_traits>
 
 
 namespace lue::vulkan {
@@ -9,29 +9,8 @@ namespace lue::vulkan {
     {
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkPipelineLayoutCreateInfo const*() const;
-
-                private:
-
-                    VkPipelineLayoutCreateInfo _create_info;
-            };
+            using CreateInfo =
+                Structure<VkPipelineLayoutCreateInfo, VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO>;
 
 
             PipelineLayout();

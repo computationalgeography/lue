@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
 #include <string>
 #include <vector>
@@ -13,30 +14,8 @@ namespace lue::vulkan {
 
             using Bytes = std::vector<char>;
 
-
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo(Bytes const& bytes);
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkShaderModuleCreateInfo const*() const;
-
-                private:
-
-                    VkShaderModuleCreateInfo _create_info;
-            };
+            using CreateInfo =
+                Structure<VkShaderModuleCreateInfo, VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO>;
 
 
             static Bytes read_file(std::string const& pathname);

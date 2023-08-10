@@ -6,37 +6,6 @@
 
 namespace lue::vulkan {
 
-    /*!
-        @brief      .
-        @param      .
-        @return     .
-        @exception  .
-
-        The bytes buffer passed in can be destructed once the ShaderModule instance has been
-        created.
-    */
-    ShaderModule::CreateInfo::CreateInfo(Bytes const& bytes):
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        _create_info.codeSize = bytes.size();
-
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-        _create_info.pCode = reinterpret_cast<std::uint32_t const*>(bytes.data());
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    ShaderModule::CreateInfo::operator VkShaderModuleCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
     ShaderModule::Bytes ShaderModule::read_file(std::string const& pathname)
     {
         std::ifstream file(pathname, std::ios::ate | std::ios::binary);

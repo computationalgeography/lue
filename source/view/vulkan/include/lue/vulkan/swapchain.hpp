@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/vulkan/queue_family.hpp"
-#include "lue/vulkan/surface.hpp"
+#include "lue/vulkan/structure.hpp"
 #include <cstdint>
+#include <vector>
 
 
 namespace lue::vulkan {
@@ -17,39 +17,8 @@ namespace lue::vulkan {
 
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo(
-                        Surface const& surface,
-                        std::uint32_t const min_nr_images,
-                        VkSurfaceFormatKHR const image_format,
-                        VkExtent2D const image_extent,
-                        QueueFamilies const& queue_families,
-                        VkSurfaceTransformFlagBitsKHR const transform,
-                        VkPresentModeKHR const present_mode);
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkSwapchainCreateInfoKHR const*() const;
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkSwapchainCreateInfoKHR>);
-
-                    VkSwapchainCreateInfoKHR _create_info;
-            };
-
+            using CreateInfo =
+                Structure<VkSwapchainCreateInfoKHR, VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR>;
 
             using Images = std::vector<VkImage>;
 

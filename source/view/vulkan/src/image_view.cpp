@@ -4,30 +4,6 @@
 
 namespace lue::vulkan {
 
-    ImageView::CreateInfo::CreateInfo():
-
-        _create_info{}
-
-    {
-        _create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    ImageView::CreateInfo::operator VkImageViewCreateInfo const*() const
-    {
-        return &_create_info;
-    }
-
-
-    VkImageViewCreateInfo& ImageView::CreateInfo::operator*()
-    {
-        return _create_info;
-    }
-
-
     ImageView::ImageView():
 
         _device{},

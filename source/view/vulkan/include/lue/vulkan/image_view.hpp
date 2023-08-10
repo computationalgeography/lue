@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 
@@ -10,33 +11,7 @@ namespace lue::vulkan {
 
         public:
 
-            class CreateInfo
-            {
-
-                public:
-
-                    CreateInfo();
-
-                    CreateInfo(CreateInfo const&) = delete;
-
-                    CreateInfo(CreateInfo&&) = default;
-
-                    ~CreateInfo() = default;
-
-                    CreateInfo& operator=(CreateInfo const&) = delete;
-
-                    CreateInfo& operator=(CreateInfo&&) = default;
-
-                    operator VkImageViewCreateInfo const*() const;
-
-                    VkImageViewCreateInfo& operator*();
-
-                private:
-
-                    static_assert(!std::is_pointer_v<VkImageViewCreateInfo>);
-
-                    VkImageViewCreateInfo _create_info;
-            };
+            using CreateInfo = Structure<VkImageViewCreateInfo, VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO>;
 
 
             ImageView();

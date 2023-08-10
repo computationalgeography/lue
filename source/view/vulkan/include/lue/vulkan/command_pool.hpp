@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/vulkan/structure.hpp"
 #include <vulkan/vulkan.h>
-#include <type_traits>
 
 
 namespace lue::vulkan {
