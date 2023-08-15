@@ -288,17 +288,29 @@ namespace lue::vulkan {
     }
 
 
-    CommandBuffer Device::command_buffer(CommandBuffer::AllocateInfo const& allocate_info) const
+    Device::CommandBuffers Device::command_buffers(CommandBuffer::AllocateInfo const& allocate_info) const
     {
         assert(is_valid());
 
-        VkCommandBuffer command_buffer;
+        std::uint32_t const nr_command_buffers = (*allocate_info).commandBufferCount;
 
-        VkResult result{vkAllocateCommandBuffers(_device, allocate_info, &command_buffer)};
+        std::vector<VkCommandBuffer> command_buffers1(nr_command_buffers);
+
+        VkResult result{vkAllocateCommandBuffers(_device, allocate_info, command_buffers1.data())};
 
         assert_result_is_ok(result);
 
-        return {_device, command_buffer};
+        CommandBuffers command_buffers2(nr_command_buffers);
+
+        std::transform(
+            command_buffers1.begin(),
+            command_buffers1.end(),
+            command_buffers2.begin(),
+            [this](VkCommandBuffer command_buffer) {
+                return CommandBuffer{_device, command_buffer};
+            });
+
+        return command_buffers2;
     }
 
 
@@ -316,6 +328,20 @@ namespace lue::vulkan {
     }
 
 
+    Device::Semaphores Device::semaphores(
+        std::uint32_t const nr_semaphores, Semaphore::CreateInfo const& create_info) const
+    {
+        Semaphores semaphores(nr_semaphores);
+
+        std::generate(
+            semaphores.begin(),
+            semaphores.end(),
+            [this, create_info = std::ref(create_info)]() { return semaphore(create_info); });
+
+        return semaphores;
+    }
+
+
     Fence Device::fence(Fence::CreateInfo const& create_info) const
     {
         assert(is_valid());
@@ -327,6 +353,19 @@ namespace lue::vulkan {
         assert_result_is_ok(result);
 
         return {_device, fence};
+    }
+
+
+    Device::Fences Device::fences(std::uint32_t const nr_fences, Fence::CreateInfo const& create_info) const
+    {
+        Fences fences(nr_fences);
+
+        std::generate(
+            fences.begin(),
+            fences.end(),
+            [this, create_info = std::ref(create_info)]() { return fence(create_info); });
+
+        return fences;
     }
 
 }  // namespace lue::vulkan

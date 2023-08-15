@@ -73,7 +73,7 @@ namespace lue::view {
 
             void create_command_pool();
 
-            void create_command_buffer();
+            void create_command_buffers();
 
             void create_sync_objects();
 
@@ -127,13 +127,15 @@ namespace lue::view {
 
             vulkan::CommandPool _command_pool;
 
-            vulkan::CommandBuffer _command_buffer;
+            vulkan::Device::CommandBuffers _command_buffers;
 
-            vulkan::Semaphore _image_available_semaphore;
+            vulkan::Device::Semaphores _image_available_semaphores;
 
-            vulkan::Semaphore _render_finished_semaphore;
+            vulkan::Device::Semaphores _render_finished_semaphores;
 
-            vulkan::Fence _in_flight_fence;
+            vulkan::Device::Fences _in_flight_fences;
+
+            std::uint32_t _current_frame;
     };
 
 }  // namespace lue::view

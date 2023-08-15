@@ -13,6 +13,11 @@
 namespace lue::view {
     namespace {
 
+        // This allows the CPU and GPU to work on their own tasks at the same time. If the CPU
+        // finishes early, it will wait untill the GPU finishes rendering before submitting
+        // more work.
+        std::uint32_t const MAX_NR_FRAMES_IN_FLIGHT = 2;
+
         static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
             [[maybe_unused]] VkDebugReportFlagsEXT flags,
             VkDebugReportObjectTypeEXT object_type,
@@ -137,10 +142,11 @@ namespace lue::view {
         _graphics_pipeline{},
         _framebuffers{},
         _command_pool{},
-        _command_buffer{},
-        _image_available_semaphore{},
-        _render_finished_semaphore{},
-        _in_flight_fence{}
+        _command_buffers{},
+        _image_available_semaphores{},
+        _render_finished_semaphores{},
+        _in_flight_fences{},
+        _current_frame{0}
 
     {
 #ifndef NDEBUG
@@ -202,7 +208,7 @@ namespace lue::view {
         create_graphics_pipeline();
         create_framebuffers();
         create_command_pool();
-        create_command_buffer();
+        create_command_buffers();
         create_sync_objects();
     }
 
@@ -617,44 +623,44 @@ namespace lue::view {
     void VulkanApplication::create_render_pass()
     {
         // Attachment description
-        VkAttachmentDescription colorAttachment{};
-        colorAttachment.format = _image_format;
-        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentDescription color_attachment{};
+        color_attachment.format = _image_format;
+        color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
         // Subpasses and attachment references
-        VkAttachmentReference colorAttachmentRef{};
-        colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference color_attachment_ref{};
+        color_attachment_ref.attachment = 0;
+        color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &colorAttachmentRef;
+        subpass.pColorAttachments = &color_attachment_ref;
 
         // Subpass dependencies
-        VkSubpassDependency dependency{};
-        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-        dependency.dstSubpass = 0;
+        VkSubpassDependency subpass_dependency{};
+        subpass_dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        subpass_dependency.dstSubpass = 0;
 
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask = 0;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        subpass_dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpass_dependency.srcAccessMask = 0;
+        subpass_dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        subpass_dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
         // Render pass
         vulkan::RenderPass::CreateInfo create_info{};
         (*create_info).attachmentCount = 1;
-        (*create_info).pAttachments = &colorAttachment;
+        (*create_info).pAttachments = &color_attachment;
         (*create_info).subpassCount = 1;
         (*create_info).pSubpasses = &subpass;
         (*create_info).dependencyCount = 1;
-        (*create_info).pDependencies = &dependency;
+        (*create_info).pDependencies = &subpass_dependency;
 
         _render_pass = _device.render_pass(create_info);
     }
@@ -722,16 +728,14 @@ namespace lue::view {
         scissor.offset = {0, 0};
         scissor.extent = _image_extent;
 
-        VkPipelineDynamicStateCreateInfo dynamic_state_create_info{};
-        dynamic_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        vulkan::Pipeline::DynamicStateCreateInfo dynamic_state_create_info{};
         std::vector<VkDynamicState> dynamic_states = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-        dynamic_state_create_info.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
-        dynamic_state_create_info.pDynamicStates = dynamic_states.data();
+        (*dynamic_state_create_info).dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
+        (*dynamic_state_create_info).pDynamicStates = dynamic_states.data();
 
-        VkPipelineViewportStateCreateInfo viewport_state_create_info{};
-        viewport_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewport_state_create_info.viewportCount = 1;
-        viewport_state_create_info.scissorCount = 1;
+        vulkan::Pipeline::ViewportStateCreateInfo viewport_state_create_info{};
+        (*viewport_state_create_info).viewportCount = 1;
+        (*viewport_state_create_info).scissorCount = 1;
 
         // Rasterizer
         VkPipelineRasterizationStateCreateInfo rasterization_state_create_info{};
@@ -747,16 +751,14 @@ namespace lue::view {
         rasterization_state_create_info.depthBiasClamp = 0.0f;           // Optional
         rasterization_state_create_info.depthBiasSlopeFactor = 0.0f;     // Optional
 
-
         // Multisampling
-        VkPipelineMultisampleStateCreateInfo multisample_state_create_info{};
-        multisample_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-        multisample_state_create_info.sampleShadingEnable = VK_FALSE;
-        multisample_state_create_info.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-        multisample_state_create_info.minSampleShading = 1.0f;           // Optional
-        multisample_state_create_info.pSampleMask = nullptr;             // Optional
-        multisample_state_create_info.alphaToCoverageEnable = VK_FALSE;  // Optional
-        multisample_state_create_info.alphaToOneEnable = VK_FALSE;       // Optional
+        vulkan::Pipeline::MultisampleStateCreateInfo multisample_state_create_info{};
+        (*multisample_state_create_info).sampleShadingEnable = VK_FALSE;
+        (*multisample_state_create_info).rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+        (*multisample_state_create_info).minSampleShading = 1.0f;           // Optional
+        (*multisample_state_create_info).pSampleMask = nullptr;             // Optional
+        (*multisample_state_create_info).alphaToCoverageEnable = VK_FALSE;  // Optional
+        (*multisample_state_create_info).alphaToOneEnable = VK_FALSE;       // Optional
 
         // Color blending
         VkPipelineColorBlendAttachmentState color_blend_attachment_state{};
@@ -781,17 +783,15 @@ namespace lue::view {
         color_blend_attachment_state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
         color_blend_attachment_state.alphaBlendOp = VK_BLEND_OP_ADD;
 
-
-        VkPipelineColorBlendStateCreateInfo color_blend_state_create_info{};
-        color_blend_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        color_blend_state_create_info.logicOpEnable = VK_FALSE;
-        color_blend_state_create_info.logicOp = VK_LOGIC_OP_COPY;  // Optional
-        color_blend_state_create_info.attachmentCount = 1;
-        color_blend_state_create_info.pAttachments = &color_blend_attachment_state;
-        color_blend_state_create_info.blendConstants[0] = 0.0f;  // Optional
-        color_blend_state_create_info.blendConstants[1] = 0.0f;  // Optional
-        color_blend_state_create_info.blendConstants[2] = 0.0f;  // Optional
-        color_blend_state_create_info.blendConstants[3] = 0.0f;  // Optional
+        vulkan::Pipeline::ColorBlendStateCreateInfo color_blend_state_create_info{};
+        (*color_blend_state_create_info).logicOpEnable = VK_FALSE;
+        (*color_blend_state_create_info).logicOp = VK_LOGIC_OP_COPY;  // Optional
+        (*color_blend_state_create_info).attachmentCount = 1;
+        (*color_blend_state_create_info).pAttachments = &color_blend_attachment_state;
+        (*color_blend_state_create_info).blendConstants[0] = 0.0f;  // Optional
+        (*color_blend_state_create_info).blendConstants[1] = 0.0f;  // Optional
+        (*color_blend_state_create_info).blendConstants[2] = 0.0f;  // Optional
+        (*color_blend_state_create_info).blendConstants[3] = 0.0f;  // Optional
 
         // Pipeline layout
         vulkan::PipelineLayout::CreateInfo pipeline_layout_create_info{};
@@ -811,12 +811,12 @@ namespace lue::view {
 
         (*graphics_pipeline_create_info).pVertexInputState = vertex_input_state_create_info;
         (*graphics_pipeline_create_info).pInputAssemblyState = input_assembly_state_create_info;
-        (*graphics_pipeline_create_info).pViewportState = &viewport_state_create_info;
+        (*graphics_pipeline_create_info).pViewportState = viewport_state_create_info;
         (*graphics_pipeline_create_info).pRasterizationState = &rasterization_state_create_info;
-        (*graphics_pipeline_create_info).pMultisampleState = &multisample_state_create_info;
+        (*graphics_pipeline_create_info).pMultisampleState = multisample_state_create_info;
         (*graphics_pipeline_create_info).pDepthStencilState = nullptr;  // Optional
-        (*graphics_pipeline_create_info).pColorBlendState = &color_blend_state_create_info;
-        (*graphics_pipeline_create_info).pDynamicState = &dynamic_state_create_info;
+        (*graphics_pipeline_create_info).pColorBlendState = color_blend_state_create_info;
+        (*graphics_pipeline_create_info).pDynamicState = dynamic_state_create_info;
 
         (*graphics_pipeline_create_info).layout = _pipeline_layout;
         (*graphics_pipeline_create_info).renderPass = _render_pass;
@@ -838,6 +838,7 @@ namespace lue::view {
             VkImageView attachments[] = {_swapchain_image_views[i]};
 
             vulkan::Framebuffer::CreateInfo create_info{};
+
             (*create_info).renderPass = _render_pass;
             (*create_info).attachmentCount = 1;
             (*create_info).pAttachments = attachments;
@@ -863,22 +864,24 @@ namespace lue::view {
     }
 
 
-    void VulkanApplication::create_command_buffer()
+    void VulkanApplication::create_command_buffers()
     {
         vulkan::CommandBuffer::AllocateInfo allocate_info{};
 
         (*allocate_info).commandPool = _command_pool;
         (*allocate_info).level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        (*allocate_info).commandBufferCount = 1;
+        (*allocate_info).commandBufferCount = MAX_NR_FRAMES_IN_FLIGHT;
 
-        _command_buffer = _device.command_buffer(allocate_info);
+        _command_buffers = _device.command_buffers(allocate_info);
     }
 
 
     void VulkanApplication::create_sync_objects()
     {
-        _image_available_semaphore = _device.semaphore(vulkan::Semaphore::CreateInfo{});
-        _render_finished_semaphore = _device.semaphore(vulkan::Semaphore::CreateInfo{});
+        _image_available_semaphores =
+            _device.semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
+        _render_finished_semaphores =
+            _device.semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
 
         vulkan::Fence::CreateInfo create_info{};
 
@@ -886,7 +889,7 @@ namespace lue::view {
         // returns immediately
         (*create_info).flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        _in_flight_fence = _device.fence(create_info);
+        _in_flight_fences = _device.fences(MAX_NR_FRAMES_IN_FLIGHT, create_info);
     }
 
 
@@ -971,36 +974,41 @@ namespace lue::view {
     void VulkanApplication::draw_frame()
     {
         // Wait for previous frame
-        vkWaitForFences(_device, 1, _in_flight_fence, VK_TRUE, UINT64_MAX);
-        vkResetFences(_device, 1, _in_flight_fence);
+        vkWaitForFences(_device, 1, _in_flight_fences[_current_frame], VK_TRUE, UINT64_MAX);
+        vkResetFences(_device, 1, _in_flight_fences[_current_frame]);
 
         // Acquire image from the swapchain
         uint32_t imageIndex;
         vkAcquireNextImageKHR(
-            _device, _swapchain, UINT64_MAX, _image_available_semaphore, VK_NULL_HANDLE, &imageIndex);
+            _device,
+            _swapchain,
+            UINT64_MAX,
+            _image_available_semaphores[_current_frame],
+            VK_NULL_HANDLE,
+            &imageIndex);
 
         // Record the command buffer
-        vkResetCommandBuffer(_command_buffer, 0);
-        record_command_buffer(_command_buffer, imageIndex);
+        vkResetCommandBuffer(_command_buffers[_current_frame], 0);
+        record_command_buffer(_command_buffers[_current_frame], imageIndex);
 
         // Submit the command buffer
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        VkSemaphore waitSemaphores[] = {_image_available_semaphore};
+        VkSemaphore waitSemaphores[] = {_image_available_semaphores[_current_frame]};
 
         VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = _command_buffer;
+        submitInfo.pCommandBuffers = _command_buffers[_current_frame];
 
-        VkSemaphore signalSemaphores[] = {_render_finished_semaphore};
+        VkSemaphore signalSemaphores[] = {_render_finished_semaphores[_current_frame]};
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 
-        if (vkQueueSubmit(_graphics_queue, 1, &submitInfo, _in_flight_fence) != VK_SUCCESS)
+        if (vkQueueSubmit(_graphics_queue, 1, &submitInfo, _in_flight_fences[_current_frame]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
@@ -1019,6 +1027,8 @@ namespace lue::view {
         (*present_info).pResults = nullptr;  // Optional
 
         _present_queue.present(present_info);
+
+        _current_frame = (_current_frame + 1) % MAX_NR_FRAMES_IN_FLIGHT;
     }
 
 

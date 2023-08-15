@@ -27,6 +27,12 @@ namespace lue::vulkan {
 
             using PresentInfo = Structure<VkPresentInfoKHR, VK_STRUCTURE_TYPE_PRESENT_INFO_KHR>;
 
+            using CommandBuffers = std::vector<CommandBuffer>;
+
+            using Fences = std::vector<Fence>;
+
+            using Semaphores = std::vector<Semaphore>;
+
 
             class Queue
             {
@@ -99,11 +105,17 @@ namespace lue::vulkan {
 
             CommandPool command_pool(CommandPool::CreateInfo const& create_info) const;
 
-            CommandBuffer command_buffer(CommandBuffer::AllocateInfo const& allocate_info) const;
+            CommandBuffers command_buffers(CommandBuffer::AllocateInfo const& allocate_info) const;
 
             Semaphore semaphore(Semaphore::CreateInfo const& create_info) const;
 
+            Semaphores semaphores(
+                std::uint32_t const nr_semaphores, Semaphore::CreateInfo const& create_info) const;
+
             Fence fence(Fence::CreateInfo const& create_info) const;
+
+            Fences fences(std::uint32_t const nr_fences, Fence::CreateInfo const& create_info) const;
+
 
         private:
 

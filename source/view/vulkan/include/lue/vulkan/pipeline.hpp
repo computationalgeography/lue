@@ -26,6 +26,21 @@ namespace lue::vulkan {
                 VkPipelineInputAssemblyStateCreateInfo,
                 VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO>;
 
+            using DynamicStateCreateInfo = Structure<
+                VkPipelineDynamicStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO>;
+
+            using ViewportStateCreateInfo = Structure<
+                VkPipelineViewportStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO>;
+
+            using MultisampleStateCreateInfo = Structure<
+                VkPipelineMultisampleStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO>;
+
+            using ColorBlendStateCreateInfo = Structure<
+                VkPipelineColorBlendStateCreateInfo,
+                VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO>;
 
             Pipeline();
 
