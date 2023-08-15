@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Fence fence;
 
-        BOOST_CHECK(!fence);
+        BOOST_CHECK(!fence.is_valid());
     }
 
     {
         lue::vulkan::Fence fence{};
 
-        BOOST_CHECK(!fence);
+        BOOST_CHECK(!fence.is_valid());
     }
 }

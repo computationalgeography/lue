@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _render_pass{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _render_pass{render_pass}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._render_pass = VkRenderPass{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     RenderPass::~RenderPass()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyRenderPass(_device, _render_pass, nullptr);
             _device = VkDevice{};
             _render_pass = VkRenderPass{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     RenderPass& RenderPass::operator=(RenderPass&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyRenderPass(_device, _render_pass, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._render_pass = VkRenderPass{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    RenderPass::operator bool() const
+    bool RenderPass::is_valid() const
     {
         return _render_pass != VK_NULL_HANDLE;
     }
 
 
-    RenderPass::operator VkRenderPass() const
+    RenderPass::operator VkRenderPass()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _render_pass;
     }

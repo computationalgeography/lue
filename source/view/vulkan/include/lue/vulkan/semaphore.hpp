@@ -26,9 +26,9 @@ namespace lue::vulkan {
 
             Semaphore& operator=(Semaphore&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkSemaphore() const;
+            operator VkSemaphore();
 
         private:
 

@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Pipeline pipeline;
 
-        BOOST_CHECK(!pipeline);
+        BOOST_CHECK(!pipeline.is_valid());
     }
 
     {
         lue::vulkan::Pipeline pipeline{};
 
-        BOOST_CHECK(!pipeline);
+        BOOST_CHECK(!pipeline.is_valid());
     }
 }

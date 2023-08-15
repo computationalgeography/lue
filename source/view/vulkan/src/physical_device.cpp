@@ -86,7 +86,7 @@ namespace lue::vulkan {
         _physical_device{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -105,7 +105,7 @@ namespace lue::vulkan {
     {
         other._physical_device = VkPhysicalDevice{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
@@ -115,13 +115,13 @@ namespace lue::vulkan {
 
         other._physical_device = VkPhysicalDevice{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    PhysicalDevice::operator bool() const
+    bool PhysicalDevice::is_valid() const
     {
         return _physical_device != VK_NULL_HANDLE;
     }
@@ -130,9 +130,9 @@ namespace lue::vulkan {
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
-    PhysicalDevice::operator VkPhysicalDevice() const
+    PhysicalDevice::operator VkPhysicalDevice()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _physical_device;
     }
@@ -140,7 +140,7 @@ namespace lue::vulkan {
 
     PhysicalDevice::Properties PhysicalDevice::properties() const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkPhysicalDeviceProperties properties;
 
@@ -152,7 +152,7 @@ namespace lue::vulkan {
 
     PhysicalDevice::Features PhysicalDevice::features() const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkPhysicalDeviceFeatures features;
 
@@ -164,7 +164,7 @@ namespace lue::vulkan {
 
     QueueFamilyProperties PhysicalDevice::queue_family_properties() const
     {
-        assert(*this);
+        assert(is_valid());
 
         std::uint32_t nr_queue_families;
 
@@ -188,7 +188,7 @@ namespace lue::vulkan {
 
     ExtensionProperties PhysicalDevice::extension_properties() const
     {
-        assert(*this);
+        assert(is_valid());
 
         std::uint32_t nr_properties{0};
 
@@ -240,30 +240,30 @@ namespace lue::vulkan {
     }
 
 
-    bool PhysicalDevice::has_surface_support(QueueFamily const& queue_family, Surface const& surface) const
+    bool PhysicalDevice::has_surface_support(QueueFamily const& queue_family, Surface& surface) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkBool32 support = false;
 
-        ::vkGetPhysicalDeviceSurfaceSupportKHR(_physical_device, queue_family, surface, &support);
+        vkGetPhysicalDeviceSurfaceSupportKHR(_physical_device, queue_family, surface, &support);
 
         return support;
     }
 
 
-    PhysicalDevice::SurfaceProperties PhysicalDevice::surface_properties(Surface const& surface) const
+    PhysicalDevice::SurfaceProperties PhysicalDevice::surface_properties(Surface& surface) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkSurfaceCapabilitiesKHR capabilities;
 
-        ::vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(_physical_device, surface, &capabilities);
 
         std::uint32_t nr_formats{};
         SurfaceProperties::Formats formats;
 
-        ::vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, surface, &nr_formats, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(_physical_device, surface, &nr_formats, nullptr);
 
         if (nr_formats > 0)
         {

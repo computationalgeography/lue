@@ -167,7 +167,7 @@ namespace lue::vulkan {
         _instance{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -192,7 +192,7 @@ namespace lue::vulkan {
 
         assert_result_is_ok(result);
 
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -203,25 +203,25 @@ namespace lue::vulkan {
     {
         other._instance = VkInstance{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Instance::~Instance()
     {
-        if (*this)
+        if (is_valid())
         {
             ::vkDestroyInstance(_instance, nullptr);
             _instance = VkInstance{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Instance& Instance::operator=(Instance&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             ::vkDestroyInstance(_instance, nullptr);
         }
@@ -230,13 +230,13 @@ namespace lue::vulkan {
 
         other._instance = VkInstance{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Instance::operator bool() const
+    bool Instance::is_valid() const
     {
         return _instance != VK_NULL_HANDLE;
     }
@@ -245,9 +245,9 @@ namespace lue::vulkan {
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
-    Instance::operator VkInstance() const
+    Instance::operator VkInstance()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _instance;
     }
@@ -255,7 +255,7 @@ namespace lue::vulkan {
 
     PhysicalDevices Instance::physical_devices() const
     {
-        assert(*this);
+        assert(is_valid());
 
         std::uint32_t nr_devices;
         ::vkEnumeratePhysicalDevices(_instance, &nr_devices, nullptr);

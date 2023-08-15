@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::RenderPass render_pass;
 
-        BOOST_CHECK(!render_pass);
+        BOOST_CHECK(!render_pass.is_valid());
     }
 
     {
         lue::vulkan::RenderPass render_pass{};
 
-        BOOST_CHECK(!render_pass);
+        BOOST_CHECK(!render_pass.is_valid());
     }
 }

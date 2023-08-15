@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::DebugReportCallback callback;
 
-        BOOST_CHECK(!callback);
+        BOOST_CHECK(!callback.is_valid());
     }
 
     {
         lue::vulkan::DebugReportCallback callback{};
 
-        BOOST_CHECK(!callback);
+        BOOST_CHECK(!callback.is_valid());
     }
 }

@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _swapchain{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _swapchain{swapchain}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._swapchain = VkSwapchainKHR{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Swapchain::~Swapchain()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroySwapchainKHR(_device, _swapchain, nullptr);
             _device = VkDevice{};
             _swapchain = VkSwapchainKHR{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Swapchain& Swapchain::operator=(Swapchain&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroySwapchainKHR(_device, _swapchain, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._swapchain = VkSwapchainKHR{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Swapchain::operator bool() const
+    bool Swapchain::is_valid() const
     {
         return _swapchain != VK_NULL_HANDLE;
     }
 
 
-    Swapchain::operator VkSwapchainKHR() const
+    Swapchain::operator VkSwapchainKHR()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _swapchain;
     }

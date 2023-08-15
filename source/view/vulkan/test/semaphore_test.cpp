@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Semaphore semaphore;
 
-        BOOST_CHECK(!semaphore);
+        BOOST_CHECK(!semaphore.is_valid());
     }
 
     {
         lue::vulkan::Semaphore semaphore{};
 
-        BOOST_CHECK(!semaphore);
+        BOOST_CHECK(!semaphore.is_valid());
     }
 }

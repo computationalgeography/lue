@@ -25,9 +25,9 @@ namespace lue::vulkan {
 
             Fence& operator=(Fence&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkFence() const;
+            operator VkFence();
 
             operator VkFence const*() const;
 

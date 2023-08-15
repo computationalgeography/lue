@@ -28,9 +28,9 @@ namespace lue::vulkan {
 
             ImageView& operator=(ImageView&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkImageView() const;
+            operator VkImageView();
 
         private:
 

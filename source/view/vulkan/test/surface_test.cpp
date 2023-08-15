@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Surface surface;
 
-        BOOST_CHECK(!surface);
+        BOOST_CHECK(!surface.is_valid());
     }
 
     {
         lue::vulkan::Surface surface{};
 
-        BOOST_CHECK(!surface);
+        BOOST_CHECK(!surface.is_valid());
     }
 }

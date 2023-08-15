@@ -130,9 +130,9 @@ namespace lue::vulkan {
 
             PhysicalDevice& operator=(PhysicalDevice&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkPhysicalDevice() const;
+            operator VkPhysicalDevice();
 
             Properties properties() const;
 
@@ -142,9 +142,9 @@ namespace lue::vulkan {
 
             bool extensions_available(Names const& names) const;
 
-            bool has_surface_support(QueueFamily const& queue_family, Surface const& surface) const;
+            bool has_surface_support(QueueFamily const& queue_family, Surface& surface) const;
 
-            SurfaceProperties surface_properties(Surface const& surface) const;
+            SurfaceProperties surface_properties(Surface& surface) const;
 
         private:
 

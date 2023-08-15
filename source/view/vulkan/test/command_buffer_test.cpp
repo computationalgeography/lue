@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::CommandBuffer command_buffer;
 
-        BOOST_CHECK(!command_buffer);
+        BOOST_CHECK(!command_buffer.is_valid());
     }
 
     {
         lue::vulkan::CommandBuffer command_buffer{};
 
-        BOOST_CHECK(!command_buffer);
+        BOOST_CHECK(!command_buffer.is_valid());
     }
 }

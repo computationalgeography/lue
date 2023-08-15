@@ -47,9 +47,9 @@ namespace lue::vulkan {
 
                     Queue& operator=(Queue&& other);
 
-                    operator bool() const;
+                    bool is_valid() const;
 
-                    operator VkQueue() const;
+                    operator VkQueue();
 
                     void present(PresentInfo const& present_info);
 
@@ -67,7 +67,7 @@ namespace lue::vulkan {
 
             Device(Device&& other);
 
-            Device(PhysicalDevice const& physical_device, CreateInfo const& create_info);
+            Device(PhysicalDevice& physical_device, CreateInfo const& create_info);
 
             ~Device();
 
@@ -75,9 +75,9 @@ namespace lue::vulkan {
 
             Device& operator=(Device&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkDevice() const;
+            operator VkDevice();
 
             void wait_idle() const;
 

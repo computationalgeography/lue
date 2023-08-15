@@ -27,9 +27,9 @@ namespace lue::vulkan {
 
             PipelineLayout& operator=(PipelineLayout&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkPipelineLayout() const;
+            operator VkPipelineLayout();
 
         private:
 

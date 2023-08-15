@@ -23,9 +23,9 @@ namespace lue::vulkan {
 
             Surface& operator=(Surface&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkSurfaceKHR() const;
+            operator VkSurfaceKHR();
 
         private:
 

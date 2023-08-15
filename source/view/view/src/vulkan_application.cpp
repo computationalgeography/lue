@@ -2,7 +2,6 @@
 #include "lue/configure.hpp"
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
-#include "lue/vulkan.hpp"
 #include <fmt/format.h>
 #include <cassert>
 #include <cmath>
@@ -96,7 +95,7 @@ namespace lue::view {
         }
 
 
-        static vulkan::Surface create_surface(vulkan::Instance const& instance, glfw::Window& window)
+        static vulkan::Surface create_surface(vulkan::Instance& instance, glfw::Window& window)
         {
             VkSurfaceKHR surface;
 
@@ -116,6 +115,10 @@ namespace lue::view {
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
         Application{arguments},
+        _library{},
+        _monitor{},
+        _window{},
+        _binding{},
         _enable_validation_layers{false},
         _instance{},
         _debug_callback{},
@@ -141,6 +144,7 @@ namespace lue::view {
 
     {
 #ifndef NDEBUG
+        // Enable validation layers (only) in debug builds
         _enable_validation_layers = true;
 #endif
     }
@@ -200,6 +204,20 @@ namespace lue::view {
         create_command_pool();
         create_command_buffer();
         create_sync_objects();
+    }
+
+
+    void VulkanApplication::init_imgui()
+    {
+        VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
+
+        int const nr_images = _swapchain_images.size();
+
+        // TODO
+        // _binding = std::make_unique<imgui::glfw::VulkanBinding>(
+        //         *_window, _instance, _physical_device, _device,
+        //         _graphics_queue, pipeline_cache, nr_images
+        //     );
     }
 
 
@@ -352,7 +370,7 @@ namespace lue::view {
 
 
     vulkan::QueueFamilies VulkanApplication::find_queue_families(
-        vulkan::PhysicalDevice const& physical_device) const
+        vulkan::PhysicalDevice const& physical_device)
     {
         vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
         vulkan::QueueFamilies queue_families{};
@@ -382,7 +400,7 @@ namespace lue::view {
     }
 
 
-    bool VulkanApplication::physical_device_is_suitable(vulkan::PhysicalDevice const& device) const
+    bool VulkanApplication::physical_device_is_suitable(vulkan::PhysicalDevice const& device)
     {
         vulkan::QueueFamilies queue_families = find_queue_families(device);
 
@@ -821,7 +839,7 @@ namespace lue::view {
 
             vulkan::Framebuffer::CreateInfo create_info{};
             (*create_info).renderPass = _render_pass;
-            (*create_info).attachmentCount = _render_pass;
+            (*create_info).attachmentCount = 1;
             (*create_info).pAttachments = attachments;
             (*create_info).width = _image_extent.width;
             (*create_info).height = _image_extent.height;
@@ -925,10 +943,25 @@ namespace lue::view {
 
     void VulkanApplication::main_loop()
     {
-        while (!_window->should_close())
+        bool quit = _window->should_close();
+
+        while (!quit)
         {
             glfw::Library::poll_events();
+
+            // imgui::glfw::VulkanFrame frame{*_window};
+
+            // static Configuration configuration{};
+            // quit = show_main_menu_bar(configuration);
+
+            // if (!quit)
+            // {
+            //     show_datasets(datasets_to_visualize, configuration.show_details());
+            // }
+
             draw_frame();
+
+            quit = quit || _window->should_close();
         }
 
         _device.wait_idle();
@@ -991,13 +1024,12 @@ namespace lue::view {
 
     int VulkanApplication::run_implementation()
     {
-
-
         // TODO Make sure that creating a window is optional. We also want to support off-screen
         //      rendering. The imgui stuff is only used to interact with the visualizations,
         //      and to gain insight into the contents of data sets.
         //      - init_window (optional)
         //      - init_vulkan
+        //      - init_imgui (optional)
         //      - enter main loop, and either(?)
         //          - allow user interaction, using glfw / imgui / vulkan stuff, ...
         //          - render and save, using only vulkan stuff
@@ -1008,251 +1040,10 @@ namespace lue::view {
         // TODO Move this elsewhere
         auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
 
-
         init_window();
         init_vulkan();
+        init_imgui();
         main_loop();
-
-        return EXIT_SUCCESS;
-
-
-        // PRESENTATION
-
-
-        //         // Create Framebuffers
-        //         int w, h;
-        //         glfwGetFramebufferSize(glfw_window, &w, &h);
-        //
-        //
-        //         ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
-        //         SetupVulkanWindow(wd, surface, w, h);
-
-
-        // Vulkan_Init
-        // imgui::glfw::VulkanBinding binding{glfw_window};
-
-        //         ImGui_ImplVulkan_InitInfo init_info = {};
-        //         init_info.Instance = g_Instance;
-        //         init_info.PhysicalDevice = g_PhysicalDevice;
-        //         init_info.Device = g_Device;
-        //         init_info.QueueFamily = g_QueueFamily;
-        //         init_info.Queue = g_Queue;
-        //         init_info.PipelineCache = g_PipelineCache;
-        //         init_info.DescriptorPool = g_DescriptorPool;
-        //         init_info.Subpass = 0;
-        //         init_info.MinImageCount = g_MinImageCount;
-        //         init_info.ImageCount = wd->ImageCount;
-        //         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
-        //         init_info.Allocator = g_Allocator;
-        //         init_info.CheckVkResultFn = check_vk_result;
-        //         ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
-
-
-        //         // Load Fonts
-        //         // - If no fonts are loaded, dear imgui will use the default font. You can also load
-        //         multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-        //         // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select
-        //         the font among multiple.
-        //         // - If the file cannot be loaded, the function will return a nullptr. Please handle those
-        //         errors in your application (e.g. use an assertion, or display an error and quit).
-        //         // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a
-        //         texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame
-        //         below will call.
-        //         // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher
-        //         quality font rendering.
-        //         // - Read 'docs/FONTS.md' for more instructions and details.
-        //         // - Remember that in C/C++ if you want to include a backslash \ in a string literal you
-        //         need to write a double backslash \\ !
-        //         //io.Fonts->AddFontDefault();
-        //         //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-        //         //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-        //         //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-        //         //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-        //         //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f,
-        //         nullptr, io.Fonts->GetGlyphRangesJapanese());
-        //         //IM_ASSERT(font != nullptr);
-        //
-        //         // Upload Fonts
-        //         {
-        //             // Use any command queue
-        //             VkCommandPool command_pool = wd->Frames[wd->FrameIndex].CommandPool;
-        //             VkCommandBuffer command_buffer = wd->Frames[wd->FrameIndex].CommandBuffer;
-        //
-        //             err = vkResetCommandPool(g_Device, command_pool, 0);
-        //             check_vk_result(err);
-        //             VkCommandBufferBeginInfo begin_info = {};
-        //             begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        //             begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        //             err = vkBeginCommandBuffer(command_buffer, &begin_info);
-        //             check_vk_result(err);
-        //
-        //             ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-        //
-        //             VkSubmitInfo end_info = {};
-        //             end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        //             end_info.commandBufferCount = 1;
-        //             end_info.pCommandBuffers = &command_buffer;
-        //             err = vkEndCommandBuffer(command_buffer);
-        //             check_vk_result(err);
-        //             err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
-        //             check_vk_result(err);
-        //
-        //             err = vkDeviceWaitIdle(g_Device);
-        //             check_vk_result(err);
-        //             ImGui_ImplVulkan_DestroyFontUploadObjects();
-        //         }
-
-
-        //         // Our state
-        //         bool show_demo_window = true;
-        //         bool show_another_window = false;
-        //         ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-        // DRAWING
-
-
-        // Main loop
-        bool quit = _window->should_close();
-
-        while (!quit)
-        {
-            glfw::Library::poll_events();
-
-            // imgui::glfw::VulkanFrame frame{glfw_window};
-
-            // static Configuration configuration{};
-            // quit = show_main_menu_bar(configuration);
-
-            // if (!quit)
-            // {
-            //     show_datasets(datasets_to_visualize, configuration.show_details());
-            // }
-
-            quit = quit || _window->should_close();
-
-
-            //             // Resize swap chain?
-            //             if (g_SwapChainRebuild)
-            //             {
-            //                 int width, height;
-            //                 glfwGetFramebufferSize(glfw_window, &width, &height);
-            //                 if (width > 0 && height > 0)
-            //                 {
-            //                     ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-            //                     ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice,
-            //                     g_Device, &g_MainWindowData, g_QueueFamily, g_Allocator, width, height,
-            //                     g_MinImageCount); g_MainWindowData.FrameIndex = 0; g_SwapChainRebuild =
-            //                     false;
-            //                 }
-            //             }
-            //
-            //             // Start the Dear ImGui frame
-            //             ImGui_ImplVulkan_NewFrame();
-            //             ImGui_ImplGlfw_NewFrame();
-            //             ImGui::NewFrame();
-            //
-            //             // 1. Show the big demo window (Most of the sample code is in
-            //             ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-            //             if (show_demo_window)
-            //                 ImGui::ShowDemoWindow(&show_demo_window);
-            //
-            //             // 2. Show a simple window that we create ourselves. We use a Begin/End pair to
-            //             create a named window.
-            //             {
-            //                 static float f = 0.0f;
-            //                 static int counter = 0;
-            //
-            //                 ImGui::Begin("Hello, world!");                          // Create a window
-            //                 called "Hello, world!" and append into it.
-            //
-            //                 ImGui::Text("This is some useful text.");               // Display some text
-            //                 (you can use a format strings too) ImGui::Checkbox("Demo Window",
-            //                 &show_demo_window);      // Edit bools storing our window open/close state
-            //                 ImGui::Checkbox("Another Window", &show_another_window);
-            //
-            //                 ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a
-            //                 slider from 0.0f to 1.0f ImGui::ColorEdit3("clear color",
-            //                 (float*)&clear_color); // Edit 3 floats representing a color
-            //
-            //                 if (ImGui::Button("Button"))                            // Buttons return true
-            //                 when clicked (most widgets return true when edited/activated)
-            //                     counter++;
-            //                 ImGui::SameLine();
-            //                 ImGui::Text("counter = %d", counter);
-            //
-            //                 ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f /
-            //                 imgui::glfw::VulkanBinding::io().Framerate,
-            //                 imgui::glfw::VulkanBinding::io().Framerate); ImGui::End();
-            //             }
-            //
-            //             // 3. Show another simple window.
-            //             if (show_another_window)
-            //             {
-            //                 ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to
-            //                 our bool variable (the window will have a closing button that will clear the
-            //                 bool when clicked) ImGui::Text("Hello from another window!"); if
-            //                 (ImGui::Button("Close Me"))
-            //                     show_another_window = false;
-            //                 ImGui::End();
-            //             }
-            //
-            //             // Rendering
-            //             ImGui::Render();
-            //             ImDrawData* draw_data = ImGui::GetDrawData();
-            //             const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f ||
-            //             draw_data->DisplaySize.y <= 0.0f); if (!is_minimized)
-            //             {
-            //                 wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-            //                 wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-            //                 wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-            //                 wd->ClearValue.color.float32[3] = clear_color.w;
-            //                 FrameRender(wd, draw_data);
-            //                 FramePresent(wd);
-            //             }
-        }
-
-
-        //         // Cleanup
-        //         err = vkDeviceWaitIdle(g_Device);
-        //         check_vk_result(err);
-        //         // ImGui_ImplVulkan_Shutdown();
-        //         // ImGui_ImplGlfw_Shutdown();
-        //         ImGui::DestroyContext();
-        //
-        //         CleanupVulkanWindow();
-        //         CleanupVulkan();
-        //
-        //         // glfwDestroyWindow(glfw_window);
-        //         // glfwTerminate();
-        //
-        //
-        //
-        //
-        //
-        //
-        //         // bool quit = glfw_window.should_close();
-        //
-        //         // while (!quit)
-        //         // {
-        //         //     glfwPollEvents();
-        //
-        //         //     imgui::glfw::VulkanFrame frame{glfw_window};
-        //
-        //         //     static Configuration configuration{};
-        //         //     quit = show_main_menu_bar(configuration);
-        //
-        //         //     // if (!quit)
-        //         //     // {
-        //         //     //     show_datasets(datasets_to_visualize, configuration.show_details());
-        //         //     // }
-        //
-        //
-        //
-        //
-        //
-        //         //     quit = quit || glfw_window.should_close();
-        //         // }
 
         return EXIT_SUCCESS;
     }

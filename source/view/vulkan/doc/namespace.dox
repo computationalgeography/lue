@@ -16,6 +16,12 @@ namespace lue {
       passing information into Vulkan API function. We assume that it is safe to let our instance go
       out of scope. We assume that the pointer passed into API functions is not stored, but only
       used to immediately use the information pointed to.
+
+    Conversion functions of classes, returning an instance of a layered Vulkan type are
+    non-constant, even though a copy may be made of the Vulkan variable. This is because the
+    Vulkan type is often a pointer to Vulkan data. See for example `Device` and `VkDevice`. The
+    automatic conversion is non-const. The layered `VkDevice` instance is actually a non-const
+    pointer.
 */
 namespace vulkan {
 }

@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _semaphore{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _semaphore{render_pass}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._semaphore = VkSemaphore{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Semaphore::~Semaphore()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroySemaphore(_device, _semaphore, nullptr);
             _device = VkDevice{};
             _semaphore = VkSemaphore{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Semaphore& Semaphore::operator=(Semaphore&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroySemaphore(_device, _semaphore, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._semaphore = VkSemaphore{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Semaphore::operator bool() const
+    bool Semaphore::is_valid() const
     {
         return _semaphore != VK_NULL_HANDLE;
     }
 
 
-    Semaphore::operator VkSemaphore() const
+    Semaphore::operator VkSemaphore()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _semaphore;
     }

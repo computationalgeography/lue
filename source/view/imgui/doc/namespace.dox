@@ -2,6 +2,8 @@ namespace lue {
 
 /*!
     @brief      Namespace containing C++ wrappers around the [Dear ImGui C-API](https://github.com/ocornut/imgui/blob/master/imgui.h)
+
+    - https://frguthmann.github.io/posts/vulkan_imgui/
 */
 namespace imgui {
 }

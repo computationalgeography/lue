@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::ShaderModule shader_module;
 
-        BOOST_CHECK(!shader_module);
+        BOOST_CHECK(!shader_module.is_valid());
     }
 
     {
         lue::vulkan::ShaderModule shader_module{};
 
-        BOOST_CHECK(!shader_module);
+        BOOST_CHECK(!shader_module.is_valid());
     }
 }

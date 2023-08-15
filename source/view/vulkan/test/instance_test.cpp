@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Instance instance;
 
-        BOOST_CHECK(!instance);
+        BOOST_CHECK(!instance.is_valid());
     }
 
     {
         lue::vulkan::Instance instance{};
 
-        BOOST_CHECK(!instance);
+        BOOST_CHECK(!instance.is_valid());
     }
 }

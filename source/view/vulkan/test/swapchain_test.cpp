@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::Swapchain swapchain;
 
-        BOOST_CHECK(!swapchain);
+        BOOST_CHECK(!swapchain.is_valid());
     }
 
     {
         lue::vulkan::Swapchain swapchain{};
 
-        BOOST_CHECK(!swapchain);
+        BOOST_CHECK(!swapchain.is_valid());
     }
 }

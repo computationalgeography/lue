@@ -61,9 +61,9 @@ namespace lue::vulkan {
 
             Instance& operator=(Instance&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkInstance() const;
+            operator VkInstance();
 
             PhysicalDevices physical_devices() const;
 

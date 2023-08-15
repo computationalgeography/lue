@@ -28,9 +28,9 @@ namespace lue::vulkan {
 
             RenderPass& operator=(RenderPass&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkRenderPass() const;
+            operator VkRenderPass();
 
         private:
 

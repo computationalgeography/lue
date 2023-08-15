@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _framebuffer{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _framebuffer{framebuffer}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._framebuffer = VkFramebuffer{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Framebuffer::~Framebuffer()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyFramebuffer(_device, _framebuffer, nullptr);
             _device = VkDevice{};
             _framebuffer = VkFramebuffer{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Framebuffer& Framebuffer::operator=(Framebuffer&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyFramebuffer(_device, _framebuffer, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._framebuffer = VkFramebuffer{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Framebuffer::operator bool() const
+    bool Framebuffer::is_valid() const
     {
         return _framebuffer != VK_NULL_HANDLE;
     }
 
 
-    Framebuffer::operator VkFramebuffer() const
+    Framebuffer::operator VkFramebuffer()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _framebuffer;
     }

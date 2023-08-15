@@ -32,9 +32,9 @@ namespace lue::vulkan {
 
             CommandBuffer& operator=(CommandBuffer&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkCommandBuffer() const;
+            operator VkCommandBuffer();
 
             operator VkCommandBuffer const*() const;
 
@@ -46,7 +46,7 @@ namespace lue::vulkan {
 
             void end_render_pass();
 
-            void bind_pipeline(VkPipelineBindPoint bind_point, Pipeline const& pipeline);
+            void bind_pipeline(VkPipelineBindPoint bind_point, Pipeline& pipeline);
 
             void set_viewport(VkViewport const* viewport);
 

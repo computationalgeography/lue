@@ -37,9 +37,9 @@ namespace lue::vulkan {
 
             Swapchain& operator=(Swapchain&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkSwapchainKHR() const;
+            operator VkSwapchainKHR();
 
             Images images() const;
 

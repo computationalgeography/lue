@@ -10,7 +10,7 @@ namespace lue::vulkan {
         _pipeline{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -20,7 +20,7 @@ namespace lue::vulkan {
         _pipeline{pipeline}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -33,26 +33,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._pipeline = VkPipeline{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Pipeline::~Pipeline()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyPipeline(_device, _pipeline, nullptr);
             _device = VkDevice{};
             _pipeline = VkPipeline{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Pipeline& Pipeline::operator=(Pipeline&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyPipeline(_device, _pipeline, nullptr);
         }
@@ -63,21 +63,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._pipeline = VkPipeline{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Pipeline::operator bool() const
+    bool Pipeline::is_valid() const
     {
         return _pipeline != VK_NULL_HANDLE;
     }
 
 
-    Pipeline::operator VkPipeline() const
+    Pipeline::operator VkPipeline()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _pipeline;
     }

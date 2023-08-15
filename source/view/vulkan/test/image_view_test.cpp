@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::ImageView image_view;
 
-        BOOST_CHECK(!image_view);
+        BOOST_CHECK(!image_view.is_valid());
     }
 
     {
         lue::vulkan::ImageView image_view{};
 
-        BOOST_CHECK(!image_view);
+        BOOST_CHECK(!image_view.is_valid());
     }
 }

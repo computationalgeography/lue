@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _surface{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _surface{surface}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,25 +34,25 @@ namespace lue::vulkan {
         other._instance = VkInstance{};
         other._surface = VkSurfaceKHR{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Surface::~Surface()
     {
-        if (*this)
+        if (is_valid())
         {
             ::vkDestroySurfaceKHR(_instance, _surface, nullptr);
             _surface = VkSurfaceKHR{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Surface& Surface::operator=(Surface&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             ::vkDestroySurfaceKHR(_instance, _surface, nullptr);
         }
@@ -63,13 +63,13 @@ namespace lue::vulkan {
         other._instance = VkInstance{};
         other._surface = VkSurfaceKHR{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Surface::operator bool() const
+    bool Surface::is_valid() const
     {
         return _surface != VK_NULL_HANDLE;
     }
@@ -78,9 +78,9 @@ namespace lue::vulkan {
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
-    Surface::operator VkSurfaceKHR() const
+    Surface::operator VkSurfaceKHR()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _surface;
     }

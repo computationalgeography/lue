@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/imgui/glfw/binding.hpp"
 #include "lue/glfw/window.hpp"
+#include "lue/vulkan.hpp"
 #include <imgui.h>
 
 
@@ -11,7 +12,14 @@ namespace lue::imgui::glfw {
 
         public:
 
-            VulkanBinding(lue::glfw::Window& window);
+            VulkanBinding(
+                lue::glfw::Window& window,
+                vulkan::Instance& instance,
+                vulkan::PhysicalDevice& physical_device,
+                vulkan::Device& device,
+                vulkan::Device::Queue& queue,
+                VkPipelineCache pipeline_cache,
+                int const nr_images);
 
             ~VulkanBinding() override;
     };

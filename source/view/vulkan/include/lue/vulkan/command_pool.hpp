@@ -26,9 +26,9 @@ namespace lue::vulkan {
 
             CommandPool& operator=(CommandPool&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkCommandPool() const;
+            operator VkCommandPool();
 
         private:
 

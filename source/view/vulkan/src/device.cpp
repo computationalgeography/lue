@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _queue{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -20,7 +20,7 @@ namespace lue::vulkan {
         _queue{queue}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -31,7 +31,7 @@ namespace lue::vulkan {
     {
         other._queue = VkQueue{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
@@ -41,13 +41,13 @@ namespace lue::vulkan {
 
         other._queue = VkQueue{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Device::Queue::operator bool() const
+    bool Device::Queue::is_valid() const
     {
         return _queue != VK_NULL_HANDLE;
     }
@@ -56,9 +56,9 @@ namespace lue::vulkan {
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
-    Device::Queue::operator VkQueue() const
+    Device::Queue::operator VkQueue()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _queue;
     }
@@ -66,6 +66,8 @@ namespace lue::vulkan {
 
     void Device::Queue::present(PresentInfo const& present_info)
     {
+        assert(is_valid());
+
         VkResult result = vkQueuePresentKHR(_queue, present_info);
 
         assert_result_is_ok(result);
@@ -77,16 +79,16 @@ namespace lue::vulkan {
         _device{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
-    Device::Device(PhysicalDevice const& physical_device, CreateInfo const& create_info):
+    Device::Device(PhysicalDevice& physical_device, CreateInfo const& create_info):
 
         _device{}
 
     {
-        VkResult result = ::vkCreateDevice(physical_device, create_info, nullptr, &_device);
+        VkResult result = vkCreateDevice(physical_device, create_info, nullptr, &_device);
 
         // VK_ERROR_OUT_OF_HOST_MEMORY
         // VK_ERROR_OUT_OF_DEVICE_MEMORY
@@ -97,7 +99,7 @@ namespace lue::vulkan {
         // VK_ERROR_DEVICE_LOST
         assert_result_is_ok(result);
 
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -108,19 +110,19 @@ namespace lue::vulkan {
     {
         other._device = VkDevice{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Device::~Device()
     {
-        if (*this)
+        if (is_valid())
         {
-            ::vkDestroyDevice(_device, nullptr);
+            vkDestroyDevice(_device, nullptr);
             _device = VkDevice{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -130,13 +132,13 @@ namespace lue::vulkan {
 
         other._device = VkDevice{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Device::operator bool() const
+    bool Device::is_valid() const
     {
         return _device != VK_NULL_HANDLE;
     }
@@ -145,9 +147,9 @@ namespace lue::vulkan {
     /*!
         @warning    Do not use the returned pointer after this instance has gone out of scope
     */
-    Device::operator VkDevice() const
+    Device::operator VkDevice()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _device;
     }
@@ -163,11 +165,11 @@ namespace lue::vulkan {
 
     Device::Queue Device::queue(QueueFamily const& queue_family) const
     {
-        assert(*this);
+        assert(is_valid());
 
-        ::VkQueue queue;
+        VkQueue queue;
 
-        ::vkGetDeviceQueue(_device, queue_family, 0, &queue);
+        vkGetDeviceQueue(_device, queue_family, 0, &queue);
 
         return queue;
     }
@@ -175,7 +177,7 @@ namespace lue::vulkan {
 
     Swapchain Device::swapchain(Swapchain::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkSwapchainKHR swapchain;
 
@@ -189,7 +191,7 @@ namespace lue::vulkan {
 
     ImageView Device::image_view(ImageView::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkImageView image_view;
 
@@ -203,7 +205,7 @@ namespace lue::vulkan {
 
     ShaderModule Device::shader_module(ShaderModule::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkShaderModule shader_module;
 
@@ -217,7 +219,7 @@ namespace lue::vulkan {
 
     PipelineLayout Device::pipeline_layout(PipelineLayout::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkPipelineLayout pipeline_layout;
 
@@ -231,7 +233,7 @@ namespace lue::vulkan {
 
     RenderPass Device::render_pass(RenderPass::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkRenderPass render_pass;
 
@@ -245,7 +247,7 @@ namespace lue::vulkan {
 
     Pipeline Device::graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkPipeline graphics_pipeline;
 
@@ -260,7 +262,7 @@ namespace lue::vulkan {
 
     Framebuffer Device::framebuffer(Framebuffer::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkFramebuffer framebuffer;
 
@@ -274,7 +276,7 @@ namespace lue::vulkan {
 
     CommandPool Device::command_pool(CommandPool::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkCommandPool command_pool;
 
@@ -288,7 +290,7 @@ namespace lue::vulkan {
 
     CommandBuffer Device::command_buffer(CommandBuffer::AllocateInfo const& allocate_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkCommandBuffer command_buffer;
 
@@ -302,7 +304,7 @@ namespace lue::vulkan {
 
     Semaphore Device::semaphore(Semaphore::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkSemaphore semaphore;
 
@@ -316,7 +318,7 @@ namespace lue::vulkan {
 
     Fence Device::fence(Fence::CreateInfo const& create_info) const
     {
-        assert(*this);
+        assert(is_valid());
 
         VkFence fence;
 

@@ -13,6 +13,13 @@ namespace lue::glfw {
 }  // namespace lue::glfw
 
 
+namespace lue::imgui::glfw {
+
+    class VulkanBinding;
+
+}  // namespace lue::imgui::glfw
+
+
 namespace lue::view {
 
     class VulkanApplication: public Application
@@ -34,13 +41,15 @@ namespace lue::view {
 
             vulkan::Names required_layer_names() const;
 
-            vulkan::QueueFamilies find_queue_families(vulkan::PhysicalDevice const& physical_device) const;
+            vulkan::QueueFamilies find_queue_families(vulkan::PhysicalDevice const& physical_device);
 
-            bool physical_device_is_suitable(vulkan::PhysicalDevice const& device) const;
+            bool physical_device_is_suitable(vulkan::PhysicalDevice const& device);
 
             void init_window();
 
             void init_vulkan();
+
+            void init_imgui();
 
             void create_instance();
 
@@ -79,6 +88,8 @@ namespace lue::view {
             std::unique_ptr<glfw::Monitor> _monitor;
 
             std::unique_ptr<glfw::Window> _window;
+
+            std::unique_ptr<imgui::glfw::VulkanBinding> _binding;
 
             bool _enable_validation_layers;
 

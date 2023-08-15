@@ -8,12 +8,12 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         lue::vulkan::CommandPool command_pool;
 
-        BOOST_CHECK(!command_pool);
+        BOOST_CHECK(!command_pool.is_valid());
     }
 
     {
         lue::vulkan::CommandPool command_pool{};
 
-        BOOST_CHECK(!command_pool);
+        BOOST_CHECK(!command_pool.is_valid());
     }
 }

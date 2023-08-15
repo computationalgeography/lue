@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _fence{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _fence{render_pass}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._fence = VkFence{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     Fence::~Fence()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyFence(_device, _fence, nullptr);
             _device = VkDevice{};
             _fence = VkFence{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     Fence& Fence::operator=(Fence&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyFence(_device, _fence, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._fence = VkFence{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    Fence::operator bool() const
+    bool Fence::is_valid() const
     {
         return _fence != VK_NULL_HANDLE;
     }
 
 
-    Fence::operator VkFence() const
+    Fence::operator VkFence()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _fence;
     }
@@ -86,7 +86,7 @@ namespace lue::vulkan {
 
     Fence::operator VkFence const*() const
     {
-        assert(*this);
+        assert(is_valid());
 
         return &_fence;
     }

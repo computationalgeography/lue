@@ -17,7 +17,7 @@ namespace lue::vulkan {
 
     {
         assert(!_instance);
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -30,7 +30,7 @@ namespace lue::vulkan {
         It is required that the instance passed in stays alive longer than the DebugReportCallback
         instance created here.
     */
-    DebugReportCallback::DebugReportCallback(Instance const& instance, CreateInfo&& create_info):
+    DebugReportCallback::DebugReportCallback(Instance& instance, CreateInfo&& create_info):
 
         _instance{instance},
         _callback{}
@@ -54,7 +54,7 @@ namespace lue::vulkan {
         VkResult result{_create_callback(_instance, create_info, nullptr, &_callback)};
         assert_result_is_ok(result);
 
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -67,25 +67,25 @@ namespace lue::vulkan {
         other._instance = VkInstance{};
         other._callback = VkDebugReportCallbackEXT{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     DebugReportCallback::~DebugReportCallback()
     {
-        if (*this)
+        if (is_valid())
         {
             _destroy_callback(_instance, _callback, nullptr);
             _callback = VkDebugReportCallbackEXT{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     DebugReportCallback& DebugReportCallback::operator=(DebugReportCallback&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             _destroy_callback(_instance, _callback, nullptr);
         }
@@ -96,13 +96,13 @@ namespace lue::vulkan {
         other._instance = VkInstance{};
         other._callback = VkDebugReportCallbackEXT{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    DebugReportCallback::operator bool() const
+    bool DebugReportCallback::is_valid() const
     {
         return _callback != VK_NULL_HANDLE;
     }

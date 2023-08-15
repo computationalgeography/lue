@@ -32,7 +32,7 @@ namespace lue::vulkan {
         _shader_module{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -42,7 +42,7 @@ namespace lue::vulkan {
         _shader_module{shader_module}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -55,26 +55,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._shader_module = VkShaderModule{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     ShaderModule::~ShaderModule()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyShaderModule(_device, _shader_module, nullptr);
             _device = VkDevice{};
             _shader_module = VkShaderModule{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     ShaderModule& ShaderModule::operator=(ShaderModule&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyShaderModule(_device, _shader_module, nullptr);
         }
@@ -85,21 +85,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._shader_module = VkShaderModule{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    ShaderModule::operator bool() const
+    bool ShaderModule::is_valid() const
     {
         return _shader_module != VK_NULL_HANDLE;
     }
 
 
-    ShaderModule::operator VkShaderModule() const
+    ShaderModule::operator VkShaderModule()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _shader_module;
     }

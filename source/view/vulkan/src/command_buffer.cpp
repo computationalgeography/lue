@@ -12,7 +12,7 @@ namespace lue::vulkan {
         _command_buffer{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -22,7 +22,7 @@ namespace lue::vulkan {
         _command_buffer{command_buffer}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -35,26 +35,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._command_buffer = VkCommandBuffer{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     // CommandBuffer::~CommandBuffer()
     // {
-    //     if (*this)
+    //     if (is_valid())
     //     {
     //         vkDestroyCommandBuffer(_device, _command_buffer, nullptr);
     //         _device = VkDevice{};
     //         _command_buffer = VkCommandBuffer{};
     //     }
 
-    //     assert(!*this);
+    //     assert(!is_valid());
     // }
 
 
     CommandBuffer& CommandBuffer::operator=(CommandBuffer&& other)
     {
-        // if (*this)
+        // if (is_valid())
         // {
         //     vkDestroyCommandBuffer(_device, _command_buffer, nullptr);
         // }
@@ -65,21 +65,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._command_buffer = VkCommandBuffer{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    CommandBuffer::operator bool() const
+    bool CommandBuffer::is_valid() const
     {
         return _command_buffer != VK_NULL_HANDLE;
     }
 
 
-    CommandBuffer::operator VkCommandBuffer() const
+    CommandBuffer::operator VkCommandBuffer()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _command_buffer;
     }
@@ -87,7 +87,7 @@ namespace lue::vulkan {
 
     CommandBuffer::operator VkCommandBuffer const*() const
     {
-        assert(*this);
+        assert(is_valid());
 
         return &_command_buffer;
     }
@@ -121,7 +121,7 @@ namespace lue::vulkan {
     }
 
 
-    void CommandBuffer::bind_pipeline(VkPipelineBindPoint bind_point, Pipeline const& pipeline)
+    void CommandBuffer::bind_pipeline(VkPipelineBindPoint bind_point, Pipeline& pipeline)
     {
         vkCmdBindPipeline(_command_buffer, bind_point, pipeline);
     }

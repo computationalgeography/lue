@@ -35,9 +35,9 @@ namespace lue::vulkan {
 
             ShaderModule& operator=(ShaderModule&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkShaderModule() const;
+            operator VkShaderModule();
 
         private:
 

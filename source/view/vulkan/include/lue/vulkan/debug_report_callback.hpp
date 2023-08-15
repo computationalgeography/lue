@@ -19,7 +19,7 @@ namespace lue::vulkan {
 
             DebugReportCallback();
 
-            DebugReportCallback(Instance const& instance, CreateInfo&& create_info);
+            DebugReportCallback(Instance& instance, CreateInfo&& create_info);
 
             DebugReportCallback(DebugReportCallback const&) = delete;
 
@@ -31,7 +31,7 @@ namespace lue::vulkan {
 
             DebugReportCallback& operator=(DebugReportCallback&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
         private:
 

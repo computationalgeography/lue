@@ -3,6 +3,7 @@
 #include "lue/vulkan/command_buffer.hpp"
 #include "lue/vulkan/command_pool.hpp"
 #include "lue/vulkan/debug_report_callback.hpp"
+#include "lue/vulkan/descriptor_pool.hpp"
 #include "lue/vulkan/device.hpp"
 #include "lue/vulkan/error.hpp"
 #include "lue/vulkan/fence.hpp"

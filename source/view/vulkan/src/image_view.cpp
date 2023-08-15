@@ -10,7 +10,7 @@ namespace lue::vulkan {
         _image_view{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -20,7 +20,7 @@ namespace lue::vulkan {
         _image_view{image_view}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -33,26 +33,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._image_view = VkImageView{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     ImageView::~ImageView()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyImageView(_device, _image_view, nullptr);
             _device = VkDevice{};
             _image_view = VkImageView{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     ImageView& ImageView::operator=(ImageView&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyImageView(_device, _image_view, nullptr);
         }
@@ -63,21 +63,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._image_view = VkImageView{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    ImageView::operator bool() const
+    bool ImageView::is_valid() const
     {
         return _image_view != VK_NULL_HANDLE;
     }
 
 
-    ImageView::operator VkImageView() const
+    ImageView::operator VkImageView()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _image_view;
     }

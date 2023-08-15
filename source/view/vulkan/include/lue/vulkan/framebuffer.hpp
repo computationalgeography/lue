@@ -27,9 +27,9 @@ namespace lue::vulkan {
 
             Framebuffer& operator=(Framebuffer&& other);
 
-            operator bool() const;
+            bool is_valid() const;
 
-            operator VkFramebuffer() const;
+            operator VkFramebuffer();
 
         private:
 

@@ -11,7 +11,7 @@ namespace lue::vulkan {
         _command_pool{}
 
     {
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
@@ -21,7 +21,7 @@ namespace lue::vulkan {
         _command_pool{command_pool}
 
     {
-        assert(*this);
+        assert(is_valid());
     }
 
 
@@ -34,26 +34,26 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._command_pool = VkCommandPool{};
 
-        assert(!other);
+        assert(!other.is_valid());
     }
 
 
     CommandPool::~CommandPool()
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyCommandPool(_device, _command_pool, nullptr);
             _device = VkDevice{};
             _command_pool = VkCommandPool{};
         }
 
-        assert(!*this);
+        assert(!is_valid());
     }
 
 
     CommandPool& CommandPool::operator=(CommandPool&& other)
     {
-        if (*this)
+        if (is_valid())
         {
             vkDestroyCommandPool(_device, _command_pool, nullptr);
         }
@@ -64,21 +64,21 @@ namespace lue::vulkan {
         other._device = VkDevice{};
         other._command_pool = VkCommandPool{};
 
-        assert(!other);
+        assert(!other.is_valid());
 
         return *this;
     }
 
 
-    CommandPool::operator bool() const
+    bool CommandPool::is_valid() const
     {
         return _command_pool != VK_NULL_HANDLE;
     }
 
 
-    CommandPool::operator VkCommandPool() const
+    CommandPool::operator VkCommandPool()
     {
-        assert(*this);
+        assert(is_valid());
 
         return _command_pool;
     }
