@@ -57,7 +57,7 @@ namespace lue::vulkan {
 
                     operator VkQueue();
 
-                    void present(PresentInfo const& present_info);
+                    VkResult present(PresentInfo const& present_info);
 
                 private:
 
@@ -115,6 +115,13 @@ namespace lue::vulkan {
             Fence fence(Fence::CreateInfo const& create_info) const;
 
             Fences fences(std::uint32_t const nr_fences, Fence::CreateInfo const& create_info) const;
+
+            VkResult wait(Fence& fence);
+
+            VkResult reset(Fence& fence);
+
+            std::tuple<VkResult, std::uint32_t> acquire_next_image(
+                Swapchain& swapchain, Semaphore& semaphore);
 
 
         private:

@@ -7,7 +7,7 @@ namespace lue::glfw {
 
     void Window::hint(int hint, int value)
     {
-        ::glfwWindowHint(hint, value);
+        glfwWindowHint(hint, value);
     }
 
 
@@ -48,7 +48,7 @@ namespace lue::glfw {
 
     Window::~Window()
     {
-        ::glfwDestroyWindow(_window);
+        glfwDestroyWindow(_window);
     }
 
 
@@ -60,7 +60,7 @@ namespace lue::glfw {
 
     void Window::make_context_current()
     {
-        ::glfwMakeContextCurrent(_window);
+        glfwMakeContextCurrent(_window);
     }
 
 
@@ -68,7 +68,7 @@ namespace lue::glfw {
     {
         int width, height;
 
-        ::glfwGetFramebufferSize(_window, &width, &height);
+        glfwGetFramebufferSize(_window, &width, &height);
 
         return {width, height};
     }
@@ -76,7 +76,19 @@ namespace lue::glfw {
 
     bool Window::should_close() const
     {
-        return ::glfwWindowShouldClose(_window);
+        return glfwWindowShouldClose(_window);
+    }
+
+
+    void Window::set_user_pointer(void* pointer)
+    {
+        glfwSetWindowUserPointer(_window, pointer);
+    }
+
+
+    GLFWframebuffersizefun Window::set_framebuffer_size_callback(GLFWframebuffersizefun callback)
+    {
+        return glfwSetFramebufferSizeCallback(_window, callback);
     }
 
 }  // namespace lue::glfw

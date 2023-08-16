@@ -117,6 +117,15 @@ namespace lue::view {
     }  // Anonymous namespace
 
 
+    void framebuffer_resize_callback(
+        GLFWwindow* window, [[maybe_unused]] int width, [[maybe_unused]] int height)
+    {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        auto application = reinterpret_cast<VulkanApplication*>(glfwGetWindowUserPointer(window));
+        application->_framebuffer_resized = true;
+    }
+
+
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
         Application{arguments},
@@ -146,7 +155,8 @@ namespace lue::view {
         _image_available_semaphores{},
         _render_finished_semaphores{},
         _in_flight_fences{},
-        _current_frame{0}
+        _current_frame{0},
+        _framebuffer_resized{false}
 
     {
 #ifndef NDEBUG
@@ -161,6 +171,12 @@ namespace lue::view {
     }
 
 
+    // void VulkanApplication::framebuffer_is_resized()
+    // {
+    //     _framebuffer_resized = true;
+    // }
+
+
     void VulkanApplication::init_window()
     {
         // This stuff is needed to be able to draw to a window. When drawining to a file,
@@ -173,7 +189,7 @@ namespace lue::view {
 
         // Create window with Vulkan context
         glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
+        // glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
 
         glfw::VideoMode const video_mode{_monitor->video_mode()};
 
@@ -187,6 +203,9 @@ namespace lue::view {
             // Screen coordinates. Note that Vulkan works with pixels.
             static_cast<int>(std::ceil(0.9 * video_mode.width())),
             static_cast<int>(std::ceil(0.9 * video_mode.height())));
+
+        _window->set_user_pointer(this);
+        _window->set_framebuffer_size_callback(framebuffer_resize_callback);
     }
 
 
@@ -594,6 +613,26 @@ namespace lue::view {
     }
 
 
+    void VulkanApplication::recreate_swapchain()
+    {
+        auto [width, height] = _window->framebuffer_size();
+
+        while (width == 0 || height == 0)
+        {
+            // We are minimized. Wait until something interesting happens (resize?).
+            glfwWaitEvents();
+            std::tie(width, height) = _window->framebuffer_size();
+        }
+
+        // Don't touch resources that may still be in use
+        _device.wait_idle();
+
+        create_swapchain();
+        create_image_views();
+        create_framebuffers();
+    }
+
+
     void VulkanApplication::create_image_views()
     {
         _swapchain_image_views.resize(_swapchain_images.size());
@@ -974,22 +1013,28 @@ namespace lue::view {
     void VulkanApplication::draw_frame()
     {
         // Wait for previous frame
-        vkWaitForFences(_device, 1, _in_flight_fences[_current_frame], VK_TRUE, UINT64_MAX);
-        vkResetFences(_device, 1, _in_flight_fences[_current_frame]);
+        _device.wait(_in_flight_fences[_current_frame]);
 
         // Acquire image from the swapchain
-        uint32_t imageIndex;
-        vkAcquireNextImageKHR(
-            _device,
-            _swapchain,
-            UINT64_MAX,
-            _image_available_semaphores[_current_frame],
-            VK_NULL_HANDLE,
-            &imageIndex);
+        auto [result, image_idx] =
+            _device.acquire_next_image(_swapchain, _image_available_semaphores[_current_frame]);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR)
+        {
+            recreate_swapchain();
+            return;
+        }
+        else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+        {
+            throw std::runtime_error("Failed to acquire swapchain image");
+        }
+
+        // Only reset the fence if we are submitting work
+        _device.reset(_in_flight_fences[_current_frame]);
 
         // Record the command buffer
         vkResetCommandBuffer(_command_buffers[_current_frame], 0);
-        record_command_buffer(_command_buffers[_current_frame], imageIndex);
+        record_command_buffer(_command_buffers[_current_frame], image_idx);
 
         // Submit the command buffer
         VkSubmitInfo submitInfo{};
@@ -1023,10 +1068,20 @@ namespace lue::view {
         (*present_info).swapchainCount = 1;
         (*present_info).pSwapchains = swapChains;
 
-        (*present_info).pImageIndices = &imageIndex;
+        (*present_info).pImageIndices = &image_idx;
         (*present_info).pResults = nullptr;  // Optional
 
-        _present_queue.present(present_info);
+        result = _present_queue.present(present_info);
+
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || _framebuffer_resized)
+        {
+            _framebuffer_resized = false;
+            recreate_swapchain();
+        }
+        else if (result != VK_SUCCESS)
+        {
+            throw std::runtime_error("Failed to present swapchain image");
+        }
 
         _current_frame = (_current_frame + 1) % MAX_NR_FRAMES_IN_FLIGHT;
     }

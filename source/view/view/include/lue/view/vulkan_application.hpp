@@ -20,16 +20,26 @@ namespace lue::imgui::glfw {
 }  // namespace lue::imgui::glfw
 
 
+struct GLFWwindow;
+
+
 namespace lue::view {
+
+    static void framebuffer_resize_callback(GLFWwindow* window, int width, int height);
+
 
     class VulkanApplication: public Application
     {
 
         public:
 
+            friend void framebuffer_resize_callback(GLFWwindow*, int, int);
+
             VulkanApplication(std::vector<std::string> const& arguments);
 
             ~VulkanApplication();
+
+            // void framebuffer_is_resized();
 
         protected:
 
@@ -62,6 +72,8 @@ namespace lue::view {
             void create_logical_device();
 
             void create_swapchain();
+
+            void recreate_swapchain();
 
             void create_image_views();
 
@@ -136,6 +148,8 @@ namespace lue::view {
             vulkan::Device::Fences _in_flight_fences;
 
             std::uint32_t _current_frame;
+
+            bool _framebuffer_resized;
     };
 
 }  // namespace lue::view

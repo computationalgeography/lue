@@ -2,6 +2,7 @@
 #include "lue/vulkan/error.hpp"
 #include <algorithm>
 #include <cassert>
+#include <tuple>
 
 
 namespace lue::vulkan {
@@ -64,13 +65,13 @@ namespace lue::vulkan {
     }
 
 
-    void Device::Queue::present(PresentInfo const& present_info)
+    VkResult Device::Queue::present(PresentInfo const& present_info)
     {
         assert(is_valid());
 
         VkResult result = vkQueuePresentKHR(_queue, present_info);
 
-        assert_result_is_ok(result);
+        return result;
     }
 
 
@@ -366,6 +367,29 @@ namespace lue::vulkan {
             [this, create_info = std::ref(create_info)]() { return fence(create_info); });
 
         return fences;
+    }
+
+
+    VkResult Device::wait(Fence& fence)
+    {
+        return vkWaitForFences(_device, 1, fence, VK_TRUE, UINT64_MAX);
+    }
+
+
+    VkResult Device::reset(Fence& fence)
+    {
+        return vkResetFences(_device, 1, fence);
+    }
+
+
+    std::tuple<VkResult, std::uint32_t> Device::acquire_next_image(Swapchain& swapchain, Semaphore& semaphore)
+    {
+        std::uint32_t image_idx;
+
+        VkResult result =
+            vkAcquireNextImageKHR(_device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &image_idx);
+
+        return std::make_tuple(result, image_idx);
     }
 
 }  // namespace lue::vulkan
