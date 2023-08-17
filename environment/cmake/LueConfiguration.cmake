@@ -237,6 +237,7 @@ if(LUE_BUILD_VIEW)
     set(LUE_DOCOPT_REQUIRED TRUE)
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GLFW_REQUIRED TRUE)
+    set(LUE_GLM_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 endif()
@@ -333,6 +334,11 @@ if(LUE_BOOST_REQUIRED)
             "Boost-1.75's safe_numerics library is known to contain a bug:\n"
             "https://github.com/boostorg/safe_numerics/issues/94")
     endif()
+endif()
+
+
+if(LUE_GLM_REQUIRED)
+    find_package(glm REQUIRED)
 endif()
 
 

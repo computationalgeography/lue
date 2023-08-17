@@ -44,6 +44,7 @@ namespace lue::vulkan {
     //     if (is_valid())
     //     {
     //         vkDestroyCommandBuffer(_device, _command_buffer, nullptr);
+    //
     //         _device = VkDevice{};
     //         _command_buffer = VkCommandBuffer{};
     //     }
@@ -124,6 +125,17 @@ namespace lue::vulkan {
     void CommandBuffer::bind_pipeline(VkPipelineBindPoint bind_point, Pipeline& pipeline)
     {
         vkCmdBindPipeline(_command_buffer, bind_point, pipeline);
+    }
+
+
+    void CommandBuffer::bind_vertex_buffer(Buffer& buffer)
+    {
+        std::uint32_t const first_binding_idx = 0;
+        std::uint32_t const nr_bindings = 1;
+        VkBuffer vertex_buffers[] = {buffer};
+        VkDeviceSize offsets[] = {0};
+
+        vkCmdBindVertexBuffers(_command_buffer, first_binding_idx, nr_bindings, vertex_buffers, offsets);
     }
 
 

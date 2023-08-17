@@ -1,5 +1,7 @@
 set(scope lue_vulkan)
 set(names
+    buffer_test
+    command_buffer_test
     command_pool_test
     debug_report_callback_test
     device_test
@@ -7,9 +9,12 @@ set(names
     framebuffer_test
     image_view_test
     instance_test
-    pipeline_test
-    pipeline_layout_test
+    memory_test
     physical_device_test
+    pipeline_layout_test
+    pipeline_test
+    queue_test
+    render_pass_test
     semaphore_test
     shader_module_test
     surface_test

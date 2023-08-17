@@ -2,78 +2,9 @@
 #include "lue/vulkan/error.hpp"
 #include <algorithm>
 #include <cassert>
-#include <tuple>
 
 
 namespace lue::vulkan {
-
-    Device::Queue::Queue():
-
-        _queue{}
-
-    {
-        assert(!is_valid());
-    }
-
-
-    Device::Queue::Queue(VkQueue queue):
-
-        _queue{queue}
-
-    {
-        assert(is_valid());
-    }
-
-
-    Device::Queue::Queue(Device::Queue&& other):
-
-        _queue{std::move(other._queue)}
-
-    {
-        other._queue = VkQueue{};
-
-        assert(!other.is_valid());
-    }
-
-
-    Device::Queue& Device::Queue::operator=(Device::Queue&& other)
-    {
-        _queue = std::move(other._queue);
-
-        other._queue = VkQueue{};
-
-        assert(!other.is_valid());
-
-        return *this;
-    }
-
-
-    bool Device::Queue::is_valid() const
-    {
-        return _queue != VK_NULL_HANDLE;
-    }
-
-
-    /*!
-        @warning    Do not use the returned pointer after this instance has gone out of scope
-    */
-    Device::Queue::operator VkQueue()
-    {
-        assert(is_valid());
-
-        return _queue;
-    }
-
-
-    VkResult Device::Queue::present(PresentInfo const& present_info)
-    {
-        assert(is_valid());
-
-        VkResult result = vkQueuePresentKHR(_queue, present_info);
-
-        return result;
-    }
-
 
     Device::Device():
 
@@ -120,6 +51,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyDevice(_device, nullptr);
+
             _device = VkDevice{};
         }
 
@@ -164,7 +96,7 @@ namespace lue::vulkan {
     }
 
 
-    Device::Queue Device::queue(QueueFamily const& queue_family) const
+    Queue Device::queue(QueueFamily const& queue_family) const
     {
         assert(is_valid());
 
@@ -176,7 +108,7 @@ namespace lue::vulkan {
     }
 
 
-    Swapchain Device::swapchain(Swapchain::CreateInfo const& create_info) const
+    Swapchain Device::create_swapchain(Swapchain::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -190,7 +122,7 @@ namespace lue::vulkan {
     }
 
 
-    ImageView Device::image_view(ImageView::CreateInfo const& create_info) const
+    ImageView Device::create_image_view(ImageView::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -204,7 +136,7 @@ namespace lue::vulkan {
     }
 
 
-    ShaderModule Device::shader_module(ShaderModule::CreateInfo const& create_info) const
+    ShaderModule Device::create_shader_module(ShaderModule::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -218,7 +150,7 @@ namespace lue::vulkan {
     }
 
 
-    PipelineLayout Device::pipeline_layout(PipelineLayout::CreateInfo const& create_info) const
+    PipelineLayout Device::create_pipeline_layout(PipelineLayout::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -232,7 +164,7 @@ namespace lue::vulkan {
     }
 
 
-    RenderPass Device::render_pass(RenderPass::CreateInfo const& create_info) const
+    RenderPass Device::create_render_pass(RenderPass::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -246,7 +178,7 @@ namespace lue::vulkan {
     }
 
 
-    Pipeline Device::graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const
+    Pipeline Device::create_graphics_pipeline(Pipeline::GraphicsPipelineCreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -261,7 +193,7 @@ namespace lue::vulkan {
     }
 
 
-    Framebuffer Device::framebuffer(Framebuffer::CreateInfo const& create_info) const
+    Framebuffer Device::create_framebuffer(Framebuffer::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -275,7 +207,7 @@ namespace lue::vulkan {
     }
 
 
-    CommandPool Device::command_pool(CommandPool::CreateInfo const& create_info) const
+    CommandPool Device::create_command_pool(CommandPool::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -289,7 +221,21 @@ namespace lue::vulkan {
     }
 
 
-    Device::CommandBuffers Device::command_buffers(CommandBuffer::AllocateInfo const& allocate_info) const
+    Buffer Device::create_buffer(Buffer::CreateInfo const& create_info) const
+    {
+        assert(is_valid());
+
+        VkBuffer buffer;
+
+        VkResult result{vkCreateBuffer(_device, create_info, nullptr, &buffer)};
+
+        assert_result_is_ok(result);
+
+        return {_device, buffer};
+    }
+
+
+    CommandBuffers Device::allocate_command_buffers(CommandBuffer::AllocateInfo const& allocate_info) const
     {
         assert(is_valid());
 
@@ -315,7 +261,7 @@ namespace lue::vulkan {
     }
 
 
-    Semaphore Device::semaphore(Semaphore::CreateInfo const& create_info) const
+    Semaphore Device::create_semaphore(Semaphore::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -329,7 +275,7 @@ namespace lue::vulkan {
     }
 
 
-    Device::Semaphores Device::semaphores(
+    Device::Semaphores Device::create_semaphores(
         std::uint32_t const nr_semaphores, Semaphore::CreateInfo const& create_info) const
     {
         Semaphores semaphores(nr_semaphores);
@@ -337,13 +283,13 @@ namespace lue::vulkan {
         std::generate(
             semaphores.begin(),
             semaphores.end(),
-            [this, create_info = std::ref(create_info)]() { return semaphore(create_info); });
+            [this, create_info = std::ref(create_info)]() { return create_semaphore(create_info); });
 
         return semaphores;
     }
 
 
-    Fence Device::fence(Fence::CreateInfo const& create_info) const
+    Fence Device::create_fence(Fence::CreateInfo const& create_info) const
     {
         assert(is_valid());
 
@@ -357,14 +303,15 @@ namespace lue::vulkan {
     }
 
 
-    Device::Fences Device::fences(std::uint32_t const nr_fences, Fence::CreateInfo const& create_info) const
+    Device::Fences Device::create_fences(
+        std::uint32_t const nr_fences, Fence::CreateInfo const& create_info) const
     {
         Fences fences(nr_fences);
 
         std::generate(
             fences.begin(),
             fences.end(),
-            [this, create_info = std::ref(create_info)]() { return fence(create_info); });
+            [this, create_info = std::ref(create_info)]() { return create_fence(create_info); });
 
         return fences;
     }
@@ -389,7 +336,38 @@ namespace lue::vulkan {
         VkResult result =
             vkAcquireNextImageKHR(_device, swapchain, UINT64_MAX, semaphore, VK_NULL_HANDLE, &image_idx);
 
-        return std::make_tuple(result, image_idx);
+        return {result, image_idx};
+    }
+
+
+    Memory Device::allocate_memory(Memory::AllocateInfo const& allocate_info)
+    {
+        VkDeviceMemory memory;
+
+        VkResult result = vkAllocateMemory(_device, allocate_info, nullptr, &memory);
+
+        assert_result_is_ok(result);
+
+        return {_device, memory};
+    }
+
+
+    void Device::map_memory(
+        Memory& memory,
+        VkDeviceSize const offset,
+        VkDeviceSize const size,
+        VkMemoryMapFlags const flags,
+        void** data)
+    {
+        VkResult result = vkMapMemory(_device, memory, offset, size, flags, data);
+
+        assert_result_is_ok(result);
+    }
+
+
+    void Device::unmap_memory(Memory& memory)
+    {
+        vkUnmapMemory(_device, memory);
     }
 
 }  // namespace lue::vulkan

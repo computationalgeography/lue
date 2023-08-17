@@ -15,10 +15,10 @@ namespace lue::vulkan {
     }
 
 
-    Semaphore::Semaphore(VkDevice device, VkSemaphore render_pass):
+    Semaphore::Semaphore(VkDevice device, VkSemaphore semaphore):
 
         _device{device},
-        _semaphore{render_pass}
+        _semaphore{semaphore}
 
     {
         assert(is_valid());
@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroySemaphore(_device, _semaphore, nullptr);
+
             _device = VkDevice{};
             _semaphore = VkSemaphore{};
         }

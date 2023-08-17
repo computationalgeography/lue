@@ -42,6 +42,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyImageView(_device, _image_view, nullptr);
+
             _device = VkDevice{};
             _image_view = VkImageView{};
         }

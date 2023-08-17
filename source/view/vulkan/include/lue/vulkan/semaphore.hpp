@@ -14,7 +14,7 @@ namespace lue::vulkan {
 
             Semaphore();
 
-            Semaphore(VkDevice device, VkSemaphore render_pass);
+            Semaphore(VkDevice device, VkSemaphore semaphore);
 
             Semaphore(Semaphore const&) = delete;
 

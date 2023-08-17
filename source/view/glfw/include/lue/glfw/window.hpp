@@ -36,6 +36,9 @@ namespace lue::glfw {
 
             bool should_close() const;
 
+            void set_size_limits(
+                int const min_width, int const min_height, int const max_width, int const max_height);
+
             void set_user_pointer(void* pointer);
 
             GLFWframebuffersizefun set_framebuffer_size_callback(GLFWframebuffersizefun callback);

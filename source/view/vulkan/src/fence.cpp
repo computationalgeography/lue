@@ -15,10 +15,10 @@ namespace lue::vulkan {
     }
 
 
-    Fence::Fence(VkDevice device, VkFence render_pass):
+    Fence::Fence(VkDevice device, VkFence fence):
 
         _device{device},
-        _fence{render_pass}
+        _fence{fence}
 
     {
         assert(is_valid());
@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyFence(_device, _fence, nullptr);
+
             _device = VkDevice{};
             _fence = VkFence{};
         }

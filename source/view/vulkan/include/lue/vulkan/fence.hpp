@@ -13,7 +13,7 @@ namespace lue::vulkan {
 
             Fence();
 
-            Fence(VkDevice device, VkFence render_pass);
+            Fence(VkDevice device, VkFence fence);
 
             Fence(Fence const&) = delete;
 

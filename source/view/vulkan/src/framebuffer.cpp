@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyFramebuffer(_device, _framebuffer, nullptr);
+
             _device = VkDevice{};
             _framebuffer = VkFramebuffer{};
         }

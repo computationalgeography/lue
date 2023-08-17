@@ -146,6 +146,8 @@ namespace lue::vulkan {
 
             SurfaceProperties surface_properties(Surface& surface) const;
 
+            VkPhysicalDeviceMemoryProperties memory_properties() const;
+
         private:
 
             ExtensionProperties extension_properties() const;

@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyCommandPool(_device, _command_pool, nullptr);
+
             _device = VkDevice{};
             _command_pool = VkCommandPool{};
         }

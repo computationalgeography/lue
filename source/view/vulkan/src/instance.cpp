@@ -212,6 +212,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             ::vkDestroyInstance(_instance, nullptr);
+
             _instance = VkInstance{};
         }
 

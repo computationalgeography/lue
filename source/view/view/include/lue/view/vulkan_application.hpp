@@ -85,6 +85,18 @@ namespace lue::view {
 
             void create_command_pool();
 
+            std::uint32_t find_memory_type(
+                std::uint32_t const type_filter, VkMemoryPropertyFlags const properties) const;
+
+            std::tuple<vulkan::Buffer, vulkan::Memory> create_buffer(
+                VkDeviceSize const size,
+                VkBufferUsageFlags const usage,
+                VkMemoryPropertyFlags const properties);
+
+            void copy_buffer(vulkan::Buffer& from_buffer, vulkan::Buffer& to_buffer, VkDeviceSize const size);
+
+            void create_vertex_buffer();
+
             void create_command_buffers();
 
             void create_sync_objects();
@@ -115,9 +127,9 @@ namespace lue::view {
 
             vulkan::Device _device;
 
-            vulkan::Device::Queue _graphics_queue;
+            vulkan::Queue _graphics_queue;
 
-            vulkan::Device::Queue _present_queue;
+            vulkan::Queue _present_queue;
 
             vulkan::Swapchain _swapchain;
 
@@ -139,7 +151,11 @@ namespace lue::view {
 
             vulkan::CommandPool _command_pool;
 
-            vulkan::Device::CommandBuffers _command_buffers;
+            vulkan::Buffer _vertex_buffer;
+
+            vulkan::Memory _vertex_buffer_memory;
+
+            vulkan::CommandBuffers _command_buffers;
 
             vulkan::Device::Semaphores _image_available_semaphores;
 

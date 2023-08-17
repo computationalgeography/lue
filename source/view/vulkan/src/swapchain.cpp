@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroySwapchainKHR(_device, _swapchain, nullptr);
+
             _device = VkDevice{};
             _swapchain = VkSwapchainKHR{};
         }

@@ -32,6 +32,7 @@ target_link_libraries(lue_view
         lue::imgui
         lue::utility
         lue::shared
+        glm::glm
 )
 
 if(LUE_VIEW_USE_VULKAN)

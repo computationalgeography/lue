@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             ::vkDestroySurfaceKHR(_instance, _surface, nullptr);
+
             _surface = VkSurfaceKHR{};
         }
 

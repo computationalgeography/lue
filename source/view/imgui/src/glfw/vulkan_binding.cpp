@@ -10,7 +10,7 @@ namespace lue::imgui::glfw {
         vulkan::Instance& instance,
         vulkan::PhysicalDevice& physical_device,
         vulkan::Device& device,
-        vulkan::Device::Queue& queue,
+        vulkan::Queue& queue,
         VkPipelineCache pipeline_cache,
         int const nr_images):
 

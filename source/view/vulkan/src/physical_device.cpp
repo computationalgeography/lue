@@ -286,4 +286,14 @@ namespace lue::vulkan {
         return {std::move(capabilities), std::move(formats), std::move(present_modes)};
     }
 
+
+    VkPhysicalDeviceMemoryProperties PhysicalDevice::memory_properties() const
+    {
+        VkPhysicalDeviceMemoryProperties properties;
+
+        vkGetPhysicalDeviceMemoryProperties(_physical_device, &properties);
+
+        return properties;
+    }
+
 }  // namespace lue::vulkan

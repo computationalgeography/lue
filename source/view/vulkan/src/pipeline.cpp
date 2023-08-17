@@ -42,6 +42,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyPipeline(_device, _pipeline, nullptr);
+
             _device = VkDevice{};
             _pipeline = VkPipeline{};
         }

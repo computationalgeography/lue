@@ -3,22 +3,6 @@
 #include <boost/test/unit_test.hpp>
 
 
-BOOST_AUTO_TEST_CASE(default_construct_queue)
-{
-    {
-        lue::vulkan::Device::Queue queue;
-
-        BOOST_CHECK(!queue.is_valid());
-    }
-
-    {
-        lue::vulkan::Device::Queue queue{};
-
-        BOOST_CHECK(!queue.is_valid());
-    }
-}
-
-
 BOOST_AUTO_TEST_CASE(default_construct_device)
 {
     {

@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/vulkan/buffer.hpp"
 #include "lue/vulkan/pipeline.hpp"
 #include "lue/vulkan/render_pass.hpp"
 #include <vulkan/vulkan.h>
@@ -47,6 +48,8 @@ namespace lue::vulkan {
             void end_render_pass();
 
             void bind_pipeline(VkPipelineBindPoint bind_point, Pipeline& pipeline);
+
+            void bind_vertex_buffer(Buffer& buffer);
 
             void set_viewport(VkViewport const* viewport);
 

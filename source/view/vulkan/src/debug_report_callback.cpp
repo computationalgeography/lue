@@ -76,6 +76,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             _destroy_callback(_instance, _callback, nullptr);
+
             _callback = VkDebugReportCallbackEXT{};
         }
 

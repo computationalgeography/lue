@@ -80,6 +80,13 @@ namespace lue::glfw {
     }
 
 
+    void Window::set_size_limits(
+        int const min_width, int const min_height, int const max_width, int const max_height)
+    {
+        glfwSetWindowSizeLimits(_window, min_width, min_height, max_width, max_height);
+    }
+
+
     void Window::set_user_pointer(void* pointer)
     {
         glfwSetWindowUserPointer(_window, pointer);

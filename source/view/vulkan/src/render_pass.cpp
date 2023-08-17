@@ -43,6 +43,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyRenderPass(_device, _render_pass, nullptr);
+
             _device = VkDevice{};
             _render_pass = VkRenderPass{};
         }

@@ -64,6 +64,7 @@ namespace lue::vulkan {
         if (is_valid())
         {
             vkDestroyShaderModule(_device, _shader_module, nullptr);
+
             _device = VkDevice{};
             _shader_module = VkShaderModule{};
         }

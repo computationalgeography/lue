@@ -3,8 +3,10 @@
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
 #include <fmt/format.h>
+#include <array>
 #include <cassert>
 #include <cmath>
+#include <glm/glm.hpp>
 #include <set>
 
 #include <iostream>
@@ -13,8 +15,49 @@
 namespace lue::view {
     namespace {
 
+        struct Vertex
+        {
+                glm::vec2 pos;
+                glm::vec3 color;
+
+                static VkVertexInputBindingDescription binding_description()
+                {
+                    VkVertexInputBindingDescription description{};
+
+                    description.binding = 0;
+                    description.stride = sizeof(Vertex);
+                    description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+                    return description;
+                }
+
+                static std::array<VkVertexInputAttributeDescription, 2> attribute_descriptions()
+                {
+                    std::array<VkVertexInputAttributeDescription, 2> descriptions{};
+
+                    descriptions[0].binding = 0;
+                    descriptions[0].location = 0;
+                    descriptions[0].format = VK_FORMAT_R32G32_SFLOAT;  // vec2: x, y
+                    descriptions[0].offset = offsetof(Vertex, pos);
+
+                    descriptions[1].binding = 0;
+                    descriptions[1].location = 1;
+                    descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;  // vec3: r, g, b
+                    descriptions[1].offset = offsetof(Vertex, color);
+
+                    return descriptions;
+                }
+        };
+
+
+        std::vector<Vertex> const vertices = {
+            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
+            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+
+
         // This allows the CPU and GPU to work on their own tasks at the same time. If the CPU
-        // finishes early, it will wait untill the GPU finishes rendering before submitting
+        // finishes early, it will wait until the GPU finishes rendering before submitting
         // more work.
         std::uint32_t const MAX_NR_FRAMES_IN_FLIGHT = 2;
 
@@ -151,6 +194,8 @@ namespace lue::view {
         _graphics_pipeline{},
         _framebuffers{},
         _command_pool{},
+        _vertex_buffer{},
+        _vertex_buffer_memory{},
         _command_buffers{},
         _image_available_semaphores{},
         _render_finished_semaphores{},
@@ -204,6 +249,10 @@ namespace lue::view {
             static_cast<int>(std::ceil(0.9 * video_mode.width())),
             static_cast<int>(std::ceil(0.9 * video_mode.height())));
 
+        // Prevent the window from becoming smaller than some small size. Otherwise bad things
+        // may happen (black screen seen on MESA-INTEL / Ivy bridge Vulkan / Intel(R) HD Graphics
+        // 4000 (IVB GT2)).
+        _window->set_size_limits(10, 10, GLFW_DONT_CARE, GLFW_DONT_CARE);
         _window->set_user_pointer(this);
         _window->set_framebuffer_size_callback(framebuffer_resize_callback);
     }
@@ -227,6 +276,7 @@ namespace lue::view {
         create_graphics_pipeline();
         create_framebuffers();
         create_command_pool();
+        create_vertex_buffer();
         create_command_buffers();
         create_sync_objects();
     }
@@ -506,7 +556,7 @@ namespace lue::view {
         std::set<vulkan::QueueFamily> unique_queue_families{
             queue_families.graphics_family(), queue_families.present_family()};
 
-        std::vector<vulkan::Device::QueueCreateInfo> queue_create_infos(unique_queue_families.size());
+        std::vector<vulkan::Queue::CreateInfo> queue_create_infos(unique_queue_families.size());
 
         std::transform(
             unique_queue_families.begin(),
@@ -515,7 +565,7 @@ namespace lue::view {
             [](vulkan::QueueFamily const& queue_family)
             {
                 static float const queue_priority{1.0f};
-                vulkan::Device::QueueCreateInfo create_info{};
+                vulkan::Queue::CreateInfo create_info{};
 
                 (*create_info).queueFamilyIndex = queue_family;
                 (*create_info).queueCount = 1;
@@ -529,12 +579,11 @@ namespace lue::view {
 
         vulkan::Device::CreateInfo device_create_info{};
 
-        // We are passing a pointer to the Vulkan structure that is layered in our QueueCreateInfo
+        // We are passing a pointer to the Vulkan structure that is layered in our Queue::CreateInfo
         // type. Internally, this pointer will be moved to reach the next info instance. This
         // should work when the Vulkan structure and our type have the same size. This is the case
         // when our structure does not have additional data members.
-        static_assert(
-            sizeof(vulkan::Device::QueueCreateInfo) == sizeof(vulkan::Device::QueueCreateInfo::VkType));
+        static_assert(sizeof(vulkan::Queue::CreateInfo) == sizeof(vulkan::Queue::CreateInfo::VkType));
         (*device_create_info).pQueueCreateInfos = *queue_create_infos.data();
         (*device_create_info).queueCreateInfoCount = queue_create_infos.size();
         (*device_create_info).pEnabledFeatures = nullptr;
@@ -544,8 +593,8 @@ namespace lue::view {
         _device = vulkan::Device{_physical_device, device_create_info};
 
         // Possibly the same queue
-        _graphics_queue = vulkan::Device::Queue{_device.queue(queue_families.graphics_family())};
-        _present_queue = vulkan::Device::Queue{_device.queue(queue_families.present_family())};
+        _graphics_queue = vulkan::Queue{_device.queue(queue_families.graphics_family())};
+        _present_queue = vulkan::Queue{_device.queue(queue_families.present_family())};
     }
 
 
@@ -605,7 +654,7 @@ namespace lue::view {
         (*swapchain_create_info).clipped = VK_TRUE;
         (*swapchain_create_info).oldSwapchain = VK_NULL_HANDLE;
 
-        _swapchain = _device.swapchain(swapchain_create_info);
+        _swapchain = _device.create_swapchain(swapchain_create_info);
 
         _swapchain_images = _swapchain.images();
         _image_format = swap_surface_format.format;
@@ -654,7 +703,7 @@ namespace lue::view {
             (*create_info).subresourceRange.baseArrayLayer = 0;
             (*create_info).subresourceRange.layerCount = 1;
 
-            _swapchain_image_views[i] = _device.image_view(create_info);
+            _swapchain_image_views[i] = _device.create_image_view(create_info);
         }
     }
 
@@ -701,7 +750,7 @@ namespace lue::view {
         (*create_info).dependencyCount = 1;
         (*create_info).pDependencies = &subpass_dependency;
 
-        _render_pass = _device.render_pass(create_info);
+        _render_pass = _device.create_render_pass(create_info);
     }
 
 
@@ -720,7 +769,8 @@ namespace lue::view {
         (*vertex_shader_module_create_info).pCode =
             reinterpret_cast<std::uint32_t const*>(vertex_shader_code.data());
 
-        vulkan::ShaderModule vertex_shader_module{_device.shader_module(vertex_shader_module_create_info)};
+        vulkan::ShaderModule vertex_shader_module{
+            _device.create_shader_module(vertex_shader_module_create_info)};
 
         vulkan::ShaderModule::CreateInfo fragment_shader_module_create_info{};
 
@@ -730,7 +780,7 @@ namespace lue::view {
             reinterpret_cast<std::uint32_t const*>(fragment_shader_code.data());
 
         vulkan::ShaderModule fragment_shader_module{
-            _device.shader_module(fragment_shader_module_create_info)};
+            _device.create_shader_module(fragment_shader_module_create_info)};
 
         vulkan::Pipeline::ShaderStageCreateInfo vertex_shader_stage_info{};
         (*vertex_shader_stage_info).stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -746,10 +796,14 @@ namespace lue::view {
             *vertex_shader_stage_info, *fragment_shader_stage_info};
 
         vulkan::Pipeline::VertexInputStateCreateInfo vertex_input_state_create_info{};
-        (*vertex_input_state_create_info).vertexBindingDescriptionCount = 0;
-        (*vertex_input_state_create_info).pVertexBindingDescriptions = nullptr;  // Optional
-        (*vertex_input_state_create_info).vertexAttributeDescriptionCount = 0;
-        (*vertex_input_state_create_info).pVertexAttributeDescriptions = nullptr;  // Optional
+
+        auto binding_description = Vertex::binding_description();
+        auto attribute_descriptions = Vertex::attribute_descriptions();
+
+        (*vertex_input_state_create_info).vertexBindingDescriptionCount = 1;
+        (*vertex_input_state_create_info).pVertexBindingDescriptions = &binding_description;
+        (*vertex_input_state_create_info).vertexAttributeDescriptionCount = attribute_descriptions.size();
+        (*vertex_input_state_create_info).pVertexAttributeDescriptions = attribute_descriptions.data();
 
         vulkan::Pipeline::InputAssemblyStateCreateInfo input_assembly_state_create_info{};
         (*input_assembly_state_create_info).topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -840,7 +894,7 @@ namespace lue::view {
         (*pipeline_layout_create_info).pushConstantRangeCount = 0;     // Optional
         (*pipeline_layout_create_info).pPushConstantRanges = nullptr;  // Optional
 
-        _pipeline_layout = _device.pipeline_layout(pipeline_layout_create_info);
+        _pipeline_layout = _device.create_pipeline_layout(pipeline_layout_create_info);
 
         // Graphics pipeline
         vulkan::Pipeline::GraphicsPipelineCreateInfo graphics_pipeline_create_info{};
@@ -864,7 +918,7 @@ namespace lue::view {
         (*graphics_pipeline_create_info).basePipelineHandle = VK_NULL_HANDLE;  // Optional
         (*graphics_pipeline_create_info).basePipelineIndex = -1;               // Optional
 
-        _graphics_pipeline = _device.graphics_pipeline(graphics_pipeline_create_info);
+        _graphics_pipeline = _device.create_graphics_pipeline(graphics_pipeline_create_info);
     }
 
 
@@ -885,7 +939,7 @@ namespace lue::view {
             (*create_info).height = _image_extent.height;
             (*create_info).layers = 1;
 
-            _framebuffers[i] = _device.framebuffer(create_info);
+            _framebuffers[i] = _device.create_framebuffer(create_info);
         }
     }
 
@@ -899,7 +953,113 @@ namespace lue::view {
         (*create_info).flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         (*create_info).queueFamilyIndex = queue_families.graphics_family();
 
-        _command_pool = _device.command_pool(create_info);
+        _command_pool = _device.create_command_pool(create_info);
+    }
+
+
+    std::uint32_t VulkanApplication::find_memory_type(
+        std::uint32_t const type_filter, VkMemoryPropertyFlags const properties) const
+    {
+        auto memory_properties{_physical_device.memory_properties()};
+
+        for (std::uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i)
+        {
+            if ((type_filter & (1 << i)) &&
+                (memory_properties.memoryTypes[i].propertyFlags & properties) == properties)
+            {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("Failed to find suitable memory type");
+    }
+
+
+    std::tuple<vulkan::Buffer, vulkan::Memory> VulkanApplication::create_buffer(
+        VkDeviceSize const size, VkBufferUsageFlags const usage, VkMemoryPropertyFlags const properties)
+    {
+        vulkan::Buffer::CreateInfo create_info{};
+
+        (*create_info).size = size;
+        (*create_info).usage = usage;
+        (*create_info).sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        auto buffer = _device.create_buffer(create_info);
+
+        auto memory_requirements{buffer.memory_requirements()};
+
+        vulkan::Memory::AllocateInfo allocate_info{};
+
+        (*allocate_info).allocationSize = memory_requirements.size;
+        (*allocate_info).memoryTypeIndex = find_memory_type(memory_requirements.memoryTypeBits, properties);
+
+        auto vertex_buffer_memory = _device.allocate_memory(allocate_info);
+
+        buffer.bind(vertex_buffer_memory, 0);
+
+        return {std::move(buffer), std::move(vertex_buffer_memory)};
+    }
+
+
+    void VulkanApplication::copy_buffer(
+        vulkan::Buffer& from_buffer, vulkan::Buffer& to_buffer, VkDeviceSize const size)
+    {
+        vulkan::CommandBuffer::AllocateInfo allocate_info{};
+
+        (*allocate_info).commandPool = _command_pool;
+        (*allocate_info).level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        (*allocate_info).commandBufferCount = 1;
+
+        vulkan::CommandBuffer command_buffer = std::move(_device.allocate_command_buffers(allocate_info)[0]);
+
+        vulkan::CommandBuffer::BeginInfo command_buffer_begin_info{};
+        (*command_buffer_begin_info).flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        command_buffer.begin(command_buffer_begin_info);
+
+        VkBufferCopy copy_region{};
+        copy_region.srcOffset = 0;  // Optional
+        copy_region.dstOffset = 0;  // Optional
+        copy_region.size = size;
+        vkCmdCopyBuffer(command_buffer, from_buffer, to_buffer, 1, &copy_region);
+
+        command_buffer.end();
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = command_buffer;
+
+        vkQueueSubmit(_graphics_queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(_graphics_queue);
+
+        vkFreeCommandBuffers(_device, _command_pool, 1, command_buffer);
+    }
+
+
+    void VulkanApplication::create_vertex_buffer()
+    {
+        VkDeviceSize const buffer_size = sizeof(vertices[0]) * vertices.size();
+
+        auto [staging_buffer, staging_buffer_memory] = create_buffer(
+            buffer_size,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        void* data;
+
+        _device.map_memory(staging_buffer_memory, 0, buffer_size, 0, &data);
+
+        std::memcpy(data, vertices.data(), static_cast<std::size_t>(buffer_size));
+
+        _device.unmap_memory(staging_buffer_memory);
+
+        std::tie(_vertex_buffer, _vertex_buffer_memory) = create_buffer(
+            buffer_size,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+        copy_buffer(staging_buffer, _vertex_buffer, buffer_size);
     }
 
 
@@ -911,16 +1071,16 @@ namespace lue::view {
         (*allocate_info).level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         (*allocate_info).commandBufferCount = MAX_NR_FRAMES_IN_FLIGHT;
 
-        _command_buffers = _device.command_buffers(allocate_info);
+        _command_buffers = _device.allocate_command_buffers(allocate_info);
     }
 
 
     void VulkanApplication::create_sync_objects()
     {
         _image_available_semaphores =
-            _device.semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
+            _device.create_semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
         _render_finished_semaphores =
-            _device.semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
+            _device.create_semaphores(MAX_NR_FRAMES_IN_FLIGHT, vulkan::Semaphore::CreateInfo{});
 
         vulkan::Fence::CreateInfo create_info{};
 
@@ -928,7 +1088,7 @@ namespace lue::view {
         // returns immediately
         (*create_info).flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-        _in_flight_fences = _device.fences(MAX_NR_FRAMES_IN_FLIGHT, create_info);
+        _in_flight_fences = _device.create_fences(MAX_NR_FRAMES_IN_FLIGHT, create_info);
     }
 
 
@@ -958,6 +1118,7 @@ namespace lue::view {
 
         // Basic drawing commands
         command_buffer.bind_pipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, _graphics_pipeline);
+        command_buffer.bind_vertex_buffer(_vertex_buffer);
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -976,7 +1137,7 @@ namespace lue::view {
         command_buffer.set_scissor(&scissor);
 
         // Draw the triangle
-        command_buffer.draw(3, 1, 0, 0);
+        command_buffer.draw(static_cast<std::uint32_t>(vertices.size()), 1, 0, 0);
 
         command_buffer.end_render_pass();
         command_buffer.end();
@@ -1037,29 +1198,29 @@ namespace lue::view {
         record_command_buffer(_command_buffers[_current_frame], image_idx);
 
         // Submit the command buffer
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        VkSubmitInfo submit_info{};
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
         VkSemaphore waitSemaphores[] = {_image_available_semaphores[_current_frame]};
 
         VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = _command_buffers[_current_frame];
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = waitSemaphores;
+        submit_info.pWaitDstStageMask = waitStages;
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = _command_buffers[_current_frame];
 
         VkSemaphore signalSemaphores[] = {_render_finished_semaphores[_current_frame]};
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores = signalSemaphores;
 
-        if (vkQueueSubmit(_graphics_queue, 1, &submitInfo, _in_flight_fences[_current_frame]) != VK_SUCCESS)
+        if (vkQueueSubmit(_graphics_queue, 1, &submit_info, _in_flight_fences[_current_frame]) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
 
         // Presentation
-        vulkan::Device::PresentInfo present_info{};
+        vulkan::Queue::PresentInfo present_info{};
 
         (*present_info).waitSemaphoreCount = 1;
         (*present_info).pWaitSemaphores = signalSemaphores;
