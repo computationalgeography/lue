@@ -12,6 +12,9 @@ add_library(lue_vulkan STATIC
     src/command_buffer.cpp
     src/command_pool.cpp
     src/debug_report_callback.cpp
+    src/descriptor_set.cpp
+    src/descriptor_pool.cpp
+    src/descriptor_set_layout.cpp
     src/device.cpp
     src/error.cpp
     src/fence.cpp

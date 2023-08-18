@@ -4,6 +4,8 @@ set(names
     command_buffer_test
     command_pool_test
     debug_report_callback_test
+    descriptor_pool_test
+    descriptor_set_layout_test
     device_test
     fence_test
     framebuffer_test

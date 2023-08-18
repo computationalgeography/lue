@@ -139,6 +139,14 @@ namespace lue::vulkan {
     }
 
 
+    void CommandBuffer::bind_index_buffer(Buffer& buffer, VkIndexType const index_type)
+    {
+        VkDeviceSize offset{0};
+
+        vkCmdBindIndexBuffer(_command_buffer, buffer, offset, index_type);
+    }
+
+
     void CommandBuffer::set_viewport(VkViewport const* viewport)
     {
         set_viewport(0, 1, viewport);
@@ -171,6 +179,18 @@ namespace lue::vulkan {
         std::uint32_t const first_instance)
     {
         vkCmdDraw(_command_buffer, nr_vertices, nr_instances, first_vertex, first_instance);
+    }
+
+
+    void CommandBuffer::draw_indexed(
+        std::uint32_t const nr_indices,
+        std::uint32_t const nr_instances,
+        std::uint32_t const first_index,
+        std::uint32_t const vertex_offset,
+        std::uint32_t const first_instance)
+    {
+        vkCmdDrawIndexed(
+            _command_buffer, nr_indices, nr_instances, first_index, vertex_offset, first_instance);
     }
 
 }  // namespace lue::vulkan

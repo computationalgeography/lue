@@ -2,6 +2,8 @@
 #include "lue/vulkan/buffer.hpp"
 #include "lue/vulkan/command_buffer.hpp"
 #include "lue/vulkan/command_pool.hpp"
+#include "lue/vulkan/descriptor_pool.hpp"
+#include "lue/vulkan/descriptor_set_layout.hpp"
 #include "lue/vulkan/fence.hpp"
 #include "lue/vulkan/framebuffer.hpp"
 #include "lue/vulkan/image_view.hpp"
@@ -94,14 +96,18 @@ namespace lue::vulkan {
 
             Memory allocate_memory(Memory::AllocateInfo const& allocate_info);
 
-            void map_memory(
+            void* map_memory(
                 Memory& memory,
                 VkDeviceSize const offset,
                 VkDeviceSize const size,
-                VkMemoryMapFlags const flags,
-                void** data);
+                VkMemoryMapFlags const flags);
 
             void unmap_memory(Memory& memory);
+
+            DescriptorSetLayout create_descriptor_set_layout(
+                DescriptorSetLayout::CreateInfo const& create_info);
+
+            DescriptorPool create_descriptor_pool(DescriptorPool::CreateInfo const& create_info);
 
 
         private:

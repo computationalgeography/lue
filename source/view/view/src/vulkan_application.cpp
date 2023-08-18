@@ -6,7 +6,10 @@
 #include <array>
 #include <cassert>
 #include <cmath>
+#define GLM_FORCE_RADIANS
+#include <chrono>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <set>
 
 #include <iostream>
@@ -51,9 +54,20 @@ namespace lue::view {
 
 
         std::vector<Vertex> const vertices = {
-            {{0.0f, -0.5f}, {1.0f, 1.0f, 1.0f}},
-            {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
+            {{-0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}},  // 0: top left: red
+            {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},   // 1: top right: green
+            {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},    // 2: bottom right: blue
+            {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}};  // 3: bottom left: white
+
+        std::vector<std::uint16_t> indices = {0, 1, 2, 2, 3, 0};
+
+
+        struct UniformBufferObject
+        {
+                alignas(16) glm::mat4 model;
+                alignas(16) glm::mat4 view;
+                alignas(16) glm::mat4 proj;
+        };
 
 
         // This allows the CPU and GPU to work on their own tasks at the same time. If the CPU
@@ -190,12 +204,20 @@ namespace lue::view {
         _image_extent{},
         _swapchain_image_views{},
         _render_pass{},
+        _descriptor_set_layout{},
         _pipeline_layout{},
         _graphics_pipeline{},
         _framebuffers{},
         _command_pool{},
         _vertex_buffer{},
         _vertex_buffer_memory{},
+        _index_buffer{},
+        _index_buffer_memory{},
+        _uniform_buffers{},
+        _uniform_buffers_memory{},
+        _uniform_buffers_mapped{},
+        _descriptor_pool{},
+        _descriptor_sets{},
         _command_buffers{},
         _image_available_semaphores{},
         _render_finished_semaphores{},
@@ -273,10 +295,15 @@ namespace lue::view {
         create_swapchain();
         create_image_views();
         create_render_pass();
+        create_descriptor_set_layout();
         create_graphics_pipeline();
         create_framebuffers();
         create_command_pool();
         create_vertex_buffer();
+        create_index_buffer();
+        create_uniform_buffers();
+        create_descriptor_pool();
+        create_descriptor_sets();
         create_command_buffers();
         create_sync_objects();
     }
@@ -284,11 +311,12 @@ namespace lue::view {
 
     void VulkanApplication::init_imgui()
     {
-        VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
-
-        int const nr_images = _swapchain_images.size();
-
         // TODO
+
+        // VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
+
+        // int const nr_images = _swapchain_images.size();
+
         // _binding = std::make_unique<imgui::glfw::VulkanBinding>(
         //         *_window, _instance, _physical_device, _device,
         //         _graphics_queue, pipeline_cache, nr_images
@@ -754,6 +782,25 @@ namespace lue::view {
     }
 
 
+    void VulkanApplication::create_descriptor_set_layout()
+    {
+        vulkan::DescriptorSetLayout::Binding binding{};
+
+        binding.binding = 0;
+        binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        binding.descriptorCount = 1;
+        binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        binding.pImmutableSamplers = nullptr;  // Optional
+
+        vulkan::DescriptorSetLayout::CreateInfo create_info{};
+
+        (*create_info).bindingCount = 1;
+        (*create_info).pBindings = &binding;
+
+        _descriptor_set_layout = _device.create_descriptor_set_layout(create_info);
+    }
+
+
     void VulkanApplication::create_graphics_pipeline()
     {
         // TODO Where to put these files?
@@ -838,7 +885,12 @@ namespace lue::view {
         rasterization_state_create_info.polygonMode = VK_POLYGON_MODE_FILL;
         rasterization_state_create_info.lineWidth = 1.0f;
         rasterization_state_create_info.cullMode = VK_CULL_MODE_BACK_BIT;
-        rasterization_state_create_info.frontFace = VK_FRONT_FACE_CLOCKWISE;
+
+        // Because of the Y-flip in the projection matrix, the vertices are being drawn in
+        // counter-clockwise order instead of clockwise order. This causes backface culling and
+        // prevents any geometry from being drawn. This is to correct for that.
+        rasterization_state_create_info.frontFace =
+            VK_FRONT_FACE_COUNTER_CLOCKWISE;  // VK_FRONT_FACE_CLOCKWISE;
         rasterization_state_create_info.depthBiasEnable = VK_FALSE;
         rasterization_state_create_info.depthBiasConstantFactor = 0.0f;  // Optional
         rasterization_state_create_info.depthBiasClamp = 0.0f;           // Optional
@@ -889,8 +941,8 @@ namespace lue::view {
         // Pipeline layout
         vulkan::PipelineLayout::CreateInfo pipeline_layout_create_info{};
 
-        (*pipeline_layout_create_info).setLayoutCount = 0;             // Optional
-        (*pipeline_layout_create_info).pSetLayouts = nullptr;          // Optional
+        (*pipeline_layout_create_info).setLayoutCount = 1;
+        (*pipeline_layout_create_info).pSetLayouts = _descriptor_set_layout;
         (*pipeline_layout_create_info).pushConstantRangeCount = 0;     // Optional
         (*pipeline_layout_create_info).pPushConstantRanges = nullptr;  // Optional
 
@@ -1046,11 +1098,9 @@ namespace lue::view {
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-        void* data;
+        auto data = _device.map_memory(staging_buffer_memory, 0, buffer_size, 0);
 
-        _device.map_memory(staging_buffer_memory, 0, buffer_size, 0, &data);
-
-        std::memcpy(data, vertices.data(), static_cast<std::size_t>(buffer_size));
+        std::memcpy(data, vertices.data(), buffer_size);
 
         _device.unmap_memory(staging_buffer_memory);
 
@@ -1060,6 +1110,109 @@ namespace lue::view {
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
         copy_buffer(staging_buffer, _vertex_buffer, buffer_size);
+    }
+
+
+    void VulkanApplication::create_index_buffer()
+    {
+        VkDeviceSize const buffer_size = sizeof(indices[0]) * indices.size();
+
+        auto [staging_buffer, staging_buffer_memory] = create_buffer(
+            buffer_size,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+        auto data = _device.map_memory(staging_buffer_memory, 0, buffer_size, 0);
+
+        std::memcpy(data, indices.data(), buffer_size);
+
+        _device.unmap_memory(staging_buffer_memory);
+
+        std::tie(_index_buffer, _index_buffer_memory) = create_buffer(
+            buffer_size,
+            VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+        copy_buffer(staging_buffer, _index_buffer, buffer_size);
+    }
+
+
+    void VulkanApplication::create_uniform_buffers()
+    {
+        VkDeviceSize const buffer_size = sizeof(UniformBufferObject);
+
+        _uniform_buffers.resize(MAX_NR_FRAMES_IN_FLIGHT);
+        _uniform_buffers_memory.resize(MAX_NR_FRAMES_IN_FLIGHT);
+        _uniform_buffers_mapped.resize(MAX_NR_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < MAX_NR_FRAMES_IN_FLIGHT; i++)
+        {
+            std::tie(_uniform_buffers[i], _uniform_buffers_memory[i]) = create_buffer(
+                buffer_size,
+                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+
+            _uniform_buffers_mapped[i] = _device.map_memory(_uniform_buffers_memory[i], 0, buffer_size, 0);
+        }
+    }
+
+
+    void VulkanApplication::create_descriptor_pool()
+    {
+        vulkan::DescriptorPool::PoolSize pool_size{};
+
+        pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        pool_size.descriptorCount = static_cast<uint32_t>(MAX_NR_FRAMES_IN_FLIGHT);
+
+        vulkan::DescriptorPool::CreateInfo create_info{};
+
+        (*create_info).poolSizeCount = 1;
+        (*create_info).pPoolSizes = &pool_size;
+        (*create_info).maxSets = static_cast<uint32_t>(MAX_NR_FRAMES_IN_FLIGHT);
+
+        _descriptor_pool = _device.create_descriptor_pool(create_info);
+    }
+
+
+    void VulkanApplication::create_descriptor_sets()
+    {
+        std::vector<VkDescriptorSetLayout> layouts(MAX_NR_FRAMES_IN_FLIGHT, _descriptor_set_layout);
+
+        vulkan::DescriptorSet::AllocateInfo allocate_info{};
+
+        (*allocate_info).descriptorPool = _descriptor_pool;
+        (*allocate_info).descriptorSetCount = MAX_NR_FRAMES_IN_FLIGHT;
+        (*allocate_info).pSetLayouts = layouts.data();
+
+        _descriptor_sets.resize(MAX_NR_FRAMES_IN_FLIGHT);
+
+        if (vkAllocateDescriptorSets(_device, allocate_info, _descriptor_sets.data()) != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to allocate descriptor sets!");
+        }
+
+        for (size_t i = 0; i < MAX_NR_FRAMES_IN_FLIGHT; i++)
+        {
+            VkDescriptorBufferInfo bufferInfo{};
+            bufferInfo.buffer = _uniform_buffers[i];
+            bufferInfo.offset = 0;
+            bufferInfo.range = sizeof(UniformBufferObject);
+
+            VkWriteDescriptorSet descriptorWrite{};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = _descriptor_sets[i];
+            descriptorWrite.dstBinding = 0;
+            descriptorWrite.dstArrayElement = 0;
+
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrite.descriptorCount = 1;
+
+            descriptorWrite.pBufferInfo = &bufferInfo;
+            descriptorWrite.pImageInfo = nullptr;        // Optional
+            descriptorWrite.pTexelBufferView = nullptr;  // Optional
+
+            vkUpdateDescriptorSets(_device, 1, &descriptorWrite, 0, nullptr);
+        }
     }
 
 
@@ -1119,6 +1272,7 @@ namespace lue::view {
         // Basic drawing commands
         command_buffer.bind_pipeline(VK_PIPELINE_BIND_POINT_GRAPHICS, _graphics_pipeline);
         command_buffer.bind_vertex_buffer(_vertex_buffer);
+        command_buffer.bind_index_buffer(_index_buffer, VK_INDEX_TYPE_UINT16);
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -1137,7 +1291,19 @@ namespace lue::view {
         command_buffer.set_scissor(&scissor);
 
         // Draw the triangle
-        command_buffer.draw(static_cast<std::uint32_t>(vertices.size()), 1, 0, 0);
+        // command_buffer.draw(static_cast<std::uint32_t>(vertices.size()), 1, 0, 0);
+        vkCmdBindDescriptorSets(
+            command_buffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            _pipeline_layout,
+            0,
+            1,
+            &_descriptor_sets[_current_frame],
+            0,
+            nullptr);
+        // command_buffer.bind_descriptor_sets(VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline_layout, 0, 1,
+        // &_descriptor_sets[_current_frame], 0, nullptr);
+        command_buffer.draw_indexed(static_cast<std::uint32_t>(indices.size()), 1, 0, 0, 0);
 
         command_buffer.end_render_pass();
         command_buffer.end();
@@ -1171,6 +1337,34 @@ namespace lue::view {
     }
 
 
+    void VulkanApplication::update_uniform_buffer(std::uint32_t const current_frame)
+    {
+        static auto const start_time = std::chrono::high_resolution_clock::now();
+
+        auto current_time = std::chrono::high_resolution_clock::now();
+        float time =
+            std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+
+        UniformBufferObject ubo{};
+
+        // Model
+        ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // View
+        ubo.view = glm::lookAt(
+            glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // Projection
+        ubo.proj = glm::perspective(
+            glm::radians(45.0f), _image_extent.width / (float)_image_extent.height, 0.1f, 10.0f);
+
+        // glm assumes OpenGL. Correct for that.
+        ubo.proj[1][1] *= -1;
+
+        std::memcpy(_uniform_buffers_mapped[_current_frame], &ubo, sizeof(ubo));
+    }
+
+
     void VulkanApplication::draw_frame()
     {
         // Wait for previous frame
@@ -1192,6 +1386,8 @@ namespace lue::view {
 
         // Only reset the fence if we are submitting work
         _device.reset(_in_flight_fences[_current_frame]);
+
+        update_uniform_buffer(_current_frame);
 
         // Record the command buffer
         vkResetCommandBuffer(_command_buffers[_current_frame], 0);

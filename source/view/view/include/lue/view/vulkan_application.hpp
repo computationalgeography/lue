@@ -79,6 +79,8 @@ namespace lue::view {
 
             void create_render_pass();
 
+            void create_descriptor_set_layout();
+
             void create_graphics_pipeline();
 
             void create_framebuffers();
@@ -97,6 +99,14 @@ namespace lue::view {
 
             void create_vertex_buffer();
 
+            void create_index_buffer();
+
+            void create_uniform_buffers();
+
+            void create_descriptor_pool();
+
+            void create_descriptor_sets();
+
             void create_command_buffers();
 
             void create_sync_objects();
@@ -104,6 +114,8 @@ namespace lue::view {
             void record_command_buffer(vulkan::CommandBuffer& command_buffer, std::uint32_t image_idx);
 
             void main_loop();
+
+            void update_uniform_buffer(std::uint32_t const current_frame);
 
             void draw_frame();
 
@@ -143,6 +155,8 @@ namespace lue::view {
 
             vulkan::RenderPass _render_pass;
 
+            vulkan::DescriptorSetLayout _descriptor_set_layout;
+
             vulkan::PipelineLayout _pipeline_layout;
 
             vulkan::Pipeline _graphics_pipeline;
@@ -154,6 +168,20 @@ namespace lue::view {
             vulkan::Buffer _vertex_buffer;
 
             vulkan::Memory _vertex_buffer_memory;
+
+            vulkan::Buffer _index_buffer;
+
+            vulkan::Memory _index_buffer_memory;
+
+            std::vector<vulkan::Buffer> _uniform_buffers;
+
+            std::vector<vulkan::Memory> _uniform_buffers_memory;
+
+            std::vector<void*> _uniform_buffers_mapped;
+
+            vulkan::DescriptorPool _descriptor_pool;
+
+            std::vector<VkDescriptorSet> _descriptor_sets;
 
             vulkan::CommandBuffers _command_buffers;
 

@@ -51,6 +51,8 @@ namespace lue::vulkan {
 
             void bind_vertex_buffer(Buffer& buffer);
 
+            void bind_index_buffer(Buffer& buffer, VkIndexType const index_type);
+
             void set_viewport(VkViewport const* viewport);
 
             void set_viewport(
@@ -67,6 +69,13 @@ namespace lue::vulkan {
                 std::uint32_t const nr_vertices,
                 std::uint32_t const nr_instances,
                 std::uint32_t const first_vertex,
+                std::uint32_t const first_instance);
+
+            void draw_indexed(
+                std::uint32_t const nr_indices,
+                std::uint32_t const nr_instances,
+                std::uint32_t const first_index,
+                std::uint32_t const vertex_offset,
                 std::uint32_t const first_instance);
 
         private:

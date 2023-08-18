@@ -352,22 +352,47 @@ namespace lue::vulkan {
     }
 
 
-    void Device::map_memory(
-        Memory& memory,
-        VkDeviceSize const offset,
-        VkDeviceSize const size,
-        VkMemoryMapFlags const flags,
-        void** data)
+    void* Device::map_memory(
+        Memory& memory, VkDeviceSize const offset, VkDeviceSize const size, VkMemoryMapFlags const flags)
     {
-        VkResult result = vkMapMemory(_device, memory, offset, size, flags, data);
+        void* data;
+
+        VkResult result = vkMapMemory(_device, memory, offset, size, flags, &data);
 
         assert_result_is_ok(result);
+
+        return data;
     }
 
 
     void Device::unmap_memory(Memory& memory)
     {
         vkUnmapMemory(_device, memory);
+    }
+
+
+    DescriptorSetLayout Device::create_descriptor_set_layout(
+        DescriptorSetLayout::CreateInfo const& create_info)
+    {
+        VkDescriptorSetLayout layout;
+
+        VkResult result = vkCreateDescriptorSetLayout(_device, create_info, nullptr, &layout);
+
+        assert_result_is_ok(result);
+
+        return {_device, layout};
+    }
+
+
+    DescriptorPool Device::create_descriptor_pool(DescriptorPool::CreateInfo const& create_info)
+    {
+        VkDescriptorPool pool;
+
+        VkResult result = vkCreateDescriptorPool(_device, create_info, nullptr, &pool);
+
+        assert_result_is_ok(result);
+
+        return {_device, pool};
     }
 
 }  // namespace lue::vulkan
