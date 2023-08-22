@@ -101,6 +101,8 @@ jobs:
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
               cmake --preset conan-release --preset lue_release \
+                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
                   -D LUE_BUILD_QA=TRUE \
                   -D LUE_QA_WITH_PYTHON_API=TRUE \
