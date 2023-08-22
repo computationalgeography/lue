@@ -69,6 +69,7 @@ jobs:
 
         - shell: bash -l {0}
           run: |
+              set -x
               conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
 
               # Use conan from pypi to get the latest version
@@ -81,12 +82,12 @@ jobs:
                   -c:b tools.system.package_manager:mode=install \
                   -c:b tools.system.package_manager:sudo=True \
                   > "$(dirname $(conan profile path default))/lue"
-              conan profile detect
+              cat "$(conan profile path lue)"
 
-              # Install packages, allowing any required system packages to be installed as well
-              CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
-              CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
-              CONAN_SYSREQUIRES_MODE=enabled conan install glu/system@
+              # # Install packages, allowing any required system packages to be installed as well
+              # CONAN_SYSREQUIRES_MODE=enabled conan install --profile=lue \
+              #     xorg/system@
+              # opengl/system@ glu/system@
 
         - name: configure lue
           shell: bash -l {0}
@@ -95,7 +96,7 @@ jobs:
               LUE_CONAN_PACKAGES="ms-gsl" conan install . \
                   --output-folder=$GITHUB_WORKSPACE/../build \
                   --build=missing \
-                  --profile=default \
+                  --profile=lue \
                   --settings=build_type=Release
               cmake --preset conan-release --preset lue_release \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
