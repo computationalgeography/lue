@@ -76,13 +76,13 @@ jobs:
               pip install "conan>=2"
 
               conan profile detect
-              conan profile show \
-                  -s:b compiler=${{ matrix.compiler.name }} \
-                  -s:b compiler.version=${{ matrix.compiler.version }} \
-                  -c:b tools.system.package_manager:mode=install \
-                  -c:b tools.system.package_manager:sudo=True \
-                  > "$(dirname $(conan profile path default))/lue"
-              cat "$(conan profile path lue)"
+              # conan profile show \
+              #     -s:b compiler=${{ matrix.compiler.name }} \
+              #     -s:b compiler.version=${{ matrix.compiler.version }} \
+              #     -c:b tools.system.package_manager:mode=install \
+              #     -c:b tools.system.package_manager:sudo=True \
+              #     > "$(dirname $(conan profile path default))/lue"
+              # cat "$(conan profile path lue)"
 
               # # Install packages, allowing any required system packages to be installed as well
               # CONAN_SYSREQUIRES_MODE=enabled conan install --profile=lue \
@@ -94,10 +94,12 @@ jobs:
           run: |
               mkdir $GITHUB_WORKSPACE/../build
               LUE_CONAN_PACKAGES="ms-gsl" conan install . \
-                  --output-folder=$GITHUB_WORKSPACE/../build \
+                  --profile=default \
+                  --settings:build compiler=${{ matrix.compiler.name }} \
+                  --settings:build compiler.version=${{ matrix.compiler.version }} \
+                  --settings:build build_type=Release \
                   --build=missing \
-                  --profile=lue \
-                  --settings=build_type=Release
+                  --output-folder=$GITHUB_WORKSPACE/../build
               cmake --preset conan-release --preset lue_release \
                   -D LUE_BUILD_DOCUMENTATION=TRUE \
                   -D LUE_BUILD_QA=TRUE \
