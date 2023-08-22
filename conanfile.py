@@ -58,10 +58,10 @@ class LUERecipe(ConanFile):
         ###     self.requires("glfw/[>3.3.7]")
 
         if install_conan_package("imgui"):
-            self.requires("imgui/[>1.89]")
+            self.requires("imgui/[>=1.89]")
 
-        if install_conan_package("ms-gsl"):
-            self.requires("ms-gsl/[>4]")
+        if install_conan_package("span-lite"):
+            self.requires("span-lite/[>=0.10]")
 
         ### # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
         ### self.requires("hdf5/1.13.1")

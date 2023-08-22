@@ -113,8 +113,8 @@ target_link_libraries(lue_py_data_model
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
-        Microsoft.GSL::Microsoft.GSL
         Python3::NumPy
+        nonstd::span-lite
 )
 
 pybind11_extension(lue_py_data_model)

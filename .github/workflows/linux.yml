@@ -93,7 +93,7 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="imgui ms-gsl" conan install . \
+              LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
                   --profile=default \
                   --settings:build compiler=${{ matrix.compiler.name }} \
                   --settings:build compiler.version=${{ matrix.compiler.version }} \
