@@ -74,14 +74,16 @@ jobs:
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
 
-              conan profile new --detect default
-              conan profile update settings.compiler=${{ matrix.compiler.name }} default
-              conan profile update settings.compiler.version=${{ matrix.compiler.version }} default
-              conan profile update settings.compiler.libcxx=libstdc++11 default
+              conan profile detect
+              conan profile show \
+                  -s:b compiler=${{ matrix.compiler.name }} \
+                  -s:b compiler.version=${{ matrix.compiler.version }} \
+                  -c:b tools.system.package_manager:mode=install \
+                  -c:b tools.system.package_manager:sudo=True \
+                  > "$(dirname $(conan profile path default)))/lue"
+              conan profile detect
 
               # Install packages, allowing any required system packages to be installed as well
-              conan profile update conf.tools.system.package_manager:mode=install default
-              conan profile update conf.tools.system.package_manager:sudo=True default
               CONAN_SYSREQUIRES_MODE=enabled conan install xorg/system@
               CONAN_SYSREQUIRES_MODE=enabled conan install opengl/system@
               CONAN_SYSREQUIRES_MODE=enabled conan install glu/system@

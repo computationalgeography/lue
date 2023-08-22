@@ -58,7 +58,6 @@
         },
         {
             "name": "lue_debug",
-            "hidden": true,
             "inherits": [
                 "hpx_debug_configuration"
             ],
@@ -68,7 +67,6 @@
         },
         {
             "name": "lue_relwithdebinfo",
-            "hidden": true,
             "inherits": [
                 "hpx_relwithdebinfo_configuration"
             ],
@@ -78,7 +76,6 @@
         },
         {
             "name": "lue_release",
-            "hidden": true,
             "inherits": [
                 "hpx_release_configuration"
             ],
