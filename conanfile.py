@@ -24,28 +24,9 @@ class LUERecipe(ConanFile):
 
     def requirements(self):
 
-        # TODO Here we can test the environment and only require packages that are actually needed
-        # - Unfortunately, this doesn't allow our CMake logic to determine whether packages
-        #   are required or not. Not a huge problem maybe. Just set the environment variables,
-        #   depending on the platform, instead of setting/computing the CMake variables.
-        # TODO Get rid of the LUE_HAVE_xxx variables.
-
-        # Requirements also have traits:
-        # - headers
-        # - libs
-        # - transitive_headers
-        # - transitive_libs
-        # - run
-        # - build
-        # - visible
-        # - override
-        # - force
-        # - package_id_mode
-
         ### # LUE_BOOST_REQUIRED AND NOT LUE_HAVE_BOOST
         ### self.requires("boost/1.78.0")
 
-        ### # LUE_DOCOPT_REQUIRED AND NOT LUE_HAVE_DOCOPT
         if install_conan_package("docopt.cpp"):
             self.requires("docopt.cpp/[>=0.6.3]")
 
@@ -56,7 +37,7 @@ class LUERecipe(ConanFile):
         ### self.requires("gdal/3.4.3")
 
         ### if install_conan_package("glfw"):
-        ###     self.requires("glfw/[>3.3.7]")
+        ###     self.requires("glfw/[>=3.3.7]")
 
         if install_conan_package("imgui"):
             self.requires("imgui/[>=1.89]")
@@ -77,7 +58,6 @@ class LUERecipe(ConanFile):
         if install_conan_package("imgui"):
             cpp_info = self.dependencies["imgui"].cpp_info
             binding_directory_pathname = cpp_info.srcdirs[0]
-
             binding_filenames = [
                 "imgui_impl_glfw.h",
                 "imgui_impl_glfw.cpp",
@@ -87,7 +67,6 @@ class LUERecipe(ConanFile):
                 "imgui_impl_vulkan.h",
                 "imgui_impl_vulkan.cpp",
             ]
-
             output_directory_pathname = os.path.join(
                 self.build_folder, "source", "view", "imgui", "src"
             )
@@ -103,6 +82,5 @@ class LUERecipe(ConanFile):
         cmake = CMakeDeps(self)
         cmake.generate()
 
-        # https://docs.conan.io/2/reference/tools/cmake/cmaketoolchain.html
         toolchain = CMakeToolchain(self, generator="Ninja")
         toolchain.generate()
