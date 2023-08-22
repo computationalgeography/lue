@@ -13,9 +13,7 @@ def install_conan_package(name):
 
     if "LUE_CONAN_PACKAGES" in os.environ:
         conan_package_names = os.environ["LUE_CONAN_PACKAGES"].split()
-        print(conan_package_names)
         result = name in conan_package_names
-        print(conan_package_names)
 
     return result
 
@@ -63,7 +61,7 @@ class LUERecipe(ConanFile):
             self.requires("imgui/[>1.89]")
 
         if install_conan_package("ms-gsl"):
-            self.requires("ms-gsl/[>4.0.0]")
+            self.requires("ms-gsl/[>4]")
 
         ### # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
         ### self.requires("hdf5/1.13.1")
