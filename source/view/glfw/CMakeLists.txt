@@ -21,6 +21,6 @@ target_link_libraries(lue_glfw
     PRIVATE
         fmt::fmt
     PUBLIC
-        glfw::glfw
+        glfw
         $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,Vulkan::Vulkan,OpenGL::GL>
 )

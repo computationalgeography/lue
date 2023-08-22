@@ -379,7 +379,13 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    # Explicitly use Module Mode, to prevent the use of Boost's own CMake find logic. This latter
+    # logic does not provide us with Boost_LIBRARY_DIRS, which we use in the add_unite_test
+    # function.
+    # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
+    # toolchain). This implies that we cannot use Boost as installed by Conan for now. Fix this
+    # when actually needed.
+    find_package(Boost MODULE REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
@@ -484,9 +490,9 @@ if(LUE_HPX_REQUIRED)
             endif()
 
             if(hpx_git_tag_is_hash)
-                set(hpx_git_shallow OFF)
+                set(hpx_git_shallow FALSE)
             else()
-                set(hpx_git_shallow ON)
+                set(hpx_git_shallow TRUE)
             endif()
 
             if(LUE_HPX_REPOSITORY)

@@ -2,29 +2,88 @@
     "version": 6,
     "configurePresets": [
         {
-            "name": "lue_ninja",
+            "name": "hpx_shared_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_TESTS": "FALSE",
+                "HPX_WITH_EXAMPLES": "FALSE",
+                "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
+                "HPX_WITH_FETCH_ASIO": "TRUE",
+                "HPX_WITH_PKGCONFIG": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_debug_configuration",
+            "hidden": true,
+            "inherits": [
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_relwithdebinfo_configuration",
+            "hidden": true,
+            "inherits": [
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "TRUE",
+                "HPX_WITH_THREAD_IDLE_RATES": "TRUE",
+                "HPX_WITH_APEX": "TRUE",
+                "HPX_WITH_PAPI": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_release_configuration",
+            "hidden": true,
+            "inherits": [
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        },
+        {
+            "name": "ninja_configuration",
             "hidden": true,
             "generator": "Ninja"
         },
         {
             "name": "lue_debug",
             "hidden": true,
+            "inherits": [
+                "hpx_debug_configuration"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
-            "name": "lue_release",
+            "name": "lue_relwithdebinfo",
             "hidden": true,
+            "inherits": [
+                "hpx_relwithdebinfo_configuration"
+            ],
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
-            "name": "lue_relwithdebinfo",
+            "name": "lue_release",
             "hidden": true,
+            "inherits": [
+                "hpx_release_configuration"
+            ],
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "Release"
             }
         }
     ]

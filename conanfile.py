@@ -1,23 +1,36 @@
 """
 Conan recipe
 """
+import os
+import shutil
+
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
 
 
-# TODO Have multiple of these, for different LUE targets?
-class LUE(ConanFile):
-    # Profile-wide variables
+def install_conan_package(name):
+    result = False
+
+    if "LUE_CONAN_PACKAGES" in os.environ:
+        conan_package_names = os.environ["LUE_CONAN_PACKAGES"].split()
+        print(conan_package_names)
+        result = name in conan_package_names
+        print(conan_package_names)
+
+    return result
+
+
+class LUERecipe(ConanFile):
+    # Profile-wide variables. Factors that affect binary compatibility.
     settings = "os", "compiler", "build_type", "arch"
-    # generators = "CMakeToolchain", "CMakeDeps"
 
     def requirements(self):
+
         # TODO Here we can test the environment and only require packages that are actually needed
         # - Unfortunately, this doesn't allow our CMake logic to determine whether packages
         #   are required or not. Not a huge problem maybe. Just set the environment variables,
         #   depending on the platform, instead of setting/computing the CMake variables.
         # TODO Get rid of the LUE_HAVE_xxx variables.
-        # TODO Can the version names be ranges?
 
         # Requirements also have traits:
         # - headers
@@ -31,66 +44,66 @@ class LUE(ConanFile):
         # - force
         # - package_id_mode
 
-        # LUE_BOOST_REQUIRED AND NOT LUE_HAVE_BOOST
-        self.requires("boost/1.78.0")
+        ### # LUE_BOOST_REQUIRED AND NOT LUE_HAVE_BOOST
+        ### self.requires("boost/1.78.0")
 
-        # LUE_DOCOPT_REQUIRED AND NOT LUE_HAVE_DOCOPT
-        self.requires("docopt.cpp/0.6.3")
+        ### # LUE_DOCOPT_REQUIRED AND NOT LUE_HAVE_DOCOPT
+        ### self.requires("docopt.cpp/0.6.3")
 
-        # LUE_FMT_REQUIRED AND NOT LUE_HAVE_FMT
-        self.requires("fmt/9.0.0")
+        ### # LUE_FMT_REQUIRED AND NOT LUE_HAVE_FMT
+        ### self.requires("fmt/9.0.0")
 
-        # LUE_GDAL_REQUIRED AND NOT LUE_HAVE_GDAL
-        self.requires("gdal/3.4.3")
+        ### # LUE_GDAL_REQUIRED AND NOT LUE_HAVE_GDAL
+        ### self.requires("gdal/3.4.3")
 
-        # LUE_GLFW_REQUIRED AND NOT LUE_HAVE_GLFW
-        self.requires("glfw/3.3.7")
+        ### if install_conan_package("glfw"):
+        ###     self.requires("glfw/[>3.3.7]")
 
-        # LUE_IMGUI_REQUIRED AND NOT LUE_HAVE_IMGUI
-        # LUE_CONAN_IMPORTS
-        #     "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_vulkan.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        #     "./res/bindings, imgui_impl_vulkan.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        self.requires("imgui/1.89.4")
+        if install_conan_package("imgui"):
+            self.requires("imgui/[>1.89]")
 
-        # LUE_MS_GSL_REQUIRED AND NOT LUE_HAVE_MS_GSL
-        self.requires("ms-gsl/4.0.0")
+        if install_conan_package("ms-gsl"):
+            self.requires("ms-gsl/[>4.0.0]")
 
-        # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
-        self.requires("hdf5/1.13.1")
+        ### # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
+        ### self.requires("hdf5/1.13.1")
 
-        # LUE_NLOHMANN_JSON_REQUIRED AND NOT LUE_HAVE_NLOHMANN_JSON
-        self.requires("nlohmann_json/3.10.5")
+        ### # LUE_NLOHMANN_JSON_REQUIRED AND NOT LUE_HAVE_NLOHMANN_JSON
+        ### self.requires("nlohmann_json/3.10.5")
 
         def layout(self):
             cmake_layout(self)
 
-            ### # We make the assumption that if the compiler is msvc the
-            ### # CMake generator is multi-config
-            ### # TODO Can this be queried somehow?
-            ### multi = True if self.settings.get_safe("compiler") == "msvc" else False
-
-            ### # TODO Instead of build, install in $LUE_OBJECTS
-
-            ### if multi:
-            ###     self.folders.generators = os.path.join("build", "generators")
-            ### else:
-            ###     self.folders.generators = os.path.join("build", str(self.settings.build_type), "generators")
-
     def generate(self):
-        deps = CMakeDeps(self)
-        deps.generate()
+        if install_conan_package("imgui"):
+            cpp_info = self.dependencies["imgui"].cpp_info
+            binding_directory_pathname = cpp_info.srcdirs[0]
 
-        toolchain = CMakeToolchain(self)
+            binding_filenames = [
+                "imgui_impl_glfw.h",
+                "imgui_impl_glfw.cpp",
+                "imgui_impl_opengl3.h",
+                "imgui_impl_opengl3.cpp",
+                "imgui_impl_opengl3_loader.h",
+                "imgui_impl_vulkan.h",
+                "imgui_impl_vulkan.cpp",
+            ]
 
-        # TODO Is this the way to get custom things in the toolchain?
-        # - See docs. There is a way to include custom toolchain stuff as well, it seems
-        # https://docs.conan.io/2/reference/tools/cmake/cmaketoolchain.html#cmaketoolchain
-        # toolchain.variables["MYVAR"] = "MYVAR_VALUE"
-        # toolchain.preprocessor_definitions["MYDEFINE"] = "MYDEF_VALUE"
+            output_directory_pathname = os.path.join(
+                self.build_folder, "source", "view", "imgui", "src"
+            )
 
+            os.makedirs(output_directory_pathname, exist_ok=True)
+
+            for binding_filename in binding_filenames:
+                shutil.copy(
+                    os.path.join(binding_directory_pathname, binding_filename),
+                    output_directory_pathname,
+                )
+
+        cmake = CMakeDeps(self)
+        cmake.generate()
+
+        # https://docs.conan.io/2/reference/tools/cmake/cmaketoolchain.html
+        toolchain = CMakeToolchain(self, generator="Ninja")
         toolchain.generate()
