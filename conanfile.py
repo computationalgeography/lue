@@ -46,7 +46,8 @@ class LUERecipe(ConanFile):
         ### self.requires("boost/1.78.0")
 
         ### # LUE_DOCOPT_REQUIRED AND NOT LUE_HAVE_DOCOPT
-        ### self.requires("docopt.cpp/0.6.3")
+        if install_conan_package("docopt.cpp"):
+            self.requires("docopt.cpp/[>=0.6.3]")
 
         ### # LUE_FMT_REQUIRED AND NOT LUE_HAVE_FMT
         ### self.requires("fmt/9.0.0")
