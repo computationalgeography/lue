@@ -80,7 +80,7 @@ jobs:
                   -s:b compiler.version=${{ matrix.compiler.version }} \
                   -c:b tools.system.package_manager:mode=install \
                   -c:b tools.system.package_manager:sudo=True \
-                  > "$(dirname $(conan profile path default)))/lue"
+                  > "$(dirname $(conan profile path default))/lue"
               conan profile detect
 
               # Install packages, allowing any required system packages to be installed as well
