@@ -100,19 +100,25 @@ jobs:
                   --settings:build build_type=Release \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
-              cmake --preset conan-release --preset lue_release \
-                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D LUE_BUILD_DOCUMENTATION=TRUE \
-                  -D LUE_BUILD_QA=TRUE \
-                  -D LUE_QA_WITH_PYTHON_API=TRUE \
-                  -D LUE_QA_WITH_TESTS=TRUE \
-                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
-                  -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                  -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                  -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                  -D LUE_BUILD_HPX=TRUE
+
+              ls
+              cat CMakeUserPresets.json
+
+              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
+                  cmake --preset conan-release --preset lue_release \
+                      -B $GITHUB_WORKSPACE/../build \
+                      -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                      -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                      -D LUE_BUILD_DOCUMENTATION=TRUE \
+                      -D LUE_BUILD_QA=TRUE \
+                      -D LUE_QA_WITH_PYTHON_API=TRUE \
+                      -D LUE_QA_WITH_TESTS=TRUE \
+                      -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                      -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
+                      -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                      -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                      -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+                      -D LUE_BUILD_HPX=TRUE
 
         - name: build lue
           shell: bash -l {0}
