@@ -22,7 +22,7 @@ jobs:
                 toolset: ["14.2", "14.3"]
                 python-version: ["3.9"]
                 architecture: ["amd64"]
-            # fail-fast: true
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
@@ -49,6 +49,7 @@ jobs:
                   hdf5 \
                   jinja2 \
                   libhwloc \
+                  libvulkan-headers \
                   libvulkan-loader \
                   matplotlib \
                   mimalloc \
@@ -71,6 +72,8 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
+              # HWLOC_ROOT="$CONDA_PREFIX/Library"
+              # HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib"
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite" conan install . \
                   --profile=default \
                   --settings:host compiler.cppstd=17 \
@@ -95,9 +98,7 @@ jobs:
                       -D HPX_WITH_FETCH_ASIO=TRUE \
                       -D HPX_WITH_PKGCONFIG=FALSE \
                       -D HPX_WITH_EXAMPLES=FALSE \
-                      -D HPX_WITH_TESTS=FALSE \
-                      -D HWLOC_ROOT="$CONDA_PREFIX/Library" \
-                      -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib"
+                      -D HPX_WITH_TESTS=FALSE
 
         - name: build lue
           shell: bash -l {0}
