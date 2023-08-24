@@ -41,15 +41,14 @@ jobs:
 
         - shell: bash -l {0}
           run: |
+              # conda-build libvulkan-headers
               conda install \
                   boost-cpp \
-                  conda-build \
                   docopt \
                   gdal \
                   hdf5 \
                   jinja2 \
                   libhwloc \
-                  libvulkan-headers \
                   libvulkan-loader \
                   matplotlib \
                   mimalloc \
@@ -93,7 +92,7 @@ jobs:
                       -D LUE_BUILD_HPX=TRUE \
                       -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
                       -D HPX_WITH_MALLOC="mimalloc" \
-                      -D HPX_WITH_WITH_ASIO=TRUE \
+                      -D HPX_WITH_FETCH_ASIO=TRUE \
                       -D HPX_WITH_PKGCONFIG=FALSE \
                       -D HPX_WITH_EXAMPLES=FALSE \
                       -D HPX_WITH_TESTS=FALSE \
