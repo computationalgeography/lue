@@ -2,6 +2,7 @@ mkdir build
 cd build
 if errorlevel 1 exit 1
 
+REM TODO Use Ninja here
 cmake .. ^
     -G "NMake Makefiles" ^
     -D CMAKE_BUILD_TYPE=Release ^
@@ -13,17 +14,11 @@ cmake .. ^
     -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE ^
     -D LUE_BUILD_QA=TRUE ^
     -D LUE_QA_WITH_PYTHON_API=TRUE ^
-    -D LUE_HAVE_BOOST=TRUE ^
-    -D LUE_HAVE_DOCOPT=TRUE ^
-    -D LUE_HAVE_FMT=TRUE ^
-    -D LUE_HAVE_GDAL=TRUE ^
-    -D LUE_HAVE_HDF5=TRUE ^
-    -D LUE_HAVE_NLOHMANN_JSON=TRUE ^
-    -D LUE_HAVE_PYBIND11=TRUE ^
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE ^
     -D Python3_EXECUTABLE="%PYTHON%"
 if errorlevel 1 exit 1
 
+REM TODO Remove parallel once Ninja is used
 cmake --build . --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
