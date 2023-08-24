@@ -17,15 +17,16 @@ jobs:
             matrix:
                 os: ["windows-2022"]
                 vs:
-                  - { name: "Visual Studio 16 2019", version: "16"}  # , toolset: "v142" }
+                  # - { name: "Visual Studio 16 2019", version: "16"}  # , toolset: "v142" }
                   - { name: "Visual Studio 17 2022", version: "17"}  # , toolset: "v143" }
+                toolset: ["14.2", "14.3"]
                 python-version: ["3.9"]
                 architecture: ["amd64"]
-            fail-fast: true
+            # fail-fast: true
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / toolset - ${{ matrix.vs.toolset }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }} / ${{ matrix.vs.name }} (toolset ${{ matrix.toolset }}) / python - ${{ matrix.python-version }}
 
         steps:
 
@@ -64,7 +65,7 @@ jobs:
         - uses: ilammy/msvc-dev-cmd@v1
           with:
               arch: ${{ matrix.architecture }}
-              # toolset: ${{ matrix.vs.toolset }}
+              toolset: ${{ matrix.toolset }}
               vsversion: ${{ matrix.vs.version }}
 
         - name: configure lue
