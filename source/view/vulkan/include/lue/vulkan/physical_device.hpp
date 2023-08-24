@@ -124,6 +124,7 @@ namespace lue::vulkan {
 
             PhysicalDevice(PhysicalDevice&& other);
 
+            // Layered device object cannot be explicitly destroyed
             ~PhysicalDevice() = default;
 
             PhysicalDevice& operator=(PhysicalDevice const&) = delete;

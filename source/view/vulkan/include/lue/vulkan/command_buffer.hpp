@@ -27,6 +27,7 @@ namespace lue::vulkan {
 
             CommandBuffer(CommandBuffer&& other);
 
+            // No need to free the layered buffer
             ~CommandBuffer() = default;
 
             CommandBuffer& operator=(CommandBuffer const&) = delete;

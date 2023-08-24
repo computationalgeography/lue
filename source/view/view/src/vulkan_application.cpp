@@ -18,6 +18,65 @@
 namespace lue::view {
     namespace {
 
+        std::size_t const tab_size = 4;
+
+
+        std::string indentation(std::size_t const indent_level)
+        {
+            return std::string(indent_level * tab_size, ' ');
+        }
+
+
+        void print_names(vulkan::Names const& names, std::size_t const indent_level)
+        {
+            std::string const indentation{lue::view::indentation(indent_level)};
+
+            for (auto const& name : names)
+            {
+                std::cout << indentation << name << "\n";
+            }
+        }
+
+
+        void print_instance_info()
+        {
+            auto const [variant, major, minor, patch] = vulkan::Instance::version();
+
+            std::cout << "Vulkan API version: " << major << "." << minor << "." << patch;
+
+            if (variant != 0)
+            {
+                std::cout << " (variant: " << variant << ")";
+            }
+
+            std::cout << std::endl;
+
+            vulkan::Names vulkan_extension_names{glfw::Library::required_instance_extensions()};
+
+            std::cout << "GLFW required Vulkan extension names:\n";
+
+            print_names(vulkan_extension_names, 1);
+
+            vulkan::ExtensionProperties const extension_properties{vulkan::Instance::extension_properties()};
+
+            std::cout << "Available extensions:\n";
+
+            for (auto const& properties : extension_properties)
+            {
+                std::cout << indentation(1) << properties.extensionName << "\n";
+            }
+
+            vulkan::Instance::LayerProperties const layer_properties{vulkan::Instance::layer_properties()};
+
+            std::cout << "Available layers:" << std::endl;
+
+            for (auto const& properties : layer_properties)
+            {
+                std::cout << indentation(1) << properties.layerName << ": " << properties.description << "\n";
+            }
+        }
+
+
         struct Vertex
         {
                 glm::vec2 pos;
@@ -246,7 +305,7 @@ namespace lue::view {
 
     void VulkanApplication::init_window()
     {
-        // This stuff is needed to be able to draw to a window. When drawining to a file,
+        // This stuff is needed to be able to draw to a window. When drawing to a file,
         // this should not be needed.
 
         _library = std::make_unique<glfw::Library>();
@@ -256,7 +315,6 @@ namespace lue::view {
 
         // Create window with Vulkan context
         glfw::Window::hint(GLFW_CLIENT_API, GLFW_NO_API);
-        // glfw::Window::hint(GLFW_RESIZABLE, GLFW_FALSE);  // TODO
 
         glfw::VideoMode const video_mode{_monitor->video_mode()};
 
@@ -375,53 +433,16 @@ namespace lue::view {
     }
 
 
+    /*!
+        @brief      Create a Vulkan instance
+    */
     void VulkanApplication::create_instance()
     {
-        std::string const application_name{"lue_view"};
-
 #ifndef NDEBUG
-        {
-            vulkan::Names vulkan_extension_names{glfw::Library::required_instance_extensions()};
-
-            std::cout << "GLFW required Vulkan extension names:";
-
-            for (auto const& name : vulkan_extension_names)
-            {
-                std::cout << " " << name;
-            }
-
-            std::cout << std::endl;
-
-            auto const [variant, major, minor, patch] = vulkan::Instance::version();
-
-            std::cout << "Vulkan API version: " << major << "." << minor << "." << patch;
-
-            if (variant != 0)
-            {
-                std::cout << " (variant: " << variant << ")";
-            }
-
-            std::cout << std::endl;
-
-            vulkan::ExtensionProperties const extension_properties{vulkan::Instance::extension_properties()};
-
-            std::cout << "Available extensions:" << std::endl;
-
-            for (auto const& properties : extension_properties)
-            {
-                std::cout << "    " << properties.extensionName << std::endl;
-            }
-
-            vulkan::Instance::LayerProperties const layer_properties{vulkan::Instance::layer_properties()};
-
-            std::cout << "Available layers:" << std::endl;
-
-            for (auto const& properties : layer_properties)
-            {
-                std::cout << "    " << properties.layerName << ": " << properties.description << std::endl;
-            }
-        }
+        print_instance_info();
 #endif
+
+        std::string const application_name{"lue_view"};
 
         // TODO Add debug print callback to validate create/destroy the instance itself
 
@@ -543,8 +564,9 @@ namespace lue::view {
             auto const properties{device.properties()};
             auto const features{device.features()};
 
-            std::cout << "    " << properties.device_name() << std::endl;
-            std::cout << "        has geometry shader: " << features.has_geometry_shader() << std::endl;
+            std::cout << indentation(1) << properties.device_name() << "\n"
+                      << indentation(2) << "has geometry shader: " << features.has_geometry_shader()
+                      << std::endl;
         }
 #endif
 
@@ -563,13 +585,9 @@ namespace lue::view {
         }
 
 #ifndef NDEBUG
-        std::cout << "Physical device selected:" << std::endl;
-
         auto const properties{_physical_device.properties()};
-        auto const features{_physical_device.features()};
 
-        std::cout << "    " << properties.device_name() << std::endl;
-        std::cout << "        has geometry shader: " << features.has_geometry_shader() << std::endl;
+        std::cout << "Physical device selected:\n" << indentation(1) << properties.device_name() << std::endl;
 #endif
     }
 
@@ -1312,6 +1330,8 @@ namespace lue::view {
 
     void VulkanApplication::main_loop()
     {
+        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
+
         bool quit = _window->should_close();
 
         while (!quit)
@@ -1446,22 +1466,6 @@ namespace lue::view {
 
     int VulkanApplication::run_implementation()
     {
-        // TODO Make sure that creating a window is optional. We also want to support off-screen
-        //      rendering. The imgui stuff is only used to interact with the visualizations,
-        //      and to gain insight into the contents of data sets.
-        //      - init_window (optional)
-        //      - init_vulkan
-        //      - init_imgui (optional)
-        //      - enter main loop, and either(?)
-        //          - allow user interaction, using glfw / imgui / vulkan stuff, ...
-        //          - render and save, using only vulkan stuff
-        //      - command line interface must make it easy to switch between these modes
-        //      - To keep things separated, this function can call different functions, depending
-        //        on the mode
-
-        // TODO Move this elsewhere
-        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
-
         init_window();
         init_vulkan();
         init_imgui();
@@ -1471,6 +1475,20 @@ namespace lue::view {
     }
 
 }  // namespace lue::view
+
+
+// TODO Make sure that creating a window is optional. We also want to support off-screen
+//      rendering. The imgui stuff is only used to interact with the visualizations,
+//      and to gain insight into the contents of data sets.
+//      - init_window (optional)
+//      - init_vulkan
+//      - init_imgui (optional)
+//      - enter main loop, and either(?)
+//          - allow user interaction, using glfw / imgui / vulkan stuff, ...
+//          - render and save, using only vulkan stuff
+//      - command line interface must make it easy to switch between these modes
+//      - To keep things separated, this function can call different functions, depending
+//        on the mode
 
 
 /// static std::tuple<vulkan::PhysicalDevice, vulkan::QueueFamilies,

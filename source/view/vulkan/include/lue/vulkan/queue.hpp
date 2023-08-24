@@ -23,6 +23,7 @@ namespace lue::vulkan {
 
             Queue(VkQueue queue);
 
+            // No need to destroy the layered queue
             ~Queue() = default;
 
             Queue& operator=(Queue const&) = delete;
