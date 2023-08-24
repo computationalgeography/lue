@@ -28,7 +28,7 @@ class LUERecipe(ConanFile):
         ### self.requires("boost/1.78.0")
 
         if install_conan_package("docopt.cpp"):
-            self.requires("docopt.cpp/[>=0.6.3]")
+            self.requires("docopt.cpp/[~0.6]")
 
         ### # LUE_FMT_REQUIRED AND NOT LUE_HAVE_FMT
         ### self.requires("fmt/9.0.0")
@@ -40,10 +40,10 @@ class LUERecipe(ConanFile):
         ###     self.requires("glfw/[>=3.3.7]")
 
         if install_conan_package("imgui"):
-            self.requires("imgui/[>=1.89]")
+            self.requires("imgui/[>=1.89 <2]")
 
         if install_conan_package("span-lite"):
-            self.requires("span-lite/[>=0.10]")
+            self.requires("span-lite/[~0.10]")
 
         ### # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
         ### self.requires("hdf5/1.13.1")

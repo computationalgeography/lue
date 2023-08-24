@@ -21,6 +21,7 @@ target_include_directories(lue_shared
 
 target_link_libraries(lue_shared
     INTERFACE
+        docopt
         fmt::fmt
 )
 
