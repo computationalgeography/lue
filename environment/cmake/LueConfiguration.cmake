@@ -601,6 +601,12 @@ endif()
 
 if(LUE_DOCOPT_REQUIRED)
     find_package(docopt REQUIRED)
+
+    # The docopt package shipѕ with CMake scripts that define a target names docopt. The
+    # Conan docopt package defines a target named docopt_s instead...
+    if(TARGET docopt_s AND NOT TARGET docopt)
+        add_library(docopt ALIAS docopt_s)
+    endif()
 endif()
 
 

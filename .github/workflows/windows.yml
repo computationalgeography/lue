@@ -3,7 +3,7 @@ name: Windows CI
 on:
   push:
     branches-ignore:
-      - "gh547"
+      - "ghxyz"
     paths:
       - ".github/workflows/windows.yml"
       - "environment/cmake/**"
@@ -42,12 +42,19 @@ jobs:
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
 
+              conan profile detect
+
         - uses: ilammy/msvc-dev-cmd@v1
 
         - name: configure lue
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
+              LUE_CONAN_PACKAGES="docopt.cpp imgui span-lite" conan install . \
+                  --profile=default \
+                  --settings:build build_type=Release \
+                  --build=missing \
+                  --output-folder=$GITHUB_WORKSPACE/../build
               cmake \
                   -S . \
                   -B $GITHUB_WORKSPACE/../build \
