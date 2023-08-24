@@ -41,7 +41,6 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              # conda-build libvulkan-headers
               conda install \
                   boost-cpp \
                   docopt \
@@ -72,8 +71,6 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
-              # HWLOC_ROOT="$CONDA_PREFIX/Library"
-              # HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib"
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite" conan install . \
                   --profile=default \
                   --settings:host compiler.cppstd=17 \

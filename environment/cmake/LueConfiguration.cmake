@@ -627,7 +627,7 @@ if(LUE_HDF5_REQUIRED)
     # logic does not provide us with the hdf5::hdf5 target, which CMake's module defines.
     # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
     # toolchain).
-    find_package(HDF5 REQUIRED COMPONENTS C)
+    find_package(HDF5 MODULE REQUIRED COMPONENTS C)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
 endif()
 
