@@ -16,13 +16,16 @@ jobs:
         strategy:
             matrix:
                 os: ["windows-2022"]
+                vs:
+                  - { name: "Visual Studio 16 2019", version: "16", toolset: "v142" }
+                  - { name: "Visual Studio 17 2022", version: "17", toolset: "v143" }
                 python-version: ["3.9"]
-                toolset: ["v142", "v143"]
+                architecture: ["amd64"]
             fail-fast: true
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / toolset - ${{ matrix.toolset }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }} / toolset - ${{ matrix.vs.toolset }} / python - ${{ matrix.python-version }}
 
         steps:
 
@@ -37,7 +40,21 @@ jobs:
 
         - shell: bash -l {0}
           run: |
-              conda install boost-cpp conda-build docopt gdal hdf5 jinja2 libhwloc libvulkan-headers libvulkan-loader matplotlib numpy pip
+              conda install \
+                  boost-cpp \
+                  conda-build \
+                  docopt \
+                  gdal \
+                  hdf5 \
+                  jinja2 \
+                  libhwloc \
+                  libvulkan-headers \
+                  libvulkan-loader \
+                  matplotlib \
+                  mimalloc \
+                  ninja \
+                  numpy \
+                  pip
 
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
@@ -45,53 +62,48 @@ jobs:
               conan profile detect
 
         - uses: ilammy/msvc-dev-cmd@v1
+          with:
+              arch: ${{ matrix.architecture }}
+              toolset: ${{ matrix.vs.toolset }}
+              vsversion: ${{ matrix.vs.version }}
 
         - name: configure lue
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="docopt.cpp imgui span-lite" conan install . \
+              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite" conan install . \
                   --profile=default \
+                  --settings:host compiler.cppstd=17 \
+                  --settings:build compiler.cppstd=17 \
                   --settings:build build_type=Release \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
-              cmake \
-                  -S . \
-                  -B $GITHUB_WORKSPACE/../build \
-                  -G "Visual Studio 17 2022" -T ${{ matrix.toolset }} \
-                  -D CMAKE_BUILD_TYPE=Release \
-                  -D LUE_DATA_MODEL_WITH_PYTHON_API:BOOL=TRUE \
-                  -D LUE_DATA_MODEL_WITH_UTILITIES:BOOL=TRUE \
-                  -D LUE_FRAMEWORK_WITH_PYTHON_API:BOOL=TRUE \
-                  -D LUE_BUILD_QA:BOOL=TRUE \
-                  -D LUE_QA_WITH_PYTHON_API=TRUE \
-                  -D LUE_QA_WITH_TESTS=TRUE \
-                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
-                  -D LUE_HAVE_BOOST:BOOL=TRUE \
-                  -D LUE_HAVE_DOCOPT:BOOL=FALSE \
-                  -D LUE_HAVE_FMT:BOOL=FALSE \
-                  -D LUE_HAVE_GDAL:BOOL=TRUE \
-                  -D LUE_HAVE_GLFW:BOOL=FALSE \
-                  -D LUE_HAVE_HDF5:BOOL=TRUE \
-                  -D LUE_HAVE_NLOHMANN_JSON:BOOL=FALSE \
-                  -D LUE_HAVE_PYBIND11:BOOL=FALSE \
-                  -D LUE_BUILD_HPX:BOOL=TRUE \
-                  -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
-                  -D HPX_WITH_MALLOC="system" \
-                  -D HPX_WITH_FETCH_ASIO=TRUE \
-                  -D HPX_WITH_PKGCONFIG=FALSE \
-                  -D HWLOC_ROOT="$CONDA_PREFIX/Library" \
-                  -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.lib" \
-                  -D HPX_WITH_EXAMPLES=FALSE \
-                  -D HPX_WITH_TESTS=FALSE
+              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
+                  cmake --preset conan-release \
+                      -B $GITHUB_WORKSPACE/../build \
+                      -D LUE_BUILD_QA=TRUE \
+                      -D LUE_QA_WITH_PYTHON_API=TRUE \
+                      -D LUE_QA_WITH_TESTS=TRUE \
+                      -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                      -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
+                      -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                      -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                      -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+                      -D LUE_BUILD_HPX=TRUE \
+                      -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
+                      -D HPX_WITH_MALLOC="mimalloc" \
+                      -D HPX_WITH_WITH_ASIO=TRUE \
+                      -D HPX_WITH_PKGCONFIG=FALSE \
+                      -D HPX_WITH_EXAMPLES=FALSE \
+                      -D HPX_WITH_TESTS=FALSE \
+                      -D HWLOC_ROOT="$CONDA_PREFIX/Library" \
+                      -D HWLOC_LIBRARY="$CONDA_PREFIX/Library/lib/hwloc.dll.lib"
 
         - name: build lue
           shell: bash -l {0}
           run: |
               cmake --build $GITHUB_WORKSPACE/../build --config Release --target all_build -- \
-                  -verbosity:minimal -nologo
-              # -maxcpucount:2
+                  -verbosity:minimal -nologo -maxcpucount:2
 
         - name: test lue
           shell: bash -l {0}

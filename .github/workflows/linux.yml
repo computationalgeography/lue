@@ -3,7 +3,7 @@ name: Linux CI
 on:
   push:
     branches-ignore:
-      - "gh547"
+      - "ghxyz"
     paths:
       - ".github/workflows/linux.yml"
       - "environment/cmake/**"
@@ -75,18 +75,6 @@ jobs:
               pip install "conan>=2"
 
               conan profile detect
-              # conan profile show \
-              #     -s:b compiler=${{ matrix.compiler.name }} \
-              #     -s:b compiler.version=${{ matrix.compiler.version }} \
-              #     -c:b tools.system.package_manager:mode=install \
-              #     -c:b tools.system.package_manager:sudo=True \
-              #     > "$(dirname $(conan profile path default))/lue"
-              # cat "$(conan profile path lue)"
-
-              # # Install packages, allowing any required system packages to be installed as well
-              # CONAN_SYSREQUIRES_MODE=enabled conan install --profile=lue \
-              #     xorg/system@
-              # opengl/system@ glu/system@
 
         - name: configure lue
           shell: bash -l {0}
@@ -96,6 +84,8 @@ jobs:
                   --profile=default \
                   --settings:build compiler=${{ matrix.compiler.name }} \
                   --settings:build compiler.version=${{ matrix.compiler.version }} \
+                  --settings:host compiler.cppstd=17 \
+                  --settings:build compiler.cppstd=17 \
                   --settings:build build_type=Release \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build

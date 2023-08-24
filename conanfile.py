@@ -24,32 +24,32 @@ class LUERecipe(ConanFile):
 
     def requirements(self):
 
-        ### # LUE_BOOST_REQUIRED AND NOT LUE_HAVE_BOOST
-        ### self.requires("boost/1.78.0")
+        # self.requires("boost/1.78.0")
 
         if install_conan_package("docopt.cpp"):
             self.requires("docopt.cpp/[~0.6]")
 
-        ### # LUE_FMT_REQUIRED AND NOT LUE_HAVE_FMT
-        ### self.requires("fmt/9.0.0")
+        if install_conan_package("fmt"):
+            self.requires("fmt/[>=9 <10]")
 
-        ### # LUE_GDAL_REQUIRED AND NOT LUE_HAVE_GDAL
-        ### self.requires("gdal/3.4.3")
+        # self.requires("gdal/3.4.3")
 
-        ### if install_conan_package("glfw"):
-        ###     self.requires("glfw/[>=3.3.7]")
+        if install_conan_package("glfw"):
+            self.requires("glfw/[~3.3]")
+
+        # self.requires("hdf5/1.13.1")
 
         if install_conan_package("imgui"):
             self.requires("imgui/[>=1.89 <2]")
 
+        if install_conan_package("nlohmann_json"):
+            self.requires("nlohmann_json/[~3.10]")
+
+        if install_conan_package("pybind11"):
+            self.requires("pybind11/[~2.9]")
+
         if install_conan_package("span-lite"):
             self.requires("span-lite/[~0.10]")
-
-        ### # LUE_HDF5_REQUIRED AND NOT LUE_HAVE_HDF5
-        ### self.requires("hdf5/1.13.1")
-
-        ### # LUE_NLOHMANN_JSON_REQUIRED AND NOT LUE_HAVE_NLOHMANN_JSON
-        ### self.requires("nlohmann_json/3.10.5")
 
         def layout(self):
             cmake_layout(self)

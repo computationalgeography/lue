@@ -354,18 +354,7 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    if(NOT LUE_HAVE_PYBIND11)
-        FetchContent_Declare(pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.9.2"
-            SYSTEM
-        )
-
-        # This should pick up the Python found above
-        FetchContent_MakeAvailable(pybind11)
-    else()
-        find_package(pybind11 CONFIG REQUIRED)
-    endif()
+    find_package(pybind11 REQUIRED)
 endif()
 
 
@@ -634,6 +623,10 @@ endif()
 
 
 if(LUE_HDF5_REQUIRED)
+    # Explicitly use Module Mode, to prevent the use of HDF5's own CMake find logic. This latter
+    # logic does not provide us with the hdf5::hdf5 target, which CMake's module defines.
+    # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
+    # toolchain).
     find_package(HDF5 REQUIRED COMPONENTS C)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
 endif()
