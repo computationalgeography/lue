@@ -74,6 +74,7 @@ jobs:
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
 
+              # TODO Write host/build profiles and use those
               conan profile detect
 
         - name: configure lue

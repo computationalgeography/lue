@@ -103,7 +103,7 @@ IncludeCategories:
     Priority:        100
   - Regex:           '^<vulkan/'
     Priority:        105
-  - Regex:           '^<(boost|fmt|hdf|numpy|pybind11)/'
+  - Regex:           '^(<(boost|fmt|numpy|pybind11)/)|<hdf5.h>'
     Priority:        110
   - Regex:           '^<.*'
     Priority:        120

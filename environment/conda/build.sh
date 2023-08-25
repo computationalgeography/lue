@@ -4,22 +4,15 @@ set -x
 
 mkdir build
 
-if [[ "$target_platform" == "osx-64" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-fi
-
-if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; then
-    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
-fi
-
-echo "OSTYPE: $OSTYPE"
-
-if [[ -v OSTYPE ]]; then
-    if [[ $OSTYPE == "linux-gnu" ]]; then
-        os="Linux"
-    elif [[ $OSTYPE == darwin* ]]; then
-        os="Macos"
+if [[ $target_platform == linux* ]]; then
+    os="Linux"
+elif [[ $target_platform == osx* ]]; then
+    if [[ $target_platform == "osx-64" ]]; then
+        export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
     fi
+
+    export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
+    os="Macos"
 fi
 
 cat > host_profile << EOF

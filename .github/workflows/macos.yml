@@ -53,6 +53,7 @@ jobs:
           run: |
               pip3 install "conan>=2" docopt jinja2 matplotlib
 
+              # TODO Write host/build profiles and use those
               conan profile detect
 
         - name: configure lue
