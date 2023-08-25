@@ -12,20 +12,34 @@ if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; th
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 fi
 
+cat > host_profile << EOF
+[settings]
+arch=x86_64
+build_type=Release
+compiler=gcc
+compiler.cppstd=17
+compiler.libcxx=libstdc++11
+compiler.version=$($CXX -dumpversion | sed 's/\..*//')
+EOF
 
-# TODO For some reason conan cannot detect the compiler version, even though CC and CXX are set.
-#      LUE_BUILD_VIEW is set to false below, to not introduce a dependency on a Conan package
-#      which requires a compiler to build it (imgui).
-#      Doesn't work: --settings:build compiler=$CXX_FOR_BUILD
-$CXX -dumpversion
-conan profile detect
+cat > build_profile << EOF
+[settings]
+arch=x86_64
+build_type=Release
+compiler=gcc
+compiler.cppstd=17
+compiler.libcxx=libstdc++11
+compiler.version=$($CXX_FOR_BUILD -dumpversion | sed 's/\..*//')
+EOF
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
-    --profile=default \
+    --profile:build=build_profile \
+    --profile:host=host_profile \
     --settings:host compiler.cppstd=17 \
     --settings:build compiler.cppstd=17 \
     --settings:build build_type=Release \
     --build=missing \
+    --generator=Ninja \
     --output-folder=build
 
 CMAKE_PREFIX_PATH=build \
@@ -35,7 +49,7 @@ CMAKE_PREFIX_PATH=build \
         -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
         -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
         -D LUE_BUILD_QA=TRUE \
-        -D LUE_BUILD_VIEW=FALSE \
+        -D LUE_BUILD_VIEW=TRUE \
         -D LUE_QA_WITH_PYTHON_API=TRUE \
         -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
         -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
