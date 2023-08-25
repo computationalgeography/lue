@@ -20,6 +20,7 @@ compiler=gcc
 compiler.cppstd=17
 compiler.libcxx=libstdc++11
 compiler.version=$($CXX -dumpversion | sed 's/\..*//')
+os=Linux
 EOF
 
 cat > build_profile << EOF
@@ -30,7 +31,10 @@ compiler=gcc
 compiler.cppstd=17
 compiler.libcxx=libstdc++11
 compiler.version=$($CXX_FOR_BUILD -dumpversion | sed 's/\..*//')
+os=Linux
 EOF
+
+echo "OSTYPE: $OSTYPE"
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
     --profile:build=build_profile \
@@ -39,7 +43,6 @@ LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
     --settings:build compiler.cppstd=17 \
     --settings:build build_type=Release \
     --build=missing \
-    --generator=Ninja \
     --output-folder=build
 
 CMAKE_PREFIX_PATH=build \
