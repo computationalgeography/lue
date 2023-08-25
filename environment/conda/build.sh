@@ -17,7 +17,7 @@ conan profile detect
 
 LUE_CONAN_PACKAGES="docopt.cpp imgui span-lite" conan install . \
     --profile=default \
-    --settings.compiler=$CXX_FOR_BUILD \
+    --settings compiler=$CXX_FOR_BUILD \
     --settings:host compiler.cppstd=17 \
     --settings:build compiler.cppstd=17 \
     --settings:build build_type=Release \
