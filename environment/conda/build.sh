@@ -12,6 +12,16 @@ if [[ "$target_platform" == "osx-64" || "$target_platform" == "osx-arm64" ]]; th
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 fi
 
+echo "OSTYPE: $OSTYPE"
+
+if [[ -v OSTYPE ]]; then
+    if [[ $OSTYPE == "linux-gnu" ]]; then
+        os="Linux"
+    elif [[ $OSTYPE == darwin* ]]; then
+        os="Macos"
+    fi
+fi
+
 cat > host_profile << EOF
 [settings]
 arch=x86_64
@@ -20,7 +30,7 @@ compiler=gcc
 compiler.cppstd=17
 compiler.libcxx=libstdc++11
 compiler.version=$($CXX -dumpversion | sed 's/\..*//')
-os=Linux
+os=$os
 EOF
 
 cat > build_profile << EOF
@@ -31,10 +41,8 @@ compiler=gcc
 compiler.cppstd=17
 compiler.libcxx=libstdc++11
 compiler.version=$($CXX_FOR_BUILD -dumpversion | sed 's/\..*//')
-os=Linux
+os=$os
 EOF
-
-echo "OSTYPE: $OSTYPE"
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
     --profile:build=build_profile \
