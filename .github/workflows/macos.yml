@@ -3,7 +3,7 @@ name: macOS CI
 on:
   push:
     branches-ignore:
-      - "gh547"
+      - "ghxyz"
     paths:
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
