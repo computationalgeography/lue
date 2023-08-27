@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -e
-set -x
 
 mkdir build
+
+compiler_version=$($CXX -dumpversion | sed 's/\..*//')
 
 if [[ $target_platform == linux* ]]; then
     os="Linux"
@@ -21,8 +22,6 @@ elif [[ $target_platform == osx* ]]; then
 
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 
-    conan profile detect
-
     if [[ $target_platform == "osx-64" ]]; then
         arch="x86_64"
 
@@ -39,7 +38,7 @@ build_type=Release
 compiler=$compiler
 compiler.cppstd=17
 compiler.libcxx=$libcxx
-compiler.version=$($CXX -dumpversion | sed 's/\..*//')
+compiler.version=$compiler_version
 os=$os
 EOF
 
@@ -50,16 +49,19 @@ build_type=Release
 compiler=$compiler
 compiler.cppstd=17
 compiler.libcxx=$libcxx
-compiler.version=$($CXX_FOR_BUILD -dumpversion | sed 's/\..*//')
+compiler.version=$compiler_version
 os=$os
 EOF
+
+if [[ $target_platform == osx* ]]; then
+    # Hack to make sure the compiler version is mentioned in Conan's settings.yml. Append it
+    # to the list of supported compiler version.
+    sed -i "s/\"15\"/\"15\", \"${compiler_version}\"/" $(conan config home)/settings.yml
+fi
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
     --profile:build=build_profile \
     --profile:host=host_profile \
-    --settings:host compiler.cppstd=17 \
-    --settings:build compiler.cppstd=17 \
-    --settings:build build_type=Release \
     --build=missing \
     --output-folder=build
 
@@ -69,9 +71,7 @@ CMAKE_PREFIX_PATH=build \
         -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
         -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
         -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-        -D LUE_BUILD_QA=TRUE \
         -D LUE_BUILD_VIEW=TRUE \
-        -D LUE_QA_WITH_PYTHON_API=TRUE \
         -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
         -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
         -D Python3_EXECUTABLE="${PYTHON}"
