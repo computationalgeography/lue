@@ -30,7 +30,7 @@ jobs:
         - name: configure system
           run: |
               brew update  # > /dev/null || true
-              # brew upgrade
+              brew upgrade
               brew install --force --overwrite \
                   asio \
                   boost \

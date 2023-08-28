@@ -1,6 +1,9 @@
 mkdir build
 if errorlevel 1 exit 1
 
+REM compiler.cppstd=17
+REM Doesn't work:
+REM     The provided compiler.cppstd=17 requires at least msvc>=191 but version 16 provided
 
 echo [settings] ^
 
@@ -9,8 +12,6 @@ arch=x86_%ARCH% ^
 build_type=Release ^
 
 compiler=msvc ^
-
-compiler.cppstd=17 ^
 
 compiler.version=%VS_MAJOR% ^
 
@@ -24,8 +25,6 @@ build_type=Release ^
 
 compiler=msvc ^
 
-compiler.cppstd=17 ^
-
 compiler.version=%VS_MAJOR% ^
 
 os=Windows > build_profile
@@ -38,6 +37,7 @@ conan install . ^
     --profile:host=host_profile ^
     --build=missing ^
     --output-folder=build
+if errorlevel 1 exit 1
 
 set CMAKE_PREFIX_PATH=build
 
@@ -48,6 +48,8 @@ cmake --preset conan-release ^
     -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE ^
     -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE ^
     -D LUE_BUILD_VIEW=TRUE ^
+    -D LUE_BUILD_QA=TRUE ^
+    -D LUE_QA_WITH_PYTHON_API=TRUE ^
     -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE ^
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE ^
     -D Python3_EXECUTABLE="%PYTHON%"
