@@ -1,16 +1,8 @@
 mkdir build
 if errorlevel 1 exit 1
 
-REM compiler.cppstd=17
-REM Doesn't work:
-REM     The provided compiler.cppstd=17 requires at least msvc>=191 but version 16 provided
 
-REM compiler.version=%VS_MAJOR% ^
-REM Doesn't work:
-REM     ERROR: Invalid setting '16' is not a valid 'settings.compiler.version' value.
-
-
-conan detect
+conan profile detect
 
 echo [settings] ^
 
@@ -19,6 +11,10 @@ arch=x86_%ARCH% ^
 build_type=Release ^
 
 compiler=msvc ^
+
+compiler.version=%VS_MAJOR% ^
+
+compiler.cppstd=17 ^
 
 os=Windows > host_profile
 
@@ -29,6 +25,10 @@ arch=x86_%ARCH% ^
 build_type=Release ^
 
 compiler=msvc ^
+
+compiler.version=%VS_MAJOR% ^
+
+compiler.cppstd=17 ^
 
 os=Windows > build_profile
 
