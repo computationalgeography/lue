@@ -29,9 +29,8 @@ jobs:
 
         - name: configure system
           run: |
-              brew update  # > /dev/null || true
-              brew upgrade
-              brew install --force --overwrite \
+              # brew update  # > /dev/null || true
+              brew install
                   asio \
                   boost \
                   doxygen \
