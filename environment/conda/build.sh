@@ -56,7 +56,10 @@ EOF
 if [[ $target_platform == osx* ]]; then
     # Hack to make sure the compiler version is mentioned in Conan's settings.yml. Append it
     # to the list of supported compiler version.
-    sed -i "s/\"15\"/\"15\", \"${compiler_version}\"/" $(conan config home)/settings.yml
+    # BTW sed -i doesn't work on macOS' BSD sed
+    sed "s/\"15\"/\"15\", \"${compiler_version}\"/" $(conan config home)/settings.yml \
+        > $(conan config home)/settings.yml.new
+    mv $(conan config home)/settings.yml.new $(conan config home)/settings.yml
 fi
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \

@@ -41,8 +41,10 @@ jobs:
 
         - shell: bash -l {0}
           run: |
+              # conda-build provides the conda-develop command used below
               conda install \
                   boost-cpp \
+                  conda-build \
                   docopt \
                   docopt.cpp \
                   fmt \

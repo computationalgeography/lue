@@ -31,7 +31,7 @@ jobs:
           run: |
               brew update  # > /dev/null || true
               # brew upgrade
-              brew install --overwrite \
+              brew install --force --overwrite \
                   asio \
                   boost \
                   doxygen \
