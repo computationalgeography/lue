@@ -46,9 +46,12 @@ jobs:
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
               # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
               # conda-build provides the conda-develop command used below
+              # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
+              #      Conan package actually works
               conda install \
                   conda-build \
                   docopt \
+                  gdal \
                   jinja2 \
                   matplotlib \
                   ninja \
@@ -71,7 +74,10 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="boost docopt.cpp fmt gdal glfw hdf5 hwloc imgui mimalloc nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
+              # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
+              #      Conan package actually works
+              #      gdal hdf5
+              LUE_CONAN_PACKAGES="boost docopt.cpp fmt glfw hwloc imgui mimalloc nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
                   --profile=default \
                   --settings:host compiler.cppstd=17 \
                   --settings:build compiler.cppstd=17 \
