@@ -49,7 +49,7 @@ compiler.cppstd=17 ^
 os=Windows > build_profile
 
 
-set LUE_CONAN_PACKAGES="imgui span-lite"
+set LUE_CONAN_PACKAGES=imgui span-lite
 
 conan install . ^
     --profile:build=build_profile ^
