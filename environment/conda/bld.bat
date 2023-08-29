@@ -26,6 +26,8 @@ compiler=msvc ^
 
 compiler.version=%compiler_version% ^
 
+compiler.runtime=dynamic ^
+
 compiler.cppstd=17 ^
 
 os=Windows > host_profile
@@ -39,6 +41,8 @@ build_type=Release ^
 compiler=msvc ^
 
 compiler.version=%compiler_version% ^
+
+compiler.runtime=dynamic ^
 
 compiler.cppstd=17 ^
 
