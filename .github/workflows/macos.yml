@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - "gh547"
     paths:
+      - "conanfile.py"
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
       - "source/**"

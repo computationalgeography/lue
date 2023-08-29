@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - "gh547"
     paths:
+      - "conanfile.py"
       - ".github/workflows/macos-conda.yml"
       - "source/**"
       - "!source/qa/python/qa/**"

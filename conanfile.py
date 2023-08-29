@@ -38,8 +38,10 @@ class LUERecipe(ConanFile):
         if install_conan_package("fmt"):
             self.requires("fmt/[>=8.1.1 <10]")
 
+        # 20230829 Conan package for more recent versions seem broken
+        # https://github.com/conan-io/conan-center-index/issues/17830
         if install_conan_package("gdal"):
-            self.requires("gdal/[>=3.4.1]")
+            self.requires("gdal/[>=3.4.1 <3.5]")
 
         if install_conan_package("glfw"):
             self.requires("glfw/[>=3.3.6]")
