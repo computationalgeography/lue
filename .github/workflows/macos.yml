@@ -3,7 +3,7 @@ name: macOS CI
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh547"
     paths:
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
@@ -29,7 +29,6 @@ jobs:
 
         - name: configure system
           run: |
-              # brew update  # > /dev/null || true
               brew install \
                   asio \
                   boost \

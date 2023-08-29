@@ -1,6 +1,20 @@
 mkdir build
 if errorlevel 1 exit 1
 
+REM TODO Figure out compiler version. Should be 19x.
+REM https://blog.knatten.org/2022/08/26/microsoft-c-versions-explained/
+
+REM Select the first line, remove everything before and after the version number, remove all dots,
+REM grab the first three bytes
+REM Example input: Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32217.1 for x64
+REM Results in: 193
+REM See Conan's settings.yml for supported values
+REM TODO How to do all this from a Windows batch file?
+REM compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
+
+%CXX%
+
+set compiler_version=193
 
 conan profile detect
 
@@ -12,7 +26,7 @@ build_type=Release ^
 
 compiler=msvc ^
 
-compiler.version=%VS_MAJOR% ^
+compiler.version=%compiler_version% ^
 
 compiler.cppstd=17 ^
 
@@ -26,7 +40,7 @@ build_type=Release ^
 
 compiler=msvc ^
 
-compiler.version=%VS_MAJOR% ^
+compiler.version=%compiler_version% ^
 
 compiler.cppstd=17 ^
 
