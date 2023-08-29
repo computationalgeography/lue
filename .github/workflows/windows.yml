@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
+      - "conanfile.py"
       - ".github/workflows/windows.yml"
       - "environment/cmake/**"
       - "source/**"
