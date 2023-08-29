@@ -98,6 +98,7 @@ jobs:
                       -D LUE_BUILD_HPX=TRUE \
                       -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
                       -D HPX_WITH_MALLOC="mimalloc" \
+                      -D HPX_WITH_FETCH_ASIO=TRUE \
                       -D HPX_WITH_PKGCONFIG=FALSE \
                       -D HPX_WITH_EXAMPLES=FALSE \
                       -D HPX_WITH_TESTS=FALSE
