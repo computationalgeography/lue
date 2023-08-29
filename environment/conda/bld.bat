@@ -1,20 +1,18 @@
 mkdir build
 if errorlevel 1 exit 1
 
-REM TODO Figure out compiler version. Should be 19x.
-REM https://blog.knatten.org/2022/08/26/microsoft-c-versions-explained/
+:: TODO Figure out compiler version. Should be 19x.
+:: https://blog.knatten.org/2022/08/26/microsoft-c-versions-explained/
 
-REM Select the first line, remove everything before and after the version number, remove all dots,
-REM grab the first three bytes
-REM Example input: Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32217.1 for x64
-REM Results in: 193
-REM See Conan's settings.yml for supported values
-REM TODO How to do all this from a Windows batch file?
-REM compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
+:: Select the first line, remove everything before and after the version number, remove all dots,
+:: grab the first three bytes
+:: Example input: Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32217.1 for x64
+:: Results in: 193
+:: See Conan's settings.yml for supported values
+:: TODO How to do all this from a Windows batch file?
+:: compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
 
 set compiler_version=193
-
-conan profile detect
 
 echo [settings] ^
 
@@ -58,6 +56,13 @@ conan install . ^
     --output-folder=build
 if errorlevel 1 exit 1
 
+:: Unset CMAKE_GENERATOR_PLATFORM. The platform is already specified in Conan's preset. Otherwise:
+:: Generator
+::     Ninja
+:: does not support platform specification, but platform
+::     x64
+:: was specified.
+set CMAKE_GENERATOR_PLATFORM=
 set CMAKE_PREFIX_PATH=build
 
 cmake --preset conan-release ^
