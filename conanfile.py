@@ -67,9 +67,7 @@ class LUERecipe(ConanFile):
         if install_conan_package("span-lite"):
             self.requires("span-lite/[~0.10]")
 
-        if install_conan_package("vulkan-headers"):
-            self.requires("vulkan-headers/[>=1.3]")
-
+        # Depends on vulkan-headers and xorg/system
         if install_conan_package("vulkan-loader"):
             self.requires("vulkan-loader/[>=1.3]")
 
