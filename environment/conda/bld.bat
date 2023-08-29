@@ -1,3 +1,5 @@
+echo on
+
 mkdir build
 if errorlevel 1 exit 1
 

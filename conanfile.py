@@ -11,6 +11,8 @@ from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
 def install_conan_package(name):
     result = False
 
+    print(os.environ)
+
     if "LUE_CONAN_PACKAGES" in os.environ:
         conan_package_names = os.environ["LUE_CONAN_PACKAGES"].split()
         result = name in conan_package_names
