@@ -12,8 +12,6 @@ REM See Conan's settings.yml for supported values
 REM TODO How to do all this from a Windows batch file?
 REM compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
 
-%CXX%
-
 set compiler_version=193
 
 conan profile detect
