@@ -3,7 +3,7 @@ name: Windows CI
 on:
   push:
     branches-ignore:
-      - "gh547"
+      - "ghxyz"
     paths:
       - ".github/workflows/windows.yml"
       - "environment/cmake/**"
@@ -41,28 +41,18 @@ jobs:
 
         - shell: bash -l {0}
           run: |
+              # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
+              # settings are used when building LUE. Mixing Conda/Conan packages likely results
+              # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
               # conda-build provides the conda-develop command used below
               conda install \
-                  boost-cpp \
                   conda-build \
                   docopt \
-                  docopt.cpp \
-                  fmt \
-                  gdal \
-                  glfw \
-                  hdf5 \
-                  hpx \
                   jinja2 \
-                  libhwloc \
-                  libvulkan-headers \
-                  libvulkan-loader \
                   matplotlib \
-                  mimalloc \
                   ninja \
-                  nlohmann_json \
                   numpy \
-                  pip \
-                  pybind11
+                  pip
 
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
@@ -80,7 +70,7 @@ jobs:
           shell: bash -l {0}
           run: |
               mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
+              LUE_CONAN_PACKAGES="boost docopt.cpp fmt gdal glfw hdf5 hwloc imgui mimalloc nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
                   --profile=default \
                   --settings:host compiler.cppstd=17 \
                   --settings:build compiler.cppstd=17 \
@@ -98,7 +88,12 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE
+                      -D LUE_BUILD_HPX=TRUE \
+                      -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
+                      -D HPX_WITH_MALLOC="mimalloc" \
+                      -D HPX_WITH_PKGCONFIG=FALSE \
+                      -D HPX_WITH_EXAMPLES=FALSE \
+                      -D HPX_WITH_TESTS=FALSE
 
         - name: build lue
           shell: bash -l {0}

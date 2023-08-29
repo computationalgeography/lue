@@ -3,7 +3,6 @@ echo on
 mkdir build
 if errorlevel 1 exit 1
 
-:: TODO Figure out compiler version. Should be 19x.
 :: https://blog.knatten.org/2022/08/26/microsoft-c-versions-explained/
 
 :: Select the first line, remove everything before and after the version number, remove all dots,
@@ -13,7 +12,6 @@ if errorlevel 1 exit 1
 :: See Conan's settings.yml for supported values
 :: TODO How to do all this from a Windows batch file?
 :: compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
-
 set compiler_version=193
 
 echo [settings] ^

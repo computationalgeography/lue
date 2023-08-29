@@ -11,8 +11,6 @@ from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
 def install_conan_package(name):
     result = False
 
-    print(os.environ)
-
     if "LUE_CONAN_PACKAGES" in os.environ:
         conan_package_names = os.environ["LUE_CONAN_PACKAGES"].split()
         result = name in conan_package_names
@@ -26,7 +24,8 @@ class LUERecipe(ConanFile):
 
     def requirements(self):
 
-        # self.requires("boost/1.78.0")
+        if install_conan_package("boost"):
+            self.requires("boost/[>1.75]")
 
         if install_conan_package("docopt.cpp"):
             self.requires("docopt.cpp/[~0.6]")
@@ -40,10 +39,17 @@ class LUERecipe(ConanFile):
         if install_conan_package("glfw"):
             self.requires("glfw/[~3.3]")
 
-        # self.requires("hdf5/1.13.1")
+        if install_conan_package("hdf5"):
+            self.requires("hdf5/[>=1.12]")
+
+        if install_conan_package("hwloc"):
+            self.requires("hwloc/[~2.9]")
 
         if install_conan_package("imgui"):
             self.requires("imgui/[>=1.89 <2]")
+
+        if install_conan_package("mimalloc"):
+            self.requires("mimalloc/[~2.1]")
 
         if install_conan_package("nlohmann_json"):
             self.requires("nlohmann_json/[~3.10]")
@@ -53,6 +59,12 @@ class LUERecipe(ConanFile):
 
         if install_conan_package("span-lite"):
             self.requires("span-lite/[~0.10]")
+
+        if install_conan_package("vulkan-headers"):
+            self.requires("vulkan-headers/[~1.3]")
+
+        if install_conan_package("vulkan-loader"):
+            self.requires("vulkan-loader/[~1.3]")
 
         def layout(self):
             cmake_layout(self)
