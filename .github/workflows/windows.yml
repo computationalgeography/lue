@@ -49,6 +49,7 @@ jobs:
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               conda install \
+                  boost-cpp \
                   conda-build \
                   docopt \
                   gdal \
@@ -78,8 +79,8 @@ jobs:
               mkdir $GITHUB_WORKSPACE/../build
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
-              #      gdal hdf5 hwloc mimalloc
-              LUE_CONAN_PACKAGES="boost docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
+              #      boost gdal hdf5 hwloc mimalloc
+              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
                   --profile=default \
                   --settings:host compiler.cppstd=17 \
                   --settings:build compiler.cppstd=17 \

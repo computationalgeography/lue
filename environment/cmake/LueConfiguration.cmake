@@ -76,39 +76,12 @@ option(LUE_VALIDATE_IDXS
 
 
 # Options related to the availability of external packages.
-# TODO Make the defaults dependent on the result of a search by CMake.
 if(WIN32)
-    ### set(LUE_HAVE_BOOST_INIT FALSE)
-    ### set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
-    ### set(LUE_HAVE_GDAL_INIT FALSE)
-    ### set(LUE_HAVE_GLFW_INIT FALSE)
-    ### set(LUE_HAVE_FMT_INIT FALSE)
-    ### set(LUE_HAVE_HDF5_INIT FALSE)
-    ### set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
-    ### set(LUE_HAVE_PYBIND11_INIT FALSE)
 elseif(APPLE)
-    # Most packages can be installed using Homebrew
-    # Change default to TRUE once Homebrew contains a version.
-    ### set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
-    ### set(LUE_HAVE_GDAL_INIT TRUE)
-    ### set(LUE_HAVE_GLFW_INIT TRUE)
-    # Change default to TRUE once Homebrew contains a version.
-    ### set(LUE_HAVE_FMT_INIT TRUE)
-    ### set(LUE_HAVE_HDF5_INIT TRUE)
-    ### set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    ### set(LUE_HAVE_PYBIND11_INIT TRUE)
 else()
-    ### set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
-    ### set(LUE_HAVE_GDAL_INIT TRUE)
-    ### set(LUE_HAVE_GLFW_INIT TRUE)
-    # Change default to TRUE once Linux package managers contain a version
-    ### set(LUE_HAVE_FMT_INIT TRUE)
-    ### set(LUE_HAVE_HDF5_INIT TRUE)
-    ### set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    ### set(LUE_HAVE_PYBIND11_INIT TRUE)
 endif()
 
 function(lue_have_option name)
@@ -117,19 +90,7 @@ function(lue_have_option name)
         ${LUE_HAVE_${name}_INIT})
 endfunction()
 
-### lue_have_option(BOOST)
-### lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
-### lue_have_option(GDAL)
-### lue_have_option(FMT)
-### lue_have_option(GLFW)
-### lue_have_option(HDF5)
-### lue_have_option(NLOHMANN_JSON)
-### lue_have_option(PYBIND11)
-
-# For now, use Conan to get ImGui. If this must be changed, be sure to also update our imgui
-# target. It assumes the Conan package of ImGui is being used.
-### set(LUE_HAVE_IMGUI FALSE)
 
 # Update / remove once we've got Vulkan sorted out.
 # Whether or not to use Vulkan, instead of OpenGL.
@@ -363,6 +324,8 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
+    set(Boost_NO_BOOST_CMAKE TRUE)
+
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
@@ -370,11 +333,6 @@ if(LUE_BOOST_REQUIRED)
             "Boost-1.75's safe_numerics library is known to contain a bug:\n"
             "https://github.com/boostorg/safe_numerics/issues/94")
     endif()
-
-    add_definitions(
-            -DBOOST_ALL_NO_LIB
-            -DBOOST_ALL_DYN_LINK
-        )
 endif()
 
 
