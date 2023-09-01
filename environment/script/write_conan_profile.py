@@ -51,9 +51,21 @@ def conan_arch():
     arch_by_machine = {
         "x86_64": "x86_64",
     }
-    machine = platform.machine()
+    uname = platform.uname()
+    machine = uname.machine
+    processor = uname.processor
 
-    return arch_by_machine[machine]
+    arch = None
+
+    if machine == "x86_64":
+        arch = "x86_64"
+    elif machine == "arm64":
+        if "T8101" in uname.version:
+            arch = "armv8"
+
+    assert arch is not None, uname
+
+    return arch
 
 
 def global_settings():
