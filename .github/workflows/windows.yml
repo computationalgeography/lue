@@ -8,6 +8,7 @@ on:
       - "conanfile.py"
       - ".github/workflows/windows.yml"
       - "environment/cmake/**"
+      - "environment/script/write_conan_profile.py"
       - "source/**"
       - "!source/qa/python/qa/**"
 

@@ -14,6 +14,7 @@ on:
       - "environment/conda/conda_build_config.yaml"
       - "environment/conda/meta.yaml"
       - "environment/conda/run_test.py"
+      - "environment/script/write_conan_profile.py"
 
 jobs:
     build:

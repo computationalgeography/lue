@@ -12,15 +12,6 @@ import docopt
 from ruamel.yaml import YAML
 
 
-# arch=armv8
-# build_type=Release
-# compiler=apple-clang
-# compiler.cppstd=gnu17
-# compiler.libcxx=libc++
-# compiler.version=14
-# os=Macos
-
-
 # arch=x86_%ARCH%
 # build_type=Release
 # compiler=msvc
