@@ -168,8 +168,17 @@ def apple_clang_settings(compiler_filename):
     """
     Return a dictionary with the Apple Clang compiler settings
     """
-    assert False, "TODO"
-    return {}
+    compiler = "apple-clang"
+    compiler_cppstd = "17"
+    compiler_libcxx = "libc++"
+    compiler_version = clang_version(compiler_filename)
+
+    return {
+        "compiler": compiler,
+        "compiler.cppstd": compiler_cppstd,
+        "compiler.libcxx": compiler_libcxx,
+        "compiler.version": compiler_version,
+    }
 
 
 def clang_settings(compiler_filename):
@@ -178,7 +187,7 @@ def clang_settings(compiler_filename):
     """
     compiler = "clang"
     compiler_cppstd = "17"
-    compiler_libcxx = "libc++11"
+    compiler_libcxx = "libc++"
     compiler_version = clang_version(compiler_filename)
 
     return {
