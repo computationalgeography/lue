@@ -68,9 +68,7 @@ def compiler_is_gcc(compiler_filename):
     """
     basename = os.path.basename(compiler_filename)
 
-    if "gcc" in basename:
-        return True
-    elif "g++" in basename:
+    if "gcc" in basename or ("g++" in basename and not "clang" in basename):
         return True
 
     return False
@@ -331,10 +329,34 @@ def write_conan_profile(compiler_filename, profile_pathname):
 
             write_conan_settings(conan_settings)
 
+    profile_options = {}
+
+    profile_buildenv = {"CXX": compiler_filename}
+
+    profile_tool_requires = {}
+
+    profile_conf = {}
+
     with open(profile_pathname, "w") as profile_file:
-        profile_string = "[settings]:\n{}\n".format(
+        profile_string = ""
+        profile_string += "[settings]:\n{}\n\n".format(
             "\n".join([f"{key}={profile_settings[key]}" for key in profile_settings])
         )
+        profile_string += "[options]:\n{}\n\n".format(
+            "\n".join([f"{key}={profile_options[key]}" for key in profile_options])
+        )
+        profile_string += "[buildenv]:\n{}\n\n".format(
+            "\n".join([f"{key}={profile_buildenv[key]}" for key in profile_buildenv])
+        )
+        profile_string += "[tool_requires]:\n{}\n\n".format(
+            "\n".join(
+                [f"{key}={profile_tool_requires[key]}" for key in profile_tool_requires]
+            )
+        )
+        profile_string += "[conf]:\n{}\n\n".format(
+            "\n".join([f"{key}={profile_conf[key]}" for key in profile_conf])
+        )
+
         profile_file.write(profile_string)
 
 
