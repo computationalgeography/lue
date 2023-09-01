@@ -29,9 +29,6 @@ requirements:
     - conan >=2
     - cmake
     - ninja                                      # [not win]
-    - docopt  # templatize.py
-    - jinja2  # templatize.py
-    - ruamel.yaml  # write_conan_profile.py
 
   host:
     # Section for the target platform. Might not be the same as the build platform!
@@ -49,6 +46,9 @@ requirements:
     - fmt
     - docopt.cpp
     - nlohmann_json
+    - docopt  # templatize.py
+    - jinja2  # templatize.py
+    - ruamel.yaml  # write_conan_profile.py
 
   run:
     # Dependencies required for using the software.

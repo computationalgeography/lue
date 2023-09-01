@@ -201,7 +201,7 @@ def clang_settings(compiler_filename):
     """
     compiler = "clang"
     compiler_cppstd = "17"
-    compiler_libcxx = "libstdc++11"
+    compiler_libcxx = "libc++"
     compiler_version = clang_version(compiler_filename)
 
     return {
@@ -331,7 +331,7 @@ def write_conan_profile(compiler_filename, profile_pathname):
 
     profile_options = {}
 
-    profile_buildenv = {"CXX": compiler_filename}
+    profile_buildenv = {}
 
     profile_tool_requires = {}
 
