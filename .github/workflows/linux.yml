@@ -71,7 +71,7 @@ jobs:
         - name: install python packages
           shell: bash -l {0}
           run: |
-              conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
+              conda install docopt breathe jinja2 markupsafe matplotlib numpy pip ruamel.yaml sphinx
 
               # Use conan from pypi to get the latest version
               pip install "conan>=2"

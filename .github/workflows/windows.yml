@@ -60,7 +60,8 @@ jobs:
                   mimalloc \
                   ninja \
                   numpy \
-                  pip
+                  pip \
+                  ruamel.yaml
 
               # Use conan from pypi to get the latest version
               pip install "conan>=2"

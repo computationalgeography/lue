@@ -29,6 +29,9 @@ requirements:
     - conan >=2
     - cmake
     - ninja                                      # [not win]
+    - docopt  # templatize.py
+    - jinja2  # templatize.py
+    - ruamel.yaml  # write_conan_profile.py
 
   host:
     # Section for the target platform. Might not be the same as the build platform!
@@ -44,9 +47,7 @@ requirements:
     - libvulkan-loader
     - pybind11
     - fmt
-    - docopt  # templatize.py
     - docopt.cpp
-    - jinja2  # templatize.py
     - nlohmann_json
 
   run:

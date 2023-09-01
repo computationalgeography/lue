@@ -51,7 +51,7 @@ jobs:
         - name: install python packages
           shell: bash -l {0}
           run: |
-              pip3 install "conan>=2" docopt jinja2 matplotlib
+              pip3 install "conan>=2" docopt jinja2 matplotlib ruamel.yaml
 
         - name: configure lue
           shell: bash -l {0}
