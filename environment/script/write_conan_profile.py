@@ -201,7 +201,8 @@ def clang_settings(compiler_filename):
     """
     compiler = "clang"
     compiler_cppstd = "17"
-    compiler_libcxx = "libc++"
+    # On Ubuntu clang depends on libstdc++
+    compiler_libcxx = "libstdc++"
     compiler_version = clang_version(compiler_filename)
 
     return {

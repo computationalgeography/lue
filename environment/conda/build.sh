@@ -11,8 +11,8 @@ if [[ $target_platform == osx* ]]; then
     fi
 fi
 
-${PYTHON} environment/script/write_conan_profile.py matrix.compiler.name host_profile
-${PYTHON} environment/script/write_conan_profile.py matrix.compiler.name build_profile
+${PYTHON} environment/script/write_conan_profile.py ${CXX} host_profile
+${PYTHON} environment/script/write_conan_profile.py ${CXX} build_profile
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
     --profile:host=host_profile \

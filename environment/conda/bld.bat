@@ -3,53 +3,8 @@ echo on
 mkdir build
 if errorlevel 1 exit 1
 
-:: https://blog.knatten.org/2022/08/26/microsoft-c-versions-explained/
-
-:: TODO Call write_conan_profile.py
-
-:: Select the first line, remove everything before and after the version number, remove all dots,
-:: grab the first three bytes
-:: Example input: Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32217.1 for x64
-:: Results in: 193
-:: See Conan's settings.yml for supported values
-:: TODO How to do all this from a Windows batch file?
-:: compiler_version=$($CXX 2>&1 | head -n 1 | sed 's/^.*Version // ; s/ .*// ; s/[.]//g' | head -c 3)
-:: set compiler_version=193
-::
-:: echo [settings] ^
-::
-:: arch=x86_%ARCH% ^
-::
-:: build_type=Release ^
-::
-:: compiler=msvc ^
-::
-:: compiler.version=%compiler_version% ^
-::
-:: compiler.runtime=dynamic ^
-::
-:: compiler.cppstd=17 ^
-::
-:: os=Windows > host_profile
-::
-:: echo [settings] ^
-::
-:: arch=x86_%ARCH% ^
-::
-:: build_type=Release ^
-::
-:: compiler=msvc ^
-::
-:: compiler.version=%compiler_version% ^
-::
-:: compiler.runtime=dynamic ^
-::
-:: compiler.cppstd=17 ^
-::
-:: os=Windows > build_profile
-
-%PYTHON% environment/script/write_conan_profile.py matrix.compiler.name host_profile
-%PYTHON% environment/script/write_conan_profile.py matrix.compiler.name build_profile
+%PYTHON% environment/script/write_conan_profile.py %CXX% host_profile
+%PYTHON% environment/script/write_conan_profile.py %CXX% build_profile
 
 set LUE_CONAN_PACKAGES=imgui span-lite
 
