@@ -83,7 +83,7 @@ jobs:
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
-              CC={{ matrix.compiler.cc }} \
+              CC=${{ matrix.compiler.cc }} \
               CXX=${{ matrix.compiler.cxx }} \
               LUE_CONAN_PACKAGES="imgui span-lite" \
                   conan install . \
