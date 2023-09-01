@@ -201,7 +201,7 @@ def clang_settings(compiler_filename):
     """
     compiler = "clang"
     compiler_cppstd = "17"
-    compiler_libcxx = "libclangc++"
+    compiler_libcxx = "libstdc++11"
     compiler_version = clang_version(compiler_filename)
 
     return {
