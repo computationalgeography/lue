@@ -3,68 +3,72 @@ set -e
 
 mkdir build
 
-compiler_version=$($CXX -dumpversion | sed 's/\..*//')
+### compiler_version=$($CXX -dumpversion | sed 's/\..*//')
 
 if [[ $target_platform == linux* ]]; then
-    os="Linux"
-    compiler="gcc"
-    libcxx="libstdc++11"
+    ### os="Linux"
+    ### compiler="gcc"
+    ### libcxx="libstdc++11"
 
-    if [[ $target_platform == "linux-32" ]]; then
-        arch="x86_32"
-    elif [[ $target_platform == "linux-64" ]]; then
-        arch="x86_64"
-    fi
+    ### if [[ $target_platform == "linux-32" ]]; then
+    ###     arch="x86_32"
+    ### elif [[ $target_platform == "linux-64" ]]; then
+    ###     arch="x86_64"
+    ### fi
 elif [[ $target_platform == osx* ]]; then
-    os="Macos"
-    compiler="apple-clang"
-    libcxx="libc++"
+    ### os="Macos"
+    ### compiler="apple-clang"
+    ### libcxx="libc++"
 
     export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
 
     if [[ $target_platform == "osx-64" ]]; then
-        arch="x86_64"
+        ### arch="x86_64"
 
         export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    elif [[ $target_platform == "osx-arm64" ]]; then
-        arch="armv8"
+    ### elif [[ $target_platform == "osx-arm64" ]]; then
+    ###     arch="armv8"
     fi
 fi
 
-cat > host_profile << EOF
-[settings]
-arch=$arch
-build_type=Release
-compiler=$compiler
-compiler.cppstd=17
-compiler.libcxx=$libcxx
-compiler.version=$compiler_version
-os=$os
-EOF
+### cat > host_profile << EOF
+### [settings]
+### arch=$arch
+### build_type=Release
+### compiler=$compiler
+### compiler.cppstd=17
+### compiler.libcxx=$libcxx
+### compiler.version=$compiler_version
+### os=$os
+### EOF
+###
+### cat > build_profile << EOF
+### [settings]
+### arch=x86_64
+### build_type=Release
+### compiler=$compiler
+### compiler.cppstd=17
+### compiler.libcxx=$libcxx
+### compiler.version=$compiler_version
+### os=$os
+### EOF
 
-cat > build_profile << EOF
-[settings]
-arch=x86_64
-build_type=Release
-compiler=$compiler
-compiler.cppstd=17
-compiler.libcxx=$libcxx
-compiler.version=$compiler_version
-os=$os
-EOF
+### # TODO Add this fo write_conan_profile
+### if [[ $target_platform == osx* ]]; then
+###     # Hack to make sure the compiler version is mentioned in Conan's settings.yml. Append it
+###     # to the list of supported compiler version.
+###     # BTW sed -i doesn't work on macOS' BSD sed
+###     sed "s/\"15\"/\"15\", \"${compiler_version}\"/" $(conan config home)/settings.yml \
+###         > $(conan config home)/settings.yml.new
+###     mv $(conan config home)/settings.yml.new $(conan config home)/settings.yml
+### fi
 
-if [[ $target_platform == osx* ]]; then
-    # Hack to make sure the compiler version is mentioned in Conan's settings.yml. Append it
-    # to the list of supported compiler version.
-    # BTW sed -i doesn't work on macOS' BSD sed
-    sed "s/\"15\"/\"15\", \"${compiler_version}\"/" $(conan config home)/settings.yml \
-        > $(conan config home)/settings.yml.new
-    mv $(conan config home)/settings.yml.new $(conan config home)/settings.yml
-fi
+${PYTHON} environment/script/write_conan_profile.py matrix.compiler.name host_profile
+${PYTHON} environment/script/write_conan_profile.py matrix.compiler.name build_profile
 
 LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
-    --profile:build=build_profile \
     --profile:host=host_profile \
+    --profile:build=build_profile \
     --build=missing \
     --output-folder=build
 

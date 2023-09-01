@@ -3,7 +3,7 @@ name: Linux CI
 on:
   push:
     branches-ignore:
-      - "gh547"
+      - "ghxyz"
     paths:
       - "conanfile.py"
       - ".github/workflows/linux.yml"
@@ -68,34 +68,30 @@ jobs:
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
 
-        - shell: bash -l {0}
+        - name: install python packages
+          shell: bash -l {0}
           run: |
               conda install docopt breathe jinja2 markupsafe matplotlib numpy pip sphinx
 
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
 
-              # TODO Write host/build profiles and use those
-              conan profile detect
-
         - name: configure lue
           shell: bash -l {0}
           run: |
-              mkdir $GITHUB_WORKSPACE/../build
+              python environment/script/write_conan_profile.py matrix.compiler.name host_profile
+              cat host_profile
+              python environment/script/write_conan_profile.py matrix.compiler.name build_profile
+              cat build_profile
               LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
-                  --profile=default \
-                  --settings:build compiler=${{ matrix.compiler.name }} \
-                  --settings:build compiler.version=${{ matrix.compiler.version }} \
-                  --settings:host compiler.cppstd=17 \
-                  --settings:build compiler.cppstd=17 \
-                  --settings:build build_type=Release \
+                  --profile:host=host_profile \
+                  --profile:build=build_profile \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
+              mkdir $GITHUB_WORKSPACE/../build
               CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
                   cmake --preset conan-release \
                       -B $GITHUB_WORKSPACE/../build \
-                      -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
-                      -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \

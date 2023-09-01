@@ -3,7 +3,7 @@ name: Windows CI
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh547"
     paths:
       - "conanfile.py"
       - ".github/workflows/windows.yml"
@@ -40,7 +40,8 @@ jobs:
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
 
-        - shell: bash -l {0}
+        - name: install python packages
+          shell: bash -l {0}
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
@@ -64,9 +65,6 @@ jobs:
               # Use conan from pypi to get the latest version
               pip install "conan>=2"
 
-              # TODO Write host/build profiles and use those
-              conan profile detect
-
         - uses: ilammy/msvc-dev-cmd@v1
           with:
               arch: ${{ matrix.architecture }}
@@ -76,17 +74,17 @@ jobs:
         - name: configure lue
           shell: bash -l {0}
           run: |
-              mkdir $GITHUB_WORKSPACE/../build
+              python environment/script/write_conan_profile.py matrix.compiler.name host_profile
+              python environment/script/write_conan_profile.py matrix.compiler.name build_profile
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
-                  --profile=default \
-                  --settings:host compiler.cppstd=17 \
-                  --settings:build compiler.cppstd=17 \
-                  --settings:build build_type=Release \
+                  --profile:host=host_profile \
+                  --profile:build=build_profile \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
+              mkdir $GITHUB_WORKSPACE/../build
               CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
                   cmake --preset conan-release \
                       -B $GITHUB_WORKSPACE/../build \
