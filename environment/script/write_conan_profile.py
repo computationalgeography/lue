@@ -1,8 +1,8 @@
+#!/usr/bin/env python
 """
 Implementation of script for dumping Conan profiles that can be used to install Conan packages
 that can be used during the build of LUE.
 """
-#!/usr/bin/env python
 import os
 import platform
 import subprocess

@@ -79,9 +79,9 @@ jobs:
         - name: configure lue
           shell: bash -l {0}
           run: |
-              python environment/script/write_conan_profile.py matrix.compiler.name host_profile
+              python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               cat host_profile
-              python environment/script/write_conan_profile.py matrix.compiler.name build_profile
+              python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               cat build_profile
               LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
                   --profile:host=host_profile \
