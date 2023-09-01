@@ -12,15 +12,6 @@ import docopt
 from ruamel.yaml import YAML
 
 
-# arch=x86_%ARCH%
-# build_type=Release
-# compiler=msvc
-# compiler.version=%compiler_version%
-# compiler.runtime=dynamic
-# compiler.cppstd=17
-# os=Windows
-
-
 def conan_os():
     """
     Return the operating system
@@ -39,16 +30,13 @@ def conan_arch():
     """
     Return the architecture
     """
-    arch_by_machine = {
-        "x86_64": "x86_64",
-    }
     uname = platform.uname()
     machine = uname.machine
     processor = uname.processor
 
     arch = None
 
-    if machine == "x86_64":
+    if machine in ["AMD64", "x86_64"]:
         arch = "x86_64"
     elif machine == "arm64":
         if "T8101" in uname.version:
@@ -150,6 +138,20 @@ def clang_version(compiler_filename):
     return gcc_version(compiler_filename)
 
 
+def msvc_version(compiler_filename):
+    """
+    Return the version of the MSVC compiler
+    """
+    command = f"{compiler_filename}"
+    output = subprocess.run(command, capture_output=True, shell=True, text=True)
+
+    assert output.returncode == 0, f"{command}: {output.stderr}"
+
+    version = output.stderr.split("\n")[0].split("Version ")[1].replace(".", "")[:3]
+
+    return version
+
+
 def gcc_settings(compiler_filename):
     """
     Return a dictionary with the GCC compiler settings
@@ -205,8 +207,17 @@ def msvc_settings(compiler_filename):
     """
     Return a dictionary with the MSVC compiler settings
     """
-    assert False, "TODO"
-    return {}
+    compiler = "msvc"
+    compiler_cppstd = "17"
+    compiler_version = msvc_version(compiler_filename)
+    compiler_runtime = "dynamic"
+
+    return {
+        "compiler": compiler,
+        "compiler.cppstd": compiler_cppstd,
+        "compiler.version": compiler_version,
+        "compiler.runtime": compiler_runtime,
+    }
 
 
 def compiler_settings(compiler_filename):

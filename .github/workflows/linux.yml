@@ -81,9 +81,7 @@ jobs:
           shell: bash -l {0}
           run: |
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
-              cat host_profile
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
-              cat build_profile
               LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
@@ -93,6 +91,8 @@ jobs:
               CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
                   cmake --preset conan-release \
                       -B $GITHUB_WORKSPACE/../build \
+                      -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                      -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \

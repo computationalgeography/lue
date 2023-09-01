@@ -18,6 +18,8 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
+                compiler:
+                    - { name: clang, cc: clang, cxx: clang++ }
             fail-fast: true
 
         runs-on: ${{ matrix.os }}
