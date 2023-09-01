@@ -68,7 +68,11 @@ def compiler_is_gcc(compiler_filename):
     """
     basename = os.path.basename(compiler_filename)
 
-    if "gcc" in basename or ("g++" in basename and not "clang" in basename):
+    if (
+        "gcc" in basename
+        or ("g++" in basename and not "clang" in basename)
+        or "gnu-c++" in basename
+    ):
         return True
 
     return False
@@ -201,8 +205,7 @@ def clang_settings(compiler_filename):
     """
     compiler = "clang"
     compiler_cppstd = "17"
-    # On Ubuntu clang depends on libstdc++
-    compiler_libcxx = "libstdc++"
+    compiler_libcxx = "libstdc++11"
     compiler_version = clang_version(compiler_filename)
 
     return {

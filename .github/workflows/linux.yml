@@ -27,7 +27,7 @@ jobs:
                     - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
                     - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
                     - { name: clang, version: 14, cc: clang-14, cxx: clang++-14, package: clang-14 }
-            fail-fast: true
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
@@ -83,8 +83,7 @@ jobs:
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
-              CC=${{ matrix.compiler.cc }} \
-              CXX=${{ matrix.compiler.cxx }} \
+              CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} \
               LUE_CONAN_PACKAGES="imgui span-lite" \
                   conan install . \
                       --profile:host=host_profile \
