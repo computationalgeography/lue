@@ -126,6 +126,7 @@ def gcc_version(compiler_filename):
     version = output.stdout.strip()
 
     # Some version return only a major version, some major.minor.patch
+    # Grab the main version
     version = version.split(".")[0]
 
     return version
@@ -135,7 +136,17 @@ def clang_version(compiler_filename):
     """
     Return the version of the Clang compiler
     """
-    return gcc_version(compiler_filename)
+    command = f"{compiler_filename} --version"
+    output = subprocess.run(command, capture_output=True, shell=True, text=True)
+
+    assert output.returncode == 0, f"{command}: {output.stderr}"
+
+    # Grab the main version
+    version = (
+        output.stdout.split("\n")[0].split("version ")[1].split("-")[0].split(".")[0]
+    )
+
+    return version
 
 
 def msvc_version(compiler_filename):

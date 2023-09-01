@@ -81,12 +81,12 @@ jobs:
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
+              mkdir $GITHUB_WORKSPACE/../build
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
                   --build=missing \
                   --output-folder=$GITHUB_WORKSPACE/../build
-              mkdir $GITHUB_WORKSPACE/../build
               CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
                   cmake --preset conan-release \
                       -B $GITHUB_WORKSPACE/../build \
