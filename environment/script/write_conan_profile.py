@@ -162,6 +162,10 @@ def msvc_version(compiler_filename):
 
     version = output.stderr.split("\n")[0].split("Version ")[1].replace(".", "")[:3]
 
+    # TODO For some reason 192 does not work in GH C/I Windows Conda build...
+    #      Read the book on Visual Studio versioning.
+    version = "193"
+
     return version
 
 
