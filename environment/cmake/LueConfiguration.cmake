@@ -314,7 +314,7 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(pybind11 REQUIRED)
+    find_package(pybind11 2.10 REQUIRED)
 endif()
 
 

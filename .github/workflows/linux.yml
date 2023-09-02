@@ -60,8 +60,7 @@ jobs:
                   libvulkan-dev \
                   ${{ matrix.compiler.package }} \
                   ninja-build \
-                  nlohmann-json3-dev \
-                  pybind11-dev
+                  nlohmann-json3-dev
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
@@ -84,7 +83,7 @@ jobs:
               python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
               CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} \
-              LUE_CONAN_PACKAGES="imgui span-lite" \
+              LUE_CONAN_PACKAGES="imgui pybind11 span-lite" \
                   conan install . \
                       --profile:host=host_profile \
                       --profile:build=build_profile \
