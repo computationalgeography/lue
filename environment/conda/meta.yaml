@@ -26,7 +26,7 @@ requirements:
     - {{ compiler('cxx') }}
     - make                                       # [unix]
     - git
-    - conan <2
+    - conan >=2
     - cmake
     - ninja                                      # [not win]
 
@@ -44,10 +44,11 @@ requirements:
     - libvulkan-loader
     - pybind11
     - fmt
-    - docopt  # templatize.py
     - docopt.cpp
-    - jinja2  # templatize.py
     - nlohmann_json
+    - docopt  # templatize.py
+    - jinja2  # templatize.py
+    - ruamel.yaml  # write_conan_profile.py
 
   run:
     # Dependencies required for using the software.

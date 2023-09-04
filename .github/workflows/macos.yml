@@ -5,8 +5,10 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
+      - "conanfile.py"
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
+      - "environment/script/write_conan_profile.py"
       - "source/**"
       - "!source/qa/python/qa/**"
 
@@ -16,6 +18,8 @@ jobs:
         strategy:
             matrix:
                 os: ["macos-11"]
+                compiler:
+                    - { name: clang, cc: clang, cxx: clang++ }
             fail-fast: true
 
         runs-on: ${{ matrix.os }}
@@ -29,8 +33,6 @@ jobs:
 
         - name: configure system
           run: |
-              brew update  # > /dev/null || true
-              # brew upgrade
               brew install \
                   asio \
                   boost \
@@ -49,37 +51,40 @@ jobs:
                   tree \
                   vulkan-loader
 
-
-        - shell: bash -l {0}
+        - name: install python packages
+          shell: bash -l {0}
           run: |
-              pip3 install "conan<2" docopt jinja2 matplotlib
-
+              pip3 install "conan>=2" docopt jinja2 matplotlib ruamel.yaml
 
         - name: configure lue
           shell: bash -l {0}
           run: |
+              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
+              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
-              cmake \
-                  -S . \
-                  -B $GITHUB_WORKSPACE/../build \
-                  -G "Ninja" \
-                  -D CMAKE_BUILD_TYPE=Release \
-                  -D FETCHCONTENT_QUIET=FALSE \
-                  -D LUE_BUILD_QA=TRUE \
-                  -D LUE_QA_WITH_PYTHON_API=TRUE \
-                  -D LUE_QA_WITH_TESTS=TRUE \
-                  -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
-                  -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
-                  -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                  -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                  -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                  -D LUE_BUILD_HPX=TRUE \
-                  -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
-                  -D HPX_WITH_MALLOC="tcmalloc" \
-                  -D HPX_WITH_PKGCONFIG=FALSE \
-                  -D HPX_WITH_EXAMPLES=FALSE \
-                  -D HPX_WITH_TESTS=FALSE \
-                  -D Python3_EXECUTABLE="/usr/local/bin/python3"
+              LUE_CONAN_PACKAGES="docopt.cpp imgui span-lite" conan install . \
+                  --profile:host=host_profile \
+                  --profile:build=build_profile \
+                  --build=missing \
+                  --output-folder=$GITHUB_WORKSPACE/../build
+              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
+                  cmake --preset conan-release \
+                      -B $GITHUB_WORKSPACE/../build \
+                      -D LUE_BUILD_QA=TRUE \
+                      -D LUE_QA_WITH_PYTHON_API=TRUE \
+                      -D LUE_QA_WITH_TESTS=TRUE \
+                      -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
+                      -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
+                      -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                      -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                      -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+                      -D LUE_BUILD_HPX=TRUE \
+                      -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
+                      -D HPX_WITH_MALLOC="tcmalloc" \
+                      -D HPX_WITH_PKGCONFIG=FALSE \
+                      -D HPX_WITH_EXAMPLES=FALSE \
+                      -D HPX_WITH_TESTS=FALSE \
+                      -D Python3_EXECUTABLE="/usr/local/bin/python3"
 
         - name: build lue
           shell: bash -l {0}

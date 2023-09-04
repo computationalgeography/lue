@@ -5,6 +5,7 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
+      - "conanfile.py"
       - ".github/workflows/windows-conda.yml"
       - "source/**"
       - "!source/qa/python/qa/**"
@@ -13,13 +14,14 @@ on:
       - "environment/conda/conda_build_config.yaml"
       - "environment/conda/meta.yaml"
       - "environment/conda/run_test.py"
+      - "environment/script/write_conan_profile.py"
 
 jobs:
     build:
 
         strategy:
             matrix:
-                os: ["windows-2019"]
+                os: ["windows-2022"]
                 python-version: ["3.9"]
             fail-fast: true
 

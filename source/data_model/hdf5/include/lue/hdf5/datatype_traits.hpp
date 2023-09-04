@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <hdf5.h>
 #include <string>
 #include <type_traits>

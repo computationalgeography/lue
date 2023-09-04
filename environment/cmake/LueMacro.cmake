@@ -68,27 +68,10 @@ macro(add_unit_test)
         ADD_DEPENDENCIES(${TEST_EXE_NAME} ${ADD_UNIT_TEST_DEPENDENCIES})
     endif()
 
-    # Maybe add ${EXECUTABLE_OUTPUT_PATH} in the future. If needed.
-    set(PATH_LIST $ENV{PATH})
-    list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
-    set(PATH_STRING "${PATH_LIST}")
-
-    if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-        string(REPLACE "\\" "/" PATH_STRING "${PATH_STRING}")
-        string(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
-    else()
-        string(REPLACE ";" ":" PATH_STRING "${PATH_STRING}")
-    endif()
-
-    # set_target_properties(${TEST_EXE_NAME}
-    #     PROPERTIES
-    #         EXCLUDE_FROM_ALL 1
-    #         EXCLUDE_FROM_DEFAULT_BUILD 1
-    # )
     set_tests_properties(${TEST_EXE_NAME}
         PROPERTIES
             ENVIRONMENT
-                "PATH=${PATH_STRING};${ADD_UNIT_TEST_ENVIRONMENT}"
+                "${ADD_UNIT_TEST_ENVIRONMENT}"
     )
 endmacro()
 
@@ -351,27 +334,10 @@ function(add_hpx_unit_test)
         ADD_DEPENDENCIES(${TEST_EXE_NAME} ${ADD_HPX_UNIT_TEST_DEPENDENCIES})
     endif()
 
-    # Maybe add ${EXECUTABLE_OUTPUT_PATH} in the future. If needed.
-    set(PATH_LIST $ENV{PATH})
-    list(INSERT PATH_LIST 0 ${Boost_LIBRARY_DIRS})
-    set(PATH_STRING "${PATH_LIST}")
-
-    if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Windows")
-        string(REPLACE "\\" "/" PATH_STRING "${PATH_STRING}")
-        string(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
-    else()
-        string(REPLACE ";" ":" PATH_STRING "${PATH_STRING}")
-    endif()
-
-    # set_target_properties(${TEST_EXE_NAME}
-    #     PROPERTIES
-    #         EXCLUDE_FROM_ALL 1
-    #         EXCLUDE_FROM_DEFAULT_BUILD 1
-    # )
     set_tests_properties(${TEST_EXE_NAME}
         PROPERTIES
             ENVIRONMENT
-                "PATH=${PATH_STRING};${ADD_HPX_UNIT_TEST_ENVIRONMENT}"
+                "${ADD_HPX_UNIT_TEST_ENVIRONMENT}"
     )
 
     hpx_setup_target(${TEST_EXE_NAME})

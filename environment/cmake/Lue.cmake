@@ -1,10 +1,10 @@
 if(UNIX AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 endif()
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 include(CompilerCache)
 useCompilerCache()
@@ -19,8 +19,8 @@ include(LueConfiguration)
 
 # ... only now set language settings relevant for (only) our own targets
 set(CMAKE_CXX_STANDARD ${LUE_CXX_STANDARD})
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_EXTENSIONS FALSE)
 
 include(LueMacro)
 
@@ -105,7 +105,8 @@ message(STATUS "Build QA                      : ${LUE_BUILD_QA}")
 message(STATUS "+ python api                  : ${LUE_QA_WITH_PYTHON_API}")
 message(STATUS "+ tests                       : ${LUE_QA_WITH_TESTS}")
 message(STATUS "")
-message(STATUS "LUE_GENERATOR_IS_MULTI_CONFIG : ${LUE_GENERATOR_IS_MULTI_CONFIG}")
+message(STATUS "CMAKE_GENERATOR               : ${CMAKE_GENERATOR}")
+message(STATUS "GENERATOR_IS_MULTI_CONFIG     : ${GENERATOR_IS_MULTI_CONFIG}")
 message(STATUS "CMAKE_SOURCE_DIR              : ${CMAKE_SOURCE_DIR}")
 message(STATUS "CMAKE_BINARY_DIR              : ${CMAKE_BINARY_DIR}")
 message(STATUS "CMAKE_INSTALL_PREFIX          : ${CMAKE_INSTALL_PREFIX}")

@@ -1,8 +1,9 @@
 #pragma once
+#include <vulkan/vulkan.h>
+#include <cstdint>
 #include <string>
 #include <tuple>
 #include <vector>
-#include <vulkan/vulkan.h>
 
 
 namespace lue::vulkan {

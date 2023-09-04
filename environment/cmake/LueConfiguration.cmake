@@ -76,44 +76,12 @@ option(LUE_VALIDATE_IDXS
 
 
 # Options related to the availability of external packages.
-# TODO Make the defaults dependent on the result of a search by CMake.
 if(WIN32)
-    set(LUE_HAVE_BOOST_INIT FALSE)
-    set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
-    set(LUE_HAVE_GDAL_INIT FALSE)
-    set(LUE_HAVE_GLFW_INIT FALSE)
-    set(LUE_HAVE_MS_GSL_INIT FALSE)
-    set(LUE_HAVE_FMT_INIT FALSE)
-    set(LUE_HAVE_HDF5_INIT FALSE)
-    set(LUE_HAVE_NLOHMANN_JSON_INIT FALSE)
-    set(LUE_HAVE_PYBIND11_INIT FALSE)
 elseif(APPLE)
-    # Most packages can be installed using Homebrew
-    set(LUE_HAVE_BOOST_INIT TRUE)
-    # Change default to TRUE once Homebrew contains a version.
-    set(LUE_HAVE_DOCOPT_INIT FALSE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
-    set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLFW_INIT TRUE)
-    # Change default to TRUE once Homebrew contains a version.
-    set(LUE_HAVE_MS_GSL_INIT FALSE)
-    set(LUE_HAVE_FMT_INIT TRUE)
-    set(LUE_HAVE_HDF5_INIT TRUE)
-    set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    set(LUE_HAVE_PYBIND11_INIT TRUE)
 else()
-    set(LUE_HAVE_BOOST_INIT TRUE)
-    set(LUE_HAVE_DOCOPT_INIT TRUE)
     set(LUE_HAVE_DOXYGEN_INIT TRUE)
-    set(LUE_HAVE_GDAL_INIT TRUE)
-    set(LUE_HAVE_GLFW_INIT TRUE)
-    # Change default to TRUE once Linux package managers contain a version
-    set(LUE_HAVE_MS_GSL_INIT FALSE)
-    set(LUE_HAVE_FMT_INIT TRUE)
-    set(LUE_HAVE_HDF5_INIT TRUE)
-    set(LUE_HAVE_NLOHMANN_JSON_INIT TRUE)
-    set(LUE_HAVE_PYBIND11_INIT TRUE)
 endif()
 
 function(lue_have_option name)
@@ -122,20 +90,7 @@ function(lue_have_option name)
         ${LUE_HAVE_${name}_INIT})
 endfunction()
 
-lue_have_option(BOOST)
-lue_have_option(DOCOPT)
 lue_have_option(DOXYGEN)
-lue_have_option(GDAL)
-lue_have_option(FMT)
-lue_have_option(GLFW)
-lue_have_option(HDF5)
-lue_have_option(MS_GSL)
-lue_have_option(NLOHMANN_JSON)
-lue_have_option(PYBIND11)
-
-# For now, use Conan to get ImGui. If this must be changed, be sure to also update our imgui
-# target. It assumes the Conan package of ImGui is being used.
-set(LUE_HAVE_IMGUI FALSE)
 
 # Update / remove once we've got Vulkan sorted out.
 # Whether or not to use Vulkan, instead of OpenGL.
@@ -159,6 +114,7 @@ endif()
 
 if(LUE_BUILD_DATA_MODEL)
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
+        set(LUE_SPAN_LITE_REQUIRED TRUE)
     endif()
 endif()
 
@@ -213,7 +169,6 @@ if(LUE_BUILD_DATA_MODEL)
     endif()
 
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
-        set(LUE_MS_GSL_REQUIRED TRUE)
         set(LUE_PYBIND11_REQUIRED TRUE)
         set(LUE_PYTHON_REQUIRED TRUE)
     endif()
@@ -256,19 +211,18 @@ if(LUE_BUILD_QA)
             filesystem system unit_test_framework)
 
         if(LUE_BUILD_FRAMEWORK)
-            set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+            if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
+                set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+            else()
+                find_file(HPXRUN "hpxrun.py")
+
+                if(NOT HPXRUN)
+                    message(FATAL_ERROR "hpxrun.py not found")
+                endif()
+            endif()
 
             # Needed to be able to run hpxrun.py
             set(LUE_PYTHON_REQUIRED TRUE)
-
-            # Does not work when HPX is built as part of LUE build
-            # find_file(HPXRUN
-            #     "hpxrun.py"
-            #     PATHS ${CMAKE_BINARY_DIR}/_deps/hpx-build/bin)
-            #
-            # if(NOT HPXRUN)
-            #     message(FATAL_ERROR "hpxrun.py not found")
-            # endif()
         endif()
     endif()
 
@@ -315,78 +269,6 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
-# ------------------------------------------------------------------------------
-# Packages that need to be installed with Conan must be installed first,
-# so packages using them will find them
-
-if(LUE_BOOST_REQUIRED)
-    # Disable search for boost-cmake stuff
-    set(Boost_NO_BOOST_CMAKE TRUE)
-
-    if(NOT LUE_HAVE_BOOST)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} boost/1.78.0)
-        set(LUE_CONAN_OPTIONS ${LUE_CONAN_OPTIONS} boost:shared=True)
-    endif()
-endif()
-
-if(LUE_DOCOPT_REQUIRED)
-    if(NOT LUE_HAVE_DOCOPT)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} docopt.cpp/0.6.3)
-    endif()
-endif()
-
-if(LUE_FMT_REQUIRED)
-    if(NOT LUE_HAVE_FMT)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} fmt/9.0.0)
-    endif()
-endif()
-
-if(LUE_GDAL_REQUIRED)
-    if(NOT LUE_HAVE_GDAL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} gdal/3.4.3)
-    endif()
-endif()
-
-
-if(LUE_GLFW_REQUIRED)
-    if(NOT LUE_HAVE_GLFW)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} glfw/3.3.7)
-    endif()
-endif()
-
-
-if(LUE_IMGUI_REQUIRED)
-    if(NOT LUE_HAVE_IMGUI)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} imgui/1.89.4)
-        list(APPEND LUE_CONAN_IMPORTS
-            "./res/bindings, imgui_impl_glfw.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_glfw.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_opengl3.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_opengl3.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_opengl3_loader.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_vulkan.h -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-            "./res/bindings, imgui_impl_vulkan.cpp -> ${CMAKE_BINARY_DIR}/source/view/imgui/src"
-        )
-    endif()
-endif()
-
-
-if(LUE_MS_GSL_REQUIRED)
-    if(NOT LUE_HAVE_MS_GSL)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} ms-gsl/4.0.0)
-    endif()
-endif()
-
-
-if(LUE_HDF5_REQUIRED)
-    if(NOT LUE_HAVE_HDF5)
-        set(HDF5_VERSION 1.13.1)
-        set(HDF5_IS_PARALLEL FALSE)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} hdf5/${HDF5_VERSION})
-    endif()
-endif()
-
-
 if(LUE_KOKKOS_MDSPAN_REQUIRED)
     FetchContent_Declare(kokkos_mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
@@ -395,35 +277,6 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
-endif()
-
-
-if(LUE_NLOHMANN_JSON_REQUIRED)
-    if(NOT LUE_HAVE_NLOHMANN_JSON)
-        set(LUE_CONAN_REQUIRES ${LUE_CONAN_REQUIRES} nlohmann_json/3.10.5)
-    endif()
-endif()
-
-
-# TODO https://github.com/conan-io/cmake-conan#using-conan_cmake_autodetect-and-conan_cmake_install-with-multi-configuration-generators
-if(LUE_CONAN_REQUIRES)
-    include(conan-0.18.1)
-    conan_cmake_configure(
-        REQUIRES ${LUE_CONAN_REQUIRES}
-        GENERATORS cmake_find_package
-        IMPORTS ${LUE_CONAN_IMPORTS}
-        OPTIONS ${LUE_CONAN_OPTIONS})
-    conan_cmake_autodetect(settings)
-    conan_cmake_install(
-        PATH_OR_REFERENCE .
-        BUILD missing
-        REMOTE conancenter
-        SETTINGS ${settings}
-        ENV CC=${CMAKE_C_COMPILER}
-        ENV CXX=${CMAKE_CXX_COMPILER}
-    )
-    list(APPEND CMAKE_MODULE_PATH
-        ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 
@@ -461,18 +314,7 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    if(NOT LUE_HAVE_PYBIND11)
-        FetchContent_Declare(pybind11
-            GIT_REPOSITORY https://github.com/pybind/pybind11
-            GIT_TAG "v2.9.2"
-            SYSTEM
-        )
-
-        # This should pick up the Python found above
-        FetchContent_MakeAvailable(pybind11)
-    else()
-        find_package(pybind11 CONFIG REQUIRED)
-    endif()
+    find_package(pybind11 2.10 REQUIRED)
 endif()
 
 
@@ -482,24 +324,14 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
+    set(Boost_NO_BOOST_CMAKE TRUE)
+
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
             "Boost-1.75's safe_numerics library is known to contain a bug:\n"
             "https://github.com/boostorg/safe_numerics/issues/94")
-    endif()
-
-    add_definitions(
-            -DBOOST_ALL_NO_LIB
-            -DBOOST_ALL_DYN_LINK
-        )
-
-    if(NOT LUE_HAVE_BOOST)
-        # Boost provided by Conan. Unit tests need path to dlls to be set. In the unit test
-        # macro's this variable is used to locate them.
-        cmake_path(GET Boost_INCLUDE_DIR PARENT_PATH Boost_LIBRARY_DIRS)
-        set(Boost_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}/bin")
     endif()
 endif()
 
@@ -594,9 +426,9 @@ if(LUE_HPX_REQUIRED)
             endif()
 
             if(hpx_git_tag_is_hash)
-                set(hpx_git_shallow OFF)
+                set(hpx_git_shallow FALSE)
             else()
-                set(hpx_git_shallow ON)
+                set(hpx_git_shallow TRUE)
             endif()
 
             if(LUE_HPX_REPOSITORY)
@@ -683,11 +515,6 @@ if(LUE_IMGUI_REQUIRED)
     find_package(imgui REQUIRED)
     find_package(glfw3 REQUIRED)
 
-    if(LUE_HAVE_GLFW)
-        # Conan find module uses glfw::glfw instead of glfw
-        add_library(glfw::glfw ALIAS glfw)
-    endif()
-
     if(LUE_VIEW_USE_VULKAN)
         find_package(Vulkan REQUIRED)
     else()
@@ -715,9 +542,10 @@ endif()
 if(LUE_DOCOPT_REQUIRED)
     find_package(docopt REQUIRED)
 
-    if(NOT LUE_HAVE_DOCOPT)
-        # Conan find module uses docopt::docopt instead of docopt
-        add_library(docopt ALIAS docopt::docopt)
+    # The docopt package shipѕ with CMake scripts that define a target names docopt. The
+    # Conan docopt package defines a target named docopt_s instead...
+    if(TARGET docopt_s AND NOT TARGET docopt)
+        add_library(docopt ALIAS docopt_s)
     endif()
 endif()
 
@@ -746,12 +574,12 @@ endif()
 
 
 if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED COMPONENTS C)
+    # Explicitly use Module Mode, to prevent the use of HDF5's own CMake find logic. This latter
+    # logic does not provide us with the hdf5::hdf5 target, which CMake's module defines.
+    # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
+    # toolchain).
+    find_package(HDF5 MODULE REQUIRED COMPONENTS C)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
-endif()
-
-if(LUE_MS_GSL_REQUIRED)
-    find_package(Microsoft.GSL REQUIRED)
 endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
@@ -760,6 +588,10 @@ endif()
 
 if(LUE_OPENCL_REQUIRED)
     find_package(OpenCL REQUIRED)
+endif()
+
+if(LUE_SPAN_LITE_REQUIRED)
+    find_package(span-lite REQUIRED)
 endif()
 
 if(LUE_SPHINX_REQUIRED)
