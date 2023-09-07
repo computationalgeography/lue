@@ -21,12 +21,12 @@ requirements:
     # Dependencies required during the build phase not needed on the host.
     - python                                     # [build_platform != target_platform]
     - cross-python_{{ target_platform }}         # [build_platform != target_platform]
-    - numpy >1.17                                # [build_platform != target_platform]
+    - numpy                                      # [build_platform != target_platform]
     - pybind11                                   # [build_platform != target_platform]
     - {{ compiler('cxx') }}
     - make                                       # [unix]
     - git
-    - conan >=2
+    - conan
     - cmake
     - ninja                                      # [not win]
 
@@ -34,12 +34,12 @@ requirements:
     # Section for the target platform. Might not be the same as the build platform!
     # Dependencies required during build phase needed on the host.
     - python
-    - numpy >1.17
+    - numpy
     - boost-cpp
-    - hdf5 >=1.10,<1.14
+    - hdf5
     - glfw
     - hpx
-    - libgdal >=3
+    - libgdal
     - libvulkan-headers
     - libvulkan-loader
     - pybind11
@@ -55,10 +55,10 @@ requirements:
     # Stuff required when using LUE.
     - docopt  # lue.qa
     - docopt.cpp
-    - hdf5 >=1.10,<1.14
+    - hdf5
     - glfw
     - hpx
-    - libgdal >=3
+    - libgdal
     - libvulkan-loader
     - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
