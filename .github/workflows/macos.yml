@@ -3,7 +3,7 @@ name: macOS CI
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh587"
     paths:
       - "conanfile.py"
       - ".github/workflows/macos.yml"
