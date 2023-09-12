@@ -96,7 +96,6 @@ target_compile_definitions(lue_py_data_model
 
 set_target_properties(lue_py_data_model
     PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
         CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
 )
 
@@ -116,8 +115,6 @@ target_link_libraries(lue_py_data_model
         Python3::NumPy
         nonstd::span-lite
 )
-
-pybind11_extension(lue_py_data_model)
 
 # TODO pybind11_strip does not work on macOS, when building using Conda packages
 #      The resulting binary can't be imported. Results in "killed: 9".

@@ -12,11 +12,6 @@ if(LUE_QA_WITH_PYTHON_API)
 
     add_library(lue::py_qa ALIAS lue_py_qa)
 
-    set_target_properties(lue_py_qa
-        PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY $<TARGET_FILE_DIR:lue::py>
-    )
-
     target_include_directories(lue_py_qa
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -31,8 +26,6 @@ if(LUE_QA_WITH_PYTHON_API)
             pybind11::opt_size
             pybind11::windows_extras
     )
-
-    pybind11_extension(lue_py_qa)
 
     # TODO pybind11_strip does not work on macOS, when building using Conda packages
     #      The resulting binary can't be imported. Results in "killed: 9".
