@@ -1,7 +1,9 @@
 #include "lue/view/vulkan_application.hpp"
+#include "lue/view/show_dataset.hpp"
 #include "lue/configure.hpp"
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
+#include <boost/dll/runtime_symbol_info.hpp>
 #include <fmt/format.h>
 #include <array>
 #include <cassert>
@@ -10,9 +12,25 @@
 #include <chrono>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <imgui_impl_vulkan.h>
 #include <set>
 
 #include <iostream>
+
+
+// TODO / Ideas
+//      Make sure that creating a window is optional. We also want to support off-screen
+//      rendering. The imgui stuff is only used to interact with the visualizations,
+//      and to gain insight into the contents of data sets.
+//      - init_window (optional)
+//      - init_vulkan
+//      - init_imgui (optional)
+//      - enter main loop, and either(?)
+//          - allow user interaction, using glfw / imgui / vulkan stuff, ...
+//          - render and save, using only vulkan stuff
+//      - command line interface must make it easy to switch between these modes
+//      - To keep things separated, this function can call different functions, depending
+//        on the mode
 
 
 namespace lue::view {
@@ -245,16 +263,17 @@ namespace lue::view {
     VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
 
         Application{arguments},
+        _datasets_to_visualize{},
         _library{},
         _monitor{},
         _window{},
-        _binding{},
         _enable_validation_layers{false},
         _instance{},
         _debug_callback{},
         _surface{},
         _physical_device{},
         _device{},
+        _binding{},
         _graphics_queue{},
         _present_queue{},
         _swapchain{},
@@ -276,6 +295,7 @@ namespace lue::view {
         _uniform_buffers_memory{},
         _uniform_buffers_mapped{},
         _descriptor_pool{},
+        _imgui_descriptor_pool{},
         _descriptor_sets{},
         _command_buffers{},
         _image_available_semaphores{},
@@ -301,6 +321,15 @@ namespace lue::view {
     // {
     //     _framebuffer_resized = true;
     // }
+
+
+    void VulkanApplication::handle_command_line_arguments()
+    {
+        // Open datasets passed in on the command line
+        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
+
+        _datasets_to_visualize = Datasets{dataset_names.begin(), dataset_names.end()};
+    }
 
 
     void VulkanApplication::init_window()
@@ -369,16 +398,74 @@ namespace lue::view {
 
     void VulkanApplication::init_imgui()
     {
-        // TODO
-
         // VkPipelineCache pipeline_cache{VK_NULL_HANDLE};
 
-        // int const nr_images = _swapchain_images.size();
+        int const nr_images = _swapchain_images.size();
 
-        // _binding = std::make_unique<imgui::glfw::VulkanBinding>(
-        //         *_window, _instance, _physical_device, _device,
-        //         _graphics_queue, pipeline_cache, nr_images
-        //     );
+        // Create descriptor pool for IMGUI.
+        // Very oversized, but it's copied from imgui demo itself
+        vulkan::DescriptorPool::PoolSize pool_sizes[] = {
+            {VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
+
+        vulkan::DescriptorPool::CreateInfo create_info{};
+
+        (*create_info).flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        (*create_info).poolSizeCount = std::size(pool_sizes);
+        (*create_info).pPoolSizes = pool_sizes;
+        (*create_info).maxSets = 1000;
+
+        _imgui_descriptor_pool = _device.create_descriptor_pool(create_info);
+
+        _binding = std::make_unique<imgui::glfw::VulkanBinding>(
+            *_window,
+            _instance,
+            _physical_device,
+            _device,
+            _graphics_queue,
+            _imgui_descriptor_pool,
+            /* pipeline_cache, */ nr_images,
+            _render_pass);
+
+        // Upload Fonts
+        vulkan::CommandBuffer::AllocateInfo allocate_info{};
+
+        (*allocate_info).commandPool = _command_pool;
+        (*allocate_info).level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        (*allocate_info).commandBufferCount = 1;
+
+        vulkan::CommandBuffer imgui_command_buffer{
+            std::move(_device.allocate_command_buffers(allocate_info)[0])};
+
+        vulkan::CommandBuffer::BeginInfo command_buffer_begin_info{};
+        (*command_buffer_begin_info).flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        imgui_command_buffer.begin(command_buffer_begin_info);
+
+        ImGui_ImplVulkan_CreateFontsTexture(imgui_command_buffer);
+
+        imgui_command_buffer.end();
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = imgui_command_buffer;
+
+        vkQueueSubmit(_graphics_queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(_graphics_queue);
+
+        vkFreeCommandBuffers(_device, _command_pool, 1, imgui_command_buffer);
+
+        ImGui_ImplVulkan_DestroyFontUploadObjects();
     }
 
 
@@ -819,13 +906,52 @@ namespace lue::view {
     }
 
 
+    // TODO Move to utils / core lib
+    std::filesystem::path program_pathname()
+    {
+#ifdef __linux__
+        // /usr/local/bin/lue_view
+        return std::filesystem::canonical("/proc/self/exe");
+#endif
+
+#ifdef MacOS
+        // TODO Mac
+        return "";
+#endif
+
+#ifdef Windows
+        // TODO Windows
+        // - Add error checking
+        // char buffer[MAX_PATH];
+        // GetModuleFileNameA(NULL, buffer, MAX_PATH);
+        // std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+        // return std::string(buffer).substr(0, pos);
+        return "";
+#endif
+    }
+
+
+    std::filesystem::path installation_prefix()
+    {
+        // /usr/local/bin/lue_view → /usr/local
+        return std::filesystem::canonical(program_pathname().remove_filename()).parent_path();
+    }
+
+
+    std::filesystem::path shader_prefix()
+    {
+        return installation_prefix() / "lib" / "shader";
+    }
+
+
     void VulkanApplication::create_graphics_pipeline()
     {
-        // TODO Where to put these files?
+        std::filesystem::path shader_prefix{lue::view::shader_prefix()};
+
         vulkan::ShaderModule::Bytes vertex_shader_code{
-            vulkan::ShaderModule::read_file("source/view/view/shader/shader.vert.spv")};
+            vulkan::ShaderModule::read_file((shader_prefix / "shader.vert.spv").string())};
         vulkan::ShaderModule::Bytes fragment_shader_code{
-            vulkan::ShaderModule::read_file("source/view/view/shader/shader.frag.spv")};
+            vulkan::ShaderModule::read_file((shader_prefix / "shader.frag.spv").string())};
 
         vulkan::ShaderModule::CreateInfo vertex_shader_module_create_info{};
 
@@ -1323,6 +1449,8 @@ namespace lue::view {
         // &_descriptor_sets[_current_frame], 0, nullptr);
         command_buffer.draw_indexed(static_cast<std::uint32_t>(indices.size()), 1, 0, 0, 0);
 
+        ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), command_buffer);
+
         command_buffer.end_render_pass();
         command_buffer.end();
     }
@@ -1330,25 +1458,23 @@ namespace lue::view {
 
     void VulkanApplication::main_loop()
     {
-        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
-
         bool quit = _window->should_close();
 
         while (!quit)
         {
             glfw::Library::poll_events();
 
-            // imgui::glfw::VulkanFrame frame{*_window};
+            imgui::glfw::VulkanFrame frame{*_window};
 
-            // static Configuration configuration{};
-            // quit = show_main_menu_bar(configuration);
+            static Configuration configuration{};
+            quit = show_main_menu_bar(configuration);
 
-            // if (!quit)
-            // {
-            //     show_datasets(datasets_to_visualize, configuration.show_details());
-            // }
-
-            draw_frame();
+            if (!quit)
+            {
+                show_datasets(_datasets_to_visualize, configuration.show_details());
+                ImGui::Render();
+                draw_frame();
+            }
 
             quit = quit || _window->should_close();
         }
@@ -1466,6 +1592,7 @@ namespace lue::view {
 
     int VulkanApplication::run_implementation()
     {
+        handle_command_line_arguments();
         init_window();
         init_vulkan();
         init_imgui();
@@ -1475,136 +1602,3 @@ namespace lue::view {
     }
 
 }  // namespace lue::view
-
-
-// TODO Make sure that creating a window is optional. We also want to support off-screen
-//      rendering. The imgui stuff is only used to interact with the visualizations,
-//      and to gain insight into the contents of data sets.
-//      - init_window (optional)
-//      - init_vulkan
-//      - init_imgui (optional)
-//      - enter main loop, and either(?)
-//          - allow user interaction, using glfw / imgui / vulkan stuff, ...
-//          - render and save, using only vulkan stuff
-//      - command line interface must make it easy to switch between these modes
-//      - To keep things separated, this function can call different functions, depending
-//        on the mode
-
-
-/// static std::tuple<vulkan::PhysicalDevice, vulkan::QueueFamilies,
-/// vulkan::PhysicalDevice::SurfaceProperties> select_physical_device(
-///     vulkan::PhysicalDevices&& devices, vulkan::Surface const& surface,
-///     vulkan::Names const& extension_names)
-/// {
-///     std::multimap<int, vulkan::PhysicalDevice> candidates{};
-
-///     for (auto& device : devices)
-///     {
-///         int const score{rate_physical_device(device)};
-
-///         candidates.insert(std::make_pair(score, std::move(device)));
-///     }
-
-///     auto it = candidates.rend();
-///     vulkan::QueueFamilies queue_families{};
-///     vulkan::PhysicalDevice::SurfaceProperties surface_properties{};
-
-///     for (it = candidates.rbegin(); it != candidates.rend(); ++it)
-///     {
-///         if (it->first == 0)
-///         {
-///             // Candidates are ordered by score. We now reached the ones that are not
-///             // suitable by definition.
-///             it = candidates.rend();
-///         }
-///         else
-///         {
-///             // Check whether the device is suitable
-///             queue_families = find_queue_families(it->second, surface);
-
-///             bool const extensions_supported = it->second.extensions_available(extension_names);
-
-///             bool swap_chain_is_adequate{false};
-
-///             if(extensions_supported)
-///             {
-///                 surface_properties = it->second.surface_properties(surface);
-///                 swap_chain_is_adequate =
-///                    !surface_properties.formats().empty() &&
-///                    !surface_properties.present_modes().empty();
-///             }
-
-///             if(queue_families.is_complete() && extensions_supported && swap_chain_is_adequate)
-///             {
-///                 break;
-///             }
-///         }
-///     }
-
-///     if (it == candidates.rend())
-///     {
-///         throw std::runtime_error("Failed to find a suitable GPU");
-///     }
-
-///     if (!queue_families.is_complete())
-///     {
-///         throw std::runtime_error("Failed to find a GPU supporting both graphics and
-///         presentation");
-///     }
-
-///     return {std::move(candidates.rbegin()->second), queue_families,
-///     std::move(surface_properties)};
-/// }
-
-
-/// static int rate_physical_device(vulkan::PhysicalDevice const& device)
-/// {
-///     int score{0};
-
-///     vulkan::PhysicalDevice::Properties const properties{device.properties()};
-
-///     // TODO Figure out which devices the expect here and whether the ranking here
-///     //      is correct
-///     // TODO Figure out which devices are actually connected to a screen. This is (only)
-///     //      relevant when we need to present something on the screen.
-///     if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-///     {
-///         score += 1000;
-///     }
-///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
-///     {
-///         score += 100;
-///     }
-///     else if (properties.device_type() == VK_PHYSICAL_DEVICE_TYPE_CPU)
-///     {
-///         score += 10;
-///     }
-
-///     return score;
-/// }
-
-
-/// static vulkan::QueueFamilies find_queue_families(
-///     vulkan::PhysicalDevice const& physical_device, vulkan::Surface const& surface)
-/// {
-///     vulkan::QueueFamilyProperties queue_family_properties{physical_device.queue_family_properties()};
-///     vulkan::QueueFamilies queue_families{};
-
-///     for (std::uint32_t i = 0; i < queue_family_properties.size(); ++i)
-///     {
-///         // TODO What if multiple families support graphics or presentation? Currently
-///         //      an assertion will trigger in the QueueFamilies member functions.
-
-///         if (queue_family_properties[i].graphics())
-///         {
-///             queue_families.set_graphics_family(vulkan::QueueFamily{i});
-///         }
-
-///         if (physical_device.has_surface_support(vulkan::QueueFamily{i}, surface))
-///         {
-///             queue_families.set_present_family(vulkan::QueueFamily{i});
-///         }
-///     }
-
-///     return queue_families;
-/// }

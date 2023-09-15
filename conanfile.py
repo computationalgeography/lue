@@ -81,9 +81,9 @@ class LUERecipe(ConanFile):
             binding_filenames = [
                 "imgui_impl_glfw.h",
                 "imgui_impl_glfw.cpp",
-                "imgui_impl_opengl3.h",
-                "imgui_impl_opengl3.cpp",
-                "imgui_impl_opengl3_loader.h",
+                "imgui_impl_opengl3.h",  # TODO Remove
+                "imgui_impl_opengl3.cpp",  # TODO Remove
+                "imgui_impl_opengl3_loader.h",  # TODO Remove
                 "imgui_impl_vulkan.h",
                 "imgui_impl_vulkan.cpp",
             ]

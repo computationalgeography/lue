@@ -48,7 +48,7 @@ if(LUE_VIEW_USE_VULKAN)
         set(input_shader_pathname "${CMAKE_CURRENT_SOURCE_DIR}/shader/${shader_filename}")
 
         # Name of SPIR-V bytecode output file
-        set(output_shader_pathname "shader/${shader_filename}.spv")
+        set(output_shader_pathname "../lib/shader/${shader_filename}.spv")
 
         add_custom_command(
             OUTPUT ${output_shader_pathname}
@@ -65,6 +65,13 @@ if(LUE_VIEW_USE_VULKAN)
     )
 
     add_dependencies(lue_view shaders)
+
+    install(
+        DIRECTORY
+            ${CMAKE_CURRENT_BINARY_DIR}/../lib/shader
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT lue_runtime
+    )
 endif()
 
 lue_install_executables(TARGETS lue_view)

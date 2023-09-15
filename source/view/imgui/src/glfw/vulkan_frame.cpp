@@ -18,16 +18,6 @@ namespace lue::imgui::glfw {
 
     VulkanFrame::~VulkanFrame()
     {
-        ImGui::Render();
-
-        // TODO
-        // auto& io = ImGui::GetIO();
-        // glViewport(0, 0, static_cast<int>(io.DisplaySize.x), static_cast<int>(io.DisplaySize.y));
-        // glClear(GL_COLOR_BUFFER_BIT);
-
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        // glfwSwapBuffers(window());
     }
 
 }  // namespace lue::imgui::glfw

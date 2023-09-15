@@ -11,8 +11,10 @@ namespace lue::imgui::glfw {
         vulkan::PhysicalDevice& physical_device,
         vulkan::Device& device,
         vulkan::Queue& queue,
-        VkPipelineCache pipeline_cache,
-        int const nr_images):
+        vulkan::DescriptorPool& pool,
+        // VkPipelineCache pipeline_cache,
+        int const nr_images,
+        vulkan::RenderPass& render_pass):
 
         Binding{}
 
@@ -26,11 +28,10 @@ namespace lue::imgui::glfw {
         init_info.Device = device;
         init_info.QueueFamily = 55555;  // Random number. Not used by ImGUI?!
         init_info.Queue = queue;
-        init_info.PipelineCache = pipeline_cache;
 
-        // TODO
-        // init_info.DescriptorPool = g_DescriptorPool;
-        init_info.DescriptorPool = VK_NULL_HANDLE;
+        // init_info.PipelineCache = pipeline_cache;
+
+        init_info.DescriptorPool = pool;
 
         // init_info.Subpass = 0;
 
@@ -39,12 +40,11 @@ namespace lue::imgui::glfw {
 
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-        init_info.Allocator = nullptr;  // g_Allocator;
+        init_info.Allocator = nullptr;
 
         init_info.CheckVkResultFn = vulkan::assert_result_is_ok;
 
-        // TODO
-        // ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
+        ImGui_ImplVulkan_Init(&init_info, render_pass);
 
         // TODO Only now the fonts?
     }

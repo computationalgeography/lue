@@ -18,8 +18,10 @@ namespace lue::imgui::glfw {
                 vulkan::PhysicalDevice& physical_device,
                 vulkan::Device& device,
                 vulkan::Queue& queue,
-                VkPipelineCache pipeline_cache,
-                int const nr_images);
+                vulkan::DescriptorPool& pool,
+                // VkPipelineCache pipeline_cache,
+                int const nr_images,
+                vulkan::RenderPass& render_pass);
 
             ~VulkanBinding() override;
     };

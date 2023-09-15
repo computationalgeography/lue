@@ -59,7 +59,7 @@ namespace lue {
         };
 
 
-        // Or just use a optional<lue::Dataset> ?
+        // Or just use an optional<lue::Dataset> ?
         using Datasets = std::vector<Dataset>;
 
 

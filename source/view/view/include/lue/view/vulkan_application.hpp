@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/view/application.hpp"
+#include "lue/view/dataset.hpp"
 #include "lue/vulkan.hpp"
 #include <memory>
 
@@ -54,6 +55,8 @@ namespace lue::view {
             vulkan::QueueFamilies find_queue_families(vulkan::PhysicalDevice const& physical_device);
 
             bool physical_device_is_suitable(vulkan::PhysicalDevice const& device);
+
+            void handle_command_line_arguments();
 
             void init_window();
 
@@ -119,13 +122,13 @@ namespace lue::view {
 
             void draw_frame();
 
+            Datasets _datasets_to_visualize;
+
             std::unique_ptr<glfw::Library> _library;
 
             std::unique_ptr<glfw::Monitor> _monitor;
 
             std::unique_ptr<glfw::Window> _window;
-
-            std::unique_ptr<imgui::glfw::VulkanBinding> _binding;
 
             bool _enable_validation_layers;
 
@@ -138,6 +141,8 @@ namespace lue::view {
             vulkan::PhysicalDevice _physical_device;
 
             vulkan::Device _device;
+
+            std::unique_ptr<imgui::glfw::VulkanBinding> _binding;
 
             vulkan::Queue _graphics_queue;
 
@@ -180,6 +185,8 @@ namespace lue::view {
             std::vector<void*> _uniform_buffers_mapped;
 
             vulkan::DescriptorPool _descriptor_pool;
+
+            vulkan::DescriptorPool _imgui_descriptor_pool;
 
             std::vector<VkDescriptorSet> _descriptor_sets;
 
