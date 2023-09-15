@@ -1,6 +1,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "shape.hpp"
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
@@ -161,6 +162,15 @@ namespace lue::framework {
             return result;
         }
 
+
+        pybind11::object create_array(
+            DynamicShape const& array_shape, pybind11::dtype const& dtype, pybind11::object const& fill_value)
+        {
+            // TODO Call overload of create_array algorithm that uses default_partition_shape(array_shape)
+            // internally
+            return create_array(array_shape, {10, 10}, dtype, fill_value);
+        }
+
     }  // Anonymous namespace
 
 
@@ -169,32 +179,44 @@ namespace lue::framework {
         module.def(
             "create_array",
             [](pybind11::tuple const& array_shape,
-               pybind11::tuple const& partition_shape,
                pybind11::object const& dtype_args,
-               pybind11::object const& fill_value)
+               pybind11::object const& fill_value,
+               std::optional<pybind11::tuple> const& partition_shape)
+            // pybind11::tuple const& partition_shape)
             {
-                return create_array(
-                    tuple_to_shape(array_shape),
-                    tuple_to_shape(partition_shape),
-                    pybind11::dtype::from_args(dtype_args),
-                    fill_value);
+                // TODO Refactor this
+
+                if (!partition_shape)
+                {
+                    return create_array(
+                        tuple_to_shape(array_shape), pybind11::dtype::from_args(dtype_args), fill_value);
+                }
+                else
+                {
+                    return create_array(
+                        tuple_to_shape(array_shape),
+                        tuple_to_shape(*partition_shape),
+                        pybind11::dtype::from_args(dtype_args),
+                        fill_value);
+                }
             },
             R"(
     Create new array
 
     :param tuple array_shape: Shape of the array
-    :param tuple partition_shape: Shape of the array partitions
     :param numpy.dtype dtype: Type of the array elements
     :param tuple fill_value: Value to fill array with
+    :param tuple partition_shape: Shape of the array partitions
     :rtype: PartitionedArray specialization
 
     The type of the array returned depends on the rank of the array and
     the type of the array elements.
 )",
             "array_shape"_a,
-            "partition_shape"_a,
             "dtype"_a,
             "fill_value"_a,
+            pybind11::kw_only(),
+            "partition_shape"_a = std::optional<pybind11::tuple>{},
             pybind11::return_value_policy::move);
     }
 

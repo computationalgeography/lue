@@ -222,126 +222,6 @@ BOOST_AUTO_TEST_CASE(shape_in_partitions)
 }
 
 
-BOOST_AUTO_TEST_CASE(partitions)
-{
-    using Index = std::uint64_t;
-    std::size_t const rank = 2;
-    using Partition = lue::ArrayPartitionDefinition<Index, rank>;
-    using Start = typename Partition::Start;
-    using Shape = typename Partition::Shape;
-
-    {
-        Shape area_shape{6, 4};
-        Shape partition_shape{6, 4};
-
-        std::size_t nr_localities = 2;
-        std::uint32_t locality_id = 0;
-
-        auto partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 1);
-        BOOST_CHECK(partitions[0] == Partition{partition_shape});
-
-        locality_id = 1;
-        partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 0);
-    }
-
-    {
-        // Grains fit perfectly in area
-        Shape area_shape{60, 40};
-        Shape partition_shape{10, 10};
-
-        std::size_t nr_localities = 6;
-
-        std::uint32_t locality_id = 0;
-        auto partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 4);
-        BOOST_CHECK(partitions[0] == (Partition{Start{0, 0}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{0, 10}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{0, 20}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{0, 30}, Shape{10, 10}}));
-
-        locality_id = 5;
-        partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 4);
-        BOOST_CHECK(partitions[0] == (Partition{Start{50, 0}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{50, 10}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{50, 20}, Shape{10, 10}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{50, 30}, Shape{10, 10}}));
-    }
-
-    {
-        // Grains don't fit perfectly in area
-        Shape area_shape{60, 40};
-        Shape partition_shape{9, 9};
-
-        std::size_t nr_localities = 6;
-
-        std::uint32_t locality_id = 0;
-        auto partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 6);
-        BOOST_CHECK(partitions[0] == (Partition{Start{0, 0}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{0, 9}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{0, 18}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{0, 27}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[4] == (Partition{Start{0, 36}, Shape{9, 4}}));
-        BOOST_CHECK(partitions[5] == (Partition{Start{9, 0}, Shape{9, 9}}));
-
-        locality_id = 4;
-        partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 6);
-        BOOST_CHECK(partitions[0] == (Partition{Start{36, 36}, Shape{9, 4}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{45, 0}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{45, 9}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{45, 18}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[4] == (Partition{Start{45, 27}, Shape{9, 9}}));
-        BOOST_CHECK(partitions[5] == (Partition{Start{45, 36}, Shape{9, 4}}));
-
-        locality_id = 5;
-        partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 5);
-        BOOST_CHECK(partitions[0] == (Partition{Start{54, 0}, Shape{6, 9}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{54, 9}, Shape{6, 9}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{54, 18}, Shape{6, 9}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{54, 27}, Shape{6, 9}}));
-        BOOST_CHECK(partitions[4] == (Partition{Start{54, 36}, Shape{6, 4}}));
-    }
-
-    {
-        // Grains don't fit perfectly in area
-        Shape area_shape{60, 40};
-        Shape partition_shape{11, 11};
-
-        std::size_t nr_localities = 6;
-
-        std::uint32_t locality_id = 0;
-        auto partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 4);
-        BOOST_CHECK(partitions[0] == (Partition{Start{0, 0}, Shape{11, 11}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{0, 11}, Shape{11, 11}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{0, 22}, Shape{11, 11}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{0, 33}, Shape{11, 7}}));
-
-        locality_id = 5;
-        partitions = lue::partitions(area_shape, partition_shape, nr_localities, locality_id);
-
-        BOOST_REQUIRE_EQUAL(partitions.size(), 4);
-        BOOST_CHECK(partitions[0] == (Partition{Start{55, 0}, Shape{5, 11}}));
-        BOOST_CHECK(partitions[1] == (Partition{Start{55, 11}, Shape{5, 11}}));
-        BOOST_CHECK(partitions[2] == (Partition{Start{55, 22}, Shape{5, 11}}));
-        BOOST_CHECK(partitions[3] == (Partition{Start{55, 33}, Shape{5, 7}}));
-    }
-}
-
-
 BOOST_AUTO_TEST_CASE(max_partition_shape_1d)
 {
     using Shape = lue::Shape<std::uint32_t, 1>;
@@ -587,5 +467,200 @@ BOOST_AUTO_TEST_CASE(partition_shapes_2d)
         Shape const partition_shape{30, 20};
 
         BOOST_CHECK_THROW(lue::partition_shapes(array_shape, partition_shape), std::runtime_error);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(default_partition_shape_1d)
+{
+    lue::Count const default_partition_size{2000 * 2000};
+    lue::Rank const rank{1};
+    using Shape = lue::Shape<lue::Index, rank>;
+    using Count = lue::Count;
+
+    // ----- Empty and small stuff -----
+    {
+        Count const nr_worker_threads{1};
+        Shape const array_shape{0};
+        Shape const shape_we_want{0};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{1};
+        Shape const array_shape{1};
+        Shape const shape_we_want{1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{2};
+        Shape const array_shape{1};
+        Shape const shape_we_want{1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{6};
+        Shape const array_shape{5};
+        Shape const shape_we_want{1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{499};
+        Shape const shape_we_want{99};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{500};
+        Shape const shape_we_want{100};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{501};
+        Shape const shape_we_want{100};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{504};
+        Shape const shape_we_want{100};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{505};
+        Shape const shape_we_want{101};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    // ----- Normal cases -----
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{nr_worker_threads * default_partition_size};
+        Shape const shape_we_want{default_partition_size};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{(nr_worker_threads * default_partition_size) - 1};
+        Shape const shape_we_want{default_partition_size - 1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{(nr_worker_threads * default_partition_size) + 1};
+        Shape const shape_we_want{default_partition_size};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(default_partition_shape_2d)
+{
+    lue::Count const default_partition_size{2000 * 2000};
+    lue::Rank const rank{2};
+    using Shape = lue::Shape<lue::Index, rank>;
+    using Count = lue::Count;
+
+    // ----- Empty and small stuff -----
+    {
+        Count const nr_worker_threads{1};
+        Shape const array_shape{0, 0};
+        Shape const shape_we_want{0, 0};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{1};
+        Shape const array_shape{1, 1};
+        Shape const shape_we_want{1, 1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{2};
+        Shape const array_shape{1, 1};
+        Shape const shape_we_want{1, 1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    {
+        Count const nr_worker_threads{6};
+        Shape const array_shape{3, 3};
+        Shape const shape_we_want{1, 1};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+
+    // ----- Normal cases -----
+    {
+        Count const nr_worker_threads{5};
+        Shape const array_shape{
+            nr_worker_threads * default_partition_size, nr_worker_threads * default_partition_size};
+        Shape const shape_we_want{
+            static_cast<Count>(std::sqrt(default_partition_size)),
+            static_cast<Count>(std::sqrt(default_partition_size))};
+
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
     }
 }

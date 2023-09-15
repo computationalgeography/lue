@@ -7,6 +7,12 @@
 
 namespace lue {
 
+    /*!
+        @brief      Type for representing collection of extents of the dimensions of a @a rank
+                    -dimensional array
+        @tparam     Count Type for representing extents
+        @tparam     Rank Dimensionality of the array
+    */
     template<typename Count, Rank rank>
     using Shape = std::array<Count, rank>;
 

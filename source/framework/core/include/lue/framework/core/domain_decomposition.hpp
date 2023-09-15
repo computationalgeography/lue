@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/core/array_partition_definition.hpp"
 #include "lue/framework/core/array_visitor.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
@@ -284,44 +283,6 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    ArrayPartitionDefinition<Index, rank> partition(
-        Shape<Index, rank> const& area_shape,
-        Shape<Index, rank> const& partition_shape,
-        Shape<Index, rank> const& shape_in_partitions,
-        std::uint32_t const locality_id)
-    {
-        typename ArrayPartitionDefinition<Index, rank>::Start start;
-
-        {
-            // Determine indices of cell at start of partition
-            // Convert between shape_in_partitions to area_shape indices
-            auto const indices = linear_to_shape_index(shape_in_partitions, Index{locality_id});
-
-            std::transform(
-                indices.begin(),
-                indices.end(),
-                partition_shape.begin(),
-                start.begin(),
-                [](Index const partition_dimension_index, Index const partition_dimension_extent)
-                { return partition_dimension_index * partition_dimension_extent; });
-        }
-
-        ArrayPartitionDefinition<Index, rank> result{start, partition_shape};
-
-        // Determine final shape of partition, taking into account that the
-        // partition must not extent beyond the area's shape
-        for (std::size_t i = 0; i < rank; ++i)
-        {
-            auto const extent = std::min(result.start()[i] + result.shape()[i], area_shape[i]);
-
-            result.shape()[i] = extent - result.start()[i];
-        }
-
-        return result;
-    }
-
-
-    template<typename Index, std::size_t rank>
     Shape<Index, rank> clamp_area_shape(
         Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
     {
@@ -344,93 +305,69 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Determine a partition shape to use, given the shape of an array and a number of cores
+        @param      array_shape Shape of the array to partition
+        @param      nr_worker_threads Number of workers threads that will be used
+        @return     Partition shape
+
+        This function always returns square partitions shapes.
+    */
     template<typename Index, std::size_t rank>
-    std::vector<ArrayPartitionDefinition<Index, rank>> partitions(
-        Shape<Index, rank> const& area_shape,
-        Shape<Index, rank> const& partition_shape,
-        std::size_t const nr_localities,
-        std::uint32_t const locality_id)
+    Shape<Index, rank> default_partition_shape(
+        Shape<Index, rank> const& array_shape, Count const nr_worker_threads)
     {
-        lue_hpx_assert(nr_localities > 0);
-        lue_hpx_assert(locality_id < nr_localities);
+        assert(nr_worker_threads > 0);
 
-        auto const shape_in_partitions_ = shape_in_partitions(area_shape, partition_shape);
-        auto const nr_partitions = std::accumulate(
-            shape_in_partitions_.begin(),
-            shape_in_partitions_.end(),
-            std::size_t(1),
-            std::multiplies<std::size_t>());
+        // Adjust heuristics if you know better
 
-        std::vector<ArrayPartitionDefinition<Index, rank>> result;
+        static Count const default_partition_size{2000 * 2000};
 
-        // TODO
-        // Pick partitions according to the Hilbert curve. This way, partitions
-        // within a locality are close to each other.
+        Count const array_size{nr_elements(array_shape)};
 
-        if (nr_partitions <= nr_localities)
+        // Get out when the array is empty
+        if (array_size == 0)
         {
-            // The first nr_partitions localities will get a single partition. The
-            // rest will get none. This is a waste of resources. We seem
-            // to have more localities than we need.
-            if (locality_id < nr_partitions)
-            {
-                result.emplace_back(
-                    partition(area_shape, partition_shape, shape_in_partitions_, locality_id));
-            }
+            return array_shape;
+        }
+
+        Count partition_size{};
+        Count dimension_size{};
+        Shape<Index, rank> partition_shape{};
+
+        bool const not_enough_elements{array_size / nr_worker_threads < default_partition_size};
+
+        if (not_enough_elements)
+        {
+            // Shrink the partition. Try to end up with enough partitions to use all cores. It
+            // is OK if that is not possible.
+            partition_size = array_size / nr_worker_threads;
+            dimension_size =
+                std::max(Count{1}, static_cast<Count>(std::floor(std::pow(partition_size, 1.0 / rank))));
+
+            partition_shape.fill(dimension_size);
         }
         else
         {
-            // Try to assign an equal amount of partitions to each locality. This
-            // is not always possible. The last n localities might have one
-            // partition less than ones before that.
-            auto const max_nr_partitions_per_locality =
-                static_cast<std::size_t>(std::ceil(double(nr_partitions) / double(nr_localities)));
-            auto const nr_localities_with_less_partitions =
-                (nr_localities * max_nr_partitions_per_locality) - nr_partitions;
-            std::uint32_t const first_locality_with_less_partitions =
-                nr_localities - nr_localities_with_less_partitions;
+            // Try the default partition size. This should result in enough partitions to
+            // distribute over all cores.
+            partition_size = default_partition_size;
+            dimension_size =
+                std::max(Count{1}, static_cast<Count>(std::floor(std::pow(partition_size, 1.0 / rank))));
 
-            std::size_t begin_partition_idx;
-            std::size_t end_partition_idx;
-
-            // Determine indices of partitions to assign to current locality
-            {
-                if (locality_id < first_locality_with_less_partitions)
-                {
-                    // Current locality is one of those that get the regular
-                    // amount of partitions assigned
-                    begin_partition_idx = locality_id * max_nr_partitions_per_locality;
-                    end_partition_idx = begin_partition_idx + max_nr_partitions_per_locality;
-                }
-                else
-                {
-                    // Current locality is one of those that get one partition
-                    // less assigned
-                    begin_partition_idx =
-                        first_locality_with_less_partitions * max_nr_partitions_per_locality;
-                    begin_partition_idx += (locality_id - first_locality_with_less_partitions) *
-                                           (max_nr_partitions_per_locality - 1);
-                    end_partition_idx = begin_partition_idx + (max_nr_partitions_per_locality - 1);
-                }
-            }
-
-            // Iterate over partition indices and obtain actual partition
-            // definitions
-            {
-                auto const nr_partitions = end_partition_idx - begin_partition_idx;
-                result.reserve(nr_partitions);
-
-                for (std::uint32_t partition_id = begin_partition_idx; partition_id < end_partition_idx;
-                     ++partition_id)
-                {
-
-                    result.emplace_back(
-                        partition(area_shape, partition_shape, shape_in_partitions_, partition_id));
-                }
-            }
+            partition_shape.fill(dimension_size);
         }
 
-        return result;
+        return partition_shape;
+    }
+
+
+    template<typename Index, std::size_t rank>
+    Shape<Index, rank> default_partition_shape(Shape<Index, rank> const& array_shape)
+    {
+        Count const nr_worker_threads{static_cast<Count>(hpx::get_num_worker_threads())};
+
+        return default_partition_shape(array_shape, nr_worker_threads);
     }
 
 }  // namespace lue
