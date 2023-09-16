@@ -40,6 +40,7 @@ jobs:
                   fmt \
                   gdal \
                   glfw \
+                  glm \
                   graphviz \
                   gperftools \
                   hdf5 \

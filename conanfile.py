@@ -43,6 +43,9 @@ class LUERecipe(ConanFile):
         if install_conan_package("gdal"):
             self.requires("gdal/[>=3.4.1 <3.5]")
 
+        if install_conan_package("glm"):
+            self.requires("glm/[>=0.9.9 <2]")
+
         if install_conan_package("glfw"):
             self.requires("glfw/[>=3.3.6]")
 

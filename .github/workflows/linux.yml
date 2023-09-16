@@ -55,6 +55,7 @@ jobs:
                   libfmt-dev \
                   libglfw3-dev \
                   libgdal-dev \
+                  libglm-dev \
                   libgoogle-perftools-dev \
                   libhdf5-dev \
                   libvulkan-dev \

@@ -38,6 +38,7 @@ requirements:
     - boost-cpp
     - hdf5
     - glfw
+    - glm
     - hpx
     - libgdal
     - libvulkan-headers
