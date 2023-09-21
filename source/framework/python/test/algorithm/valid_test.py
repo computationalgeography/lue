@@ -17,10 +17,9 @@ class ValidTest(lue_test.TestCase):
     def test_all_valid(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         dtype = np.int32
         fill_value = 5  # Valid value
-        array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        array = lfr.create_array(array_shape, dtype, fill_value)
 
         result = lfr.valid(array)
 
@@ -30,10 +29,9 @@ class ValidTest(lue_test.TestCase):
     def test_all_invalid(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         dtype = np.dtype(np.int32)
         fill_value = 5  # Valid value
-        array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        array = lfr.create_array(array_shape, dtype, fill_value)
 
         # Turn all valid values into invalid ones
         array = lfr.where(array != fill_value, 7)

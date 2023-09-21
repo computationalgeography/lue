@@ -1,6 +1,8 @@
 #include "shape.hpp"
+#include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 
 namespace lh5 = lue::hdf5;
@@ -103,23 +105,6 @@ namespace lue::framework {
         }
 
 
-        // template<
-        //     typename Element,
-        //     Rank rank>
-        // PartitionedArray<Element, rank> read_array(
-        //     std::string const& array_pathname,
-        //     StaticShape<rank> const& center_cell,
-        //     StaticShape<rank> const& subset_shape,
-        //     StaticShape<rank> const& partition_shape,
-        //     data_model::ID const object_id)
-        // {
-        //     using Policies = policy::read_into::DefaultValuePolicies<Element>;
-
-        //     return lue::read<Element, Policies, rank>(
-        //         Policies{}, array_pathname, center_cell, subset_shape, partition_shape, object_id);
-        // }
-
-
         template<typename Element, Rank rank>
         PartitionedArray<Element, rank> read_array(
             std::string const& array_pathname,
@@ -208,15 +193,12 @@ namespace lue::framework {
         }  // namespace variable
 
 
-        pybind11::object read_array(
-            std::string const& array_pathname,
-            DynamicShape const& center_cell,
-            DynamicShape const& subset_shape,
-            DynamicShape const& partition_shape)
+        pybind11::object read_array_py1(
+            std::string const& array_pathname, std::optional<pybind11::tuple> const& partition_shape)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
-            auto const [object_id, raster_shape, datatype] =
+            auto const [object_id, dynamic_array_shape, datatype] =
                 ldm::constant::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
             Rank const rank{2};
@@ -227,81 +209,110 @@ namespace lue::framework {
                     fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
             }
 
-            if (center_cell.size() != rank)
+            StaticShape<rank> const static_array_shape{dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+            StaticShape<rank> static_partition_shape{};
+
+            if (partition_shape)
+            {
+                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
+                }
+
+                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+            }
+            else
+            {
+                static_partition_shape = default_partition_shape(static_array_shape);
+            }
+
+            return read(constant::ArrayIO{}, datatype, array_pathname, static_partition_shape, object_id);
+        }
+
+
+        pybind11::object read_array_py2(
+            std::string const& array_pathname,
+            pybind11::tuple const& center_cell,
+            pybind11::tuple const& subset_shape,
+            std::optional<pybind11::tuple> const& partition_shape)
+        {
+            DynamicShape const center_cell_{tuple_to_shape(center_cell)};
+            DynamicShape const subset_shape_{tuple_to_shape(subset_shape)};
+
+            auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
+                parse_array_pathname(array_pathname);
+            auto const [object_id, dynamic_array_shape, datatype] =
+                ldm::constant::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
+
+            Rank const rank{2};
+
+            if (rank != 2)
+            {
+                throw std::runtime_error(
+                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
+            }
+
+            if (center_cell_.size() != rank)
             {
                 throw std::runtime_error(fmt::format(
                     "Rank of array shape and number of center cell indices passed in must be equal ({} != "
                     "{})",
                     rank,
-                    center_cell.size()));
+                    center_cell_.size()));
             }
 
-            if (subset_shape.size() != rank)
+            if (subset_shape_.size() != rank)
             {
                 throw std::runtime_error(fmt::format(
                     "Rank of array shape and array shape passed in must be equal ({} != {})",
                     rank,
-                    subset_shape.size()));
+                    subset_shape_.size()));
             }
 
-            if (partition_shape.size() != rank)
+            StaticShape<rank> const static_array_shape{
+                dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
+            StaticShape<rank> static_partition_shape{};
+
+            if (partition_shape)
             {
-                throw std::runtime_error(fmt::format(
-                    "Rank of array shape and partition shape passed in must be equal ({} != {})",
-                    rank,
-                    partition_shape.size()));
+                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
+                }
+
+                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+            }
+            else
+            {
+                static_partition_shape = default_partition_shape(static_array_shape);
             }
 
-            lh5::Hyperslab const hyperslab{
-                lh5::hyperslab(shape_to_offset(center_cell), shape_to_shape(subset_shape), raster_shape)};
+            lh5::Hyperslab const hyperslab{lh5::hyperslab(
+                shape_to_offset(center_cell_), shape_to_shape(subset_shape_), dynamic_array_shape)};
 
             return read(
-                constant::ArrayIO{hyperslab},
-                datatype,
-                array_pathname,
-                dynamic_shape_to_static_shape<2>(partition_shape),
-                object_id);
+                constant::ArrayIO{hyperslab}, datatype, array_pathname, static_partition_shape, object_id);
         }
 
 
-        pybind11::object read_array(std::string const& array_pathname, DynamicShape const& partition_shape)
+        pybind11::object read_array_py3(
+            std::string const& array_pathname,
+            Index const time_step_idx,
+            std::optional<pybind11::tuple> const& partition_shape)
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
-            auto const [object_id, _, datatype] =
-                ldm::constant::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
-
-            Rank const rank{2};
-
-            if (rank != 2)
-            {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
-
-            if (partition_shape.size() != rank)
-            {
-                throw std::runtime_error(fmt::format(
-                    "Rank of array shape and partition shape must be equal ({} != {})",
-                    rank,
-                    partition_shape.size()));
-            }
-
-            return read(
-                constant::ArrayIO{},
-                datatype,
-                array_pathname,
-                dynamic_shape_to_static_shape<2>(partition_shape),
-                object_id);
-        }
-
-
-        pybind11::object read_array(
-            std::string const& array_pathname, DynamicShape const& partition_shape, Index const time_step_idx)
-        {
-            auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
-                parse_array_pathname(array_pathname);
-            auto const [object_id, _, datatype] =
+            auto const [object_id, dynamic_array_shape, datatype] =
                 ldm::variable::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
             Rank const rank{2};
@@ -312,19 +323,34 @@ namespace lue::framework {
                     fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
             }
 
-            if (partition_shape.size() != rank)
+            StaticShape<rank> const static_array_shape{
+                dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
+            StaticShape<rank> static_partition_shape{};
+
+            if (partition_shape)
             {
-                throw std::runtime_error(fmt::format(
-                    "Rank of array shape and partition shape must be equal ({} != {})",
-                    rank,
-                    partition_shape.size()));
+                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
+                }
+
+                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+            }
+            else
+            {
+                static_partition_shape = default_partition_shape(static_array_shape);
             }
 
             return read(
                 variable::ArrayIO{time_step_idx},
                 datatype,
                 array_pathname,
-                dynamic_shape_to_static_shape<2>(partition_shape),
+                static_partition_shape,
                 object_id);
         }
 
@@ -335,13 +361,14 @@ namespace lue::framework {
     {
         module.def(
             "read_array",
-            [](std::string const& array_pathname, pybind11::tuple const& partition_shape)
-            { return read_array(array_pathname, tuple_to_shape(partition_shape)); },
+            read_array_py1,
             R"(
-    Read array from dataset
+    Create new array, filled with values read from dataset
 
     :param str array_pathname: Pathname to array in dataset
-    :param tuple partition_shape: Shape of the array partitions
+    :param tuple partition_shape: Shape of the array partitions. When not
+        passed in, a default shape will be used which might not result in the
+        best performance and scalability.
     :rtype: PartitionedArray specialization
 
     The pathname must be formatted as:
@@ -351,30 +378,23 @@ namespace lue::framework {
     use the overload that accepts a time step index.
 )",
             "array_pathname"_a,
-            "partition_shape"_a)
+            pybind11::kw_only(),
+            "partition_shape"_a = std::optional<pybind11::tuple>{},
+            pybind11::return_value_policy::move);
 
-            ;
 
         module.def(
             "read_array",
-            [](std::string const& array_pathname,
-               pybind11::tuple const& center_cell,
-               pybind11::tuple const& subset_shape,
-               pybind11::tuple const& partition_shape)
-            {
-                return read_array(
-                    array_pathname,
-                    tuple_to_shape(center_cell),
-                    tuple_to_shape(subset_shape),
-                    tuple_to_shape(partition_shape));
-            },
+            read_array_py2,
             R"(
-    Read subset of array from dataset
+    Create new array, filled with values read from dataset
 
     :param str array_pathname: Pathname to array in dataset
     :param tuple center_cell: Indices of center cell of array subset
     :param tuple subset_shape: Shape of array subset
-    :param tuple partition_shape: Shape of the array partitions
+    :param tuple partition_shape: Shape of the array partitions. When not
+        passed in, a default shape will be used which might not result in the
+        best performance and scalability.
     :rtype: PartitionedArray specialization
 
     The pathname must be formatted as:
@@ -386,23 +406,22 @@ namespace lue::framework {
             "array_pathname"_a,
             "center_cell"_a,
             "subset_shape"_a,
-            "partition_shape"_a)
-
-            ;
+            pybind11::kw_only(),
+            "partition_shape"_a = std::optional<pybind11::tuple>{},
+            pybind11::return_value_policy::move);
 
 
         module.def(
             "read_array",
-            [](std::string const& array_pathname,
-               pybind11::tuple const& partition_shape,
-               Index const time_step_idx)
-            { return read_array(array_pathname, tuple_to_shape(partition_shape), time_step_idx); },
+            read_array_py3,
             R"(
-    Read array from dataset
+    Create new array, filled with values read from dataset
 
     :param str array_pathname: Pathname to array in dataset
-    :param tuple partition_shape: Shape of the array partitions
     :param int time_step_idx: Index of the time step to read [0, nr_time_steps)
+    :param tuple partition_shape: Shape of the array partitions. When not
+        passed in, a default shape will be used which might not result in the
+        best performance and scalability.
     :rtype: PartitionedArray specialization
 
     The pathname must be formatted as:
@@ -412,10 +431,10 @@ namespace lue::framework {
     use the overload without a time step index.
 )",
             "array_pathname"_a,
-            "partition_shape"_a,
-            "time_step_idx"_a)
-
-            ;
+            "time_step_idx"_a,
+            pybind11::kw_only(),
+            "partition_shape"_a = std::optional<pybind11::tuple>{},
+            pybind11::return_value_policy::move);
     }
 
 }  // namespace lue::framework

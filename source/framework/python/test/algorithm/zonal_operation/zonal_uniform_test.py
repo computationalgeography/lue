@@ -19,14 +19,11 @@ class ZonalUniformTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         fill_zone = 3
 
         for value_dtype, zone_dtype in itertools.product(
             (np.float32, np.float64),
             (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
         ):
-            zones = lfr.create_array(
-                array_shape, partition_shape, zone_dtype, fill_zone
-            )
+            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
             lfr.zonal_uniform(zones, value_dtype)

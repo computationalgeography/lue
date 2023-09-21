@@ -17,20 +17,17 @@ class KinematicWaveTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         direction = 3
         alpha = 1.5
         beta = 0.6
         time_step_duration = 15
         channel_length = 10
 
-        flow_direction = lfr.create_array(
-            array_shape, partition_shape, np.uint8, direction
-        )
+        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
 
         for dtype in [np.float32, np.float64]:
-            discharge = lfr.create_array(array_shape, partition_shape, dtype, 5)
-            inflow = lfr.create_array(array_shape, partition_shape, dtype, 1)
+            discharge = lfr.create_array(array_shape, dtype, 5)
+            inflow = lfr.create_array(array_shape, dtype, 1)
 
             lfr.kinematic(
                 flow_direction,

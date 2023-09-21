@@ -870,6 +870,20 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+
+        The partition shape is based on @a default_partition_shape.
+    */
+    template<typename Policies, typename Functor, typename Shape>
+    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
+        Policies const& policies, Shape const& array_shape, Functor const& partition_creator)
+    {
+        return create_partitioned_array(
+            policies, array_shape, default_partition_shape(array_shape), partition_creator);
+    }
+
+
     template<
         typename Functor,
         typename Shape,
@@ -882,6 +896,18 @@ namespace lue {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
 
         return create_partitioned_array(Policies{}, array_shape, partition_shape, partition_creator);
+    }
+
+
+    template<
+        typename Functor,
+        typename Shape,
+        // Select cases where Functor is passed, instead of Element
+        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
+        Shape const& array_shape, Functor const& partition_creator)
+    {
+        return create_partitioned_array(array_shape, default_partition_shape(array_shape), partition_creator);
     }
 
 
@@ -905,6 +931,17 @@ namespace lue {
         typename Shape,
         // Select cases where Element is not a Functor (but it can be a class)
         std::enable_if_t<!is_functor_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank<Shape>> create_partitioned_array(Shape const& array_shape)
+    {
+        return create_partitioned_array(array_shape, default_partition_shape(array_shape));
+    }
+
+
+    template<
+        typename Element,
+        typename Shape,
+        // Select cases where Element is not a Functor (but it can be a class)
+        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
     PartitionedArray<Element, rank<Shape>> create_partitioned_array(
         Shape const& array_shape, Shape const& partition_shape, Element const fill_value)
     {
@@ -912,6 +949,18 @@ namespace lue {
         using Functor = InstantiateFilled<Element, rank<Shape>>;
 
         return create_partitioned_array(Policies{}, array_shape, partition_shape, Functor{fill_value});
+    }
+
+
+    template<
+        typename Element,
+        typename Shape,
+        // Select cases where Element is not a Functor (but it can be a class)
+        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank<Shape>> create_partitioned_array(
+        Shape const& array_shape, Element const fill_value)
+    {
+        return create_partitioned_array(array_shape, default_partition_shape(array_shape), fill_value);
     }
 
 }  // namespace lue

@@ -23,7 +23,10 @@ class RoutingOperationTest(OperationTest):
                 type_(0.5) * non_spatial_material / non_spatial_material
             )
             spatial_fraction = lfr.create_array(
-                self.array_shape, self.partition_shape, type_, non_spatial_fraction
+                self.array_shape,
+                type_,
+                non_spatial_fraction,
+                partition_shape=self.partition_shape,
             )
 
             _ = lpr.accufractionflux(ldd, spatial_material, spatial_fraction)
@@ -43,7 +46,10 @@ class RoutingOperationTest(OperationTest):
 
             non_spatial_threshold = type_(0.5) * non_spatial_material
             spatial_threshold = lfr.create_array(
-                self.array_shape, self.partition_shape, type_, non_spatial_threshold
+                self.array_shape,
+                type_,
+                non_spatial_threshold,
+                partition_shape=self.partition_shape,
             )
 
             _ = lpr.accuthresholdflux(ldd, spatial_material, spatial_threshold)

@@ -17,11 +17,8 @@ class InterPartitionStreamTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
 
         direction = 4
-        flow_direction = lfr.create_array(
-            array_shape, partition_shape, np.uint8, direction
-        )
+        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
 
         inter_partition_stream = lfr.inter_partition_stream(flow_direction)

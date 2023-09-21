@@ -19,12 +19,9 @@ class WhereTest(lue_test.TestCase):
         # available.
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         dtype = np.int32
         fill_value = 5
-        expression_array = lfr.create_array(
-            array_shape, partition_shape, dtype, fill_value
-        )
+        expression_array = lfr.create_array(array_shape, dtype, fill_value)
 
         condition_array = expression_array == 5
 
@@ -46,16 +43,11 @@ class WhereTest(lue_test.TestCase):
         # available.
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         dtype = np.int32
         fill_value1 = 5
         fill_value2 = 6
-        expression_array1 = lfr.create_array(
-            array_shape, partition_shape, dtype, fill_value1
-        )
-        expression_array2 = lfr.create_array(
-            array_shape, partition_shape, dtype, fill_value2
-        )
+        expression_array1 = lfr.create_array(array_shape, dtype, fill_value1)
+        expression_array2 = lfr.create_array(array_shape, dtype, fill_value2)
 
         condition_array = expression_array1 == 5
 

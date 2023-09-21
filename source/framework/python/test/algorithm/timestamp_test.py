@@ -17,7 +17,6 @@ class TimestampTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
 
         for type_ in [
             np.uint8,
@@ -28,5 +27,5 @@ class TimestampTest(lue_test.TestCase):
             np.float32,
             np.float64,
         ]:
-            array = lfr.create_array(array_shape, partition_shape, type_, 0)
+            array = lfr.create_array(array_shape, type_, 0)
             timestamp = lfr.timestamp(array)

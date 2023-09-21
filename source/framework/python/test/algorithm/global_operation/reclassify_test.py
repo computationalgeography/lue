@@ -17,11 +17,10 @@ class ReclassifyTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         id_ = 3
 
         for from_type in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
-            ids = lfr.create_array(array_shape, partition_shape, from_type, id_)
+            ids = lfr.create_array(array_shape, from_type, id_)
 
             for to_type in [np.float32, np.float64]:
                 lookup_table = {

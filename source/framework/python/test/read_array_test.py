@@ -42,7 +42,7 @@ class ReadArrayTest(lue_test.TestCase):
 
         # Read and verify the array
         partition_shape = (10, 10)
-        array = lfr.read_array(array_pathname, partition_shape)
+        array = lfr.read_array(array_pathname)
 
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
@@ -96,7 +96,7 @@ class ReadArrayTest(lue_test.TestCase):
 
         # Read and verify the array
         partition_shape = (10, 10)
-        array = lfr.read_array(array_pathname, partition_shape, time_step_idx=3)
+        array = lfr.read_array(array_pathname, time_step_idx=3)
 
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
@@ -133,7 +133,12 @@ class ReadArrayTest(lue_test.TestCase):
         subset_shape = (25, 25)
         partition_shape = (10, 10)
         array_read = lfr.to_numpy(
-            lfr.read_array(array_pathname, subset_center, subset_shape, partition_shape)
+            lfr.read_array(
+                array_pathname,
+                subset_center,
+                subset_shape,
+                partition_shape=partition_shape,
+            )
         )
 
         self.assertEqual(array_read.dtype, dtype)

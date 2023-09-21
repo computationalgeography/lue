@@ -119,38 +119,66 @@ namespace lue::framework {
         }
 
 
-        pybind11::object create_array(
-            DynamicShape const& array_shape,
-            DynamicShape const& partition_shape,
-            pybind11::dtype const& dtype,
-            pybind11::object const& fill_value)
+        pybind11::object create_array_py(
+            pybind11::tuple const& array_shape,
+            pybind11::object const& dtype_args,
+            pybind11::object const& fill_value,
+            std::optional<pybind11::tuple> const& partition_shape)
         {
-            if (array_shape.size() != partition_shape.size())
+            DynamicShape const dynamic_array_shape{tuple_to_shape(array_shape)};
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+            Rank const rank{dynamic_array_shape.size()};
+
+            if (partition_shape)
             {
-                throw std::runtime_error(fmt::format(
-                    "Rank of array shape and partition shape must be equal ({} != {})",
-                    array_shape.size(),
-                    partition_shape.size()));
+                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
+                }
             }
 
-            Rank const rank{array_shape.size()};
             pybind11::object result;
 
             if (rank == 1)
             {
-                result = create_array<1>(
-                    dynamic_shape_to_static_shape<1>(array_shape),
-                    dynamic_shape_to_static_shape<1>(partition_shape),
-                    dtype,
-                    fill_value);
+                StaticShape<1> const static_array_shape{
+                    dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
+                StaticShape<1> static_partition_shape{};
+
+                if (partition_shape)
+                {
+                    static_partition_shape =
+                        dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
+                }
+                else
+                {
+                    static_partition_shape = default_partition_shape(static_array_shape);
+                }
+
+                result = create_array<1>(static_array_shape, static_partition_shape, dtype, fill_value);
             }
             else if (rank == 2)
             {
-                result = create_array<2>(
-                    dynamic_shape_to_static_shape<2>(array_shape),
-                    dynamic_shape_to_static_shape<2>(partition_shape),
-                    dtype,
-                    fill_value);
+                StaticShape<2> const static_array_shape{
+                    dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                StaticShape<2> static_partition_shape{};
+
+                if (partition_shape)
+                {
+                    static_partition_shape =
+                        dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
+                }
+                else
+                {
+                    static_partition_shape = default_partition_shape(static_array_shape);
+                }
+
+                result = create_array<2>(static_array_shape, static_partition_shape, dtype, fill_value);
             }
             else
             {
@@ -162,15 +190,6 @@ namespace lue::framework {
             return result;
         }
 
-
-        pybind11::object create_array(
-            DynamicShape const& array_shape, pybind11::dtype const& dtype, pybind11::object const& fill_value)
-        {
-            // TODO Call overload of create_array algorithm that uses default_partition_shape(array_shape)
-            // internally
-            return create_array(array_shape, {10, 10}, dtype, fill_value);
-        }
-
     }  // Anonymous namespace
 
 
@@ -178,35 +197,16 @@ namespace lue::framework {
     {
         module.def(
             "create_array",
-            [](pybind11::tuple const& array_shape,
-               pybind11::object const& dtype_args,
-               pybind11::object const& fill_value,
-               std::optional<pybind11::tuple> const& partition_shape)
-            // pybind11::tuple const& partition_shape)
-            {
-                // TODO Refactor this
-
-                if (!partition_shape)
-                {
-                    return create_array(
-                        tuple_to_shape(array_shape), pybind11::dtype::from_args(dtype_args), fill_value);
-                }
-                else
-                {
-                    return create_array(
-                        tuple_to_shape(array_shape),
-                        tuple_to_shape(*partition_shape),
-                        pybind11::dtype::from_args(dtype_args),
-                        fill_value);
-                }
-            },
+            create_array_py,
             R"(
-    Create new array
+    Create new array, filled with a value
 
     :param tuple array_shape: Shape of the array
     :param numpy.dtype dtype: Type of the array elements
-    :param tuple fill_value: Value to fill array with
-    :param tuple partition_shape: Shape of the array partitions
+    :param fill_value: Value to fill array with
+    :param tuple partition_shape: Shape of the array partitions. When not
+        passed in, a default shape will be used which might not result in the
+        best performance and scalability.
     :rtype: PartitionedArray specialization
 
     The type of the array returned depends on the rank of the array and

@@ -151,4 +151,12 @@ namespace lue {
         return data_type(*dataset_ptr);
     }
 
+
+    Shape<Count, 2> shape(GDALDataset& dataset)
+    {
+        GDALBandPtr band_ptr{get_raster_band(dataset)};
+
+        return {band_ptr->GetYSize(), band_ptr->GetXSize()};
+    }
+
 }  // namespace lue

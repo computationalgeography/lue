@@ -17,13 +17,10 @@ class AccuFractionTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
 
         direction = 2
-        flow_direction = lfr.create_array(
-            array_shape, partition_shape, np.uint8, direction
-        )
-        material = lfr.create_array(array_shape, partition_shape, np.float64, 1)
-        fraction = lfr.create_array(array_shape, partition_shape, np.float64, 0.8)
+        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
+        material = lfr.create_array(array_shape, np.float64, 1)
+        fraction = lfr.create_array(array_shape, np.float64, 0.8)
 
         flux, state = lfr.accu_fraction(flow_direction, material, fraction)

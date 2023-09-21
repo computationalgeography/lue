@@ -17,11 +17,8 @@ class AspectTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
 
         fill_value = 5
-        elevation = lfr.create_array(
-            array_shape, partition_shape, np.float32, fill_value
-        )
+        elevation = lfr.create_array(array_shape, np.float32, fill_value)
 
         aspect = lfr.aspect(elevation)

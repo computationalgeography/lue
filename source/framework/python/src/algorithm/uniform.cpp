@@ -4,6 +4,9 @@
 #include <pybind11/stl.h>
 
 
+using namespace pybind11::literals;
+
+
 // std::uint8_t is not supported:
 // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
 
@@ -217,43 +220,67 @@ namespace lue::framework {
 
 
         // Step 1: Convert from Python types to C++ types and validate contents
-        pybind11::object uniform2(
-            DynamicShape const& array_shape,
-            DynamicShape const& partition_shape,
+        pybind11::object uniform_py(
+            pybind11::tuple const& array_shape,
             pybind11::object const& dtype_args,
             pybind11::object const& min_value,
-            pybind11::object const& max_value)
+            pybind11::object const& max_value,
+            std::optional<pybind11::tuple> const& partition_shape)
         {
+            DynamicShape const dynamic_array_shape{tuple_to_shape(array_shape)};
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+            Rank const rank{dynamic_array_shape.size()};
 
-            if (array_shape.size() != partition_shape.size())
+            if (partition_shape)
             {
-                throw std::runtime_error(fmt::format(
-                    "Rank of array shape and partition shape must be equal ({} != {})",
-                    array_shape.size(),
-                    partition_shape.size()));
+                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
+                }
             }
 
-            Rank const rank{array_shape.size()};
             pybind11::object result;
 
             if (rank == 1)
             {
-                result = uniform<1>(
-                    dynamic_shape_to_static_shape<1>(array_shape),
-                    dynamic_shape_to_static_shape<1>(partition_shape),
-                    dtype,
-                    min_value,
-                    max_value);
+                StaticShape<1> const static_array_shape{
+                    dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
+                StaticShape<1> static_partition_shape{};
+
+                if (partition_shape)
+                {
+                    static_partition_shape =
+                        dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
+                }
+                else
+                {
+                    static_partition_shape = default_partition_shape(static_array_shape);
+                }
+
+                result = uniform<1>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
             }
             else if (rank == 2)
             {
-                result = uniform<2>(
-                    dynamic_shape_to_static_shape<2>(array_shape),
-                    dynamic_shape_to_static_shape<2>(partition_shape),
-                    dtype,
-                    min_value,
-                    max_value);
+                StaticShape<2> const static_array_shape{
+                    dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                StaticShape<2> static_partition_shape{};
+
+                if (partition_shape)
+                {
+                    static_partition_shape =
+                        dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
+                }
+                else
+                {
+                    static_partition_shape = default_partition_shape(static_array_shape);
+                }
+
+                result = uniform<2>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
             }
             else
             {
@@ -278,7 +305,31 @@ namespace lue::framework {
         module.def("uniform", uniform1<float, 2>);
         module.def("uniform", uniform1<double, 2>);
 
-        module.def("uniform", uniform2);
+        module.def(
+            "uniform",
+            uniform_py,
+            R"(
+    Create new array, filled with uniformly distributed random values
+
+    :param tuple array_shape: Shape of the array
+    :param numpy.dtype dtype: Type of the array elements
+    :param min_value: Minimum potentially generated value
+    :param max_value: Maximum potentially generated value
+    :param tuple partition_shape: Shape of the array partitions. When not
+        passed in, a default shape will be used which might not result in the
+        best performance and scalability.
+    :rtype: PartitionedArray specialization
+
+    The type of the array returned depends on the rank of the array and
+    the type of the array elements.
+)",
+            "array_shape"_a,
+            "dtype"_a,
+            "min_value"_a,
+            "max_value"_a,
+            pybind11::kw_only(),
+            "partition_shape"_a = std::optional<pybind11::tuple>{},
+            pybind11::return_value_policy::move);
     }
 
 }  // namespace lue::framework
