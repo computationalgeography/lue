@@ -40,9 +40,9 @@ jobs:
 
         - name: configure system
           run: |
-              sudo apt-get update
+              # sudo apt-get update
               # sudo apt-get upgrade
-              sudo apt-get remove libunwind-14-dev
+              # sudo apt-get remove libunwind-14-dev
               sudo apt-get install \
                   cmake \
                   doxygen \
