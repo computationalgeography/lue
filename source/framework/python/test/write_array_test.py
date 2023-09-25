@@ -29,7 +29,7 @@ class WriteArrayTest(lue_test.TestCase):
         fill_value = 0
 
         # Create an array with random values and some no-data
-        array = lfr.uniform(array_shape, partition_shape, dtype, 1, 10)
+        array = lfr.uniform(array_shape, dtype, 1, 10, partition_shape=partition_shape)
         array = lfr.where(array < 8, array)
 
         dataset_pathname = "write_constant_array.lue"
@@ -53,7 +53,7 @@ class WriteArrayTest(lue_test.TestCase):
         written = lfr.write_array(array, array_pathname)
         written.get()
 
-        array_read = lfr.read_array(array_pathname, partition_shape)
+        array_read = lfr.read_array(array_pathname, partition_shape=partition_shape)
 
         self.assertTrue(lfr.all(array_read == array).get())
 
@@ -73,7 +73,9 @@ class WriteArrayTest(lue_test.TestCase):
         arrays = []
 
         for t in range(nr_time_steps):
-            array = lfr.uniform(array_shape, partition_shape, dtype, 1, 10)
+            array = lfr.uniform(
+                array_shape, dtype, 1, 10, partition_shape=partition_shape
+            )
             array = lfr.where(array < 8, array)
             arrays.append(array)
 
@@ -116,6 +118,8 @@ class WriteArrayTest(lue_test.TestCase):
 
         for t in range(nr_time_steps):
             written[t].get()
-            array_read = lfr.read_array(array_pathname, partition_shape, t)
+            array_read = lfr.read_array(
+                array_pathname, t, partition_shape=partition_shape
+            )
 
             self.assertTrue(lfr.all(array_read == arrays[t]).get())

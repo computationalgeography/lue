@@ -22,10 +22,7 @@ class FromNumPyTest(lue_test.TestCase):
         dtype = np.int32
         numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
 
-        # https://github.com/computationalgeography/lue/issues/484
-        return
-
-        lue_array = lfr.from_numpy(numpy_array, partition_shape)
+        lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
 
         self.assertEqual(lue_array.dtype, dtype)
         self.assertEqual(lue_array.shape, array_shape)
@@ -43,10 +40,9 @@ class FromNumPyTest(lue_test.TestCase):
         numpy_array[20, 20] = 999
         numpy_array[30, 30] = 999
 
-        # https://github.com/computationalgeography/lue/issues/484
-        return
-
-        lue_array = lfr.from_numpy(numpy_array, partition_shape, 999)
+        lue_array = lfr.from_numpy(
+            numpy_array, partition_shape=partition_shape, no_data_value=999
+        )
 
         self.assertEqual(lfr.minimum(lue_array).get(), 5)
         self.assertEqual(lfr.maximum(lue_array).get(), 5)
@@ -61,10 +57,7 @@ class FromNumPyTest(lue_test.TestCase):
         dtype = np.int32
         numpy_array = np.arange(1, dtype=dtype).reshape(array_shape)
 
-        # https://github.com/computationalgeography/lue/issues/484
-        return
-
-        lue_array = lfr.from_numpy(numpy_array, partition_shape)
+        lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
 
         self.assertEqual(lue_array.dtype, dtype)
         self.assertEqual(lue_array.shape, array_shape)
@@ -81,9 +74,6 @@ class FromNumPyTest(lue_test.TestCase):
         array_shape = (60, 40)
         partition_shape = (10, 10)
 
-        # https://github.com/computationalgeography/lue/issues/484
-        return
-
         for input_type in [
             np.uint8,
             np.uint32,
@@ -93,17 +83,27 @@ class FromNumPyTest(lue_test.TestCase):
             input_dtype = np.dtype(input_type)
             numpy_array = np.full(array_shape, 5, dtype=input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
             self.assertEqual(lue_array.dtype, input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
+            lue_array = lfr.from_numpy(
+                numpy_array, partition_shape=partition_shape, no_data_value=9
+            )
             self.assertEqual(lue_array.dtype, input_dtype)
 
             self.assertRaises(
-                TypeError, lfr.from_numpy, numpy_array, partition_shape, -9
+                TypeError,
+                lfr.from_numpy,
+                numpy_array,
+                partition_shape=partition_shape,
+                no_data_value=-9,
             )
             self.assertRaises(
-                TypeError, lfr.from_numpy, numpy_array, partition_shape, 9.9
+                TypeError,
+                lfr.from_numpy,
+                numpy_array,
+                partition_shape=partition_shape,
+                no_data_value=9.9,
             )
 
         for input_type in [
@@ -114,17 +114,25 @@ class FromNumPyTest(lue_test.TestCase):
             input_dtype = np.dtype(input_type)
             numpy_array = np.full(array_shape, 5, dtype=input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
             self.assertEqual(lue_array.dtype, input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
+            lue_array = lfr.from_numpy(
+                numpy_array, partition_shape=partition_shape, no_data_value=9
+            )
             self.assertEqual(lue_array.dtype, input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, -9)
+            lue_array = lfr.from_numpy(
+                numpy_array, partition_shape=partition_shape, no_data_value=-9
+            )
             self.assertEqual(lue_array.dtype, input_dtype)
 
             self.assertRaises(
-                TypeError, lfr.from_numpy, numpy_array, partition_shape, 9.9
+                TypeError,
+                lfr.from_numpy,
+                numpy_array,
+                partition_shape=partition_shape,
+                no_data_value=9.9,
             )
 
         for input_type in [
@@ -135,14 +143,10 @@ class FromNumPyTest(lue_test.TestCase):
             input_dtype = np.dtype(input_type)
             numpy_array = np.full(array_shape, 5, dtype=input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape)
+            lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
             self.assertEqual(lue_array.dtype, input_dtype)
 
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9)
-            self.assertEqual(lue_array.dtype, input_dtype)
-
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, -9)
-            self.assertEqual(lue_array.dtype, input_dtype)
-
-            lue_array = lfr.from_numpy(numpy_array, partition_shape, 9.9)
+            lue_array = lfr.from_numpy(
+                numpy_array, partition_shape=partition_shape, no_data_value=9.9
+            )
             self.assertEqual(lue_array.dtype, input_dtype)

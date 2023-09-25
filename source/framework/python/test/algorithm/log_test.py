@@ -17,9 +17,8 @@ class LogTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         dtype = np.float64
         fill_value = 5.5
-        array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+        array = lfr.create_array(array_shape, dtype, fill_value)
 
         lfr.log(array)

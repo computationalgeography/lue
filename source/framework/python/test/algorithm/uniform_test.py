@@ -17,7 +17,6 @@ class UniformTest(lue_test.TestCase):
     def test_overload1(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         min_value = 33
         max_value = 55
         fill_value = 5
@@ -31,9 +30,7 @@ class UniformTest(lue_test.TestCase):
             np.float32,
             np.float64,
         ]:
-            array = lfr.create_array(
-                array_shape, partition_shape, argument_type, fill_value
-            )
+            array = lfr.create_array(array_shape, argument_type, fill_value)
 
             for result_type in [
                 np.uint32,
@@ -49,9 +46,8 @@ class UniformTest(lue_test.TestCase):
     def test_overload2(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         min_value = 33
         max_value = 55
 
         for type_ in [np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
-            lfr.uniform(array_shape, partition_shape, type_, min_value, max_value)
+            lfr.uniform(array_shape, type_, min_value, max_value)

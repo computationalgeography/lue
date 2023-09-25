@@ -140,7 +140,9 @@ def non_spatial_to_spatial(fill_value, template=None):
 
     partition_shape = configuration.partition_shape
 
-    return lfr.create_array(array_shape, partition_shape, scalar_type, fill_value)
+    return lfr.create_array(
+        array_shape, scalar_type, fill_value, partition_shape=partition_shape
+    )
 
 
 def read_if_necessary(*args) -> tuple:

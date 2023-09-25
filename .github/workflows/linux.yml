@@ -26,7 +26,7 @@ jobs:
                     - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9     , package: g++-9    }
                     - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
                     - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
-                    - { name: clang, version: 14, cc: clang-14, cxx: clang++-14, package: clang-14 }
+                    - { name: clang, version: 15, cc: clang-15, cxx: clang++-15, package: clang-15 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}

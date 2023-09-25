@@ -29,10 +29,10 @@ namespace lue::framework {
 
 
     template<Rank rank, typename Count>
-    std::array<Count, rank> dynamic_shape_to_static_shape(std::vector<Count> const& shape)
+    StaticShape<rank> dynamic_shape_to_static_shape(std::vector<Count> const& shape)
     {
         lue_hpx_assert(shape.size() == rank);
-        std::array<Count, rank> result{};
+        StaticShape<rank> result{};
         std::copy(shape.begin(), shape.end(), result.begin());
         return result;
     }

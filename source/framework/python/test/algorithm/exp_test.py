@@ -17,9 +17,8 @@ class ExpTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         fill_value = 5.5
 
         for dtype in [np.float32, np.float64]:
-            array = lfr.create_array(array_shape, partition_shape, dtype, fill_value)
+            array = lfr.create_array(array_shape, dtype, fill_value)
             lfr.exp(array)

@@ -323,4 +323,14 @@ namespace lue {
             policies, array_shape, partition_shape, Functor{min_value, max_value});
     }
 
+
+    template<typename Element, typename Policies, typename Shape>
+    PartitionedArray<Element, rank<Shape>> uniform(
+        Policies const& policies, Shape const& array_shape, Element const min_value, Element const max_value)
+    {
+        using Functor = InstantiateUniform<Element, rank<Shape>>;
+
+        return create_partitioned_array(policies, array_shape, Functor{min_value, max_value});
+    }
+
 }  // namespace lue

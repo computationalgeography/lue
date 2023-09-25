@@ -17,7 +17,6 @@ class IteratePerElementTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         fill_value = 5
 
         for type_ in [
@@ -29,5 +28,5 @@ class IteratePerElementTest(lue_test.TestCase):
             np.float32,
             np.float64,
         ]:
-            array = lfr.create_array(array_shape, partition_shape, type_, fill_value)
+            array = lfr.create_array(array_shape, type_, fill_value)
             array = lfr.iterate_per_element(array)

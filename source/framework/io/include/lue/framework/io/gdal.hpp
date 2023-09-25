@@ -44,6 +44,8 @@ namespace lue {
 
     GDALDataType data_type(std::string const& name);
 
+    Shape<Count, 2> shape(GDALDataset& dataset);
+
 
     namespace detail {
 

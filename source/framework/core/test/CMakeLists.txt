@@ -1,7 +1,6 @@
 set(scope lue_framework_core)
 set(names
     array_test
-    array_partition_definition_test
     array_visitor_test
     configuration_entry_test
     domain_decomposition_test

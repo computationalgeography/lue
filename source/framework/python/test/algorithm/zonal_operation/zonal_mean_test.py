@@ -19,7 +19,6 @@ class ZonalMeanTest(lue_test.TestCase):
     def test_overloads(self):
 
         array_shape = (60, 40)
-        partition_shape = (10, 10)
         fill_value = 5
         fill_zone = 3
 
@@ -27,10 +26,6 @@ class ZonalMeanTest(lue_test.TestCase):
             (np.float32, np.float64),
             (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
         ):
-            array = lfr.create_array(
-                array_shape, partition_shape, value_dtype, fill_value
-            )
-            zones = lfr.create_array(
-                array_shape, partition_shape, zone_dtype, fill_zone
-            )
+            array = lfr.create_array(array_shape, value_dtype, fill_value)
+            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
             lfr.zonal_mean(array, zones)

@@ -39,48 +39,48 @@ class OperationTest(lue_test.TestCase):
         cls.spatial = {
             np.uint8: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.uint8,
                 fill_value=cls.non_spatial[np.uint8],
+                partition_shape=cls.partition_shape,
             ),
             np.uint32: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.uint32,
                 fill_value=cls.non_spatial[np.uint32],
+                partition_shape=cls.partition_shape,
             ),
             np.uint64: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.uint64,
                 fill_value=cls.non_spatial[np.uint64],
+                partition_shape=cls.partition_shape,
             ),
             np.int32: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.int32,
                 fill_value=cls.non_spatial[np.int32],
+                partition_shape=cls.partition_shape,
             ),
             np.int64: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.int64,
                 fill_value=cls.non_spatial[np.int64],
+                partition_shape=cls.partition_shape,
             ),
             np.float32: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.float32,
                 fill_value=cls.non_spatial[np.float32],
+                partition_shape=cls.partition_shape,
             ),
             np.float64: lfr.create_array(
                 cls.array_shape,
-                cls.partition_shape,
                 np.float64,
                 fill_value=cls.non_spatial[np.float64],
+                partition_shape=cls.partition_shape,
             ),
         }
         direction = 3
         cls.ldd = lfr.create_array(
-            cls.array_shape, cls.partition_shape, np.uint8, direction
+            cls.array_shape, np.uint8, direction, partition_shape=cls.partition_shape
         )
