@@ -125,6 +125,9 @@ jobs:
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
               cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
 
+              # Add location of dependencies installed with Conan to the runtime environment
+              ./conanrun.bat
+
               export PATH="`pwd`/install/bin:$PATH"
               install/bin/lue_translate --version
               install/bin/lue_validate --version
