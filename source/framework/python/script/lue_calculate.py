@@ -2,15 +2,13 @@
 import ast
 import os.path
 import sys
+import typing
 
 import docopt
+import numpy as np
 
 import lue.framework as lfr
 from lue import __version__ as lue_version
-
-
-# TODO Use a smart default partition size. Add a function for that to the C++ code and use it
-#      everywhere as a default partition size.
 
 
 def print_line() -> None:
@@ -92,6 +90,20 @@ class QualifyOperationVisitor(ast.NodeTransformer):
         node.func.id = f"lfr.{node.func.id}"
         return node
 
+    def visit_Name(self, node):
+        if node.id in [
+            "uint8",
+            "uint32",
+            "uint64",
+            "int32",
+            "int64",
+            "float32",
+            "float64",
+        ]:
+            node.id = f"np.{node.id}"
+
+        return node
+
 
 def pathname_to_variable_name(pathname: str) -> str:
     basename = os.path.basename(pathname)
@@ -117,7 +129,7 @@ def pathnames_to_variable_names(pathnames: set[str]) -> dict[str, str]:
 
 
 def statement_to_statement_block(
-    statement: str, partition_shape: tuple[int, int]
+    statement: str, partition_shape: typing.Optional[tuple[int, int]]
 ) -> list[str]:
     """
     Parse statement and create a block of code
@@ -146,14 +158,22 @@ def statement_to_statement_block(
         unique_strings_visitor.strings
     )
 
+    if len(variable_name_by_pathname) == 0:
+        raise ValueError(
+            f"The right-hand side expression must refer to at least one existing raster: {rhs}"
+        )
+
     # Prepend the original statement with from_gdal statements. Name variable after uniquified
     # basename without extension of string.
     read_statements = []
 
     for pathname, variable_name in variable_name_by_pathname.items():
-        read_statements.append(
-            f'{variable_name} = lfr.from_gdal("{pathname}", partition_shape={partition_shape})'
-        )
+        if partition_shape is None:
+            read_statements.append(f'{variable_name} = lfr.from_gdal("{pathname}")')
+        else:
+            read_statements.append(
+                f'{variable_name} = lfr.from_gdal("{pathname}", partition_shape={partition_shape})'
+            )
 
     clone_pathname = list(variable_name_by_pathname)[0]
 
@@ -203,10 +223,14 @@ def execute_statement_block(statement_block: list[str]) -> None:
     The statements have (only) access to functionality in the lue.framework
     subpackage, aliased as lfr.
     """
-    exec(";".join(statement_block), {"__builtins__": {}, "lfr": lfr}, {})
+    exec(
+        "\n".join(statement_block),
+        {"__builtins__": {"__import__": __import__}, "lfr": lfr, "np": np},
+        {},
+    )
 
 
-def execute(statement: str, partition_shape: tuple[int, int]) -> int:
+def execute(statement: str, partition_shape: typing.Optional[tuple[int, int]]) -> int:
     statement_block = statement_to_statement_block(statement, partition_shape)
 
     execute_statement_block(statement_block)
@@ -227,7 +251,7 @@ Options:
     statement            Assignment statement to evaluate
     -h --help            Show this screen
     --version            Show version
-    --partition=<shape>  Shape of partitions [default: 500,500]
+    --partition=<shape>  Shape of partitions
 
 The right-hand side expression of the assignment statement must be a
 valid Python expression. It is assumed that all functions and operators
@@ -242,12 +266,16 @@ Raster names don't need to be quoted.
 Environmental variables formatted as $NAME or ${{NAME}} are expanded. In
 addition, on Windows variables formatted as %NAME% are also expanded.
 
-Using file extensions is optional. When not present .tif is assumed.
+Using file extensions is optional. When not present a few popular extensions
+are tried.
+
+By default, lue_calculate will use all available CPU cores. Pass HPX
+command-line options if you want to configure the HPX runtime.
 
 Examples:
     {command} 'slope.tif = slope("$MY_DATA/elevation.tif", 100.0)'
     {command} 'flux, state =
-        accu_threshold("flow_direction.tif", "material.tif", "threshold.tif")'
+        accu_threshold("flow_direction", "material", "threshold")'
 """.format(
         command=os.path.basename(sys.argv[0])
     )
@@ -255,9 +283,13 @@ Examples:
     arguments = [arg for arg in sys.argv[1:] if not arg.startswith("--hpx:")]
     arguments = docopt.docopt(usage, arguments, version=lue_version)
     statement = arguments["<statement>"]  # type: ignore
-    partition_shape: tuple[int, int] = tuple(
-        int(extent) for extent in arguments["--partition"].split(",")  # type: ignore
-    )
+
+    partition_shape: typing.Optional[tuple[int, int]] = None
+
+    if "--partition_shape" in arguments:
+        partition_shape = tuple(
+            int(extent) for extent in arguments["--partition"].split(",")  # type: ignore
+        )
 
     return execute(statement, partition_shape)
 

@@ -3,7 +3,7 @@ name: Windows CI
 on:
   push:
     branches-ignore:
-      - "gh578"
+      - "ghxyz"
     paths:
       - "conanfile.py"
       - ".github/workflows/windows.yml"
@@ -132,5 +132,6 @@ jobs:
 
               # Add our package to the set of Conda packages
               conda-develop install/lib/python${{ matrix.python-version }}
+              install/bin/lue_calculate --version
               install/bin/lue_scalability --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"

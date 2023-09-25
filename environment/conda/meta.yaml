@@ -70,6 +70,7 @@ test:
   commands:
     - lue_translate -h
     - lue_validate -h
+    - lue_calculate -h
     - lue_scalability -h                      # [not win]
     - lue_view -h
 
