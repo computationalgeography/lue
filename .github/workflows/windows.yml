@@ -130,7 +130,8 @@ jobs:
               # Add location of dependencies installed with Conan to the runtime environment
               pwd
               ls -ltr
-              ./conanrun.bat
+              ls -ltr ${{ env.build-directory }}
+              ${{ env.build-directory }}/conanrun.bat
 
               export PATH="`pwd`/${{ env.install-directory }}/bin:$PATH"
               ${{ env.install-directory }}/bin/lue_translate --version
