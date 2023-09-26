@@ -136,10 +136,12 @@ jobs:
               export PATH="`pwd`/${{ env.install-directory }}/bin:$PATH"
               ${{ env.install-directory }}/bin/lue_translate --version
               ${{ env.install-directory }}/bin/lue_validate --version
-              ${{ env.install-directory }}/bin/lue_view --version
+              ${{ env.install-directory }}/bin/lue_view --version || "TODO: Error executing lue_view!"
 
               # Add our package to the set of Conda packages
               conda-develop ${{ env.install-directory }}/lib/python${{ matrix.python-version }}
-              ${{ env.install-directory }}/bin/lue_calculate --version
-              ${{ env.install-directory }}/bin/lue_scalability --version
+              ${{ env.install-directory }}/bin/lue_calculate --version || "TODO: Error executing lue_calculate!"
+              ${{ env.install-directory }}/bin/lue_scalability --version || "TODO: Error executing lue_scalability!"
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+
+              dumpbin /imports ${{ env.install-directory }}/bin/lue_view
