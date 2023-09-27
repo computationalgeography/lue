@@ -128,9 +128,6 @@ jobs:
               cmake --install ${{ env.build-directory }} --prefix ${{ env.install-directory }} --component lue_runtime
 
               # Add location of dependencies installed with Conan to the runtime environment
-              pwd
-              ls -ltr
-              ls -ltr ${{ env.build-directory }}
               ${{ env.build-directory }}/conanrun.bat
 
               export PATH="`pwd`/${{ env.install-directory }}/bin:$PATH"
@@ -144,4 +141,4 @@ jobs:
               ${{ env.install-directory }}/bin/lue_scalability --version || echo "TODO: Error executing lue_scalability!"
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-              dumpbin /imports ${{ env.install-directory }}/bin/lue_view
+              dumpbin //imports ${{ env.install-directory }}/bin/lue_view.exe
