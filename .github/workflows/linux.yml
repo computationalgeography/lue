@@ -139,6 +139,7 @@ jobs:
               install/bin/lue_view --version
 
               export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              install/bin/lue_calculate --version
               install/bin/lue_scalability --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 

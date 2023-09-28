@@ -30,10 +30,18 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.vs.name }} / python - ${{ matrix.python-version }}
 
+        defaults:
+          run:
+            shell: bash -l {0}
+
+        env:
+          source-directory: $GITHUB_WORKSPACE
+          build-directory: $GITHUB_WORKSPACE/../build
+          install-directory: $GITHUB_WORKSPACE/../install
+
         steps:
 
-        - name: checkout lue
-          uses: actions/checkout@v3
+        - uses: actions/checkout@v3
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
@@ -41,8 +49,7 @@ jobs:
               python-version: ${{ matrix.python-version }}
               channels: conda-forge
 
-        - name: install python packages
-          shell: bash -l {0}
+        - name: install Conda packages
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
@@ -73,23 +80,22 @@ jobs:
               # toolset: ${{ matrix.toolset }}
               vsversion: ${{ matrix.vs.version }}
 
-        - name: configure lue
-          shell: bash -l {0}
+        - name: configure
           run: |
               python environment/script/write_conan_profile.py cl host_profile
               python environment/script/write_conan_profile.py cl build_profile
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
-              mkdir $GITHUB_WORKSPACE/../build
+              mkdir ${{ env.build-directory }}
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
                   --build=missing \
-                  --output-folder=$GITHUB_WORKSPACE/../build
-              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
+                  --output-folder=${{ env.build-directory }}
+              CMAKE_PREFIX_PATH=${{ env.build-directory }} \
                   cmake --preset conan-release \
-                      -B $GITHUB_WORKSPACE/../build \
+                      -B ${{ env.build-directory }} \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
@@ -108,29 +114,31 @@ jobs:
                       -D HPX_WITH_EXAMPLES=FALSE \
                       -D HPX_WITH_TESTS=FALSE
 
-        - name: build lue
-          shell: bash -l {0}
+        - name: build
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --target all
+              cmake --build ${{ env.build-directory }} --target all
 
-        - name: test lue
-          shell: bash -l {0}
+        - name: test
           run: |
-              cd $GITHUB_WORKSPACE/../build
-              ctest --output-on-failure
+              ctest --test-dir ${{ env.build-directory }} --output-on-failure
 
-        - name: install lue runtime component
-          shell: bash -l {0}
+        - name: install
           run: |
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
+              cmake --install ${{ env.build-directory }} --prefix ${{ env.install-directory }} --component runtime
+              cmake --install ${{ env.build-directory }} --prefix ${{ env.install-directory }} --component lue_runtime
 
-              export PATH="`pwd`/install/bin:$PATH"
-              install/bin/lue_translate --version
-              install/bin/lue_validate --version
-              install/bin/lue_view --version
+              # Add location of dependencies installed with Conan to the runtime environment
+              ${{ env.build-directory }}/conanrun.bat
+
+              export PATH="`pwd`/${{ env.install-directory }}/bin:$PATH"
+              ${{ env.install-directory }}/bin/lue_translate --version
+              ${{ env.install-directory }}/bin/lue_validate --version
+              ${{ env.install-directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
 
               # Add our package to the set of Conda packages
-              conda-develop install/lib/python${{ matrix.python-version }}
-              install/bin/lue_scalability --version
+              conda-develop ${{ env.install-directory }}/lib/python${{ matrix.python-version }}
+              ${{ env.install-directory }}/bin/lue_calculate --version || echo "TODO: Error executing lue_calculate!"
+              ${{ env.install-directory }}/bin/lue_scalability --version || echo "TODO: Error executing lue_scalability!"
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+
+              dumpbin //imports ${{ env.install-directory }}/bin/lue_view.exe

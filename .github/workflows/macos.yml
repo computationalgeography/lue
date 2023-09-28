@@ -108,5 +108,6 @@ jobs:
               install/bin/lue_view --version
 
               export PYTHONPATH="$(echo install/lib/python3.*):$PYTHONPATH"
+              python3 install/bin/lue_calculate --version
               python3 install/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
