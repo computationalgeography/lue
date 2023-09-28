@@ -62,7 +62,7 @@ jobs:
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="docopt.cpp imgui span-lite" conan install . \
+              LUE_CONAN_PACKAGES="docopt.cpp imgui" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
                   --build=missing \

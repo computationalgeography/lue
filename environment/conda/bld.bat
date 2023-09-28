@@ -9,7 +9,7 @@ if errorlevel 1 exit 1
 %PYTHON% environment/script/write_conan_profile.py %CXX% build_profile
 if errorlevel 1 exit 1
 
-set LUE_CONAN_PACKAGES=imgui span-lite
+set LUE_CONAN_PACKAGES=imgui
 
 conan install . ^
     --profile:host=host_profile ^
