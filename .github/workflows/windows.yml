@@ -57,7 +57,11 @@ jobs:
               # conda-build provides the conda-develop command used below
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
-              conda install \
+
+              # Use different solver than the default to work around "picosat: out of memory in 'new'"
+              conda install conda-libmamba-solver
+
+              conda install --solver=libmamba \
                   boost-cpp \
                   conda-build \
                   docopt \
@@ -88,7 +92,7 @@ jobs:
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
               mkdir ${{ env.build-directory }}
-              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 span-lite vulkan-headers vulkan-loader" conan install . \
+              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 vulkan-headers vulkan-loader" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
                   --build=missing \

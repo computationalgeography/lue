@@ -274,7 +274,6 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
         # GIT_TAG mdspan-0.6.0
-        SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
 endif()
@@ -314,7 +313,15 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(pybind11 2.10 REQUIRED)
+    # find_package(pybind11 2.10 REQUIRED)
+
+    FetchContent_Declare(pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11.git
+        GIT_TAG 8a099e44b3d5f85b20f05828d919d2332a8de841  # 2.11.1
+        SYSTEM
+        # FIND_PACKAGE_ARGS
+    )
+    FetchContent_MakeAvailable(pybind11)
 endif()
 
 
@@ -592,7 +599,13 @@ if(LUE_OPENCL_REQUIRED)
 endif()
 
 if(LUE_SPAN_LITE_REQUIRED)
-    find_package(span-lite REQUIRED)
+    FetchContent_Declare(span-lite
+        GIT_REPOSITORY https://github.com/martinmoene/span-lite.git
+        GIT_TAG cbb9c3c5162a0d7018c7b3e053153a04d4fbbbb9  # 0.10.3
+        SYSTEM
+        FIND_PACKAGE_ARGS
+    )
+    FetchContent_MakeAvailable(span-lite)
 endif()
 
 if(LUE_SPHINX_REQUIRED)

@@ -14,7 +14,7 @@ fi
 ${PYTHON} environment/script/write_conan_profile.py ${CXX} host_profile
 ${PYTHON} environment/script/write_conan_profile.py ${CXX} build_profile
 
-LUE_CONAN_PACKAGES="imgui span-lite" conan install . \
+LUE_CONAN_PACKAGES="imgui" conan install . \
     --profile:host=host_profile \
     --profile:build=build_profile \
     --build=missing \
