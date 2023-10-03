@@ -1,0 +1,8 @@
+#include "lue/framework/partitioned_route/serial_route_partition_impl.hpp"
+
+
+namespace lue {
+
+    template class SerialRoutePartition<{{ rank }}>;
+
+}  // namespace lue
