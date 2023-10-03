@@ -33,6 +33,16 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python-version }}
 
+        defaults:
+          run:
+            shell: bash -l {0}
+
+        env:
+          source_directory: $GITHUB_WORKSPACE
+          build_directory: $GITHUB_WORKSPACE/../build
+          runtime_install_directory: $GITHUB_WORKSPACE/../runtime_install
+          development_install_directory: $GITHUB_WORKSPACE/../development_install
+
         steps:
 
         - uses: actions/checkout@v4
@@ -40,7 +50,7 @@ jobs:
           with:
             python-version: ${{ matrix.python-version }}
 
-        - name: setup platform
+        - name: install packages
           run: |
               sudo apt-get update
               # sudo apt-get upgrade
@@ -78,22 +88,20 @@ jobs:
                   ruamel.yaml \
                   sphinx
 
-        - name: configure lue
-          shell: bash -l {0}
+        - name: configure
           run: |
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
-              mkdir $GITHUB_WORKSPACE/../build
-              CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} \
-              LUE_CONAN_PACKAGES="imgui" \
+              mkdir ${{ env.build_directory }}
+              CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
                   conan install . \
                       --profile:host=host_profile \
                       --profile:build=build_profile \
                       --build=missing \
-                      --output-folder=$GITHUB_WORKSPACE/../build
-              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
+                      --output-folder=${{ env.build_directory }}
+              CMAKE_PREFIX_PATH=${{ env.build_directory }} \
                   cmake --preset conan-release \
-                      -B $GITHUB_WORKSPACE/../build \
+                      -B ${{ env.build_directory }} \
                       -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
@@ -112,40 +120,51 @@ jobs:
                       -D HPX_WITH_EXAMPLES=FALSE \
                       -D HPX_WITH_TESTS=FALSE
 
-        - name: build lue
-          shell: bash -l {0}
+        - name: build
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --target all
+              cmake --build ${{ env.build_directory }} --target all
 
-        - name: test lue
-          shell: bash -l {0}
+        - name: test
           run: |
-              cd $GITHUB_WORKSPACE/../build
-              ctest --output-on-failure
+              ctest --test-dir ${{ env.build_directory }} --output-on-failure
 
-        - name: generate lue documentation
+        - name: generate documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == '3.10'
-          shell: bash
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --target cpp_doc py_doc
-              cmake --build $GITHUB_WORKSPACE/../build --target sphinx_doc
+              cmake --build ${{ env.build_directory }} --target cpp_doc py_doc
+              cmake --build ${{ env.build_directory }} --target sphinx_doc
 
-        - name: install runtime component
-          shell: bash -l {0}
+        - name: runtime install
           run: |
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.runtime_install_directory }} \
+                  --component runtime \
+                  --strip
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.runtime_install_directory }} \
+                  --component lue_runtime \
+                  --strip
 
-              install/bin/lue_translate --version
-              install/bin/lue_validate --version
-              install/bin/lue_view --version
+              ${{ env.runtime_install_directory }}/bin/lue_translate --version
+              ${{ env.runtime_install_directory }}/bin/lue_validate --version
+              ${{ env.runtime_install_directory }}/bin/lue_view --version
 
-              export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
-              install/bin/lue_calculate --version
-              install/bin/lue_scalability --version
+              export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              ${{ env.runtime_install_directory }}/bin/lue_calculate --version
+              ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-        - name: deploy lue documentation
+        - name: development install
+          run: |
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.development_install_directory }} \
+                  --component lue_development \
+                  --strip
+
+        - name: deploy documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == '3.10'
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
@@ -159,5 +178,5 @@ jobs:
               echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
               echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
               echo "StrictHostKeyChecking no" >> $HOME/.ssh/config
-              cd $GITHUB_WORKSPACE/../build/document/doc
+              cd ${{ env.build_directory }}/document/doc
               lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port

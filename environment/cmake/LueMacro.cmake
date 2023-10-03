@@ -431,7 +431,6 @@ function(lue_install_executables)
         TARGETS
             ${${name}_TARGETS}
         RUNTIME
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
             COMPONENT ${${name}_RUNTIME_COMPONENT}
     )
 endfunction()
@@ -478,17 +477,13 @@ function(lue_install_libraries)
         EXPORT
             ${${name}_EXPORT}
         RUNTIME
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
             COMPONENT ${${name}_RUNTIME_COMPONENT}
         LIBRARY
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
             COMPONENT ${${name}_RUNTIME_COMPONENT}
             NAMELINK_COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
         ARCHIVE
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
             COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
-        PUBLIC_HEADER
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILE_SET HEADERS
             COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
         INCLUDES
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

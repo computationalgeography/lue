@@ -23,7 +23,6 @@ class LUERecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
 
     def requirements(self):
-
         # Lower bound of the version ranges should include the versions installed at current
         # popular Linux distributions (e.g. current Ubuntu LTS).
         # Upper bound of the version ranges should be left open, or should be set to some
@@ -71,8 +70,8 @@ class LUERecipe(ConanFile):
         if install_conan_package("vulkan-loader"):
             self.requires("vulkan-loader/[>=1.3]")
 
-        def layout(self):
-            cmake_layout(self)
+    def layout(self):
+        cmake_layout(self)
 
     def generate(self):
         if install_conan_package("imgui"):

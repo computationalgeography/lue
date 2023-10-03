@@ -1,7 +1,7 @@
 add_test_conditionally(test)
 
 configure_file(
-    include/lue/hdf5/configure.hpp.in
+    include/configure.hpp.in
     include/lue/hdf5/configure.hpp
 )
 
@@ -46,6 +46,17 @@ target_include_directories(lue_hdf5
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+)
+
+target_sources(lue_hdf5
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
 )
 
 target_link_libraries(lue_hdf5

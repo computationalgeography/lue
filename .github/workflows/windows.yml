@@ -35,9 +35,10 @@ jobs:
             shell: bash -l {0}
 
         env:
-          source-directory: $GITHUB_WORKSPACE
-          build-directory: $GITHUB_WORKSPACE/../build
-          install-directory: $GITHUB_WORKSPACE/../install
+          source_directory: $GITHUB_WORKSPACE
+          build_directory: $GITHUB_WORKSPACE/../build
+          runtime_install_directory: $GITHUB_WORKSPACE/../runtime_install
+          development_install_directory: $GITHUB_WORKSPACE/../development_install
 
         steps:
 
@@ -92,14 +93,14 @@ jobs:
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
               mkdir ${{ env.build-directory }}
-              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json pybind11 vulkan-headers vulkan-loader" conan install . \
+              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json vulkan-headers vulkan-loader" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
                   --build=missing \
-                  --output-folder=${{ env.build-directory }}
-              CMAKE_PREFIX_PATH=${{ env.build-directory }} \
+                  --output-folder=${{ env.build_directory }}
+              CMAKE_PREFIX_PATH=${{ env.build_directory }} \
                   cmake --preset conan-release \
-                      -B ${{ env.build-directory }} \
+                      -B ${{ env.build_directory }} \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
@@ -120,29 +121,37 @@ jobs:
 
         - name: build
           run: |
-              cmake --build ${{ env.build-directory }} --target all
+              cmake --build ${{ env.build_directory }} --target all
 
         - name: test
           run: |
-              ctest --test-dir ${{ env.build-directory }} --output-on-failure
+              ctest --test-dir ${{ env.build_directory }} --output-on-failure
 
-        - name: install
+        - name: runtime install
           run: |
-              cmake --install ${{ env.build-directory }} --prefix ${{ env.install-directory }} --component runtime
-              cmake --install ${{ env.build-directory }} --prefix ${{ env.install-directory }} --component lue_runtime
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.runtime_install_directory }} \
+                  --component runtime \
+                  --strip
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.runtime_install_directory }} \
+                  --component lue_runtime \
+                  --strip
 
               # Add location of dependencies installed with Conan to the runtime environment
-              ${{ env.build-directory }}/conanrun.bat
+              ${{ env.build_directory }}/conanrun.bat
 
-              export PATH="`pwd`/${{ env.install-directory }}/bin:$PATH"
-              ${{ env.install-directory }}/bin/lue_translate --version
-              ${{ env.install-directory }}/bin/lue_validate --version
-              ${{ env.install-directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
+              export PATH="${{ env.runtime_install_directory }}/bin:$PATH"
+              ${{ env.runtime_install_directory }}/bin/lue_translate --version
+              ${{ env.runtime_install_directory }}/bin/lue_validate --version
+              ${{ env.runtime_install_directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
 
               # Add our package to the set of Conda packages
-              conda-develop ${{ env.install-directory }}/lib/python${{ matrix.python-version }}
-              ${{ env.install-directory }}/bin/lue_calculate --version
-              ${{ env.install-directory }}/bin/lue_scalability --version
+              conda-develop ${{ env.runtime_install_directory }}/lib/python${{ matrix.python-version }}
+              ${{ env.runtime_install_directory }}/bin/lue_calculate --version
+              ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-              dumpbin //imports ${{ env.install-directory }}/bin/lue_view.exe
+              dumpbin //imports ${{ env.runtime_install_directory }}/bin/lue_view.exe

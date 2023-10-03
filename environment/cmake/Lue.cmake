@@ -52,9 +52,6 @@ include(GNUInstallDirs)
 # behaviour by using a directory containing our PROJECT_NAME.
 set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/${LUE_LOWER_PROJECT_NAME})
 
-# It is common practice to install headers into a project-specific subdirectory
-set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/${LUE_LOWER_PROJECT_NAME})
-
 file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
     ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
