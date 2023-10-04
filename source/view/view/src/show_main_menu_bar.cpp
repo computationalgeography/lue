@@ -1,8 +1,8 @@
 #include "lue/view/show_main_menu_bar.hpp"
-#include "lue/configure.hpp"
 #include "lue/git.hpp"
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
+#include "lue/version.hpp"
 
 
 namespace lue::view {
@@ -15,7 +15,7 @@ namespace lue::view {
 
             if (ImGui::BeginPopupModal("About...", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                ImGui::Text("LUE version %s (build %s)", BuildOptions::version, Git::short_sha1);
+                ImGui::Text("LUE version %s (build %s)", version().c_str(), short_sha1().c_str());
                 ImGui::Separator();
                 ImGui::Text("By the Computational Geography research and development team");
                 ImGui::Text("LUE is licensed under the MIT License");

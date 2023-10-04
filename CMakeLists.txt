@@ -31,8 +31,20 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/environment/cmake")
 
-include(GetGitRevisionDescription)
-get_git_head_revision(LUE_GIT_REFSPEC LUE_GIT_SHA1)
+find_package(Git REQUIRED)
+execute_process(
+    COMMAND ${GIT_EXECUTABLE} -C ${CMAKE_CURRENT_SOURCE_DIR} rev-parse HEAD
+    RESULT_VARIABLE result
+    OUTPUT_VARIABLE LUE_GIT_SHA1
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if(result)
+    message(FATAL_ERROR "Failed to get git hash: ${result}")
+endif()
+
+# include(GetGitRevisionDescription)
+# get_git_head_revision(LUE_GIT_REFSPEC LUE_GIT_SHA1)
 string(SUBSTRING ${LUE_GIT_SHA1} 0 7 LUE_GIT_SHORT_SHA1)
 
 include(Lue)

@@ -1,8 +1,8 @@
 #include "lue/utility/command.hpp"
 #include "lue/utility/print_message.hpp"
 // #include "lue/utility/stopwatch.hpp"
-#include "lue/configure.hpp"
 #include "lue/git.hpp"
+#include "lue/version.hpp"
 #include <fmt/format.h>
 #include <cassert>
 #include <iostream>
@@ -74,11 +74,7 @@ namespace lue {
             _info_stream(std::cout),
             _error_stream(std::cerr),
             _arguments(docopt::docopt(
-                usage,
-                arguments,
-                true,
-                fmt::format("{} (build {})", BuildOptions::version, Git::short_sha1),
-                true)),
+                usage, arguments, true, fmt::format("{} (build {})", version(), short_sha1()), true)),
             _subcommand_creators{subcommand_creators},
             _sub_command()
 

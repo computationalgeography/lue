@@ -88,7 +88,7 @@ endif()
 
 message(STATUS "--------------------------------------------------------------")
 message(STATUS "LUE_VERSION                   : ${LUE_VERSION}")
-message(STATUS "LUE_GIT_REFSPEC               : ${LUE_GIT_REFSPEC}")
+message(STATUS "LUE_GIT_SHA1                  : ${LUE_GIT_SHA1}")
 message(STATUS "LUE_GIT_SHORT_SHA1            : ${LUE_GIT_SHORT_SHA1}")
 message(STATUS "Build data model              : ${LUE_BUILD_DATA_MODEL}")
 message(STATUS "+ python api                  : ${LUE_DATA_MODEL_WITH_PYTHON_API}")

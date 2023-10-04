@@ -1,5 +1,5 @@
 #include "submodule.hpp"
-#include "lue/hdf5/configure.hpp"
+#include "lue/hdf5/version.hpp"
 
 
 namespace py = pybind11;
@@ -25,8 +25,8 @@ namespace lue {
     not offered by this package yet.
 )");
 
-            submodule.attr("__version__") = py::str(BuildOptions::hdf5_version);
-            submodule.attr("hdf5_version") = py::str(BuildOptions::hdf5_version);
+            submodule.attr("__version__") = py::str(hdf5_version());
+            submodule.attr("hdf5_version") = py::str(hdf5_version());
 
             init_shape(submodule);
             init_identifier(submodule);

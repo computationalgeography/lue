@@ -5,6 +5,11 @@ configure_file(
     include/lue/hdf5/configure.hpp
 )
 
+configure_file(
+    src/version.cpp.in
+    src/version.cpp
+)
+
 add_library(lue_hdf5 STATIC
     src/attribute.cpp
     src/attributes.cpp
@@ -28,6 +33,7 @@ add_library(lue_hdf5 STATIC
     src/soft_link.cpp
     src/validate.cpp
     src/vlen_memory.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
 )
 
 add_library(lue::hdf5 ALIAS lue_hdf5)

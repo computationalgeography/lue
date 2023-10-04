@@ -1,0 +1,35 @@
+#include "lue/version.hpp"
+
+
+namespace lue {
+
+    std::string version()
+    {
+        return "${LUE_VERSION}";
+    }
+
+
+    std::uint32_t major_version()
+    {
+        return ${LUE_VERSION_MAJOR};
+    }
+
+
+    std::uint32_t minor_version()
+    {
+        return ${LUE_VERSION_MINOR};
+    }
+
+
+    std::uint32_t patch_version()
+    {
+        return ${LUE_VERSION_PATCH};
+    }
+
+
+    std::uint32_t tweak_version()
+    {
+        return ${LUE_VERSION_TWEAK} + 0;
+    }
+
+}  // namespace lue
