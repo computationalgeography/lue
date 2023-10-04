@@ -92,7 +92,7 @@ jobs:
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
-              mkdir ${{ env.build-directory }}
+              mkdir ${{ env.build_directory }}
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json vulkan-headers vulkan-loader" conan install . \
                   --profile:host=host_profile \
                   --profile:build=build_profile \
