@@ -59,4 +59,16 @@ namespace lue::server {
         return result;
     }
 
+
+    template<Rank rank>
+    std::vector<typename SerialRoutePartition<rank>::RouteFragment>
+    SerialRoutePartition<rank>::route_fragments(RouteID const route_id) const
+    {
+        auto const it = _route_fragments.find(route_id);
+
+        lue_hpx_assert(it != _route_fragments.end());
+
+        return it->second;
+    }
+
 }  // namespace lue::server

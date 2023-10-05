@@ -2,6 +2,7 @@
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
 #include <hpx/runtime_distributed.hpp>
+#include <algorithm>
 #include <optional>
 #include <tuple>
 #include <vector>
@@ -64,6 +65,32 @@ namespace lue {
             SerialRouteFragment& operator=(SerialRouteFragment const&) = default;
 
             SerialRouteFragment& operator=(SerialRouteFragment&&) = default;
+
+
+            bool operator==(SerialRouteFragment const& other) const
+            {
+                // Test for same size first, otherwise the value of mismatch.first can be end()
+                // even if a mismatch was found (if other.idxs contains more elements).
+                bool const same_size{std::size(_idxs) == std::size(other._idxs)};
+                bool const same_next_fragment_location{
+                    _next_fragment_location == other._next_fragment_location};
+                bool result{false};
+
+                if (same_size && same_next_fragment_location)
+                {
+                    // Only now call mismatch. Collections are equal if no mismatch was found
+                    result =
+                        std::mismatch(_idxs.begin(), _idxs.end(), other._idxs.begin()).first == _idxs.end();
+                }
+
+                return result;
+            }
+
+
+            bool operator!=(SerialRouteFragment const& other) const
+            {
+                return !(*this == other);
+            }
 
 
             Count nr_cells() const

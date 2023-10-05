@@ -24,7 +24,9 @@ namespace lue::server {
             //! ID of a route
             using RouteID = Index;
 
-            using RouteFragments = std::unordered_map<RouteID, std::vector<SerialRouteFragment<rank>>>;
+            using RouteFragment = SerialRouteFragment<rank>;
+
+            using RouteFragments = std::unordered_map<RouteID, std::vector<RouteFragment>>;
 
             SerialRoutePartition();
 
@@ -46,11 +48,15 @@ namespace lue::server {
 
             std::vector<RouteID> route_ids() const;
 
+            std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
+
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, nr_routes, NrRoutesAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, nr_route_fragments, NrRouteFragmentsAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, route_ids, RouteIDsAction)
+
+            HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, route_fragments, RouteFragmentsAction)
 
 
         private:
@@ -75,7 +81,11 @@ namespace lue::server {
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
         SerialRoutePartition_##rank##_Component::RouteIDsAction,                                             \
-        SerialRoutePartition_##rank##_RouteIDsAction)
+        SerialRoutePartition_##rank##_RouteIDsAction)                                                        \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        SerialRoutePartition_##rank##_Component::RouteFragmentsAction,                                       \
+        SerialRoutePartition_##rank##_RouteFragmentsAction)
 
 
 LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(1)

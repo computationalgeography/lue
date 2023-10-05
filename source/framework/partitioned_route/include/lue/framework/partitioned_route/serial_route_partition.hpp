@@ -25,6 +25,10 @@ namespace lue {
 
             using RouteID = typename Server::RouteID;
 
+            using RouteFragment = typename Server::RouteFragment;
+
+            using RouteFragments = typename Server::RouteFragments;
+
             SerialRoutePartition();
 
             SerialRoutePartition(hpx::id_type component_id);
@@ -46,6 +50,8 @@ namespace lue {
             hpx::future<Count> nr_route_fragments() const;
 
             hpx::future<std::vector<RouteID>> route_ids() const;
+
+            hpx::future<std::vector<RouteFragment>> route_fragments(RouteID const route_id) const;
     };
 
 }  // namespace lue

@@ -25,7 +25,11 @@ HPX_REGISTER_COMPONENT_MODULE()
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
         SerialRoutePartition_##rank##_Component::RouteIDsAction,                                             \
-        SerialRoutePartition_##rank##_RouteIDsAction)
+        SerialRoutePartition_##rank##_RouteIDsAction)                                                        \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        SerialRoutePartition_##rank##_Component::RouteFragmentsAction,                                       \
+        SerialRoutePartition_##rank##_RouteFragmentsAction)
 
 
 LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(Element, 1)

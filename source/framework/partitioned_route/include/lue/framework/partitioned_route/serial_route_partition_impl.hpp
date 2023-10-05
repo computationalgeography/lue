@@ -53,7 +53,6 @@ namespace lue {
 
         typename Server::NrRouteFragmentsAction action;
 
-        // this->get_id() identifies the server instance
         return hpx::async(action, this->get_id());
     }
 
@@ -67,8 +66,20 @@ namespace lue {
 
         typename Server::RouteIDsAction action;
 
-        // this->get_id() identifies the server instance
         return hpx::async(action, this->get_id());
+    }
+
+
+    template<Rank rank>
+    hpx::future<std::vector<typename SerialRoutePartition<rank>::RouteFragment>>
+    SerialRoutePartition<rank>::route_fragments(RouteID const route_id) const
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        typename Server::RouteFragmentsAction action;
+
+        return hpx::async(action, this->get_id(), route_id);
     }
 
 }  // namespace lue
