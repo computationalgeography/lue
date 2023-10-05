@@ -1,9 +1,5 @@
 # Our higher level API on top of imgui + glfw
 
-# Imgui binding files copied by Conan (see conanfile.py in project root)
-# TODO This assumes we are using Conan for this...
-set(conan_build_folder "${CMAKE_BINARY_DIR}/build/${CMAKE_BUILD_TYPE}/source/view/imgui/src")
-
 add_library(lue_imgui STATIC
     src/menu.cpp
     src/selectable.cpp
@@ -13,11 +9,11 @@ add_library(lue_imgui STATIC
     src/window.cpp
 
     $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,
-        ${conan_build_folder}/imgui_impl_vulkan.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_vulkan.cpp
         src/glfw/vulkan_binding.cpp
         src/glfw/vulkan_frame.cpp
         src/glfw/vulkan_surface.cpp,
-        ${conan_build_folder}/imgui_impl_opengl3.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
         src/glfw/opengl_binding.cpp
         src/glfw/opengl_frame.cpp
     >
@@ -25,13 +21,13 @@ add_library(lue_imgui STATIC
     src/glfw/binding.cpp
     src/glfw/frame.cpp
 
-    ${conan_build_folder}/imgui_impl_glfw.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_glfw.cpp
 )
 
 target_include_directories(lue_imgui
     PUBLIC
         # Imgui binding headers copied by Conan
-        ${conan_build_folder}
+        ${CMAKE_CURRENT_BINARY_DIR}/src
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 

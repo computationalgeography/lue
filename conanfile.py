@@ -70,9 +70,6 @@ class LUERecipe(ConanFile):
         if install_conan_package("vulkan-loader"):
             self.requires("vulkan-loader/[>=1.3]")
 
-    def layout(self):
-        cmake_layout(self)
-
     def generate(self):
         if install_conan_package("imgui"):
             cpp_info = self.dependencies["imgui"].cpp_info

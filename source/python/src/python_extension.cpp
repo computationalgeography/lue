@@ -1,3 +1,4 @@
+#include "lue/configure.hpp"
 #include "lue/git.hpp"
 #include "lue/version.hpp"
 #ifdef LUE_BUILD_DATA_MODEL
@@ -17,7 +18,6 @@
 #endif
 #include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
-#include <pybind11/pybind11.h>
 
 
 namespace lue {
