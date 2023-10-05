@@ -53,7 +53,6 @@ jobs:
         - name: install packages
           run: |
               sudo apt-get update
-              # sudo apt-get upgrade
               sudo apt-get remove libunwind-14-dev
               sudo apt-get install \
                   cmake \
@@ -156,13 +155,41 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-        - name: development install
+        - name: development package
           run: |
               cmake \
                   --install ${{ env.build_directory }} \
                   --prefix ${{ env.development_install_directory }} \
                   --component lue_development \
                   --strip
+
+              # TODO Test the dev package
+
+        - name: source package
+          run: |
+              cmake \
+                  --build ${{ env.build_directory }} \
+                  --target package_source
+              mkdir src
+              cd src
+              tar zxf ../lue-*.tar.gz
+              mkdir bld
+              cd lue-*
+              ln -s ${{ env.build_directory }}/CMakePresets.json CMakeUserPresets.json
+              # TODO Source package does not yet contain the generated source files
+              # CMAKE_PREFIX_PATH=${{ env.build_directory }} \
+              #     cmake --preset conan-release \
+              #         -B bld \
+              #         -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+              #         -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+              #         -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+              #         -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+              #         -D LUE_BUILD_VIEW=TRUE \
+              #         -D LUE_BUILD_QA=TRUE \
+              #         -D LUE_QA_WITH_PYTHON_API=TRUE \
+              #         -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE
+
+              # TODO Test configuring and building the source package
 
         - name: deploy documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == '3.10'

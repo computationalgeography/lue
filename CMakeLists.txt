@@ -9,6 +9,7 @@ set(${PROJECT_NAME}_COPYRIGHT "2015-now LUE developers")
 set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
 set(${PROJECT_NAME}_HOMEPAGE "https://lue.computationalgeography.org")
 set(${PROJECT_NAME}_EMAIL "https://lue@computationalgeography.org")
+set(CMAKE_PROJECT_DESCRIPTION "A modelling framework for simulating large geographical systems of agents and fields")
 
 
 # PROJECT_NAME can be used to generate variable names. The next variables can be used if casing
@@ -69,3 +70,7 @@ add_subdirectory(source)
 #             -P "${CMAKE_BINARY_DIR}/cmake_install.cmake"
 #     )
 # endif()
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    include(lue_package)
+endif()
