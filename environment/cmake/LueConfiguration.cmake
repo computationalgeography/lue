@@ -129,8 +129,6 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
-# TODO This assumes a Python interpreter is installed...
-#      We need it to generate modules with template instantiations.
 set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
 # NOTE These can be made configurable later on
@@ -182,10 +180,11 @@ if(LUE_BUILD_FRAMEWORK)
     set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
     set(LUE_KOKKOS_MDSPAN_REQUIRED TRUE)
+    set(LUE_PYTHON_REQUIRED TRUE)  # templatize.py
 
-    if(LUE_BUILD_HPX AND LUE_BUILD_OTF2 AND LUE_OTF2_WITH_PYTHON)
-        set(LUE_PYTHON_REQUIRED TRUE)
-    endif()
+    # if(LUE_BUILD_HPX AND LUE_BUILD_OTF2 AND LUE_OTF2_WITH_PYTHON)
+    #     set(LUE_PYTHON_REQUIRED TRUE)
+    # endif()
 
     # if(LUE_FRAMEWORK_WITH_OPENCL)
     #     set(LUE_OPENCL_REQUIRED TRUE)
@@ -197,7 +196,6 @@ if(LUE_BUILD_FRAMEWORK)
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
-        set(LUE_PYTHON_REQUIRED TRUE)
     endif()
 endif()
 
@@ -266,6 +264,7 @@ if(LUE_KOKKOS_MDSPAN_REQUIRED)
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
         # GIT_TAG mdspan-0.6.0
+        SYSTEM
     )
     FetchContent_MakeAvailable(kokkos_mdspan)
 endif()
@@ -311,7 +310,7 @@ if(LUE_PYBIND11_REQUIRED)
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
         GIT_TAG 8a099e44b3d5f85b20f05828d919d2332a8de841  # 2.11.1
         SYSTEM
-        # FIND_PACKAGE_ARGS
+        FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(pybind11)
 endif()

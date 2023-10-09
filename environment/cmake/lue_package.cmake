@@ -43,3 +43,19 @@ else()
 endif()
 
 include(CPack)
+
+cpack_add_component(lue_runtime
+    DISPLAY_NAME
+        "LUE runtime package"
+    DESCRIPTION
+        "This package contains everything needed to use LUE. Install this package if you want to develop simulation models, for example."
+    REQUIRED
+)
+
+cpack_add_component(lue_development
+    DISPLAY_NAME
+        "LUE development package"
+    DESCRIPTION
+        "This package contains everything needed to extend LUE. Install this package if you want to add new modelling operations, for example."
+    DISABLED
+)
