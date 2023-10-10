@@ -3,7 +3,7 @@ name: Linux CI
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh446"
     paths:
       - "conanfile.py"
       - ".github/workflows/linux.yml"
@@ -42,6 +42,8 @@ jobs:
           build_directory: $GITHUB_WORKSPACE/../build
           runtime_install_directory: $GITHUB_WORKSPACE/../runtime_install
           development_install_directory: $GITHUB_WORKSPACE/../development_install
+          lue_consume_source_directory: $GITHUB_WORKSPACE/../lue_consume
+          lue_consume_build_directory: $GITHUB_WORKSPACE/../lue_consume_build
 
         steps:
 
@@ -154,6 +156,24 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+
+        - name: development install
+          run: |
+              cmake \
+                  --install ${{ env.build_directory }} \
+                  --prefix ${{ env.development_install_directory }} \
+                  --component lue_development
+              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              # TODO Uncomment once this works
+              # cmake \
+              #     -S ${{ env.lue_consume_source_directory }} \
+              #     -B ${{ env.lue_consume_build_directory }} \
+              #     -G "Ninja" \
+              #     -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+              #     -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }}
+              # cmake --build ${{ env.lue_consume_build_directory }} --target all
+              # ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+              # ${{ env.lue_consume_build_directory }}/lue_consume_framework
 
         - name: development package
           run: |

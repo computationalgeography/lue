@@ -1,0 +1,84 @@
+name: Linux consume LUE
+
+on:
+  push:
+    branches-ignore:
+      - "gh446"
+    paths:
+      - "conanfile.py"
+      - ".github/workflows/linux-consume.yml"
+      - "environment/cmake/**"
+      - "source/**"
+      - "!source/qa/python/qa/**"
+
+jobs:
+    build:
+
+        strategy:
+            matrix:
+                os: ["ubuntu-22.04"]
+                compiler:
+                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9     , package: g++-9    }
+                    - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
+                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
+                    - { name: clang, version: 15, cc: clang-15, cxx: clang++-15, package: clang-15 }
+            fail-fast: false
+
+        runs-on: ${{ matrix.os }}
+
+        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
+
+        defaults:
+          run:
+            shell: bash -l {0}
+
+        env:
+          source_directory: $GITHUB_WORKSPACE
+          build_directory: $GITHUB_WORKSPACE/../build
+
+        steps:
+
+        - uses: actions/checkout@v4
+          with:
+            repository: "computationalgeography/lue_consume"
+
+        - name: install packages
+          run: |
+              sudo apt-get update
+              sudo apt-get remove libunwind-14-dev
+              sudo apt-get install \
+                  cmake \
+                  hwloc \
+                  libasio-dev \
+                  libboost-all-dev \
+                  libdocopt-dev \
+                  libfmt-dev \
+                  libgdal-dev \
+                  libgoogle-perftools-dev \
+                  libhdf5-dev \
+                  ${{ matrix.compiler.package }} \
+                  ninja-build \
+                  nlohmann-json3-dev \
+                  python3-docopt \
+                  python3-jinja2 \
+                  python3-numpy \
+                  python3-pip
+
+        - name: configure
+          run: |
+                cmake \
+                    --preset lue_consume_debug \
+                    -B ${{ env.build_directory }} \
+                    -G "Ninja" \
+                    -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                    -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                    -D HPX_WITH_MALLOC="tcmalloc"
+
+        - name: build
+          run: |
+              cmake --build ${{ env.build_directory }} --target all
+
+        - name: test
+          run: |
+              ${{ env.build_directory }}/lue_consume_data_model
+              ${{ env.build_directory }}/lue_consume_framework
