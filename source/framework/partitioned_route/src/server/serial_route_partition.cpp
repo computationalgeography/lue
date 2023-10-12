@@ -16,6 +16,9 @@ HPX_REGISTER_COMPONENT_MODULE()
         SerialRoutePartition_##rank##_Component)                                                             \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
+        SerialRoutePartition_##rank##_Component::ShapeAction, SerialRoutePartition_##rank##_ShapeAction)     \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
         SerialRoutePartition_##rank##_Component::NrRoutesAction,                                             \
         SerialRoutePartition_##rank##_NrRoutesAction)                                                        \
                                                                                                              \

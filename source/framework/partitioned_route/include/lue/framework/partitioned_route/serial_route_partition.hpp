@@ -29,6 +29,8 @@ namespace lue {
 
             using RouteFragments = typename Server::RouteFragments;
 
+            using Shape = typename Server::Shape;
+
             SerialRoutePartition();
 
             SerialRoutePartition(hpx::id_type component_id);
@@ -44,6 +46,8 @@ namespace lue {
             SerialRoutePartition& operator=(SerialRoutePartition const&) = default;
 
             SerialRoutePartition& operator=(SerialRoutePartition&&) = default;
+
+            hpx::future<Shape> shape() const;
 
             hpx::future<Count> nr_routes() const;
 

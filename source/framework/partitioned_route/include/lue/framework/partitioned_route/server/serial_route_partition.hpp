@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/shape.hpp"
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
 #include <hpx/include/components.hpp>
@@ -28,9 +29,11 @@ namespace lue::server {
 
             using RouteFragments = std::unordered_map<RouteID, std::vector<RouteFragment>>;
 
+            using Shape = lue::Shape<Index, rank>;
+
             SerialRoutePartition();
 
-            SerialRoutePartition(RouteFragments&& route_fragments);
+            SerialRoutePartition(Shape const& shape, RouteFragments&& route_fragments);
 
             SerialRoutePartition(SerialRoutePartition const&) = default;
 
@@ -42,6 +45,8 @@ namespace lue::server {
 
             SerialRoutePartition& operator=(SerialRoutePartition&&) = default;
 
+            Shape shape() const;
+
             Count nr_routes() const;
 
             Count nr_route_fragments() const;
@@ -49,6 +54,8 @@ namespace lue::server {
             std::vector<RouteID> route_ids() const;
 
             std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
+
+            HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, shape, ShapeAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, nr_routes, NrRoutesAction)
 
@@ -61,6 +68,11 @@ namespace lue::server {
 
         private:
 
+            void assert_invariants() const;
+
+            //! Partition shape
+            Shape _shape;
+
             RouteFragments _route_fragments;
     };
 
@@ -70,6 +82,9 @@ namespace lue::server {
 #define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(rank)                                        \
                                                                                                              \
     using SerialRoutePartition_##rank##_Component = lue::server::SerialRoutePartition<rank>;                 \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        SerialRoutePartition_##rank##_Component::ShapeAction, SerialRoutePartition_##rank##_ShapeAction)     \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
         SerialRoutePartition_##rank##_Component::NrRoutesAction,                                             \

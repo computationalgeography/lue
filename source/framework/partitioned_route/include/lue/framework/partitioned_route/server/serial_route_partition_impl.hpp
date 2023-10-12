@@ -8,19 +8,30 @@ namespace lue::server {
     SerialRoutePartition<rank>::SerialRoutePartition():
 
         Base{},
+        _shape{},
         _route_fragments{}
 
     {
+        assert_invariants();
     }
 
 
     template<Rank rank>
-    SerialRoutePartition<rank>::SerialRoutePartition(RouteFragments&& route_fragments):
+    SerialRoutePartition<rank>::SerialRoutePartition(Shape const& shape, RouteFragments&& route_fragments):
 
         Base{},
+        _shape{shape},
         _route_fragments{std::move(route_fragments)}
 
     {
+        assert_invariants();
+    }
+
+
+    template<Rank rank>
+    typename SerialRoutePartition<rank>::Shape SerialRoutePartition<rank>::shape() const
+    {
+        return _shape;
     }
 
 
@@ -69,6 +80,27 @@ namespace lue::server {
         lue_hpx_assert(it != _route_fragments.end());
 
         return it->second;
+    }
+
+
+    template<Rank rank>
+    void SerialRoutePartition<rank>::assert_invariants() const
+    {
+        // Verify all cells idxs in the fragments are within the partition
+        for (auto const& [route_id, fragments] : _route_fragments)
+        {
+            for (auto const& fragment : fragments)
+            {
+                for (auto const& cell_idxs : fragment.cells_idxs())
+                {
+                    for (Index idx = 0; idx < rank; ++idx)
+                    {
+                        lue_hpx_assert(cell_idxs[idx] >= 0);
+                        lue_hpx_assert(cell_idxs[idx] < _shape[idx]);
+                    }
+                }
+            }
+        }
     }
 
 }  // namespace lue::server

@@ -33,6 +33,19 @@ namespace lue {
 
 
     template<Rank rank>
+    hpx::future<typename SerialRoutePartition<rank>::Shape> SerialRoutePartition<rank>::shape() const
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        typename Server::ShapeAction action;
+
+        // this->get_id() identifies the server instance
+        return hpx::async(action, this->get_id());
+    }
+
+
+    template<Rank rank>
     hpx::future<Count> SerialRoutePartition<rank>::nr_routes() const
     {
         lue_hpx_assert(this->is_ready());
@@ -40,7 +53,6 @@ namespace lue {
 
         typename Server::NrRoutesAction action;
 
-        // this->get_id() identifies the server instance
         return hpx::async(action, this->get_id());
     }
 
