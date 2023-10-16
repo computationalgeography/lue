@@ -16,10 +16,7 @@ namespace lue::framework {
         using Array = pybind11::array_t<T>;
 
         template<typename T>
-        using Object = std::tuple<Array<T>, pybind11::buffer_info>;
-
-        template<typename T>
-        using ReferenceCountedObject = std::shared_ptr<Object<T>>;
+        using ReferenceCountedObject = std::shared_ptr<Array<T>>;
 
     }  // Anonymous namespace
 
@@ -27,18 +24,6 @@ namespace lue::framework {
 
 
 namespace lue::detail {
-
-    // template<
-    //     typename T>
-    // class ArrayTraits<
-    //     pybind11::array_t<T>>
-    // {
-
-    //     public:
-
-    //         using Element = T;
-
-    // };
 
     template<typename T>
     class ArrayTraits<lue::framework::ReferenceCountedObject<T>>
@@ -109,20 +94,10 @@ namespace lue::framework {
             //   created. This is prevented by copying array instances around. This increases
             //   the reference count of the underlying pybind11 object.
 
-            // The reference counted object is a shared pointer of:
-            // - The array passed in
-            // - The pybind11::buffer_info instance of the array
-            // This second thing provides us with a pointer to the buffer array elements. Obtaining
-            // it should only be done once, for all partitions. Therefore we do that here and glue
-            // it to the array. A shared pointer to this tuple is passed around in the create_array
-            // function. We don't use the reference counting of the array itself, apart from
-            // the one copy we make when we create the tuple.
-
             using Policies = lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
             using Functor = lue::InstantiateFromBuffer<ReferenceCountedObject<Element>, 2>;
 
-            ReferenceCountedObject<Element> object{
-                std::make_shared<Object<Element>>(std::make_tuple(array, array.request()))};
+            ReferenceCountedObject<Element> object{std::make_shared<Array<Element>>(array)};
 
             return pybind11::cast(lue::create_partitioned_array(
                 Policies{},
@@ -131,7 +106,7 @@ namespace lue::framework {
                 Functor{
                     object,  // Copy: increments reference count
                     [](ReferenceCountedObject<Element> const& object) -> Element*
-                    { return static_cast<Element*>(std::get<1>(*object).ptr); },
+                    { return const_cast<Element*>(object->data()); },
                     no_data_value}));
         }
 
@@ -148,49 +123,56 @@ namespace lue::framework {
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint8_t>{});
+            "no_data_value"_a = std::optional<uint8_t>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<uint32_t>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint32_t>{});
+            "no_data_value"_a = std::optional<uint32_t>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<uint64_t>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint64_t>{});
+            "no_data_value"_a = std::optional<uint64_t>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<int32_t>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<int32_t>{});
+            "no_data_value"_a = std::optional<int32_t>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<int64_t>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<int64_t>{});
+            "no_data_value"_a = std::optional<int64_t>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<float>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<float>{});
+            "no_data_value"_a = std::optional<float>{},
+            pybind11::return_value_policy::move);
         module.def(
             "from_numpy",
             from_numpy_py<double>,
             "array"_a.noconvert(),
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<double>{});
+            "no_data_value"_a = std::optional<double>{},
+            pybind11::return_value_policy::move);
     }
 
 }  // namespace lue::framework

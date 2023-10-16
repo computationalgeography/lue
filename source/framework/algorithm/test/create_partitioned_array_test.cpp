@@ -343,6 +343,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     using BufferHandle = std::shared_ptr<Buffer>;
 
     BufferHandle buffer_handle = std::make_shared<Buffer>(nr_values);
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 1);
     std::iota(buffer_handle->begin(), buffer_handle->end(), 0);
 
     // Create a partitioned array, passing in the buffer
@@ -368,9 +369,9 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     auto const& partitions = array.partitions();
     lue::wait_all(partitions);
 
-    // buffer_handle and the functor containing a copy of buffer_handle
+    // buffer_handle and the functor contain a copy of buffer_handle
     // At least once this test failed (use_count was 3). Could be this specific test is wrong.
-    // BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
 
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
 
@@ -421,6 +422,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
     using BufferHandle = boost::shared_ptr<Buffer>;
 
     BufferHandle buffer_handle = boost::make_shared<Buffer>(nr_values);
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 1);
     std::fill_n(buffer_handle.get(), nr_values, 5);
 
     // Put a special no-data value in the first cell of each partition
@@ -442,6 +444,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
         buffer_handle,  // Copy: increments reference count
         [](BufferHandle const& handle) -> Element* { return handle.get(); },
         999};
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
 
     using CreatePartitionedArrayPolicies =
         lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
@@ -451,6 +454,8 @@ BOOST_AUTO_TEST_CASE(use_case_3)
     // In each partition we put a no-data value, so the number of no-data values must be equal
     // to the number of partitions.
     BOOST_CHECK_EQUAL(lue::sum(!valid<std::uint8_t>(array)).get(), array.nr_partitions());
+
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
 
     // Now test these explicitly. All other values must then be valid, by definition.
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
