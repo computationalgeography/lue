@@ -750,7 +750,7 @@ namespace lue {
 
                 auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                // A single instance of this class are used to instantiate all new partitions. This
+                // A single instance of this class is used to instantiate all new partitions. This
                 // happens asynchronously. A partition client (a future to the server instance)
                 // is returned immediately, but the server instance itself is not created yet.
                 // To be able to create the server instance later on, when the
@@ -765,7 +765,7 @@ namespace lue {
                      array_shape,
                      offset,
                      partition_shape,
-                     buffer_handle = _buffer_handle,
+                     buffer_handle = _buffer_handle,  // Copy, increases reference count
                      grab_buffer = _grab_buffer,
                      no_data_value = _no_data_value]()
                     {
