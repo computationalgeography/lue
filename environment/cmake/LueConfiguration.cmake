@@ -211,15 +211,7 @@ if(LUE_BUILD_QA)
             filesystem system unit_test_framework)
 
         if(LUE_BUILD_FRAMEWORK)
-            if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
-                set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
-            else()
-                find_file(HPXRUN "hpxrun.py")
-
-                if(NOT HPXRUN)
-                    message(FATAL_ERROR "hpxrun.py not found")
-                endif()
-            endif()
+            set(LUE_HPXRUN_REQUIRED TRUE)
 
             # Needed to be able to run hpxrun.py
             set(LUE_PYTHON_REQUIRED TRUE)
@@ -515,6 +507,13 @@ if(LUE_HPX_REQUIRED)
                     "ABI compatibility is not guaranteed. Expect link errors.")
             endif()
         endif()
+    endif()
+
+    if(LUE_HPXRUN_REQUIRED)
+        find_file(HPXRUN "hpxrun.py"
+            HINTS ${HPX_PREFIX}/bin
+            REQUIRED
+        )
     endif()
 endif()
 

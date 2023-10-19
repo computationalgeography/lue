@@ -38,7 +38,7 @@ jobs:
         - name: checkout lue
           uses: actions/checkout@v3
 
-        - name: configure system
+        - name: setup platform
           run: |
               sudo apt-get update
               # sudo apt-get upgrade
@@ -61,21 +61,17 @@ jobs:
                   ${{ matrix.compiler.package }} \
                   ninja-build \
                   nlohmann-json3-dev \
-                  pybind11-dev
-
-        - uses: conda-incubator/setup-miniconda@v2
-          with:
-              auto-update-conda: true
-              python-version: ${{ matrix.python-version }}
-              channels: conda-forge
-
-        - name: install python packages
-          shell: bash -l {0}
-          run: |
-              conda install docopt breathe jinja2 markupsafe matplotlib numpy pip ruamel.yaml sphinx
-
-              # Use conan from pypi to get the latest version
-              pip install "conan>=2"
+                  pybind11-dev \
+                  python3-breath \
+                  python3-docopt \
+                  python3-jinja2 \
+                  python3-markupsafe \
+                  python3-matplotlib \
+                  python3-numpy \
+                  python3-pip \
+                  python3-ruamel.yaml \
+                  python3-sphinx
+            sudo pip3 install conan
 
         - name: configure lue
           shell: bash -l {0}
