@@ -38,6 +38,11 @@ add_library(lue_hdf5 STATIC
 
 add_library(lue::hdf5 ALIAS lue_hdf5)
 
+set_target_properties(lue_hdf5
+    PROPERTIES
+        EXPORT_NAME hdf5
+)
+
 target_compile_definitions(lue_hdf5
     PUBLIC
         H5_USE_110_API
@@ -74,4 +79,6 @@ target_link_libraries(lue_hdf5
         fmt::fmt
 )
 
-lue_install_libraries(TARGETS lue_hdf5)
+lue_install_development_libraries(
+    TARGETS lue_hdf5
+)

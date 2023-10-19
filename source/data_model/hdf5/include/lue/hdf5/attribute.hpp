@@ -4,6 +4,7 @@
 #include "lue/hdf5/datatype_traits.hpp"
 #include <cassert>
 #include <stdexcept>
+#include <type_traits>
 
 
 namespace lue {

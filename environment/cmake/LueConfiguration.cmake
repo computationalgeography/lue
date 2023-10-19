@@ -179,7 +179,7 @@ if(LUE_BUILD_FRAMEWORK)
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
-    set(LUE_KOKKOS_MDSPAN_REQUIRED TRUE)
+    set(LUE_MDSPAN_REQUIRED TRUE)
     set(LUE_PYTHON_REQUIRED TRUE)  # templatize.py
 
     # if(LUE_BUILD_HPX AND LUE_BUILD_OTF2 AND LUE_OTF2_WITH_PYTHON)
@@ -259,14 +259,14 @@ if(LUE_BUILD_DOCUMENTATION)
 endif()
 
 
-if(LUE_KOKKOS_MDSPAN_REQUIRED)
-    FetchContent_Declare(kokkos_mdspan
+if(LUE_MDSPAN_REQUIRED)
+    FetchContent_Declare(MDSpan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
         GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
-        # GIT_TAG mdspan-0.6.0
         SYSTEM
+        FIND_PACKAGE_ARGS
     )
-    FetchContent_MakeAvailable(kokkos_mdspan)
+    FetchContent_MakeAvailable(MDSpan)
 endif()
 
 
@@ -517,6 +517,22 @@ if(LUE_HPX_REQUIRED)
                 REQUIRED
             )
         endif()
+    endif()
+
+    if(LUE_HPXRUN_REQUIRED)
+        find_file(HPXRUN "hpxrun.py"
+            HINTS ${HPX_PREFIX}
+        )
+
+    #      if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
+    #             set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+    #         else()
+    #             find_file(HPXRUN "hpxrun.py")
+
+    #             if(NOT HPXRUN)
+    #                 message(FATAL_ERROR "hpxrun.py not found")
+    #             endif()
+    #         endif()
     endif()
 endif()
 

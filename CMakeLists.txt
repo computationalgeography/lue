@@ -53,8 +53,42 @@ include(Lue)
 if(LUE_BUILD_DOCUMENTATION)
     add_subdirectory(document)
 endif()
+
 add_subdirectory(source)
 
+install(
+    EXPORT lue_development
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lue
+    NAMESPACE lue::
+    FILE lue_development.cmake
+    COMPONENT lue_development
+)
+
+configure_file(
+    environment/cmake/lue-config.cmake.in
+    environment/cmake/lue-config.cmake
+    @ONLY
+)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/environment/cmake/lue-config.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lue
+    COMPONENT lue_development
+)
+
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    lue-config-version.cmake
+    COMPATIBILITY
+        ExactVersion
+)
+
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/lue-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lue
+    COMPONENT lue_development
+)
 
 # if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
 #     install(

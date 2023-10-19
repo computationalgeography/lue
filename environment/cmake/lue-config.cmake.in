@@ -1,0 +1,33 @@
+include(CMakeFindDependencyMacro)
+
+
+# Imported targets the LUE targets depend on, in its headers, or at link-time
+set(LUE_BOOST_REQUIRED @LUE_BOOST_REQUIRED@)
+set(LUE_FMT_REQUIRED @LUE_FMT_REQUIRED@)
+set(LUE_HDF5_REQUIRED @LUE_HDF5_REQUIRED@)
+set(LUE_HPX_REQUIRED @LUE_HPX_REQUIRED@)
+set(LUE_MDSPAN_REQUIRED @LUE_MDSPAN_REQUIRED@)
+
+
+if(LUE_BOOST_REQUIRED)
+    find_dependency(Boost)
+endif()
+
+if(LUE_FMT_REQUIRED)
+    find_dependency(fmt)
+endif()
+
+if(LUE_HDF5_REQUIRED)
+    find_dependency(HDF5)
+endif()
+
+if(LUE_HPX_REQUIRED)
+    find_dependency(HPX)
+endif()
+
+if(LUE_MDSPAN_REQUIRED)
+    find_dependency(MDSpan)
+endif()
+
+
+include(${CMAKE_CURRENT_LIST_DIR}/lue_development.cmake)

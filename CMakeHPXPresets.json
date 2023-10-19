@@ -1,0 +1,72 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "hpx_shared_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_TESTS": "FALSE",
+                "HPX_WITH_EXAMPLES": "FALSE",
+                "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
+                "HPX_WITH_FETCH_ASIO": "TRUE",
+                "HPX_WITH_PKGCONFIG": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_node_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_NETWORKING": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_cluster_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_NETWORKING": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_debug_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_node_configuration",
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_relwithdebinfo_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_node_configuration",
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "TRUE",
+                "HPX_WITH_THREAD_IDLE_RATES": "TRUE",
+                "HPX_WITH_APEX": "TRUE",
+                "HPX_WITH_PAPI": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_release_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_node_configuration",
+                "hpx_shared_configuration"
+            ],
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        }
+    ]
+}

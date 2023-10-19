@@ -12,6 +12,11 @@ if(LUE_QA_WITH_PYTHON_API)
 
     add_library(lue::py_qa ALIAS lue_py_qa)
 
+    set_target_properties(lue_py_qa
+        PROPERTIES
+            VERSION ${LUE_VERSION}
+            SOVERSION ${LUE_VERSION_MAJOR}
+    )
     target_include_directories(lue_py_qa
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -33,7 +38,9 @@ if(LUE_QA_WITH_PYTHON_API)
         pybind11_strip(lue_py_qa)
     endif()
 
-    lue_install_libraries(TARGETS lue_py_qa)
+    lue_install_runtime_libraries(
+        TARGETS lue_py_qa
+    )
 
     if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
         # If we are using a Python interpreter from a Conda environment then we must expand RPATH

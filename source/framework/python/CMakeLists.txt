@@ -155,6 +155,12 @@ target_compile_definitions(lue_py_framework
         NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
 )
 
+set_target_properties(lue_py_framework
+    PROPERTIES
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+)
+
 target_include_directories(lue_py_framework
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
@@ -185,7 +191,9 @@ if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebIn
     pybind11_strip(lue_py_framework)
 endif()
 
-lue_install_libraries(TARGETS lue_py_framework)
+lue_install_runtime_libraries(
+    TARGETS lue_py_framework
+)
 
 if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
     # If we are using a Python interpreter from a Conda environment then we must expand RPATH
