@@ -493,6 +493,10 @@ if(LUE_HPX_REQUIRED)
         endif()
 
         FetchContent_MakeAvailable(hpx)
+
+        if(LUE_HPXRUN_REQUIRED)
+            set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
+        endif()
     else()
         find_package(HPX REQUIRED)
 
@@ -507,13 +511,13 @@ if(LUE_HPX_REQUIRED)
                     "ABI compatibility is not guaranteed. Expect link errors.")
             endif()
         endif()
-    endif()
 
-    if(LUE_HPXRUN_REQUIRED)
-        find_file(HPXRUN "hpxrun.py"
-            HINTS ${HPX_PREFIX}/bin
-            REQUIRED
-        )
+        if(LUE_HPXRUN_REQUIRED)
+            find_file(HPXRUN "hpxrun.py"
+                HINTS ${HPX_PREFIX}/bin
+                REQUIRED
+            )
+        endif()
     endif()
 endif()
 
