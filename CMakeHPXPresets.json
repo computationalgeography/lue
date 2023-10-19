@@ -16,7 +16,7 @@
             "name": "hpx_node_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_NETWORKING": "FALSE"
+                "HPX_WITH_NETWORKING": "TRUE"
             }
         },
         {
