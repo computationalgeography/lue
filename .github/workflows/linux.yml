@@ -62,22 +62,34 @@ jobs:
                   ninja-build \
                   nlohmann-json3-dev \
                   pybind11-dev \
-                  python3-breath \
-                  python3-docopt \
-                  python3-jinja2 \
-                  python3-markupsafe \
-                  python3-matplotlib \
-                  python3-numpy \
-                  python3-pip \
-                  python3-ruamel.yaml \
-                  python3-sphinx
-            sudo pip3 install conan
+
+        - name: setup python
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+
+        - name: setup virtual environment
+          shell: bash -l {0}
+          run: |
+              python3 -m venv venv
+              source venv/bin/activate
+              pip3 install \
+                  breath \
+                  conan \
+                  docopt \
+                  jinja2 \
+                  markupsafe \
+                  matplotlib \
+                  numpy \
+                  pip \
+                  ruamel.yaml \
+                  sphinx
 
         - name: configure lue
           shell: bash -l {0}
           run: |
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
+              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
+              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir $GITHUB_WORKSPACE/../build
               CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} \
               LUE_CONAN_PACKAGES="imgui" \
@@ -138,7 +150,7 @@ jobs:
               export PYTHONPATH="install/lib/python${{ matrix.python-version }}:$PYTHONPATH"
               install/bin/lue_calculate --version
               install/bin/lue_scalability --version
-              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
         - name: deploy lue documentation
           if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == '3.10'
