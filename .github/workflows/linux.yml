@@ -123,7 +123,7 @@ jobs:
                   -B ${{ env.mdspan_build_directory }} \
                   -D CMAKE_BUILD_TYPE=Release
               cmake --build ${{ env.mdspan_build_directory }} --target all
-              cmake --install ${{ env.mdspan_build_directory }} --prefix ${{ mdspan_install_directory }} --strip
+              cmake --install ${{ env.mdspan_build_directory }} --prefix ${{ env.mdspan_install_directory }} --strip
               rm -fr ${{ env.mdspan_build_directory }} ${{ env.mdspan_source_directory }}
 
         - name: configure
