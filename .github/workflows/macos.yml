@@ -84,7 +84,7 @@ jobs:
             install_directory:
               ${{ env.hpx_install_directory }}
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
-            cmake_preset_file: $GITHUB_WORKSPACE/CMakeHPXPresets.json
+            cmake_preset_file: ${{ env.source_directory }}/CMakeHPXPresets.json
 
         - name: "install mdspan"
           uses: ./.github/actions/install_mdspan
