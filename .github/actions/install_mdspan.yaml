@@ -1,0 +1,40 @@
+name: "install mdspan"
+description: "Configure, build and install MDSpan, and clean-up afterwards"
+inputs:
+  cxx_compiler:
+    required: true
+  build_type:
+    required: true
+  mdspan_tag:
+    required: true
+  source_directory:
+    required: true
+  build_directory:
+    required: true
+  install_directory:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: install mdspan
+      shell: bash
+      run: |
+        git clone https://github.com/kokkos/mdspan.git ${{ inputs.mdspan_source_directory }}
+
+        cd ${{ inputs.mdspan_source_directory }}
+        git checkout ${{ inputs.mdspan_tag }}
+        cd -
+
+        mkdir ${{ inputs.mdspan_build_directory }}
+
+        cmake \
+            -S ${{ inputs.mdspan_source_directory }} \
+            -B ${{ inputs.mdspan_build_directory }} \
+            -G "Ninja" \
+            -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
+            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }}
+
+        cmake --build ${{ inputs.mdspan_build_directory }} --target all
+        cmake --install ${{ inputs.mdspan_build_directory }} --prefix ${{ inputs.mdspan_install_directory }} --strip
+
+        rm -fr ${{ inputs.mdspan_build_directory }} ${{ inputs.mdspan_source_directory }}

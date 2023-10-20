@@ -1,0 +1,53 @@
+name: "install hpx"
+description: "Configure, build and install HPX, using settings needed by the LUE build, and clean-up afterwards"
+inputs:
+  cxx_compiler:
+    required: true
+  build_type:
+    required: true
+  hpx_version:
+    required: true
+  source_directory:
+    required: true
+  build_directory:
+    required: true
+  install_directory:
+    required: true
+  cache_key:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: cache hpx
+      id: cache-hpx
+      uses: actions/cache@v3
+      env:
+          cache-name: cache-hpx
+      with:
+          path: ${{ inputs.hpx_install_directory }}
+          key: ${{ inputs.cache_key }}
+
+    - name: install hpx
+      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
+      shell: bash
+      run: |
+        wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ inputs.hpx_version }}.tar.gz
+        tar -zx --directory=$(dirname ${{ inputs.hpx_source_directory }}) --file v${{ inputs.hpx_version }}.tar.gz
+        wget https://raw.githubusercontent.com/computationalgeography/lue/${{ inputs.lue_branch }}/CMakeHPXPresets.json \
+            -O $hpx_source_directory/CMakeUserPresets.json
+
+        mkdir ${{ inputs.hpx_build_directory }}
+
+        cd ${{ inputs.hpx_source_directory }}
+        cmake \
+            --preset hpx_release_node_configuration \
+            -B ${{ inputs.hpx_build_directory }} \
+            -G "Ninja" \
+            -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
+            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }}
+        cd -
+
+        cmake --build ${{ inputs.hpx_build_directory }} --target all
+        cmake --install ${{ inputs.hpx_build_directory }} --prefix ${{ inputs.hpx_install_directory }} --strip
+
+        rm -fr ${{ inputs.hpx_build_directory }} ${{ inputs.hpx_source_directory }}
