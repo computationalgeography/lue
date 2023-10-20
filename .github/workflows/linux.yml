@@ -18,7 +18,7 @@ jobs:
         strategy:
             matrix:
                 os: ["ubuntu-22.04"]
-                python-version: ["3.9", "3.12"]
+                python_version: ["3.9", "3.12"]
                 compiler:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
@@ -27,11 +27,11 @@ jobs:
                     - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
                     - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
                     - { name: clang, version: 15, cc: clang-15, cxx: clang++-15, package: clang-15 }
-            fail-fast: true
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python-version }}
+        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python_version }}
 
         defaults:
           run:
@@ -55,9 +55,10 @@ jobs:
         steps:
 
         - uses: actions/checkout@v4
+
         - uses: actions/setup-python@v4
           with:
-            python-version: ${{ matrix.python-version }}
+            python-version: ${{ matrix.python_version }}
             cache: "pip"
             cache-dependency-path: "**/requirements-dev.txt"
 
@@ -85,51 +86,32 @@ jobs:
                   nlohmann-json3-dev
               pip3 install -r environment/configuration/requirements-dev.txt
 
-        - name: cache hpx
-          id: cache-hpx
-          uses: actions/cache@v3
-          env:
-              cache-name: cache-hpx
+        - name: "install hpx"
+          uses: ./.github/actions/install_hpx
           with:
-              path: ${{ env.hpx_install_directory }}
-              key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cxx_compiler: ${{ matrix.compiler.name }}
+            build_type: Release
+            hpx_version: ${{ env.hpx_version }}
+            source_directory:
+              ${{ env.hpx_source_directory }}
+            build_directory:
+              ${{ env.hpx_build_directory }}
+            install_directory:
+              ${{ env.hpx_install_directory }}
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 
-        - if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
-          name: install hpx
-          run: |
-              wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ env.hpx_version }}.tar.gz
-              tar -zx --directory=$(dirname ${{ env.hpx_source_directory }}) --file v${{ env.hpx_version }}.tar.gz
-              cp ${{ env.source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}/CMakeUserPresets.json
-              mkdir ${{ env.hpx_build_directory }}
-              cd ${{ env.hpx_source_directory }}
-              cmake \
-                  --preset hpx_release_node_configuration \
-                  -B ${{ env.hpx_build_directory }} \
-                  -G "Ninja" \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D CMAKE_BUILD_TYPE=Release
-              cd -
-              cmake --build ${{ env.hpx_build_directory }} --target all
-              cmake --install ${{ env.hpx_build_directory }} --prefix ${{ env.hpx_install_directory }} --strip
-              rm -fr ${{ env.hpx_build_directory }} ${{ env.hpx_source_directory }}
-
-        - name: install mdspan
-          run: |
-              git clone https://github.com/kokkos/mdspan.git ${{ env.mdspan_source_directory }}
-              cd ${{ env.mdspan_source_directory }}
-              git checkout a799088  # 20191010
-              cd -
-
-              mkdir ${{ env.mdspan_build_directory }}
-              cmake \
-                  -S ${{ env.mdspan_source_directory }} \
-                  -B ${{ env.mdspan_build_directory }} \
-                  -G "Ninja" \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D CMAKE_BUILD_TYPE=Release
-              cmake --build ${{ env.mdspan_build_directory }} --target all
-              cmake --install ${{ env.mdspan_build_directory }} --prefix ${{ env.mdspan_install_directory }} --strip
-              rm -fr ${{ env.mdspan_build_directory }} ${{ env.mdspan_source_directory }}
+        - name: "install mdspan"
+          uses: ./.github/actions/install_mdspan
+          with:
+            cxx_compiler: ${{ matrix.compiler.name }}
+            build_type: Release
+            mdspan_tag: a799088  # 20191010
+            source_directory:
+              ${{ env.mdspan_source_directory }}
+            build_directory:
+              ${{ env.mdspan_build_directory }}
+            install_directory:
+              ${{ env.mdspan_install_directory }}
 
         - name: configure
           run: |
@@ -156,7 +138,6 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D LUE_BUILD_HPX=FALSE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
 
@@ -187,7 +168,7 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_validate --version
               ${{ env.runtime_install_directory }}/bin/lue_view --version
 
-              export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
               export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib64:$LD_LIBRARY_PATH"
               ${{ env.runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.runtime_install_directory }}/bin/lue_scalability --version
@@ -235,7 +216,7 @@ jobs:
         #       # TODO Test configuring and building the source package
 
         - name: documentation
-          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python-version == '3.10'
+          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python_version == '3.10'
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
