@@ -58,7 +58,8 @@ jobs:
         - uses: actions/setup-python@v4
           with:
             python-version: ${{ matrix.python-version }}
-            cache: pip
+            cache: "pip"
+            cache-dependency-path: "**/requirements-dev.txt"
 
         - name: install packages
           run: |
@@ -88,7 +89,17 @@ jobs:
               # pip3 install --upgrade pip
               pip3 install -r environment/configuration/requirements-dev.txt
 
-        - name: configure, build, install hpx / mdspan
+        - name: cache hpx
+          id: cache-hpx
+          uses: actions/cache@v3
+          env:
+              cache-name: cache-hpx
+          with:
+              path: ${{ env.hpx_install_directory }}
+              key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+
+        - if: ${{ steps.cache-hpx.outputs.cache-hit != "true" }}
+          name: install hpx
           run: |
               wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ env.hpx_version }}.tar.gz
               tar -zx --directory=$(dirname ${{ env.hpx_source_directory }}) --file v${{ env.hpx_version }}.tar.gz
@@ -99,12 +110,16 @@ jobs:
                   --preset hpx_release_node_configuration \
                   -B ${{ env.hpx_build_directory }} \
                   -G "Ninja" \
+                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release
               cd -
               cmake --build ${{ env.hpx_build_directory }} --target all
               cmake --install ${{ env.hpx_build_directory }} --prefix ${{ env.hpx_install_directory }} --strip
               rm -fr ${{ env.hpx_build_directory }} ${{ env.hpx_source_directory }}
 
+        - name: install mdspan
+          run: |
               git clone https://github.com/kokkos/mdspan.git ${{ env.mdspan_source_directory }}
               cd ${{ env.mdspan_source_directory }}
               git checkout a799088  # 20191010
@@ -112,9 +127,11 @@ jobs:
 
               mkdir ${{ env.mdspan_build_directory }}
               cmake \
-                  -G "Ninja" \
                   -S ${{ env.mdspan_source_directory }} \
                   -B ${{ env.mdspan_build_directory }} \
+                  -G "Ninja" \
+                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release
               cmake --build ${{ env.mdspan_build_directory }} --target all
               cmake --install ${{ env.mdspan_build_directory }} --prefix ${{ env.mdspan_install_directory }} --strip
@@ -136,6 +153,7 @@ jobs:
                       -B ${{ env.build_directory }} \
                       -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                      -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
