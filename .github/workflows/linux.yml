@@ -27,7 +27,7 @@ jobs:
                     - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
                     - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
                     - { name: clang, version: 15, cc: clang-15, cxx: clang++-15, package: clang-15 }
-            fail-fast: false
+            fail-fast: true
 
         runs-on: ${{ matrix.os }}
 
@@ -45,7 +45,7 @@ jobs:
           lue_consume_source_directory: $GITHUB_WORKSPACE/../lue_consume
           lue_consume_build_directory: $GITHUB_WORKSPACE/../lue_consume_build
           hpx_version: 1.9.1
-          hpx_source_directory: $GITHUB_WORKSPACE/../hpx-source
+          hpx_source_directory: $GITHUB_WORKSPACE/../hpx-1.9.1
           hpx_build_directory: $GITHUB_WORKSPACE/../hpx-build
           hpx_install_directory: $GITHUB_WORKSPACE/../hpx-install
           mdspan_source_directory: $GITHUB_WORKSPACE/../mdspan-source
