@@ -141,8 +141,8 @@ jobs:
 
               # Add our package to the set of Conda packages
               conda-develop ${{ env.install-directory }}/lib/python${{ matrix.python-version }}
-              ${{ env.install-directory }}/bin/lue_calculate --version || echo "TODO: Error executing lue_calculate!"
-              ${{ env.install-directory }}/bin/lue_scalability --version || echo "TODO: Error executing lue_scalability!"
+              ${{ env.install-directory }}/bin/lue_calculate --version
+              ${{ env.install-directory }}/bin/lue_scalability --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
               dumpbin //imports ${{ env.install-directory }}/bin/lue_view.exe
