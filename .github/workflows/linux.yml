@@ -98,8 +98,8 @@ jobs:
 
         - name: configure, build, install hpx / mdspan
           run: |
-              wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ hpx_version }}.tar.gz
-              tar -zx --directory=$(dirname ${{ env.hpx_source_directory }}) --file v${{ hpx_version }}.tar.gz
+              wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ env.hpx_version }}.tar.gz
+              tar -zx --directory=$(dirname ${{ env.hpx_source_directory }}) --file v${{ env.hpx_version }}.tar.gz
               cp ${{ env.source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}/CMakeUserPresets.json
               mkdir ${{ env.hpx_build_directory }}
               cd ${{ env.hpx_source_directory }}
