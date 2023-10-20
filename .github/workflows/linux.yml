@@ -98,7 +98,7 @@ jobs:
               path: ${{ env.hpx_install_directory }}
               key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 
-        - if: ${{ steps.cache-hpx.outputs.cache-hit != "true" }}
+        - if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
           name: install hpx
           run: |
               wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ env.hpx_version }}.tar.gz
