@@ -187,10 +187,9 @@ namespace lue {
 
             if (datatype.is_string())
             {
-                // HDF5 array contains variable length UTF8 strings. The
-                // destination array must contain fixed length Unicode strings
-                // (measured in code points). Shorter strings are padded with
-                // nulls.
+                // HDF5 array contains variable length UTF8 strings. The destination array
+                // must contain fixed length Unicode strings (measured in UCS4 encoded code
+                // points). Shorter strings are padded with nulls.
 
                 assert(slice_shape.size() == 1);
                 auto const nr_strings = slice_shape[0];
@@ -198,72 +197,79 @@ namespace lue {
                 // Read the strings in a data structure of our own
                 hdf5::Datatype const memory_datatype{lue::hdf5::create_string_datatype()};
 
-                // Array of variable length arrays of characters. The values_read
-                // array will be freed.
+                // Array of variable length arrays of characters. The values_read array will
+                // be freed.
                 auto values_read{std::make_unique<char*[]>(nr_strings)};
 
-                // Object to scope the array of arrays allocated by the next
-                // read. The values_read sub-arrays will be freed.
+                // Object to scope the array of arrays allocated by the next read. The values_read
+                // sub-arrays will be freed.
                 lue::hdf5::VLenMemory vlen{memory_datatype, array.dataspace(), values_read.get()};
 
                 array.read(hyperslab, values_read.get());
 
-                // We now have variable length UTF8 encoded Unicode strings in
-                // values_read. These must end up as fixed length Unicode strings
-                // in the Numpy array.
+                // We now have variable length UTF8 encoded Unicode strings in values_read. These
+                // must end up as fixed length Unicode strings in the Numpy array.
 
-                std::size_t max_nr_bytes_utf8{0};
+                // Maximum number of bytes used to represent a UTF8 encoded string in HDF5
+                std::size_t max_nr_bytes_per_string_utf8{0};
 
                 for (size_t i = 0; i < nr_strings; ++i)
                 {
-                    max_nr_bytes_utf8 = std::max(max_nr_bytes_utf8, strlen(values_read[i]));
+                    assert(values_read[i][strlen(values_read[i])] == '\0');
+                    max_nr_bytes_per_string_utf8 =
+                        std::max(max_nr_bytes_per_string_utf8, std::strlen(values_read[i]));
                 }
 
-                // Number of bytes used to represent a code point
-                std::size_t const nr_bytes_per_code_point{4};
+                // Number of bytes used to represent a single code point in a NumPy Unicode
+                // string, which uses UTF32 encoding (~= UCS4).
+                std::size_t const nr_bytes_per_code_point_utf32{4};
 
-                // Number of code points per string
-                std::size_t const nr_code_points{max_nr_bytes_utf8};
+                // Maximum number of code points per NumPy Unicode string. This happens when
+                // a single character is represented by a single byte on the HDF5 side (UTF8).
+                std::size_t const max_nr_code_points{max_nr_bytes_per_string_utf8};
 
-                // Number of bytes per string
-                std::size_t const nr_bytes_unicode{nr_code_points * nr_bytes_per_code_point};
-
-                // Number of ordinals per string, to store the encoded Unicode
-                // string on the Python side
-                assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
-                std::size_t const nr_ordinals{nr_bytes_unicode / sizeof(Py_UNICODE)};
+                // Maximum number of bytes per NumPy Unicode string
+                std::size_t const max_nr_bytes_per_string_utf32{
+                    max_nr_code_points * nr_bytes_per_code_point_utf32};
 
                 // Buffer for all Unicode strings, back to back
-                auto py_buffer{std::make_unique<Py_UNICODE[]>(nr_strings * nr_ordinals)};
-                std::fill(py_buffer.get(), py_buffer.get() + nr_strings * nr_ordinals, '\0');
+                auto py_buffer_utf32{std::make_unique<Py_UCS4[]>(nr_strings * max_nr_bytes_per_string_utf32)};
+                std::fill(
+                    py_buffer_utf32.get(),
+                    py_buffer_utf32.get() + nr_strings * max_nr_bytes_per_string_utf32,
+                    '\0');
 
-                py::str py_string;
-                Py_ssize_t data_size;
-                Py_UNICODE* it = py_buffer.get();
-
-                for (std::size_t i = 0; i < nr_strings; ++i)
                 {
-                    // Decode UTF8 string as read from LUE array
-                    py_string = py::reinterpret_steal<py::str>(::PyUnicode_FromString(values_read[i]));
+                    py::str py_string{};
+                    Py_UCS4* buffer_ptr{py_buffer_utf32.get()};
 
-                    if (!py_string)
+                    for (std::size_t i = 0; i < nr_strings; ++i)
                     {
-                        throw py::error_already_set();
-                    }
+                        // Decode UTF8 string as read from LUE array
+                        py_string = py::reinterpret_steal<py::str>(PyUnicode_FromString(values_read[i]));
 
-                    // Copy Unicode string into the slot in the Numpy array
-                    data_size = PyUnicode_GET_DATA_SIZE(py_string.ptr());  // Bytes
-                    char const* data{PyUnicode_AS_DATA(py_string.ptr())};
-                    std::memcpy(it, data, data_size);
-                    it += nr_ordinals;
+                        if (!py_string)
+                        {
+                            throw py::error_already_set();
+                        }
+
+                        // Copy Unicode string into the right slot in the Numpy array
+                        if (PyUnicode_AsUCS4(py_string.ptr(), buffer_ptr, max_nr_bytes_per_string_utf32, 0) ==
+                            nullptr)
+                        {
+                            throw py::error_already_set();
+                        }
+
+                        buffer_ptr += max_nr_bytes_per_string_utf32;
+                    }
                 }
 
                 py::capsule free_when_done(
-                    py_buffer.get(), [](void* buffer) { delete[] static_cast<Py_UNICODE*>(buffer); });
+                    py_buffer_utf32.get(), [](void* buffer) { delete[] static_cast<Py_UCS4*>(buffer); });
 
-                py::dtype dtype{"U" + std::to_string(nr_code_points)};
+                py::dtype dtype{"U" + std::to_string(max_nr_code_points)};
                 hdf5::Shape shape{nr_strings};
-                result = py::array(dtype, shape, py_buffer.release(), free_when_done);
+                result = py::array(dtype, shape, py_buffer_utf32.release(), free_when_done);
             }
             else
             {
@@ -873,7 +879,7 @@ namespace lue {
 
                         // Verify values are strings
                         // s : ascii chars or utf8 encoded unicode string
-                        // w : unicode - 4 bytes per code point (and on windows 2?!)
+                        // w : unicode - 4 bytes per code point
 
                         assert(!info.format.empty());
                         bool utf8_encoded_strings = info.format.back() == 's';
@@ -911,87 +917,93 @@ namespace lue {
                             // ASCII and UTF8 encoded strings
 
                             // Length in bytes of each individual string
-                            std::size_t const nr_bytes_utf8 = info.itemsize;
-                            assert(nr_bytes_utf8 == std::stoul(info.format));
+                            std::size_t const nr_bytes_per_string_utf8 = info.itemsize;
+                            assert(nr_bytes_per_string_utf8 == std::stoul(info.format));
 
                             // Buffer is a 1-D array with all strings back to back. The
                             // maximum length of each string is the same:
-                            // nr_bytes_utf8. Shorter strings are padded with nulls.
-                            char const* py_buffer = static_cast<char const*>(info.ptr);
+                            // nr_bytes_per_string_utf8. Shorter strings are padded with nulls.
+                            char const* py_buffer_utf8 = static_cast<char const*>(info.ptr);
 
                             for (std::size_t i = 0; i < nr_strings; ++i)
                             {
-
-                                // Point it at start of Python string in buffer
-                                auto const it = py_buffer + (i * nr_bytes_utf8);
+                                auto const start_of_string_utf8 =
+                                    py_buffer_utf8 + (i * nr_bytes_per_string_utf8);
 
                                 // Copy bytes and trim tailing null characters
-                                std::string utf8_string{it, nr_bytes_utf8};
+                                std::string string_utf8{start_of_string_utf8, nr_bytes_per_string_utf8};
                                 boost::algorithm::trim_right_if(
-                                    utf8_string, [](char c) { return c == '\0'; });
+                                    string_utf8, [](char const c) { return c == '\0'; });
 
-                                // Make space for the UTF8 encoded string + null
-                                // character. Copy the string and append with a null.
-                                hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
+                                // Make space for the UTF8 encoded string + null character. Copy
+                                // the string and append with a null.
+                                hdf5_buffer.get()[i] = new char[string_utf8.size() + 1];
                                 auto hdf5_string = hdf5_buffer.get()[i];
-                                std::copy(utf8_string.begin(), utf8_string.end(), hdf5_string);
-                                hdf5_string[utf8_string.size()] = '\0';
+                                std::copy(string_utf8.begin(), string_utf8.end(), hdf5_string);
+                                hdf5_string[string_utf8.size()] = '\0';
                             }
                         }
                         else
                         {
                             // Unicode strings
 
-                            // TODO Fix as part of GH #447
-                            throw std::runtime_error("Encoding of Unicode string is not supported yet");
+                            // Length in bytes of each individual string
+                            std::size_t const nr_bytes_per_string_utf32 = info.itemsize;
 
-                            /// // Length in bytes of each individual string
-                            /// std::size_t const nr_bytes_unicode = info.itemsize;
+                            // Number of bytes used to represent a code point
+                            std::size_t const nr_bytes_per_code_point_utf32 = 4;
+                            assert(nr_bytes_per_string_utf32 % nr_bytes_per_code_point_utf32 == 0);
 
-                            /// // Number of bytes used to represent a code point
-                            /// std::size_t const nr_bytes_per_code_point = 4;
-                            /// assert(nr_bytes_unicode % nr_bytes_per_code_point == 0);
+                            // Length in code points of each individual string
+                            std::size_t const nr_code_points =
+                                nr_bytes_per_string_utf32 / nr_bytes_per_code_point_utf32;
+                            assert(nr_code_points == std::stoul(info.format));
 
-                            /// // Length in code points of each individual string
-                            /// std::size_t const nr_code_points =
-                            ///     nr_bytes_unicode / nr_bytes_per_code_point;
-                            /// assert(nr_code_points == std::stoul(info.format));
+                            // Buffer is a 1-D array with all strings back to back. The maximum
+                            // length of each string is the same: nr_code_points. Shorter strings
+                            // are padded with nulls.
+                            {
+                                Py_UCS4 const* py_buffer_utf32 = static_cast<Py_UCS4 const*>(info.ptr);
+                                Py_UCS4 const* start_of_string_utf32{py_buffer_utf32};
 
-                            /// // assert(nr_bytes_unicode % sizeof(Py_UNICODE) == 0);
-                            /// // auto const max_nr_ordinals_string =
-                            /// //     nr_bytes_unicode / sizeof(Py_UNICODE);
+                                for (std::size_t i = 0; i < nr_strings; ++i)
+                                {
+                                    py::str py_string_utf32{
+                                        py::reinterpret_steal<py::str>(::PyUnicode_DecodeUTF32(
+                                            (char const*)start_of_string_utf32,
+                                            nr_bytes_per_string_utf32,
+                                            nullptr,
+                                            nullptr))};
 
-                            /// // Buffer is a 1-D array with all strings back to back. The
-                            /// // maximum length of each string is the same:
-                            /// // nr_code_points. Shorter strings are padded with nulls.
-                            /// Py_UNICODE const* py_buffer =
-                            ///     static_cast<Py_UNICODE const*>(info.ptr);
+                                    if (!py_string_utf32)
+                                    {
+                                        throw py::error_already_set();
+                                    }
 
-                            /// for(std::size_t i = 0; i < nr_strings; ++i) {
-                            ///     // Point it at start of Python Unicode string in buffer
-                            ///     auto const it = py_buffer + i * nr_code_points;
+                                    // Encode string in UTF8, which is how strings are stored
+                                    // in LUE. Remove any trailing null characters.
+                                    py::str py_string_utf8 = py::reinterpret_steal<py::str>(
+                                        ::PyUnicode_AsUTF8String(py_string_utf32.ptr()));
 
-                            ///     // Encode string in UTF8, which is how strings are stored
-                            ///     // in LUE. Remove any trailing null characters.
-                            ///     py::str py_utf8_string =
-                            ///         py::reinterpret_steal<py::str>(
-                            ///             ::PyUnicode_EncodeUTF8(
-                            ///                 it, nr_code_points, nullptr));
-                            ///     std::string utf8_string =
-                            ///         py_utf8_string.cast<std::string>();
-                            ///     boost::algorithm::trim_right_if(utf8_string, [](char c)
-                            ///         {
-                            ///             return c == '\0';
-                            ///         });
+                                    if (!py_string_utf8)
+                                    {
+                                        throw py::error_already_set();
+                                    }
 
-                            ///     // Make space for the UTF8 encoded string + null
-                            ///     // character. Copy the string and append with a null.
-                            ///     hdf5_buffer.get()[i] = new char[utf8_string.size() + 1];
-                            ///     auto hdf5_string = hdf5_buffer.get()[i];
-                            ///     std::copy(
-                            ///         utf8_string.begin(), utf8_string.end(), hdf5_string);
-                            ///     hdf5_string[utf8_string.size()] = '\0';
-                            /// }
+                                    std::string string_utf8 = py_string_utf8.cast<std::string>();
+                                    boost::algorithm::trim_right_if(
+                                        string_utf8, [](char const c) { return c == '\0'; });
+
+                                    // Make space for the UTF8 encoded string + null
+                                    // character. Copy the string and append with a null.
+                                    hdf5_buffer.get()[i] = new char[string_utf8.size() + 1];
+                                    auto hdf5_string = hdf5_buffer.get()[i];
+                                    std::copy(string_utf8.begin(), string_utf8.end(), hdf5_string);
+                                    hdf5_string[string_utf8.size()] = '\0';
+                                }
+
+                                start_of_string_utf32 += nr_bytes_per_string_utf32;
+                            }
                         }
 
                         array.write(hdf5_buffer.get());
