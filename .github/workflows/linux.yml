@@ -83,9 +83,6 @@ jobs:
                   ${{ matrix.compiler.package }} \
                   ninja-build \
                   nlohmann-json3-dev
-
-              # https://github.com/actions/setup-python#caching-packages-dependencies
-              # pip3 install --upgrade pip
               pip3 install -r environment/configuration/requirements-dev.txt
 
         - name: cache hpx
@@ -109,7 +106,6 @@ jobs:
                   --preset hpx_release_node_configuration \
                   -B ${{ env.hpx_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release
               cd -
@@ -129,7 +125,6 @@ jobs:
                   -S ${{ env.mdspan_source_directory }} \
                   -B ${{ env.mdspan_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release
               cmake --build ${{ env.mdspan_build_directory }} --target all
@@ -141,7 +136,7 @@ jobs:
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
               mkdir ${{ env.build_directory }}
-              CC=${{ matrix.compiler.cc }} CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
+              CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
                   conan install . \
                       --profile:host=host_profile \
                       --profile:build=build_profile \
@@ -150,7 +145,6 @@ jobs:
               CMAKE_PREFIX_PATH=${{ env.build_directory }} \
                   cmake --preset conan-release \
                       -B ${{ env.build_directory }} \
-                      -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
@@ -194,6 +188,7 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_view --version
 
               export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python-version }}:$PYTHONPATH"
+              export LD_LIBRARY_PATH="${{ env.hpx_install_directory/lib64 }}:$LD_LIBRARY_PATH"
               ${{ env.runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
@@ -204,8 +199,7 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }}
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                   -D LUE_ROOT=${{ env.development_install_directory }} \
@@ -230,7 +224,6 @@ jobs:
         #       # CMAKE_PREFIX_PATH=${{ env.build_directory }} \
         #       #     cmake --preset conan-release \
         #       #         -B bld \
-        #       #         -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
         #       #         -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
         #       #         -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
         #       #         -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \

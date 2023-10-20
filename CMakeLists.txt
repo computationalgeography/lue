@@ -2,7 +2,7 @@ cmake_minimum_required(
     VERSION 3.26)
 project(LUE
     VERSION 0.3.8
-    LANGUAGES C CXX)
+    LANGUAGES CXX)
 
 set(${PROJECT_NAME}_ORGANISATION_NAME "Computational Geography")
 set(${PROJECT_NAME}_COPYRIGHT "2015-now LUE developers")

@@ -71,7 +71,7 @@ jobs:
               pip3 install conan docopt jinja2 matplotlib ruamel.yaml
 
         - name: "install hpx"
-          uses: actions/install_hpx
+          uses: .github/actions/install_hpx
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
@@ -85,7 +85,7 @@ jobs:
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 
         - name: "install mdspan"
-          uses: actions/install_mdspan
+          uses: .github/actions/install_mdspan
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
@@ -162,8 +162,7 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_C_COMPILER=${{ matrix.compiler.cc }} \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }}
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                   -D LUE_ROOT=${{ env.development_install_directory }} \
