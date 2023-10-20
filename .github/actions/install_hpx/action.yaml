@@ -15,6 +15,8 @@ inputs:
     required: true
   cache_key:
     required: true
+  cmake_preset_file:
+    required: true
   cmake_flags:
     required: false
 runs:
@@ -26,7 +28,7 @@ runs:
       env:
           cache-name: cache-hpx
       with:
-          path: ${{ inputs.hpx_install_directory }}
+          path: ${{ inputs.install_directory }}
           key: ${{ inputs.cache_key }}
 
     - name: install hpx
@@ -34,23 +36,22 @@ runs:
       shell: bash
       run: |
         wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ inputs.hpx_version }}.tar.gz
-        tar -zx --directory=$(dirname ${{ inputs.hpx_source_directory }}) --file v${{ inputs.hpx_version }}.tar.gz
-        wget https://raw.githubusercontent.com/computationalgeography/lue/${{ inputs.lue_branch }}/CMakeHPXPresets.json \
-            -O $hpx_source_directory/CMakeUserPresets.json
+        tar -zx --directory=$(dirname ${{ inputs.source_directory }}) --file v${{ inputs.hpx_version }}.tar.gz
+        cp ${{ inputs.cmake_preset_file }} $source_directory/CMakeUserPresets.json
 
-        mkdir ${{ inputs.hpx_build_directory }}
+        mkdir ${{ inputs.build_directory }}
 
-        cd ${{ inputs.hpx_source_directory }}
+        cd ${{ inputs.source_directory }}
         cmake \
             --preset hpx_release_node_configuration \
-            -B ${{ inputs.hpx_build_directory }} \
+            -B ${{ inputs.build_directory }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             ${{ inputs.cmake_flags }}
         cd -
 
-        cmake --build ${{ inputs.hpx_build_directory }} --target all
-        cmake --install ${{ inputs.hpx_build_directory }} --prefix ${{ inputs.hpx_install_directory }} --strip
+        cmake --build ${{ inputs.build_directory }} --target all
+        cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
-        rm -fr ${{ inputs.hpx_build_directory }} ${{ inputs.hpx_source_directory }}
+        rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
