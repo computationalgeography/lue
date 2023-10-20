@@ -71,7 +71,7 @@ jobs:
               pip3 install conan docopt jinja2 matplotlib ruamel.yaml
 
         - name: "install hpx"
-          uses: .github/actions/install_hpx
+          uses: ./.github/actions/install_hpx
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
@@ -85,7 +85,7 @@ jobs:
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 
         - name: "install mdspan"
-          uses: .github/actions/install_mdspan
+          uses: ./.github/actions/install_mdspan
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release

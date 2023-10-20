@@ -188,7 +188,7 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_view --version
 
               export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python-version }}:$PYTHONPATH"
-              export LD_LIBRARY_PATH="${{ env.hpx_install_directory/lib64 }}:$LD_LIBRARY_PATH"
+              export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib64:$LD_LIBRARY_PATH"
               ${{ env.runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
