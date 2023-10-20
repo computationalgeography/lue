@@ -1,0 +1,22 @@
+#include "lue/framework/algorithm/definition/highest_n.hpp"
+#include "lue/framework/algorithm/value_policies/highest_n.hpp"
+
+
+namespace lue {
+
+    {% if ZoneElement %}
+    LUE_INSTANTIATE_HIGHEST_N_ZONE(
+            ESC(policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ ZoneElement }}, {{ InputElement }}>),
+            {{ OutputElement }},
+            {{ ZoneElement }},
+            {{ InputElement }}
+        );
+    {% else %}
+    LUE_INSTANTIATE_HIGHEST_N(
+            ESC(policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            {{ OutputElement }},
+            {{ InputElement }}
+        );
+    {% endif %}
+
+}  // namespace lue

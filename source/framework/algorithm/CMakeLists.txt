@@ -47,6 +47,7 @@ target_sources(lue_framework_algorithm
 target_link_libraries(lue_framework_algorithm
     PUBLIC
         lue::framework_partitioned_array
+        lue::framework_partitioned_route
         lue::framework_core
         # HPX::iostreams_component
         HPX::hpx
@@ -1475,6 +1476,50 @@ block()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
+
+
+block()
+    set(counter "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" name ${InputElement})
+
+            # Instantiate highest_n
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","InputElement":"${InputElement}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            foreach(Zone IN LISTS Zones)
+                math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ZoneElement":"${Zone}","InputElement":"${InputElement}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
 
 set(materials std::uint8_t std::int64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 

@@ -96,4 +96,19 @@ namespace lue {
             StartOfRoutes _start_of_routes;
     };
 
+
+    namespace detail {
+
+        template<Rank r>
+        class ArrayTraits<SerialRoute<r>>
+        {
+
+            public:
+
+                constexpr static Rank rank = r;
+
+                using Shape = typename SerialRoute<r>::Shape;
+        };
+
+    }  // namespace detail
 }  // namespace lue

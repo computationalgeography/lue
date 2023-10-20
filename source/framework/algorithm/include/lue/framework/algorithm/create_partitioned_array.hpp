@@ -933,7 +933,7 @@ namespace lue {
         std::enable_if_t<!is_functor_v<Element>>* = nullptr>
     PartitionedArray<Element, rank<Shape>> create_partitioned_array(Shape const& array_shape)
     {
-        return create_partitioned_array(array_shape, default_partition_shape(array_shape));
+        return create_partitioned_array<Element>(array_shape, default_partition_shape(array_shape));
     }
 
 
