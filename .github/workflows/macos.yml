@@ -1,4 +1,4 @@
-name: macOS CI
+cxx: macOS CI
 
 on:
   push:
@@ -20,7 +20,8 @@ jobs:
                 os: ["macos-11"]
                 compiler:
                     - { name: clang, cc: clang, cxx: clang++ }
-            fail-fast: true
+                python_version: ["3.11"]
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
@@ -119,7 +120,6 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D LUE_BUILD_HPX=FALSE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
                       -D Python3_EXECUTABLE="/usr/local/bin/python3"
@@ -151,7 +151,7 @@ jobs:
               ${{ env.runtime_install_directory }}/bin/lue_validate --version
               ${{ env.runtime_install_directory }}/bin/lue_view --version
 
-              export PYTHONPATH="$(echo ${{ env.runtime_install_directory }}/lib/python3.*):$PYTHONPATH"
+              export PYTHONPATH="${{ env.runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
               python3 ${{ env.runtime_install_directory }}/bin/lue_calculate --version
               python3 ${{ env.runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"

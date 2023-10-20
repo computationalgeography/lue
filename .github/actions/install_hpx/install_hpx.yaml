@@ -15,6 +15,8 @@ inputs:
     required: true
   cache_key:
     required: true
+  cmake_flags:
+    required: false
 runs:
   using: "composite"
   steps:
@@ -44,7 +46,8 @@ runs:
             -B ${{ inputs.hpx_build_directory }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
-            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }}
+            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            ${{ inputs.cmake_flags }}
         cd -
 
         cmake --build ${{ inputs.hpx_build_directory }} --target all
