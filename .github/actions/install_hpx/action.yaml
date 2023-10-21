@@ -7,23 +7,8 @@ inputs:
     required: true
   hpx_version:
     required: true
-  source_directory:
-    required: true
-    description: "Variables will be expanded before use"
-  build_directory:
-    required: true
-    description: "Variables will be expanded before use"
-  install_directory:
-    required: true
-    description: "Variables will be expanded before use"
   cache_key:
     required: true
-  cmake_preset_file:
-    required: true
-    description: "Variables will be expanded before use"
-  cmake_flags:
-    required: false
-    description: "Variables will be expanded before use"
 runs:
   using: "composite"
   steps:
@@ -33,7 +18,7 @@ runs:
       env:
           cache-name: cache-hpx
       with:
-          path: ${{ inputs.install_directory }}
+          path: $HPX_INSTALL_DIRECTORY
           key: ${{ inputs.cache_key }}
 
     - name: install hpx
@@ -42,7 +27,7 @@ runs:
       run: |
         wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ inputs.hpx_version }}.tar.gz
         tar -zx --directory=$(dirname $HPX_SOURCE_DIRECTORY) --file v${{ inputs.hpx_version }}.tar.gz
-        cp ${{ inputs.cmake_preset_file }} $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
+        cp $HPX_CMAKE_PRESET_FILE $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
 
         mkdir $HPX_BUILD_DIRECTORY
 
@@ -53,16 +38,10 @@ runs:
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
-            ${{ inputs.cmake_flags }}
+            $HPX_CMAKE_FLAGS
         cd -
 
         cmake --build $HPX_BUILD_DIRECTORY --target all
         cmake --install $HPX_BUILD_DIRECTORY --prefix $HPX_INSTALL_DIRECTORY --strip
 
         rm -fr $HPX_BUILD_DIRECTORY $HPX_SOURCE_DIRECTORY
-      env:
-        HPX_SOURCE_DIRECTORY: ${{ inputs.source_directory }}
-        HPX_BUILD_DIRECTORY: ${{ inputs.build_directory }}
-        HPX_INSTALL_DIRECTORY: ${{ inputs.install_directory }}
-        HPX_CMAKE_PRESET_FILE: ${{ inputs.cmake_preset_file }}
-        HPX_CMAKE_FLAGS: ${{ inputs.cmake_flags }}
