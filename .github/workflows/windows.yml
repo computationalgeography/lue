@@ -58,12 +58,14 @@ jobs:
         steps:
 
         - uses: actions/checkout@v4
+          with:
+            path: ${{ env.lue_source_directory }}
 
         - uses: conda-incubator/setup-miniconda@v2
           with:
-              auto-update-conda: true
-              python-version: ${{ matrix.python_version }}
-              channels: conda-forge
+            auto-update-conda: true
+            python-version: ${{ matrix.python_version }}
+            channels: conda-forge
 
         - name: setup platform
           run: |

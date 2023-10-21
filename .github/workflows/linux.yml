@@ -39,6 +39,7 @@ jobs:
         defaults:
           run:
             shell: bash -l {0}
+            working-directory: .
 
         env:
           lue_source_directory: lue_source
@@ -58,6 +59,8 @@ jobs:
         steps:
 
         - uses: actions/checkout@v4
+          with:
+            path: ${{ env.lue_source_directory }}
 
         - uses: actions/setup-python@v4
           with:
