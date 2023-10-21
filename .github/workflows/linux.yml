@@ -39,7 +39,7 @@ jobs:
         defaults:
           run:
             shell: bash -l {0}
-            working-directory: .
+            working-directory: ..
 
         env:
           lue_source_directory: lue_source
@@ -101,6 +101,8 @@ jobs:
           run: |
             pwd
             ls
+            ls lue_source
+            ls lue_source/.github/actions/install_hpx
 
         # - name: "install hpx"
         #   uses: lue_source/.github/actions/install_hpx
