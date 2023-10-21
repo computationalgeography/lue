@@ -87,18 +87,18 @@ jobs:
                   nlohmann-json3-dev
               pip3 install -r environment/configuration/requirements-dev.txt
 
+              # Expand all variables that contain variables themselves and store the values in
+              # a bash script which can be used by job steps and composite actions
               echo "LUE_SOURCE_DIRECTORY=${{ env.lue_source_directory }}" >> $GITHUB_ENV
               echo "LUE_BUILD_DIRECTORY=${{ env.lue_build_directory }}" >> $GITHUB_ENV
               echo "LUE_RUNTIME_INSTALL_DIRECTORY=${{ env.lue_runtime_install_directory }}" >> $GITHUB_ENV
               echo "LUE_DEVELOPMENT_INSTALL_DIRECTORY=${{ env.lue_development_install_directory }}" >> $GITHUB_ENV
               echo "LUE_CONSUME_SOURCE_DIRECTORY=${{ env.lue_consume_source_directory }}" >> $GITHUB_ENV
               echo "LUE_CONSUME_BUILD_DIRECTORY=${{ env.lue_consume_build_directory }}" >> $GITHUB_ENV
-              echo "HPX_VERSION=${{ env.hpx_version }}" >> $GITHUB_ENV
               echo "HPX_SOURCE_DIRECTORY=${{ env.hpx_source_directory }}" >> $GITHUB_ENV
               echo "HPX_BUILD_DIRECTORY=${{ env.hpx_build_directory }}" >> $GITHUB_ENV
               echo "HPX_INSTALL_DIRECTORY=${{ env.hpx_install_directory }}" >> $GITHUB_ENV
               echo "HPX_CMAKE_PRESET_FILE=${{ env.lue_source_directory }}/CMakeHPXPresets.json" >> $GITHUB_ENV
-              echo "HPX_CMAKE_FLAGS=" >> $GITHUB_ENV
               echo "MDSPAN_SOURCE_DIRECTORY=${{ env.mdspan_source_directory }}" >> $GITHUB_ENV
               echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
               echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
@@ -106,7 +106,7 @@ jobs:
         - name: "install hpx"
           uses: ./.github/actions/install_hpx
           with:
-            cxx_compiler: ${{ matrix.compiler.name }}
+            cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             hpx_version: ${{ env.hpx_version }}
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
@@ -114,7 +114,7 @@ jobs:
         - name: "install mdspan"
           uses: ./.github/actions/install_mdspan
           with:
-            cxx_compiler: ${{ matrix.compiler.name }}
+            cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             mdspan_tag: a799088  # 20191010
             source_directory:
