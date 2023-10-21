@@ -5,9 +5,11 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
-      - "conanfile.py"
       - ".github/actions/**"
       - ".github/workflows/macos.yml"
+      - "conanfile.py"
+      - "CMakePresets.json"
+      - "CMakeHPXPresets.json"
       - "environment/cmake/**"
       - "environment/script/write_conan_profile.py"
       - "source/**"
