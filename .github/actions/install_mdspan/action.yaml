@@ -7,15 +7,6 @@ inputs:
     required: true
   mdspan_tag:
     required: true
-  source_directory:
-    required: true
-    description: "Variables will be expanded before use"
-  build_directory:
-    required: true
-    description: "Variables will be expanded before use"
-  install_directory:
-    required: true
-    description: "Variables will be expanded before use"
 runs:
   using: "composite"
   steps:
@@ -41,7 +32,3 @@ runs:
         cmake --install $MDSPAN_BUILD_DIRECTORY --prefix $MDSPAN_INSTALL_DIRECTORY --strip
 
         rm -fr $MDSPAN_BUILD_DIRECTORY $MDSPAN_SOURCE_DIRECTORY
-      env:
-        MDSPAN_SOURCE_DIRECTORY: ${{ inputs.source_directory }}
-        MDSPAN_BUILD_DIRECTORY: ${{ inputs.build_directory }}
-        MDSPAN_INSTALL_DIRECTORY: ${{ inputs.install_directory }}

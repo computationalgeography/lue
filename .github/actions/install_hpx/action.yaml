@@ -20,7 +20,6 @@ runs:
       with:
           path: $HPX_INSTALL_DIRECTORY
           key: ${{ inputs.cache_key }}
-
     - name: install hpx
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash

@@ -6,6 +6,7 @@ on:
       - "ghxyz"
     paths:
       - "conanfile.py"
+      - ".github/actions/**"
       - ".github/workflows/macos.yml"
       - "environment/cmake/**"
       - "environment/script/write_conan_profile.py"
@@ -50,7 +51,7 @@ jobs:
 
         - uses: actions/checkout@v4
 
-        - name: install packages
+        - name: setup platform
           run: |
               brew install \
                   asio \
@@ -71,20 +72,29 @@ jobs:
                   vulkan-loader
               pip3 install conan docopt jinja2 matplotlib ruamel.yaml
 
+              # Expand all variables that contain variables themselves and store the values in
+              # a bash script which can be used by job steps and composite actions
+              echo "LUE_SOURCE_DIRECTORY=${{ env.lue_source_directory }}" >> $GITHUB_ENV
+              echo "LUE_BUILD_DIRECTORY=${{ env.lue_build_directory }}" >> $GITHUB_ENV
+              echo "LUE_RUNTIME_INSTALL_DIRECTORY=${{ env.lue_runtime_install_directory }}" >> $GITHUB_ENV
+              echo "LUE_DEVELOPMENT_INSTALL_DIRECTORY=${{ env.lue_development_install_directory }}" >> $GITHUB_ENV
+              echo "LUE_CONSUME_SOURCE_DIRECTORY=${{ env.lue_consume_source_directory }}" >> $GITHUB_ENV
+              echo "LUE_CONSUME_BUILD_DIRECTORY=${{ env.lue_consume_build_directory }}" >> $GITHUB_ENV
+              echo "HPX_SOURCE_DIRECTORY=${{ env.hpx_source_directory }}" >> $GITHUB_ENV
+              echo "HPX_BUILD_DIRECTORY=${{ env.hpx_build_directory }}" >> $GITHUB_ENV
+              echo "HPX_INSTALL_DIRECTORY=${{ env.hpx_install_directory }}" >> $GITHUB_ENV
+              echo "HPX_CMAKE_PRESET_FILE=${{ env.lue_source_directory }}/CMakeHPXPresets.json" >> $GITHUB_ENV
+              echo "MDSPAN_SOURCE_DIRECTORY=${{ env.mdspan_source_directory }}" >> $GITHUB_ENV
+              echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
+              echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
+
         - name: "install hpx"
           uses: ./.github/actions/install_hpx
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
             hpx_version: ${{ env.hpx_version }}
-            source_directory:
-              ${{ env.hpx_source_directory }}
-            build_directory:
-              ${{ env.hpx_build_directory }}
-            install_directory:
-              ${{ env.hpx_install_directory }}
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
-            cmake_preset_file: ${{ env.source_directory }}/CMakeHPXPresets.json
 
         - name: "install mdspan"
           uses: ./.github/actions/install_mdspan
@@ -92,12 +102,6 @@ jobs:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
             mdspan_tag: a799088  # 20191010
-            source_directory:
-              ${{ env.mdspan_source_directory }}
-            build_directory:
-              ${{ env.mdspan_build_directory }}
-            install_directory:
-              ${{ env.mdspan_install_directory }}
 
         - name: configure
           run: |
