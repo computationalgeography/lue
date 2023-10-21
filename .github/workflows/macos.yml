@@ -88,9 +88,6 @@ jobs:
               echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
               echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
 
-                "HPX_WITH_MALLOC": "tcmalloc",
-                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
-
         - name: "install hpx"
           uses: ./.github/actions/install_hpx
           with:

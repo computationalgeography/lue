@@ -33,7 +33,7 @@ runs:
 
         cd $HPX_SOURCE_DIRECTORY
         cmake \
-            --preset ${{ inputs.cmake_preset }}
+            --preset ${{ inputs.cmake_preset }} \
             -B $HPX_BUILD_DIRECTORY \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
