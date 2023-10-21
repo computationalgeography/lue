@@ -6,6 +6,7 @@ on:
       - "ghxyz"
     paths:
       - "conanfile.py"
+      - ".github/actions/**"
       - ".github/workflows/linux.yml"
       - "environment/cmake/**"
       - "environment/script/write_conan_profile.py"
