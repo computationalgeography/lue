@@ -75,6 +75,7 @@ jobs:
 
               conda install --solver=libmamba \
                   boost-cpp \
+                  conan \
                   conda-build \
                   docopt \
                   gdal \
@@ -85,11 +86,8 @@ jobs:
                   ninja \
                   numpy \
                   pip \
-                  ruamel.yaml \
-                  wget
-
-              # Use conan from pypi to get the latest version
-              pip install conan
+                  ruamel.yaml
+              pip install wget
 
         - uses: ilammy/msvc-dev-cmd@v1
           with:

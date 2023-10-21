@@ -9,32 +9,39 @@ inputs:
     required: true
   source_directory:
     required: true
+    description: "Variables will be expanded before use"
   build_directory:
     required: true
+    description: "Variables will be expanded before use"
   install_directory:
     required: true
+    description: "Variables will be expanded before use"
 runs:
   using: "composite"
   steps:
     - name: install mdspan
       shell: bash
       run: |
-        git clone https://github.com/kokkos/mdspan.git ${{ inputs.mdspan_source_directory }}
+        git clone https://github.com/kokkos/mdspan.git $MDSPAN_SOURCE_DIRECTORY
 
-        cd ${{ inputs.mdspan_source_directory }}
+        cd $MDSPAN_SOURCE_DIRECTORY
         git checkout ${{ inputs.mdspan_tag }}
         cd -
 
-        mkdir ${{ inputs.mdspan_build_directory }}
+        mkdir $MDSPAN_BUILD_DIRECTORY
 
         cmake \
-            -S ${{ inputs.mdspan_source_directory }} \
-            -B ${{ inputs.mdspan_build_directory }} \
+            -S $MDSPAN_SOURCE_DIRECTORY \
+            -B $MDSPAN_BUILD_DIRECTORY \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }}
 
-        cmake --build ${{ inputs.mdspan_build_directory }} --target all
-        cmake --install ${{ inputs.mdspan_build_directory }} --prefix ${{ inputs.mdspan_install_directory }} --strip
+        cmake --build $MDSPAN_BUILD_DIRECTORY --target all
+        cmake --install $MDSPAN_BUILD_DIRECTORY --prefix $MDSPAN_INSTALL_DIRECTORY --strip
 
-        rm -fr ${{ inputs.mdspan_build_directory }} ${{ inputs.mdspan_source_directory }}
+        rm -fr $MDSPAN_BUILD_DIRECTORY $MDSPAN_SOURCE_DIRECTORY
+      env:
+        MDSPAN_SOURCE_DIRECTORY: ${{ inputs.source_directory }}
+        MDSPAN_BUILD_DIRECTORY: ${{ inputs.build_directory }}
+        MDSPAN_INSTALL_DIRECTORY: ${{ inputs.install_directory }}

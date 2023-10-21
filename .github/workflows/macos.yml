@@ -17,7 +17,7 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-11"]
+                os: ["macos-13"]
                 compiler:
                     - { name: clang, cc: clang, cxx: clang++ }
                 python_version: ["3.11"]

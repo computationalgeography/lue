@@ -9,16 +9,21 @@ inputs:
     required: true
   source_directory:
     required: true
+    description: "Variables will be expanded before use"
   build_directory:
     required: true
+    description: "Variables will be expanded before use"
   install_directory:
     required: true
+    description: "Variables will be expanded before use"
   cache_key:
     required: true
   cmake_preset_file:
     required: true
+    description: "Variables will be expanded before use"
   cmake_flags:
     required: false
+    description: "Variables will be expanded before use"
 runs:
   using: "composite"
   steps:
@@ -36,22 +41,28 @@ runs:
       shell: bash
       run: |
         wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ inputs.hpx_version }}.tar.gz
-        tar -zx --directory=$(dirname ${{ inputs.source_directory }}) --file v${{ inputs.hpx_version }}.tar.gz
-        cp ${{ inputs.cmake_preset_file }} $source_directory/CMakeUserPresets.json
+        tar -zx --directory=$(dirname $HPX_SOURCE_DIRECTORY) --file v${{ inputs.hpx_version }}.tar.gz
+        cp ${{ inputs.cmake_preset_file }} $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
 
-        mkdir ${{ inputs.build_directory }}
+        mkdir $HPX_BUILD_DIRECTORY
 
-        cd ${{ inputs.source_directory }}
+        cd $HPX_SOURCE_DIRECTORY
         cmake \
             --preset hpx_release_node_configuration \
-            -B ${{ inputs.build_directory }} \
+            -B $HPX_BUILD_DIRECTORY \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             ${{ inputs.cmake_flags }}
         cd -
 
-        cmake --build ${{ inputs.build_directory }} --target all
-        cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
+        cmake --build $HPX_BUILD_DIRECTORY --target all
+        cmake --install $HPX_BUILD_DIRECTORY --prefix $HPX_INSTALL_DIRECTORY --strip
 
-        rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
+        rm -fr $HPX_BUILD_DIRECTORY $HPX_SOURCE_DIRECTORY
+      env:
+        HPX_SOURCE_DIRECTORY: ${{ inputs.source_directory }}
+        HPX_BUILD_DIRECTORY: ${{ inputs.build_directory }}
+        HPX_INSTALL_DIRECTORY: ${{ inputs.install_directory }}
+        HPX_CMAKE_PRESET_FILE: ${{ inputs.cmake_preset_file }}
+        HPX_CMAKE_FLAGS: ${{ inputs.cmake_flags }}
