@@ -26,7 +26,7 @@ runs:
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
-        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.get $HPX_SOURCE_DIRECTORY
+        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git $HPX_SOURCE_DIRECTORY
         cp $HPX_CMAKE_PRESET_FILE $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
 
         mkdir $HPX_BUILD_DIRECTORY
