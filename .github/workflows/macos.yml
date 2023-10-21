@@ -93,6 +93,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
+            cmake_preset: hpx_release_macos_node_configuration
             hpx_version: ${{ env.hpx_version }}
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 
@@ -101,7 +102,6 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
-            cmake_preset: hpx_release_macos_node_configuration
             mdspan_tag: a799088  # 20191010
 
         - name: configure
