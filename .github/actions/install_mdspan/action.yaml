@@ -7,28 +7,34 @@ inputs:
     required: true
   mdspan_tag:
     required: true
+  source_directory:
+    required: true
+  build_directory:
+    required: true
+  install_directory:
+    required: true
 runs:
   using: "composite"
   steps:
     - name: install mdspan
       shell: bash
       run: |
-        git clone https://github.com/kokkos/mdspan.git $MDSPAN_SOURCE_DIRECTORY
+        git clone https://github.com/kokkos/mdspan.git ${{ inputs.source_directory }}
 
-        cd $MDSPAN_SOURCE_DIRECTORY
+        cd ${{ inputs.source_directory }}
         git checkout ${{ inputs.mdspan_tag }}
         cd -
 
-        mkdir $MDSPAN_BUILD_DIRECTORY
+        mkdir ${{ inputs.build_directory }}
 
         cmake \
-            -S $MDSPAN_SOURCE_DIRECTORY \
-            -B $MDSPAN_BUILD_DIRECTORY \
+            -S ${{ inputs.source_directory }} \
+            -B ${{ inputs.build_directory }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }}
 
-        cmake --build $MDSPAN_BUILD_DIRECTORY --target all
-        cmake --install $MDSPAN_BUILD_DIRECTORY --prefix $MDSPAN_INSTALL_DIRECTORY --strip
+        cmake --build ${{ inputs.build_directory }} --target all
+        cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
-        rm -fr $MDSPAN_BUILD_DIRECTORY $MDSPAN_SOURCE_DIRECTORY
+        rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}

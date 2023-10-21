@@ -26,10 +26,10 @@ jobs:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
-                    - { name: gcc  , version:  9, cc: gcc-9   , cxx: g++-9     , package: g++-9    }
-                    - { name: gcc  , version: 12, cc: gcc-12  , cxx: g++-12    , package: g++-12   }
-                    - { name: clang, version: 11, cc: clang-11, cxx: clang++-11, package: clang-11 }
-                    - { name: clang, version: 15, cc: clang-15, cxx: clang++-15, package: clang-15 }
+                    - { name: gcc  , version:  9, c: gcc-9   , cxx: g++-9     , package: g++-9    }
+                    - { name: gcc  , version: 12, c: gcc-12  , cxx: g++-12    , package: g++-12   }
+                    - { name: clang, version: 11, c: clang-11, cxx: clang++-11, package: clang-11 }
+                    - { name: clang, version: 15, c: clang-15, cxx: clang++-15, package: clang-15 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -41,19 +41,19 @@ jobs:
             shell: bash -l {0}
 
         env:
-          lue_source_directory: $GITHUB_WORKSPACE
-          lue_build_directory: $GITHUB_WORKSPACE/../build
-          lue_runtime_install_directory: $GITHUB_WORKSPACE/../runtime_install
-          lue_development_install_directory: $GITHUB_WORKSPACE/../development_install
-          lue_consume_source_directory: $GITHUB_WORKSPACE/../lue_consume
-          lue_consume_build_directory: $GITHUB_WORKSPACE/../lue_consume_build
+          lue_source_directory: lue_source
+          lue_build_directory: lue_build
+          lue_runtime_install_directory: lue_runtime_install
+          lue_development_install_directory: lue_development_install
+          lue_consume_source_directory: lue_consume_source
+          lue_consume_build_directory: lue_consume_build
           hpx_version: 1.9.1
-          hpx_source_directory: $GITHUB_WORKSPACE/../hpx-source
-          hpx_build_directory: $GITHUB_WORKSPACE/../hpx-build
-          hpx_install_directory: $GITHUB_WORKSPACE/../hpx-install
-          mdspan_source_directory: $GITHUB_WORKSPACE/../mdspan-source
-          mdspan_build_directory: $GITHUB_WORKSPACE/../mdspan-build
-          mdspan_install_directory: $GITHUB_WORKSPACE/../mdspan-install
+          hpx_source_directory: hpx_source
+          hpx_build_directory: hpx_build
+          hpx_install_directory: hpx_install
+          mdspan_source_directory: mdspan_source
+          mdspan_build_directory: mdspan_build
+          mdspan_install_directory: mdspan_install
 
         steps:
 
@@ -89,30 +89,19 @@ jobs:
                   nlohmann-json3-dev
               pip3 install -r environment/configuration/requirements-dev.txt
 
-              # Expand all variables that contain variables themselves and store the values in
-              # a bash script which can be used by job steps and composite actions
-              echo "LUE_SOURCE_DIRECTORY=${{ env.lue_source_directory }}" >> $GITHUB_ENV
-              echo "LUE_BUILD_DIRECTORY=${{ env.lue_build_directory }}" >> $GITHUB_ENV
-              echo "LUE_RUNTIME_INSTALL_DIRECTORY=${{ env.lue_runtime_install_directory }}" >> $GITHUB_ENV
-              echo "LUE_DEVELOPMENT_INSTALL_DIRECTORY=${{ env.lue_development_install_directory }}" >> $GITHUB_ENV
-              echo "LUE_CONSUME_SOURCE_DIRECTORY=${{ env.lue_consume_source_directory }}" >> $GITHUB_ENV
-              echo "LUE_CONSUME_BUILD_DIRECTORY=${{ env.lue_consume_build_directory }}" >> $GITHUB_ENV
-              echo "HPX_SOURCE_DIRECTORY=${{ env.hpx_source_directory }}" >> $GITHUB_ENV
-              echo "HPX_BUILD_DIRECTORY=${{ env.hpx_build_directory }}" >> $GITHUB_ENV
-              echo "HPX_INSTALL_DIRECTORY=${{ env.hpx_install_directory }}" >> $GITHUB_ENV
-              echo "HPX_CMAKE_PRESET_FILE=${{ env.lue_source_directory }}/CMakeHPXPresets.json" >> $GITHUB_ENV
-              echo "MDSPAN_SOURCE_DIRECTORY=${{ env.mdspan_source_directory }}" >> $GITHUB_ENV
-              echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
-              echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
-
         - name: "install hpx"
           uses: ./.github/actions/install_hpx
           with:
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             cmake_preset: hpx_release_linux_node_configuration
+            cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            source_directory: ${{ env.hpx_source_directory }}
+            build_directory: ${{ env.hpx_build_directory }}
+            install_directory: ${{ env.hpx_install_directory }}
 
         - name: "install mdspan"
           uses: ./.github/actions/install_mdspan
@@ -120,6 +109,9 @@ jobs:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             mdspan_tag: a799088  # 20191010
+            source_directory: ${{ env.mdspan_source_directory }}
+            build_directory: ${{ env.mdspan_build_directory }}
+            install_directory: ${{ env.mdspan_install_directory }}
 
         - name: configure
           run: |

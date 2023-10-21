@@ -1,15 +1,25 @@
 name: "install hpx"
 description: "Configure, build and install HPX, using settings needed by the LUE build, and clean-up afterwards"
 inputs:
+  c_compiler:
+    required: true
   cxx_compiler:
     required: true
   build_type:
     required: true
   cmake_preset:
     required: true
+  cmake_preset_file:
+    required: true
   hpx_version:
     required: true
   cache_key:
+    required: true
+  source_directory:
+    required: true
+  build_directory:
+    required: true
+  install_directory:
     required: true
 runs:
   using: "composite"
@@ -20,28 +30,29 @@ runs:
       env:
         cache-name: cache-hpx
       with:
-        path: $HPX_INSTALL_DIRECTORY
+        path: ${{ inputs.install_directory }}
         key: ${{ inputs.cache_key }}
     - name: install hpx
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
-        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git $HPX_SOURCE_DIRECTORY
-        cp $HPX_CMAKE_PRESET_FILE $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
+        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
-        mkdir $HPX_BUILD_DIRECTORY
+        mkdir ${{ inputs.build_directory }}
 
-        cd $HPX_SOURCE_DIRECTORY
+        cd ${{ inputs.source_directory }}
         cmake \
             --preset ${{ inputs.cmake_preset }} \
-            -B $HPX_BUILD_DIRECTORY \
+            -B ${{ inputs.build_directory }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
             $HPX_CMAKE_FLAGS
         cd -
 
-        cmake --build $HPX_BUILD_DIRECTORY --target all
-        cmake --install $HPX_BUILD_DIRECTORY --prefix $HPX_INSTALL_DIRECTORY --strip
+        cmake --build ${{ inputs.build_directory }} --target all
+        cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
-        rm -fr $HPX_BUILD_DIRECTORY $HPX_SOURCE_DIRECTORY
+        rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
