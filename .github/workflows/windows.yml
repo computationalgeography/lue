@@ -99,8 +99,13 @@ jobs:
               # toolset: ${{ matrix.toolset }}
               vsversion: ${{ matrix.vs.version }}
 
+        - name: check
+          run: |
+            pwd
+            ls
+
         - name: "install hpx"
-          uses: lue_source/.github/actions/install_hpx
+          uses: .github/actions/install_hpx
           with:
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
@@ -115,7 +120,7 @@ jobs:
             install_directory: ${{ env.hpx_install_directory }}
 
         - name: "install mdspan"
-          uses: lue_source/.github/actions/install_mdspan
+          uses: .github/actions/install_mdspan
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release

@@ -92,6 +92,11 @@ jobs:
                   nlohmann-json3-dev
               pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
 
+        - name: check
+          run: |
+            pwd
+            ls
+
         - name: "install hpx"
           uses: lue_source/.github/actions/install_hpx
           with:

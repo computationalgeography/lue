@@ -77,6 +77,11 @@ jobs:
                   vulkan-loader
               pip3 install conan docopt jinja2 matplotlib ruamel.yaml
 
+        - name: check
+          run: |
+            pwd
+            ls
+
         - name: "install hpx"
           uses: lue_source/.github/actions/install_hpx
           with:
