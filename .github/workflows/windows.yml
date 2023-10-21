@@ -118,6 +118,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
+            cmake_preset: hpx_release_windows_node_configuration
             hpx_version: ${{ env.hpx_version }}
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
 

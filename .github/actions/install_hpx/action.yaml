@@ -5,6 +5,8 @@ inputs:
     required: true
   build_type:
     required: true
+  cmake_preset:
+    required: true
   hpx_version:
     required: true
   cache_key:
@@ -16,23 +18,22 @@ runs:
       id: cache-hpx
       uses: actions/cache@v3
       env:
-          cache-name: cache-hpx
+        cache-name: cache-hpx
       with:
-          path: $HPX_INSTALL_DIRECTORY
-          key: ${{ inputs.cache_key }}
+        path: $HPX_INSTALL_DIRECTORY
+        key: ${{ inputs.cache_key }}
     - name: install hpx
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
-        wget https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v${{ inputs.hpx_version }}.tar.gz
-        tar -zx --directory=$(dirname $HPX_SOURCE_DIRECTORY) --file v${{ inputs.hpx_version }}.tar.gz
+        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.get $HPX_SOURCE_DIRECTORY
         cp $HPX_CMAKE_PRESET_FILE $HPX_SOURCE_DIRECTORY/CMakeUserPresets.json
 
         mkdir $HPX_BUILD_DIRECTORY
 
         cd $HPX_SOURCE_DIRECTORY
         cmake \
-            --preset hpx_release_node_configuration \
+            --preset ${{ inputs.cmake_preset }}
             -B $HPX_BUILD_DIRECTORY \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \

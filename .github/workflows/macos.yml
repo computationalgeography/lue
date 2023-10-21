@@ -18,7 +18,7 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-13"]
+                os: ["macos-12"]
                 compiler:
                     - { name: clang, cc: clang, cxx: clang++ }
                 python_version: ["3.11"]
@@ -88,6 +88,9 @@ jobs:
               echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
               echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
 
+                "HPX_WITH_MALLOC": "tcmalloc",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
+
         - name: "install hpx"
           uses: ./.github/actions/install_hpx
           with:
@@ -101,6 +104,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.name }}
             build_type: Release
+            cmake_preset: hpx_release_macos_node_configuration
             mdspan_tag: a799088  # 20191010
 
         - name: configure
