@@ -39,9 +39,10 @@ jobs:
         defaults:
           run:
             shell: bash -l {0}
-            working-directory: ..
+            working-directory: .  # This is something like /home/runner/work/lue/lue
 
         env:
+          # Directories are relative to the default working directory
           lue_source_directory: lue_source
           lue_build_directory: lue_build
           lue_runtime_install_directory: lue_runtime_install
