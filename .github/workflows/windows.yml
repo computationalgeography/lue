@@ -100,7 +100,7 @@ jobs:
               vsversion: ${{ matrix.vs.version }}
 
         - name: "install hpx"
-          uses: ./.github/actions/install_hpx
+          uses: ${{ env.lue_source_directory }}/.github/actions/install_hpx
           with:
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
@@ -115,7 +115,7 @@ jobs:
             install_directory: ${{ env.hpx_install_directory }}
 
         - name: "install mdspan"
-          uses: ./.github/actions/install_mdspan
+          uses: ${{ env.lue_source_directory }}/.github/actions/install_mdspan
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
@@ -126,8 +126,10 @@ jobs:
 
         - name: configure
           run: |
+              cd ${{ env.lue_source_directory }}
               python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} host_profile
               python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} build_profile
+              cd -
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
