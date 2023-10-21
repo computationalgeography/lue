@@ -45,7 +45,7 @@ jobs:
           lue_consume_source_directory: $GITHUB_WORKSPACE/../lue_consume
           lue_consume_build_directory: $GITHUB_WORKSPACE/../lue_consume_build
           hpx_version: 1.9.1
-          hpx_source_directory: $GITHUB_WORKSPACE/../hpx-1.9.1
+          hpx_source_directory: $GITHUB_WORKSPACE/../hpx-source
           hpx_build_directory: $GITHUB_WORKSPACE/../hpx-build
           hpx_install_directory: $GITHUB_WORKSPACE/../hpx-install
           mdspan_source_directory: $GITHUB_WORKSPACE/../mdspan-source
@@ -86,26 +86,24 @@ jobs:
                   mimalloc \
                   ninja \
                   numpy \
-                  pip \
                   ruamel.yaml
-              pip install wget
 
               # Expand all variables that contain variables themselves and store the values in
               # a bash script which can be used by job steps and composite actions
-              echo "LUE_SOURCE_DIRECTORY=${{ env.lue_source_directory }}" >> $GITHUB_ENV
-              echo "LUE_BUILD_DIRECTORY=${{ env.lue_build_directory }}" >> $GITHUB_ENV
-              echo "LUE_RUNTIME_INSTALL_DIRECTORY=${{ env.lue_runtime_install_directory }}" >> $GITHUB_ENV
-              echo "LUE_DEVELOPMENT_INSTALL_DIRECTORY=${{ env.lue_development_install_directory }}" >> $GITHUB_ENV
-              echo "LUE_CONSUME_SOURCE_DIRECTORY=${{ env.lue_consume_source_directory }}" >> $GITHUB_ENV
-              echo "LUE_CONSUME_BUILD_DIRECTORY=${{ env.lue_consume_build_directory }}" >> $GITHUB_ENV
-              echo "HPX_SOURCE_DIRECTORY=${{ env.hpx_source_directory }}" >> $GITHUB_ENV
-              echo "HPX_BUILD_DIRECTORY=${{ env.hpx_build_directory }}" >> $GITHUB_ENV
-              echo "HPX_INSTALL_DIRECTORY=${{ env.hpx_install_directory }}" >> $GITHUB_ENV
-              echo "HPX_CMAKE_PRESET_FILE=${{ env.lue_source_directory }}/CMakeHPXPresets.json" >> $GITHUB_ENV
-              echo "HPX_CMAKE_FLAGS=\"-D HPX_WITH_MALLOC=mimalloc -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib\"" >> $GITHUB_ENV
-              echo "MDSPAN_SOURCE_DIRECTORY=${{ env.mdspan_source_directory }}" >> $GITHUB_ENV
-              echo "MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }}" >> $GITHUB_ENV
-              echo "MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }}" >> $GITHUB_ENV
+              echo LUE_SOURCE_DIRECTORY=${{ env.lue_source_directory }} >> $GITHUB_ENV
+              echo LUE_BUILD_DIRECTORY=${{ env.lue_build_directory }} >> $GITHUB_ENV
+              echo LUE_RUNTIME_INSTALL_DIRECTORY=${{ env.lue_runtime_install_directory }} >> $GITHUB_ENV
+              echo LUE_DEVELOPMENT_INSTALL_DIRECTORY=${{ env.lue_development_install_directory }} >> $GITHUB_ENV
+              echo LUE_CONSUME_SOURCE_DIRECTORY=${{ env.lue_consume_source_directory }} >> $GITHUB_ENV
+              echo LUE_CONSUME_BUILD_DIRECTORY=${{ env.lue_consume_build_directory }} >> $GITHUB_ENV
+              echo HPX_SOURCE_DIRECTORY=${{ env.hpx_source_directory }} >> $GITHUB_ENV
+              echo HPX_BUILD_DIRECTORY=${{ env.hpx_build_directory }} >> $GITHUB_ENV
+              echo HPX_INSTALL_DIRECTORY=${{ env.hpx_install_directory }} >> $GITHUB_ENV
+              echo HPX_CMAKE_PRESET_FILE=${{ env.lue_source_directory }}/CMakeHPXPresets.json >> $GITHUB_ENV
+              echo HPX_CMAKE_FLAGS="-D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib" >> $GITHUB_ENV
+              echo MDSPAN_SOURCE_DIRECTORY=${{ env.mdspan_source_directory }} >> $GITHUB_ENV
+              echo MDSPAN_BUILD_DIRECTORY=${{ env.mdspan_build_directory }} >> $GITHUB_ENV
+              echo MDSPAN_INSTALL_DIRECTORY=${{ env.mdspan_install_directory }} >> $GITHUB_ENV
 
         - uses: ilammy/msvc-dev-cmd@v1
           with:
