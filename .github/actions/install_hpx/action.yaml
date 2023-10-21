@@ -38,23 +38,20 @@ runs:
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
-        pwd
         git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
         mkdir ${{ inputs.build_directory }}
 
-        cd ${{ inputs.source_directory }}
         cmake \
-            --preset ${{ inputs.cmake_preset }} \
+            -S ${{ inputs.source_directory }} \
             -B ${{ inputs.build_directory }} \
+            --preset ${{ inputs.cmake_preset }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
             ${{ inputs.cmake_flags }}
-        cd -
-
         cmake --build ${{ inputs.build_directory }} --target all
         cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
