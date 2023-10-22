@@ -81,7 +81,7 @@ jobs:
               conda install conda-libmamba-solver
               conda install --solver=libmamba \
                   boost-cpp \
-                  conan \
+                  conan>=2 \
                   conda-build \
                   docopt \
                   gdal \
@@ -92,7 +92,6 @@ jobs:
                   ninja \
                   numpy \
                   ruamel.yaml
-              conan profile detect
 
         - uses: ilammy/msvc-dev-cmd@v1
           with:
