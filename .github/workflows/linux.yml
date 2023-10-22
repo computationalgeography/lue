@@ -92,7 +92,6 @@ jobs:
                   ninja-build \
                   nlohmann-json3-dev
               pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
-              conan profile detect
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
@@ -184,6 +183,7 @@ jobs:
 
               export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
               export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$LD_LIBRARY_PATH"
+
               ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
