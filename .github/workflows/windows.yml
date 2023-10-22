@@ -131,10 +131,10 @@ jobs:
               #      boost gdal hdf5 hwloc mimalloc
               mkdir ${{ env.lue_build_directory }}
 
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
@@ -198,7 +198,7 @@ jobs:
               conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
               ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
-              python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
               dumpbin //imports ${{ env.lue_runtime_install_directory }}/bin/lue_view.exe
 
