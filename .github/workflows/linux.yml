@@ -142,8 +142,6 @@ jobs:
                       --profile:build=build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
-              cd -
-
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
@@ -162,6 +160,7 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+              cd -
 
         - name: build
           run: |
