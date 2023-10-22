@@ -74,7 +74,21 @@ jobs:
 
         - name: setup platform
           run: |
-              choco install boost-msvc-14.3
+              choco install \
+                  boost-msvc-14.3 \
+                  gdal \
+                  libhwloc \
+                  mimalloc \
+                  ninja \
+
+              pip3 install \
+                  conan \
+                  docopt \
+                  jinja2 \
+                  matplotlib \
+                  numpy \
+                  ruamel.yaml
+
 
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
@@ -126,6 +140,39 @@ jobs:
             build_directory: ${{ env.hpx_build_directory }}
             install_directory: ${{ env.hpx_install_directory }}
 
+
+        ### - name: cache hpx
+        ###   id: cache-hpx
+        ###   uses: actions/cache@v3
+        ###   env:
+        ###     cache-name: cache-hpx
+        ###   with:
+        ###     path: ${{ env.hpx_install_directory }}
+        ###     key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+
+        ### - name: install hpx
+        ###   if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
+        ###   run: |
+
+        ###     git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        ###     cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
+
+        ###     mkdir ${{ inputs.build_directory }}
+
+        ###     cmake \
+        ###         -S ${{ inputs.source_directory }} \
+        ###         -B ${{ inputs.build_directory }} \
+        ###         --preset ${{ inputs.cmake_preset }} \
+        ###         -G "Ninja" \
+        ###         -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
+        ###         -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+        ###         -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
+        ###         ${{ inputs.cmake_flags }}
+        ###     cmake --build ${{ inputs.build_directory }} --target all
+        ###     cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
+
+        ###     rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
+
         - name: "install mdspan"
           uses: ./lue_source/.github/actions/install_mdspan
           with:
@@ -155,8 +202,10 @@ jobs:
               cd -
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-                  cmake --preset conan-release \
+                  cmake \
+                      -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
+                      --preset conan-release \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \

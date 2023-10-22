@@ -127,8 +127,10 @@ jobs:
               cd -
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-                  cmake --preset conan-release \
+                  cmake \
+                      -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
+                      --preset conan-release \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
