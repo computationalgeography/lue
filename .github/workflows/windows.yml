@@ -57,11 +57,6 @@ jobs:
 
         steps:
 
-        - name: check
-          run: |
-            pwd
-            ls
-
         - uses: actions/checkout@v4
           with:
             path: ${{ env.lue_source_directory }}
@@ -84,7 +79,6 @@ jobs:
 
               # Use different solver than the default to work around "picosat: out of memory in 'new'"
               conda install conda-libmamba-solver
-
               conda install --solver=libmamba \
                   boost-cpp \
                   conan \
@@ -98,17 +92,13 @@ jobs:
                   ninja \
                   numpy \
                   ruamel.yaml
+              conan profile detect
 
         - uses: ilammy/msvc-dev-cmd@v1
           with:
               arch: ${{ matrix.architecture }}
               # toolset: ${{ matrix.toolset }}
               vsversion: ${{ matrix.vs.version }}
-
-        - name: check
-          run: |
-            pwd
-            ls
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
@@ -175,15 +165,20 @@ jobs:
               #      boost gdal hdf5 hwloc mimalloc
               mkdir ${{ env.lue_build_directory }}
 
-              cd ${{ env.lue_source_directory }}
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} host_profile
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} build_profile
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/host_profile
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/build_profile
+
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json vulkan-headers vulkan-loader" \
-                  conan install . \
-                      --profile:host=host_profile \
-                      --profile:build=build_profile \
+                  conan install ${{ env.lue_source_directory }} \
+                      --profile:host=${{ env.lue_source_directory }}/host_profile \
+                      --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
@@ -200,7 +195,6 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
-              cd -
 
         - name: build
           run: |
@@ -237,7 +231,7 @@ jobs:
               conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
               ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
-              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
               dumpbin //imports ${{ env.lue_runtime_install_directory }}/bin/lue_view.exe
 

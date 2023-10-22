@@ -52,11 +52,6 @@ jobs:
 
         steps:
 
-        - name: check
-          run: |
-            pwd
-            ls
-
         - uses: actions/checkout@v4
           with:
             path: ${{ env.lue_source_directory }}
@@ -81,11 +76,7 @@ jobs:
                   tree \
                   vulkan-loader
               pip3 install conan docopt jinja2 matplotlib ruamel.yaml
-
-        - name: check
-          run: |
-            pwd
-            ls
+              conan profile detect
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
@@ -115,15 +106,17 @@ jobs:
           run: |
               mkdir ${{ env.lue_build_directory }}
 
-              cd ${{ env.lue_source_directory }}
-              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
-              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
-              cd -
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/host_profile
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/build_profile
 
               LUE_CONAN_PACKAGES="docopt.cpp imgui" \
                   conan install ${{ env.lue_source_directory }} \
-                    --profile:host=host_profile \
-                    --profile:build=build_profile \
+                    --profile:host=${{ env.lue_source_directory }}/host_profile \
+                    --profile:build=${{ env.lue_source_directory }}/build_profile \
                     --build=missing \
                     --output-folder=${{ env.lue_build_directory }}
 
