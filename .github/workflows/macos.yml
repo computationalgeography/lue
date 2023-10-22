@@ -118,12 +118,15 @@ jobs:
               cd ${{ env.lue_source_directory }}
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
+              cd -
+
               LUE_CONAN_PACKAGES="docopt.cpp imgui" \
-                  conan install . \
+                  conan install ${{ env.lue_source_directory }} \
                     --profile:host=host_profile \
                     --profile:build=build_profile \
                     --build=missing \
                     --output-folder=${{ env.lue_build_directory }}
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
@@ -141,7 +144,6 @@ jobs:
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
                       -D Python3_EXECUTABLE="/usr/local/bin/python3"
-              cd -
 
         - name: build
           run: |
