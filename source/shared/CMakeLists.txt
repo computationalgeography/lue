@@ -47,7 +47,6 @@ target_sources(lue_shared
 
 target_link_libraries(lue_shared
     PUBLIC
-        docopt
         fmt::fmt
 )
 
