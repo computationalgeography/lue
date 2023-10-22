@@ -38,6 +38,8 @@ runs:
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       shell: bash
       run: |
+        echo $CONDA_PREFIX
+
         git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 

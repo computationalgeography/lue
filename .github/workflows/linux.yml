@@ -131,17 +131,19 @@ jobs:
 
         - name: configure
           run: |
+              mkdir ${{ env.lue_build_directory }}
+
               cd ${{ env.lue_source_directory }}
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
               python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
-              cd -
-              mkdir ${{ env.lue_build_directory }}
               CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
                   conan install . \
                       --profile:host=host_profile \
                       --profile:build=build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
+              cd -
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake --preset conan-release \
                       -B ${{ env.lue_build_directory }} \

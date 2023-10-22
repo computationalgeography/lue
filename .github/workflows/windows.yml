@@ -74,6 +74,8 @@ jobs:
 
         - name: setup platform
           run: |
+              choco install boost-msvc-14.3
+
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
               # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
@@ -136,20 +138,22 @@ jobs:
 
         - name: configure
           run: |
-              cd ${{ env.lue_source_directory }}
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} host_profile
-              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} build_profile
-              cd -
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
               #      boost gdal hdf5 hwloc mimalloc
               mkdir ${{ env.lue_build_directory }}
+
+              cd ${{ env.lue_source_directory }}
+              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} host_profile
+              python environment/script/write_conan_profile.py ${{ matrix.compiler.cxx }} build_profile
               LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json vulkan-headers vulkan-loader" \
                   conan install . \
                       --profile:host=host_profile \
                       --profile:build=build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
+              cd -
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake --preset conan-release \
                       -B ${{ env.lue_build_directory }} \
