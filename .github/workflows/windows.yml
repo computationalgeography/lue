@@ -148,13 +148,13 @@ jobs:
               ls
 
               ls ${{ env.lue_build_directory }}
-              if [ -f ${{ env.lue_build_directory }}/CMakePresets ]; then
-                  cat ${{ env.lue_build_directory }}/CMakePresets ]
+              if [ -f ${{ env.lue_build_directory }}/CMakePresets.json ]; then
+                  cat ${{ env.lue_build_directory }}/CMakePresets.json ]
               fi
 
               ls ${{ env.lue_source_directory }}
-              if [ -f ${{ env.lue_source_directory }}/CMakeUserPresets ]; then
-                  cat ${{ env.lue_source_directory }}/CMakeUserPresets ]
+              if [ -f ${{ env.lue_source_directory }}/CMakeUserPresets.json ]; then
+                  cat ${{ env.lue_source_directory }}/CMakeUserPresets.json ]
               fi
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
