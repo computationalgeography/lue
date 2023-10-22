@@ -145,6 +145,18 @@ jobs:
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
 
+              ls
+
+              ls ${{ env.lue_build_directory }}
+              if [ -f ${{ env.lue_build_directory }}/CMakePresets ]; then
+                  cat ${{ env.lue_build_directory }}/CMakePresets ]
+              fi
+
+              ls ${{ env.lue_source_directory }}
+              if [ -f ${{ env.lue_build_directory }}/CMakeUserPresets ]; then
+                  cat ${{ env.lue_build_directory }}/CMakeUserPresets ]
+              fi
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
