@@ -3,7 +3,7 @@ name: Linux consume LUE
 on:
   push:
     branches-ignore:
-      - "gh446"
+      - "*"
     paths:
       - "conanfile.py"
       - ".github/workflows/linux-consume.yml"

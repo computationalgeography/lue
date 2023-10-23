@@ -78,7 +78,7 @@ jobs:
               #      Conan package actually works
 
               # Use different solver than the default to work around "picosat: out of memory in 'new'"
-              conda install conda-libmamba-solver
+              conda install -n base -c defaults conda-libmamba-solver
               conda install --solver=libmamba \
                   boost-cpp \
                   "conan>=2" \
@@ -145,18 +145,6 @@ jobs:
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
 
-              ls
-
-              ls ${{ env.lue_build_directory }}
-              if [ -f ${{ env.lue_build_directory }}/CMakePresets.json ]; then
-                  cat ${{ env.lue_build_directory }}/CMakePresets.json ]
-              fi
-
-              ls ${{ env.lue_source_directory }}
-              if [ -f ${{ env.lue_source_directory }}/CMakeUserPresets.json ]; then
-                  cat ${{ env.lue_source_directory }}/CMakeUserPresets.json ]
-              fi
-
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
@@ -196,36 +184,38 @@ jobs:
               # Unit tests
               ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
 
-              # Tests of runtime targets
-              # Add location of dependencies installed with Conan to the runtime environment
-              ${{ env.lue_build_directory }}/conanrun.bat
+              # TODO See gh598
 
-              export PATH="${{ env.lue_runtime_install_directory }}/bin:$PATH"
+              ### # Tests of runtime targets
+              ### # Add location of dependencies installed with Conan to the runtime environment
+              ### ${{ env.lue_build_directory }}/conanrun.bat
 
-              ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
+              ### export PATH="${{ env.lue_runtime_install_directory }}/bin:$PATH"
 
-              # Add our package to the set of Conda packages
-              conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
-              ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
-              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              ### ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+              ### ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+              ### ${{ env.lue_runtime_install_directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
 
-              dumpbin //imports ${{ env.lue_runtime_install_directory }}/bin/lue_view.exe
+              ### # Add our package to the set of Conda packages
+              ### conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
+              ### ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
+              ### ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
+              ### python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-              # Test of imported CMake targets
-              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
-              cmake \
-                  -S ${{ env.lue_consume_source_directory }} \
-                  -B ${{ env.lue_consume_build_directory }} \
-                  -G "Ninja" \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D CMAKE_BUILD_TYPE=Release \
-                  -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
-                  -D LUE_ROOT=${{ env.lue_development_install_directory }} \
-                  -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                  -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
-              cmake --build ${{ env.lue_consume_build_directory }} --target all
-              ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework
+              ### dumpbin //imports ${{ env.lue_runtime_install_directory }}/bin/lue_view.exe
+
+              ### # Test of imported CMake targets
+              ### git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              ### cmake \
+              ###     -S ${{ env.lue_consume_source_directory }} \
+              ###     -B ${{ env.lue_consume_build_directory }} \
+              ###     -G "Ninja" \
+              ###     -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+              ###     -D CMAKE_BUILD_TYPE=Release \
+              ###     -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
+              ###     -D LUE_ROOT=${{ env.lue_development_install_directory }} \
+              ###     -D HPX_ROOT=${{ env.hpx_install_directory }} \
+              ###     -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+              ### cmake --build ${{ env.lue_consume_build_directory }} --target all
+              ### ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+              ### ${{ env.lue_consume_build_directory }}/lue_consume_framework

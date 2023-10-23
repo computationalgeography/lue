@@ -3,7 +3,7 @@ name: Linux Conda package
 on:
   push:
     branches-ignore:
-      - "gh446"
+      - "ghxyz"
     paths:
       - "conanfile.py"
       - ".github/workflows/linux-conda.yml"
@@ -30,11 +30,6 @@ jobs:
         name: ${{ matrix.os }} / python - ${{ matrix.python-version }} / conda
 
         steps:
-
-        ### - name: Configure system
-        ###   run: |
-        ###       sudo apt-get update
-        ###       sudo apt install mesa-common-dev libglu1-mesa-dev libgl1-mesa-glx
 
         - name: Checkout LUE
           uses: actions/checkout@v3
