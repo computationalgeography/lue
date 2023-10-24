@@ -6,23 +6,50 @@ configure_file(
 )
 
 configure_file(
-    include/lue/git.hpp.in
-    include/lue/git.hpp
+    src/git.cpp.in
+    src/git.cpp
 )
 
-add_library(lue_shared INTERFACE)
+configure_file(
+    src/version.cpp.in
+    src/version.cpp
+)
+
+add_library(lue_shared STATIC
+    ${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
+)
+
 add_library(lue::shared ALIAS lue_shared)
 
+set_target_properties(lue_shared
+    PROPERTIES
+        EXPORT_NAME shared
+)
+
 target_include_directories(lue_shared
-    INTERFACE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+target_sources(lue_shared
+    PUBLIC
+        FILE_SET
+            HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/configure.hpp
+)
+
 target_link_libraries(lue_shared
-    INTERFACE
-        docopt
+    PUBLIC
         fmt::fmt
 )
 
-lue_install_libraries(TARGETS lue_shared)
+lue_install_development_libraries(
+    TARGETS lue_shared
+)

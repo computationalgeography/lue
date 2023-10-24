@@ -23,4 +23,6 @@ target_link_libraries(lue_validate
         lue::validate
 )
 
-lue_install_executables(TARGETS lue_validate)
+lue_install_executables(
+    TARGETS lue_validate
+)

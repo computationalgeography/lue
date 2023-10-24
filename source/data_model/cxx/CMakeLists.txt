@@ -67,9 +67,24 @@ add_library(lue_data_model STATIC
 
 add_library(lue::data_model ALIAS lue_data_model)
 
+set_target_properties(lue_data_model
+    PROPERTIES
+        EXPORT_NAME data_model
+)
+
 target_include_directories(lue_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+target_sources(lue_data_model
+    PUBLIC
+        FILE_SET
+            HEADERS
+        BASE_DIRS
+            include
+        FILES
+            include/lue
 )
 
 target_link_libraries(lue_data_model
@@ -79,4 +94,6 @@ target_link_libraries(lue_data_model
         fmt::fmt
 )
 
-lue_install_libraries(TARGETS lue_data_model)
+lue_install_development_libraries(
+    TARGETS lue_data_model
+)

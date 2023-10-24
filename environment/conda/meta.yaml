@@ -35,19 +35,19 @@ requirements:
     # Dependencies required during build phase needed on the host.
     - python
     - numpy
-    - boost-cpp
+    - libboost-headers
     - hdf5
-    - glfw
+    - glfw                                       # [not arm64]
     - hpx
     - libgdal
-    - libvulkan-headers
-    - libvulkan-loader
+    - libvulkan-headers                          # [not arm64]
+    - libvulkan-loader                           # [not arm64]
     - pybind11
     - fmt
-    - docopt.cpp
-    - nlohmann_json
     - docopt  # templatize.py
+    - docopt.cpp
     - jinja2  # templatize.py
+    - nlohmann_json
     - ruamel.yaml  # write_conan_profile.py
 
   run:
@@ -56,10 +56,10 @@ requirements:
     - docopt  # lue.qa
     - docopt.cpp
     - hdf5
-    - glfw
+    - glfw                                       # [not arm64]
     - hpx
     - libgdal
-    - libvulkan-loader
+    - libvulkan-loader                           # [not arm64]
     - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
     - python
@@ -70,9 +70,9 @@ test:
   commands:
     - lue_translate -h
     - lue_validate -h
-    - lue_calculate -h                        # [not win]
-    - lue_scalability -h                      # [not win]
-    - lue_view -h
+    - lue_calculate -h                           # [not win]
+    - lue_scalability -h                         # [not win]
+    - lue_view -h                                # [not arm64]
 
 
 about:

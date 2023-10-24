@@ -1,5 +1,5 @@
 #include "lue/object/dataset.hpp"
-#include "lue/configure.hpp"
+#include "lue/version.hpp"
 #include <cassert>
 #include <stdexcept>
 
@@ -146,7 +146,7 @@ namespace lue {
                 create_universes(file);
                 create_phenomena(file);
 
-                file.attributes().write<std::string>("lue_version", LUE_VERSION);
+                file.attributes().write<std::string>("lue_version", version());
 
                 if (!description.empty())
                 {

@@ -1,0 +1,11 @@
+#include "lue/hdf5/version.hpp"
+
+
+namespace lue {
+
+    std::string hdf5_version()
+    {
+        return "${HDF5_VERSION}";
+    }
+
+}  // namespace lue

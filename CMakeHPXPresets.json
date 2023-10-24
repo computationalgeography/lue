@@ -1,0 +1,209 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "hpx_shared_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
+                "HPX_WITH_EXAMPLES": "FALSE",
+                "HPX_WITH_FETCH_ASIO": "TRUE",
+                "HPX_WITH_HWLOC": "TRUE",
+                "HPX_WITH_PKGCONFIG": "FALSE",
+                "HPX_WITH_TESTS": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_node_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_NETWORKING": "TRUE",
+                "HPX_WITH_PARCELPORT_TCP": "TRUE",
+                "HPX_WITH_PARCELPORT_MPI": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_cluster_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_NETWORKING": "TRUE",
+                "HPX_WITH_PARCELPORT_TCP": "FALSE",
+                "HPX_WITH_PARCELPORT_MPI": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_linux_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_MALLOC": "tcmalloc",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_macos_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_MALLOC": "tcmalloc",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_windows_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_MALLOC": "mimalloc",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_debug_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_relwithdebinfo_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "TRUE",
+                "HPX_WITH_THREAD_IDLE_RATES": "TRUE",
+                "HPX_WITH_APEX": "TRUE",
+                "HPX_WITH_PAPI": "TRUE"
+            }
+        },
+        {
+            "name": "hpx_release_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
+                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
+                "HPX_WITH_APEX": "FALSE",
+                "HPX_WITH_PAPI": "FALSE"
+            }
+        },
+        {
+            "name": "hpx_debug_linux_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_debug_configuration",
+                "hpx_linux_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_debug_macos_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_debug_configuration",
+                "hpx_macos_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_debug_windows_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_debug_configuration",
+                "hpx_windows_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_debug_cluster_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_debug_configuration",
+                "hpx_linux_configuration",
+                "hpx_cluster_configuration"
+            ]
+        },
+        {
+            "name": "hpx_relwithdebinfo_linux_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_relwithdebinfo_configuration",
+                "hpx_linux_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_relwithdebinfo_macos_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_relwithdebinfo_configuration",
+                "hpx_macos_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_relwithdebinfo_windows_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_relwithdebinfo_configuration",
+                "hpx_windows_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_relwithdebinfo_cluster_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_relwithdebinfo_configuration",
+                "hpx_linux_configuration",
+                "hpx_cluster_configuration"
+            ]
+        },
+        {
+            "name": "hpx_release_linux_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_release_configuration",
+                "hpx_linux_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_release_macos_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_release_configuration",
+                "hpx_macos_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_release_windows_node_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_release_configuration",
+                "hpx_windows_configuration",
+                "hpx_node_configuration"
+            ]
+        },
+        {
+            "name": "hpx_release_cluster_configuration",
+            "hidden": false,
+            "inherits": [
+                "hpx_shared_configuration",
+                "hpx_release_configuration",
+                "hpx_linux_configuration",
+                "hpx_cluster_configuration"
+            ]
+        }
+    ]
+}

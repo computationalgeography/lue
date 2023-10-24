@@ -1,0 +1,17 @@
+#include "lue/git.hpp"
+
+
+namespace lue {
+
+    std::string sha1()
+    {
+        return "${LUE_GIT_SHA1}";
+    }
+
+
+    std::string short_sha1()
+    {
+        return "${LUE_GIT_SHORT_SHA1}";
+    }
+
+}  // namespace lue

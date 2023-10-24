@@ -393,16 +393,82 @@ function(lue_install_programs)
     install(
         PROGRAMS ${${name}_TARGETS}
         DESTINATION ${CMAKE_INSTALL_BINDIR}
-        COMPONENT ${${name}_RUNTIME_COMPONENT}
+        COMPONENT lue_runtime
+    )
+endfunction()
+
+
+function(lue_install_development_libraries)
+    # Install libraries, lue_development component
+    set(options
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_development_libraries")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH ${LUE_ORIGIN}
+        )
+    endforeach()
+
+    install(
+        TARGETS ${${name}_TARGETS}
+        EXPORT lue_development
+        EXCLUDE_FROM_ALL
+        ARCHIVE
+            COMPONENT lue_development
+        LIBRARY
+            COMPONENT lue_development
+            NAMELINK_COMPONENT lue_development
+        RUNTIME
+            COMPONENT lue_development
+        FILE_SET HEADERS
+            COMPONENT lue_development
+        INCLUDES
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+endfunction()
+
+
+function(lue_install_runtime_libraries)
+    # Install libraries, lue_runtime component
+    set(options
+    )
+    set(multi_value_arguments
+        TARGETS
+    )
+    set(name "lue_install_runtime_libraries")
+    cmake_parse_arguments(
+        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
+    )
+
+    foreach(target ${${name}_TARGETS})
+        set_property(
+            TARGET ${target}
+                PROPERTY INSTALL_RPATH ${LUE_ORIGIN}
+        )
+    endforeach()
+
+    install(
+        TARGETS ${${name}_TARGETS}
+        LIBRARY
+            COMPONENT lue_runtime
+            NAMELINK_COMPONENT lue_runtime
+        RUNTIME
+            COMPONENT lue_runtime
     )
 endfunction()
 
 
 function(lue_install_executables)
+    # Install executables, lue_runtime component
     set(options
-    )
-    set(one_value_arguments
-        # RUNTIME_COMPONENT
     )
     set(multi_value_arguments
         TARGETS
@@ -411,12 +477,6 @@ function(lue_install_executables)
     cmake_parse_arguments(
         ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
     )
-
-    set(${name}_RUNTIME_COMPONENT lue_runtime)
-
-    # if(NOT ${name}_RUNTIME_COMPONENT)
-    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
-    # endif()
 
     foreach(target ${${name}_TARGETS})
         set_property(
@@ -431,67 +491,7 @@ function(lue_install_executables)
         TARGETS
             ${${name}_TARGETS}
         RUNTIME
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
-    )
-endfunction()
-
-
-function(lue_install_libraries)
-    set(options
-    )
-    set(one_value_arguments
-        EXPORT
-        # DEVELOPMENT_COMPONENT
-        # RUNTIME_COMPONENT
-    )
-    set(multi_value_arguments
-        TARGETS
-    )
-    set(name "lue_install_libraries")
-    cmake_parse_arguments(
-        ${name} "${options}" "${one_value_arguments}" "${multi_value_arguments}" ${ARGN}
-    )
-
-    set(${name}_DEVELOPMENT_COMPONENT lue_development)
-    set(${name}_RUNTIME_COMPONENT lue_runtime)
-
-    # if(NOT ${name}_DEVELOPMENT_COMPONENT)
-    #     set(${name}_DEVELOPMENT_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
-    # endif()
-
-    # if(NOT ${name}_RUNTIME_COMPONENT)
-    #     set(${name}_RUNTIME_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
-    # endif()
-
-    foreach(target ${${name}_TARGETS})
-        set_property(
-            TARGET ${target}
-                PROPERTY INSTALL_RPATH
-                    ${LUE_ORIGIN}
-        )
-    endforeach()
-
-    install(
-        TARGETS
-            ${${name}_TARGETS}
-        EXPORT
-            ${${name}_EXPORT}
-        RUNTIME
-            DESTINATION ${CMAKE_INSTALL_BINDIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
-        LIBRARY
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
-            NAMELINK_COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
-        ARCHIVE
-            DESTINATION ${CMAKE_INSTALL_LIBDIR}
-            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
-        PUBLIC_HEADER
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-            COMPONENT ${${name}_DEVELOPMENT_COMPONENT}
-        INCLUDES
-            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            COMPONENT lue_runtime
     )
 endfunction()
 
@@ -530,10 +530,10 @@ function(lue_install_python_modules)
             ${${name}_TARGETS}
         RUNTIME
             DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
+            COMPONENT lue_runtime
         LIBRARY
             DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
-            COMPONENT ${${name}_RUNTIME_COMPONENT}
+            COMPONENT lue_runtime
     )
 endfunction()
 

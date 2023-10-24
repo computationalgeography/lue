@@ -5,8 +5,11 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
-      - "conanfile.py"
+      - ".github/actions/**"
       - ".github/workflows/macos.yml"
+      - "conanfile.py"
+      - "CMakePresets.json"
+      - "CMakeHPXPresets.json"
       - "environment/cmake/**"
       - "environment/script/write_conan_profile.py"
       - "source/**"
@@ -17,21 +20,43 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-11"]
+                os: ["macos-13"]
                 compiler:
-                    - { name: clang, cc: clang, cxx: clang++ }
-            fail-fast: true
+                    - { name: clang, c: clang, cxx: clang++ }
+                python_version: ["3.11"]
+            fail-fast: false
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }}
+        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
+
+        defaults:
+          run:
+            shell: bash -l {0}
+            working-directory: .
+
+        env:
+          lue_source_directory: lue_source
+          lue_build_directory: lue_build
+          lue_runtime_install_directory: lue_runtime_install
+          lue_development_install_directory: lue_development_install
+          lue_consume_source_directory: lue_consume_source
+          lue_consume_build_directory: lue_consume_build
+          hpx_version: 1.9.1
+          hpx_source_directory: hpx_source
+          hpx_build_directory: hpx_build
+          hpx_install_directory: hpx_install
+          mdspan_source_directory: mdspan_source
+          mdspan_build_directory: mdspan_build
+          mdspan_install_directory: mdspan_install
 
         steps:
 
-        - name: checkout lue
-          uses: actions/checkout@v3
+        - uses: actions/checkout@v4
+          with:
+            path: ${{ env.lue_source_directory }}
 
-        - name: configure system
+        - name: setup platform
           run: |
               brew install \
                   asio \
@@ -50,26 +75,57 @@ jobs:
                   pybind11 \
                   tree \
                   vulkan-loader
+              pip3 install conan docopt jinja2 matplotlib ruamel.yaml
+              conan profile detect
 
-        - name: install python packages
-          shell: bash -l {0}
-          run: |
-              pip3 install "conan>=2" docopt jinja2 matplotlib ruamel.yaml
+        - name: "install hpx"
+          uses: ./lue_source/.github/actions/install_hpx
+          with:
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            c_compiler: ${{ matrix.compiler.c }}
+            cxx_compiler: ${{ matrix.compiler.cxx }}
+            build_type: Release
+            cmake_preset: hpx_release_macos_node_configuration
+            cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
+            hpx_version: ${{ env.hpx_version }}
+            source_directory: ${{ env.hpx_source_directory }}
+            build_directory: ${{ env.hpx_build_directory }}
+            install_directory: ${{ env.hpx_install_directory }}
 
-        - name: configure lue
-          shell: bash -l {0}
+        - name: "install mdspan"
+          uses: ./lue_source/.github/actions/install_mdspan
+          with:
+            cxx_compiler: ${{ matrix.compiler.cxx }}
+            build_type: Release
+            mdspan_tag: a799088  # 20191010
+            source_directory: ${{ env.mdspan_source_directory }}
+            build_directory: ${{ env.mdspan_build_directory }}
+            install_directory: ${{ env.mdspan_install_directory }}
+
+        - name: configure
           run: |
-              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} host_profile
-              python3 environment/script/write_conan_profile.py ${{ matrix.compiler.name }} build_profile
-              mkdir $GITHUB_WORKSPACE/../build
-              LUE_CONAN_PACKAGES="docopt.cpp imgui" conan install . \
-                  --profile:host=host_profile \
-                  --profile:build=build_profile \
-                  --build=missing \
-                  --output-folder=$GITHUB_WORKSPACE/../build
-              CMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/../build \
-                  cmake --preset conan-release \
-                      -B $GITHUB_WORKSPACE/../build \
+              mkdir ${{ env.lue_build_directory }}
+
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/host_profile
+              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/build_profile
+
+              LUE_CONAN_PACKAGES="docopt.cpp imgui" \
+                  conan install ${{ env.lue_source_directory }} \
+                    --profile:host=${{ env.lue_source_directory }}/host_profile \
+                    --profile:build=${{ env.lue_source_directory }}/build_profile \
+                    --build=missing \
+                    --output-folder=${{ env.lue_build_directory }}
+
+              CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+                  cmake \
+                      -S ${{ env.lue_source_directory }} \
+                      -B ${{ env.lue_build_directory }} \
+                      --preset conan-release \
+                      -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
@@ -78,36 +134,56 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D LUE_BUILD_HPX=TRUE \
-                      -D HPX_USE_CMAKE_CXX_STANDARD=TRUE \
-                      -D HPX_WITH_MALLOC="tcmalloc" \
-                      -D HPX_WITH_PKGCONFIG=FALSE \
-                      -D HPX_WITH_EXAMPLES=FALSE \
-                      -D HPX_WITH_TESTS=FALSE \
+                      -D HPX_ROOT=${{ env.hpx_install_directory }} \
+                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
                       -D Python3_EXECUTABLE="/usr/local/bin/python3"
 
-        - name: build lue
-          shell: bash -l {0}
+        - name: build
           run: |
-              cmake --build $GITHUB_WORKSPACE/../build --target all
+              cmake --build ${{ env.lue_build_directory }} --target all
 
-        - name: test lue
-          shell: bash -l {0}
+        - name: install
           run: |
-              cd $GITHUB_WORKSPACE/../build
-              ctest --output-on-failure
+              cmake \
+                  --install ${{ env.lue_build_directory }} \
+                  --prefix ${{ env.lue_runtime_install_directory }} \
+                  --component lue_runtime \
+                  --strip
+              cmake \
+                  --install ${{ env.lue_build_directory }} \
+                  --prefix ${{ env.lue_development_install_directory }} \
+                  --component lue_development \
+                  --strip
 
-        - name: install lue runtime component
-          shell: bash -l {0}
+        - name: test
           run: |
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component runtime
-              cmake --install $GITHUB_WORKSPACE/../build --prefix install --component lue_runtime
+              # Unit tests
+              ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
 
-              install/bin/lue_translate --version
-              install/bin/lue_validate --version
-              install/bin/lue_view --version
+              # Test of runtime targets
+              ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
-              export PYTHONPATH="$(echo install/lib/python3.*):$PYTHONPATH"
-              python3 install/bin/lue_calculate --version
-              python3 install/bin/lue_scalability --version
+              export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
+              export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+
+              python3 ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
+              python3 ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
               python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+
+              # Test of imported CMake targets
+              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              cmake \
+                  -S ${{ env.lue_consume_source_directory }} \
+                  -B ${{ env.lue_consume_build_directory }} \
+                  -G "Ninja" \
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                  -D CMAKE_BUILD_TYPE=Release \
+                  -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
+                  -D LUE_ROOT=${{ env.lue_development_install_directory }} \
+                  -D HPX_ROOT=${{ env.hpx_install_directory }} \
+                  -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+              cmake --build ${{ env.lue_consume_build_directory }} --target all
+              ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework

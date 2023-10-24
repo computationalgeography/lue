@@ -1,7 +1,7 @@
 #include "lue/view/vulkan_application.hpp"
-#include "lue/configure.hpp"
 #include "lue/glfw.hpp"
 #include "lue/imgui.hpp"
+#include "lue/version.hpp"
 #include "lue/vulkan.hpp"
 #include <fmt/format.h>
 #include <cassert>
@@ -486,8 +486,7 @@ namespace lue::view {
         vulkan::Instance instance{vulkan::Instance::CreateInfo{
             vulkan::ApplicationInfo{
                 application_name,
-                std::make_tuple(
-                    BuildOptions::major_version, BuildOptions::minor_version, BuildOptions::patch_version),
+                std::make_tuple(major_version(), minor_version(), patch_version()),
                 VK_API_VERSION_1_2},
             required_layer_names,
             required_extension_names}};

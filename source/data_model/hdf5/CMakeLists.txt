@@ -1,8 +1,13 @@
 add_test_conditionally(test)
 
 configure_file(
-    include/lue/hdf5/configure.hpp.in
+    include/configure.hpp.in
     include/lue/hdf5/configure.hpp
+)
+
+configure_file(
+    src/version.cpp.in
+    src/version.cpp
 )
 
 add_library(lue_hdf5 STATIC
@@ -28,9 +33,15 @@ add_library(lue_hdf5 STATIC
     src/soft_link.cpp
     src/validate.cpp
     src/vlen_memory.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
 )
 
 add_library(lue::hdf5 ALIAS lue_hdf5)
+
+set_target_properties(lue_hdf5
+    PROPERTIES
+        EXPORT_NAME hdf5
+)
 
 target_compile_definitions(lue_hdf5
     PUBLIC
@@ -48,6 +59,17 @@ target_include_directories(lue_hdf5
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
 )
 
+target_sources(lue_hdf5
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
+)
+
 target_link_libraries(lue_hdf5
     PUBLIC
         lue::shared
@@ -57,4 +79,6 @@ target_link_libraries(lue_hdf5
         fmt::fmt
 )
 
-lue_install_libraries(TARGETS lue_hdf5)
+lue_install_development_libraries(
+    TARGETS lue_hdf5
+)

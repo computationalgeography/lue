@@ -96,7 +96,8 @@ target_compile_definitions(lue_py_data_model
 
 set_target_properties(lue_py_data_model
     PROPERTIES
-        CXX_CLANG_TIDY ""  # TODO(KDJ) Get it to skip pybind11.h
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
 target_include_directories(lue_py_data_model
@@ -122,7 +123,9 @@ if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebIn
     pybind11_strip(lue_py_data_model)
 endif()
 
-lue_install_libraries(TARGETS lue_py_data_model)
+lue_install_runtime_libraries(
+    TARGETS lue_py_data_model
+)
 
 if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
     # If we are using a Python interpreter from a Conda environment then we must expand RPATH

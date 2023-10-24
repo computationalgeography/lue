@@ -46,4 +46,6 @@ target_link_libraries(lue_translate
         lue::translate
 )
 
-lue_install_executables(TARGETS lue_translate)
+lue_install_executables(
+    TARGETS lue_translate
+)

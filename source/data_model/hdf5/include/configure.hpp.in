@@ -1,7 +1,6 @@
 #pragma once
 
 
-#cmakedefine HDF5_VERSION "${HDF5_VERSION}"
 #cmakedefine HDF5_IS_PARALLEL
 
 
@@ -12,12 +11,6 @@ namespace lue {
     {
 
         public:
-
-            // C++20
-            // static constexpr std::string version{HDF5_VERSION};
-
-            // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, hicpp-avoid-c-arrays, modernize-avoid-c-arrays)
-            static constexpr char const* hdf5_version{HDF5_VERSION};
 
             static constexpr bool hdf5_is_parallel{
 #ifdef HDF5_IS_PARALLEL

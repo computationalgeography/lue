@@ -1,4 +1,5 @@
 #include "lue/hdf5/file.hpp"
+#include "lue/hdf5/version.hpp"
 #include <fmt/format.h>
 #include <cassert>
 #include <filesystem>
@@ -225,7 +226,7 @@ namespace lue::hdf5 {
 
         File file{std::move(id)};
 
-        file.attributes().write<std::string>("hdf5_version", BuildOptions::hdf5_version);
+        file.attributes().write<std::string>("hdf5_version", hdf5_version());
 
         return file;
     }

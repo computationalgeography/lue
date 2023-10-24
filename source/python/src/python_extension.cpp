@@ -1,5 +1,6 @@
 #include "lue/configure.hpp"
 #include "lue/git.hpp"
+#include "lue/version.hpp"
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
 #include "lue/py/data_model/submodule.hpp"
@@ -17,9 +18,6 @@
 #endif
 #include <boost/algorithm/string/join.hpp>
 #include <fmt/format.h>
-
-
-namespace py = pybind11;
 
 
 namespace lue {
@@ -60,9 +58,9 @@ namespace lue {
 )",
             boost::algorithm::join(automodules, "\n    "));
 
-        module.attr("__version__") = py::str(BuildOptions::version);
-        module.attr("lue_version") = py::str(BuildOptions::version);
-        module.attr("git_short_sha1") = py::str(Git::short_sha1);
+        module.attr("__version__") = pybind11::str(version());
+        module.attr("lue_version") = pybind11::str(version());
+        module.attr("git_short_sha1") = pybind11::str(short_sha1());
 
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
