@@ -6,6 +6,7 @@ add_test_conditionally(test)
 
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
+    src/component/decreasing_order_zone.cpp
 )
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
@@ -1486,6 +1487,19 @@ block()
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${InputElement})
 
+            # Instantiate decreasing_order
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/decreasing_order.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                '{"name":"${name}","Policies":"${Policies}","InputElement":"${InputElement}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             # Instantiate highest_n
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
 
@@ -1501,6 +1515,18 @@ block()
 
             foreach(Zone IN LISTS Zones)
                 math(EXPR count "${count} + 1")
+
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/decreasing_order.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"name":"${name}","Policies":"${Policies}","ZoneElement":"${Zone}","InputElement":"${InputElement}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
 

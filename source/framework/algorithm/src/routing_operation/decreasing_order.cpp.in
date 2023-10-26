@@ -1,0 +1,20 @@
+#include "lue/framework/algorithm/definition/decreasing_order.hpp"
+#include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
+
+
+namespace lue {
+
+    {% if ZoneElement %}
+    LUE_INSTANTIATE_DECREASING_ORDER_ZONE(
+            ESC(policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
+            {{ ZoneElement }},
+            {{ InputElement }}
+        );
+    {% else %}
+    LUE_INSTANTIATE_DECREASING_ORDER(
+            ESC(policy::decreasing_order::{{ Policies }}<{{ InputElement }}>),
+            {{ InputElement }}
+        );
+    {% endif %}
+
+}  // namespace lue

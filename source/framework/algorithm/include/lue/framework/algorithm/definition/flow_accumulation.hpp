@@ -122,6 +122,16 @@ namespace lue {
         }  // namespace flow_accumulation
 
 
+        template<typename MaterialCells>
+        class ArrayTraits<flow_accumulation::OutputMaterial<MaterialCells>>
+        {
+
+            public:
+
+                using Element = typename flow_accumulation::OutputMaterial<MaterialCells>::Element;
+        };
+
+
         template<
             typename Policies,
             typename PartitionIOComponent,
@@ -1394,7 +1404,6 @@ namespace lue {
 
             return std::make_tuple(result_flux_partitions, result_state_partitions);
         }
-
 
     }  // namespace detail
 

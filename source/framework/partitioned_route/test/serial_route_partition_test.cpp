@@ -31,14 +31,16 @@ BOOST_AUTO_TEST_CASE(construct_server01)
     using RoutePartitionServer = lue::server::SerialRoutePartition<2>;
     using RoutePartition = lue::SerialRoutePartition<2>;
 
+    typename RoutePartitionServer::Offset const partition_offset{33, 44};
     typename RoutePartitionServer::Shape const partition_shape{6, 4};
     typename RoutePartitionServer::RouteFragments fragments{};
 
-    hpx::future<hpx::id_type> partition_server_id{
-        hpx::new_<RoutePartitionServer>(hpx::find_here(), partition_shape, std::move(fragments))};
+    hpx::future<hpx::id_type> partition_server_id{hpx::new_<RoutePartitionServer>(
+        hpx::find_here(), partition_offset, partition_shape, std::move(fragments))};
 
     RoutePartition partition_client{std::move(partition_server_id)};
 
+    BOOST_CHECK_EQUAL(partition_client.offset().get(), partition_offset);
     BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_shape);
     BOOST_CHECK_EQUAL(partition_client.nr_routes().get(), 0);
 }
@@ -50,6 +52,7 @@ BOOST_AUTO_TEST_CASE(construct_server02)
     using RouteFragment = typename RoutePartition::RouteFragment;
     using RouteFragments = typename RoutePartition::RouteFragments;
 
+    typename RoutePartition::Offset const partition_offset{33, 44};
     typename RoutePartition::Shape const partition_shape{20, 20};
 
     RouteFragment const fragment1{{{0, 1}, {2, 3}, {4, 5}}};
@@ -69,11 +72,12 @@ BOOST_AUTO_TEST_CASE(construct_server02)
     hpx::id_type server_locality{!other_localities.empty() ? other_localities.front() : hpx::find_here()};
 
     RoutePartition partition_client{
-        hpx::new_<RoutePartition>(server_locality, partition_shape, std::move(fragments))};
+        hpx::new_<RoutePartition>(server_locality, partition_offset, partition_shape, std::move(fragments))};
 
     // Wait for the server component to be created in the remote locality before querying it
     partition_client.wait();
 
+    BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_offset);
     BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_shape);
     BOOST_CHECK_EQUAL(partition_client.nr_routes().get(), 2);
     BOOST_CHECK_EQUAL(partition_client.nr_route_fragments().get(), 3);

@@ -96,7 +96,9 @@ namespace lue {
 
                 using Element = E;
 
-                constexpr static Rank rank = r;
+                static constexpr Rank rank = r;
+
+                static constexpr bool is_partitioned_array{true};
 
                 using Offset = typename PartitionedArray<E, r>::Offset;
 

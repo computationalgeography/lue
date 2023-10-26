@@ -410,6 +410,15 @@ namespace lue {
 
 
     template<typename Element>
+    class FunctorTraits<ReadPartitionsPerLocality<Element>>
+    {
+        public:
+
+            static constexpr bool is_functor{true};
+    };
+
+
+    template<typename Element>
     PartitionedArray<Element, 2> read(std::string const& name, Shape<Count, 2> const& partition_shape)
     {
         // Create a new partitioned array. Each partition is filled with the corresponding

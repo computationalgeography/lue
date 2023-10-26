@@ -29,6 +29,8 @@ namespace lue {
 
             using RouteFragments = typename Server::RouteFragments;
 
+            using Offset = typename Server::Offset;
+
             using Shape = typename Server::Shape;
 
             SerialRoutePartition();
@@ -47,6 +49,8 @@ namespace lue {
 
             SerialRoutePartition& operator=(SerialRoutePartition&&) = default;
 
+            hpx::future<Offset> offset() const;
+
             hpx::future<Shape> shape() const;
 
             hpx::future<Count> nr_routes() const;
@@ -58,4 +62,24 @@ namespace lue {
             hpx::future<std::vector<RouteFragment>> route_fragments(RouteID const route_id) const;
     };
 
+
+    namespace detail {
+
+        template<Rank r>
+        class ArrayTraits<SerialRoutePartition<r>>
+        {
+
+            public:
+
+                constexpr static Rank rank = r;
+
+                using Offset = typename SerialRoutePartition<r>::Offset;
+
+                using Shape = typename SerialRoutePartition<r>::Shape;
+
+                template<Rank r_>
+                using Partition = SerialRoutePartition<r_>;
+        };
+
+    }  // namespace detail
 }  // namespace lue

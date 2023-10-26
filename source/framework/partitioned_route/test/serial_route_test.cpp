@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         Route route;
 
-        BOOST_CHECK_EQUAL(route.array_shape(), Shape{});
+        BOOST_CHECK_EQUAL(route.shape(), Shape{});
         BOOST_CHECK_EQUAL(route.nr_routes(), 0);
     }
 
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
     {
         Route route{};
 
-        BOOST_CHECK_EQUAL(route.array_shape(), Shape{});
+        BOOST_CHECK_EQUAL(route.shape(), Shape{});
         BOOST_CHECK_EQUAL(route.nr_routes(), 0);
     }
 }
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(construct)
 
     lue::SerialRoute<2> route{array_shape, std::move(partitions)};
 
-    BOOST_CHECK_EQUAL(route.array_shape(), array_shape);
+    BOOST_CHECK_EQUAL(route.shape(), array_shape);
     BOOST_CHECK_EQUAL(route.partitions().shape(), shape_in_partitions);
     BOOST_CHECK_EQUAL(route.nr_routes(), 0);
 }

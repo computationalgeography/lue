@@ -62,4 +62,10 @@ target_link_libraries(lue_framework_partitioned_route
     PUBLIC
         lue::framework_core)
 
-lue_install_libraries(TARGETS lue_framework_partitioned_route)
+lue_install_development_libraries(
+    TARGETS lue_framework_partitioned_route
+)
+
+lue_install_runtime_libraries(
+    TARGETS lue_framework_partitioned_route
+)

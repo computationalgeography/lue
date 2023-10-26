@@ -38,9 +38,9 @@ namespace lue {
                 assert_invariants();
             }
 
-            SerialRoute(Shape const& array_shape, Partitions&& partitions):
+            SerialRoute(Shape const& shape, Partitions&& partitions):
 
-                _array_shape{array_shape},
+                _array_shape{shape},
                 _partitions(std::move(partitions))
 
             {
@@ -48,7 +48,7 @@ namespace lue {
             }
 
 
-            Shape const& array_shape() const
+            Shape const& shape() const
             {
                 return _array_shape;
             }
@@ -105,9 +105,37 @@ namespace lue {
 
             public:
 
-                constexpr static Rank rank = r;
+                static constexpr Rank rank = r;
+
+                static constexpr bool is_partitioned_array{true};
 
                 using Shape = typename SerialRoute<r>::Shape;
+
+                template<Rank r_>
+                using Partition = typename SerialRoute<r_>::PartitionClient;
+
+                template<Rank r_>
+                using Partitions = typename SerialRoute<r_>::Partitions;
+        };
+
+
+        template<Rank r>
+        class ArrayTraits<Array<typename SerialRoute<r>::PartitionClient, r>>
+        {
+
+            public:
+
+                constexpr static Rank rank = r;
+
+                using Offset = typename SerialRoute<r>::PartitionClient::Offset;
+
+                using Shape = typename SerialRoute<r>::Shape;
+
+                template<Rank r_>
+                using Partition = typename SerialRoute<r_>::PartitionClient;
+
+                template<Rank r_>
+                using Partitions = typename SerialRoute<r_>::Partitions;
         };
 
     }  // namespace detail

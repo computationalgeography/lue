@@ -8,6 +8,7 @@ namespace lue::server {
     SerialRoutePartition<rank>::SerialRoutePartition():
 
         Base{},
+        _offset{},
         _shape{},
         _route_fragments{}
 
@@ -17,14 +18,23 @@ namespace lue::server {
 
 
     template<Rank rank>
-    SerialRoutePartition<rank>::SerialRoutePartition(Shape const& shape, RouteFragments&& route_fragments):
+    SerialRoutePartition<rank>::SerialRoutePartition(
+        Offset const& offset, Shape const& shape, RouteFragments&& route_fragments):
 
         Base{},
+        _offset{offset},
         _shape{shape},
         _route_fragments{std::move(route_fragments)}
 
     {
         assert_invariants();
+    }
+
+
+    template<Rank rank>
+    typename SerialRoutePartition<rank>::Offset SerialRoutePartition<rank>::offset() const
+    {
+        return _offset;
     }
 
 

@@ -33,6 +33,19 @@ namespace lue {
 
 
     template<Rank rank>
+    hpx::future<typename SerialRoutePartition<rank>::Offset> SerialRoutePartition<rank>::offset() const
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        typename Server::OffsetAction action;
+
+        // this->get_id() identifies the server instance
+        return hpx::async(action, this->get_id());
+    }
+
+
+    template<Rank rank>
     hpx::future<typename SerialRoutePartition<rank>::Shape> SerialRoutePartition<rank>::shape() const
     {
         lue_hpx_assert(this->is_ready());
