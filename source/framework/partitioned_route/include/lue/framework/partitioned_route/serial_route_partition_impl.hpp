@@ -33,6 +33,34 @@ namespace lue {
 
 
     template<Rank rank>
+    SerialRoutePartition<rank>::SerialRoutePartition(hpx::shared_future<hpx::id_type>&& component_id):
+
+        Base{std::move(component_id)}
+
+    {
+    }
+
+
+    template<Rank rank>
+    SerialRoutePartition<rank>::SerialRoutePartition(hpx::future<SerialRoutePartition>&& partition):
+
+        Base{std::move(partition)}
+
+    {
+    }
+
+
+    template<Rank rank>
+    SerialRoutePartition<rank>::SerialRoutePartition(
+        hpx::id_type const locality_id, Offset const& offset, Shape const& shape):
+
+        Base{hpx::new_<Server>(locality_id, offset, shape)}
+
+    {
+    }
+
+
+    template<Rank rank>
     hpx::future<typename SerialRoutePartition<rank>::Offset> SerialRoutePartition<rank>::offset() const
     {
         lue_hpx_assert(this->is_ready());

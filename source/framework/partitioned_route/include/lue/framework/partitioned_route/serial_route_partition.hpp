@@ -39,6 +39,12 @@ namespace lue {
 
             SerialRoutePartition(hpx::future<hpx::id_type>&& component_id);
 
+            SerialRoutePartition(hpx::shared_future<hpx::id_type>&& component_id);
+
+            SerialRoutePartition(hpx::future<SerialRoutePartition>&& partition);
+
+            SerialRoutePartition(hpx::id_type locality_id, Offset const& offset, Shape const& shape);
+
             SerialRoutePartition(SerialRoutePartition const&) = default;
 
             SerialRoutePartition(SerialRoutePartition&&) = default;

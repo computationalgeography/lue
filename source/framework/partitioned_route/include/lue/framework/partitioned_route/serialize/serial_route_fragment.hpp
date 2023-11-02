@@ -14,15 +14,15 @@ namespace hpx::serialization {
     {
         // Read fragment from archive
         using Fragment = lue::SerialRouteFragment<rank>;
-        using CellsIdxs = typename Fragment::CellsIdxs;
+        using CellIdxs = typename Fragment::CellIdxs;
         using Location = typename Fragment::Location;
 
-        CellsIdxs cells_idxs{};
+        CellIdxs cell_idxs{};
         std::optional<Location> next_fragment_location{};
 
-        archive& cells_idxs& next_fragment_location;
+        archive& cell_idxs& next_fragment_location;
 
-        fragment = Fragment{cells_idxs};
+        fragment = Fragment{cell_idxs};
 
         if (next_fragment_location)
         {
@@ -38,7 +38,7 @@ namespace hpx::serialization {
         [[maybe_unused]] unsigned int const version)
     {
         // Write buffer to archive
-        archive& fragment.cells_idxs() & fragment.next_fragment_location();
+        archive& fragment.cell_idxs() & fragment.next_fragment_location();
     }
 
 }  // namespace hpx::serialization

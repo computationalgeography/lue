@@ -36,6 +36,8 @@ namespace lue::server {
 
             SerialRoutePartition();
 
+            SerialRoutePartition(Offset const& offset, Shape const& shape);
+
             SerialRoutePartition(Offset const& offset, Shape const& shape, RouteFragments&& route_fragments);
 
             SerialRoutePartition(SerialRoutePartition const&) = default;
@@ -60,7 +62,7 @@ namespace lue::server {
 
             std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
 
-            HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, shape, OffsetAction)
+            HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, offset, OffsetAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, shape, ShapeAction)
 

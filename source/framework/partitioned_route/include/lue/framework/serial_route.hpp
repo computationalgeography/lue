@@ -22,11 +22,17 @@ namespace lue {
 
             using RouteID = typename PartitionServer::RouteID;
 
-            // using RouteFragment = typename PartitionServer::RouteFragment;
+            using FragmentLocation = typename SerialRouteFragment<rank>::Location;
+
+            //! For each route the location of the first fragment
+            using Starts = std::map<RouteID, FragmentLocation>;
+
+            using StartsFuture = hpx::shared_future<Starts>;
 
             SerialRoute():
 
                 _array_shape{},
+                _starts{},
                 _partitions{}
 
             {
@@ -38,10 +44,20 @@ namespace lue {
                 assert_invariants();
             }
 
-            SerialRoute(Shape const& shape, Partitions&& partitions):
+            SerialRoute(Shape const& shape, StartsFuture&& starts, Partitions&& partitions):
 
                 _array_shape{shape},
-                _partitions(std::move(partitions))
+                _starts{std::move(starts)},
+                _partitions{std::move(partitions)}
+
+            {
+                assert_invariants();
+            }
+
+
+            SerialRoute(Shape const& shape, hpx::future<Starts>&& starts, Partitions&& partitions):
+
+                SerialRoute{shape, starts.share(), std::move(partitions)}
 
             {
                 assert_invariants();
@@ -54,16 +70,32 @@ namespace lue {
             }
 
 
+            StartsFuture starts() const
+            {
+                return _starts;
+            }
+
+
             Partitions const& partitions() const
             {
                 return _partitions;
             }
 
 
-            Count nr_routes() const
+            hpx::future<Count> nr_routes() const
             {
-                return static_cast<Count>(std::size(_start_of_routes));
+                lue_hpx_assert(is_valid());
+
+                return _starts.then([](auto const& starts)
+                                    { return static_cast<Count>(std::size(starts.get())); });
             }
+
+
+            bool is_valid() const
+            {
+                return _starts.valid();
+            }
+
 
         private:
 
@@ -85,15 +117,11 @@ namespace lue {
             }
 
 
-            //! For each route the location of the first fragment
-            using StartOfRoutes = std::map<RouteID, typename SerialRouteFragment<rank>::Location>;
-
             Shape _array_shape;
 
-            Partitions _partitions;
+            StartsFuture _starts;
 
-            //! Collection of partitions in which routes start
-            StartOfRoutes _start_of_routes;
+            Partitions _partitions;
     };
 
 
@@ -116,6 +144,8 @@ namespace lue {
 
                 template<Rank r_>
                 using Partitions = typename SerialRoute<r_>::Partitions;
+
+                using Offset = typename Partition<r>::Offset;
         };
 
 

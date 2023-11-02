@@ -28,12 +28,16 @@ namespace lue {
             using Locality = hpx::id_type;
 
             //! Location of a route fragment
-            using Location = std::tuple<PartitionID, Locality>;
+            /// using Location = std::tuple<PartitionID, Locality>;
+            /// TODO Turn PartitionID into a hpx::shared_future<hpx::id_type> and the shared_future back into
+            /// a Locality
+            using Location = std::tuple<PartitionID, hpx::shared_future<hpx::id_type>>;
 
-            //! Indices of a cell, within a partition
-            using CellIdxs = Indices<Index, rank>;
+            //! Linear index of a cell, within a partition
+            /// using CellIdxs = Indices<Index, rank>;
+            using CellIdx = Index;
 
-            using CellsIdxs = std::vector<CellIdxs>;
+            using CellIdxs = std::vector<CellIdx>;
 
 
             SerialRouteFragment() = default;
@@ -42,7 +46,7 @@ namespace lue {
 
             SerialRouteFragment(SerialRouteFragment&&) = default;
 
-            SerialRouteFragment(CellsIdxs const& idxs):
+            SerialRouteFragment(CellIdxs const& idxs):
 
                 _idxs{idxs},
                 _next_fragment_location{}
@@ -51,7 +55,7 @@ namespace lue {
             }
 
 
-            SerialRouteFragment(CellsIdxs&& idxs):
+            SerialRouteFragment(CellIdxs&& idxs):
 
                 _idxs{std::move(idxs)},
                 _next_fragment_location{}
@@ -99,7 +103,7 @@ namespace lue {
             }
 
 
-            void append(CellIdxs const& cell_idxs)
+            void append(CellIdx const& cell_idxs)
             {
                 // It doesn't make sense to keep adding idxs when the location of the next
                 // fragment is already known, does it?
@@ -119,7 +123,7 @@ namespace lue {
             }
 
 
-            CellsIdxs const& cells_idxs() const
+            CellIdxs const& cell_idxs() const
             {
                 return _idxs;
             }
@@ -134,7 +138,7 @@ namespace lue {
         private:
 
             //! All cell indices that are part of the fragment
-            CellsIdxs _idxs;
+            CellIdxs _idxs;
 
             //! Location of the next fragment, if any
             std::optional<Location> _next_fragment_location;

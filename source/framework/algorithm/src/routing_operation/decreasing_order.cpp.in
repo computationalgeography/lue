@@ -2,19 +2,26 @@
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
 
 
+{% if ZoneElement %}
+    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2);
+    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2);
+{% else %}
+{% endif %}
+
+
 namespace lue {
 
     {% if ZoneElement %}
-    LUE_INSTANTIATE_DECREASING_ORDER_ZONE(
-            ESC(policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
-            {{ ZoneElement }},
-            {{ InputElement }}
-        );
+        LUE_INSTANTIATE_DECREASING_ORDER_ZONE(
+                ESC(policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
+                {{ ZoneElement }},
+                {{ InputElement }}
+            );
     {% else %}
-    LUE_INSTANTIATE_DECREASING_ORDER(
-            ESC(policy::decreasing_order::{{ Policies }}<{{ InputElement }}>),
-            {{ InputElement }}
-        );
+        LUE_INSTANTIATE_DECREASING_ORDER(
+                ESC(policy::decreasing_order::{{ Policies }}<{{ InputElement }}>),
+                {{ InputElement }}
+            );
     {% endif %}
 
 }  // namespace lue

@@ -18,6 +18,16 @@ namespace lue::server {
 
 
     template<Rank rank>
+    SerialRoutePartition<rank>::SerialRoutePartition(Offset const& offset, Shape const& shape):
+
+        SerialRoutePartition{offset, shape, {}}
+
+    {
+        assert_invariants();
+    }
+
+
+    template<Rank rank>
     SerialRoutePartition<rank>::SerialRoutePartition(
         Offset const& offset, Shape const& shape, RouteFragments&& route_fragments):
 
@@ -101,13 +111,10 @@ namespace lue::server {
         {
             for (auto const& fragment : fragments)
             {
-                for (auto const& cell_idxs : fragment.cells_idxs())
+                for (auto const& cell_idx : fragment.cell_idxs())
                 {
-                    for (Index idx = 0; idx < rank; ++idx)
-                    {
-                        lue_hpx_assert(cell_idxs[idx] >= 0);
-                        lue_hpx_assert(cell_idxs[idx] < _shape[idx]);
-                    }
+                    lue_hpx_assert(cell_idx >= 0);
+                    lue_hpx_assert(cell_idx < nr_elements(_shape));
                 }
             }
         }
