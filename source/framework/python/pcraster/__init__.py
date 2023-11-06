@@ -130,7 +130,6 @@ def is_non_spatial(argument):
 
 
 def non_spatial_to_spatial(fill_value, template=None):
-
     scalar_type = numpy_scalar_type(fill_value)
 
     if template is None:
@@ -767,16 +766,25 @@ def profcurv(*args):
     raise NotImplementedError("profcurv")
 
 
-def rounddown(*args):
-    raise NotImplementedError("rounddown")
+def rounddown(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.floor(expression)
 
 
-def roundoff(*args):
-    raise NotImplementedError("roundoff")
+def roundoff(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.round(expression)
 
 
-def roundup(*args):
-    raise NotImplementedError("roundup")
+def roundup(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.ceil(expression)
 
 
 def scalar(expression):
