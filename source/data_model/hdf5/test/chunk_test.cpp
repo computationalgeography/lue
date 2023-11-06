@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue hdf5 chunk
 #include "lue/hdf5/chunk.hpp"
 #include <boost/test/unit_test.hpp>
+#include <cstdint>
 
 
 namespace lh5 = lue::hdf5;
