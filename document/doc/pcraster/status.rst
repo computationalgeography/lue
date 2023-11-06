@@ -419,8 +419,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 3
    * - sqr
-     - ❌
-     - 1
+     - ✅
+     - Not as an operation. Just use value * value.
    * - sqrt
      - ✅
      -
