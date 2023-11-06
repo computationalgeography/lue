@@ -11,6 +11,7 @@ Numeric
     exp
     floor
     log
+    log10
     multiply
     pow
     round
@@ -24,6 +25,7 @@ Numeric
 .. autofunction:: exp
 .. autofunction:: floor
 .. autofunction:: log
+.. autofunction:: log10
 .. autofunction:: multiply
 .. autofunction:: pow
 .. autofunction:: round

@@ -282,10 +282,10 @@ added to the LUE framework. The number of model developers requesting one is one
      -
    * - ln
      - ✅
-     -
+     - log
    * - log10
-     - ❌
-     - 1
+     - ✅
+     -
    * - lookup
      - ❌
      - ?
