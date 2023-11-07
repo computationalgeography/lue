@@ -373,14 +373,14 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 2
    * - rounddown
-     - ❌
-     - 1
+     - ✅
+     - floor
    * - roundoff
-     - ❌
-     - 1
+     - ✅
+     - round
    * - roundup
-     - ❌
-     - 1
+     - ✅
+     - ceil
    * - scalar
      - ✅
      -
