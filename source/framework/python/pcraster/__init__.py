@@ -603,8 +603,11 @@ def ln(expression):
     return lfr.log(expression)
 
 
-def log10(*args):
-    raise NotImplementedError("log10")
+def log10(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.float32(expression))
+
+    return lfr.log10(expression)
 
 
 def lookup(*args):

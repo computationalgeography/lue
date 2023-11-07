@@ -415,6 +415,19 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # log10
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log10-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/log10.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # pow
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/pow-${count}.cpp")
 
