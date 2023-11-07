@@ -230,7 +230,7 @@ jobs:
         #       # TODO Test configuring and building the source package
 
         - name: documentation
-          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python_version == '3.10'
+          if: github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python_version == '3.12'
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
