@@ -638,17 +638,17 @@ def mapminimum(expression):
     return lfr.maximum(expression)
 
 
-def mapnormal(*args):
-    raise NotImplementedError("mapnormal")
+def mapnormal():
+    return normal(1)
 
 
-def maptotal(expression):
+def maptotal():
     # TODO C++ side is ready, just add the Python wrapper
     raise NotImplementedError("maptotal")
 
 
-def mapuniform(*args):
-    raise NotImplementedError("mapuniform")
+def mapuniform():
+    return uniform(1)
 
 
 def markwhilesumle(*args):
@@ -726,8 +726,11 @@ def nominal(expression):
     raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
-def normal(*args):
-    raise NotImplementedError("normal")
+def normal(expression):
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=np.uint8(expression))
+
+    return lfr.where(expression, lfr.normal(expression, np.float32, 0, 1))
 
 
 def pcrnot(expression):
