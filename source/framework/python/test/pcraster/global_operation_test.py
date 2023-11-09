@@ -22,3 +22,11 @@ class GlobalOperationTest(OperationTest):
             expression = self.spatial[expression_type]
 
             _ = lpr.mapminimum(expression)
+
+    @lue_test.framework_test_case
+    def test_mapnormal(self):
+        _ = lpr.mapnormal()
+
+    @lue_test.framework_test_case
+    def test_mapuniform(self):
+        _ = lpr.mapuniform()

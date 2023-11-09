@@ -50,6 +50,7 @@ namespace lue::framework {
     void bind_maximum(pybind11::module& module);
     void bind_minimum(pybind11::module& module);
     void bind_multiply(pybind11::module& module);
+    void bind_normal(pybind11::module& module);
     void bind_not_equal_to(pybind11::module& module);
     void bind_pow(pybind11::module& module);
     void bind_round(pybind11::module& module);
@@ -112,6 +113,7 @@ namespace lue::framework {
         bind_maximum(module);
         bind_minimum(module);
         bind_multiply(module);
+        bind_normal(module);
         bind_not_equal_to(module);
         bind_pow(module);
         bind_round(module);

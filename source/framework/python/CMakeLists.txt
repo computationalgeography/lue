@@ -64,6 +64,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/maximum.cpp
     src/algorithm/minimum.cpp
     src/algorithm/multiply.cpp
+    src/algorithm/normal.cpp
     src/algorithm/not_equal_to.cpp
     src/algorithm/pow.cpp
     src/algorithm/sin.cpp

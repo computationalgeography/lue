@@ -308,14 +308,14 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      -
    * - mapnormal
-     - ❌
-     - 1
+     - ✅
+     - normal(array, dtype, 0, 1), normal(array_shape, partition_shape, dtype, 0, 1)
    * - maptotal
      - ✅
      -
    * - mapuniform
-     - ❌
-     - 1
+     - ✅
+     - uniform(array, dtype, 0, 1), uniform(array_shape, partition_shape, dtype, 0, 1)
    * - | markwhilesumle
        | markwhilesumge
      - ❌
@@ -339,8 +339,8 @@ added to the LUE framework. The number of model developers requesting one is one
      - ✅
      -
    * - normal
-     - ❌
-     - 1
+     - ✅
+     -
    * - | not
        | ``~``
        | pcrnot
