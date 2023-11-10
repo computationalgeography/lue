@@ -24,12 +24,14 @@ namespace lue::framework {
     void bind_atan2(pybind11::module& module);
     void bind_cast(pybind11::module& module);
     void bind_cos(pybind11::module& module);
+    void bind_ceil(pybind11::module& module);
     void bind_d8_flow_direction(pybind11::module& module);
     void bind_divide(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
     void bind_downstream_distance(pybind11::module& module);
     void bind_equal_to(pybind11::module& module);
     void bind_exp(pybind11::module& module);
+    void bind_floor(pybind11::module& module);
     void bind_greater_than(pybind11::module& module);
     void bind_greater_than_equal_to(pybind11::module& module);
     void bind_inflow_count(pybind11::module& module);
@@ -40,6 +42,7 @@ namespace lue::framework {
     void bind_less_than_equal_to(pybind11::module& module);
     void bind_locality_id(pybind11::module& module);
     void bind_log(pybind11::module& module);
+    void bind_log10(pybind11::module& module);
     void bind_logical_and(pybind11::module& module);
     void bind_logical_exclusive_or(pybind11::module& module);
     void bind_logical_inclusive_or(pybind11::module& module);
@@ -47,8 +50,10 @@ namespace lue::framework {
     void bind_maximum(pybind11::module& module);
     void bind_minimum(pybind11::module& module);
     void bind_multiply(pybind11::module& module);
+    void bind_normal(pybind11::module& module);
     void bind_not_equal_to(pybind11::module& module);
     void bind_pow(pybind11::module& module);
+    void bind_round(pybind11::module& module);
     void bind_sin(pybind11::module& module);
     void bind_slope(pybind11::module& module);
     void bind_sqrt(pybind11::module& module);
@@ -81,6 +86,7 @@ namespace lue::framework {
         bind_atan(module);
         bind_atan2(module);
         bind_cast(module);
+        bind_ceil(module);
         bind_cos(module);
         bind_d8_flow_direction(module);
         bind_divide(module);
@@ -88,6 +94,7 @@ namespace lue::framework {
         bind_downstream_distance(module);
         bind_equal_to(module);
         bind_exp(module);
+        bind_floor(module);
         bind_greater_than(module);
         bind_greater_than_equal_to(module);
         bind_inflow_count(module);
@@ -98,6 +105,7 @@ namespace lue::framework {
         bind_less_than_equal_to(module);
         bind_locality_id(module);
         bind_log(module);
+        bind_log10(module);
         bind_logical_and(module);
         bind_logical_exclusive_or(module);
         bind_logical_inclusive_or(module);
@@ -105,8 +113,10 @@ namespace lue::framework {
         bind_maximum(module);
         bind_minimum(module);
         bind_multiply(module);
+        bind_normal(module);
         bind_not_equal_to(module);
         bind_pow(module);
+        bind_round(module);
         bind_sin(module);
         bind_slope(module);
         bind_sqrt(module);

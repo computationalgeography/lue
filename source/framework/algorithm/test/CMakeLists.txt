@@ -32,6 +32,7 @@ set(local_operation_names
     atan
     atan2
     cast
+    ceil
     close_to
     copy
     cos
@@ -40,19 +41,23 @@ set(local_operation_names
     equal_to
     exp
     fill
+    floor
     greater_than
     greater_than_equal_to
     iterate_per_element
     less_than
     less_than_equal_to
     log
+    log10
     logical_and
     logical_exclusive_or
     logical_inclusive_or
     logical_not
     multiply
+    normal
     not_equal_to
     pow
+    round
     sin
     sqrt
     subtract

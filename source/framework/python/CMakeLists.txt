@@ -64,6 +64,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/maximum.cpp
     src/algorithm/minimum.cpp
     src/algorithm/multiply.cpp
+    src/algorithm/normal.cpp
     src/algorithm/not_equal_to.cpp
     src/algorithm/pow.cpp
     src/algorithm/sin.cpp
@@ -90,10 +91,14 @@ add_library(lue_py_framework SHARED
     src/algorithm/global_operation/reclassify.cpp
 
     src/algorithm/local_operation.cpp
+    src/algorithm/local_operation/ceil.cpp
+    src/algorithm/local_operation/floor.cpp
+    src/algorithm/local_operation/log10.cpp
     src/algorithm/local_operation/logical_and.cpp
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/round.cpp
     src/algorithm/local_operation/unique_id.cpp
 
     src/algorithm/routing_operation.cpp
