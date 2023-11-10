@@ -197,6 +197,7 @@ foreach(name ${routing_operation_names})
         PRIVATE
             lue::framework_local_operation
             lue::framework_routing_operation)
+            # HPX::iostreams_component)
 endforeach()
 
 set(names

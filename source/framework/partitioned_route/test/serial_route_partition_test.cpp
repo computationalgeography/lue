@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE(construct_server02)
     std::vector<RouteFragment> fragments0{fragment1};
     std::vector<RouteFragment> fragments1{fragment2, fragment3};
 
-    std::vector<typename RoutePartition::RouteID> const route_ids{5, 3};
+    std::set<typename RoutePartition::RouteID> const route_ids{5, 3};
 
-    RouteFragments fragments{{route_ids[0], fragments0}, {route_ids[1], fragments1}};
+    RouteFragments fragments{{5, fragments0}, {3, fragments1}};
 
     std::vector<hpx::id_type> other_localities{hpx::find_remote_localities()};
 

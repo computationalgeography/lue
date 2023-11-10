@@ -63,7 +63,7 @@ namespace lue {
 
             hpx::future<Count> nr_route_fragments() const;
 
-            hpx::future<std::vector<RouteID>> route_ids() const;
+            hpx::future<std::set<RouteID>> route_ids() const;
 
             hpx::future<std::vector<RouteFragment>> route_fragments(RouteID const route_id) const;
     };

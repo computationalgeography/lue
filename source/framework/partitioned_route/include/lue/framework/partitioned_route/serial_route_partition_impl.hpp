@@ -111,7 +111,7 @@ namespace lue {
 
 
     template<Rank rank>
-    hpx::future<std::vector<typename SerialRoutePartition<rank>::RouteID>>
+    hpx::future<std::set<typename SerialRoutePartition<rank>::RouteID>>
     SerialRoutePartition<rank>::route_ids() const
     {
         lue_hpx_assert(this->is_ready());

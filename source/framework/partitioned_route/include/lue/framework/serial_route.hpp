@@ -70,9 +70,20 @@ namespace lue {
             }
 
 
-            StartsFuture starts() const
+            void wait() const
             {
-                return _starts;
+                lue_hpx_assert(valid());
+
+                _starts.wait();
+            }
+
+
+            Starts const& starts() const
+            {
+                lue_hpx_assert(valid());
+                lue_hpx_assert(is_ready());
+
+                return _starts.get();
             }
 
 
@@ -82,18 +93,27 @@ namespace lue {
             }
 
 
-            hpx::future<Count> nr_routes() const
+            Count nr_routes() const
             {
-                lue_hpx_assert(is_valid());
+                lue_hpx_assert(valid());
+                lue_hpx_assert(is_ready());
 
-                return _starts.then([](auto const& starts)
-                                    { return static_cast<Count>(std::size(starts.get())); });
+                return static_cast<Count>(std::size(starts()));
+
+                // return _starts.then([](auto const& starts)
+                //                     { return static_cast<Count>(std::size(starts.get())); });
             }
 
 
-            bool is_valid() const
+            bool valid() const
             {
                 return _starts.valid();
+            }
+
+
+            bool is_ready() const
+            {
+                return _starts.is_ready();
             }
 
 

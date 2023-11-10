@@ -68,10 +68,17 @@ namespace lue {
         PartitionedArray<InputElement, rank> const& array,
         Count const nr_cells)
     {
-        using DecreasingOrderPolicies = policy::Policies<
-            policy::DomainPolicyT<Policies>,
+        // TODO Make this work
+        // using DecreasingOrderPolicies = policy::Policies<
+        //     policy::AllValuesWithinDomain<ZoneElement, InputElement>,
+        //     policy::OutputsPolicies<>,
+        //     policy::InputsPolicies<policy::InputPoliciesT<Policies, 0>, policy::InputPoliciesT<Policies,
+        //     1>>>;
+
+        using DecreasingOrderPolicies = policy::DefaultValuePolicies<
+            policy::AllValuesWithinDomain<ZoneElement, InputElement>,
             policy::OutputElements<>,
-            policy::InputsPolicies<policy::InputPoliciesT<Policies, 0>>>;
+            policy::InputElements<ZoneElement, InputElement>>;
 
         return highest_n<OutputElement>(
             policies, decreasing_order(DecreasingOrderPolicies{}, region, array, nr_cells), nr_cells);
@@ -82,12 +89,19 @@ namespace lue {
     PartitionedArray<OutputElement, rank> highest_n(
         Policies const& policies, PartitionedArray<InputElement, rank> const& array, Count const nr_cells)
     {
-        using DecreasingOrderPolicies = policy::Policies<
-            policy::DomainPolicyT<Policies>,
-            policy::OutputElements<>,
-            policy::InputsPolicies<policy::InputPoliciesT<Policies, 0>>>;
+        // TODO Make this work
+        // using DecreasingOrderPolicies = policy::Policies<
+        //     policy::AllValuesWithinDomain<InputElement>,
+        //     policy::OutputsPolicies<>,
+        //     policy::InputsPolicies<policy::InputPoliciesT<Policies, 0, InputElement>>>;
 
-        return highest_n<OutputElement>(policies, decreasing_order(policies, array, nr_cells), nr_cells);
+        using DecreasingOrderPolicies = policy::DefaultValuePolicies<
+            policy::AllValuesWithinDomain<InputElement>,
+            policy::OutputElements<>,
+            policy::InputElements<InputElement>>;
+
+        return highest_n<OutputElement>(
+            policies, decreasing_order(DecreasingOrderPolicies{}, array, nr_cells), nr_cells);
     }
 
 }  // namespace lue

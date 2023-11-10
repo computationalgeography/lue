@@ -3,9 +3,10 @@
 
 
 {% if ZoneElement %}
-    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2);
-    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2);
+    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
+    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
 {% else %}
+    // TODO
 {% endif %}
 
 

@@ -1398,7 +1398,6 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-
 block()
     set(counter "0")
 

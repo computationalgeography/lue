@@ -77,14 +77,13 @@ namespace lue::server {
 
 
     template<Rank rank>
-    std::vector<typename SerialRoutePartition<rank>::RouteID> SerialRoutePartition<rank>::route_ids() const
+    std::set<typename SerialRoutePartition<rank>::RouteID> SerialRoutePartition<rank>::route_ids() const
     {
-        std::vector<RouteID> result{};
-        result.reserve(std::size(_route_fragments));
+        std::set<RouteID> result{};
 
         for (auto const& [route_id, fragments] : _route_fragments)
         {
-            result.push_back(route_id);
+            result.insert(route_id);
         }
 
         return result;

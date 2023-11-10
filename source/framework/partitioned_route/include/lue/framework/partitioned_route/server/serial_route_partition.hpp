@@ -4,7 +4,9 @@
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
 #include <hpx/include/components.hpp>
+#include <set>
 #include <unordered_map>
+#include <vector>
 
 
 namespace lue::server {
@@ -58,7 +60,7 @@ namespace lue::server {
 
             Count nr_route_fragments() const;
 
-            std::vector<RouteID> route_ids() const;
+            std::set<RouteID> route_ids() const;
 
             std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
 

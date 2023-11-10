@@ -1,15 +1,23 @@
 #pragma once
-/// #include "lue/framework/algorithm/component/decreasing_order_zone.hpp"
 #include "lue/framework/algorithm/decreasing_order.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
 #include <hpx/include/components.hpp>
+#include <algorithm>
 #include <map>
+
+// #include "lue/stream.hpp"
+// #include <hpx/iostream.hpp>
 
 
 namespace lue {
     namespace detail {
+
+        template<typename Policies, typename Zone, typename Value, Rank rank>
+        class DecreasingOrderZone;
+
+
         namespace server {
 
             template<typename Policies, typename Zone, typename Value, Rank rank>
@@ -34,26 +42,11 @@ namespace lue {
 
                     using Shape = typename SerialRoutePartition<rank>::Shape;
 
-                    using RoutePartition = SerialRoutePartition<rank>;
+                    using RoutePartition = lue::SerialRoutePartition<rank>;
 
                     using RouteFragments = typename RoutePartition::RouteFragments;
 
                     using RouteFragment = typename RoutePartition::RouteFragment;
-
-
-                    DecreasingOrderZone():
-
-                        Base{},
-                        _offset{},
-                        _shape{},
-                        _partition_promise{},
-                        _partition_future{},
-                        // _route_partition{},
-                        _values_by_zone{}
-
-                    {
-                        // lue_hpx_assert(!_route_partition.valid());
-                    }
 
 
                     DecreasingOrderZone(Offset const& offset, Shape const& shape):
@@ -62,19 +55,21 @@ namespace lue {
                         _offset{offset},
                         _shape{shape},
                         _partition_promise{},
-                        _partition_future{_partition_promise.get_shared_future()},
-                        // _route_partition{hpx::find_here(), offset, shape},
+                        // _partition_future{},
+                        _route_partition{_partition_promise.get_future()},
                         _values_by_zone{}
 
                     {
-                        // TODO RouteID and Zone can be the same thing here
+                        // lue_hpx_assert(!_partition_future.valid());
 
-                        // hpx::future<hpx::id_type> component_id_f =
-                        // hpx::new_<lue::server::SerialRoutePartition<rank>>(
-                        //     hpx::find_here(), std::move(_offset), std::move(_shape),
-                        //     std::move(_route_fragments));
+                        // // _partition_future = _partition_promise.get_shared_future();
+                        // _partition_future = _partition_promise.get_future().share();
 
-                        // lue_hpx_assert(_route_partition.valid());
+                        // lue_hpx_assert(_partition_future.valid());
+                        // lue_hpx_assert(!_partition_future.is_ready());
+
+                        lue_hpx_assert(_route_partition.valid());
+                        lue_hpx_assert(!_route_partition.is_ready());
                     }
 
 
@@ -89,16 +84,18 @@ namespace lue {
                     DecreasingOrderZone& operator=(DecreasingOrderZone&&) = default;
 
 
-                    // RoutePartition route_partition()
-                    hpx::shared_future<hpx::id_type> route_partition() const
+                    // hpx::tuple<hpx::shared_future<hpx::id_type>> route_partition() const
+
+                    RoutePartition route_partition()
                     {
-                        // lue_hpx_assert(_route_partition.valid());
+                        // Return the future to the route's partition ID. It will be marked as
+                        // ready when either:
+                        // 1. No route passes through the partition, or
+                        // 2. All routes have been recorded
 
-                        // return _route_partition;
+                        lue_hpx_assert(_route_partition.valid());
 
-                        // return _partition_promise.get_future();
-
-                        return _partition_future;
+                        return _route_partition;
                     }
 
 
@@ -108,7 +105,17 @@ namespace lue {
                         // the layered promise. This, in turn, will mark the associated future
                         // as ready.
 
-                        // After calling this function, this component should not be used anymore
+                        // After calling this function, this component must not be used anymore
+
+                        lue_hpx_assert(_route_partition.valid());
+                        lue_hpx_assert(!_route_partition.is_ready());
+
+                        // Given that we recorded route fragments in a depth-first fashion,
+                        // we reverse the fragments here, before moving them into the route partition
+                        for (auto& [route_id, fragments] : _route_fragments)
+                        {
+                            std::reverse(fragments.begin(), fragments.end());
+                        }
 
                         hpx::future<hpx::id_type> component_id_f =
                             hpx::new_<lue::server::SerialRoutePartition<rank>>(
@@ -117,13 +124,16 @@ namespace lue {
                                 std::move(_shape),
                                 std::move(_route_fragments));
 
-                        component_id_f.then([partition_promise = std::move(_partition_promise)](
-                                                hpx::future<hpx::id_type>&& component_id_f) mutable
-                                            { partition_promise.set_value(component_id_f.get()); });
+                        // Creating partitions happens asynchronously (see the client
+                        // instance). Just wait for it to be finished.
+                        component_id_f.wait();
+
+                        _partition_promise.set_value(component_id_f.get());
+
+                        lue_hpx_assert(_route_partition.is_ready());
                     }
 
 
-                    // std::tuple<hpx::future<hpx::id_type>, std::map<Zone, Value>> sort_values(
                     std::map<Zone, Value> sort_values(
                         Policies const& policies,
                         ZonePartition const& zone_partition,
@@ -154,7 +164,7 @@ namespace lue {
                         // - Add the value to this collection
                         for (Index idx = 0; idx < nr_elements; ++idx)
                         {
-                            if (!zone_ndp.is_no_data(zone_partition_data, idx) ||
+                            if (!zone_ndp.is_no_data(zone_partition_data, idx) &&
                                 !value_ndp.is_no_data(value_partition_data, idx))
                             {
                                 _values_by_zone[zone_partition_data[idx]].push_back(
@@ -191,24 +201,18 @@ namespace lue {
                             create_partition();
                         }
 
-                        // return {_partition_promise.get_future(), result};
                         return result;
                     }
 
 
-                    void record_route(
+                    typename RouteFragment::Location record_route(
                         RouteID const route_id,
                         std::vector<std::tuple<Value, hpx::id_type>> maxima,
                         Count current_length,
                         Count const max_length)
                     {
-
-                        // Gather route fragments
-
-
-                        /// using RouteFragments = std::unordered_map<RouteID, std::vector<RouteFragment>>;
-                        /// RouteFragments _route_fragments;
-
+                        // Gather route fragments in current partition and return the location
+                        // information
 
                         // Inputs:
                         // route_id: ID of route to record
@@ -223,7 +227,6 @@ namespace lue {
                         // _values_by_zone: per zone (== route ID) collection of {value: idx},
                         //     in decreasing order
                         // _partition_future: future of route partition that will eventually be created
-
 
                         // Goal:
                         // As long as:
@@ -240,26 +243,31 @@ namespace lue {
 
                         lue_hpx_assert(_values_by_zone.find(route_id) != _values_by_zone.end());
 
+                        // Reference, we are updating this collection here
+                        // TODO Is this thread-safe?
                         std::vector<std::tuple<Value, lue::Index>>& values_by_zone{
                             _values_by_zone.find(route_id)->second};
 
-                        // std::vector<std::tuple<Value, hpx::id_type>> maxima,
-
+                        // Otherwise we should be here at all
                         lue_hpx_assert(!maxima.empty());
                         lue_hpx_assert(!values_by_zone.empty());
+
+                        // Current maximum corresponds with this partition's first value and ID
                         lue_hpx_assert(std::get<0>(maxima[0]) == std::get<0>(values_by_zone[0]));
                         lue_hpx_assert(std::get<1>(maxima[0]) == this->get_id());
 
                         Value remote_value{std::numeric_limits<Value>::min()};
                         hpx::id_type remote_id{};
 
-                        if (!maxima.empty())
+                        if (maxima.size() > 1)
                         {
-                            std::tie(remote_value, remote_id) = maxima[0];
+                            std::tie(remote_value, remote_id) = maxima[1];
 
-                            // lue_hpx_assert(remote_value < local_value);
+                            // Value in other partition must be equal or lower then this
+                            // partition's first value
+                            lue_hpx_assert(remote_value <= std::get<0>(values_by_zone[0]));
+                            lue_hpx_assert(remote_id != this->get_id());
                         }
-
 
                         using CellIdxs = typename RouteFragment::CellIdxs;
 
@@ -289,100 +297,79 @@ namespace lue {
                             values_by_zone.erase(values_by_zone.begin(), values_by_zone.begin() + idx);
                         }
 
-                        RouteFragment route_fragment(cell_idxs);
+                        if (values_by_zone.empty())
+                        {
+                            maxima.erase(maxima.begin());
+                        }
+                        else
+                        {
+                            // We have visited the value(s) with large value(s) and are about
+                            // to continue recording the route elsewhere. Update maximum for
+                            // this partition. Recording of routes will come back here.
 
-                        hpx::future<void> downstream_done_f{};
+                            lue_hpx_assert(maxima.size() > 1);
+
+                            // Grab new maximum. This is the first one in our colleciton.
+                            Value const new_maximum = std::get<0>(values_by_zone[0]);
+
+                            // Pop current record from the front of the maxima collection that is moved around
+                            auto maximum_and_component_id = maxima[0];
+                            maxima.erase(maxima.begin());
+
+                            // Update record with new maximum
+                            std::get<0>(maximum_and_component_id) = new_maximum;
+
+                            // Insert record in a position that maintains the decreasing order of maxima
+                            maxima.insert(
+                                // Find first element in maxima collection for which its maximum
+                                // is smaller or equal than our new_maximum. This is where we
+                                // want to insert the updated record.
+                                std::lower_bound(
+                                    maxima.begin(),
+                                    maxima.end(),
+                                    new_maximum,
+                                    [](auto const& maximum_and_component_id, Value const new_maximum)
+                                    { return std::get<0>(maximum_and_component_id) > new_maximum; }),
+                                maximum_and_component_id);
+                        }
+
+                        RouteFragment route_fragment(cell_idxs);
 
                         if (current_length < max_length && !maxima.empty())
                         {
                             lue_hpx_assert(remote_id != this->get_id());
 
-                            // // Handle downstream part of the route
-                            // DecreasingOrderZone component{remote_id};
+                            // Handle downstream part of the route
+                            detail::DecreasingOrderZone<Policies, Zone, Value, rank> component{remote_id};
 
-                            // downstream_done_f = component.record_route(route_id, std::move(maxima),
-                            // current_length, max_length);
+                            auto downstream_route_fragment_location_f = component.record_route(
+                                route_id, std::move(maxima), current_length, max_length);
 
-                            // // TODO How to end the fragments? For that we need the route
-                            // //     partition id, which we don't have yet
-                            // //     Possibly Location is currently wrong. Locality can be found
-                            // //     already, but route partition id not yet. That should be a future.
-                            // //     record_route can return a future<shared_future<partition_id>,
-                            // locality_id>, which is future<Fragment::Location>
-                            // /// // End the current fragment by storing the location information of
-                            // /// // the partition containing the downstream cell
+                            // End the current fragment by storing the location information of
+                            // the partition containing the downstream fragment. Wait for this
+                            // information to be available. This wait is recursive: the downstream
+                            // call to record_route also waits on its downstream call.
 
-                            // downstream_done_f.wait();
-
-                            // TODO grab the location information and end the current route
+                            route_fragment.end(downstream_route_fragment_location_f.get());
                         }
 
-                        // TODO Return Fragment::Location
+                        _route_fragments[route_id].push_back(route_fragment);
 
+                        return typename RouteFragment::Location{_route_partition.share(), hpx::find_here()};
 
-                        /// // idx point to a tuple our values_by_zone
-                        /// Index idx{0};
+                        // → Testing with a single process works as well...
 
-                        /// using CellIdxs = typename RouteFragment::CellIdxs;
-
-                        /// // Collection for storing idxs of cells in the current partition
-                        /// // containing values that are all higher than or equal to the highest
-                        /// // value in another partition
-                        /// CellIdxs cell_idxs{};
-
-                        /// // Store the first value
-                        /// auto [local_value, local_idx] = values_by_zone[idx];
-
-                        /// cell_idxs.push_back(local_idx);
-
-                        /// maxima.erase(maxima.begin());
-
-                        /// while(++idx < values_by_zone.size() && current_length < max_length && local_value
-                        /// >= remote_value)
-                        /// {
-                        ///     auto [local_value, local_idx] = values_by_zone[idx];
-
-                        ///     cell_idxs.push_back(local_idx);
-
-                        ///     ++current_length;
-                        ///     ++idx;
-                        /// }
-
-                        /// RouteFragment route_fragment(cell_idxs);
-
-
-                        /// // TODO optionally "end" the route with a continuation
-
-
-                        /// _route_fragments[zone].push_back(route_fragment);
-
-
-                        //     - record_route(maxima, max_length)
-
-                        // TODO
-
-                        // Once last value in last route has been handled, set promise's value
-                        // (create partition and set ID)
-
-
+                        // Works if we first create the partion already, which we don't want to
                         // create_partition();
 
-                        // PartitionID =
+                        // // Does .share maybe hang? No...
+                        // auto meh = _route_partition.share();
+                        // return typename RouteFragment::Location{'a', meh, hpx::find_here()};
 
-                        // using Location = std::tuple<PartitionID, Locality>;
-
-
-                        // auto fragment_f = downstream_component.record_route(zone, std::move(maximima),
-                        // current_length, max_length);
-
-
-                        // TODO Only return once the downstream route has been recorded. Once all routes have
-                        // been created, the caller can call create_partition and obtain the
-
-
-                        // Component component{std::get<1>(values.front())};
-
-                        // component.record_route(zone, std::move(values), Count{0}, max_length));
+                        // Works:
+                        // return typename
+                        // RouteFragment::Location{hpx::make_ready_future<hpx::id_type>().share(),
+                        // hpx::find_here()};
                     }
 
 
@@ -406,9 +393,9 @@ namespace lue {
 
                     hpx::promise<hpx::id_type> _partition_promise;
 
-                    hpx::shared_future<hpx::id_type> _partition_future;
+                    /// hpx::shared_future<hpx::id_type> _partition_future;
 
-                    // RoutePartition _route_partition;
+                    RoutePartition _route_partition;
 
                     std::map<Zone, std::vector<std::tuple<Value, lue::Index>>> _values_by_zone;
             };
@@ -439,7 +426,11 @@ namespace lue {
 
                 using ValuePartition = typename Server::ValuePartition;
 
-                using RoutePartition = typename Server::RoutePartition;
+                // using RoutePartitionServer = typename Server::RoutePartitionServer;
+
+                using RoutePartition = SerialRoutePartition<rank>;
+
+                using RouteFragment = SerialRouteFragment<rank>;
 
                 using RouteID = typename Server::RouteID;
 
@@ -491,8 +482,9 @@ namespace lue {
                 DecreasingOrderZone& operator=(DecreasingOrderZone&&) = default;
 
 
-                // RoutePartition route_partition() const
-                hpx::future<hpx::shared_future<hpx::id_type>> route_partition() const
+                // hpx::future<hpx::shared_future<hpx::id_type>> route_partition() const
+                // hpx::future<hpx::tuple<hpx::shared_future<hpx::id_type>>> route_partition() const
+                RoutePartition route_partition()
                 {
                     lue_hpx_assert(this->is_ready());
                     lue_hpx_assert(this->get_id());
@@ -525,18 +517,11 @@ namespace lue {
 
                     typename Server::SortValuesAction action;
 
-                    // auto [component_id_f, maximum_per_zone] =
-                    //     hpx::split_future(hpx::async(action, this->get_id(), policies, zone_partition,
-                    //     value_partition));
-
-                    // return {SerialRoutePartition<rank>{std::move(component_id_f)},
-                    // std::move(maximum_per_zone)};
-
                     return hpx::async(action, this->get_id(), policies, zone_partition, value_partition);
                 }
 
 
-                hpx::future<void> record_route(
+                hpx::future<typename RouteFragment::Location> record_route(
                     RouteID const route_id,
                     std::vector<std::tuple<Value, hpx::id_type>>&& maxima,
                     Count current_length,
@@ -575,15 +560,16 @@ namespace lue {
         using ValuePartition = PartitionT<ValueArray>;
 
         using Route = SerialRoute<rank>;
+        using RoutePartitions = PartitionsT2<Route>;
         using RoutePartition = PartitionT2<Route>;
-        using Partitions = PartitionsT2<Route>;
+        using RouteStarts = typename Route::Starts;
         using Offset = OffsetT<Route>;
         using Shape = ShapeT<Route>;
 
         Shape const array_shape{value.shape()};
         Shape const shape_in_partitions{value.partitions().shape()};
         Count const nr_partitions{lue::nr_elements(value.partitions())};
-        Partitions partitions{shape_in_partitions};
+        RoutePartitions route_partitions{shape_in_partitions};
 
         Localities<rank> const& localities{value.localities()};
         ZonePartitions const& zone_partitions{zone.partitions()};
@@ -593,7 +579,10 @@ namespace lue {
         using Component = detail::DecreasingOrderZone<Policies, Zone, Value, rank>;
 
         std::vector<hpx::future<Component>> components_f(nr_partitions);
-        std::vector<hpx::future<hpx::shared_future<hpx::id_type>>> partition_ids_f(nr_partitions);
+        /// std::vector<hpx::future<hpx::shared_future<hpx::id_type>>> partition_ids_f(nr_partitions);
+        /// std::vector<hpx::future<hpx::tuple<hpx::shared_future<hpx::id_type>>>>
+        /// partition_ids_f(nr_partitions);
+        std::vector<RoutePartition> partition_ids_f(nr_partitions);
 
         // Create collection of (futures to) maps, for storing (per partition) the maximum
         // value per zone
@@ -609,8 +598,7 @@ namespace lue {
             // the result partitions (not ready yet), and a future to a map containing (per
             // partition) the maximum value per zone.
 
-            /// hpx::tie(components_f[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
-            // hpx::tie(components_f[p], partitions[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
+            // Dataflow for when the input partitions are ready
             hpx::tie(components_f[p], partition_ids_f[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
 
@@ -618,11 +606,12 @@ namespace lue {
                     ZonePartition const& zone_partition, ValuePartition const& value_partition)
                 {
                     hpx::future<Component> component_f{};
-                    // RoutePartition partition{};
-                    hpx::future<hpx::shared_future<hpx::id_type>> partition_id_f{};
+                    /// hpx::future<hpx::shared_future<hpx::id_type>> partition_id_f{};
+                    /// hpx::future<hpx::tuple<hpx::shared_future<hpx::id_type>>> partition_id_f{};
+                    RoutePartition partition_id_f{};
                     hpx::future<MaxValueByZone> max_values_f{};
 
-                    /// hpx::tie(component_f, max_values_f) = hpx::split_future(hpx::dataflow(
+                    // Dataflow for when the partition's offset and shape are ready
                     hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(hpx::dataflow(
                         hpx::launch::async,
                         hpx::unwrapping(
@@ -631,25 +620,27 @@ namespace lue {
                                 Offset const& offset, Shape const& shape)
                             {
                                 hpx::future<Component> component_f{};
-                                // RoutePartition partition{};
-                                hpx::future<hpx::shared_future<hpx::id_type>> partition_id_f;
+                                /// hpx::future<hpx::shared_future<hpx::id_type>> partition_id_f{};
+                                /// hpx::future<hpx::tuple<hpx::shared_future<hpx::id_type>>>
+                                /// partition_id_f{};
+                                RoutePartition partition_id_f{};
                                 hpx::future<MaxValueByZone> max_values_f{};
 
-                                /// hpx::tie(component_f, max_values_f) =
+                                // Create a component and tell it to sort values by zone
                                 hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(
                                     hpx::new_<Component>(locality, offset, shape)
                                         .then(
 
                                             [policies, zone_partition, value_partition](Component&& component)
                                             {
-                                                // RoutePartition partition{};
                                                 hpx::future<MaxValueByZone> max_values{};
 
-                                                // hpx::tie(partition, max_values) =
-                                                // component.sort_values(policies, zone_partition,
-                                                // value_partition);
-                                                hpx::future<hpx::shared_future<hpx::id_type>> partition_id_f =
-                                                    component.route_partition();
+                                                /// hpx::future<hpx::shared_future<hpx::id_type>>
+                                                /// partition_id_f =
+                                                /// hpx::future<hpx::tuple<hpx::shared_future<hpx::id_type>>>
+                                                /// partition_id_f =
+                                                RoutePartition partition_id_f = component.route_partition();
+
                                                 max_values = component.sort_values(
                                                     policies, zone_partition, value_partition);
 
@@ -665,7 +656,6 @@ namespace lue {
                                     std::move(component_f),
                                     std::move(partition_id_f),
                                     std::move(max_values_f));
-                                /// return hpx::make_tuple(std::move(component_f), std::move(max_values_f));
                             }),
 
                         value_partition.offset(),
@@ -673,34 +663,41 @@ namespace lue {
 
                     return hpx::make_tuple(
                         std::move(component_f), std::move(partition_id_f), std::move(max_values_f));
-                    /// return hpx::make_tuple(std::move(component_f), std::move(max_values_f));
                 },
 
                 zone_partitions[p],
                 value_partitions[p]));
         }
 
+        /// for(auto const& f: partition_ids_f) { lue_hpx_assert(f.valid()); }
 
-        // TODO Integrate with loop below
-        hpx::wait_all(partition_ids_f.begin(), partition_ids_f.end());
+        /// // TODO Integrate with loop below
+        /// // hpx::wait_all(partition_ids_f.begin(), partition_ids_f.end());
 
+        /// // auto a = hpx::when_all(partition_ids_f.begin(), partition_ids_f.end());
+        /// // a.wait();
+
+        /// std::transform(
+        ///     partition_ids_f.begin(),
+        ///     partition_ids_f.end(),
+        ///     route_partitions.begin(),
+        ///     [](auto& partition_id_f) { return RoutePartition{partition_id_f.get()}; });
+
+        // TODO No-op
         std::transform(
             partition_ids_f.begin(),
             partition_ids_f.end(),
-            partitions.begin(),
-            [](auto& partition_id_f) { return RoutePartition{partition_id_f.get()}; });
+            route_partitions.begin(),
+            [](auto& partition_id_f) { return partition_id_f; });
 
-
-        // Given the information we have now, we can start recording routes.
+        // Given the information we have now, we can start recording routes
 
         // Although we have futures to components, once the maps containing the maximum values
         // per zone per partition are ready, the components must be ready as well. The max_values
         // maps are the result of calling an action on the ready components. We therefore don't
-        // have to wait for the components to be ready.
+        // have to explicitly wait for the components to be ready.
 
-        using Starts = typename Route::Starts;
-
-        hpx::future<Starts> starts{
+        auto [starts, components] = hpx::split_future(
             hpx::when_all(max_values_f.begin(), max_values_f.end())
                 .then(
                     [components_f = std::move(components_f),
@@ -757,70 +754,68 @@ namespace lue {
                                 { return std::get<0>(lhs) > std::get<0>(rhs); });
                         }
 
-                        // Per zone, initialize a route, referencing the partition containing the highest
-                        // value
-                        Starts starts{};
-
-                        // - Component ID of serial_route_partition
-                        // - Locality ID of serial_route_partition
-
-                        /// for(auto& [zone, values]: max_values_by_zone)
-                        /// {
-                        ///     // using FragmentLocation = typename Route::FragmentLocation;
-                        ///     // using Location = std::tuple<PartitionID, Locality>;
-
-                        ///     starts[zone] = std::get<1>(values.front());
-                        /// }
-
-                        Count const nr_routes = std::size(max_values_by_zone);
-
-                        using Routes = std::vector<hpx::future<void>>;
-
-                        Routes routes{};
-                        routes.reserve(nr_routes);
-
                         // Per zone / route, record the route
-                        for (auto& [zone, values] : max_values_by_zone)
+                        std::vector<Zone> zones(max_values_by_zone.size());
+                        std::vector<hpx::future<typename Route::FragmentLocation>> starts_f(
+                            max_values_by_zone.size());
                         {
-                            lue_hpx_assert(!values.empty());
+                            Index idx{0};
 
-                            Component component{std::get<1>(values.front())};
+                            for (auto& [zone, values] : max_values_by_zone)
+                            {
+                                lue_hpx_assert(!values.empty());
 
-                            // starts[zone] = component.record_route(zone, std::move(values), Count{0},
-                            // max_length);
+                                Component component{std::get<1>(values.front())};
 
-                            routes.push_back(
-                                component.record_route(zone, std::move(values), Count{0}, max_length));
+                                zones[idx] = zone;
+                                starts_f[idx] =
+                                    component.record_route(zone, std::move(values), Count{0}, max_length);
+
+                                ++idx;
+                            }
                         }
 
+                        // Once all routes are ready, we can set the value of the route partition
+                        // promises, in turn marking these partitions as ready
+                        return hpx::when_all(starts_f.begin(), starts_f.end())
+                            .then(
+                                [zones = std::move(zones), components = std::move(components)](
+                                    hpx::future<std::vector<hpx::future<typename Route::FragmentLocation>>>&&
+                                        starts_ff)
+                                {
+                                    // Tell each component who hasn't done so already to create
+                                    // the route partition server instance and set the associated
+                                    // promise
 
-                        // Once all routes are ready, we can obtain the ID of the route partition
-                        // containing each start
+                                    Count const nr_partitions = std::size(components);
 
+                                    for (Index p = 0; p < nr_partitions; ++p)
+                                    {
+                                        components[p].create_partition();
+                                    }
 
-                        // // Once all routes are ready, we can set the value of the promises, in turn marking
-                        // // the route partitions as ready
-                        // hpx::when_all(starts.begin(), starts.end()).then(
-                        //         [components=std::move(components)]([[maybe_unused]]
-                        //         hpx::future<std::vector<hpx::future<void>>>&& routes_f)
-                        //         {
-                        //             // Tell each component who hasn't done so already to create
-                        //             // the route partition server instance and set the associated
-                        //             // promise
+                                    // Collect the route starts
+                                    RouteStarts starts{};
+                                    auto starts_f{starts_ff.get()};
 
-                        //             Count const nr_partitions = std::size(components);
+                                    for (Index idx = 0; idx < zones.size(); ++idx)
+                                    {
+                                        starts[zones[idx]] = starts_f[idx].get();
+                                    }
 
-                        //             for(Index p = 0; p < nr_partitions; ++p)
-                        //             {
-                        //                 components[p].create_partition();
-                        //             }
-                        //         }
-                        //     );
+                                    return hpx::make_tuple(starts, components);
+                                });
+                    }));
 
-                        return starts;
-                    })};
+        // As long as not all output route partitions are ready, we need to keep the components
+        // alive
+        hpx::when_all(
+            route_partitions.begin(),
+            route_partitions.end(),
+            [components = std::move(components)]([[maybe_unused]] auto&& partitions_f)
+            { HPX_UNUSED(components); });
 
-        return SerialRoute<rank>{array_shape, std::move(starts), std::move(partitions)};
+        return SerialRoute<rank>{array_shape, std::move(starts), std::move(route_partitions)};
 
 
         // For each zone, determine the partition in which the maximum value is located in. Store this
@@ -891,6 +886,7 @@ namespace lue {
         // Create a single route from the cell with the highest value to the cell
         // with the lowest value. Stop when the route has the same length as the length passed in.
 
+        lue_hpx_assert(false);  // Not ready yet
         lue_hpx_assert(value.shape() == value.shape());
 
         using Route = SerialRoute<rank>;

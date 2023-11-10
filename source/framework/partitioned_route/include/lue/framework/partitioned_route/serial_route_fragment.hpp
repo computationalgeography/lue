@@ -10,6 +10,10 @@
 
 namespace lue {
 
+    template<Rank rank>
+    class SerialRoutePartition;
+
+
     /*!
         @brief      Class for aggregating information about a fragment of a serial route
 
@@ -25,13 +29,13 @@ namespace lue {
             using PartitionID = hpx::id_type;
 
             //! Locality a partition is located in
-            using Locality = hpx::id_type;
+            using LocalityID = hpx::id_type;
 
             //! Location of a route fragment
-            /// using Location = std::tuple<PartitionID, Locality>;
-            /// TODO Turn PartitionID into a hpx::shared_future<hpx::id_type> and the shared_future back into
-            /// a Locality
-            using Location = std::tuple<PartitionID, hpx::shared_future<hpx::id_type>>;
+            /// using Location = hpx::tuple<PartitionID, LocalityID>;
+            /// using Location = hpx::tuple<PartitionID, hpx::shared_future<hpx::id_type>>;
+            using Location = hpx::tuple<hpx::shared_future<PartitionID>, LocalityID>;
+            /// using Location = hpx::shared_future<PartitionID>;
 
             //! Linear index of a cell, within a partition
             /// using CellIdxs = Indices<Index, rank>;
@@ -132,6 +136,12 @@ namespace lue {
             std::optional<Location> const& next_fragment_location() const
             {
                 return _next_fragment_location;
+            }
+
+
+            bool is_last() const
+            {
+                return !_next_fragment_location.has_value();
             }
 
 
