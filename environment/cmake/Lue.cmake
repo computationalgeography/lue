@@ -37,8 +37,6 @@ if(LUE_BUILD_QA AND LUE_QA_WITH_TESTS)
     enable_testing()
 endif()
 
-get_property(LUE_GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-
 if(APPLE)
     set(LUE_ORIGIN @loader_path)
 else()
