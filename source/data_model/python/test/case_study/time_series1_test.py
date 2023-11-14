@@ -6,7 +6,6 @@ import lue_test
 
 class TimeSeriesTest(lue_test.TestCase):
     def test_case_study(self):
-
         # Time series as implemented here:
         # - Discharge at catchment outlets
         #     - Located at fixed points in space
@@ -30,7 +29,6 @@ class TimeSeriesTest(lue_test.TestCase):
         )
 
         def discharge_property(phenomenon):
-
             nr_outlets = 10
 
             ids = numpy.arange(nr_outlets, dtype=numpy.uint64)
@@ -122,7 +120,6 @@ class TimeSeriesTest(lue_test.TestCase):
             return discharge
 
         def discretization_property(phenomenon):
-
             # Property set
             collection = phenomenon.add_collection_property_set(
                 "outlets_collection", phenomenon.property_sets["outlets"].time_domain

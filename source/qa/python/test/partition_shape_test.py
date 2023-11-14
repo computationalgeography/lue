@@ -10,7 +10,6 @@ from lue.benchmark.shape import *
 
 class PartitionShapeTest(unittest.TestCase):
     def test_partition_shape_multipliers(self):
-
         shape = (10, 10)
 
         partition_shape = (1, 1)
@@ -34,7 +33,6 @@ class PartitionShapeTest(unittest.TestCase):
         self.assertEqual(multipliers, [2, 5])
 
     def test_ranges_of_partition_shape_multipliers(self):
-
         shape = (10, 10)
 
         min_partition_shape = (1, 1)
@@ -62,7 +60,6 @@ class PartitionShapeTest(unittest.TestCase):
         self.assertEqual(multiplier_ranges[1], range(2, 2, -1))
 
     def test_ranges_of_shapes(self):
-
         min_shape = (1, 1)
         max_shape = (10, 10)
         step = 1
@@ -72,7 +69,6 @@ class PartitionShapeTest(unittest.TestCase):
         self.assertEqual(ranges[1], range(1, 11, step))
 
     def test_partition_shapes(self):
-
         min_shape = (480, 480)
         max_shape = (500, 500)
         step = 10

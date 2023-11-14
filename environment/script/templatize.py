@@ -9,7 +9,6 @@ import jinja2
 
 
 def main():
-
     usage = """\
 Read a file, replace some placeholders with values, and write the result
 to a file

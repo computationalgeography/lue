@@ -35,7 +35,6 @@ so it should be generated and translated only once.
 
 
 def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
-
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
 
@@ -77,7 +76,6 @@ def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
 
 
 def benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=None):
-
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
 

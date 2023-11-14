@@ -6,11 +6,9 @@ from lue.qa.scalability.core import json
 
 
 def sort_benchmarks_by_time(result_prefix, cluster, benchmark, experiment):
-
     items = []
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         benchmark_pathname = experiment.benchmark_result_pathname(
             result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"

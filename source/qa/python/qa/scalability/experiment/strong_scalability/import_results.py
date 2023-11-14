@@ -16,7 +16,6 @@ from .experiment import Experiment
 def benchmark_meta_to_lue_json(
     benchmark_pathname, lue_dataset_pathname, cluster, benchmark, experiment
 ):
-
     array_shape = experiment.array.shape
     partition_shape = experiment.partition.shape
 
@@ -116,7 +115,6 @@ def benchmark_meta_to_lue_json(
 
 
 def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
-
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
 
@@ -245,7 +243,6 @@ def import_raw_results(
     metadata_written = False
 
     for benchmark_idx in benchmark_idxs:
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
 
         result_pathname = experiment.benchmark_result_pathname(
@@ -269,7 +266,6 @@ def import_raw_results(
 
 
 def write_scalability_results(lue_dataset):
-
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     lue_measurement = lue_dataset.benchmark.measurement
@@ -586,7 +582,6 @@ def write_scalability_results(lue_dataset):
 
 
 def import_results(configuration_data):
-
     configuration = Configuration(configuration_data)
     cluster = configuration.cluster
     benchmark = configuration.benchmark
@@ -612,7 +607,6 @@ def import_results(configuration_data):
     if not raw_results_already_imported or not job.scalability_lue_dataset_exists(
         result_prefix, cluster, benchmark, experiment
     ):
-
         # Copy dataset and write scalability results
         job.copy_raw_to_scalability_lue_dataset(
             result_prefix, cluster, benchmark, experiment

@@ -44,7 +44,6 @@ Options:
 
 @checked_call
 def add_attribute(graph_name, output_name, node_name, attribute_name, attribute_value):
-
     graph = open(graph_name, "r").read()
     snippet = "{attribute}={value}".format(
         attribute=attribute_name, value=attribute_value

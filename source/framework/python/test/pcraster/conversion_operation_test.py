@@ -9,7 +9,6 @@ from .operation_test import OperationTest, setUpModule, tearDownModule
 class ConversionOperationTest(OperationTest):
     @lue_test.framework_test_case
     def test_boolean(self):
-
         for expression_type in [
             int,
             float,
@@ -34,7 +33,6 @@ class ConversionOperationTest(OperationTest):
 
     @lue_test.framework_test_case
     def test_nominal(self):
-
         for expression_type in [
             int,
             float,
@@ -60,7 +58,6 @@ class ConversionOperationTest(OperationTest):
 
     @lue_test.framework_test_case
     def test_scalar(self):
-
         for expression_type in [
             int,
             float,

@@ -22,12 +22,10 @@ from pcraster.framework import *
 
 class ForestFireModel(DynamicModel):
     def __init__(self):
-
         DynamicModel.__init__(self)
         setclone("clone.map")
 
     def initial(self):
-
         # Initial burning locations, self.fire represents area that is
         # burning or has burnt down
         # self.fire = order(uniform(1)) < 5
@@ -57,7 +55,6 @@ class ForestFireModel(DynamicModel):
         self.report(self.spot_ignite_probability, "spot_ignite_probability")
 
     def dynamic(self):
-
         # Find pixels where at least one neighbour is burning and that
         # are not yet burning or burnt down. This should be window4total
         # (NOT a Moore neighbourhood)

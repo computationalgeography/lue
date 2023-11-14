@@ -16,7 +16,6 @@ def tearDownModule():
 class WriteArrayTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_write_constant_array(self):
-
         # TODO https://github.com/computationalgeography/lue/issues/483
         return
 
@@ -59,7 +58,6 @@ class WriteArrayTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_write_variable_array(self):
-
         # Create t arrays, write them to a dataset, ready them back in,
         # and verify the arrays read are equal to the arrays written.
 

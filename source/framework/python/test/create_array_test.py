@@ -15,7 +15,6 @@ def tearDownModule():
 class CreateArrayTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_create_array01(self):
-
         array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.int32
@@ -32,7 +31,6 @@ class CreateArrayTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_create_array02(self):
-
         array_shape = (60, 40)
         dtype = np.int32
         fill_value = 5

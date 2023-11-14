@@ -9,7 +9,6 @@ import lue_test
 
 class DatasetTest(lue_test.TestCase):
     def test_create(self):
-
         dataset_name = "dataset_create.lue"
 
         lue_test.remove_file_if_existant(dataset_name)
@@ -26,7 +25,6 @@ class DatasetTest(lue_test.TestCase):
             self.assertFalse(os.access(dataset_name, os.X_OK))
 
     def test_object_name(self):
-
         dataset_name = "dataset_object_name.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -34,7 +32,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertEqual(dataset.id.name, "")
 
     def test_object_pathname(self):
-
         dataset_name = "dataset_object_pathname.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -42,7 +39,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertEqual(dataset.id.pathname, "/")
 
     def test_pathname(self):
-
         dataset_name = "dataset_pathname.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -50,13 +46,11 @@ class DatasetTest(lue_test.TestCase):
         self.assertEqual(dataset.pathname, dataset_name)
 
     def test_open_existing_readable(self):
-
         dataset_name = "dataset_open_existing_readable.lue"
         dataset = self.create_dataset(dataset_name)
         existing_dataset = ldm.open_dataset(dataset_name, "r")
 
     def test_add_universe(self):
-
         dataset_name = "dataset_add_universe.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -65,7 +59,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertTrue("my_universe" in dataset.universes)
 
     def test_add_universe_twice(self):
-
         dataset_name = "dataset_add_universe_twice.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -73,7 +66,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertRaises(RuntimeError, dataset.add_universe, "my_universe")
 
     def test_add_phenomenon(self):
-
         dataset_name = "dataset_add_phenomenon.lue"
         dataset = self.create_dataset(dataset_name)
 
@@ -82,7 +74,6 @@ class DatasetTest(lue_test.TestCase):
         self.assertTrue("my_phenomenon" in dataset.phenomena)
 
     def test_add_phenomenon_twice(self):
-
         dataset_name = "dataset_add_phenomenon_twice.lue"
         dataset = self.create_dataset(dataset_name)
 

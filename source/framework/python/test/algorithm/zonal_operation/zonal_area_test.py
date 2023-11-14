@@ -15,7 +15,6 @@ def tearDownModule():
 class ZonalAreaTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
-
         array_shape = (60, 40)
         fill_zone = 3
 

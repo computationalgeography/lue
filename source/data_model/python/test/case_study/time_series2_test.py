@@ -8,7 +8,6 @@ import lue_test
 
 class TimeSeriesTest(lue_test.TestCase):
     def test_case_study(self):
-
         # Time series as implemented here:
         # - Discharge at catchment outlets
         #     - Located at fixed points in space
@@ -82,7 +81,6 @@ class TimeSeriesTest(lue_test.TestCase):
 
         # Iterate over the time boxes
         for t in range(nr_time_boxes):
-
             # Store additional time box and count
             time_box = numpy.array([t, t + 1], dtype=time_coordinate_datatype)
             time_domain.value.expand(1)[-1] = time_box
@@ -91,7 +89,6 @@ class TimeSeriesTest(lue_test.TestCase):
 
             # Iterate over the time cells within each time box
             for c in range(count):
-
                 # Store IDs of objects in the active set
                 object_index = active_object_id.nr_ids
                 active_set_index.expand(1)[-1] = object_index

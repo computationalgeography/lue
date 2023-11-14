@@ -32,7 +32,6 @@ absolute. Absolute paths to rasters will be used as is.
 
 
 def raster_to_lue_json(raster_pathnames, lue_file, extent, discretization):
-
     object_id = 5
     properties = [
         {

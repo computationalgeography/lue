@@ -8,7 +8,6 @@ __all__ = [
 
 
 def json_to_data(pathname):
-
     pathname = os.path.expandvars(pathname)
 
     assert os.path.isfile(pathname), pathname

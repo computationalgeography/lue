@@ -6,7 +6,6 @@ import lue_test
 
 class TreeCrownTest(lue_test.TestCase):
     def test_case_study1(self):
-
         # A number of trees
         # - Location of tree in space is stored as 2D points
         # - Location of crown in space is stored as 2D boxes with
@@ -19,7 +18,6 @@ class TreeCrownTest(lue_test.TestCase):
         ids = np.arange(nr_trees, dtype=np.uint64)
 
         def add_stem_properties(phenomenon):
-
             # Property-set for properties attached to tree stems. Stems
             # are located in space using stationary 2D points.
 
@@ -48,7 +46,6 @@ class TreeCrownTest(lue_test.TestCase):
             return stem_points
 
         def discretized_presence(property_set):
-
             # Set-up a boolean property and a discretization property for
             # storing temporal boolean grids representing the presence
             # in space of tree crowns through time
@@ -91,7 +88,6 @@ class TreeCrownTest(lue_test.TestCase):
             return presence
 
         def add_crown_properties(phenomenon):
-
             # Property-set for properties attached to tree crowns. Crowns
             # are located in space using stationary 2D boxes within
             # which the presence is discretized. The presence of the
@@ -169,7 +165,6 @@ class TreeCrownTest(lue_test.TestCase):
         ldm.assert_is_valid(dataset)
 
     def test_case_study2(self):
-
         dataset = ldm.create_dataset("forest.lue")
 
         # We are assuming here that we can model biomass of trees in a
@@ -335,7 +330,6 @@ class TreeCrownTest(lue_test.TestCase):
             )
 
         for y in range(nr_years):
-
             # Time domain item for this growth season
             t_start = (y * nr_days_per_year) + start_of_growth_season
             t_end = t_start + nr_days_per_growth_season
@@ -434,7 +428,6 @@ class TreeCrownTest(lue_test.TestCase):
         nr_trees = len(crowns.space_domain.value)
 
         if nr_trees > 0:
-
             # Store IDs of starting trees in collection of IDs
             forests.object_id.expand(1)[-1] = 0
 

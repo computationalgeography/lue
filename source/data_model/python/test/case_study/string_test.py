@@ -6,7 +6,6 @@ import lue_test
 
 class StringTest(lue_test.TestCase):
     def test_case_study(self):
-
         dataset = ldm.create_dataset("planets.lue")
         planets = dataset.add_phenomenon("planets")
 

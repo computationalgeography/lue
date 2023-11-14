@@ -32,7 +32,6 @@ def depart_generated_image_node(self, node):
 
 
 class GeneratedImageDirective(Directive):
-
     required_arguments = 1
     has_content = False
 

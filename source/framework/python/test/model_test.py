@@ -11,5 +11,4 @@ def tearDownModule():
 
 
 class ModelTest(lue_test.TestCase):
-
     pass

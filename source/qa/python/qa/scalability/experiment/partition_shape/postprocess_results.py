@@ -48,7 +48,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experime
     assert math.is_monotonically_increasing(partition_sizes), partition_sizes
 
     def plot_duration(axis, array_idx, partition_sizes, partition_shapes):
-
         if count == 1:
             duration = lue_dataset.partition.partition.properties[
                 "duration_{}".format(array_idx)
@@ -103,7 +102,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experime
     # size, the spread of durations per partition size
     # for array_shape in array_shapes:
     for array_idx in range(len(array_shapes)):
-
         array_shape = array_shapes[array_idx]
 
         figure, axis = plt.subplots(figsize=(15, 10))  # Inches...
@@ -166,7 +164,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experime
 
 
 def postprocess_results(configuration_data):
-
     configuration = Configuration(configuration_data)
     cluster = configuration.cluster
     benchmark = configuration.benchmark

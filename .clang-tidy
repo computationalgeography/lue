@@ -41,6 +41,7 @@ Checks: >-
     -clang-analyzer-cplusplus.Move,
     -clang-analyzer-cplusplus.NewDeleteLeaks,
     -clang-analyzer-deadcode.DeadStores,
+    -clang-diagnostic-error,
     -clang-diagnostic-unused-lambda-capture,
     -cppcoreguidelines-avoid-c-arrays,
     -modernize-avoid-c-arrays,

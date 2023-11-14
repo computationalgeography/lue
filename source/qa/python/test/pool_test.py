@@ -10,7 +10,6 @@ from lue.benchmark.pool import *
 
 class PoolTest(unittest.TestCase):
     def _test_case_multiplier(self, min_size, max_size, multiplier, permutation_sizes):
-
         data = {
             "min_size": min_size,
             "max_size": max_size,
@@ -47,7 +46,6 @@ class PoolTest(unittest.TestCase):
     def _test_case_incrementor(
         self, min_size, max_size, incrementor, permutation_sizes
     ):
-
         data = {
             "min_size": min_size,
             "max_size": max_size,

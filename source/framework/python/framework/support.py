@@ -219,7 +219,6 @@ class MonteCarloModel(object):  # (lfr.Model):
 class MonteCarloModelRunner(object):
     @staticmethod
     def initialize_sample_directories(model, remove_existing_directories):
-
         for sample_nr in range(model.first_sample_nr, model.last_sample_nr + 1):
             directory_pathname = f"{sample_nr}"
 
@@ -239,7 +238,6 @@ class MonteCarloModelRunner(object):
         )
 
     def run(self, rate_limit=0):
-
         assert rate_limit >= 0, rate_limit
         assert (
             self.framework_model.first_time_step == 1

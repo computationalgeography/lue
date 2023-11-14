@@ -19,7 +19,6 @@ def generate_script_slurm_threads(
     partition_shape = experiment.partition.shape
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_threads = nr_workers
         result_pathname = experiment.benchmark_result_pathname(
@@ -114,7 +113,6 @@ def generate_script_slurm_numa_nodes(
     nr_threads = benchmark.worker.nr_threads
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers
         result_pathname = experiment.benchmark_result_pathname(
@@ -222,7 +220,6 @@ def generate_script_slurm_cluster_nodes(
     nr_threads = benchmark.worker.nr_threads
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
 
@@ -309,7 +306,6 @@ def generate_script_slurm_cluster_nodes(
 def generate_script_slurm(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
 
     if benchmark.worker.nr_cluster_nodes_range > 0:
@@ -329,7 +325,6 @@ def generate_script_slurm(
 def generate_script_shell(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     assert benchmark.worker.type == "thread"
     assert benchmark.worker.nr_cluster_nodes_range == 0
     assert benchmark.worker.nr_numa_nodes_range == 0
@@ -343,7 +338,6 @@ def generate_script_shell(
     partition_shape = experiment.partition.shape
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_threads = nr_workers
         result_pathname = experiment.benchmark_result_pathname(

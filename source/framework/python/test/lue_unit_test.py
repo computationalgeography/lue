@@ -31,7 +31,6 @@ import unittest
 
 
 if __name__ == "__main__":
-
     hpx_arguments = [
         argument for argument in sys.argv[1:] if argument.startswith("--hpx")
     ]

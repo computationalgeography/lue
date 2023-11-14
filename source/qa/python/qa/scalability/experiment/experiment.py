@@ -3,7 +3,6 @@ import os.path
 
 class Arguments(object):
     def __init__(self, json_dict):
-
         self.positionals = (
             json_dict["positionals"] if "positionals" in json_dict else []
         )
@@ -11,7 +10,6 @@ class Arguments(object):
 
     @property
     def to_list(self):
-
         result = []
 
         for positional in self.positionals:
@@ -27,7 +25,6 @@ class Arguments(object):
 
 class Experiment(object):
     def __init__(self, data, name, description):
-
         # Name (kind) of the experiment
         self.name = name
 
@@ -46,7 +43,6 @@ class Experiment(object):
         self.program_name = os.path.basename(self.command_pathname)
 
     def to_json(self):
-
         result = {
             "command_pathname": self.command_pathname,
             # "nr_time_steps": self.nr_time_steps,
@@ -80,7 +76,6 @@ class Experiment(object):
     def result_pathname(
         self, result_prefix, cluster_name, scenario_name, basename, extension
     ):
-
         return os.path.join(
             self.workspace_pathname(result_prefix, cluster_name, scenario_name),
             "{}.{}".format(basename, extension),

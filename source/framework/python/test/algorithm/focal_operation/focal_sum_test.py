@@ -15,7 +15,6 @@ def tearDownModule():
 class FocalSumTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
-
         array_shape = (60, 40)
         fill_value = 5
         kernel = np.full((3, 3), 1, dtype=np.uint8)
