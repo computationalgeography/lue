@@ -1092,9 +1092,6 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
 
-    ValueElement const x1{lue::policy::no_data_value<ValueElement>};
-    ZoneElement const x2{lue::policy::no_data_value<ZoneElement>};
-
     Shape const array_shape{500, 500};
     Shape const partition_shape{array_shape};
     lue::Count const nr_zones{10};

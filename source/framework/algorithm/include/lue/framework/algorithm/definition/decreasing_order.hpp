@@ -291,8 +291,9 @@ namespace lue {
 
                         {
                             Index idx{0};
+                            Index const nr_local_maxima{static_cast<Index>(std::size(local_maxima))};
 
-                            for (; idx < local_maxima.size() && current_length < max_length;
+                            for (; idx < nr_local_maxima && current_length < max_length;
                                  ++idx, ++current_length)
                             {
                                 auto [local_value, local_idx] = local_maxima[idx];
@@ -427,7 +428,6 @@ namespace lue {
                                 .then(
                                     [route_fragment_ends_idxs = std::move(_route_fragment_ends_idxs),
                                      route_fragments = std::move(_route_fragments),
-                                     route_fragment_ends = std::move(_route_fragment_ends),
                                      route_partition = std::move(_route_partition),
                                      route_partition_p =
                                          std::move(_route_partition_p)](auto&& route_fragment_ends_f) mutable
@@ -436,12 +436,14 @@ namespace lue {
 
                                         for (auto const& [route_id, idxs] : route_fragment_ends_idxs)
                                         {
-                                            for (auto const [fragment_idx, fragment_end_idx] : idxs)
+                                            for (auto const& [fragment_idx, fragment_end_idx] : idxs)
                                             {
                                                 lue_hpx_assert(
-                                                    fragment_idx < std::size(route_fragments[route_id]));
+                                                    fragment_idx <
+                                                    static_cast<Index>(std::size(route_fragments[route_id])));
                                                 lue_hpx_assert(
-                                                    fragment_end_idx < std::size(route_fragment_ends));
+                                                    fragment_end_idx <
+                                                    static_cast<Index>(std::size(route_fragment_ends)));
 
                                                 route_fragments[route_id][fragment_idx].end(
                                                     route_fragment_ends[fragment_end_idx].get());
@@ -825,9 +827,13 @@ namespace lue {
                                     RouteStarts starts{};
                                     auto starts_f{starts_ff.get()};
 
-                                    for (Index idx = 0; idx < zones.size(); ++idx)
                                     {
-                                        starts[zones[idx]] = starts_f[idx].get();
+                                        Index const nr_zones{static_cast<Index>(std::size(zones))};
+
+                                        for (Index idx = 0; idx < nr_zones; ++idx)
+                                        {
+                                            starts[zones[idx]] = starts_f[idx].get();
+                                        }
                                     }
 
                                     return hpx::make_tuple(starts, components);
