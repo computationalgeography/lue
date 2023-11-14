@@ -103,6 +103,13 @@ namespace lue::server {
 
 
     template<Rank rank>
+    void SerialRoutePartition<rank>::set_route_fragments(RouteFragments&& route_fragments)
+    {
+        _route_fragments = std::move(route_fragments);
+    }
+
+
+    template<Rank rank>
     void SerialRoutePartition<rank>::assert_invariants() const
     {
         // Verify all cells idxs in the fragments are within the partition

@@ -46,6 +46,13 @@ add_library(lue_framework_partitioned_route SHARED
 
 add_library(lue::framework_partitioned_route ALIAS lue_framework_partitioned_route)
 
+set_target_properties(lue_framework_partitioned_route
+    PROPERTIES
+        EXPORT_NAME framework_partitioned_route
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+)
+
 generate_export_header(lue_framework_partitioned_route
     EXPORT_FILE_NAME include/lue/framework/partitioned_route/export.hpp
     EXPORT_MACRO_NAME LUE_FPR_EXPORT)
@@ -61,6 +68,18 @@ target_link_libraries(lue_framework_partitioned_route
         HPX::component
     PUBLIC
         lue::framework_core)
+
+target_sources(lue_framework_partitioned_route
+    PUBLIC
+        FILE_SET
+            HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
+)
 
 lue_install_development_libraries(
     TARGETS lue_framework_partitioned_route

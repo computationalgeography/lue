@@ -64,6 +64,8 @@ namespace lue::server {
 
             std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
 
+            void set_route_fragments(RouteFragments&& route_fragments);
+
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, offset, OffsetAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, shape, ShapeAction)
