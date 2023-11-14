@@ -42,7 +42,6 @@ def runtime_scope(user_main):
     """
 
     def decorated_function(*args, **kwargs):
-
         lfr.start_hpx_runtime(default_hpx_runtime_configuration)
 
         if lfr.on_root_locality():

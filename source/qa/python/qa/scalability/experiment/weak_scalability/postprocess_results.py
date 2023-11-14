@@ -55,7 +55,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
         axis.grid()
 
     def plot_duration(axis):
-
         if count == 1:
             duration = lue_measurement.duration.value[:][sort_idxs]
             y_label = "duration ({})".format(time_point_units)
@@ -102,7 +101,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
         annotate_plot(axis, y_label)
 
     def plot_relative_efficiency(axis):
-
         if count == 1:
             relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(

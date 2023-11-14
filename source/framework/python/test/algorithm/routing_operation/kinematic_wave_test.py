@@ -15,7 +15,6 @@ def tearDownModule():
 class KinematicWaveTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
-
         array_shape = (60, 40)
         direction = 3
         alpha = 1.5

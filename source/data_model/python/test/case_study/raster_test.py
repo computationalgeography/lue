@@ -6,7 +6,6 @@ import lue_test
 
 class RasterTest(lue_test.TestCase):
     def test_case_study(self):
-
         dataset = ldm.create_dataset("areas.lue")
         areas = dataset.add_phenomenon("areas")
 

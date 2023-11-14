@@ -61,7 +61,6 @@ def ranges_of_partition_shape_multipliers(
 
 
 def shape_ranges(min_shape, max_shape, step):
-
     assert len(min_shape) == len(max_shape)
     assert step > 0
     rank = len(min_shape)
@@ -72,7 +71,6 @@ def shape_ranges(min_shape, max_shape, step):
 
 
 def partition_shapes(min_shape, max_shape, step):
-
     # TODO Rename this function. Related to shapes, not partition shapes
 
     shape_ranges_ = shape_ranges(min_shape, max_shape, step)
@@ -90,11 +88,9 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
     """
 
     def nr_elements(shape):
-
         return reduce(lambda e1, e2: e1 * e2, shape)
 
     def shape(nr_elements, normalized_shape):
-
         rank = len(normalized_shape)
 
         nr_elements_per_dimension = nr_elements ** (1.0 / rank)
@@ -113,7 +109,6 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
     assert multiplier > 1, multiplier
 
     if method == "linear":
-
         # Increase the number of cells linearly, by
         # i * (multiplier - 1) * sizes[0]
         new_size = lambda i: sizes[0] + i * (multiplier - 1) * sizes[0]
@@ -124,7 +119,6 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
             i += 1
 
     elif method == "exponential":
-
         # Increase the number of cells exponentially, by multiplier *
         # previous number of elements
         while multiplier * sizes[-1] <= max_nr_elements:
@@ -142,11 +136,9 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
 
 class Range(object):
     def __init__(self, data):
-
         self.from_json(data)
 
     def from_json(self, data):
-
         self.max_nr_elements = data["max_nr_elements"]
         self.multiplier = data["multiplier"]
         self.method = data["method"]
@@ -157,7 +149,6 @@ class Range(object):
             assert self.multiplier > 1
 
     def to_json(self):
-
         return {
             "max_nr_elements": self.max_nr_elements,
             "multiplier": self.multiplier,
@@ -167,16 +158,13 @@ class Range(object):
 
 class Shape(object):
     def __init__(self, data):
-
         self.from_json(data)
 
     def from_json(self, data):
-
         self._shape = tuple(data["shape"])
         self._range = Range(data["range"]) if "range" in data else None
 
     def to_json(self):
-
         result = {"shape": self._shape}
 
         if self._range:
@@ -185,12 +173,10 @@ class Shape(object):
         return result
 
     def is_fixed(self):
-
         return self._range is None
 
     @property
     def shapes(self):
-
         if self.is_fixed():
             result = [self._shape]
         else:

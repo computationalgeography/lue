@@ -18,7 +18,6 @@ def tearDownModule():
 class LocalOperationTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_sqrt(self):
-
         partitions = (100,)
         values = np.random.random(1000000)
         # partitioned_array = lfr.create_array(values, partitions)

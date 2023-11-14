@@ -15,7 +15,6 @@ def tearDownModule():
 class D8FlowDirectionTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
-
         array_shape = (60, 40)
         direction = 6
 
@@ -25,7 +24,6 @@ class D8FlowDirectionTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_directions(self):
-
         array_shape = (60, 40)
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:

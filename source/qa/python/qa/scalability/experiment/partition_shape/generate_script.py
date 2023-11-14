@@ -7,7 +7,6 @@ from .configuration import Configuration
 
 
 def nr_workers(worker):
-
     if worker.type == "thread":
         result = worker.nr_threads
     elif worker.type == "numa_node":
@@ -21,7 +20,6 @@ def nr_workers(worker):
 def generate_script_slurm(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     # We are not scaling workers, but testing partition sizes
     assert benchmark.worker.nr_cluster_nodes_range == 0
     assert benchmark.worker.nr_numa_nodes_range == 0
@@ -37,7 +35,6 @@ def generate_script_slurm(
 
     for array_shape in experiment.array.shapes:
         for partition_shape in experiment.partition.shapes:
-
             result_pathname = experiment.benchmark_result_pathname(
                 result_prefix,
                 cluster.name,
@@ -129,7 +126,6 @@ def generate_script_slurm(
 def generate_script_shell(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     assert benchmark.worker.type == "thread"
 
     # Iterate over all combinations of array shapes and partition shapes
@@ -141,7 +137,6 @@ def generate_script_shell(
 
     for array_shape in experiment.array.shapes:
         for partition_shape in experiment.partition.shapes:
-
             result_pathname = experiment.benchmark_result_pathname(
                 result_prefix,
                 cluster.name,

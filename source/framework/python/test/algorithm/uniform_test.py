@@ -15,7 +15,6 @@ def tearDownModule():
 class UniformTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overload1(self):
-
         array_shape = (60, 40)
         min_value = 33
         max_value = 55
@@ -44,7 +43,6 @@ class UniformTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_overload2(self):
-
         array_shape = (60, 40)
         min_value = 33
         max_value = 55

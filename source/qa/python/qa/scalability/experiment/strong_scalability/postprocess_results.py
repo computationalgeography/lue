@@ -56,14 +56,12 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
     lue_scaling = lue_dataset.benchmark.scaling
 
     def annotate_plot(axis, y_label):
-
         axis.set_xlabel("workers ({})".format(worker_type))
         axis.set_xticks(nr_workers)
         axis.set_ylabel(y_label)
         axis.grid()
 
     def plot_duration(axis):
-
         if count == 1:
             duration = lue_measurement.duration.value[:][sort_idxs]
             y_label = "duration ({})".format(time_point_units)
@@ -112,7 +110,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
         annotate_plot(axis, y_label)
 
     def plot_relative_speed_up(axis):
-
         if count == 1:
             relative_speed_up = lue_scaling.relative_speed_up.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(
@@ -159,7 +156,6 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
         annotate_plot(axis, y_label)
 
     def plot_relative_efficiency(axis):
-
         if count == 1:
             relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
             plot_actual = lambda data: axis.plot(

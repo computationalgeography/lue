@@ -332,7 +332,6 @@ def write_conan_profile(compiler_filename, profile_pathname):
         # we just add the newer version to the list of supported versions. Otherwise Conan wil
         # not install packages.
         if compiler_version not in compiler_versions:
-
             String = type(compiler_versions[0])
 
             compiler_versions.append(String(compiler_version))

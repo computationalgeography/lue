@@ -2,7 +2,6 @@ import numpy as np
 
 
 def is_monotonically_increasing(array):
-
     # np.diff returns the difference between consecutive elements
 
     # Cast to float64 because when the type is unsigned int, this

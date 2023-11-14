@@ -91,7 +91,7 @@ namespace lue::qa {
         // Create new json file and dump the information about this experiment
         std::ofstream stream{pathname};
 
-        if(!stream)
+        if (!stream)
         {
             throw std::runtime_error("File " + pathname + " could not be opened for saving results to");
         }

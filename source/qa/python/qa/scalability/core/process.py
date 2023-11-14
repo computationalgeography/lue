@@ -5,7 +5,6 @@ import tempfile
 
 
 def execute_command(command):
-
     result = subprocess.call(shlex.split(command))
 
     if result != 0:
@@ -13,12 +12,10 @@ def execute_command(command):
 
 
 def lue_translate():
-
     return os.path.expandvars("$LUE_OBJECTS/bin/lue_translate")
 
 
 def import_lue_json(lue_json_pathname, lue_dataset_pathname):
-
     command = "{} import --add {} {}".format(
         lue_translate(), lue_dataset_pathname, lue_json_pathname
     )

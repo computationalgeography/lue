@@ -8,7 +8,6 @@ import lue_test
 
 class ArrayTest(lue_test.TestCase):
     def setUp(self):
-
         dataset_name = "my_dataset.lue"
         lue_test.remove_file_if_existant(dataset_name)
         self.dataset = ldm.create_dataset(dataset_name)
@@ -49,14 +48,11 @@ class ArrayTest(lue_test.TestCase):
         ldm.assert_is_valid(self.dataset)
 
     def tearDown(self):
-
         del self.dataset
 
     def test_no_index(self):
-
         # Shape of values is: (nr_objects, nr_rows, nr_cols)
         def compare_values():
-
             # Verify current value
             self.assertArraysEqual(
                 self.lue_numeric_values[:], self.numpy_numeric_values
@@ -93,7 +89,6 @@ class ArrayTest(lue_test.TestCase):
         # compare_values()
 
     def test_one_slice_index(self):
-
         # Value of first item
         # [[0 1]
         #  [2 3]
@@ -152,7 +147,6 @@ class ArrayTest(lue_test.TestCase):
         )
 
     def test_one_integer_index(self):
-
         # Value of an item
         for i in range(self.nr_objects):
             self.assertArraysEqual(
@@ -179,7 +173,6 @@ class ArrayTest(lue_test.TestCase):
             )
 
     def test_two_slice_indices(self):
-
         nr_objects = self.nr_objects
         nr_rows = self.nr_rows
 
@@ -222,7 +215,6 @@ class ArrayTest(lue_test.TestCase):
         )
 
     def test_two_integer_indices(self):
-
         nr_objects = self.nr_objects
         nr_rows = self.nr_rows
 
@@ -268,7 +260,6 @@ class ArrayTest(lue_test.TestCase):
         )
 
     def test_three_slice_indices(self):
-
         nr_objects = self.nr_objects
         nr_rows = self.nr_rows
         nr_cols = self.nr_cols
@@ -338,7 +329,6 @@ class ArrayTest(lue_test.TestCase):
         )
 
     def test_three_integer_indices(self):
-
         nr_objects = self.nr_objects
         nr_rows = self.nr_rows
         nr_cols = self.nr_cols
@@ -390,7 +380,6 @@ class ArrayTest(lue_test.TestCase):
         # )
 
     def test_too_many_indices(self):
-
         with self.assertRaises(IndexError) as numpy_context:
             self.numpy_numeric_values[0, 0, 0, 0]
 
@@ -405,7 +394,6 @@ class ArrayTest(lue_test.TestCase):
         # TODO Test assign
 
     def test_unsupported_index_type(self):
-
         # String
         with self.assertRaises(IndexError) as lue_context:
             self.lue_numeric_values["meh"]
@@ -428,7 +416,6 @@ class ArrayTest(lue_test.TestCase):
         # TODO Test assign
 
     def test_iterate(self):
-
         with self.assertRaises(ValueError) as lue_context:
             for _ in self.phenomenon.object_id:
                 pass

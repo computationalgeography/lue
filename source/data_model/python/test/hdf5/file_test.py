@@ -7,7 +7,6 @@ import lue_test
 
 class FileTest(lue_test.TestCase):
     def test_create_remove(self):
-
         file_pathname = "file_create.h5"
 
         lue_test.remove_file_if_existant(file_pathname)
@@ -31,7 +30,6 @@ class FileTest(lue_test.TestCase):
         self.assertFalse(lh5.file_exists(file_pathname))
 
     def test_pathname(self):
-
         # Relative path
         file_pathname = "file_pathname.h5"
         lue_test.remove_file_if_existant(file_pathname)

@@ -15,7 +15,6 @@ def tearDownModule():
 class ToNumPyTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_array(self):
-
         array_shape = (60, 40)
         dtype = np.int32
         fill_value = 5
@@ -29,7 +28,6 @@ class ToNumPyTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_mark_no_data(self):
-
         array_shape = (60, 40)
         dtype = np.int32
 
@@ -42,7 +40,6 @@ class ToNumPyTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_small_array(self):
-
         array_shape = (1, 1)
         dtype = np.int32
         fill_value = 5
@@ -67,7 +64,6 @@ class ToNumPyTest(lue_test.TestCase):
             np.uint32,
             np.uint64,
         ]:
-
             input_dtype = np.dtype(input_type)
             lue_array = lfr.create_array(array_shape, input_dtype, input_type(5))
 
@@ -84,7 +80,6 @@ class ToNumPyTest(lue_test.TestCase):
             np.int32,
             np.int64,
         ]:
-
             input_dtype = np.dtype(input_type)
             lue_array = lfr.create_array(array_shape, input_dtype, input_type(5))
 
@@ -103,7 +98,6 @@ class ToNumPyTest(lue_test.TestCase):
             np.float32,
             np.float64,
         ]:
-
             input_dtype = np.dtype(input_type)
             lue_array = lfr.create_array(array_shape, input_dtype, input_type(5))
 
@@ -121,7 +115,6 @@ class ToNumPyTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_result_of_multiple_operations(self):
-
         array_shape = (60, 40)
         dtype = np.dtype(np.int32)
         fill_value = 5
@@ -135,7 +128,6 @@ class ToNumPyTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_numpy_roundtrip(self):
-
         array_shape = (60, 40)
         nr_cells = 60 * 40
         partition_shape = (10, 10)
@@ -157,7 +149,6 @@ class ToNumPyTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_numpy_roundtrip_result_of_multiple_operations(self):
-
         array_shape = (60, 40)
         nr_cells = 60 * 40
         partition_shape = (10, 10)

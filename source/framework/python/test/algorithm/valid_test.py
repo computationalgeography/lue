@@ -15,7 +15,6 @@ def tearDownModule():
 class ValidTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_all_valid(self):
-
         array_shape = (60, 40)
         dtype = np.int32
         fill_value = 5  # Valid value
@@ -27,7 +26,6 @@ class ValidTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_all_invalid(self):
-
         array_shape = (60, 40)
         dtype = np.dtype(np.int32)
         fill_value = 5  # Valid value

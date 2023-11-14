@@ -16,7 +16,6 @@ from .experiment import Experiment
 def benchmark_meta_to_lue_json(
     benchmark_pathname, lue_dataset_pathname, cluster, benchmark, experiment
 ):
-
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
     environment_json = benchmark_json["environment"]
@@ -95,7 +94,6 @@ def benchmark_meta_to_lue_json(
 
 
 def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
-
     # Read benchmark JSON
     benchmark_json = json.loads(open(benchmark_pathname).read())
 
@@ -215,7 +213,6 @@ def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
 
 
 def determine_epoch(result_prefix, cluster, benchmark, experiment):
-
     array_shapes = experiment.array.shapes
     partition_shapes = experiment.partition.shapes
 
@@ -223,7 +220,6 @@ def determine_epoch(result_prefix, cluster, benchmark, experiment):
 
     for array_shape in array_shapes:
         for partition_shape in partition_shapes:
-
             benchmark_pathname = experiment.benchmark_result_pathname(
                 result_prefix,
                 cluster.name,
@@ -274,7 +270,6 @@ def import_raw_results(
 
     for array_shape in array_shapes:
         for partition_shape in partition_shapes:
-
             result_pathname = experiment.benchmark_result_pathname(
                 result_prefix,
                 cluster.name,
@@ -305,7 +300,6 @@ def import_raw_results(
 
 
 def write_scalability_results(lue_dataset):
-
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     # Write phenomenon to dataset containing the shapes of the arrays
@@ -418,7 +412,6 @@ def write_scalability_results(lue_dataset):
 
 
 def import_results(configuration_data):
-
     configuration = Configuration(configuration_data)
     cluster = configuration.cluster
     benchmark = configuration.benchmark
@@ -444,7 +437,6 @@ def import_results(configuration_data):
     if not raw_results_already_imported or not job.scalability_lue_dataset_exists(
         result_prefix, cluster, benchmark, experiment
     ):
-
         # Copy dataset and write scalability results
         job.copy_raw_to_scalability_lue_dataset(
             result_prefix, cluster, benchmark, experiment

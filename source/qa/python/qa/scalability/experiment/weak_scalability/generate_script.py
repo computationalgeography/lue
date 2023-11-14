@@ -11,12 +11,10 @@ from .configuration import Configuration
 # nr_workers * 1. In higher dimensional cases, the work scale factor
 # lies between 1 and nr_workers.
 def work_scale_multiplier(rank, nr_workers):
-
     return nr_workers ** (1.0 / rank)
 
 
 def scale_array_shape(array_shape_per_worker, nr_workers):
-
     rank = len(array_shape_per_worker)
     work_size_per_worker = reduce((lambda x, y: x * y), array_shape_per_worker)
     multiplier = work_scale_multiplier(rank, nr_workers)
@@ -48,7 +46,6 @@ def generate_script_slurm_threads(
     partition_shape = experiment.partition.shape
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_threads = nr_workers
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
@@ -150,7 +147,6 @@ def generate_script_slurm_numa_nodes(
     nr_threads = benchmark.worker.nr_threads
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
@@ -262,7 +258,6 @@ def generate_script_slurm_cluster_nodes(
     nr_threads = benchmark.worker.nr_threads
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
 
@@ -351,7 +346,6 @@ def generate_script_slurm_cluster_nodes(
 def generate_script_slurm(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
 
     if benchmark.worker.nr_cluster_nodes_range > 0:
@@ -371,7 +365,6 @@ def generate_script_slurm(
 def generate_script_shell(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-
     assert benchmark.worker.type == "thread"
     assert benchmark.worker.nr_cluster_nodes_range == 0
     assert benchmark.worker.nr_numa_nodes_range == 0
@@ -385,7 +378,6 @@ def generate_script_shell(
     partition_shape = experiment.partition.shape
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
-
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_threads = nr_workers
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)

@@ -16,7 +16,6 @@ def tearDownModule():
 class ReadArrayTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_read_constant_array(self):
-
         # Create a dataset containing a constant raster
         dataset_pathname = "read_constant_array.lue"
         phenomenon_name = "earth"
@@ -50,7 +49,6 @@ class ReadArrayTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_read_variable_array(self):
-
         # Create an in-memory dataset containing a variable raster
         dataset_pathname = "read_variable_array.lue"
         phenomenon_name = "earth"
@@ -104,7 +102,6 @@ class ReadArrayTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_read_array_subset(self):
-
         # Create a dataset containing a constant raster
         dataset_pathname = "read_subset.lue"
         phenomenon_name = "earth"

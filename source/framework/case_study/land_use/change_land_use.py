@@ -70,7 +70,6 @@ gdal.UseExceptions()
 
 
 def count_if(array):
-
     counts = dict(zip(*np.unique(array, return_counts=True)))
 
     return counts[True] if True in counts else 0
@@ -93,14 +92,12 @@ def map_range(array):
 
 
 def square_kernel(radius, dtype=np.float64):
-
     size = 2 * radius + 1
 
     return np.ones(shape=(size, size), dtype=dtype)
 
 
 def convolve(array, kernel):
-
     return signal.fftconvolve(array, kernel, mode="same")
 
 
@@ -115,7 +112,6 @@ def convolve(array, kernel):
 
 
 def window_total(array, kernel_radius, skip_center_cell=False):
-
     kernel = square_kernel(kernel_radius, np.float64)
 
     if skip_center_cell:
@@ -126,7 +122,6 @@ def window_total(array, kernel_radius, skip_center_cell=False):
 
 def slope(array, cell_width, cell_height):
     def function(data, cell_width, cell_height):
-
         rise = (
             (data[6] + (2 * data[7]) + data[8]) - (data[0] + (2 * data[1]) + data[2])
         ) / (8 * cell_height)
@@ -147,7 +142,6 @@ def slope(array, cell_width, cell_height):
 
 
 def write_grid(array, name, time_step):
-
     figure, ax = plt.subplots(figsize=(5, 5))
 
     if np.issubdtype(array.dtype, np.bool_):
@@ -189,7 +183,6 @@ pcr_value_scale_by_dtype = {
 
 
 def write_raster(array, name, time_step=None):
-
     name = "{}_{}".format(name, time_step) if time_step is not None else name
 
     nr_rows, nr_cols = array.shape
@@ -226,18 +219,15 @@ def write_raster(array, name, time_step=None):
 
 class ChangeLandUse(object):
     def __init__(self, environment):
-
         self.environment = environment
 
     def __call__(self):
-
         sys.stdout.write("[")
         sys.stdout.flush()
 
         self.initialize()
 
         for time_step in range(self.environment.nr_time_steps):
-
             self.simulate(time_step)
 
             sys.stdout.write(".")
@@ -247,7 +237,6 @@ class ChangeLandUse(object):
         sys.stdout.flush()
 
     def initialize(self):
-
         data = self.environment
 
         self.land_use = np.copy(data.initial_land_use)
@@ -261,14 +250,12 @@ class ChangeLandUse(object):
         write_raster(data.slope, "slope")
 
     def simulate(self, time_step):
-
         data = self.environment
 
         original_land_use = np.copy(self.land_use)
         cells_changed_this_time_step = np.full_like(self.land_use, False, dtype=np.bool)
 
         for land_use_type in data.active_land_use_types:
-
             suitability = self.suitability(time_step, land_use_type, self.land_use)
 
             write_raster(
@@ -284,7 +271,6 @@ class ChangeLandUse(object):
             # Cells are converted to or removed from this land-use
             # until the total yield equals meets the total demand
             if total_demand > total_yield:
-
                 # Consider suitabilities of those cells that have
                 # not been converted during the current time step.
                 # Mark all other suitabilities with 0.
@@ -294,7 +280,6 @@ class ChangeLandUse(object):
 
                 # Expand area occupied with current land-use type.
                 while total_demand > total_yield:
-
                     # Consider suitabilities of those cells that
                     # do not already contain the current land-use
                     # type. Scale suitabilities to [0, 1].
@@ -312,7 +297,6 @@ class ChangeLandUse(object):
                     )
 
             elif total_demand < total_yield:
-
                 # Consider suitabilities of those cells that have
                 # not been converted during the current time step.
                 # Mark all other suitabilities with 1.
@@ -322,7 +306,6 @@ class ChangeLandUse(object):
 
                 # Contract area occupied with current land-use type
                 while total_demand < total_yield:
-
                     # Consider suitabilities of those cells that
                     # do already contain the current land-use type.
                     # Scale suitabilities to [0, 1].
@@ -354,12 +337,10 @@ class ChangeLandUse(object):
         write_raster(self.land_use, "land_use", time_step + 1)
 
     def suitability(self, time_step, land_use_type, land_use):
-
         data = self.environment
         suitability = np.zeros_like(land_use, dtype=np.float64)
 
         for suitability_factor in data.suitability_factors[land_use_type]:
-
             suitability += suitability_factor.weight * suitability_factor(
                 time_step, land_use_type, land_use
             )
@@ -373,7 +354,6 @@ class ChangeLandUse(object):
         return suitability
 
     def total_demand(self, time_step, land_use_type):
-
         data = self.environment
 
         # Number of inhabitants at current time-step
@@ -392,7 +372,6 @@ class ChangeLandUse(object):
         return nr_inhabitants * demand_per_capita * self_sufficiency_ratio
 
     def potential_yield(self, time_step, land_use_type):
-
         data = self.environment
 
         # Maximum possible product yield of products from current
@@ -411,14 +390,12 @@ class ChangeLandUse(object):
         return max_potential_product_yield * actual_yield_fraction
 
     def current_yield(self, land_use_type, potential_yield, land_use):
-
         # Current yield of products from current land-use type at current
         # time-step is potential yield in cells that contain that
         # land-use type (kg / km² / year)
         return np.where(land_use == land_use_type, potential_yield, 0)
 
     def total_yield(self, land_use_type, potential_yield, land_use):
-
         data = self.environment
 
         current_yield = self.current_yield(land_use_type, potential_yield, land_use)
@@ -430,7 +407,6 @@ class ChangeLandUse(object):
         )
 
     def expand_land_use_type(self, land_use, land_use_type, suitability):
-
         # When the land-use type expands, it allocates
         # new cells of this type at locations with the
         # highest suitability.
@@ -456,7 +432,6 @@ class ChangeLandUse(object):
         return land_use
 
     def contract_land_use_type(self, land_use, land_use_type, suitability):
-
         # When the land-use type contracts, it removes cells
         # of this type at locations with the lowest suitability.
 
@@ -484,25 +459,20 @@ class ChangeLandUse(object):
 
 class SuitabilityFactor(object):
     def __init__(self, weight):
-
         self.weight = weight
 
     def __call__(self, time_step, land_use_type, land_use):
-
         return self.calculate(time_step, land_use_type, land_use)
 
     def calculate(self, time_step, land_use_type, land_use):
-
         raise NotImplementedError("SuitabilityFactor.calculate")
 
 
 class Autocorrelation(SuitabilityFactor):
     def __init__(self, weight):
-
         SuitabilityFactor.__init__(self, weight)
 
     def calculate(self, time_step, land_use_type, land_use):
-
         # Count the number of occurrences of value in the neighborhood
         # of each cell. The more occurrences, the better. Scale
         # occurrences between 0(no occurrences) and 1(8 occurrences).
@@ -519,22 +489,18 @@ class Autocorrelation(SuitabilityFactor):
 
 class Randomness(SuitabilityFactor):
     def __init__(self, weight):
-
         SuitabilityFactor.__init__(self, weight)
 
     def calculate(self, time_step, land_use_type, land_use):
-
         return map_range(np.random.uniform(size=land_use.shape))
 
 
 class SuitableArea(SuitabilityFactor):
     def __init__(self, weight, selection):
-
         SuitabilityFactor.__init__(self, weight)
         self.selection = selection.astype(np.float64)
 
     def calculate(self, time_step, land_use_type, land_use):
-
         suitability = self.selection
 
         assert np.all(0 <= suitability)
@@ -599,7 +565,6 @@ class Environment(object):
 
         # Iterate over all active land-use types
         for land_use_type in self.active_land_use_types:
-
             # Demand -------------------------------------------------------------------
             self.demand_per_capita[land_use_type] = [
                 # FIXME vary this(?)

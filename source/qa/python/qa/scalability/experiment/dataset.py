@@ -9,7 +9,6 @@ from .cluster import Cluster
 
 
 def write_benchmark_settings(lue_dataset, cluster, benchmark, experiment):
-
     ldm.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     phenomenon = lue_dataset.add_phenomenon("benchmark")
@@ -37,7 +36,6 @@ def write_benchmark_settings(lue_dataset, cluster, benchmark, experiment):
 
 
 def write_script(lue_dataset, script):
-
     ldm.assert_is_valid(lue_dataset)
 
     script_property = lue_dataset.benchmark.meta_information.add_property(
@@ -49,7 +47,6 @@ def write_script(lue_dataset, script):
 
 
 def read_benchmark_settings(lue_dataset, Experiment):
-
     ldm.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     phenomenon = lue_dataset.benchmark
@@ -65,7 +62,6 @@ def read_benchmark_settings(lue_dataset, Experiment):
 
 
 def raw_results_already_imported(lue_dataset):
-
     ldm.assert_is_valid(lue_dataset, fail_on_warning=False)
 
     # Test for something that is being imported

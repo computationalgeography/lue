@@ -21,20 +21,17 @@ Options:
 
 
 def print_message(indent, message):
-
     tabsize = 2
 
     print("{}{}".format(indent * tabsize * " ", message))
 
 
 def print_messages(indent, messages):
-
     for message in messages:
         print_message(indent, message)
 
 
 def print_heading(indent, length):
-
     print_messages(
         indent,
         [
@@ -71,7 +68,6 @@ def print_heading(indent, length):
 
 
 def describe_file(file, indent):
-
     print_message(indent, "file")
     print_messages(
         indent + 1,
@@ -106,7 +102,6 @@ def describe_file(file, indent):
 
 
 def describe_property_set(property_set, indent):
-
     print_message(indent, "property_set: {}".format(property_set.id.name))
     indent += 1
 
@@ -120,7 +115,6 @@ def describe_property_set(property_set, indent):
 
 
 def describe_property_sets(property_sets, indent):
-
     print_message(indent, "property_sets")
     indent += 1
 
@@ -129,7 +123,6 @@ def describe_property_sets(property_sets, indent):
 
 
 def describe_phenomenon(phenomenon, indent):
-
     print_message(indent, "phenomenon: {}".format(phenomenon.id.name))
     indent += 1
 
@@ -139,7 +132,6 @@ def describe_phenomenon(phenomenon, indent):
 
 
 def describe_phenomena(phenomena, indent):
-
     print_message(indent, "phenomena")
     indent += 1
 
@@ -148,12 +140,10 @@ def describe_phenomena(phenomena, indent):
 
 
 def describe_universe(universe, indent):
-
     assert False  # TODO
 
 
 def describe_universes(universes, indent):
-
     print_message(indent, "unverses")
     indent += 1
 
@@ -162,7 +152,6 @@ def describe_universes(universes, indent):
 
 
 def describe_dataset(dataset, indent):
-
     print_message(
         indent,
         "dataset: {}".format(os.path.splitext(os.path.basename(dataset.pathname))[0]),
@@ -176,7 +165,6 @@ def describe_dataset(dataset, indent):
 
 
 def describe_datasets(pathnames, indent=0):
-
     print_message(indent, "datasets")
     indent += 1
 

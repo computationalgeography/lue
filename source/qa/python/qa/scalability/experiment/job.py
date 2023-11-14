@@ -49,7 +49,6 @@ def program_configuration(
     result_pathname=None,
     nr_workers=None,
 ):
-
     assert nr_workers is not None
 
     if result_pathname is None:
@@ -164,7 +163,6 @@ def program_configuration(
 
 
 def write_script(commands, script_pathname):
-
     with open(script_pathname, "w") as script:
         script.write(
             """\
@@ -192,7 +190,6 @@ def create_slurm_script(
     max_duration,
     job_steps,
 ):
-
     # HPX doc:
     # You can change the number of localities started per node
     # (for example to account for NUMA effects) by specifying the
@@ -264,7 +261,6 @@ def lue_scalability_dataset_basename():
 
 
 def lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment):
-
     return experiment.result_pathname(
         result_prefix,
         cluster.name,
@@ -275,7 +271,6 @@ def lue_raw_dataset_pathname(result_prefix, cluster, benchmark, experiment):
 
 
 def lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experiment):
-
     return experiment.result_pathname(
         result_prefix,
         cluster.name,
@@ -286,7 +281,6 @@ def lue_scalability_dataset_pathname(result_prefix, cluster, benchmark, experime
 
 
 def create_raw_lue_dataset(result_prefix, cluster, benchmark, experiment):
-
     dataset_pathname = lue_raw_dataset_pathname(
         result_prefix, cluster, benchmark, experiment
     )
@@ -305,7 +299,6 @@ def create_raw_lue_dataset(result_prefix, cluster, benchmark, experiment):
 
 
 def open_raw_lue_dataset(result_prefix, cluster, benchmark, experiment, open_mode):
-
     dataset_pathname = lue_raw_dataset_pathname(
         result_prefix, cluster, benchmark, experiment
     )
@@ -318,7 +311,6 @@ def open_raw_lue_dataset(result_prefix, cluster, benchmark, experiment, open_mod
 def open_scalability_lue_dataset(
     result_prefix, cluster, benchmark, experiment, open_mode
 ):
-
     dataset_pathname = lue_scalability_dataset_pathname(
         result_prefix, cluster, benchmark, experiment
     )
@@ -329,7 +321,6 @@ def open_scalability_lue_dataset(
 
 
 def scalability_lue_dataset_exists(result_prefix, cluster, benchmark, experiment):
-
     dataset_pathname = lue_scalability_dataset_pathname(
         result_prefix, cluster, benchmark, experiment
     )
@@ -337,7 +328,6 @@ def scalability_lue_dataset_exists(result_prefix, cluster, benchmark, experiment
 
 
 def copy_raw_to_scalability_lue_dataset(result_prefix, cluster, benchmark, experiment):
-
     raw_dataset_pathname = lue_raw_dataset_pathname(
         result_prefix, cluster, benchmark, experiment
     )

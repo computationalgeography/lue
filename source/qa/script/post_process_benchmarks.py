@@ -34,7 +34,6 @@ Options:
 def post_process_strong_scaling_benchmarks(
     name, time_point, system_name, environment, durations
 ):
-
     # TODO
     #     - Add units to y-axis duration plot
     #     - Add subtitle
@@ -164,13 +163,11 @@ def post_process_strong_scaling_benchmarks(
 def post_process_weak_scaling_benchmarks(
     name, time_point, system_name, environment, durations
 ):
-
     # TODO
     pass
 
 
 def post_process_benchmarks(lue_pathname):
-
     lue_dataset = lue.open_dataset(lue_pathname)
     lue_benchmark = lue_dataset.phenomena["benchmark"]
 

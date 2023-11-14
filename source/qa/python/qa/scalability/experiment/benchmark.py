@@ -5,11 +5,9 @@ from . import worker
 
 class HPX(object):
     def __init__(self, data):
-
         self.from_json(data)
 
     def from_json(self, data):
-
         self.performance_counters = (
             data["performance_counters"] if "performance_counters" in data else None
         )
@@ -90,7 +88,6 @@ class Benchmark(object):
                 ), self.worker.max_nr_threads
 
         elif self.worker.type == "numa_node":
-
             assert self.locality_per == "numa_node"
 
             self.nr_logical_cores_per_locality = (
@@ -118,7 +115,6 @@ class Benchmark(object):
             ), self.worker.max_nr_threads
 
         elif self.worker.type == "cluster_node":
-
             assert self.locality_per == "numa_node"
 
             self.nr_logical_cores_per_locality = (
@@ -151,7 +147,6 @@ class Benchmark(object):
         return "Benchmark(count={}, worker={})".format(self.count, self.worker)
 
     def from_json(self, data, cluster):
-
         self.scenario_name = data["scenario"] if "scenario" in data else "default"
         self.count = data["count"]
 
