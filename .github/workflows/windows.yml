@@ -138,7 +138,7 @@ jobs:
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
-              LUE_CONAN_PACKAGES="docopt.cpp fmt glfw imgui nlohmann_json vulkan-headers vulkan-loader" \
+              LUE_CONAN_PACKAGES="docopt.cpp glfw imgui nlohmann_json vulkan-headers vulkan-loader" \
                   conan install ${{ env.lue_source_directory }} \
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
