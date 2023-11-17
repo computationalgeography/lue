@@ -1119,76 +1119,72 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
 // }
 
 
-// BOOST_AUTO_TEST_CASE(random_input)
-// {
-//     lue::Rank const rank{2};
-//
-//     using ZoneElement = std::uint64_t;
-//     using ValueElement = float;
-//     using Shape = lue::Shape<lue::Count, rank>;
-//     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
-//     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
-//
-//     ValueElement const x1{lue::policy::no_data_value<ValueElement>};
-//     ZoneElement const x2{lue::policy::no_data_value<ZoneElement>};
-//
-//     std::random_device random_device{};
-//     std::default_random_engine random_number_engine(random_device());
-//
-//     Shape const array_shape = [&]()
-//     {
-//         lue::Count const min{100};
-//         lue::Count const max{500};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return Shape{
-//             distribution(random_number_engine),
-//             distribution(random_number_engine),
-//         };
-//     }();
-//     Shape const partition_shape = [&]()
-//     {
-//         lue::Count const min{90};
-//         lue::Count const max{100};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return Shape{
-//             distribution(random_number_engine),
-//             distribution(random_number_engine),
-//         };
-//     }();
-//     lue::Count const nr_zones = [&]()
-//     {
-//         lue::Count const min{1};
-//         lue::Count const max{10};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return distribution(random_number_engine);
-//     }();
-//
-//     lue::Count const max_route_length = [&]()
-//     {
-//         lue::Count const min{0};
-//         lue::Count const max{lue::nr_elements(array_shape)};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return distribution(random_number_engine);
-//     }();
-//
-//     using namespace lue::value_policies;
-//
-//     ValueArray value_array{lue::value_policies::uniform<ValueElement>(array_shape, partition_shape, 0,
-//     100)};
-//
-//     value_array = lue::value_policies::where(value_array > ValueElement{10.0}, value_array);
-//
-//     ZoneArray const zone_array{
-//         lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
-//
-//     Route const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array,
-//     max_route_length);
-//
-//     route_we_got.wait();
-//
-//     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
-// }
+BOOST_AUTO_TEST_CASE(random_input)
+{
+    lue::Rank const rank{2};
+
+    using ZoneElement = std::uint64_t;
+    using ValueElement = float;
+    using Shape = lue::Shape<lue::Count, rank>;
+    using ValueArray = lue::PartitionedArray<ValueElement, rank>;
+    using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
+
+    std::random_device random_device{};
+    std::default_random_engine random_number_engine(random_device());
+
+    Shape const array_shape = [&]()
+    {
+        lue::Count const min{100};
+        lue::Count const max{500};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    }();
+    Shape const partition_shape = [&]()
+    {
+        lue::Count const min{90};
+        lue::Count const max{100};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    }();
+    lue::Count const nr_zones = [&]()
+    {
+        lue::Count const min{1};
+        lue::Count const max{10};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return distribution(random_number_engine);
+    }();
+
+    lue::Count const max_route_length = [&]()
+    {
+        lue::Count const min{0};
+        lue::Count const max{lue::nr_elements(array_shape)};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return distribution(random_number_engine);
+    }();
+
+    using namespace lue::value_policies;
+
+    ValueArray value_array{lue::value_policies::uniform<ValueElement>(array_shape, partition_shape, 0, 100)};
+
+    value_array = lue::value_policies::where(value_array > ValueElement{10.0}, value_array);
+
+    ZoneArray const zone_array{
+        lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
+
+    Route const route_we_got =
+        lue::value_policies::decreasing_order(zone_array, value_array, max_route_length);
+
+    route_we_got.wait();
+
+    BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
+}
