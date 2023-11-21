@@ -29,6 +29,8 @@ namespace lue {
 
             using RouteFragments = typename Server::RouteFragments;
 
+            using RouteFragmentLocation = typename RouteFragment::Location;
+
             using Offset = typename Server::Offset;
 
             using Shape = typename Server::Shape;
@@ -66,6 +68,8 @@ namespace lue {
             hpx::future<std::set<RouteID>> route_ids() const;
 
             hpx::future<std::vector<RouteFragment>> route_fragments(RouteID const route_id) const;
+
+            hpx::future<std::vector<RouteFragmentLocation>> remote_route_fragment_locations() const;
     };
 
 

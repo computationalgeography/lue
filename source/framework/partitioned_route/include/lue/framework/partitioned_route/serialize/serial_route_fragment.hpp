@@ -37,8 +37,18 @@ namespace hpx::serialization {
         lue::SerialRouteFragment<rank> const& fragment,
         [[maybe_unused]] unsigned int const version)
     {
-        // Write buffer to archive
-        archive& fragment.cell_idxs() & fragment.next_fragment_location();
+        // Write fragment to archive
+        using Fragment = lue::SerialRouteFragment<rank>;
+        using Location = typename Fragment::Location;
+
+        std::optional<Location> next_fragment_location{};
+
+        if (!fragment.is_last())
+        {
+            next_fragment_location = fragment.next_fragment_location();
+        }
+
+        archive& fragment.cell_idxs() & next_fragment_location;
     }
 
 }  // namespace hpx::serialization

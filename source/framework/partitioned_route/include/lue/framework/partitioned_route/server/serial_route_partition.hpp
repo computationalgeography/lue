@@ -32,6 +32,8 @@ namespace lue::server {
 
             using RouteFragments = std::unordered_map<RouteID, std::vector<RouteFragment>>;
 
+            using RouteFragmentLocation = typename RouteFragment::Location;
+
             using Offset = lue::Offset<Index, rank>;
 
             using Shape = lue::Shape<Index, rank>;
@@ -64,6 +66,8 @@ namespace lue::server {
 
             std::vector<RouteFragment> route_fragments(RouteID const route_id) const;
 
+            std::vector<RouteFragmentLocation> remote_route_fragment_locations() const;
+
             void set_route_fragments(RouteFragments&& route_fragments);
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, offset, OffsetAction)
@@ -77,6 +81,9 @@ namespace lue::server {
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, route_ids, RouteIDsAction)
 
             HPX_DEFINE_COMPONENT_ACTION(SerialRoutePartition, route_fragments, RouteFragmentsAction)
+
+            HPX_DEFINE_COMPONENT_ACTION(
+                SerialRoutePartition, remote_route_fragment_locations, RemoteRouteFragmentLocationsAction)
 
 
         private:
@@ -119,7 +126,11 @@ namespace lue::server {
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
         SerialRoutePartition_##rank##_Component::RouteFragmentsAction,                                       \
-        SerialRoutePartition_##rank##_RouteFragmentsAction)
+        SerialRoutePartition_##rank##_RouteFragmentsAction)                                                  \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        SerialRoutePartition_##rank##_Component::RemoteRouteFragmentLocationsAction,                         \
+        SerialRoutePartition_##rank##_RemoteRouteFragmentLocationsAction)
 
 
 LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(1)

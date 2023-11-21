@@ -133,9 +133,11 @@ namespace lue {
             }
 
 
-            std::optional<Location> const& next_fragment_location() const
+            Location const& next_fragment_location() const
             {
-                return _next_fragment_location;
+                lue_hpx_assert(!is_last());
+
+                return _next_fragment_location.value();
             }
 
 

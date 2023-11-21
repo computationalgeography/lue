@@ -6,7 +6,8 @@
     LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
     LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
 {% else %}
-    // TODO
+    LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS({{ Policies }}, {{ InputElement }}, 2)
+    LUE_REGISTER_DECREASING_ORDER_ACTIONS({{ Policies }}, {{ InputElement }}, 2)
 {% endif %}
 
 

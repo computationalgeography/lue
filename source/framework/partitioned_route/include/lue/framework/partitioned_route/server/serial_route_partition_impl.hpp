@@ -103,6 +103,27 @@ namespace lue::server {
 
 
     template<Rank rank>
+    std::vector<typename SerialRoutePartition<rank>::RouteFragmentLocation>
+    SerialRoutePartition<rank>::remote_route_fragment_locations() const
+    {
+        std::vector<RouteFragmentLocation> locations{};
+
+        for (auto const& [route_id, fragments] : _route_fragments)
+        {
+            for (auto const& fragment : fragments)
+            {
+                if (!fragment.is_last())
+                {
+                    locations.push_back(fragment.next_fragment_location());
+                }
+            }
+        }
+
+        return locations;
+    }
+
+
+    template<Rank rank>
     void SerialRoutePartition<rank>::set_route_fragments(RouteFragments&& route_fragments)
     {
         _route_fragments = std::move(route_fragments);

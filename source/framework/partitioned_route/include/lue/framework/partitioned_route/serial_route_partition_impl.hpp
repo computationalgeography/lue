@@ -135,4 +135,17 @@ namespace lue {
         return hpx::async(action, this->get_id(), route_id);
     }
 
+
+    template<Rank rank>
+    hpx::future<std::vector<typename SerialRoutePartition<rank>::RouteFragmentLocation>>
+    SerialRoutePartition<rank>::remote_route_fragment_locations() const
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        typename Server::RemoteRouteFragmentLocationsAction action;
+
+        return hpx::async(action, this->get_id());
+    }
+
 }  // namespace lue
