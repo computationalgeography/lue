@@ -7,6 +7,8 @@
 #include <hpx/synchronization/shared_mutex.hpp>
 #include <algorithm>
 #include <map>
+#include <mutex>
+#include <shared_mutex>
 #include <tuple>
 #include <vector>
 

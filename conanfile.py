@@ -52,7 +52,7 @@ class LUERecipe(ConanFile):
             self.requires("hwloc/[>=2.7.0]")
 
         if install_conan_package("imgui"):
-            self.requires("imgui/[>=1.89 <2]")
+            self.requires("imgui/[>=1.89 <1.90]")
 
         if install_conan_package("mimalloc"):
             self.requires("mimalloc/[>=2 <3]")
