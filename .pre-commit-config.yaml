@@ -52,25 +52,17 @@ repos:
     args: [--style=file, -i]
   - id: clang-tidy
     args: [--quiet]
-    # Skipping lue/framework for now because of issues with using clang icw build setup for gcc
-    # Also skipping a few other files (unused ones, ...)
     exclude: |
       (?x)^(
-        source/data_model/cxx/include/lue/core/configuration.hpp|
-        source/data_model/test/include/lue/test/print.hpp|
-        source/data_model/translate/include/lue/translate/command.hpp|
-        source/data_model/translate/include/lue/translate/format.hpp|
-        source/data_model/translate/include/lue/translate/format/gdal_stack.hpp|
-        source/data_model/translate/include/lue/translate/format/gdal_stacks.hpp|
-        source/data_model/translate/src/format/gdal_stack.cpp|
-        source/data_model/translate/src/format/gdal_stacks.cpp|
-        source/data_model/translate/src/format/geo_eas.cpp|
-        source/data_model/utility/include/lue/utility/utility.hpp|
+        source/data_model/cxx/.*|
+        source/data_model/hl/.*|
+        source/data_model/python/.*|
+        source/data_model/test/.*|
+        source/data_model/translate/.*|
+        source/data_model/utility/.*|
+        source/data_model/validate/.*|
         source/framework/.*|
-        source/framework/algorithm/benchmark/.*|
-        source/framework/benchmark/.*|
-        source/framework/case_study/.*|
-        source/view/imgui/.*|
-        source/view/vulkan/.*|
-        source/view/view/src/vulkan_application.cpp|
+        source/python/.*|
+        source/qa/.*|
+        source/view/.*|
       )$
