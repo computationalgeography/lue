@@ -32,13 +32,9 @@ namespace lue {
             using LocalityID = hpx::id_type;
 
             //! Location of a route fragment
-            /// using Location = hpx::tuple<PartitionID, LocalityID>;
-            /// using Location = hpx::tuple<PartitionID, hpx::shared_future<hpx::id_type>>;
-            using Location = hpx::tuple<hpx::shared_future<PartitionID>, LocalityID>;
-            /// using Location = hpx::shared_future<PartitionID>;
+            using Location = hpx::shared_future<PartitionID>;
 
             //! Linear index of a cell, within a partition
-            /// using CellIdxs = Indices<Index, rank>;
             using CellIdx = Index;
 
             using CellIdxs = std::vector<CellIdx>;
@@ -75,32 +71,6 @@ namespace lue {
             SerialRouteFragment& operator=(SerialRouteFragment&&) = default;
 
 
-            bool operator==(SerialRouteFragment const& other) const
-            {
-                // Test for same size first, otherwise the value of mismatch.first can be end()
-                // even if a mismatch was found (if other.idxs contains more elements).
-                bool const same_size{std::size(_idxs) == std::size(other._idxs)};
-                bool const same_next_fragment_location{
-                    _next_fragment_location == other._next_fragment_location};
-                bool result{false};
-
-                if (same_size && same_next_fragment_location)
-                {
-                    // Only now call mismatch. Collections are equal if no mismatch was found
-                    result =
-                        std::mismatch(_idxs.begin(), _idxs.end(), other._idxs.begin()).first == _idxs.end();
-                }
-
-                return result;
-            }
-
-
-            bool operator!=(SerialRouteFragment const& other) const
-            {
-                return !(*this == other);
-            }
-
-
             Count nr_cells() const
             {
                 return std::size(_idxs);
@@ -122,6 +92,7 @@ namespace lue {
                 // It doesn't make sense to change the location of the next fragment to something
                 // else, does it?
                 lue_hpx_assert(!_next_fragment_location);
+                lue_hpx_assert(location.valid());
 
                 _next_fragment_location = location;
             }
@@ -136,6 +107,7 @@ namespace lue {
             Location const& next_fragment_location() const
             {
                 lue_hpx_assert(!is_last());
+                lue_hpx_assert(_next_fragment_location.value().valid());
 
                 return _next_fragment_location.value();
             }

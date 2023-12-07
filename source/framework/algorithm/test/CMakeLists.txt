@@ -196,8 +196,8 @@ foreach(name ${routing_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
-            lue::framework_routing_operation)
-            # HPX::iostreams_component)
+            lue::framework_routing_operation
+            HPX::iostreams_component)
 endforeach()
 
 set(names

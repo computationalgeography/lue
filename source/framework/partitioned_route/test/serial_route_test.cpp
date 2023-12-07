@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(construct)
     BOOST_CHECK_EQUAL(route.shape(), array_shape);
     BOOST_CHECK(route.valid());
     BOOST_CHECK_EQUAL(route.partitions().shape(), shape_in_partitions);
-    route.wait();
+    route.starts().wait();
     BOOST_CHECK(route.is_ready());
     BOOST_CHECK_EQUAL(route.nr_routes(), 0);
 }

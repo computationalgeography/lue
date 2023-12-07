@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     Route const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.wait();
+    route_we_got.starts().wait();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -266,11 +266,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     BOOST_REQUIRE(lue::all_are_valid(partitions));
 
+    hpx::wait_all(partitions.begin(), partitions.end());
+
     // partition(0, 0)
     {
         auto const& partition_we_got = partitions(0, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -328,8 +328,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(0, 1)
     {
         auto const& partition_we_got = partitions(0, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -417,8 +415,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(0, 2)
     {
         auto const& partition_we_got = partitions(0, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -477,8 +473,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 0)
     {
         auto const& partition_we_got = partitions(1, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -545,8 +539,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 1)
     {
         auto const& partition_we_got = partitions(1, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -620,8 +612,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 2)
     {
         auto const& partition_we_got = partitions(1, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -688,8 +678,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 0)
     {
         auto const& partition_we_got = partitions(2, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -748,8 +736,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 1)
     {
         auto const& partition_we_got = partitions(2, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -809,8 +795,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 2)
     {
         auto const& partition_we_got = partitions(2, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -922,7 +906,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     Route const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.wait();
+    route_we_got.starts().wait();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -930,9 +914,9 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     BOOST_REQUIRE(lue::all_are_valid(partitions));
 
-    auto const& partition_we_got = partitions(0, 0);
-    partition_we_got.wait();
+    hpx::wait_all(partitions.begin(), partitions.end());
 
+    auto const& partition_we_got = partitions(0, 0);
     auto const offset_we_got = partition_we_got.offset().get();
     auto const shape_we_got = partition_we_got.shape().get();
     auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1210,7 +1194,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
 
     Route const route_we_got = lue::value_policies::decreasing_order(value_array);
 
-    route_we_got.wait();
+    route_we_got.starts().wait();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -1218,13 +1202,13 @@ BOOST_AUTO_TEST_CASE(use_case_03)
 
     BOOST_REQUIRE(lue::all_are_valid(partitions));
 
+    hpx::wait_all(partitions.begin(), partitions.end());
+
     RouteID const route_id{0};
 
     // partition(0, 0)
     {
         auto const& partition_we_got = partitions(0, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1282,8 +1266,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(0, 1)
     {
         auto const& partition_we_got = partitions(0, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1342,8 +1324,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(0, 2)
     {
         auto const& partition_we_got = partitions(0, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1402,8 +1382,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 0)
     {
         auto const& partition_we_got = partitions(1, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1462,8 +1440,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 1)
     {
         auto const& partition_we_got = partitions(1, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1521,8 +1497,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 2)
     {
         auto const& partition_we_got = partitions(1, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1580,8 +1554,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 0)
     {
         auto const& partition_we_got = partitions(2, 0);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1639,8 +1611,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 1)
     {
         auto const& partition_we_got = partitions(2, 1);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1699,8 +1669,6 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 2)
     {
         auto const& partition_we_got = partitions(2, 2);
-        partition_we_got.wait();
-
         auto const offset_we_got = partition_we_got.offset().get();
         auto const shape_we_got = partition_we_got.shape().get();
         auto const nr_routes_we_got = partition_we_got.nr_routes().get();
@@ -1783,10 +1751,59 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
 
     Route const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.wait();
+    route_we_got.starts().wait();
 
     // This assumes all zones actually occur in zone_array
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
+}
+
+
+BOOST_AUTO_TEST_CASE(single_partition_empty_route)
+{
+    // Verify that a partition for which route fragments aren't recorded is still finished
+    lue::Rank const rank{2};
+
+    using ZoneElement = std::uint64_t;
+    using ValueElement = float;
+    using Shape = lue::Shape<lue::Count, rank>;
+    using ValueArray = lue::PartitionedArray<ValueElement, rank>;
+    using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
+
+    Shape const array_shape{5, 5};
+    Shape const partition_shape{array_shape};
+    lue::Count const max_route_length{0};
+
+    using namespace lue::value_policies;
+
+    ValueArray value_array{lue::value_policies::uniform<ValueElement>(array_shape, partition_shape, 0, 100)};
+
+    {
+        Route const route_we_got = lue::value_policies::decreasing_order(value_array, max_route_length);
+
+        route_we_got.starts().wait();
+
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
+
+        auto const& partitions = route_we_got.partitions();
+
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
+
+    {
+        ZoneArray const zone_array{
+            lue::create_partitioned_array<ZoneElement>(array_shape, partition_shape, 1)};
+
+        Route const route_we_got =
+            lue::value_policies::decreasing_order(zone_array, value_array, max_route_length);
+
+        route_we_got.starts().wait();
+
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
+
+        auto const& partitions = route_we_got.partitions();
+
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
 }
 
 
@@ -1860,7 +1877,7 @@ BOOST_AUTO_TEST_CASE(random_input)
     Route const route_we_got =
         lue::value_policies::decreasing_order(zone_array, value_array, max_route_length);
 
-    route_we_got.wait();
+    route_we_got.starts().wait();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 }

@@ -24,20 +24,20 @@ namespace lue {
         {
             using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, InputElement>;
 
-            return highest_n<OutputElement>(Policies{}, route, array, nr_cells);
+            return highest_n(Policies{}, route, array, nr_cells);
         }
 
 
         template<typename OutputElement, typename ZoneElement, typename InputElement, Rank rank>
         PartitionedArray<OutputElement, rank> highest_n(
-            PartitionedArray<ZoneElement, rank> const& region,
+            PartitionedArray<ZoneElement, rank> const& zone,
             PartitionedArray<InputElement, rank> const& array,
             Count const nr_cells)
         {
             using Policies =
                 policy::highest_n::DefaultValuePolicies<OutputElement, ZoneElement, InputElement>;
 
-            return highest_n<OutputElement>(Policies{}, region, array, nr_cells);
+            return highest_n(Policies{}, zone, array, nr_cells);
         }
 
 
@@ -47,7 +47,7 @@ namespace lue {
         {
             using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, InputElement>;
 
-            return highest_n<OutputElement>(Policies{}, array, nr_cells);
+            return highest_n(Policies{}, array, nr_cells);
         }
 
     }  // namespace value_policies

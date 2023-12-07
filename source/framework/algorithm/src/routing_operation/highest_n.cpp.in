@@ -3,8 +3,17 @@
 
 
 {% if ZoneElement %}
+    LUE_REGISTER_HIGHEST_N_ACTIONS(
+            ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ ZoneElement }}, {{ InputElement }}>),
+            2,
+            {{ OutputElement }}_{{ ZoneElement }}_{{ InputElement }}
+        );
 {% else %}
-    LUE_REGISTER_WALK_ACTIONS(2, HighestN_MarkAsTrue, ESC(lue::MarkAsTrue<lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>, 2>));
+    LUE_REGISTER_HIGHEST_N_ACTIONS(
+            ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            2,
+            {{ OutputElement }}_{{ InputElement }}
+        );
 {% endif %}
 
 

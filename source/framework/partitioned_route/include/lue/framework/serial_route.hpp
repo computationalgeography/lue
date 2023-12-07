@@ -27,8 +27,6 @@ namespace lue {
             //! For each route the location of the first fragment
             using Starts = std::map<RouteID, FragmentLocation>;
 
-            using StartsFuture = hpx::shared_future<Starts>;
-
             SerialRoute():
 
                 _array_shape{},
@@ -44,7 +42,7 @@ namespace lue {
                 assert_invariants();
             }
 
-            SerialRoute(Shape const& shape, StartsFuture&& starts, Partitions&& partitions):
+            SerialRoute(Shape const& shape, hpx::shared_future<Starts>&& starts, Partitions&& partitions):
 
                 _array_shape{shape},
                 _starts{std::move(starts)},
@@ -70,20 +68,28 @@ namespace lue {
             }
 
 
-            void wait() const
+            /// void wait() const
+            /// {
+            ///     lue_hpx_assert(valid());
+
+            ///     _starts.wait();
+            /// }
+
+
+            /// Starts const& starts() const
+            /// {
+            ///     lue_hpx_assert(valid());
+            ///     lue_hpx_assert(is_ready());
+
+            ///     return _starts.get();
+            /// }
+
+
+            hpx::shared_future<Starts> starts() const
             {
                 lue_hpx_assert(valid());
 
-                _starts.wait();
-            }
-
-
-            Starts const& starts() const
-            {
-                lue_hpx_assert(valid());
-                lue_hpx_assert(is_ready());
-
-                return _starts.get();
+                return _starts;
             }
 
 
@@ -98,10 +104,7 @@ namespace lue {
                 lue_hpx_assert(valid());
                 lue_hpx_assert(is_ready());
 
-                return static_cast<Count>(std::size(starts()));
-
-                // return _starts.then([](auto const& starts)
-                //                     { return static_cast<Count>(std::size(starts.get())); });
+                return static_cast<Count>(std::size(starts().get()));
             }
 
 
@@ -139,7 +142,7 @@ namespace lue {
 
             Shape _array_shape;
 
-            StartsFuture _starts;
+            hpx::shared_future<Starts> _starts;
 
             Partitions _partitions;
     };

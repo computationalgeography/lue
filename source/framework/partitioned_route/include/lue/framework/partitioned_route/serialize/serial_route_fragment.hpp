@@ -13,21 +13,30 @@ namespace hpx::serialization {
         [[maybe_unused]] unsigned int const version)
     {
         // Read fragment from archive
+
         using Fragment = lue::SerialRouteFragment<rank>;
         using CellIdxs = typename Fragment::CellIdxs;
         using Location = typename Fragment::Location;
 
         CellIdxs cell_idxs{};
-        std::optional<Location> next_fragment_location{};
+        bool is_last{false};
 
-        archive& cell_idxs& next_fragment_location;
+        // clang-format off
+        archive & cell_idxs & is_last;
 
         fragment = Fragment{cell_idxs};
 
-        if (next_fragment_location)
+        if(!is_last)
         {
-            fragment.end(*next_fragment_location);
+            Location next_fragment_location{};
+
+            archive & next_fragment_location;
+
+            lue_hpx_assert(next_fragment_location.valid());
+
+            fragment.end(next_fragment_location);
         }
+        // clang-format on
     }
 
 
@@ -38,17 +47,21 @@ namespace hpx::serialization {
         [[maybe_unused]] unsigned int const version)
     {
         // Write fragment to archive
-        using Fragment = lue::SerialRouteFragment<rank>;
-        using Location = typename Fragment::Location;
 
-        std::optional<Location> next_fragment_location{};
+        // clang-format off
+        archive & fragment.cell_idxs();
 
-        if (!fragment.is_last())
+        if(fragment.is_last())
         {
-            next_fragment_location = fragment.next_fragment_location();
+            archive & true;
         }
+        else
+        {
+            lue_hpx_assert(fragment.next_fragment_location().valid());
 
-        archive& fragment.cell_idxs() & next_fragment_location;
+            archive & false & fragment.next_fragment_location();
+        }
+        // clang-format on
     }
 
 }  // namespace hpx::serialization
