@@ -1755,6 +1755,10 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
 
     // This assumes all zones actually occur in zone_array
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
+
+    auto const& partitions = route_we_got.partitions();
+
+    hpx::wait_all(partitions.begin(), partitions.end());
 }
 
 
@@ -1782,7 +1786,7 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
 
         route_we_got.starts().wait();
 
-        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 0);
 
         auto const& partitions = route_we_got.partitions();
 
@@ -1798,7 +1802,7 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
 
         route_we_got.starts().wait();
 
-        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 0);
 
         auto const& partitions = route_we_got.partitions();
 
@@ -1880,4 +1884,8 @@ BOOST_AUTO_TEST_CASE(random_input)
     route_we_got.starts().wait();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
+
+    auto const& partitions = route_we_got.partitions();
+
+    hpx::wait_all(partitions.begin(), partitions.end());
 }

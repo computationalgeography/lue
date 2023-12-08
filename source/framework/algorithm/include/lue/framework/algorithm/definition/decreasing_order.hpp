@@ -440,7 +440,7 @@ namespace lue {
 
                         if (!continue_downstream)
                         {
-                            skip_recording_route_fragments(route_id, std::move(downstream_maxima));
+                            notify_skip_recording_route_fragments(route_id, std::move(downstream_maxima));
 
                             // Done with this route, but not all local values are used. Get rid
                             // of the pair in the map anyway.
@@ -527,10 +527,11 @@ namespace lue {
                     }
 
 
-                    void skip_recording_route_fragments2(RouteID const route_id)
+                    void skip_recording_route_fragments(RouteID const route_id)
                     {
                         // This function is possibly accessed by multiple threads at the same
                         // time, for different routes
+
                         std::unique_lock write_lock{_data._record_route_fragment_mutex};
                         lue_hpx_assert(_local_values_by_zone.find(route_id) != _local_values_by_zone.end());
                         _local_values_by_zone.erase(route_id);
@@ -551,12 +552,12 @@ namespace lue {
 
                     HPX_DEFINE_COMPONENT_ACTION(
                         DecreasingOrderZone,
-                        skip_recording_route_fragments2,
+                        skip_recording_route_fragments,
                         SkipRecordingRouteFragmentsAction);
 
                 private:
 
-                    void skip_recording_route_fragments(
+                    void notify_skip_recording_route_fragments(
                         RouteID const route_id, DownstreamMaxima<Value>&& downstream_maxima)
                     {
                         // Iterate over all downstream maxima and notify the associated component
@@ -937,7 +938,7 @@ namespace lue {
 
                         if (!continue_downstream)
                         {
-                            skip_recording_route_fragments(route_id, std::move(downstream_maxima));
+                            notify_skip_recording_route_fragments(route_id, std::move(downstream_maxima));
 
                             // Done with this route, but not all local values are used
                             _local_values.clear();
@@ -1014,7 +1015,7 @@ namespace lue {
                     }
 
 
-                    void skip_recording_route_fragments2([[maybe_unused]] RouteID const route_id)
+                    void skip_recording_route_fragments([[maybe_unused]] RouteID const route_id)
                     {
                         // This function is never accessed by multiple threads at the same
                         // time. There is only a single route.
@@ -1032,11 +1033,11 @@ namespace lue {
                         DecreasingOrder, record_route_fragment, RecordRouteFragmentAction);
 
                     HPX_DEFINE_COMPONENT_ACTION(
-                        DecreasingOrder, skip_recording_route_fragments2, SkipRecordingRouteFragmentsAction);
+                        DecreasingOrder, skip_recording_route_fragments, SkipRecordingRouteFragmentsAction);
 
                 private:
 
-                    void skip_recording_route_fragments(
+                    void notify_skip_recording_route_fragments(
                         RouteID const route_id, DownstreamMaxima<Value>&& downstream_maxima)
                     {
                         // Iterate over all downstream maxima and notify the associated component
@@ -1392,9 +1393,26 @@ namespace lue {
                             std::sort(values.begin(), values.end(), detail::CompareRemoteMaxima<Value>{});
                         }
 
+                        // Handle case where the length of the route happens to be zero
+                        // TODO This case can be short-cut at the start of the function
+                        if (max_length == 0)
+                        {
+                            for (auto& [zone, values] : remote_maxima_by_zone)
+                            {
+                                lue_hpx_assert(!values.empty());
+
+                                Component component{std::get<1>(values.front())};
+
+                                component.skip_recording_route_fragments(zone);
+                            }
+
+                            remote_maxima_by_zone.clear();
+                        }
+
                         std::vector<Zone> zones(remote_maxima_by_zone.size());
                         std::vector<hpx::future<typename Route::FragmentLocation>> starts_f(
                             remote_maxima_by_zone.size());
+
                         {
                             Index idx{0};
 
@@ -1412,8 +1430,6 @@ namespace lue {
                             }
                         }
 
-                        // Once all routes are ready, we can set the value of the route partition
-                        // promises, in turn marking these partitions as ready
                         return hpx::when_all(starts_f.begin(), starts_f.end())
                             .then(
                                 [zones = std::move(zones), components = std::move(components)](
@@ -1433,7 +1449,7 @@ namespace lue {
                                         }
                                     }
 
-                                    return hpx::make_tuple(starts, components);
+                                    return hpx::make_tuple(std::move(starts), std::move(components));
                                 });
                     }));
 
@@ -1629,14 +1645,27 @@ namespace lue {
                             downstream_maxima.end(),
                             detail::CompareRemoteMaxima<Value>{});
 
-                        if (downstream_maxima.empty())
+
+                        Component component{std::get<1>(downstream_maxima.front())};
+
+                        if (max_length == 0 || downstream_maxima.empty())
                         {
-                            return hpx::make_ready_future<hpx::tuple<RouteStarts, decltype(components)>>();
+                            // Empty route
+                            // TODO We can shortcut the case where max_length == 0 at the start
+                            //      of this function
+
+                            if (!downstream_maxima.empty())
+                            {
+                                component.skip_recording_route_fragments(route_id);
+                            }
+
+                            RouteStarts starts{};
+
+                            return hpx::make_ready_future(
+                                hpx::make_tuple(std::move(starts), std::move(components)));
                         }
                         else
                         {
-                            Component component{std::get<1>(downstream_maxima.front())};
-
                             hpx::future<typename Route::FragmentLocation> start_f =
                                 component.record_route_fragment(
                                     route_id, std::move(downstream_maxima), Count{0}, max_length);
