@@ -7,10 +7,13 @@
 #include "lue/framework/algorithm/walk.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
-#include <hpx/datastructures/tuple.hpp>
 #include <hpx/include/components.hpp>
+#include <hpx/synchronization/shared_mutex.hpp>
+#include <algorithm>
+#include <map>
 #include <mutex>
 #include <shared_mutex>
+#include <vector>
 
 
 namespace lue {

@@ -12,8 +12,14 @@ namespace lue {
     }  // namespace detail
 
 
-    template<template<typename> typename Collection, template<typename> typename Future, typename Element>
-    hpx::future<Collection<Element>> when_all_get(Collection<Future<Element>>&& futures)
+    template<
+        template<typename, typename...>
+        typename Collection,
+        typename... Ts,
+        template<typename>
+        typename Future,
+        typename Element>
+    hpx::future<Collection<Element>> when_all_get(Collection<Future<Element>, Ts...>&& futures)
     {
         // Given a collection of futures to elements, wait for all futures to become ready
         // and return a collection with the elements originally pointed to by the futures.
