@@ -1481,6 +1481,21 @@ block()
     set(counter "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        math(EXPR count "${count} + 1")
+
+        # Instantiate highest_n
+        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+
+        generate_template_instantiation(
+            INPUT_PATHNAME
+                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+            OUTPUT_PATHNAME
+                "${output_pathname}"
+            DICTIONARY
+            '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+        )
+        list(APPEND generated_source_files "${output_pathname}")
+
         foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${InputElement})
@@ -1498,7 +1513,7 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            # Instantiate highest_n
+            # Instantiate highest_n (global)
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
 
             generate_template_instantiation(
@@ -1526,6 +1541,7 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # Instantiate highest_n (zonal)
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
 
                 generate_template_instantiation(

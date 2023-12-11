@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_CASE(random_input)
         lue::Count const max{500};
         std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-        return Shape{100, 100};
+        // return Shape{100, 100};
 
         return Shape{
             distribution(random_number_engine),
@@ -516,11 +516,11 @@ BOOST_AUTO_TEST_CASE(random_input)
     }();
     Shape const partition_shape = [&]()
     {
-        lue::Count const min{90};
-        lue::Count const max{100};
+        lue::Count const min{40};
+        lue::Count const max{50};
         std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-        return Shape{10, 10};
+        // return Shape{10, 10};
 
         return Shape{
             distribution(random_number_engine),
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE(random_input)
         lue::Count const max{10};
         std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-        return lue::Count{100};
+        // return lue::Count{100};
 
         return distribution(random_number_engine);
     }();
@@ -544,7 +544,7 @@ BOOST_AUTO_TEST_CASE(random_input)
         lue::Count const max{lue::nr_elements(array_shape)};
         std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-        return lue::Count{10000};
+        // return lue::Count{10000};
 
         return distribution(random_number_engine);
     }();

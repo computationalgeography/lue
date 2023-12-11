@@ -8,11 +8,17 @@
             2,
             {{ OutputElement }}_{{ ZoneElement }}_{{ InputElement }}
         );
-{% else %}
+{% elif InputElement %}
     LUE_REGISTER_HIGHEST_N_ACTIONS(
             ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
             2,
             {{ OutputElement }}_{{ InputElement }}
+        );
+{% else %}
+    LUE_REGISTER_HIGHEST_N_ACTIONS(
+            ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}>),
+            2,
+            {{ OutputElement }}
         );
 {% endif %}
 
@@ -20,15 +26,19 @@
 namespace lue {
 
     {% if ZoneElement %}
-        LUE_INSTANTIATE_HIGHEST_N_ZONE(
+        LUE_INSTANTIATE_HIGHEST_N_ZONAL(
                 ESC(policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ ZoneElement }}, {{ InputElement }}>),
                 {{ ZoneElement }},
                 {{ InputElement }}
             );
-    {% else %}
-        LUE_INSTANTIATE_HIGHEST_N(
+    {% elif InputElement %}
+        LUE_INSTANTIATE_HIGHEST_N_GLOBAL(
                 ESC(policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
                 {{ InputElement }}
+            );
+    {% else %}
+        LUE_INSTANTIATE_HIGHEST_N(
+                ESC(policy::highest_n::{{ Policies }}<{{ OutputElement }}>)
             );
     {% endif %}
 

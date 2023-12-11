@@ -37,7 +37,7 @@ namespace lue {
 
                     Data(Count const max_nr_cells):
 
-                        _nr_cells_visited{},
+                        _nr_cells_visited{0},
                         _max_nr_cells_to_visit{max_nr_cells}
 
                     {
@@ -189,17 +189,13 @@ namespace lue {
                             // call handling an upstream fragment and subsequent calls handling
                             // downstream fragments.
 
-                            // TODO For some reason this function gets called for a route_id
-                            //      for which _fragments_idxs does not contain a record
-                            //      anymore. Protecting all code with a unique_lock solves it.
-                            // TODO std::shared_lock read_lock{_walk_mutex, std::defer_lock};
-                            // TODO std::unique_lock write_lock{_walk_mutex, std::defer_lock};
-                            std::unique_lock write_lock{_walk_mutex};
+                            std::shared_lock read_lock{_walk_mutex, std::defer_lock};
+                            std::unique_lock write_lock{_walk_mutex, std::defer_lock};
 
-                            // First, do stuff, using state veriables. Don't change stuff that
+                            // First, do stuff, *using* state veriables. Don't change stuff that
                             // is shared between threads. Changing different cells in a raster
                             // is fine, just don't change the same values.
-                            // TODO read_lock.lock();
+                            read_lock.lock();
 
                             auto route_partition_server_ptr{ready_component_ptr(_route_partition)};
                             auto& route_partition_server{*route_partition_server_ptr};
@@ -235,11 +231,13 @@ namespace lue {
                                 output_partition_data[cell_idxs[idx]] = 1;
                             }
 
-                            bool const keep_walking{data.keep_walking()};
+                            read_lock.unlock();
+                            write_lock.lock();
+                            ++fragment_idx;
 
                             if (!route_fragment.is_last())
                             {
-                                if (keep_walking)
+                                if (data.keep_walking())
                                 {
                                     // Continue the walk in a downstream partition
                                     lue_hpx_assert(route_fragment.next_fragment_location().valid());
@@ -257,39 +255,33 @@ namespace lue {
                                 }
                                 else
                                 {
-                                    // Notify downstream components to skip walking the rest
-                                    // of the route. We are done with this route.
-                                    notify_skip_walking_route_fragments(route_id);
+                                    lue_hpx_assert(route_fragment.next_fragment_location().valid());
+                                    lue_hpx_assert(route_fragment.next_fragment_location().is_ready());
+
+                                    hpx::id_type const downstream_route_partition_id{
+                                        route_fragment.next_fragment_location().get()};
+
+                                    lue_hpx_assert(
+                                        _downstream_components.find(downstream_route_partition_id) !=
+                                        _downstream_components.end());
+
+                                    _downstream_components.at(downstream_route_partition_id)
+                                        .skip_walking_route_fragments(route_id);
                                 }
                             }
-
-                            // TODO read_lock.unlock();
-
-                            // Now update the state variables to reflect the fact that we just
-                            // walked an additional fragment of the route
-                            // TODO write_lock.lock();
-
-                            ++fragment_idx;
 
                             lue_hpx_assert(
                                 (route_fragment.is_last() &&
                                  fragment_idx == static_cast<Size>(std::size(route_fragments))) ||
                                 !route_fragment.is_last());
 
-                            if ((fragment_idx == static_cast<Size>(std::size(route_fragments))) ||
-                                !keep_walking)
+                            if (fragment_idx == static_cast<Size>(std::size(route_fragments)))
                             {
-                                // There are reasons to stop walking the current route:
-                                // - We have handled the last fragment
-                                // - We have handled a sufficiently number of cells
-                                // - ...
-
-                                // Erase the index from the collection
-                                // Note: fragment_idx reference dangles from now on
+                                // This was the last fragment of the route that is located in
+                                // this partition. If it was the last fragment at all, we can / must
+                                // finish the partition.
                                 _fragment_idxs.erase(route_id);
 
-                                // If we just handled the last route, then we can finish the
-                                // output partition
                                 if (_fragment_idxs.empty())
                                 {
                                     finish_partition();
@@ -305,16 +297,49 @@ namespace lue {
                             // apparently we have handled all fragments of all routes, and the
                             // output partition can be finished.
 
+                            // This function is called from another component. Since we will
+                            // be changing the state of the current component, we need to obtain
+                            // a write lock.
+
+                            std::shared_lock read_lock{_walk_mutex, std::defer_lock};
+                            std::unique_lock write_lock{_walk_mutex, std::defer_lock};
+
+                            read_lock.lock();
+
+                            lue_hpx_assert(!_fragment_idxs.empty());
+                            lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
+
+                            Index& fragment_idx{_fragment_idxs.at(route_id)};
+
+                            auto const& route_fragments{
+                                ready_component_ptr(_route_partition)->route_fragments(route_id)};
+                            lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
+
+                            auto const& route_fragment{route_fragments[fragment_idx]};
+
+                            if (!route_fragment.is_last())
                             {
-                                // This function is called from another component. Since we will
-                                // be changing the state of the current component, we need to obtain
-                                // a write lock.
+                                lue_hpx_assert(route_fragment.next_fragment_location().valid());
+                                lue_hpx_assert(route_fragment.next_fragment_location().is_ready());
 
-                                std::unique_lock write_lock{_walk_mutex};
+                                hpx::id_type const downstream_route_partition_id{
+                                    route_fragment.next_fragment_location().get()};
 
-                                lue_hpx_assert(!_fragment_idxs.empty());
-                                lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
+                                lue_hpx_assert(
+                                    _downstream_components.find(downstream_route_partition_id) !=
+                                    _downstream_components.end());
 
+                                _downstream_components.at(downstream_route_partition_id)
+                                    .skip_walking_route_fragments(route_id);
+                            }
+
+                            read_lock.unlock();
+                            write_lock.lock();
+
+                            ++fragment_idx;
+
+                            if (fragment_idx == static_cast<Size>(std::size(route_fragments)))
+                            {
                                 _fragment_idxs.erase(route_id);
 
                                 if (_fragment_idxs.empty())
@@ -322,8 +347,6 @@ namespace lue {
                                     finish_partition();
                                 }
                             }
-
-                            notify_skip_walking_route_fragments(route_id);
                         }
 
 
@@ -338,49 +361,6 @@ namespace lue {
                             Walk, skip_walking_route_fragments, SkipWalkingRouteFragmentsAction);
 
                     private:
-
-                        void notify_skip_walking_route_fragments(RouteID const route_id)
-                        {
-                            // Tell the *downstream partitions* that further walking the
-                            // route will be skipped. This should continue until the
-                            // end of the route. In case skipping these fragments results in
-                            // an empty _fragment_idxs collection, then apparantly we have handled
-                            // all partitions of all routes and the output partition can be finished.
-
-                            // This function is called from walk, with the read lock locked. This
-                            // is great, since we are only sending messages to downstream
-                            // components. We're not changing the state of the current component.
-
-                            {
-                                lue_hpx_assert(!_fragment_idxs.empty());
-                                lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
-                                Index& fragment_idx{_fragment_idxs.at(route_id)};
-                                auto const& route_fragments{
-                                    ready_component_ptr(_route_partition)->route_fragments(route_id)};
-                                lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
-
-                                while (fragment_idx < static_cast<Size>(std::size(route_fragments)))
-                                {
-                                    auto const& route_fragment{route_fragments[fragment_idx]};
-
-                                    lue_hpx_assert(route_fragment.next_fragment_location().valid());
-                                    lue_hpx_assert(route_fragment.next_fragment_location().is_ready());
-
-                                    hpx::id_type const downstream_route_partition_id{
-                                        route_fragment.next_fragment_location().get()};
-
-                                    lue_hpx_assert(
-                                        _downstream_components.find(downstream_route_partition_id) !=
-                                        _downstream_components.end());
-
-                                    _downstream_components.at(downstream_route_partition_id)
-                                        .skip_walking_route_fragments(route_id);
-
-                                    ++fragment_idx;
-                                }
-                            }
-                        }
-
 
                         void finish_partition()
                         {
@@ -528,23 +508,16 @@ namespace lue {
         using Route = SerialRoute<rank>;
         using RoutePartition = PartitionT2<Route>;
 
-        using InputElement = policy::InputElementT<Policies>;
-
         using OutputElement = policy::OutputElementT<Policies>;
         using OutputArray = PartitionedArray<OutputElement, rank>;
         using OutputPartition = PartitionT<OutputArray>;
         using OutputPartitions = PartitionsT<OutputArray>;
 
-        using WalkPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<InputElement>,
-            policy::OutputElements<OutputElement>,
-            policy::InputElements<InputElement>>;
-
         // Iterate over all route partitions and:
         // - Create a new Walk component, passing in the route partition
 
-        using WalkComponentClient = detail::highest_n::Walk<WalkPolicies, rank>;
-        using WalkComponentServer = detail::highest_n::server::Walk<WalkPolicies, rank>;
+        using WalkComponentClient = detail::highest_n::Walk<Policies, rank>;
+        using WalkComponentServer = detail::highest_n::server::Walk<Policies, rank>;
 
         // TODO
         // Since a partioned array currently caches locality IDs, we need to retrieve them,
@@ -690,45 +663,55 @@ namespace lue {
 
 #define LUE_REGISTER_HIGHEST_N_ACTION_DECLARATIONS(Policies, rank, unique)                                   \
                                                                                                              \
-    using WalkServer = hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;     \
+    using WalkServer_##unique =                                                                              \
+        hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(WalkServer, HighestNWalk_##rank##_##unique)                                       \
-                                                                                                             \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)           \
+    HPX_REGISTER_COMPONENT(WalkServer_##unique, HighestNWalk_##rank##_##unique)                              \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer::SetDownstreamComponentsAction,                                                           \
+        WalkServer_##unique::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)  \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        WalkServer_##unique::SetDownstreamComponentsAction,                                                  \
         HighestNWalk_##rank##_##unique##_SetRemoteComponentsAction)                                          \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(WalkServer::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)     \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        WalkServer_##unique::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer::SkipWalkingRouteFragmentsAction,                                                         \
+        WalkServer_##unique::SkipWalkingRouteFragmentsAction,                                                \
         HighestNWalk_##rank##_##unique##_SkipWalkingRouteFragmentsAction)
 
 
 #define LUE_REGISTER_HIGHEST_N_ACTIONS(Policies, rank, unique)                                               \
                                                                                                              \
-    using WalkServer = hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;     \
+    using WalkServer_##unique =                                                                              \
+        hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(WalkServer, HighestNWalk_##rank##_##unique)                                       \
-                                                                                                             \
-    HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)           \
+    HPX_REGISTER_COMPONENT(WalkServer_##unique, HighestNWalk_##rank##_##unique)                              \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer::SetDownstreamComponentsAction,                                                           \
+        WalkServer_##unique::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)  \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        WalkServer_##unique::SetDownstreamComponentsAction,                                                  \
         HighestNWalk_##rank##_##unique##_SetRemoteComponentsAction)                                          \
                                                                                                              \
-    HPX_REGISTER_ACTION(WalkServer::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)                 \
+    HPX_REGISTER_ACTION(WalkServer_##unique::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)        \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer::SkipWalkingRouteFragmentsAction,                                                         \
+        WalkServer_##unique::SkipWalkingRouteFragmentsAction,                                                \
         HighestNWalk_##rank##_##unique##_SkipWalkingRouteFragmentsAction)
 
 
-#define LUE_INSTANTIATE_HIGHEST_N(Policies, InputElement)                                                    \
+#define LUE_INSTANTIATE_HIGHEST_N(Policies)                                                                  \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
+    highest_n<ArgumentType<void(Policies)>, 2>(                                                              \
+        ArgumentType<void(Policies)> const&, SerialRoute<2> const&, Count const max_nr_cells);
+
+
+#define LUE_INSTANTIATE_HIGHEST_N_GLOBAL(Policies, InputElement)                                             \
                                                                                                              \
     template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
     highest_n<ArgumentType<void(Policies)>, InputElement, 2>(                                                \
@@ -736,7 +719,8 @@ namespace lue {
         PartitionedArray<InputElement, 2> const&,                                                            \
         Count const max_nr_cells);
 
-#define LUE_INSTANTIATE_HIGHEST_N_ZONE(Policies, ZoneElement, InputElement)                                  \
+
+#define LUE_INSTANTIATE_HIGHEST_N_ZONAL(Policies, ZoneElement, InputElement)                                 \
                                                                                                              \
     template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
     highest_n<ArgumentType<void(Policies)>, ZoneElement, InputElement, 2>(                                   \

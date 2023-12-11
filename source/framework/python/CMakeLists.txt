@@ -102,6 +102,8 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/unique_id.cpp
 
     src/algorithm/routing_operation.cpp
+    src/algorithm/routing_operation/decreasing_order.cpp
+    src/algorithm/routing_operation/highest_n.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
 
     src/algorithm/zonal_operation.cpp
@@ -143,6 +145,8 @@ add_library(lue_py_framework SHARED
 
     src/numpy/from_numpy.cpp
     src/numpy/to_numpy.cpp
+
+    src/partitioned_route/serial_route.cpp
 
     src/python_extension.cpp
     src/submodule.cpp

@@ -138,7 +138,7 @@ namespace lue::server {
         {
             for (auto const& fragment : fragments)
             {
-                for (auto const& cell_idx : fragment.cell_idxs())
+                for ([[maybe_unused]] auto const& cell_idx : fragment.cell_idxs())
                 {
                     lue_hpx_assert(cell_idx >= 0);
                     lue_hpx_assert(cell_idx < nr_elements(_shape));
