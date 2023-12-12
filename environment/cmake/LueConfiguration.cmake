@@ -3,7 +3,10 @@ include(CheckCXXSymbolExists)
 
 # Options to be set by the user ------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
-    option(LUE_ENABLE_IWYU "Enable include-what-you-use" ON)
+    option(LUE_ENABLE_IWYU
+        "Enable include-what-you-use"
+        FALSE)
+
     if(LUE_ENABLE_IWYU)
         set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
