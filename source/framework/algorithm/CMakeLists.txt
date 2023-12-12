@@ -1479,6 +1479,7 @@ endblock()
 
 block()
     set(counter "0")
+    set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         math(EXPR count "${count} + 1")
@@ -1492,7 +1493,7 @@ block()
             OUTPUT_PATHNAME
                 "${output_pathname}"
             DICTIONARY
-            '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","rank":"${rank}"}'
         )
         list(APPEND generated_source_files "${output_pathname}")
 
@@ -1522,7 +1523,7 @@ block()
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","InputElement":"${InputElement}"}'
+                '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","InputElement":"${InputElement}","rank":"${rank}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
 
@@ -1550,7 +1551,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ZoneElement":"${Zone}","InputElement":"${InputElement}"}'
+                    '{"name":"${name}","Policies":"${Policies}","OutputElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ZoneElement":"${Zone}","InputElement":"${InputElement}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()

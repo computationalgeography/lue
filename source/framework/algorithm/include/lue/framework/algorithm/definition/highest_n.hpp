@@ -663,45 +663,45 @@ namespace lue {
 
 #define LUE_REGISTER_HIGHEST_N_ACTION_DECLARATIONS(Policies, rank, unique)                                   \
                                                                                                              \
-    using WalkServer_##unique =                                                                              \
+    using HighestNWalkServer_##unique =                                                                      \
         hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(WalkServer_##unique, HighestNWalk_##rank##_##unique)                              \
+    HPX_REGISTER_COMPONENT(HighestNWalkServer_##unique, HighestNWalk_##unique)                               \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer_##unique::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)  \
+        HighestNWalkServer_##unique::ResultPartitionAction, HighestNWalk_ResultPartitionAction_##unique)     \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer_##unique::SetDownstreamComponentsAction,                                                  \
-        HighestNWalk_##rank##_##unique##_SetRemoteComponentsAction)                                          \
+        HighestNWalkServer_##unique::SetDownstreamComponentsAction,                                          \
+        HighestNWalk_SetRemoteComponentsAction_##unique)                                                     \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer_##unique::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)                        \
+        HighestNWalkServer_##unique::WalkAction, HighestNWalk_WalkAction_##unique)                           \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        WalkServer_##unique::SkipWalkingRouteFragmentsAction,                                                \
-        HighestNWalk_##rank##_##unique##_SkipWalkingRouteFragmentsAction)
+        HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                                        \
+        HighestNWalk_SkipWalkingRouteFragmentsAction_##unique)
 
 
 #define LUE_REGISTER_HIGHEST_N_ACTIONS(Policies, rank, unique)                                               \
                                                                                                              \
-    using WalkServer_##unique =                                                                              \
+    using HighestNWalkServer_##unique =                                                                      \
         hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(WalkServer_##unique, HighestNWalk_##rank##_##unique)                              \
+    HPX_REGISTER_COMPONENT(HighestNWalkServer_##unique, HighestNWalk_##unique)                               \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer_##unique::ResultPartitionAction, HighestNWalk_##rank##_##unique##_ResultPartitionAction)  \
+        HighestNWalkServer_##unique::ResultPartitionAction, HighestNWalk_ResultPartitionAction_##unique)     \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer_##unique::SetDownstreamComponentsAction,                                                  \
-        HighestNWalk_##rank##_##unique##_SetRemoteComponentsAction)                                          \
+        HighestNWalkServer_##unique::SetDownstreamComponentsAction,                                          \
+        HighestNWalk_SetRemoteComponentsAction_##unique)                                                     \
                                                                                                              \
-    HPX_REGISTER_ACTION(WalkServer_##unique::WalkAction, HighestNWalk_##rank##_##unique##_WalkAction)        \
+    HPX_REGISTER_ACTION(HighestNWalkServer_##unique::WalkAction, HighestNWalk_WalkAction_##unique)           \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        WalkServer_##unique::SkipWalkingRouteFragmentsAction,                                                \
-        HighestNWalk_##rank##_##unique##_SkipWalkingRouteFragmentsAction)
+        HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                                        \
+        HighestNWalk_SkipWalkingRouteFragmentsAction_##unique)
 
 
 #define LUE_INSTANTIATE_HIGHEST_N(Policies)                                                                  \

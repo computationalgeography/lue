@@ -6,19 +6,19 @@
     LUE_REGISTER_HIGHEST_N_ACTIONS(
             ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ ZoneElement }}, {{ InputElement }}>),
             2,
-            {{ OutputElement }}_{{ ZoneElement }}_{{ InputElement }}
+            {{ OutputElement }}_{{ ZoneElement }}_{{ InputElement }}_2
         );
 {% elif InputElement %}
     LUE_REGISTER_HIGHEST_N_ACTIONS(
             ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
             2,
-            {{ OutputElement }}_{{ InputElement }}
+            {{ OutputElement }}_{{ InputElement }}_2
         );
 {% else %}
     LUE_REGISTER_HIGHEST_N_ACTIONS(
             ESC(lue::policy::highest_n::{{ Policies }}<{{ OutputElement }}>),
             2,
-            {{ OutputElement }}
+            {{ OutputElement }}_2
         );
 {% endif %}
 
