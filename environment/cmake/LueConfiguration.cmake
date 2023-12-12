@@ -2,6 +2,24 @@ include(CheckCXXSymbolExists)
 
 
 # Options to be set by the user ------------------------------------------------
+if(PROJECT_IS_TOP_LEVEL)
+    option(LUE_ENABLE_IWYU "Enable include-what-you-use" ON)
+    if(LUE_ENABLE_IWYU)
+        set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
+        find_program(INCLUDE_WHAT_YOU_USE_EXECUTABLE include-what-you-use REQUIRED)
+
+        # Revisit once it is easy to use include-what-you-use >= 0.18 (try: include-what-you-use --version)
+        # set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE
+        #     ${INCLUDE_WHAT_YOU_USE_EXECUTABLE}
+        #     -Xiwyu --mapping-file=...
+        #     -Xiwyu --error
+        #     CACHE STRING "Include-what-you-use command"
+        # )
+    endif()
+endif()
+
+
 option(LUE_BUILD_DATA_MODEL
     "Build LUE data model API"
     TRUE)
