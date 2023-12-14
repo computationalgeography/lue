@@ -3,6 +3,7 @@
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
+#include "lue/framework/route/define.hpp"
 #include <hpx/include/components.hpp>
 #include <set>
 #include <unordered_map>
@@ -14,19 +15,16 @@ namespace lue::server {
     /*!
         @brief      Component server class for serial route partitions
     */
-    template<Rank rank>
+    template<typename RouteID, Rank rank>
     class HPX_COMPONENT_EXPORT SerialRoutePartition:
-        public hpx::components::component_base<SerialRoutePartition<rank>>
+        public hpx::components::component_base<SerialRoutePartition<RouteID, rank>>
     {
 
         private:
 
-            using Base = hpx::components::component_base<SerialRoutePartition<rank>>;
+            using Base = hpx::components::component_base<SerialRoutePartition<RouteID, rank>>;
 
         public:
-
-            //! ID of a route
-            using RouteID = Index;
 
             using RouteFragment = SerialRouteFragment<rank>;
 
@@ -102,38 +100,40 @@ namespace lue::server {
 }  // namespace lue::server
 
 
-#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(rank)                                        \
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(RouteID, rank, unique)                                   \
                                                                                                              \
-    using SerialRoutePartition_##rank##_Component = lue::server::SerialRoutePartition<rank>;                 \
+    namespace detail {                                                                                       \
+        using SerialRoutePartitionServer_##unique = lue::server::SerialRoutePartition<RouteID, rank>;        \
+    }                                                                                                        \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::OffsetAction, SerialRoutePartition_##rank##_OffsetAction)   \
+    HPX_REGISTER_COMPONENT(                                                                                  \
+        hpx::components::component<::detail::SerialRoutePartitionServer_##unique>,                           \
+        SerialRoutePartitionServer_##unique)                                                                 \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::ShapeAction, SerialRoutePartition_##rank##_ShapeAction)     \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::OffsetAction,                                         \
+        SerialRoutePartitionServerOffsetAction_##unique)                                                     \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::NrRoutesAction,                                             \
-        SerialRoutePartition_##rank##_NrRoutesAction)                                                        \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::ShapeAction,                                          \
+        SerialRoutePartitionServerShapeAction_##unique)                                                      \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::NrRouteFragmentsAction,                                     \
-        SerialRoutePartition_##rank##_NrRouteFragmentsAction)                                                \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::NrRoutesAction,                                       \
+        SerialRoutePartitionServerNrRoutesAction_##unique)                                                   \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::RouteIDsAction,                                             \
-        SerialRoutePartition_##rank##_RouteIDsAction)                                                        \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::NrRouteFragmentsAction,                               \
+        SerialRoutePartitionServerNrRouteFragmentsAction_##unique)                                           \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::RouteFragmentsAction,                                       \
-        SerialRoutePartition_##rank##_RouteFragmentsAction)                                                  \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::RouteIDsAction,                                       \
+        SerialRoutePartitionServerRouteIDsAction_##unique)                                                   \
                                                                                                              \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        SerialRoutePartition_##rank##_Component::RemoteRouteFragmentLocationsAction,                         \
-        SerialRoutePartition_##rank##_RemoteRouteFragmentLocationsAction)
-
-
-LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(1)
-LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(2)
-
-#undef LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::RouteFragmentsAction,                                 \
+        SerialRoutePartitionServerRouteFragmentsAction_##unique)                                             \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        ::detail::SerialRoutePartitionServer_##unique::RemoteRouteFragmentLocationsAction,                   \
+        SerialRoutePartitionServerRemoteRouteFragmentLocationsAction_##unique)

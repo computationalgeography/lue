@@ -3,6 +3,6 @@
 
 namespace lue {
 
-    template class SerialRoutePartition<{{ rank }}>;
+    template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
 
 }  // namespace lue

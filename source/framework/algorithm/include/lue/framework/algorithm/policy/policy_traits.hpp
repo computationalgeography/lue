@@ -140,6 +140,14 @@ namespace lue::policy {
     using InputsPoliciesT = typename detail::PoliciesTraits<Policies>::InputsPolicies;
 
 
+    template<typename Policies>
+    constexpr auto nr_inputs = Policies::nr_inputs;
+
+
+    template<typename Policies>
+    constexpr auto nr_outputs = Policies::nr_outputs;
+
+
     template<typename T>
     using ElementT = typename detail::TypeTraits<lue::detail::remove_cvref_t<T>>::Element;
 

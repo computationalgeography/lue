@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_CASE(default_construct)
 {
-    using Route = lue::SerialRoute<2>;
+    using Route = lue::SerialRoute<std::uint32_t, 2>;
     using Shape = typename Route::Shape;
 
     // Default initialization
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 
 BOOST_AUTO_TEST_CASE(construct)
 {
-    using Route = lue::SerialRoute<2>;
+    using Route = lue::SerialRoute<std::int64_t, 2>;
     using Shape = typename Route::Shape;
     using Starts = typename Route::Starts;
     using Partitions = typename Route::Partitions;
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(construct)
     hpx::future<Starts> starts_f{hpx::make_ready_future<Starts>()};
     Partitions partitions{shape_in_partitions};
 
-    lue::SerialRoute<2> route{array_shape, std::move(starts_f), std::move(partitions)};
+    Route route{array_shape, std::move(starts_f), std::move(partitions)};
 
     BOOST_CHECK_EQUAL(route.shape(), array_shape);
     BOOST_CHECK(route.valid());

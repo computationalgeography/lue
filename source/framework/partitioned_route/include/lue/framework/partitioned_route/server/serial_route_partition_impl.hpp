@@ -4,8 +4,8 @@
 
 namespace lue::server {
 
-    template<Rank rank>
-    SerialRoutePartition<rank>::SerialRoutePartition():
+    template<typename RouteID, Rank rank>
+    SerialRoutePartition<RouteID, rank>::SerialRoutePartition():
 
         Base{},
         _offset{},
@@ -17,8 +17,8 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    SerialRoutePartition<rank>::SerialRoutePartition(Offset const& offset, Shape const& shape):
+    template<typename RouteID, Rank rank>
+    SerialRoutePartition<RouteID, rank>::SerialRoutePartition(Offset const& offset, Shape const& shape):
 
         SerialRoutePartition{offset, shape, {}}
 
@@ -27,8 +27,8 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    SerialRoutePartition<rank>::SerialRoutePartition(
+    template<typename RouteID, Rank rank>
+    SerialRoutePartition<RouteID, rank>::SerialRoutePartition(
         Offset const& offset, Shape const& shape, RouteFragments&& route_fragments):
 
         Base{},
@@ -41,29 +41,29 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    typename SerialRoutePartition<rank>::Offset SerialRoutePartition<rank>::offset() const
+    template<typename RouteID, Rank rank>
+    auto SerialRoutePartition<RouteID, rank>::offset() const -> Offset
     {
         return _offset;
     }
 
 
-    template<Rank rank>
-    typename SerialRoutePartition<rank>::Shape SerialRoutePartition<rank>::shape() const
+    template<typename RouteID, Rank rank>
+    auto SerialRoutePartition<RouteID, rank>::shape() const -> Shape
     {
         return _shape;
     }
 
 
-    template<Rank rank>
-    Count SerialRoutePartition<rank>::nr_routes() const
+    template<typename RouteID, Rank rank>
+    Count SerialRoutePartition<RouteID, rank>::nr_routes() const
     {
         return std::size(_route_fragments);
     }
 
 
-    template<Rank rank>
-    Count SerialRoutePartition<rank>::nr_route_fragments() const
+    template<typename RouteID, Rank rank>
+    Count SerialRoutePartition<RouteID, rank>::nr_route_fragments() const
     {
         Count result{0};
 
@@ -76,8 +76,8 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    std::set<typename SerialRoutePartition<rank>::RouteID> SerialRoutePartition<rank>::route_ids() const
+    template<typename RouteID, Rank rank>
+    std::set<RouteID> SerialRoutePartition<RouteID, rank>::route_ids() const
     {
         std::set<RouteID> result{};
 
@@ -90,9 +90,9 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    std::vector<typename SerialRoutePartition<rank>::RouteFragment>
-    SerialRoutePartition<rank>::route_fragments(RouteID const route_id) const
+    template<typename RouteID, Rank rank>
+    auto SerialRoutePartition<RouteID, rank>::route_fragments(RouteID const route_id) const
+        -> std::vector<RouteFragment>
     {
         auto const it = _route_fragments.find(route_id);
 
@@ -102,9 +102,9 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    std::vector<typename SerialRoutePartition<rank>::RouteFragmentLocation>
-    SerialRoutePartition<rank>::remote_route_fragment_locations() const
+    template<typename RouteID, Rank rank>
+    auto SerialRoutePartition<RouteID, rank>::remote_route_fragment_locations() const
+        -> std::vector<RouteFragmentLocation>
     {
         std::vector<RouteFragmentLocation> locations{};
 
@@ -123,15 +123,15 @@ namespace lue::server {
     }
 
 
-    template<Rank rank>
-    void SerialRoutePartition<rank>::set_route_fragments(RouteFragments&& route_fragments)
+    template<typename RouteID, Rank rank>
+    void SerialRoutePartition<RouteID, rank>::set_route_fragments(RouteFragments&& route_fragments)
     {
         _route_fragments = std::move(route_fragments);
     }
 
 
-    template<Rank rank>
-    void SerialRoutePartition<rank>::assert_invariants() const
+    template<typename RouteID, Rank rank>
+    void SerialRoutePartition<RouteID, rank>::assert_invariants() const
     {
         // Verify all cells idxs in the fragments are within the partition
         for (auto const& [route_id, fragments] : _route_fragments)

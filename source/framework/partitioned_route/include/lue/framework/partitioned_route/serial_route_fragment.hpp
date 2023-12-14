@@ -10,8 +10,8 @@
 
 namespace lue {
 
-    template<Rank rank>
-    class SerialRoutePartition;
+    // template<Rank rank>
+    // class SerialRoutePartition;
 
 
     /*!

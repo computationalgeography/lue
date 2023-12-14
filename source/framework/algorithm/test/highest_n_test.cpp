@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     using ZoneElement = std::uint32_t;
     using ValueElement = double;
-    using ResultElement = std::uint8_t;
+    using ResultElement = ZoneElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
@@ -492,7 +492,7 @@ BOOST_AUTO_TEST_CASE(random_input)
 
     using ZoneElement = std::uint64_t;
     using ValueElement = float;
-    using ResultElement = std::uint8_t;
+    using ResultElement = ZoneElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;

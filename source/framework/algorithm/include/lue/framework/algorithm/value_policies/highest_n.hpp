@@ -5,47 +5,47 @@
 namespace lue {
     namespace policy::highest_n {
 
-        template<typename OutputElement, typename... InputElement>
+        template<typename OutputElement, typename RouteID, typename... InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<InputElement...>,
+            AllValuesWithinDomain<RouteID, InputElement...>,
             OutputElements<OutputElement>,
-            InputElements<InputElement...>>;
+            InputElements<RouteID, InputElement...>>;
 
     }  // namespace policy::highest_n
 
 
     namespace value_policies {
 
-        template<typename OutputElement, Rank rank>
+        template<typename OutputElement, typename RouteID, Rank rank>
         PartitionedArray<OutputElement, rank> highest_n(
-            SerialRoute<rank> const& route, Count const max_nr_cells)
+            SerialRoute<RouteID, rank> const& route, Count const max_nr_cells)
         {
-            using Policies = policy::highest_n::DefaultValuePolicies<OutputElement>;
+            using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, RouteID>;
 
             return highest_n(Policies{}, route, max_nr_cells);
         }
 
 
-        template<typename OutputElement, typename ZoneElement, typename InputElement, Rank rank>
+        template<typename OutputElement, typename ZoneElement, typename FieldElement, Rank rank>
         PartitionedArray<OutputElement, rank> highest_n(
             PartitionedArray<ZoneElement, rank> const& zone,
-            PartitionedArray<InputElement, rank> const& array,
+            PartitionedArray<FieldElement, rank> const& field,
             Count const max_nr_cells)
         {
             using Policies =
-                policy::highest_n::DefaultValuePolicies<OutputElement, ZoneElement, InputElement>;
+                policy::highest_n::DefaultValuePolicies<OutputElement, ZoneElement, FieldElement>;
 
-            return highest_n(Policies{}, zone, array, max_nr_cells);
+            return highest_n(Policies{}, zone, field, max_nr_cells);
         }
 
 
-        template<typename OutputElement, typename InputElement, Rank rank>
+        template<typename OutputElement, typename FieldElement, Rank rank>
         PartitionedArray<OutputElement, rank> highest_n(
-            PartitionedArray<InputElement, rank> const& array, Count const max_nr_cells)
+            PartitionedArray<FieldElement, rank> const& field, Count const max_nr_cells)
         {
-            using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, InputElement>;
+            using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, RouteID, FieldElement>;
 
-            return highest_n(Policies{}, array, max_nr_cells);
+            return highest_n(Policies{}, field, max_nr_cells);
         }
 
     }  // namespace value_policies

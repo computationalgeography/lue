@@ -61,8 +61,9 @@ namespace lue {
     }
 
 
-    template<Rank rank, typename Component, typename Data>
-    hpx::future<void> walk(SerialRoute<rank> const& route, Array<Component, rank>& components, Data&& data)
+    template<typename RouteID, Rank rank, typename Component, typename Data>
+    hpx::future<void> walk(
+        SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, Data&& data)
     {
         // For each route:
         // - Visit all cells until some condition is false
@@ -76,7 +77,7 @@ namespace lue {
         // - Initiate each route's walk by calling visit on the walk component containing the
         //   route's start fragment. The visit must continue from there on, for as long as needed
 
-        using Route = SerialRoute<rank>;
+        using Route = SerialRoute<RouteID, rank>;
         using RoutePartition = PartitionT2<Route>;
         using DownstreamRoutePartitionIDs = std::vector<hpx::shared_future<hpx::id_type>>;
 

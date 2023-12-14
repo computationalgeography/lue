@@ -21,6 +21,11 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/algorithm)
 add_subdirectory(io)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/io)
 
+if(LUE_FRAMEWORK_WITH_IMAGE_LAND)
+    add_subdirectory(image_land)
+    list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/image_land)
+endif()
+
 add_subdirectory(model)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/model)
 

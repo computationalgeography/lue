@@ -7,7 +7,7 @@ namespace lue::framework {
     namespace detail {
 
         template<typename OutputElement, Rank rank>
-        auto highest_n(SerialRoute<rank> const& route, Count const max_nr_cells)
+        auto highest_n(SerialRoute<OutputElement, rank> const& route, Count const max_nr_cells)
         {
             return lue::value_policies::highest_n<OutputElement>(route, max_nr_cells);
         }

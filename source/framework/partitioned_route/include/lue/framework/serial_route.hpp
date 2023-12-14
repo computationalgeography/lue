@@ -1,26 +1,24 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/partitioned_route/serial_route_partition.hpp"
-#include <algorithm>
+// #include <algorithm>
 
 
 namespace lue {
 
-    template<Rank rank>
+    template<typename RouteID, Rank rank>
     class SerialRoute
     {
 
         public:
 
-            using PartitionClient = SerialRoutePartition<rank>;
+            using PartitionClient = SerialRoutePartition<RouteID, rank>;
 
             using PartitionServer = typename PartitionClient::Server;
 
             using Partitions = Array<PartitionClient, rank>;
 
             using Shape = typename Partitions::Shape;
-
-            using RouteID = typename PartitionServer::RouteID;
 
             using FragmentLocation = typename SerialRouteFragment<rank>::Location;
 
@@ -150,8 +148,8 @@ namespace lue {
 
     namespace detail {
 
-        template<Rank r>
-        class ArrayTraits<SerialRoute<r>>
+        template<typename RouteID, Rank r>
+        class ArrayTraits<SerialRoute<RouteID, r>>
         {
 
             public:
@@ -160,35 +158,35 @@ namespace lue {
 
                 static constexpr bool is_partitioned_array{true};
 
-                using Shape = typename SerialRoute<r>::Shape;
+                using Shape = typename SerialRoute<RouteID, r>::Shape;
 
                 template<Rank r_>
-                using Partition = typename SerialRoute<r_>::PartitionClient;
+                using Partition = typename SerialRoute<RouteID, r_>::PartitionClient;
 
                 template<Rank r_>
-                using Partitions = typename SerialRoute<r_>::Partitions;
+                using Partitions = typename SerialRoute<RouteID, r_>::Partitions;
 
                 using Offset = typename Partition<r>::Offset;
         };
 
 
-        template<Rank r>
-        class ArrayTraits<Array<typename SerialRoute<r>::PartitionClient, r>>
+        template<typename RouteID, Rank r>
+        class ArrayTraits<Array<SerialRoutePartition<RouteID, r>, r>>
         {
 
             public:
 
                 constexpr static Rank rank = r;
 
-                using Offset = typename SerialRoute<r>::PartitionClient::Offset;
+                using Offset = typename SerialRoutePartition<RouteID, r>::Offset;
 
-                using Shape = typename SerialRoute<r>::Shape;
+                using Shape = typename SerialRoutePartition<RouteID, r>::Shape;
 
-                template<Rank r_>
-                using Partition = typename SerialRoute<r_>::PartitionClient;
+                template<typename RouteID_, Rank r_>
+                using Partition = SerialRoutePartition<RouteID_, r_>;
 
-                template<Rank r_>
-                using Partitions = typename SerialRoute<r_>::Partitions;
+                template<typename RouteID_, Rank r_>
+                using Partitions = typename SerialRoute<RouteID_, r_>::Partitions;
         };
 
     }  // namespace detail

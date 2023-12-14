@@ -10,6 +10,7 @@
 #include <mutex>
 #include <shared_mutex>
 #include <tuple>
+#include <type_traits>
 #include <vector>
 
 
@@ -18,11 +19,11 @@ namespace lue {
 
         // NOTE: deque is slower than vector
 
-        template<typename Policies, typename Zone, typename Value, Rank rank>
-        class DecreasingOrderZone;
+        template<typename Policies, Rank rank>
+        class DecreasingOrderZonal;
 
-        template<typename Policies, typename Value, Rank rank>
-        class DecreasingOrder;
+        template<typename Policies, Rank rank>
+        class DecreasingOrderGlobal;
 
         template<typename Value>
         using LocalValue = std::tuple<Value, lue::Index>;
@@ -78,21 +79,25 @@ namespace lue {
 
         namespace server {
 
-            template<typename Policies, typename Value, Rank rank>
+            template<typename Policies, Rank rank>
             class DecreasingOrderData
             {
+
+                private:
+
+                    using RouteID = policy::InputElementT<Policies, 0>;
+
+                    using Value = policy::InputElementT<Policies, 1>;
 
                 public:
 
                     using ValuePartition = lue::ArrayPartition<Value, rank>;
 
-                    using RouteID = Index;
+                    using Offset = typename SerialRoutePartition<RouteID, rank>::Offset;
 
-                    using Offset = typename SerialRoutePartition<rank>::Offset;
+                    using Shape = typename SerialRoutePartition<RouteID, rank>::Shape;
 
-                    using Shape = typename SerialRoutePartition<rank>::Shape;
-
-                    using RoutePartition = lue::SerialRoutePartition<rank>;
+                    using RoutePartition = lue::SerialRoutePartition<RouteID, rank>;
 
                     using RouteFragments = typename RoutePartition::RouteFragments;
 
@@ -222,16 +227,23 @@ namespace lue {
             };
 
 
-            template<typename Policies, typename Zone, typename Value, Rank rank>
-            class DecreasingOrderZone:
-                public hpx::components::component_base<DecreasingOrderZone<Policies, Zone, Value, rank>>
+            template<typename Policies, Rank rank>
+            class DecreasingOrderZonal:
+                public hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>
             {
 
                 private:
 
-                    using Data = DecreasingOrderData<Policies, Value, rank>;
+                    using Data = DecreasingOrderData<Policies, rank>;
+
                     using ComponentServerBase =
-                        hpx::components::component_base<DecreasingOrderZone<Policies, Zone, Value, rank>>;
+                        hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>;
+
+                    using RouteID = policy::InputElementT<Policies, 0>;
+
+                    using Zone = RouteID;
+
+                    using Value = policy::InputElementT<Policies, 1>;
 
                 public:
 
@@ -249,14 +261,12 @@ namespace lue {
 
                     using RouteFragmentLocation = typename Data::RouteFragmentLocation;
 
-                    using RouteID = typename Data::RouteID;
-
                     using CellIdxs = typename Data::CellIdxs;
 
                     using ZonePartition = lue::ArrayPartition<Zone, rank>;
 
 
-                    DecreasingOrderZone(Offset const& offset, Shape const& shape):
+                    DecreasingOrderZonal(Offset const& offset, Shape const& shape):
 
                         ComponentServerBase{},
                         _data{offset, shape},
@@ -493,8 +503,7 @@ namespace lue {
                             // Spawn a task on the remote component
                             lue_hpx_assert(downstream_component_id != this->get_id());
 
-                            detail::DecreasingOrderZone<Policies, Zone, Value, rank> component{
-                                downstream_component_id};
+                            detail::DecreasingOrderZonal<Policies, rank> component{downstream_component_id};
 
                             auto downstream_route_fragment_location_f = component.record_route_fragment(
                                 route_id, std::move(downstream_maxima), current_length, max_length);
@@ -543,15 +552,15 @@ namespace lue {
                     }
 
 
-                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderZone, route_partition, RoutePartitionAction);
+                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderZonal, route_partition, RoutePartitionAction);
 
-                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderZone, sort_values, SortValuesAction);
-
-                    HPX_DEFINE_COMPONENT_ACTION(
-                        DecreasingOrderZone, record_route_fragment, RecordRouteFragmentAction);
+                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderZonal, sort_values, SortValuesAction);
 
                     HPX_DEFINE_COMPONENT_ACTION(
-                        DecreasingOrderZone,
+                        DecreasingOrderZonal, record_route_fragment, RecordRouteFragmentAction);
+
+                    HPX_DEFINE_COMPONENT_ACTION(
+                        DecreasingOrderZonal,
                         skip_recording_route_fragments,
                         SkipRecordingRouteFragmentsAction);
 
@@ -569,8 +578,7 @@ namespace lue {
                         {
                             lue_hpx_assert(downstream_component_id != this->get_id());
 
-                            detail::DecreasingOrderZone<Policies, Zone, Value, rank> component{
-                                downstream_component_id};
+                            detail::DecreasingOrderZonal<Policies, rank> component{downstream_component_id};
 
                             component.skip_recording_route_fragments(route_id);
                         }
@@ -585,22 +593,28 @@ namespace lue {
         }  // namespace server
 
 
-        template<typename Policies, typename Zone, typename Value, Rank rank>
-        class DecreasingOrderZone:
+        template<typename Policies, Rank rank>
+        class DecreasingOrderZonal:
             public hpx::components::client_base<
-                DecreasingOrderZone<Policies, Zone, Value, rank>,
-                server::DecreasingOrderZone<Policies, Zone, Value, rank>>
+                DecreasingOrderZonal<Policies, rank>,
+                server::DecreasingOrderZonal<Policies, rank>>
 
         {
 
             public:
 
-                using Server = server::DecreasingOrderZone<Policies, Zone, Value, rank>;
+                using Server = server::DecreasingOrderZonal<Policies, rank>;
 
             private:
 
                 using ComponentClientBase =
-                    hpx::components::client_base<DecreasingOrderZone<Policies, Zone, Value, rank>, Server>;
+                    hpx::components::client_base<DecreasingOrderZonal<Policies, rank>, Server>;
+
+                using RouteID = policy::InputElementT<Policies, 0>;
+
+                using Zone = RouteID;
+
+                using Value = policy::InputElementT<Policies, 1>;
 
             public:
 
@@ -608,20 +622,18 @@ namespace lue {
 
                 using ValuePartition = typename Server::ValuePartition;
 
-                using RoutePartition = SerialRoutePartition<rank>;
+                using RoutePartition = SerialRoutePartition<RouteID, rank>;
 
                 using RouteFragment = SerialRouteFragment<rank>;
 
                 using RouteFragmentLocation = typename RouteFragment::Location;
-
-                using RouteID = typename Server::RouteID;
 
                 using Offset = typename Server::Offset;
 
                 using Shape = typename Server::Shape;
 
 
-                DecreasingOrderZone():
+                DecreasingOrderZonal():
 
                     ComponentClientBase{}
 
@@ -629,7 +641,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrderZone(hpx::id_type const component_id):
+                DecreasingOrderZonal(hpx::id_type const component_id):
 
                     ComponentClientBase{component_id}
 
@@ -637,7 +649,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrderZone(hpx::future<hpx::id_type>&& component_id):
+                DecreasingOrderZonal(hpx::future<hpx::id_type>&& component_id):
 
                     ComponentClientBase{std::move(component_id)}
 
@@ -645,7 +657,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrderZone(Offset const& offset, Shape const& shape):
+                DecreasingOrderZonal(Offset const& offset, Shape const& shape):
 
                     ComponentClientBase{offset, shape}
 
@@ -653,15 +665,15 @@ namespace lue {
                 }
 
 
-                DecreasingOrderZone(DecreasingOrderZone const&) = default;
+                DecreasingOrderZonal(DecreasingOrderZonal const&) = default;
 
-                DecreasingOrderZone(DecreasingOrderZone&&) = default;
+                DecreasingOrderZonal(DecreasingOrderZonal&&) = default;
 
-                ~DecreasingOrderZone() = default;
+                ~DecreasingOrderZonal() = default;
 
-                DecreasingOrderZone& operator=(DecreasingOrderZone const&) = default;
+                DecreasingOrderZonal& operator=(DecreasingOrderZonal const&) = default;
 
-                DecreasingOrderZone& operator=(DecreasingOrderZone&&) = default;
+                DecreasingOrderZonal& operator=(DecreasingOrderZonal&&) = default;
 
 
                 RoutePartition route_partition() const
@@ -724,16 +736,21 @@ namespace lue {
 
         namespace server {
 
-            template<typename Policies, typename Value, Rank rank>
-            class DecreasingOrder:
-                public hpx::components::component_base<DecreasingOrder<Policies, Value, rank>>
+            template<typename Policies, Rank rank>
+            class DecreasingOrderGlobal:
+                public hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>
             {
 
                 private:
 
-                    using Data = DecreasingOrderData<Policies, Value, rank>;
+                    using Data = DecreasingOrderData<Policies, rank>;
+
                     using ComponentServerBase =
-                        hpx::components::component_base<DecreasingOrder<Policies, Value, rank>>;
+                        hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>;
+
+                    using RouteID = policy::InputElementT<Policies, 0>;
+
+                    using Value = policy::InputElementT<Policies, 1>;
 
                 public:
 
@@ -751,8 +768,6 @@ namespace lue {
 
                     using RouteFragmentLocation = typename Data::RouteFragmentLocation;
 
-                    using RouteID = typename Data::RouteID;
-
                     using CellIdxs = typename Data::CellIdxs;
 
 
@@ -761,7 +776,7 @@ namespace lue {
                         @param      offset Offset of route partition
                         @param      offset Shape of route partition
                     */
-                    DecreasingOrder(Offset const& offset, Shape const& shape):
+                    DecreasingOrderGlobal(Offset const& offset, Shape const& shape):
 
                         ComponentServerBase{},
                         _data{offset, shape},
@@ -771,15 +786,15 @@ namespace lue {
                     }
 
 
-                    DecreasingOrder(DecreasingOrder const&) = default;
+                    DecreasingOrderGlobal(DecreasingOrderGlobal const&) = default;
 
-                    DecreasingOrder(DecreasingOrder&&) = default;
+                    DecreasingOrderGlobal(DecreasingOrderGlobal&&) = default;
 
-                    ~DecreasingOrder() = default;
+                    ~DecreasingOrderGlobal() = default;
 
-                    DecreasingOrder& operator=(DecreasingOrder const&) = default;
+                    DecreasingOrderGlobal& operator=(DecreasingOrderGlobal const&) = default;
 
-                    DecreasingOrder& operator=(DecreasingOrder&&) = default;
+                    DecreasingOrderGlobal& operator=(DecreasingOrderGlobal&&) = default;
 
 
                     RoutePartition route_partition()
@@ -802,7 +817,7 @@ namespace lue {
                         lue_hpx_assert(value_partition.is_ready());
 
                         auto const& value_ndp =
-                            std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                            std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
                         auto const value_partition_data{ready_component_ptr(value_partition)->data()};
 
@@ -982,7 +997,7 @@ namespace lue {
                             // Spawn a task on the remote component
                             lue_hpx_assert(downstream_component_id != this->get_id());
 
-                            detail::DecreasingOrder<Policies, Value, rank> component{downstream_component_id};
+                            detail::DecreasingOrderGlobal<Policies, rank> component{downstream_component_id};
 
                             auto downstream_route_fragment_location_f = component.record_route_fragment(
                                 route_id, std::move(downstream_maxima), current_length, max_length);
@@ -1025,15 +1040,17 @@ namespace lue {
                     }
 
 
-                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrder, route_partition, RoutePartitionAction);
+                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderGlobal, route_partition, RoutePartitionAction);
 
-                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrder, sort_values, SortValuesAction);
-
-                    HPX_DEFINE_COMPONENT_ACTION(
-                        DecreasingOrder, record_route_fragment, RecordRouteFragmentAction);
+                    HPX_DEFINE_COMPONENT_ACTION(DecreasingOrderGlobal, sort_values, SortValuesAction);
 
                     HPX_DEFINE_COMPONENT_ACTION(
-                        DecreasingOrder, skip_recording_route_fragments, SkipRecordingRouteFragmentsAction);
+                        DecreasingOrderGlobal, record_route_fragment, RecordRouteFragmentAction);
+
+                    HPX_DEFINE_COMPONENT_ACTION(
+                        DecreasingOrderGlobal,
+                        skip_recording_route_fragments,
+                        SkipRecordingRouteFragmentsAction);
 
                 private:
 
@@ -1047,7 +1064,7 @@ namespace lue {
 
                         for (auto const& [value, downstream_component_id] : downstream_maxima)
                         {
-                            detail::DecreasingOrder<Policies, Value, rank> component{downstream_component_id};
+                            detail::DecreasingOrderGlobal<Policies, rank> component{downstream_component_id};
 
                             component.skip_recording_route_fragments(route_id);
                         }
@@ -1062,41 +1079,43 @@ namespace lue {
         }  // namespace server
 
 
-        template<typename Policies, typename Value, Rank rank>
-        class DecreasingOrder:
+        template<typename Policies, Rank rank>
+        class DecreasingOrderGlobal:
             public hpx::components::client_base<
-                DecreasingOrder<Policies, Value, rank>,
-                server::DecreasingOrder<Policies, Value, rank>>
+                DecreasingOrderGlobal<Policies, rank>,
+                server::DecreasingOrderGlobal<Policies, rank>>
 
         {
 
             public:
 
-                using Server = server::DecreasingOrder<Policies, Value, rank>;
+                using Server = server::DecreasingOrderGlobal<Policies, rank>;
 
             private:
 
                 using ComponentClientBase =
-                    hpx::components::client_base<DecreasingOrder<Policies, Value, rank>, Server>;
+                    hpx::components::client_base<DecreasingOrderGlobal<Policies, rank>, Server>;
+
+                using RouteID = policy::InputElementT<Policies, 0>;
+
+                using Value = policy::InputElementT<Policies, 1>;
 
             public:
 
                 using ValuePartition = typename Server::ValuePartition;
 
-                using RoutePartition = SerialRoutePartition<rank>;
+                using RoutePartition = SerialRoutePartition<RouteID, rank>;
 
                 using RouteFragment = SerialRouteFragment<rank>;
 
                 using RouteFragmentLocation = typename RouteFragment::Location;
-
-                using RouteID = typename Server::RouteID;
 
                 using Offset = typename Server::Offset;
 
                 using Shape = typename Server::Shape;
 
 
-                DecreasingOrder():
+                DecreasingOrderGlobal():
 
                     ComponentClientBase{}
 
@@ -1104,7 +1123,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrder(hpx::id_type const component_id):
+                DecreasingOrderGlobal(hpx::id_type const component_id):
 
                     ComponentClientBase{component_id}
 
@@ -1112,7 +1131,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrder(hpx::future<hpx::id_type>&& component_id):
+                DecreasingOrderGlobal(hpx::future<hpx::id_type>&& component_id):
 
                     ComponentClientBase{std::move(component_id)}
 
@@ -1120,7 +1139,7 @@ namespace lue {
                 }
 
 
-                DecreasingOrder(Offset const& offset, Shape const& shape):
+                DecreasingOrderGlobal(Offset const& offset, Shape const& shape):
 
                     ComponentClientBase{offset, shape}
 
@@ -1128,15 +1147,15 @@ namespace lue {
                 }
 
 
-                DecreasingOrder(DecreasingOrder const&) = default;
+                DecreasingOrderGlobal(DecreasingOrderGlobal const&) = default;
 
-                DecreasingOrder(DecreasingOrder&&) = default;
+                DecreasingOrderGlobal(DecreasingOrderGlobal&&) = default;
 
-                ~DecreasingOrder() = default;
+                ~DecreasingOrderGlobal() = default;
 
-                DecreasingOrder& operator=(DecreasingOrder const&) = default;
+                DecreasingOrderGlobal& operator=(DecreasingOrderGlobal const&) = default;
 
-                DecreasingOrder& operator=(DecreasingOrder&&) = default;
+                DecreasingOrderGlobal& operator=(DecreasingOrderGlobal&&) = default;
 
 
                 RoutePartition route_partition() const
@@ -1197,11 +1216,11 @@ namespace lue {
     }  // namespace detail
 
 
-    template<typename Policies, typename Zone, typename Value, Rank rank>
-    SerialRoute<rank> decreasing_order(
+    template<typename Policies, Rank rank>
+    SerialRoute<policy::OutputElementT<Policies, 0>, rank> decreasing_order(
         Policies const& policies,
-        PartitionedArray<Zone, rank> const& zone,
-        PartitionedArray<Value, rank> const& value,
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& zone,
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& value,
         Count const max_length)
     {
         // For each zone, create a route from the cell with the highest value to the cell
@@ -1229,16 +1248,23 @@ namespace lue {
         // equal to the max_length passed in. Keep track of the length of the route while
         // recording it.
 
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
+
         lue_hpx_assert(zone.shape() == value.shape());
 
+        using Zone = policy::InputElementT<Policies, 0>;
         using ZoneArray = PartitionedArray<Zone, rank>;
         using ZonePartitions = PartitionsT<ZoneArray>;
         using ZonePartition = PartitionT<ZoneArray>;
+
+        using Value = policy::InputElementT<Policies, 1>;
         using ValueArray = PartitionedArray<Value, rank>;
         using ValuePartitions = PartitionsT<ValueArray>;
         using ValuePartition = PartitionT<ValueArray>;
 
-        using Route = SerialRoute<rank>;
+        using RouteID = policy::OutputElementT<Policies, 0>;
+        using Route = SerialRoute<RouteID, rank>;
         using RoutePartitions = PartitionsT2<Route>;
         using RoutePartition = PartitionT2<Route>;
         using RouteStarts = typename Route::Starts;
@@ -1255,7 +1281,7 @@ namespace lue {
         ValuePartitions const& value_partitions{value.partitions()};
 
         // Create collection of (futures to) components that will do all the work, distributed
-        using Component = detail::DecreasingOrderZone<Policies, Zone, Value, rank>;
+        using Component = detail::DecreasingOrderZonal<Policies, rank>;
 
         std::vector<hpx::future<Component>> components_f(nr_partitions);
 
@@ -1368,6 +1394,7 @@ namespace lue {
                             components.begin(),
                             [](hpx::future<Component>& component_f)
                             {
+                                component_f.wait();  // TODO
                                 lue_hpx_assert(component_f.is_ready());
                                 return component_f.get();
                             });
@@ -1459,13 +1486,15 @@ namespace lue {
             .then([components = std::move(components)]([[maybe_unused]] auto&& partitions_f)
                   { HPX_UNUSED(components); });
 
-        return SerialRoute<rank>{array_shape, std::move(starts), std::move(route_partitions)};
+        return Route{array_shape, std::move(starts), std::move(route_partitions)};
     }
 
 
-    template<typename Policies, typename Value, Rank rank>
-    SerialRoute<rank> decreasing_order(
-        Policies const& policies, PartitionedArray<Value, rank> const& value, Count const max_length)
+    template<typename Policies, Rank rank>
+    SerialRoute<policy::OutputElementT<Policies, 0>, rank> decreasing_order(
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& value,
+        Count const max_length)
     {
         // Create a single route from the cell with the highest value to the cell
         // with the lowest value. Stop when the route has the same length as the length passed in.
@@ -1490,11 +1519,16 @@ namespace lue {
         // equal to the max_length passed in. Keep track of the length of the route while
         // recording it.
 
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
+
+        using Value = policy::InputElementT<Policies, 1>;
         using ValueArray = PartitionedArray<Value, rank>;
         using ValuePartitions = PartitionsT<ValueArray>;
         using ValuePartition = PartitionT<ValueArray>;
 
-        using Route = SerialRoute<rank>;
+        using RouteID = policy::OutputElementT<Policies, 0>;
+        using Route = SerialRoute<RouteID, rank>;
         using RoutePartitions = PartitionsT2<Route>;
         using RoutePartition = PartitionT2<Route>;
         using RouteStarts = typename Route::Starts;
@@ -1510,7 +1544,7 @@ namespace lue {
         ValuePartitions const& value_partitions{value.partitions()};
 
         // Create collection of (futures to) components that will do all the work, distributed
-        using Component = detail::DecreasingOrder<Policies, Value, rank>;
+        using Component = detail::DecreasingOrderGlobal<Policies, rank>;
 
         std::vector<hpx::future<Component>> components_f(nr_partitions);
 
@@ -1620,6 +1654,7 @@ namespace lue {
                             components.begin(),
                             [](hpx::future<Component>& component_f)
                             {
+                                component_f.wait();  // TODO
                                 lue_hpx_assert(component_f.is_ready());
                                 return component_f.get();
                             });
@@ -1689,128 +1724,130 @@ namespace lue {
             .then([components = std::move(components)]([[maybe_unused]] auto&& partitions_f)
                   { HPX_UNUSED(components); });
 
-        return SerialRoute<rank>{array_shape, std::move(starts), std::move(route_partitions)};
+        return Route{array_shape, std::move(starts), std::move(route_partitions)};
     }
 
 }  // namespace lue
 
 
-#define LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS(Policies, Zone, Value, rank)                  \
+#define LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_ZONAL(Policies, rank, unique)                      \
                                                                                                              \
-    using DecreasingOrderZone_##Zone##_##Value##_##rank = lue::detail::server::DecreasingOrderZone<          \
-        lue::policy::decreasing_order::DefaultValuePolicies<Zone, Value>,                                    \
-        Zone,                                                                                                \
-        Value,                                                                                               \
-        rank>;                                                                                               \
-                                                                                                             \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::RoutePartitionAction,                                 \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_RoutePartitionAction)                                \
+    namespace lue::detail {                                                                                  \
+        using DecreasingOrderZonalServer_##unique =                                                          \
+            lue::detail::server::DecreasingOrderZonal<Policies, rank>;                                       \
+    }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::SortValuesAction,                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_SortValuesAction)                                    \
+        lue::detail::DecreasingOrderZonalServer_##unique::RoutePartitionAction,                              \
+        DecreasingOrderZonalServerRoutePartitionAction_##unique)                                             \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::RecordRouteFragmentAction,                            \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_RecordRouteFragmentAction)                           \
+        lue::detail::DecreasingOrderZonalServer_##unique::SortValuesAction,                                  \
+        DecreasingOrderZonalServerSortValuesAction_##unique)                                                 \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::SkipRecordingRouteFragmentsAction,                    \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_SkipRecordingRouteFragmentsAction)
+        lue::detail::DecreasingOrderZonalServer_##unique::RecordRouteFragmentAction,                         \
+        DecreasingOrderZonalServerRecordRouteFragmentAction_##unique)                                        \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::DecreasingOrderZonalServer_##unique::SkipRecordingRouteFragmentsAction,                 \
+        DecreasingOrderZonalServerSkipRecordingRouteFragmentsAction_##unique)
 
 
-#define LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS(Policies, Zone, Value, rank)                              \
+#define LUE_REGISTER_DECREASING_ORDER_ACTIONS_ZONAL(Policies, rank, unique)                                  \
                                                                                                              \
-    using DecreasingOrderZoneServerType_##Zone##_##Value##_##rank =                                          \
-        hpx::components::component<lue::detail::server::DecreasingOrderZone<                                 \
-            lue::policy::decreasing_order::DefaultValuePolicies<Zone, Value>,                                \
-            Zone,                                                                                            \
-            Value,                                                                                           \
-            rank>>;                                                                                          \
+    namespace lue::detail {                                                                                  \
+        using DecreasingOrderZonalЅerverComponent_##unique =                                                 \
+            hpx::components::component<lue::detail::server::DecreasingOrderZonal<Policies, rank>>;           \
+    }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \
-        DecreasingOrderZoneServerType_##Zone##_##Value##_##rank,                                             \
-        DecreasingOrderZone_##Zone##_##Value##_##rank)                                                       \
+        lue::detail::DecreasingOrderZonalЅerverComponent_##unique,                                           \
+        DecreasingOrderZonalЅerverComponent_##unique)                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::RoutePartitionAction,                                 \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_RoutePartitionAction)                                \
+        lue::detail::DecreasingOrderZonalServer_##unique::RoutePartitionAction,                              \
+        DecreasingOrderZonalServerRoutePartitionAction_##unique)                                             \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::SortValuesAction,                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_SortValuesAction)                                    \
+        lue::detail::DecreasingOrderZonalServer_##unique::SortValuesAction,                                  \
+        DecreasingOrderZonalServerSortValuesAction_##unique)                                                 \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::RecordRouteFragmentAction,                            \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_RecordRouteFragmentAction)                           \
+        lue::detail::DecreasingOrderZonalServer_##unique::RecordRouteFragmentAction,                         \
+        DecreasingOrderZonalServerRecordRouteFragmentAction_##unique)                                        \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrderZone_##Zone##_##Value##_##rank::SkipRecordingRouteFragmentsAction,                    \
-        DecreasingOrderZone_##Zone##_##Value##_##rank##_SkipRecordingRouteFragmentsAction)
+        lue::detail::DecreasingOrderZonalServer_##unique::SkipRecordingRouteFragmentsAction,                 \
+        DecreasingOrderZonalServerSkipRecordingRouteFragmentsAction_##unique)
 
 
-#define LUE_INSTANTIATE_DECREASING_ORDER_ZONE(Policies, ZoneElement, InputElement)                           \
+#define LUE_INSTANTIATE_DECREASING_ORDER_ZONAL(Policies, rank)                                               \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT SerialRoute<2>                                                     \
-    decreasing_order<ArgumentType<void(Policies)>, ZoneElement, InputElement, 2>(                            \
+    template LUE_ROUTING_OPERATION_EXPORT SerialRoute<policy::OutputElementT<Policies, 0>, rank>             \
+    decreasing_order<ArgumentType<void(Policies)>, rank>(                                                    \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<ZoneElement, 2> const&,                                                             \
-        PartitionedArray<InputElement, 2> const&,                                                            \
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const&,                                   \
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
         Count const max_length);
 
 
-#define LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS(Policies, Value, rank)                             \
+#define LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_GLOBAL(Policies, rank, unique)                     \
                                                                                                              \
-    using DecreasingOrder_##Value##_##rank = lue::detail::server::                                           \
-        DecreasingOrder<lue::policy::decreasing_order::DefaultValuePolicies<Value>, Value, rank>;            \
-                                                                                                             \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrder_##Value##_##rank::RoutePartitionAction,                                              \
-        DecreasingOrder_##Value##_##rank##_RoutePartitionAction)                                             \
+    namespace lue::detail {                                                                                  \
+        using DecreasingOrderGlobalServer_##unique =                                                         \
+            lue::detail::server::DecreasingOrderGlobal<Policies, rank>;                                      \
+    }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrder_##Value##_##rank::SortValuesAction,                                                  \
-        DecreasingOrder_##Value##_##rank##_SortValuesAction)                                                 \
+        lue::detail::DecreasingOrderGlobalServer_##unique::RoutePartitionAction,                             \
+        DecreasingOrderGlobalServerRoutePartitionAction_##unique)                                            \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrder_##Value##_##rank::RecordRouteFragmentAction,                                         \
-        DecreasingOrder_##Value##_##rank##_RecordRouteFragmentAction)                                        \
+        lue::detail::DecreasingOrderGlobalServer_##unique::SortValuesAction,                                 \
+        DecreasingOrderGlobalServerSortValuesAction_##unique)                                                \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        DecreasingOrder_##Value##_##rank::SkipRecordingRouteFragmentsAction,                                 \
-        DecreasingOrder_##Value##_##rank##_SkipRecordingRouteFragmentsAction)
+        lue::detail::DecreasingOrderGlobalServer_##unique::RecordRouteFragmentAction,                        \
+        DecreasingOrderGlobalServerRecordRouteFragmentAction_##unique)                                       \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::DecreasingOrderGlobalServer_##unique::SkipRecordingRouteFragmentsAction,                \
+        DecreasingOrderGlobalServerSkipRecordingRouteFragmentsAction_##unique)
 
 
-#define LUE_REGISTER_DECREASING_ORDER_ACTIONS(Policies, Value, rank)                                         \
+#define LUE_REGISTER_DECREASING_ORDER_ACTIONS_GLOBAL(Policies, rank, unique)                                 \
                                                                                                              \
-    using DecreasingOrderServerType_##Value##_##rank = hpx::components::component<                           \
-        lue::detail::server::                                                                                \
-            DecreasingOrder<lue::policy::decreasing_order::DefaultValuePolicies<Value>, Value, rank>>;       \
+    namespace lue::detail {                                                                                  \
+        using DecreasingOrderGlobalServerComponent_##unique =                                                \
+            hpx::components::component<lue::detail::server::DecreasingOrderGlobal<Policies, rank>>;          \
+    }                                                                                                        \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(DecreasingOrderServerType_##Value##_##rank, DecreasingOrder_##Value##_##rank)     \
-                                                                                                             \
-    HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrder_##Value##_##rank::RoutePartitionAction,                                              \
-        DecreasingOrder_##Value##_##rank##_RoutePartitionAction)                                             \
-                                                                                                             \
-    HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrder_##Value##_##rank::SortValuesAction,                                                  \
-        DecreasingOrder_##Value##_##rank##_SortValuesAction)                                                 \
+    HPX_REGISTER_COMPONENT(                                                                                  \
+        lue::detail::DecreasingOrderGlobalServerComponent_##unique,                                          \
+        DecreasingOrderGlobalServerComponent_##unique)                                                       \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrder_##Value##_##rank::RecordRouteFragmentAction,                                         \
-        DecreasingOrder_##Value##_##rank##_RecordRouteFragmentAction)                                        \
+        lue::detail::DecreasingOrderGlobalServer_##unique::RoutePartitionAction,                             \
+        DecreasingOrderGlobalServerRoutePartitionAction_##unique)                                            \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        DecreasingOrder_##Value##_##rank::SkipRecordingRouteFragmentsAction,                                 \
-        DecreasingOrder_##Value##_##rank##_SkipRecordingRouteFragmentsAction)
+        lue::detail::DecreasingOrderGlobalServer_##unique::SortValuesAction,                                 \
+        DecreasingOrderGlobalServerSortValuesAction_##unique)                                                \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::DecreasingOrderGlobalServer_##unique::RecordRouteFragmentAction,                        \
+        DecreasingOrderGlobalServerRecordRouteFragmentAction_##unique)                                       \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::DecreasingOrderGlobalServer_##unique::SkipRecordingRouteFragmentsAction,                \
+        DecreasingOrderGlobalServerSkipRecordingRouteFragmentsAction_##unique)
 
 
-#define LUE_INSTANTIATE_DECREASING_ORDER(Policies, InputElement)                                             \
+#define LUE_INSTANTIATE_DECREASING_ORDER_GLOBAL(Policies, rank)                                              \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT SerialRoute<2>                                                     \
-    decreasing_order<ArgumentType<void(Policies)>, InputElement, 2>(                                         \
+    template LUE_ROUTING_OPERATION_EXPORT SerialRoute<policy::OutputElementT<Policies, 0>, rank>             \
+    decreasing_order<ArgumentType<void(Policies)>, rank>(                                                    \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<InputElement, 2> const&,                                                            \
-        Count const max_length);
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
+        Count const);

@@ -7,20 +7,22 @@
 namespace lue {
 
     template<typename Policies, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
-        Policies const& policies, SerialRoute<rank> const& route, Count const max_nr_cells);
-
-    template<typename Policies, typename ZoneElement, typename InputElement, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
         Policies const& policies,
-        PartitionedArray<ZoneElement, rank> const& region,
-        PartitionedArray<InputElement, rank> const& array,
+        SerialRoute<policy::InputElementT<Policies, 0>, rank> const& route,
         Count const max_nr_cells);
 
-    template<typename Policies, typename InputElement, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
+    template<typename Policies, typename FieldElement, Rank rank>
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
         Policies const& policies,
-        PartitionedArray<InputElement, rank> const& array,
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& zone,
+        PartitionedArray<FieldElement, rank> const& field,
+        Count const max_nr_cells);
+
+    template<typename Policies, typename FieldElement, Rank rank>
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
+        Policies const& policies,
+        PartitionedArray<FieldElement, rank> const& field,
         Count const max_nr_cells);
 
 }  // namespace lue

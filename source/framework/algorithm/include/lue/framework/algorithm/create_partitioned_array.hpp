@@ -943,11 +943,12 @@ namespace lue {
 
     template<
         typename Policies,
+        typename RouteID,
         Rank rank,
         typename Functor,
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
     PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
-        Policies const& policies, SerialRoute<rank> const& route, Functor const& partition_creator)
+        Policies const& policies, SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
     {
         // Use the route passed in as a clone / template for creating the new array. The shape
         // of the output array and the individual partitions, and the distribution of the
@@ -1004,9 +1005,13 @@ namespace lue {
     }
 
 
-    template<Rank rank, typename Functor, std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    template<
+        typename RouteID,
+        Rank rank,
+        typename Functor,
+        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
     PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
-        SerialRoute<rank> const& route, Functor const& partition_creator)
+        SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<OutputElementT<Functor>>;
 

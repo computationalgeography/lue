@@ -9,31 +9,33 @@ block()
     set(counter "0")
 
     foreach(rank IN LISTS ranks)
-        math(EXPR count "${count} + 1")
+        foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+            math(EXPR count "${count} + 1")
 
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${count}.cpp")
 
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_route_partition.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-                '{"rank":"${rank}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_route_partition.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"RouteID":"${RouteID}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
 
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/serial_route_partition-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/serial_route_partition-${count}.cpp")
 
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/src/server/serial_route_partition.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-                '{"rank":"${rank}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/server/serial_route_partition.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"RouteID":"${RouteID}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
     endforeach()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)

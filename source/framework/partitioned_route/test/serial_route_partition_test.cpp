@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_CASE(default_construct_client)
 
     // Default initialization
     {
-        lue::SerialRoutePartition<2> partition;
+        lue::SerialRoutePartition<std::uint8_t, 2> partition;
 
         BOOST_CHECK(!partition.valid());
         BOOST_CHECK(!partition.is_ready());
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(default_construct_client)
 
     // Value initialization
     {
-        lue::SerialRoutePartition<2> partition{};
+        lue::SerialRoutePartition<std::uint8_t, 2> partition{};
 
         BOOST_CHECK(!partition.valid());
         BOOST_CHECK(!partition.is_ready());
@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE(default_construct_client)
 
 BOOST_AUTO_TEST_CASE(construct_server01)
 {
-    using RoutePartitionServer = lue::server::SerialRoutePartition<2>;
-    using RoutePartition = lue::SerialRoutePartition<2>;
+    using RoutePartitionServer = lue::server::SerialRoutePartition<std::int32_t, 2>;
+    using RoutePartition = lue::SerialRoutePartition<std::int32_t, 2>;
 
     typename RoutePartitionServer::Offset const partition_offset{33, 44};
     typename RoutePartitionServer::Shape const partition_shape{6, 4};
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(construct_server01)
 
 BOOST_AUTO_TEST_CASE(construct_server02)
 {
-    using RoutePartition = lue::SerialRoutePartition<2>;
+    using RoutePartition = lue::SerialRoutePartition<std::uint64_t, 2>;
     using RouteFragment = typename RoutePartition::RouteFragment;
     using RouteFragments = typename RoutePartition::RouteFragments;
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(construct_server02)
     std::vector<RouteFragment> fragments0{fragment1};
     std::vector<RouteFragment> fragments1{fragment2, fragment3};
 
-    std::set<typename RoutePartition::RouteID> const route_ids{5, 3};
+    std::set<lue::RouteID> const route_ids{5, 3};
 
     RouteFragments fragments{{5, fragments0}, {3, fragments1}};
 

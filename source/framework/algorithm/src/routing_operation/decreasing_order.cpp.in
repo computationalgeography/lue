@@ -3,27 +3,36 @@
 
 
 {% if ZoneElement %}
-    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTION_DECLARATIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
-    LUE_REGISTER_DECREASING_ORDER_ZONE_ACTIONS({{ Policies }}, {{ ZoneElement }}, {{ InputElement }}, 2)
+    LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_ZONAL(
+            ESC(lue::policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
+            {{ rank }},
+            {{ ZoneElement }}_{{ InputElement }}_{{ rank }})
+    LUE_REGISTER_DECREASING_ORDER_ACTIONS_ZONAL(
+            ESC(lue::policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
+            {{ rank }},
+            {{ ZoneElement }}_{{ InputElement }}_{{ rank }})
 {% else %}
-    LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS({{ Policies }}, {{ InputElement }}, 2)
-    LUE_REGISTER_DECREASING_ORDER_ACTIONS({{ Policies }}, {{ InputElement }}, 2)
+    LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_GLOBAL(
+            ESC(lue::policy::decreasing_order::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            {{ rank }},
+            {{ OutputElement }}_{{ InputElement }}_{{ rank }})
+    LUE_REGISTER_DECREASING_ORDER_ACTIONS_GLOBAL(
+            ESC(lue::policy::decreasing_order::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            {{ rank }},
+            {{ OutputElement }}_{{ InputElement }}_{{ rank }})
 {% endif %}
 
 
 namespace lue {
 
     {% if ZoneElement %}
-        LUE_INSTANTIATE_DECREASING_ORDER_ZONE(
-                ESC(policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
-                {{ ZoneElement }},
-                {{ InputElement }}
-            );
+        LUE_INSTANTIATE_DECREASING_ORDER_ZONAL(
+            ESC(policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
+            {{ rank }});
     {% else %}
-        LUE_INSTANTIATE_DECREASING_ORDER(
-                ESC(policy::decreasing_order::{{ Policies }}<{{ InputElement }}>),
-                {{ InputElement }}
-            );
+        LUE_INSTANTIATE_DECREASING_ORDER_GLOBAL(
+            ESC(policy::decreasing_order::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            {{ rank }});
     {% endif %}
 
 }  // namespace lue

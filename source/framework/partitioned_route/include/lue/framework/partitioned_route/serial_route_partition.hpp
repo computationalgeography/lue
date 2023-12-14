@@ -11,19 +11,18 @@ namespace lue {
         Each instance is associated with a single serial route partition component
         server instance. Multiple instances can be associated with a single server instance.
     */
-    template<Rank rank>
+    template<typename RouteID, Rank rank>
     class LUE_FPR_EXPORT SerialRoutePartition:
-        public hpx::components::client_base<SerialRoutePartition<rank>, server::SerialRoutePartition<rank>>
+        public hpx::components::
+            client_base<SerialRoutePartition<RouteID, rank>, server::SerialRoutePartition<RouteID, rank>>
 
     {
 
         public:
 
-            using Server = server::SerialRoutePartition<rank>;
+            using Server = server::SerialRoutePartition<RouteID, rank>;
 
-            using Base = hpx::components::client_base<SerialRoutePartition<rank>, Server>;
-
-            using RouteID = typename Server::RouteID;
+            using Base = hpx::components::client_base<SerialRoutePartition<RouteID, rank>, Server>;
 
             using RouteFragment = typename Server::RouteFragment;
 
@@ -75,20 +74,20 @@ namespace lue {
 
     namespace detail {
 
-        template<Rank r>
-        class ArrayTraits<SerialRoutePartition<r>>
+        template<typename RouteID, Rank r>
+        class ArrayTraits<SerialRoutePartition<RouteID, r>>
         {
 
             public:
 
                 constexpr static Rank rank = r;
 
-                using Offset = typename SerialRoutePartition<r>::Offset;
+                using Offset = typename SerialRoutePartition<RouteID, r>::Offset;
 
-                using Shape = typename SerialRoutePartition<r>::Shape;
+                using Shape = typename SerialRoutePartition<RouteID, r>::Shape;
 
-                template<Rank r_>
-                using Partition = SerialRoutePartition<r_>;
+                template<RouteID, Rank r_>
+                using Partition = SerialRoutePartition<RouteID, r_>;
         };
 
     }  // namespace detail

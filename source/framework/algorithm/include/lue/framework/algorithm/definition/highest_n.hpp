@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/decreasing_order.hpp"
 #include "lue/framework/algorithm/detail/promise.hpp"
 #include "lue/framework/algorithm/highest_n.hpp"
@@ -13,6 +12,7 @@
 #include <map>
 #include <mutex>
 #include <shared_mutex>
+#include <type_traits>
 #include <vector>
 
 
@@ -43,16 +43,6 @@ namespace lue {
                     {
                     }
 
-                    Data(Data const&) = default;
-
-                    Data(Data&&) = default;
-
-                    ~Data() = default;
-
-                    Data& operator=(Data const&) = default;
-
-                    Data& operator=(Data&&) = default;
-
 
                     Count& operator++()
                     {
@@ -72,7 +62,7 @@ namespace lue {
 
 
                     template<typename Archive>
-                    void serialize(Archive& archive, unsigned int const)
+                    void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
                     {
                         // clang-format off
                         archive & _max_nr_cells_to_visit;
@@ -100,7 +90,8 @@ namespace lue {
 
                         using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
                         using ComponentClient = highest_n::Walk<Policies, rank>;
-                        using OutputElement = policy::OutputElementT<Policies>;
+                        using OutputElement = policy::OutputElementT<Policies, 0>;
+                        using RouteID = policy::InputElementT<Policies, 0>;
 
                     protected:
 
@@ -110,9 +101,8 @@ namespace lue {
 
                     public:
 
-                        using RouteID = Index;
                         using OutputPartition = PartitionT<OutputArray>;
-                        using RoutePartition = lue::SerialRoutePartition<rank>;
+                        using RoutePartition = lue::SerialRoutePartition<RouteID, rank>;
 
 
                         Walk(Policies const& policies, RoutePartition route_partition):
@@ -404,7 +394,6 @@ namespace lue {
                     using ComponentServer = server::Walk<Policies, rank>;
                     using ComponentClientBase =
                         hpx::components::client_base<Walk<Policies, rank>, ComponentServer>;
-                    using RouteID = typename ComponentServer::RouteID;
                     using OutputPartition = typename ComponentServer::OutputPartition;
 
                 public:
@@ -502,13 +491,19 @@ namespace lue {
 
 
     template<typename Policies, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
-        Policies const& policies, SerialRoute<rank> const& route, Count const max_nr_cells)
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
+        Policies const& policies,
+        SerialRoute<policy::InputElementT<Policies, 0>, rank> const& route,
+        Count const max_nr_cells)
     {
-        using Route = SerialRoute<rank>;
+        static_assert(std::is_integral_v<policy::OutputElementT<Policies, 0>>);
+        static_assert(std::is_integral_v<policy::InputElementT<Policies, 0>>);
+
+        using RouteID = policy::InputElementT<Policies, 0>;
+        using Route = SerialRoute<RouteID, rank>;
         using RoutePartition = PartitionT2<Route>;
 
-        using OutputElement = policy::OutputElementT<Policies>;
+        using OutputElement = policy::OutputElementT<Policies, 0>;
         using OutputArray = PartitionedArray<OutputElement, rank>;
         using OutputPartition = PartitionT<OutputArray>;
         using OutputPartitions = PartitionsT<OutputArray>;
@@ -595,13 +590,21 @@ namespace lue {
     }
 
 
-    template<typename Policies, typename ZoneElement, typename InputElement, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
+    template<typename Policies, typename InputElement, Rank rank>
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
         [[maybe_unused]] /* TODO */ Policies const& policies,
-        PartitionedArray<ZoneElement, rank> const& zone,
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& zone,
+        // PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array,
         PartitionedArray<InputElement, rank> const& array,
         Count const max_nr_cells)
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 1>, InputElement>);
+        static_assert(std::is_arithmetic_v<policy::InputElementT<Policies, 1>>);
+
+        using ZoneElement = policy::InputElementT<Policies, 0>;
+        using RouteID = ZoneElement;
+        // using InputElement = policy::InputElementT<Policies, 1>;
+
         // TODO Make this work
         // using DecreasingOrderPolicies = policy::Policies<
         //     policy::AllValuesWithinDomain<ZoneElement, InputElement>,
@@ -611,29 +614,38 @@ namespace lue {
 
         using DecreasingOrderPolicies = policy::DefaultValuePolicies<
             policy::AllValuesWithinDomain<ZoneElement, InputElement>,
-            policy::OutputElements<>,
+            policy::OutputElements<RouteID>,
             policy::InputElements<ZoneElement, InputElement>>;
 
+        SerialRoute<RouteID, rank> route =
+            decreasing_order(DecreasingOrderPolicies{}, zone, array, max_nr_cells);
+
         // TODO Make this depend on the policy and its state passed in
-        using OutputElement = policy::OutputElementT<Policies>;
+        using OutputElement = policy::OutputElementT<Policies, 0>;
 
         using WalkPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<InputElement>,
+            policy::AllValuesWithinDomain<RouteID>,
             policy::OutputElements<OutputElement>,
-            policy::InputElements<InputElement>>;
-
-        SerialRoute<rank> route = decreasing_order(DecreasingOrderPolicies{}, zone, array, max_nr_cells);
+            policy::InputElements<RouteID>>;
 
         return highest_n(WalkPolicies{}, route, max_nr_cells);
     }
 
 
     template<typename Policies, typename InputElement, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies>, rank> highest_n(
+    // typename std::enable_if_t<(policy::nr_inputs<Policies> > 1)>
+    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
         [[maybe_unused]] /* TODO */ Policies const& policies,
+        // PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array,
         PartitionedArray<InputElement, rank> const& array,
         Count const max_nr_cells)
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 1>, InputElement>);
+        static_assert(std::is_arithmetic_v<policy::InputElementT<Policies, 1>>);
+
+        using RouteID = policy::InputElementT<Policies, 0>;
+        // using InputElement = policy::InputElementT<Policies, 1>;
+
         // TODO Make this work
         // using DecreasingOrderPolicies = policy::Policies<
         //     policy::AllValuesWithinDomain<InputElement>,
@@ -641,19 +653,19 @@ namespace lue {
         //     policy::InputsPolicies<policy::InputPoliciesT<Policies, 0, InputElement>>>;
 
         using DecreasingOrderPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<InputElement>,
-            policy::OutputElements<>,
-            policy::InputElements<InputElement>>;
+            policy::AllValuesWithinDomain<RouteID, InputElement>,
+            policy::OutputElements<RouteID>,
+            policy::InputElements<RouteID, InputElement>>;
+
+        SerialRoute<RouteID, rank> route = decreasing_order(DecreasingOrderPolicies{}, array, max_nr_cells);
 
         // TODO Make this depend on the policy and its state passed in
-        using OutputElement = policy::OutputElementT<Policies>;
+        using OutputElement = policy::OutputElementT<Policies, 0>;
 
         using WalkPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<InputElement>,
+            policy::AllValuesWithinDomain<RouteID>,
             policy::OutputElements<OutputElement>,
-            policy::InputElements<InputElement>>;
-
-        SerialRoute<rank> route = decreasing_order(DecreasingOrderPolicies{}, array, max_nr_cells);
+            policy::InputElements<RouteID>>;
 
         return highest_n(WalkPolicies{}, route, max_nr_cells);
     }
@@ -663,68 +675,75 @@ namespace lue {
 
 #define LUE_REGISTER_HIGHEST_N_ACTION_DECLARATIONS(Policies, rank, unique)                                   \
                                                                                                              \
-    using HighestNWalkServer_##unique =                                                                      \
-        hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
-                                                                                                             \
-    HPX_REGISTER_COMPONENT(HighestNWalkServer_##unique, HighestNWalk_##unique)                               \
-                                                                                                             \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        HighestNWalkServer_##unique::ResultPartitionAction, HighestNWalk_ResultPartitionAction_##unique)     \
+    namespace lue::detail {                                                                                  \
+        using HighestNWalkServer_##unique = lue::detail::highest_n::server::Walk<Policies, rank>;            \
+    }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        HighestNWalkServer_##unique::SetDownstreamComponentsAction,                                          \
-        HighestNWalk_SetRemoteComponentsAction_##unique)                                                     \
+        lue::detail::HighestNWalkServer_##unique::ResultPartitionAction,                                     \
+        HighestNWalkServerResultPartitionAction_##unique)                                                    \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        HighestNWalkServer_##unique::WalkAction, HighestNWalk_WalkAction_##unique)                           \
+        lue::detail::HighestNWalkServer_##unique::SetDownstreamComponentsAction,                             \
+        HighestNWalkServerSetRemoteComponentsAction_##unique)                                                \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                                        \
-        HighestNWalk_SkipWalkingRouteFragmentsAction_##unique)
+        lue::detail::HighestNWalkServer_##unique::WalkAction, HighestNWalkServerWalkAction_##unique)         \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                           \
+        HighestNWalkServerSkipWalkingRouteFragmentsAction_##unique)
 
 
 #define LUE_REGISTER_HIGHEST_N_ACTIONS(Policies, rank, unique)                                               \
                                                                                                              \
-    using HighestNWalkServer_##unique =                                                                      \
-        hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                    \
+    namespace lue::detail {                                                                                  \
+        using HighestNWalkServerComponent_##unique =                                                         \
+            hpx::components::component<lue::detail::highest_n::server::Walk<Policies, rank>>;                \
+    }                                                                                                        \
                                                                                                              \
-    HPX_REGISTER_COMPONENT(HighestNWalkServer_##unique, HighestNWalk_##unique)                               \
-                                                                                                             \
-    HPX_REGISTER_ACTION(                                                                                     \
-        HighestNWalkServer_##unique::ResultPartitionAction, HighestNWalk_ResultPartitionAction_##unique)     \
-                                                                                                             \
-    HPX_REGISTER_ACTION(                                                                                     \
-        HighestNWalkServer_##unique::SetDownstreamComponentsAction,                                          \
-        HighestNWalk_SetRemoteComponentsAction_##unique)                                                     \
-                                                                                                             \
-    HPX_REGISTER_ACTION(HighestNWalkServer_##unique::WalkAction, HighestNWalk_WalkAction_##unique)           \
+    HPX_REGISTER_COMPONENT(                                                                                  \
+        lue::detail::HighestNWalkServerComponent_##unique, HighestNWalkServerComponent_##unique)             \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                                        \
-        HighestNWalk_SkipWalkingRouteFragmentsAction_##unique)
-
-
-#define LUE_INSTANTIATE_HIGHEST_N(Policies)                                                                  \
+        lue::detail::HighestNWalkServer_##unique::ResultPartitionAction,                                     \
+        HighestNWalkServerResultPartitionAction_##unique)                                                    \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
-    highest_n<ArgumentType<void(Policies)>, 2>(                                                              \
-        ArgumentType<void(Policies)> const&, SerialRoute<2> const&, Count const max_nr_cells);
-
-
-#define LUE_INSTANTIATE_HIGHEST_N_GLOBAL(Policies, InputElement)                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::HighestNWalkServer_##unique::SetDownstreamComponentsAction,                             \
+        HighestNWalkServerSetRemoteComponentsAction_##unique)                                                \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
-    highest_n<ArgumentType<void(Policies)>, InputElement, 2>(                                                \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::HighestNWalkServer_##unique::WalkAction, HighestNWalkServerWalkAction_##unique)         \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::HighestNWalkServer_##unique::SkipWalkingRouteFragmentsAction,                           \
+        HighestNWalkServerSkipWalkingRouteFragmentsAction_##unique)
+
+
+#define LUE_INSTANTIATE_HIGHEST_N(Policies, rank)                                                            \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies, 0>, rank>        \
+    highest_n<ArgumentType<void(Policies)>, rank>(                                                           \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<InputElement, 2> const&,                                                            \
-        Count const max_nr_cells);
+        SerialRoute<policy::InputElementT<Policies, 0>, rank> const&,                                        \
+        Count const);
 
 
-#define LUE_INSTANTIATE_HIGHEST_N_ZONAL(Policies, ZoneElement, InputElement)                                 \
+#define LUE_INSTANTIATE_HIGHEST_N_GLOBAL(Policies, rank)                                                     \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies>, 2>              \
-    highest_n<ArgumentType<void(Policies)>, ZoneElement, InputElement, 2>(                                   \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies, 0>, rank>        \
+    highest_n<ArgumentType<void(Policies)>, policy::InputElementT<Policies, 1>, rank>(                       \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<ZoneElement, 2> const&,                                                             \
-        PartitionedArray<InputElement, 2> const&,                                                            \
-        Count const max_nr_cells);
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
+        Count const);
+
+
+#define LUE_INSTANTIATE_HIGHEST_N_ZONAL(Policies, rank)                                                      \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies, 0>, rank>        \
+    highest_n<ArgumentType<void(Policies)>, policy::InputElementT<Policies, 1>, rank>(                       \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const&,                                   \
+        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
+        Count const);
