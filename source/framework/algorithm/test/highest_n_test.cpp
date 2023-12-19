@@ -255,8 +255,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
         });
     // clang-format on
 
-    ResultArray const result_we_got =
-        lue::value_policies::highest_n<ResultElement>(zone_array, value_array, max_nr_cells);
+    ResultArray const result_we_got = lue::value_policies::highest_n<ResultElement>(
+        lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells), max_nr_cells);
 
     auto const& partitions = result_we_got.partitions();
 
@@ -558,8 +558,8 @@ BOOST_AUTO_TEST_CASE(random_input)
     ZoneArray const zone_array{
         lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
 
-    ResultArray const result_we_got =
-        lue::value_policies::highest_n<ResultElement>(zone_array, value_array, max_nr_cells);
+    ResultArray const result_we_got = lue::value_policies::highest_n<ResultElement>(
+        lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells), max_nr_cells);
 
     auto const& partitions = result_we_got.partitions();
 

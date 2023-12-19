@@ -37,7 +37,7 @@ namespace lue::framework {
             auto class_ =
                 pybind11::class_<Route>(
                     module,
-                    fmt::format("SerialRoute_{}", rank).c_str(),
+                    fmt::format("SerialRoute_{}_{}", as_string<RouteID>(), rank).c_str(),
                     fmt::format(
                         R"(
     Partitioned serial route type for routes of rank {}
@@ -86,10 +86,10 @@ namespace lue::framework {
     void bind_serial_route(pybind11::module& module)
     {
         detail::bind_serial_route<std::uint8_t, 2>(module);
-        detail::bind_serial_route<std::int32_t, 2>(module);
-        detail::bind_serial_route<std::int64_t, 2>(module);
         detail::bind_serial_route<std::uint32_t, 2>(module);
         detail::bind_serial_route<std::uint64_t, 2>(module);
+        detail::bind_serial_route<std::int32_t, 2>(module);
+        detail::bind_serial_route<std::int64_t, 2>(module);
     }
 
 }  // namespace lue::framework

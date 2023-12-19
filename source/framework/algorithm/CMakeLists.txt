@@ -64,7 +64,7 @@ set(generated_source_files "")
 set(offset "src/local_operation")
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -234,7 +234,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS
@@ -264,7 +264,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS
@@ -501,7 +501,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -530,7 +530,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
@@ -656,7 +656,7 @@ set(Counts uint64_t)
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -708,7 +708,7 @@ endblock()
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -786,7 +786,7 @@ endblock()
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
@@ -812,7 +812,7 @@ endblock()
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
         foreach(Count IN LISTS Counts)
@@ -889,7 +889,7 @@ set(generated_source_files "")
 
 block()
     # Instantiate zonal_area
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Count IN LISTS Counts)
@@ -916,7 +916,7 @@ endblock()
 
 block()
     # Instantiate zonal_diversity
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Count IN LISTS Counts)
@@ -945,7 +945,7 @@ endblock()
 
 block()
     # Instantiate zonal_majority
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
@@ -972,7 +972,7 @@ endblock()
 
 block()
     # Instantiate zonal_maximum
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -999,7 +999,7 @@ endblock()
 
 block()
     # Instantiate zonal_mean
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1026,7 +1026,7 @@ endblock()
 
 block()
     # Instantiate zonal_minimum
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -1053,7 +1053,7 @@ endblock()
 
 block()
     # Instantiate zonal_normal
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1080,7 +1080,7 @@ endblock()
 
 block()
     # Instantiate zonal_sum
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -1107,7 +1107,7 @@ endblock()
 
 block()
     # Instantiate zonal_uniform
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1181,7 +1181,7 @@ set(offset "src/global_operation")
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS all_policies)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
@@ -1208,7 +1208,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
@@ -1284,7 +1284,7 @@ set(offset "src/routing_operation")
 
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         math(EXPR count "${count} + 1")
@@ -1323,7 +1323,7 @@ endblock()
 set(material_elements uint64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS all_policies)
         foreach(Element IN LISTS material_elements)
@@ -1348,7 +1348,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS material_elements)
@@ -1373,7 +1373,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS all_policies)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1399,7 +1399,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1478,7 +1478,7 @@ endblock()
 
 
 block()
-    set(counter "0")
+    set(count "0")
     set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
@@ -1515,7 +1515,7 @@ block()
         endforeach()
     endforeach()
 
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
@@ -1534,39 +1534,39 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
-                foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                    math(EXPR count "${count} + 1")
+                ### foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                ###     math(EXPR count "${count} + 1")
 
-                    # Instantiate highest_n (zonal)
-                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
-                    generate_template_instantiation(
-                        INPUT_PATHNAME
-                            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
-                        OUTPUT_PATHNAME
-                            "${output_pathname}"
-                        DICTIONARY
-                        '{"Policies":"${Policies}","OutputElement":"${OutputElement}","ZoneElement":"${ZoneElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
-                    )
-                    list(APPEND generated_source_files "${output_pathname}")
+                ###     # Instantiate highest_n (zonal)
+                ###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+                ###     generate_template_instantiation(
+                ###         INPUT_PATHNAME
+                ###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+                ###         OUTPUT_PATHNAME
+                ###             "${output_pathname}"
+                ###         DICTIONARY
+                ###         '{"Policies":"${Policies}","OutputElement":"${OutputElement}","ZoneElement":"${ZoneElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
+                ###     )
+                ###     list(APPEND generated_source_files "${output_pathname}")
 
-                endforeach()
+                ### endforeach()
             endforeach()
 
-            foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                math(EXPR count "${count} + 1")
+            ### foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            ###     math(EXPR count "${count} + 1")
 
-                # Instantiate highest_n (global)
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                    '{"Policies":"${Policies}","OutputElement":"${OutputElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
+            ###     # Instantiate highest_n (global)
+            ###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+            ###     generate_template_instantiation(
+            ###         INPUT_PATHNAME
+            ###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+            ###         OUTPUT_PATHNAME
+            ###             "${output_pathname}"
+            ###         DICTIONARY
+            ###         '{"Policies":"${Policies}","OutputElement":"${OutputElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
+            ###     )
+            ###     list(APPEND generated_source_files "${output_pathname}")
+            ### endforeach()
         endforeach()
     endforeach()
 
@@ -1577,7 +1577,7 @@ endblock()
 set(materials uint8_t int64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Element IN LISTS materials)
         math(EXPR count "${count} + 1")
@@ -1601,7 +1601,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
@@ -1626,7 +1626,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
@@ -1651,7 +1651,7 @@ block()
 endblock()
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         math(EXPR count "${count} + 1")

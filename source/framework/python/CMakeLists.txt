@@ -5,7 +5,6 @@ add_test_conditionally(test)
 
 # framework/*
 foreach(module_name __init__.py support.py)
-    message(DEBUG ${module_name})
     file(GENERATE
         OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/framework/${module_name}
         INPUT framework/${module_name}

@@ -1,0 +1,21 @@
+#include "lue/framework/algorithm/definition/integrate.hpp"
+#include "lue/framework/algorithm/value_policies/integrate.hpp"
+
+
+LUE_REGISTER_INTEGRATE_ACTION_DECLARATIONS(
+    ESC(lue::policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
+    {{ rank }},
+    {{ RouteID }}_{{ rank }});
+LUE_REGISTER_INTEGRATE_ACTIONS(
+    ESC(lue::policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
+    {{ rank }},
+    {{ RouteID }}_{{ rank }});
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_INTEGRATE(
+        ESC(policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
+        {{ rank }});
+
+}  // namespace lue
