@@ -1,9 +1,9 @@
 #pragma once
-#include "lue/framework/algorithm/highest_n.hpp"
+#include "lue/framework/algorithm/first_n.hpp"
 
 
 namespace lue {
-    namespace policy::highest_n {
+    namespace policy::first_n {
 
         template<typename OutputElement, typename RouteID, typename... InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
@@ -11,18 +11,18 @@ namespace lue {
             OutputElements<OutputElement>,
             InputElements<RouteID, InputElement...>>;
 
-    }  // namespace policy::highest_n
+    }  // namespace policy::first_n
 
 
     namespace value_policies {
 
         template<typename OutputElement, typename RouteID, Rank rank>
-        auto highest_n(SerialRoute<RouteID, rank> const& route, Count const max_nr_cells)
+        auto first_n(SerialRoute<RouteID, rank> const& route, Count const max_nr_cells)
             -> PartitionedArray<OutputElement, rank>
         {
-            using Policies = policy::highest_n::DefaultValuePolicies<OutputElement, RouteID>;
+            using Policies = policy::first_n::DefaultValuePolicies<OutputElement, RouteID>;
 
-            return highest_n(Policies{}, route, max_nr_cells);
+            return first_n(Policies{}, route, max_nr_cells);
         }
 
     }  // namespace value_policies

@@ -12,7 +12,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class HighestNTest(lue_test.TestCase):
+class FirstNTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -25,4 +25,4 @@ class HighestNTest(lue_test.TestCase):
             zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
             route = lfr.decreasing_order(zones, values, max_nr_cells)
 
-            lfr.highest_n(route, max_nr_cells)
+            lfr.first_n(route, max_nr_cells)

@@ -77,7 +77,7 @@ set(routing_operation_names
     accu_fraction
     accu_threshold
     decreasing_order
-    highest_n
+    first_n
     inflow_count
     kinematic_wave
 )

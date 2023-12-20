@@ -102,7 +102,7 @@ add_library(lue_py_framework SHARED
 
     src/algorithm/routing_operation.cpp
     src/algorithm/routing_operation/decreasing_order.cpp
-    src/algorithm/routing_operation/highest_n.cpp
+    src/algorithm/routing_operation/first_n.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
 
     src/algorithm/zonal_operation.cpp

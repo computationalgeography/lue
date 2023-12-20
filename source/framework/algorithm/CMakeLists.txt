@@ -1522,51 +1522,18 @@ block()
             foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                # Instantiate highest_n (routing)
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
+                # Instantiate first_n
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/first_n-${count}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/first_n.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
                     '{"Policies":"${Policies}","OutputElement":"${OutputElement}","RouteID":"${ZoneElement}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-
-                ### foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                ###     math(EXPR count "${count} + 1")
-
-                ###     # Instantiate highest_n (zonal)
-                ###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
-                ###     generate_template_instantiation(
-                ###         INPUT_PATHNAME
-                ###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
-                ###         OUTPUT_PATHNAME
-                ###             "${output_pathname}"
-                ###         DICTIONARY
-                ###         '{"Policies":"${Policies}","OutputElement":"${OutputElement}","ZoneElement":"${ZoneElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
-                ###     )
-                ###     list(APPEND generated_source_files "${output_pathname}")
-
-                ### endforeach()
             endforeach()
-
-            ### foreach(FieldElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            ###     math(EXPR count "${count} + 1")
-
-            ###     # Instantiate highest_n (global)
-            ###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/highest_n-${count}.cpp")
-            ###     generate_template_instantiation(
-            ###         INPUT_PATHNAME
-            ###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/highest_n.cpp.in"
-            ###         OUTPUT_PATHNAME
-            ###             "${output_pathname}"
-            ###         DICTIONARY
-            ###         '{"Policies":"${Policies}","OutputElement":"${OutputElement}","FieldElement":"${FieldElement}","rank":"${rank}"}'
-            ###     )
-            ###     list(APPEND generated_source_files "${output_pathname}")
-            ### endforeach()
         endforeach()
     endforeach()
 

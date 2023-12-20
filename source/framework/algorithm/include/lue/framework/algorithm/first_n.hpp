@@ -7,7 +7,7 @@
 namespace lue {
 
     template<typename Policies, Rank rank>
-    auto highest_n(
+    auto first_n(
         Policies const& policies,
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const& route,
         Count max_nr_cells) -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>;

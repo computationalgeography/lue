@@ -1,8 +1,8 @@
-#define BOOST_TEST_MODULE lue framework algorithm highest_n
+#define BOOST_TEST_MODULE lue framework algorithm first_n
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
+#include "lue/framework/algorithm/value_policies/first_n.hpp"
 #include "lue/framework/algorithm/value_policies/greater_than.hpp"
-#include "lue/framework/algorithm/value_policies/highest_n.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/core/component.hpp"
@@ -38,7 +38,7 @@ namespace {
 //     lue::Count const nr_elements{0};
 //
 //     Array<InputElement> input_array = lue::create_partitioned_array<InputElement>(array_shape);
-//     Array<OutputElement> output_array = highest_n<OutputElement>(input_array, nr_elements);
+//     Array<OutputElement> output_array = first_n<OutputElement>(input_array, nr_elements);
 //
 //     BOOST_CHECK_EQUAL(output_array.shape(), array_shape);
 // }
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
         });
     // clang-format on
 
-    ResultArray const result_we_got = lue::value_policies::highest_n<ResultElement>(
+    ResultArray const result_we_got = lue::value_policies::first_n<ResultElement>(
         lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells), max_nr_cells);
 
     auto const& partitions = result_we_got.partitions();
@@ -558,7 +558,7 @@ BOOST_AUTO_TEST_CASE(random_input)
     ZoneArray const zone_array{
         lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
 
-    ResultArray const result_we_got = lue::value_policies::highest_n<ResultElement>(
+    ResultArray const result_we_got = lue::value_policies::first_n<ResultElement>(
         lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells), max_nr_cells);
 
     auto const& partitions = result_we_got.partitions();
