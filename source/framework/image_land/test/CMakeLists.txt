@@ -14,7 +14,6 @@ foreach(name ${names})
     target_link_libraries(${test_name}
         PRIVATE
             lue::image_land
-            lue::framework_routing_operation
             lue_framework_algorithm_test
             lue::framework_test
             Boost::unit_test_framework

@@ -1300,7 +1300,7 @@ namespace lue {
             // partition) the maximum value per zone.
 
             // Dataflow for when the input partitions are ready
-            hpx::tie(components_f[p], route_partitions[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
+            std::tie(components_f[p], route_partitions[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
 
                 [policies, locality = localities[p]](
@@ -1311,7 +1311,7 @@ namespace lue {
                     hpx::future<MaxValueByZone> max_values_f{};
 
                     // Dataflow for when the partition's offset and shape are ready
-                    hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(hpx::dataflow(
+                    std::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(hpx::dataflow(
                         hpx::launch::async,
                         hpx::unwrapping(
 
@@ -1323,7 +1323,7 @@ namespace lue {
                                 hpx::future<MaxValueByZone> max_values_f{};
 
                                 // Create a component and tell it to sort values by zone
-                                hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(
+                                std::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(
                                     hpx::new_<Component>(locality, offset, shape)
                                         .then(
 
@@ -1334,7 +1334,7 @@ namespace lue {
                                                     component.sort_values(
                                                         policies, zone_partition, value_partition)};
 
-                                                return hpx::make_tuple(
+                                                return std::make_tuple(
                                                     std::move(component),
                                                     std::move(partition_id_f),
                                                     std::move(max_values_f));
@@ -1342,7 +1342,7 @@ namespace lue {
 
                                             ));
 
-                                return hpx::make_tuple(
+                                return std::make_tuple(
                                     std::move(component_f),
                                     std::move(partition_id_f),
                                     std::move(max_values_f));
@@ -1351,7 +1351,7 @@ namespace lue {
                         value_partition.offset(),
                         value_partition.shape()));
 
-                    return hpx::make_tuple(
+                    return std::make_tuple(
                         std::move(component_f), std::move(partition_id_f), std::move(max_values_f));
                 },
 
@@ -1394,7 +1394,7 @@ namespace lue {
                             components.begin(),
                             [](hpx::future<Component>& component_f)
                             {
-                                component_f.wait();  // TODO
+                                // component_f.wait();  // TODO
                                 lue_hpx_assert(component_f.is_ready());
                                 return component_f.get();
                             });
@@ -1563,7 +1563,7 @@ namespace lue {
             // partition) the maximum value.
 
             // Dataflow for when the input partitions are ready
-            hpx::tie(components_f[p], route_partitions[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
+            std::tie(components_f[p], route_partitions[p], max_values_f[p]) = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
 
                 [policies, locality = localities[p]](ValuePartition const& value_partition)
@@ -1573,7 +1573,7 @@ namespace lue {
                     hpx::future<MaxValue> max_values_f{};
 
                     // Dataflow for when the partition's offset and shape are ready
-                    hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(hpx::dataflow(
+                    std::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(hpx::dataflow(
                         hpx::launch::async,
                         hpx::unwrapping(
 
@@ -1584,7 +1584,7 @@ namespace lue {
                                 hpx::future<MaxValue> max_values_f{};
 
                                 // Create a component and tell it to sort values
-                                hpx::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(
+                                std::tie(component_f, partition_id_f, max_values_f) = hpx::split_future(
                                     hpx::new_<Component>(locality, offset, shape)
                                         .then(
 
@@ -1594,7 +1594,7 @@ namespace lue {
                                                 hpx::future<MaxValue> max_values_f{
                                                     component.sort_values(policies, value_partition)};
 
-                                                return hpx::make_tuple(
+                                                return std::make_tuple(
                                                     std::move(component),
                                                     std::move(partition_id_f),
                                                     std::move(max_values_f));
@@ -1602,7 +1602,7 @@ namespace lue {
 
                                             ));
 
-                                return hpx::make_tuple(
+                                return std::make_tuple(
                                     std::move(component_f),
                                     std::move(partition_id_f),
                                     std::move(max_values_f));
@@ -1611,7 +1611,7 @@ namespace lue {
                         value_partition.offset(),
                         value_partition.shape()));
 
-                    return hpx::make_tuple(
+                    return std::make_tuple(
                         std::move(component_f), std::move(partition_id_f), std::move(max_values_f));
                 },
 
@@ -1697,7 +1697,7 @@ namespace lue {
                             RouteStarts starts{};
 
                             return hpx::make_ready_future(
-                                hpx::make_tuple(std::move(starts), std::move(components)));
+                                std::make_tuple(std::move(starts), std::move(components)));
                         }
                         else
                         {
@@ -1713,7 +1713,7 @@ namespace lue {
 
                                     starts[route_id] = start_f.get();
 
-                                    return hpx::make_tuple(starts, components);
+                                    return std::make_tuple(starts, components);
                                 });
                         }
                     }));

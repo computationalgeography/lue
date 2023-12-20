@@ -1,7 +1,7 @@
 #pragma once
-#include "lue/framework/algorithm/decreasing_order.hpp"
 #include "lue/framework/algorithm/detail/promise.hpp"
 #include "lue/framework/algorithm/highest_n.hpp"
+#include "lue/framework/algorithm/routing/walk/cell_counter.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/walk.hpp"
 #include "lue/framework/core/component.hpp"
@@ -20,62 +20,7 @@ namespace lue {
     namespace detail {
         namespace highest_n {
 
-            // TODO Move to translation unit if possible
-            class Data
-            {
-
-                public:
-
-                    Data():
-
-                        _nr_cells_visited{},
-                        _max_nr_cells_to_visit{}
-
-                    {
-                    }
-
-
-                    Data(Count const max_nr_cells):
-
-                        _nr_cells_visited{0},
-                        _max_nr_cells_to_visit{max_nr_cells}
-
-                    {
-                    }
-
-
-                    Count& operator++()
-                    {
-                        return ++_nr_cells_visited;
-                    }
-
-
-                    bool keep_walking() const
-                    {
-                        return _nr_cells_visited < _max_nr_cells_to_visit;
-                    }
-
-
-                private:
-
-                    friend class hpx::serialization::access;
-
-
-                    template<typename Archive>
-                    void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
-                    {
-                        // clang-format off
-                        archive & _max_nr_cells_to_visit;
-                        // clang-format on
-                    }
-
-                    Count _nr_cells_visited;
-
-                    Count _max_nr_cells_to_visit;
-            };
-
-            // TODO bitwise serializable
-
+            using Data = CellCounter;
 
             template<typename Policies, Rank rank>
             class Walk;
@@ -481,20 +426,11 @@ namespace lue {
     }      // namespace detail
 
 
-    // TODO
-    // There is no need for visiting the cells in turn. Procedure can be made fully parallel. Maybe have
-    // a different walk / visit function for this case.
-    // - walk: Walk along a route, visiting cells in order. Needed when there is a dependency
-    //   between the cells.
-    // - visit: Just visit all cells in whatever order is the fastest. Possible when there is
-    //   no dependency between the cells.
-
-
     template<typename Policies, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
+    auto highest_n(
         Policies const& policies,
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const& route,
-        Count const max_nr_cells)
+        Count const max_nr_cells) -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
         static_assert(std::is_integral_v<policy::OutputElementT<Policies, 0>>);
         static_assert(std::is_integral_v<policy::InputElementT<Policies, 0>>);
@@ -530,9 +466,7 @@ namespace lue {
 
             hpx::future<hpx::id_type> meh_f;
 
-            // hpx::tie(localities_f[p], walk_components[p]) =
-            // hpx::split_future(hpx::dataflow(hpx::launch::async,
-            hpx::tie(localities_f[p], meh_f) = hpx::split_future(hpx::dataflow(
+            std::tie(localities_f[p], meh_f) = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 [policies](RoutePartition const& route_partition)
                 {
@@ -545,7 +479,7 @@ namespace lue {
                     hpx::future<hpx::id_type> walk_component_f{hpx::new_<WalkComponentServer>(
                         hpx::colocated(route_partition_id), policies, route_partition)};
 
-                    return hpx::make_tuple(std::move(locality_f), std::move(walk_component_f));
+                    return std::make_tuple(std::move(locality_f), std::move(walk_component_f));
                 },
                 route_partitions[p]));
 
@@ -587,87 +521,6 @@ namespace lue {
             .then([components = std::move(walk_components)](auto&&) { HPX_UNUSED(components); });
 
         return OutputArray{route.shape(), std::move(localities), std::move(partitions)};
-    }
-
-
-    template<typename Policies, typename InputElement, Rank rank>
-    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
-        [[maybe_unused]] /* TODO */ Policies const& policies,
-        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& zone,
-        // PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array,
-        PartitionedArray<InputElement, rank> const& array,
-        Count const max_nr_cells)
-    {
-        static_assert(std::is_same_v<policy::InputElementT<Policies, 1>, InputElement>);
-        static_assert(std::is_arithmetic_v<policy::InputElementT<Policies, 1>>);
-
-        using ZoneElement = policy::InputElementT<Policies, 0>;
-        using RouteID = ZoneElement;
-        // using InputElement = policy::InputElementT<Policies, 1>;
-
-        // TODO Make this work
-        // using DecreasingOrderPolicies = policy::Policies<
-        //     policy::AllValuesWithinDomain<ZoneElement, InputElement>,
-        //     policy::OutputsPolicies<>,
-        //     policy::InputsPolicies<policy::InputPoliciesT<Policies, 0>, policy::InputPoliciesT<Policies,
-        //     1>>>;
-
-        using DecreasingOrderPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<ZoneElement, InputElement>,
-            policy::OutputElements<RouteID>,
-            policy::InputElements<ZoneElement, InputElement>>;
-
-        SerialRoute<RouteID, rank> route =
-            decreasing_order(DecreasingOrderPolicies{}, zone, array, max_nr_cells);
-
-        // TODO Make this depend on the policy and its state passed in
-        using OutputElement = policy::OutputElementT<Policies, 0>;
-
-        using WalkPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<RouteID>,
-            policy::OutputElements<OutputElement>,
-            policy::InputElements<RouteID>>;
-
-        return highest_n(WalkPolicies{}, route, max_nr_cells);
-    }
-
-
-    template<typename Policies, typename InputElement, Rank rank>
-    // typename std::enable_if_t<(policy::nr_inputs<Policies> > 1)>
-    PartitionedArray<policy::OutputElementT<Policies, 0>, rank> highest_n(
-        [[maybe_unused]] /* TODO */ Policies const& policies,
-        // PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array,
-        PartitionedArray<InputElement, rank> const& array,
-        Count const max_nr_cells)
-    {
-        static_assert(std::is_same_v<policy::InputElementT<Policies, 1>, InputElement>);
-        static_assert(std::is_arithmetic_v<policy::InputElementT<Policies, 1>>);
-
-        using RouteID = policy::InputElementT<Policies, 0>;
-        // using InputElement = policy::InputElementT<Policies, 1>;
-
-        // TODO Make this work
-        // using DecreasingOrderPolicies = policy::Policies<
-        //     policy::AllValuesWithinDomain<InputElement>,
-        //     policy::OutputsPolicies<>,
-        //     policy::InputsPolicies<policy::InputPoliciesT<Policies, 0, InputElement>>>;
-
-        using DecreasingOrderPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<RouteID, InputElement>,
-            policy::OutputElements<RouteID>,
-            policy::InputElements<RouteID, InputElement>>;
-
-        SerialRoute<RouteID, rank> route = decreasing_order(DecreasingOrderPolicies{}, array, max_nr_cells);
-
-        // TODO Make this depend on the policy and its state passed in
-        using OutputElement = policy::OutputElementT<Policies, 0>;
-
-        using WalkPolicies = policy::DefaultValuePolicies<
-            policy::AllValuesWithinDomain<RouteID>,
-            policy::OutputElements<OutputElement>,
-            policy::InputElements<RouteID>>;
-
-        return highest_n(WalkPolicies{}, route, max_nr_cells);
     }
 
 }  // namespace lue
@@ -727,23 +580,4 @@ namespace lue {
     highest_n<ArgumentType<void(Policies)>, rank>(                                                           \
         ArgumentType<void(Policies)> const&,                                                                 \
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const&,                                        \
-        Count const);
-
-
-#define LUE_INSTANTIATE_HIGHEST_N_GLOBAL(Policies, rank)                                                     \
-                                                                                                             \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies, 0>, rank>        \
-    highest_n<ArgumentType<void(Policies)>, policy::InputElementT<Policies, 1>, rank>(                       \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
-        Count const);
-
-
-#define LUE_INSTANTIATE_HIGHEST_N_ZONAL(Policies, rank)                                                      \
-                                                                                                             \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<policy::OutputElementT<Policies, 0>, rank>        \
-    highest_n<ArgumentType<void(Policies)>, policy::InputElementT<Policies, 1>, rank>(                       \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const&,                                   \
-        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
         Count const);

@@ -6,7 +6,7 @@ set(ranks 0 1 2)
 set(generated_source_files "")
 
 block()
-    set(counter "0")
+    set(count "0")
 
     # Only locally add bool to the list of element types
     list(APPEND LUE_FRAMEWORK_ELEMENTS bool)

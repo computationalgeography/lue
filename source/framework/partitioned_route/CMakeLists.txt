@@ -6,7 +6,7 @@ set(ranks 1 2)
 set(generated_source_files "")
 
 block()
-    set(counter "0")
+    set(count "0")
 
     foreach(rank IN LISTS ranks)
         foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)

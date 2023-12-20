@@ -9,7 +9,7 @@ set(LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES "DefaultValuePolicies")
 set(offset "src")
 
 block()
-    set(counter "0")
+    set(count "0")
     set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES)
@@ -72,6 +72,7 @@ target_sources(lue_image_land
 target_link_libraries(lue_image_land
     PUBLIC
         lue::framework_algorithm
+        lue::framework_routing_operation
 )
 
 lue_install_runtime_libraries(

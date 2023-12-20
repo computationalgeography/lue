@@ -3,6 +3,8 @@
 #include "lue/framework/algorithm/detail/localities.hpp"
 #include "lue/framework/algorithm/image_land_operation_export.hpp"
 #include "lue/framework/algorithm/integrate.hpp"
+#include "lue/framework/algorithm/routing/walk/accumulator.hpp"
+#include "lue/framework/algorithm/routing/walk/cell_counter.hpp"
 #include "lue/framework/algorithm/walk.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
@@ -16,20 +18,10 @@
 namespace lue::detail::integrate {
 
     template<typename RouteID, typename Element>
-    class Data
+    class Data: public CellCounter, public Accumulator<RouteID, Element>
     {
 
         public:
-
-            Data(Count const max_nr_cells):
-
-                _nr_cells_visited{0},
-                _max_nr_cells_to_visit{max_nr_cells},
-                _accumulated_value{}
-
-            {
-            }
-
 
             Data():
 
@@ -38,45 +30,24 @@ namespace lue::detail::integrate {
             {
             }
 
+            Data(Count const max_nr_cells):
 
-            Count& operator++()
+                CellCounter{max_nr_cells},
+                Accumulator<RouteID, Element>{}
+
             {
-                return ++_nr_cells_visited;
             }
-
-
-            bool keep_walking() const
-            {
-                return _nr_cells_visited < _max_nr_cells_to_visit;
-            }
-
-
-            Element& accumulated_value(RouteID const route_id)
-            {
-                // A zero-initialized value is inserted if no value for the route_id is
-                // present in the map
-                return _accumulated_value[route_id];
-            }
-
 
         private:
 
             friend class hpx::serialization::access;
 
-
             template<typename Archive>
-            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
+            void serialize(Archive& archive, unsigned int const version)
             {
-                // clang-format off
-                    archive & _max_nr_cells_to_visit & _accumulated_value;
-                // clang-format on
+                CellCounter::serialize(archive, version);
+                Accumulator<RouteID, Element>::serialize(archive, version);
             }
-
-            Count _nr_cells_visited;
-
-            Count _max_nr_cells_to_visit;
-
-            std::map<RouteID, Element> _accumulated_value;
     };
 
 
@@ -227,7 +198,7 @@ namespace lue::detail::integrate {
                     // - Calculate an output value
                     // - Assign output value to corresponding cell in the output partition
 
-                    OutputElement& accumulated_value{data.accumulated_value(route_id)};
+                    OutputElement& accumulated_value{data.value(route_id)};
 
                     for (std::size_t idx = 0; idx < cell_idxs.size() && data.keep_walking(); ++idx, ++data)
                     {
@@ -486,9 +457,6 @@ namespace lue::detail::integrate {
     };
 
 }  // namespace lue::detail::integrate
-
-
-// HPX_IS_BITWISE_SERIALIZABLE(lue::detail::integrate::Data);
 
 
 namespace lue {

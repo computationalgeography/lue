@@ -1679,6 +1679,7 @@ endblock()
 add_library(lue_framework_routing_operation SHARED
     ${generated_source_files}
     src/routing_operation/channel.cpp
+    src/routing_operation/walk/cell_counter.cpp
 )
 
 add_library(lue::framework_routing_operation ALIAS lue_framework_routing_operation)
