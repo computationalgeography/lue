@@ -1757,13 +1757,13 @@ namespace lue {
 #define LUE_REGISTER_DECREASING_ORDER_ACTIONS_ZONAL(Policies, rank, unique)                                  \
                                                                                                              \
     namespace lue::detail {                                                                                  \
-        using DecreasingOrderZonalЅerverComponent_##unique =                                                 \
+        using DecreasingOrderZonalServerComponent_##unique =                                                 \
             hpx::components::component<lue::detail::server::DecreasingOrderZonal<Policies, rank>>;           \
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \
-        lue::detail::DecreasingOrderZonalЅerverComponent_##unique,                                           \
-        DecreasingOrderZonalЅerverComponent_##unique)                                                        \
+        lue::detail::DecreasingOrderZonalServerComponent_##unique,                                           \
+        DecreasingOrderZonalServerComponent_##unique)                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
         lue::detail::DecreasingOrderZonalServer_##unique::RoutePartitionAction,                              \
