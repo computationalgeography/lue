@@ -572,6 +572,14 @@ endif()
 if(LUE_DOCOPT_REQUIRED)
     find_package(docopt REQUIRED)
 
+    # FetchContent_Declare(docopt
+    #     GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
+    #     GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
+    #     SYSTEM
+    #     FIND_PACKAGE_ARGS
+    # )
+    # FetchContent_MakeAvailable(docopt)
+
     # The docopt package shipѕ with CMake scripts that define a target names docopt. The
     # Conan docopt package defines a target named docopt_s instead...
     if(TARGET docopt_s AND NOT TARGET docopt)
@@ -621,7 +629,13 @@ if(LUE_HDF5_REQUIRED)
 endif()
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
-    find_package(nlohmann_json REQUIRED)
+    FetchContent_Declare(nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG 9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03  # v3.11.3
+        SYSTEM
+        FIND_PACKAGE_ARGS
+    )
+    FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
 if(LUE_OPENCL_REQUIRED)

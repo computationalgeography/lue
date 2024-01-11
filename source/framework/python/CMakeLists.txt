@@ -188,6 +188,7 @@ target_link_libraries(lue_py_framework
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
+        Python3::Python
 )
 
 # TODO pybind11_strip does not work on macOS, when building using Conda packages
