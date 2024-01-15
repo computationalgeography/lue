@@ -241,9 +241,5 @@ jobs:
           run: |
               cmake --build ${{ env.lue_build_directory }} --target cpp_doc py_doc
               cmake --build ${{ env.lue_build_directory }} --target sphinx_doc
-              mkdir -p $HOME/.ssh
-              echo "HostKeyAlgorithms ssh-rsa" >> $HOME/.ssh/config
-              echo "PubkeyAcceptedKeyTypes ssh-rsa" >> $HOME/.ssh/config
-              echo "StrictHostKeyChecking no" >> $HOME/.ssh/config
               cd ${{ env.lue_build_directory }}/document/doc
-              lftp -e "mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+              lftp -e "set ssl-allow false;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password $ftp_server -p $ftp_port
