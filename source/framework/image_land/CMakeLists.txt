@@ -14,10 +14,10 @@ block()
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES)
         foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-            foreach(IntegrandElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            foreach(FloatingPointElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                # Instantiate integrate (route)
+                # Instantiate integrate
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate-${count}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -25,7 +25,19 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                    '{"Policies":"${Policies}","RouteID":"${ZoneElement}","IntegrandElement":"${IntegrandElement}","rank":"${rank}"}'
+                    '{"Policies":"${Policies}","RouteID":"${ZoneElement}","IntegrandElement":"${FloatingPointElement}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate integrate_and_allocate
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate_and_allocate-${count}.cpp")
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/integrate_and_allocate.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                    '{"Policies":"${Policies}","ZoneElement":"${ZoneElement}","FloatingPointElement":"${FloatingPointElement}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()

@@ -1,0 +1,50 @@
+#include "lue/framework/algorithm/value_policies/integrate_and_allocate.hpp"
+// #include "lue/py/framework/core/partitioned_array.hpp"
+// #include "lue/py/framework/core/vector_of_array.hpp"
+#include <pybind11/stl.h>
+
+
+namespace lue::image_land {
+    namespace detail {
+
+        template<typename ZoneElement, typename FloatingPointElement, Rank rank>
+        auto integrate_and_allocate(
+            SerialRoute<ZoneElement, rank> const& route,
+            PartitionedArray<ZoneElement, rank> const& zone,
+            std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
+                crop_fractions)
+        {
+            return lue::value_policies::integrate_and_allocate(route, zone, crop_fractions);
+        }
+
+
+        template<typename ZoneElement, typename FloatingPointElement, Rank rank>
+        void bind_integrate_and_allocate(pybind11::module& module)
+        {
+            module.def(
+                "integrate_and_allocate",
+                lue::image_land::detail::integrate_and_allocate<ZoneElement, FloatingPointElement, rank>,
+                pybind11::return_value_policy::move);
+        }
+
+    }  // namespace detail
+
+
+    void bind_integrate_and_allocate(pybind11::module& module)
+    {
+        Rank const rank{2};
+
+        detail::bind_integrate_and_allocate<std::uint8_t, float, rank>(module);
+        detail::bind_integrate_and_allocate<std::uint32_t, float, rank>(module);
+        detail::bind_integrate_and_allocate<std::uint64_t, float, rank>(module);
+        detail::bind_integrate_and_allocate<std::int32_t, float, rank>(module);
+        detail::bind_integrate_and_allocate<std::int64_t, float, rank>(module);
+
+        detail::bind_integrate_and_allocate<std::uint8_t, double, rank>(module);
+        detail::bind_integrate_and_allocate<std::uint32_t, double, rank>(module);
+        detail::bind_integrate_and_allocate<std::uint64_t, double, rank>(module);
+        detail::bind_integrate_and_allocate<std::int32_t, double, rank>(module);
+        detail::bind_integrate_and_allocate<std::int64_t, double, rank>(module);
+    }
+
+}  // namespace lue::image_land

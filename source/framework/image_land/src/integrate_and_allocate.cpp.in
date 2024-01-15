@@ -1,0 +1,11 @@
+#include "lue/framework/algorithm/definition/integrate_and_allocate.hpp"
+#include "lue/framework/algorithm/value_policies/integrate_and_allocate.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_INTEGRATE_AND_ALLOCATE(
+        ESC(policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
+        {{ rank }});
+
+}  // namespace lue

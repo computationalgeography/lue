@@ -1395,6 +1395,7 @@ namespace lue {
                             [](hpx::future<Component>& component_f)
                             {
                                 // component_f.wait();  // TODO
+                                // TODO This assertion fails sometimes. Fix this!
                                 lue_hpx_assert(component_f.is_ready());
                                 return component_f.get();
                             });

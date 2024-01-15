@@ -4,6 +4,7 @@
 namespace lue::image_land {
 
     void bind_integrate(pybind11::module& module);
+    void bind_integrate_and_allocate(pybind11::module& module);
 
 
     void init_submodule(pybind11::module& module)
@@ -18,6 +19,7 @@ namespace lue::image_land {
 )");
 
         bind_integrate(submodule);
+        bind_integrate_and_allocate(submodule);
     }
 
 }  // namespace lue::image_land

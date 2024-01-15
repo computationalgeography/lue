@@ -12,6 +12,7 @@ endforeach()
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 add_library(lue_py_image_land SHARED
     src/integrate.cpp
+    src/integrate_and_allocate.cpp
     src/python_extension.cpp
     src/submodule.cpp
 )
@@ -52,6 +53,7 @@ target_link_libraries(lue_py_image_land
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
+        Python3::Python
 )
 
 # TODO pybind11_strip does not work on macOS, when building using Conda packages
