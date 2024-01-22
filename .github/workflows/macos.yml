@@ -58,7 +58,7 @@ jobs:
 
         - name: setup platform
           run: |
-              brew install \
+              brew install --verbose \
                   boost \
                   doxygen \
                   fmt \
@@ -119,9 +119,6 @@ jobs:
                     --build=missing \
                     --output-folder=${{ env.lue_build_directory }}
 
-              env | grep -i homebrew
-              ls /opt/homebrew
-
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
@@ -138,7 +135,6 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
-                      -D HDF5_ROOT=/opt/homebrew/opt/hdf5 \
                       -D Python3_EXECUTABLE="/usr/local/bin/python3"
 
         - name: build
