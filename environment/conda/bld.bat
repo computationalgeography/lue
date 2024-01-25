@@ -25,6 +25,15 @@ if errorlevel 1 exit 1
 ::     x64
 :: was specified.
 set CMAKE_GENERATOR_PLATFORM=
+
+:: Unset CMAKE_GENERATOR_TOOLSET. Otherwise:
+:: Generator
+::   Ninja
+:: does not support toolset specification, but toolset
+::   v142
+:: was specified.
+set CMAKE_GENERATOR_TOOLSET=
+
 set CMAKE_PREFIX_PATH=build
 
 cmake --preset conan-release ^
