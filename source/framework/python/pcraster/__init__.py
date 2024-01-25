@@ -635,7 +635,7 @@ def mapmaximum(expression):
 
 
 def mapminimum(expression):
-    return lfr.maximum(expression)
+    return lfr.minimum(expression)
 
 
 def mapnormal():
