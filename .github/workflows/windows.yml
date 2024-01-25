@@ -24,8 +24,8 @@ jobs:
                 compiler:
                     - { name: "visual studio", c: cl, cxx: cl }
                 vs:
-                  - { name: "Visual Studio 16 2019", version: "16"}  # , toolset: "v142" }
-                  # - { name: "Visual Studio 17 2022", version: "17"}  # , toolset: "v143" }
+                  # - { name: "Visual Studio 16 2019", version: "16"}  # , toolset: "v142" }
+                  - { name: "Visual Studio 17 2022", version: "17"}  # , toolset: "v143" }
                 # toolset: ["14.2", "14.3"]
                 python_version: ["3.9"]
                 architecture: ["amd64"]
