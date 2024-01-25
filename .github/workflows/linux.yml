@@ -36,6 +36,8 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python_version }}
 
+        timeout-minutes: 120
+
         defaults:
           run:
             shell: bash -l {0}

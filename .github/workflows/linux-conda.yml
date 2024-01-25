@@ -29,6 +29,8 @@ jobs:
 
         name: ${{ matrix.os }} / python - ${{ matrix.python-version }} / conda
 
+        timeout-minutes: 120
+
         steps:
 
         - name: Checkout LUE

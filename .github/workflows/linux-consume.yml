@@ -28,6 +28,8 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
 
+        timeout-minutes: 120
+
         defaults:
           run:
             shell: bash -l {0}
