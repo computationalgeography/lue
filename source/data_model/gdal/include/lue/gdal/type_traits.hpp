@@ -2,16 +2,23 @@
 #include <gdal_priv.h>
 
 
-namespace lue {
+namespace lue::gdal {
 
+    /*!
+        @brief      Type-dependant information
+        @tparam     Element Type of individual elements in a raster
+
+        Members:
+        - @a type_id: GDAL type-id corresponding with @a Element
+    */
     template<typename Element>
-    class GDALTypeTraits
+    class TypeTraits
     {
     };
 
 
     template<>
-    class GDALTypeTraits<std::uint8_t>
+    class TypeTraits<std::uint8_t>
     {
 
         public:
@@ -21,7 +28,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<std::uint16_t>
+    class TypeTraits<std::uint16_t>
     {
 
         public:
@@ -31,7 +38,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<std::int16_t>
+    class TypeTraits<std::int16_t>
     {
 
         public:
@@ -41,7 +48,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<std::uint32_t>
+    class TypeTraits<std::uint32_t>
     {
 
         public:
@@ -51,7 +58,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<std::int32_t>
+    class TypeTraits<std::int32_t>
     {
 
         public:
@@ -62,7 +69,7 @@ namespace lue {
 
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
     template<>
-    class GDALTypeTraits<std::uint64_t>
+    class TypeTraits<std::uint64_t>
     {
 
         public:
@@ -72,7 +79,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<std::int64_t>
+    class TypeTraits<std::int64_t>
     {
 
         public:
@@ -83,7 +90,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<float>
+    class TypeTraits<float>
     {
 
         public:
@@ -93,7 +100,7 @@ namespace lue {
 
 
     template<>
-    class GDALTypeTraits<double>
+    class TypeTraits<double>
     {
 
         public:
@@ -101,4 +108,4 @@ namespace lue {
             static constexpr GDALDataType type_id{GDT_Float64};
     };
 
-}  // namespace lue
+}  // namespace lue::gdal

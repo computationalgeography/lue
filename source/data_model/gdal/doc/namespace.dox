@@ -1,0 +1,17 @@
+namespace lue {
+
+    /*!
+        @brief      Namespace containing C++ wrappers around the GDAL C++-API
+
+        This namespace contains relatively low-level code that is required
+        for the LUE library *developer* but not so much to the library *user*.
+        The code is useful in other contexts than LUE: lue::gdal doesn't depend on
+        anything specific to LUE.
+
+        More information about GDAL can be found online:
+        - [GDAL homepage](https://www.gdal.org)
+        - [GDAP API reference](https://gdal.org/api/index.html)
+    */
+    namespace gdal {
+    }
+}

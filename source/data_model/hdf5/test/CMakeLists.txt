@@ -5,6 +5,7 @@ add_unit_tests(
         chunk_test.cpp
         dataset_test.cpp
         datatype_test.cpp
+        file_test.cpp
         group_test.cpp
         hyperslab_test.cpp
         identifier_test.cpp

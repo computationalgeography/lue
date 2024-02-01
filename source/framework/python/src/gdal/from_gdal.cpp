@@ -1,7 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/framework/io/gdal.hpp"
 #include "lue/framework/io/raster.hpp"
+#include "lue/gdal.hpp"
 #include <fmt/format.h>
 #include <pybind11/stl.h>
 
@@ -22,8 +22,9 @@ namespace lue::framework {
         pybind11::object from_gdal_py(
             std::string const& name, std::optional<pybind11::tuple> const& partition_shape)
         {
-            GDALDatasetPtr dataset{open_dataset(name, GDALAccess::GA_ReadOnly)};
-            auto const static_array_shape{lue::shape(*dataset)};
+            gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
+            auto const raster_shape{gdal::shape(*dataset)};
+            StaticShape<2> static_array_shape{raster_shape[0], raster_shape[1]};
             StaticShape<2> static_partition_shape{};
 
             if (partition_shape)
@@ -46,7 +47,7 @@ namespace lue::framework {
             }
 
             pybind11::object result;
-            GDALDataType const data_type{lue::data_type(*dataset)};
+            GDALDataType const data_type{gdal::data_type(*dataset)};
 
             if (data_type == GDT_Byte)
             {

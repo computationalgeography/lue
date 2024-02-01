@@ -1,0 +1,11 @@
+#include "lue/gdal/version.hpp"
+
+
+namespace lue::gdal {
+
+    auto version() -> std::string
+    {
+        return "${GDAL_VERSION}";
+    }
+
+}  // namespace lue::gdal

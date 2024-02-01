@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/assert.hpp"
-#include "lue/framework/io/gdal.hpp"
+#include "lue/gdal.hpp"
 // #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
 // #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include <hpx/async_colocated/get_colocation_id.hpp>
@@ -89,7 +89,7 @@ namespace lue {
                 using WriteLock = std::unique_lock<Mutex>;
 
 
-                Band(GDALBandPtr&& band_ptr):
+                Band(gdal::RasterBandPtr&& band_ptr):
 
                     _band_ptr{std::move(band_ptr)}
 
@@ -125,7 +125,7 @@ namespace lue {
                         data.data(),
                         data.shape()[1],
                         data.shape()[0],
-                        GDALTypeTraits<Element>::type_id,
+                        gdal::TypeTraits<Element>::type_id,
                         0,
                         0,
                         nullptr)};
@@ -141,7 +141,7 @@ namespace lue {
 
                 Mutex _mutex;
 
-                GDALBandPtr _band_ptr;
+                gdal::RasterBandPtr _band_ptr;
         };
 
 
@@ -151,11 +151,7 @@ namespace lue {
         template<typename Element>
         std::tuple<Element, bool> no_data_value(::GDALRasterBand& band)
         {
-            int success;
-
-            Element value = detail::no_data_value<Element>(band, &success);
-
-            return std::make_tuple(value, success != 0);
+            return gdal::no_data_value<Element>(band);
         }
 
 
@@ -165,7 +161,7 @@ namespace lue {
 
             public:
 
-                ReadPartition(GDALDatasetPtr&& dataset_ptr, BandPtr&& band_ptr):
+                ReadPartition(gdal::DatasetPtr&& dataset_ptr, BandPtr&& band_ptr):
 
                     _dataset_ptr{std::move(dataset_ptr)},
                     _band_ptr{std::move(band_ptr)}
@@ -225,7 +221,7 @@ namespace lue {
 
             private:
 
-                GDALDatasetPtr _dataset_ptr;
+                gdal::DatasetPtr _dataset_ptr;
 
                 BandPtr _band_ptr;
         };
@@ -252,8 +248,8 @@ namespace lue {
             std::vector<lue::OffsetT<Partition>> const& offsets,
             std::vector<lue::ShapeT<Partition>> const& partition_shapes)
         {
-            GDALDatasetPtr dataset_ptr{open_dataset(name, ::GA_ReadOnly)};
-            GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
+            gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_ReadOnly)};
+            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
             using Element = lue::ElementT<Partition>;
 
@@ -369,8 +365,8 @@ namespace lue {
             // Open band
             // Write partition's data
 
-            GDALDatasetPtr dataset_ptr{open_dataset(name, ::GA_Update)};
-            GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
+            gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_Update)};
+            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
             auto partition_server_ptr{hpx::get_ptr(hpx::launch::sync, partition)};
             auto data{partition_server_ptr->data()};
@@ -385,7 +381,7 @@ namespace lue {
                 data.data(),
                 data.shape()[1],
                 data.shape()[0],
-                GDALTypeTraits<Element>::type_id,
+                gdal::TypeTraits<Element>::type_id,
                 0,
                 0,
                 nullptr)};
@@ -436,16 +432,16 @@ namespace lue {
         // Only then can we call the logic that creates a partitioned array asynchronously.
 
         Shape<Count, 2> array_shape;
-        bool no_data_value_is_valid;
+        bool no_data_value_is_valid{};
         Element no_data_value;
 
         {
-            GDALDatasetPtr dataset_ptr{open_dataset(name, ::GA_ReadOnly)};
+            gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_ReadOnly)};
 
             array_shape[0] = dataset_ptr->GetRasterYSize();
             array_shape[1] = dataset_ptr->GetRasterXSize();
 
-            GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
+            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
             std::tie(no_data_value, no_data_value_is_valid) = lue::no_data_value<Element>(*band_ptr);
         }
@@ -511,17 +507,22 @@ namespace lue {
 
         {
             Count const nr_bands{1};
-            GDALDataType const data_type{GDALTypeTraits<Element>::type_id};
-            GDALDatasetPtr dataset_ptr{create(name, array.shape(), nr_bands, data_type)};
-            GDALBandPtr band_ptr{get_raster_band(*dataset_ptr)};
+            GDALDataType const data_type{gdal::TypeTraits<Element>::type_id};
+            gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
+                name,
+                gdal::Shape{
+                    static_cast<gdal::Count>(array.shape()[0]), static_cast<gdal::Count>(array.shape()[1])},
+                nr_bands,
+                data_type)};
+            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
-            set_no_data_value(*band_ptr, no_data_value);
+            gdal::set_no_data_value(*band_ptr, no_data_value);
 
             if (!clone_name.empty())
             {
                 // Copy stuff from clone dataset
 
-                GDALDatasetPtr clone_dataset_ptr{open_dataset(clone_name, ::GA_ReadOnly)};
+                gdal::DatasetPtr clone_dataset_ptr{gdal::open_dataset(clone_name, ::GA_ReadOnly)};
 
                 Shape<Count, 2> const shape{
                     clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
