@@ -125,7 +125,7 @@ namespace lue {
                         data.data(),
                         data.shape()[1],
                         data.shape()[0],
-                        gdal::TypeTraits<Element>::type_id,
+                        gdal::data_type_v<Element>,
                         0,
                         0,
                         nullptr)};
@@ -381,7 +381,7 @@ namespace lue {
                 data.data(),
                 data.shape()[1],
                 data.shape()[0],
-                gdal::TypeTraits<Element>::type_id,
+                gdal::data_type_v<Element>,
                 0,
                 0,
                 nullptr)};
@@ -507,8 +507,9 @@ namespace lue {
 
         {
             Count const nr_bands{1};
-            GDALDataType const data_type{gdal::TypeTraits<Element>::type_id};
+            GDALDataType const data_type{gdal::data_type_v<Element>};
             gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
+                "GTiff",
                 name,
                 gdal::Shape{
                     static_cast<gdal::Count>(array.shape()[0]), static_cast<gdal::Count>(array.shape()[1])},

@@ -11,8 +11,10 @@ configure_file(
 )
 
 add_library(lue_gdal STATIC
+    src/blocks.cpp
     src/dataset.cpp
     src/driver.cpp
+    src/raster.cpp
     src/raster_band.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
 )
@@ -43,7 +45,6 @@ target_sources(lue_gdal
 
 target_link_libraries(lue_gdal
     PUBLIC
-        lue::shared
         GDAL::GDAL
     PRIVATE
         fmt::fmt

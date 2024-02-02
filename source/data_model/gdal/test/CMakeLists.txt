@@ -1,9 +1,12 @@
 set(scope lue_gdal)
 
 set(names
+    blocks_test
     dataset_test
     driver_test
+    raster_test
     raster_band_test
+    type_traits_test
     version_test
 )
 

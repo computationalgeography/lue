@@ -2,6 +2,7 @@
 #include "lue/gdal/driver.hpp"
 #include <fmt/format.h>
 #include <cassert>
+#include <cmath>
 #include <stdexcept>
 
 
@@ -10,21 +11,33 @@ namespace lue::gdal {
     /*!
         @brief      Open dataset @name
         @param      open_mode Open mode to use: `GDALAccess::GA_ReadOnly` or `GDALAccess::GA_Update`
-        @exception  std::runtime_error In case the dataset cannot be opened
-    */
-    auto open_dataset(std::string const& name, GDALAccess open_mode) -> DatasetPtr
-    {
-        register_gdal_drivers();
 
+        In case the dataset cannot be opened, the smart pointer returned will evaluate to false.
+    */
+    auto try_open_dataset(std::string const& name, GDALAccess open_mode) -> DatasetPtr
+    {
 #ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
 #endif
 
-        DatasetPtr dataset_ptr{static_cast<GDALDataset*>(::GDALOpen(name.c_str(), open_mode)), gdal_close};
+        DatasetPtr dataset_ptr{static_cast<GDALDataset*>(GDALOpen(name.c_str(), open_mode)), gdal_close};
 
 #ifndef NDEBUG
         CPLPopErrorHandler();
 #endif
+
+        return dataset_ptr;
+    }
+
+
+    /*!
+        @brief      Open dataset @name
+        @param      open_mode Open mode to use: `GDALAccess::GA_ReadOnly` or `GDALAccess::GA_Update`
+        @exception  std::runtime_error In case the dataset cannot be opened
+    */
+    auto open_dataset(std::string const& name, GDALAccess open_mode) -> DatasetPtr
+    {
+        DatasetPtr dataset_ptr{try_open_dataset(name, open_mode)};
 
         if (!dataset_ptr)
         {
@@ -42,20 +55,21 @@ namespace lue::gdal {
         @param      data_type Type of the elements in the raster band(s)
         @exception  std::runtime_error In case the dataset cannot be created
     */
-    auto create_dataset(std::string const& name, Shape const& shape, Count nr_bands, GDALDataType data_type)
-        -> DatasetPtr
+    auto create_dataset(
+        std::string const& driver_name,
+        std::string const& dataset_name,
+        Shape const& shape,
+        Count nr_bands,
+        GDALDataType data_type) -> DatasetPtr
     {
-        register_gdal_drivers();
-
 #ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
 #endif
 
-        // TODO let GDAL pick the driver and/or use extension(?)
-        DriverPtr driver{gdal::driver("GTiff")};
-
         DatasetPtr dataset_ptr{
-            driver->Create(name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr), gdal_close};
+            driver(driver_name)
+                ->Create(dataset_name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr),
+            gdal_close};
 
 #ifndef NDEBUG
         CPLPopErrorHandler();
@@ -63,10 +77,16 @@ namespace lue::gdal {
 
         if (!dataset_ptr)
         {
-            throw std::runtime_error("Raster " + name + " cannot be created");
+            throw std::runtime_error(fmt::format("Raster {} cannot be created", dataset_name));
         }
 
         return dataset_ptr;
+    }
+
+
+    auto create_dataset(std::string const& driver_name, std::string const& dataset_name) -> DatasetPtr
+    {
+        return create_dataset(driver_name, dataset_name, Shape{0, 0}, 0, GDT_Unknown);
     }
 
 
@@ -79,8 +99,6 @@ namespace lue::gdal {
     auto create_copy(std::string const& name, DatasetPtr& clone_dataset) -> DatasetPtr
     {
         assert(clone_dataset);
-
-        register_gdal_drivers();
 
 #ifndef NDEBUG
         CPLPushErrorHandler(CPLQuietErrorHandler);
@@ -112,12 +130,18 @@ namespace lue::gdal {
     }
 
 
+    auto nr_raster_bands(GDALDataset& dataset) -> Count
+    {
+        return dataset.GetRasterCount();
+    }
+
+
     /*!
         @brief      Return a raster band from the @a dataset passed in
         @param      band_nr Number of band to return. Must be larger than zero.
         @exception  std::runtime_error In case the band cannot be obtained
     */
-    auto raster_band(::GDALDataset& dataset, Count const band_nr) -> RasterBandPtr
+    auto raster_band(GDALDataset& dataset, Count const band_nr) -> RasterBandPtr
     {
         RasterBandPtr band_ptr{dataset.GetRasterBand(band_nr)};
 
@@ -134,7 +158,7 @@ namespace lue::gdal {
         @overload
         @brief      Return the first raster band.
     */
-    auto raster_band(::GDALDataset& dataset) -> RasterBandPtr
+    auto raster_band(GDALDataset& dataset) -> RasterBandPtr
     {
         return raster_band(dataset, 1);
     }
@@ -169,9 +193,60 @@ namespace lue::gdal {
     */
     auto shape(GDALDataset& dataset) -> Shape
     {
-        RasterBandPtr band_ptr{raster_band(dataset)};
+        return {dataset.GetRasterYSize(), dataset.GetRasterXSize()};
+    }
 
-        return {band_ptr->GetYSize(), band_ptr->GetXSize()};
+
+    auto up_is_north(GeoTransform const& geo_transform) -> bool
+    {
+        return geo_transform[2] == 0.0 && geo_transform[4] == 0.0 && geo_transform[5] < 0.0;
+    }
+
+
+    auto cells_are_square(GeoTransform const& geo_transform) -> bool
+    {
+        return geo_transform[1] == std::abs(geo_transform[5]);
+    }
+
+
+    /*!
+        @brief      Return the information about the affine transformation from raster coordinates
+                    (row, col indices) to georeferenced coordinates (projected or geographic
+                    coordinates)
+        @return     Collection of six coefficients
+
+        Index | Meaning
+        ----- | -------
+        0 | X-coordinate of the upper-left corner of the upper-left cell (west)
+        1 | Cell width
+        2 | Row rotation (typically zero)
+        3 | Y-coordinate of the upper-left corner of the upper-left cell (north)
+        4 | Column rotation (typically zero)
+        5 | Cell height (negative value for a north-up raster)
+    */
+    auto geo_transform(GDALDataset& dataset) -> GeoTransform
+    {
+        GeoTransform result{};
+        dataset.GetGeoTransform(result.data());
+
+        if (!up_is_north(result))
+        {
+            throw std::runtime_error("Only rasters oriented to the north are currently supported");
+        }
+
+        if (!cells_are_square(result))
+        {
+            throw std::runtime_error("Only rasters with square cells are currently supported");
+        }
+
+        return result;
+    }
+
+
+    auto set_geo_transform(GDALDataset& dataset, GeoTransform const& geo_transform) -> void
+    {
+        // For some reason, GDAL wants a non-const pointer...
+        dataset.SetGeoTransform(const_cast<double*>(geo_transform.data()));
     }
 
 }  // namespace lue::gdal

@@ -1,10 +1,9 @@
 namespace lue {
 
     /*!
-        @brief      Namespace containing C++ wrappers around the GDAL C++-API
+        @brief      Namespace containing a nicer API around the GDAL C++-API and additional
+                    code that makes working with the GDAL library a nicer experience
 
-        This namespace contains relatively low-level code that is required
-        for the LUE library *developer* but not so much to the library *user*.
         The code is useful in other contexts than LUE: lue::gdal doesn't depend on
         anything specific to LUE.
 

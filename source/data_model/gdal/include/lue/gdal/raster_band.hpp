@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gdal/define.hpp"
 #include <gdal_priv.h>
 
 
@@ -13,6 +14,10 @@ namespace lue::gdal {
 
 
     auto data_type(GDALRasterBand& band) -> GDALDataType;
+
+    auto block_size(GDALRasterBand& band) -> Shape;
+
+    auto band_size(GDALRasterBand& band) -> Shape;
 
 
     namespace detail {

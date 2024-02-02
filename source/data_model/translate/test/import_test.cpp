@@ -350,3 +350,60 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         BOOST_CHECK_EQUAL(elements[3], 105);
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(raster_round_trip_01)
+{
+    namespace lgd = lue::gdal;
+    namespace lu = lue::utility;
+
+    lgd::register_gdal_drivers();
+
+    std::string const gdal_driver_name{"MEM"};
+
+    // Create an input GDAL raster
+    // - Integral element type
+    // - Set some value as no-data value
+    std::string const input_raster_name{"raster_round_trip_01_in"};
+    lgd::Shape const& raster_shape{6, 4};
+    lue::data_model::Count const nr_bands{1};
+    GDALDataType const gdal_data_type{GDT_Int32};
+
+    lgd::DatasetPtr input_dataset_ptr{
+        lgd::create_dataset(gdal_driver_name, input_raster_name, raster_shape, nr_bands, gdal_data_type)};
+    lgd::Raster input_raster{input_dataset_ptr};
+    lgd::Raster::Band band{input_raster.band(1)};
+
+    // TODO set elements
+    // TODO set no-data value
+
+
+    // Import raster into LUE data set
+
+
+    // TODO
+
+
+    // Export GDAL raster again
+    std::string const output_raster_name{"raster_round_trip_01_out"};
+
+    // Verify imported and exported rasters are the same
+
+
+    // compare_rasters_equal(input_dataset_ptr, output_raster_dataset);
+    // TODO
+}
+
+
+BOOST_AUTO_TEST_CASE(raster_round_trip_02)
+{
+    // Create an input GDAL raster
+    // - Floating point element type
+    // - Set NaN as no-data value
+
+    // Import raster into LUE data set
+
+    // Export GDAL raster again
+
+    // Verify imported and exported rasters are the same
+}
