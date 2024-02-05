@@ -67,7 +67,7 @@ namespace lue::gdal {
     };
 
 
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
     template<>
     class TypeTraits<std::uint64_t>
     {

@@ -29,7 +29,7 @@ namespace lue::gdal {
         }
 
 
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
         // "An explicit specialization of a function template is inline only if it is declared
         // with the inline specifier (or defined as deleted), it doesn't matter if the primary
         // template is inline."
@@ -56,7 +56,7 @@ namespace lue::gdal {
         }
 
 
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
         // "An explicit specialization of a function template is inline only if it is declared
         // with the inline specifier (or defined as deleted), it doesn't matter if the primary
         // template is inline."

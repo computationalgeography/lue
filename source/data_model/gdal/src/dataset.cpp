@@ -147,7 +147,20 @@ namespace lue::gdal {
 
         if (band_ptr == nullptr)
         {
-            throw std::runtime_error(fmt::format("Band {} cannot be obtained", band_nr));
+            Count const nr_bands{nr_raster_bands(dataset)};
+
+            if (band_nr < 0 || band_nr > nr_bands)
+            {
+                throw std::runtime_error(fmt::format(
+                    "Requested raster band ({}) is outside the valid range ([{} - {}]",
+                    band_nr,
+                    1,
+                    nr_bands));
+            }
+            else
+            {
+                throw std::runtime_error(fmt::format("Band {} cannot be obtained", band_nr));
+            }
         }
 
         return band_ptr;

@@ -1,7 +1,7 @@
 #include "lue/translate/translate.hpp"
+#include "lue/gdal.hpp"
 #include "lue/translate/command.hpp"
 #include <fmt/format.h>
-#include <gdal_priv.h>
 #include <hdf5.h>
 
 
@@ -87,7 +87,7 @@ namespace lue {
             // lots of messages we usually don't care about.
             H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 
-            GDALAllRegister();
+            gdal::register_gdal_drivers();
         }
 
 

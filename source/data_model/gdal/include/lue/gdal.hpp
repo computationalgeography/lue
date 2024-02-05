@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gdal/configure.hpp"
 #include "lue/gdal/dataset.hpp"
 #include "lue/gdal/driver.hpp"
 #include "lue/gdal/raster.hpp"

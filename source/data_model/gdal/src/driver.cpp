@@ -1,4 +1,5 @@
 #include "lue/gdal/driver.hpp"
+#include <stdexcept>
 
 
 namespace lue::gdal {

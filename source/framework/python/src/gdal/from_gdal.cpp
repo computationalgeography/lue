@@ -61,7 +61,7 @@ namespace lue::framework {
             {
                 result = from_gdal<int32_t>(name, static_partition_shape);
             }
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             else if (data_type == GDT_UInt64)
             {
                 result = from_gdal<uint64_t>(name, static_partition_shape);

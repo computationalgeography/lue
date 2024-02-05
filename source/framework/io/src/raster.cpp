@@ -436,14 +436,13 @@ namespace lue {
         Element no_data_value;
 
         {
-            gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_ReadOnly)};
+            gdal::Raster raster{gdal::open_dataset(name, ::GA_ReadOnly)};
+            gdal::Raster::Band raster_band{raster.band(1)};
 
-            array_shape[0] = dataset_ptr->GetRasterYSize();
-            array_shape[1] = dataset_ptr->GetRasterXSize();
-
-            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
-
-            std::tie(no_data_value, no_data_value_is_valid) = lue::no_data_value<Element>(*band_ptr);
+            auto const raster_shape = raster.shape();
+            array_shape[0] = static_cast<Count>(raster_shape[0]);
+            array_shape[1] = static_cast<Count>(raster_shape[1]);
+            std::tie(no_data_value, no_data_value_is_valid) = raster_band.no_data_value<Element>();
         }
 
         using Functor = ReadPartitionsPerLocality<Element>;
@@ -604,7 +603,7 @@ namespace lue {
 INSTANTIATE(uint8_t)
 INSTANTIATE(uint32_t)
 INSTANTIATE(int32_t)
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
 INSTANTIATE(uint64_t)
 INSTANTIATE(int64_t)
 #endif

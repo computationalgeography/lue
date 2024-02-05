@@ -36,7 +36,7 @@ namespace lue::utility {
                 result = hdf5::native_datatype<std::int32_t>();
                 break;
             }
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             case GDT_UInt64:
             {
                 result = hdf5::native_datatype<std::uint64_t>();
@@ -92,7 +92,7 @@ namespace lue::utility {
         {
             result = gdal::data_type_v<std::int32_t>;
         }
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
         else if (data_type == hdf5::native_uint64)
         {
             result = gdal::data_type_v<std::uint64_t>;
@@ -734,7 +734,7 @@ namespace lue::utility {
                 gdal_to_lue<RasterView, int32_t>(gdal_raster_band, lue_raster_layer);
                 break;
             }
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             case GDT_UInt64:
             {
                 gdal_to_lue<RasterView, uint64_t>(gdal_raster_band, lue_raster_layer);

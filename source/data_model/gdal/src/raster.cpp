@@ -1,5 +1,6 @@
 #include "lue/gdal/raster.hpp"
 #include <cassert>
+#include <stdexcept>
 
 
 namespace lue::gdal {
@@ -211,9 +212,6 @@ namespace lue::gdal {
 
     auto Raster::band(Count const band_nr) const -> Band
     {
-        assert(band_nr > 0);
-        assert(band_nr <= nr_bands());
-
         return Raster::Band{raster_band(*_dataset_ptr, band_nr)};
     }
 

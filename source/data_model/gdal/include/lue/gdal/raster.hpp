@@ -30,6 +30,12 @@ namespace lue::gdal {
 
                     [[nodiscard]] auto data_type() const -> GDALDataType;
 
+                    template<typename Element>
+                    [[nodiscard]] auto no_data_value() const -> std::tuple<Element, bool>
+                    {
+                        return gdal::no_data_value<Element>(*_band);
+                    }
+
                     [[nodiscard]] auto blocks() const -> Blocks;
 
                     auto read_block(Offset const& block_offset, void* buffer) const -> void;
