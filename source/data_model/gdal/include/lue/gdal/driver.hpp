@@ -17,4 +17,6 @@ namespace lue::gdal {
 
     auto driver(std::string const& name) -> DriverPtr;
 
+    auto delete_dataset(GDALDriver& driver, std::string const& dataset_name) -> void;
+
 }  // namespace lue::gdal

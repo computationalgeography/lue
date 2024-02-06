@@ -37,6 +37,13 @@ namespace lue::gdal {
     auto try_open_dataset(std::string const& name, GDALAccess open_mode) -> DatasetPtr;
 
     auto create_dataset(
+        GDALDriver& driver,
+        std::string const& dataset_name,
+        Shape const& shape,
+        Count nr_bands,
+        GDALDataType data_type) -> DatasetPtr;
+
+    auto create_dataset(
         std::string const& driver_name,
         std::string const& dataset_name,
         Shape const& shape,

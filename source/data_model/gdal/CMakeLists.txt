@@ -14,6 +14,7 @@ add_library(lue_gdal STATIC
     src/blocks.cpp
     src/dataset.cpp
     src/driver.cpp
+    src/error.cpp
     src/raster.cpp
     src/raster_band.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
@@ -43,6 +44,8 @@ target_sources(lue_gdal
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/gdal/configure.hpp
 )
 
+# NOTE: Think twice before adding libraries here. lue::gdal is a simple, thin API around the
+# GDAL API.
 target_link_libraries(lue_gdal
     PUBLIC
         GDAL::GDAL

@@ -116,24 +116,15 @@ namespace lue {
                     // not block.
                     ReadLock read_lock{_mutex};
 
-                    CPLErr const status{_band_ptr->RasterIO(
-                        GF_Read,
-                        offset[1],
-                        offset[0],
-                        data.shape()[1],
-                        data.shape()[0],
-                        data.data(),
-                        data.shape()[1],
-                        data.shape()[0],
-                        gdal::data_type_v<Element>,
-                        0,
-                        0,
-                        nullptr)};
+                    lue::gdal::Offset gdal_offset{
+                        static_cast<lue::gdal::Offset::value_type>(offset[0]),
+                        static_cast<lue::gdal::Offset::value_type>(offset[1])};
+                    lue::gdal::Shape gdal_shape{
+                        static_cast<lue::gdal::Shape::value_type>(data.shape()[0]),
+                        static_cast<lue::gdal::Shape::value_type>(data.shape()[1])};
 
-                    if (status != CE_None)
-                    {
-                        throw std::runtime_error("Cannot read partition data");
-                    }
+                    lue::gdal::read(
+                        *_band_ptr, gdal_offset, gdal_shape, gdal::data_type_v<Element>, data.data());
                 }
 
 
@@ -365,31 +356,21 @@ namespace lue {
             // Open band
             // Write partition's data
 
-            gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_Update)};
-            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
+            gdal::Raster raster{gdal::open_dataset(name, ::GA_Update)};
+            gdal::Raster::Band raster_band{raster.band(1)};
 
             auto partition_server_ptr{hpx::get_ptr(hpx::launch::sync, partition)};
             auto data{partition_server_ptr->data()};
             auto offset{partition_server_ptr->offset()};
 
-            CPLErr const status{band_ptr->RasterIO(
-                GF_Write,
-                offset[1],
-                offset[0],
-                data.shape()[1],
-                data.shape()[0],
-                data.data(),
-                data.shape()[1],
-                data.shape()[0],
-                gdal::data_type_v<Element>,
-                0,
-                0,
-                nullptr)};
+            lue::gdal::Offset gdal_offset{
+                static_cast<lue::gdal::Offset::value_type>(offset[0]),
+                static_cast<lue::gdal::Offset::value_type>(offset[1])};
+            lue::gdal::Shape gdal_shape{
+                static_cast<lue::gdal::Shape::value_type>(data.shape()[0]),
+                static_cast<lue::gdal::Shape::value_type>(data.shape()[1])};
 
-            if (status != CE_None)
-            {
-                throw std::runtime_error("Cannot write partition data");
-            }
+            raster_band.write(gdal_offset, gdal_shape, gdal::data_type_v<Element>, data.data());
         }
 
 

@@ -10,7 +10,7 @@ namespace lue::utility {
 
     auto memory_data_type_to_gdal_data_type(hdf5::Datatype const& data_type) -> GDALDataType;
 
-    auto translate_lue_dataset_to_raster(
+    auto translate_lue_dataset_to_gdal_raster(
         data_model::Dataset& dataset, std::string const& raster_name, Metadata const& metadata) -> void;
 
     auto try_open_gdal_raster_dataset_for_read(std::string const& dataset_name) -> gdal::DatasetPtr;

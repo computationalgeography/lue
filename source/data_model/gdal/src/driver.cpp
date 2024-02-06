@@ -1,4 +1,5 @@
 #include "lue/gdal/driver.hpp"
+#include <fmt/format.h>
 #include <stdexcept>
 
 
@@ -32,10 +33,21 @@ namespace lue::gdal {
 
         if (driver_ptr == nullptr)
         {
-            throw std::runtime_error("Driver " + name + " is not available");
+            throw std::runtime_error(fmt::format("Driver {} is not available", name));
         }
 
         return driver_ptr;
+    }
+
+
+    auto delete_dataset(GDALDriver& driver, std::string const& dataset_name) -> void
+    {
+        CPLErr const status = driver.Delete(dataset_name.c_str());
+
+        if (status != CE_None)
+        {
+            throw std::runtime_error(fmt::format("Cannot delete dataset {}", dataset_name));
+        }
     }
 
 }  // namespace lue::gdal

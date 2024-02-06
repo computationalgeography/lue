@@ -8,6 +8,22 @@
 
 namespace lue::gdal {
 
+    namespace {
+
+        auto up_is_north(GeoTransform const& geo_transform) -> bool
+        {
+            return geo_transform[2] == 0.0 && geo_transform[4] == 0.0 && geo_transform[5] < 0.0;
+        }
+
+
+        auto cells_are_square(GeoTransform const& geo_transform) -> bool
+        {
+            return geo_transform[1] == std::abs(geo_transform[5]);
+        }
+
+    }  // Anonymous namespace
+
+
     /*!
         @brief      Open dataset @name
         @param      open_mode Open mode to use: `GDALAccess::GA_ReadOnly` or `GDALAccess::GA_Update`
@@ -16,17 +32,7 @@ namespace lue::gdal {
     */
     auto try_open_dataset(std::string const& name, GDALAccess open_mode) -> DatasetPtr
     {
-#ifndef NDEBUG
-        CPLPushErrorHandler(CPLQuietErrorHandler);
-#endif
-
-        DatasetPtr dataset_ptr{static_cast<GDALDataset*>(GDALOpen(name.c_str(), open_mode)), gdal_close};
-
-#ifndef NDEBUG
-        CPLPopErrorHandler();
-#endif
-
-        return dataset_ptr;
+        return {static_cast<GDALDataset*>(GDALOpen(name.c_str(), open_mode)), gdal_close};
     }
 
 
@@ -56,24 +62,15 @@ namespace lue::gdal {
         @exception  std::runtime_error In case the dataset cannot be created
     */
     auto create_dataset(
-        std::string const& driver_name,
+        GDALDriver& driver,
         std::string const& dataset_name,
         Shape const& shape,
         Count nr_bands,
         GDALDataType data_type) -> DatasetPtr
     {
-#ifndef NDEBUG
-        CPLPushErrorHandler(CPLQuietErrorHandler);
-#endif
-
         DatasetPtr dataset_ptr{
-            driver(driver_name)
-                ->Create(dataset_name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr),
+            driver.Create(dataset_name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr),
             gdal_close};
-
-#ifndef NDEBUG
-        CPLPopErrorHandler();
-#endif
 
         if (!dataset_ptr)
         {
@@ -84,6 +81,23 @@ namespace lue::gdal {
     }
 
 
+    /*!
+        @overload
+    */
+    auto create_dataset(
+        std::string const& driver_name,
+        std::string const& dataset_name,
+        Shape const& shape,
+        Count nr_bands,
+        GDALDataType data_type) -> DatasetPtr
+    {
+        return create_dataset(*driver(driver_name), dataset_name, shape, nr_bands, data_type);
+    }
+
+
+    /*!
+        @overload
+    */
     auto create_dataset(std::string const& driver_name, std::string const& dataset_name) -> DatasetPtr
     {
         return create_dataset(driver_name, dataset_name, Shape{0, 0}, 0, GDT_Unknown);
@@ -100,20 +114,12 @@ namespace lue::gdal {
     {
         assert(clone_dataset);
 
-#ifndef NDEBUG
-        CPLPushErrorHandler(CPLQuietErrorHandler);
-#endif
-
         // TODO let GDAL pick the driver and/or use extension(?)
         DriverPtr driver{gdal::driver("GTiff")};
 
         DatasetPtr dataset_ptr{
             driver->CreateCopy(name.c_str(), clone_dataset.get(), FALSE, nullptr, nullptr, nullptr),
             gdal_close};
-
-#ifndef NDEBUG
-        CPLPopErrorHandler();
-#endif
 
         if (!dataset_ptr)
         {
@@ -130,6 +136,9 @@ namespace lue::gdal {
     }
 
 
+    /*!
+        @brief      Return the number of bands in a raster
+    */
     auto nr_raster_bands(GDALDataset& dataset) -> Count
     {
         return dataset.GetRasterCount();
@@ -157,10 +166,8 @@ namespace lue::gdal {
                     1,
                     nr_bands));
             }
-            else
-            {
-                throw std::runtime_error(fmt::format("Band {} cannot be obtained", band_nr));
-            }
+
+            throw std::runtime_error(fmt::format("Band {} cannot be obtained", band_nr));
         }
 
         return band_ptr;
@@ -210,23 +217,12 @@ namespace lue::gdal {
     }
 
 
-    auto up_is_north(GeoTransform const& geo_transform) -> bool
-    {
-        return geo_transform[2] == 0.0 && geo_transform[4] == 0.0 && geo_transform[5] < 0.0;
-    }
-
-
-    auto cells_are_square(GeoTransform const& geo_transform) -> bool
-    {
-        return geo_transform[1] == std::abs(geo_transform[5]);
-    }
-
-
     /*!
         @brief      Return the information about the affine transformation from raster coordinates
                     (row, col indices) to georeferenced coordinates (projected or geographic
                     coordinates)
         @return     Collection of six coefficients
+        @sa         set_geo_transform
 
         Index | Meaning
         ----- | -------
@@ -256,10 +252,14 @@ namespace lue::gdal {
     }
 
 
+    /*!
+        @brief      Set the transformation information
+        @sa         geo_transform
+    */
     auto set_geo_transform(GDALDataset& dataset, GeoTransform const& geo_transform) -> void
     {
         // For some reason, GDAL wants a non-const pointer...
-        dataset.SetGeoTransform(const_cast<double*>(geo_transform.data()));
+        dataset.SetGeoTransform(const_cast<Coordinate*>(geo_transform.data()));
     }
 
 }  // namespace lue::gdal

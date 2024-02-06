@@ -4,6 +4,9 @@ namespace lue {
         @brief      Namespace containing a nicer API around the GDAL C++-API and additional
                     code that makes working with the GDAL library a nicer experience
 
+        The API tries to be as close to the original GDAL API as possible. There are only a
+        few utility classes, e.g.: gdal::Blocks and gdal::Raster.
+
         The code is useful in other contexts than LUE: lue::gdal doesn't depend on
         anything specific to LUE.
 

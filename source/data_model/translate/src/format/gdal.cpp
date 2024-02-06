@@ -5,6 +5,35 @@
 
 namespace lue::utility {
 
+    namespace {
+
+        auto blocks(gdal::Shape const& band_shape, gdal::Shape const& block_shape) -> gdal::Blocks
+        {
+            auto [block_size_y, block_size_x] = block_shape;
+
+            assert(block_size_x >= 0);
+            assert(block_size_y >= 0);
+
+            auto [nr_rows, nr_cols] = band_shape;
+
+            assert(nr_rows >= 0);
+            assert(nr_cols >= 0);
+
+            // TODO Enlarge given some heuristics:
+            // - A whole number of times the actual block size (in each dimension)
+            // - Number of cells below some sensible value (1GB?)
+            block_size_x *= 10;
+            block_size_y *= 10;
+
+            block_size_x = std::min(block_size_x, nr_cols);
+            block_size_y = std::min(block_size_y, nr_rows);
+
+            return {{nr_cols, nr_rows}, {block_size_x, block_size_y}};
+        }
+
+    }  // Anonymous namespace
+
+
     auto gdal_data_type_to_memory_data_type(GDALDataType const data_type) -> hdf5::Datatype
     {
         hdf5::Datatype result{};
@@ -130,7 +159,7 @@ namespace lue::utility {
         // locations in time. The 2D array to write to the raster band is
         // located at the index passed in.
 
-        auto const blocks = raster_band.blocks();
+        auto const blocks = utility::blocks(raster_band.size(), raster_band.block_size());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -164,7 +193,7 @@ namespace lue::utility {
                 hdf5::Hyperslab const hyperslab{offset, count};
 
                 value.read(memory_datatype, hyperslab, values.data());
-                raster_band.write_block({block_x, block_y}, values.data());
+                raster_band.write_block({block_y, block_x}, values.data());
             }
         }
     }
@@ -225,7 +254,7 @@ namespace lue::utility {
     void lue_to_gdal(data_model::Array const& array, gdal::Raster::Band& raster_band)
     {
         // It is assumed here that array only contains a 2D array
-        auto const blocks = raster_band.blocks();
+        auto const blocks = utility::blocks(raster_band.size(), raster_band.block_size());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -249,7 +278,7 @@ namespace lue::utility {
                 hdf5::Hyperslab const hyperslab{offset, count};
 
                 array.read(memory_datatype, hyperslab, values.data());
-                raster_band.write_block({block_x, block_y}, values.data());
+                raster_band.write_block({block_y, block_x}, values.data());
             }
         }
     }
@@ -310,7 +339,7 @@ namespace lue::utility {
     }
 
 
-    auto translate_lue_dataset_to_raster(
+    auto translate_lue_dataset_to_gdal_raster(
         data_model::Dataset& dataset, std::string const& raster_name, Metadata const& metadata) -> void
     {
         // Figure out which property-sets are selected
@@ -669,9 +698,9 @@ namespace lue::utility {
     template<
         typename RasterView,
         typename T>  // In-file GDAL element type
-    void gdal_to_lue(gdal::Raster::Band const& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
+    void gdal_to_lue(gdal::Raster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
     {
-        auto const blocks = gdal_raster_band.blocks();
+        auto const blocks = utility::blocks(gdal_raster_band.size(), gdal_raster_band.block_size());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -692,7 +721,7 @@ namespace lue::utility {
                     static_cast<hdf5::Count::value_type>(nr_valid_cells_x)};
                 hdf5::Hyperslab hyperslab{offset, count};
 
-                gdal_raster_band.read_block({block_x, block_y}, values.data());
+                gdal_raster_band.read_block({block_y, block_x}, values.data());
                 hdf5::Shape const shape = {
                     static_cast<hdf5::Shape::value_type>(nr_valid_cells_x * nr_valid_cells_y)};
                 auto memory_dataspace = hdf5::create_dataspace(shape);
@@ -703,7 +732,7 @@ namespace lue::utility {
 
 
     template<typename RasterView>
-    void gdal_to_lue(gdal::Raster::Band const& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
+    void gdal_to_lue(gdal::Raster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
     {
         GDALDataType const data_type{gdal_raster_band.data_type()};
 
@@ -799,7 +828,7 @@ namespace lue::utility {
 
         assert(!gdal_dataset_names.empty());
 
-        gdal::Raster const gdal_raster{gdal_dataset_names[0]};
+        gdal::Raster const gdal_raster{gdal::open_dataset(gdal_dataset_names[0], GDALAccess::GA_ReadOnly)};
         auto const [nr_rows, nr_cols] = gdal_raster.shape();
         auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
             gdal_raster.geo_transform();
@@ -837,7 +866,7 @@ namespace lue::utility {
 
         for (std::string const& gdal_dataset_name : gdal_dataset_names)
         {
-            gdal::Raster const gdal_raster{gdal_dataset_name};
+            gdal::Raster const gdal_raster{gdal::open_dataset(gdal_dataset_name, GDALAccess::GA_ReadOnly)};
 
             std::string const raster_layer_name{std::filesystem::path(gdal_dataset_name).stem().string()};
 

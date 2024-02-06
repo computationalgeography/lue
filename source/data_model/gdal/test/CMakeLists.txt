@@ -22,6 +22,7 @@ foreach(name ${names})
     target_link_libraries(${test_name}
         PRIVATE
             lue::gdal
+            lue::shared
             Boost::unit_test_framework
     )
 

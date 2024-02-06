@@ -9,8 +9,6 @@
 
 BOOST_AUTO_TEST_CASE(round_trip_1)
 {
-    lue::gdal::register_gdal_drivers();
-
     // int32_t, all valid
     using Element = std::int32_t;
     using Array = lue::PartitionedArray<Element, 2>;
@@ -23,18 +21,16 @@ BOOST_AUTO_TEST_CASE(round_trip_1)
 
     lue::write<Element>(array_written, name).wait();
 
-    // TODO BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    // TODO Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::read<Element>(name, partition_shape)};
 
-    // TODO lue::test::check_arrays_are_equal(array_read, array_written);
+    lue::test::check_arrays_are_equal(array_read, array_written);
 }
 
 
 BOOST_AUTO_TEST_CASE(round_trip_2)
 {
-    lue::gdal::register_gdal_drivers();
-
     // int32_t, none valid
     using Element = std::int32_t;
     using Array = lue::PartitionedArray<Element, 2>;
@@ -47,18 +43,16 @@ BOOST_AUTO_TEST_CASE(round_trip_2)
 
     lue::write<Element>(array_written, name).wait();
 
-    // TODO BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    // TODO Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::read<Element>(name, partition_shape)};
 
-    // TODO lue::test::check_arrays_are_equal(array_read, array_written);
+    lue::test::check_arrays_are_equal(array_read, array_written);
 }
 
 
 BOOST_AUTO_TEST_CASE(round_trip_3)
 {
-    lue::gdal::register_gdal_drivers();
-
     // float, all valid
     using Element = float;
     using Array = lue::PartitionedArray<Element, 2>;
@@ -71,18 +65,16 @@ BOOST_AUTO_TEST_CASE(round_trip_3)
 
     lue::write<Element>(array_written, name).wait();
 
-    // TODO BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    // TODO Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::read<Element>(name, partition_shape)};
 
-    // TODO lue::test::check_arrays_are_equal(array_read, array_written);
+    lue::test::check_arrays_are_equal(array_read, array_written);
 }
 
 
 BOOST_AUTO_TEST_CASE(round_trip_4)
 {
-    lue::gdal::register_gdal_drivers();
-
     // float, none valid
     using Element = float;
     using Array = lue::PartitionedArray<Element, 2>;
@@ -95,9 +87,9 @@ BOOST_AUTO_TEST_CASE(round_trip_4)
 
     lue::write<Element>(array_written, name).wait();
 
-    // TODO BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    // TODO Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::read<Element>(name, partition_shape)};
 
-    // TODO lue::test::check_arrays_are_equal(array_read, array_written);
+    lue::test::check_arrays_are_equal(array_read, array_written);
 }

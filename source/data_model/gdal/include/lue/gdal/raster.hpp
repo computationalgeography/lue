@@ -6,11 +6,17 @@
 
 namespace lue::gdal {
 
+    /*!
+        @brief      Utility class for performing I/O to a raster and its bands
+    */
     class Raster
     {
 
         public:
 
+            /*!
+                @brief      Utility class for performing I/O to a raster band
+            */
             class Band
             {
 
@@ -30,35 +36,50 @@ namespace lue::gdal {
 
                     [[nodiscard]] auto data_type() const -> GDALDataType;
 
+                    [[nodiscard]] auto block_size() const -> Shape;
+
+                    [[nodiscard]] auto size() const -> Shape;
+
+
+                    /*!
+                        @sa         gdal::no_data_value
+                    */
                     template<typename Element>
                     [[nodiscard]] auto no_data_value() const -> std::tuple<Element, bool>
                     {
-                        return gdal::no_data_value<Element>(*_band);
+                        return gdal::no_data_value<Element>(*_band_ptr);
                     }
 
-                    [[nodiscard]] auto blocks() const -> Blocks;
 
-                    auto read_block(Offset const& block_offset, void* buffer) const -> void;
+                    /*!
+                        @sa         gdal::set_no_data_value
+                    */
+                    template<typename Element>
+                    auto set_no_data_value(Element const value) -> void
+                    {
+                        gdal::set_no_data_value<Element>(*_band_ptr, value);
+                    }
 
-                    auto read(void* buffer) const -> void;
+
+                    auto read_block(Offset const& block_offset, void* buffer) -> void;
 
                     auto write_block(Offset const& block_offset, void* buffer) -> void;
 
-                    // void       write               (hl::Raster::Band& raster_band,
-                    //                                 ProgressIndicator& progress_indicator);
+                    auto read(void* buffer) -> void;
+
+                    auto write(void* buffer) -> void;
+
+                    auto write(Offset const& offset, Shape const& shape, GDALDataType data_type, void* buffer)
+                        -> void;
+
+                    auto write(Shape const& shape, GDALDataType data_type, void* buffer) -> void;
+
 
                 private:
 
-                    // template<
-                    //     typename T>
-                    // void       write               (hl::Raster::Band& raster_band,
-                    //                                 ProgressIndicator& progress_indicator);
-
-                    RasterBandPtr _band;
+                    RasterBandPtr _band_ptr;
             };
 
-
-            explicit Raster(std::string const& dataset_name);
 
             explicit Raster(DatasetPtr dataset_ptr);
 

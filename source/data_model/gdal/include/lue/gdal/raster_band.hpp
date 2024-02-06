@@ -19,6 +19,28 @@ namespace lue::gdal {
 
     auto band_size(GDALRasterBand& band) -> Shape;
 
+    auto read_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
+
+    auto write_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
+
+    auto read(
+        GDALRasterBand& band,
+        Offset const& offset,
+        Shape const& raster_shape,
+        GDALDataType data_type,
+        void* buffer) -> void;
+
+    auto read(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer) -> void;
+
+    auto write(
+        GDALRasterBand& band,
+        Offset const& offset,
+        Shape const& raster_shape,
+        GDALDataType data_type,
+        void* buffer) -> void;
+
+    auto write(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer) -> void;
+
 
     namespace detail {
 
@@ -52,7 +74,7 @@ namespace lue::gdal {
         template<typename Element>
         auto set_no_data_value(GDALRasterBand& band, Element const value) -> CPLErr
         {
-            return band.SetNoDataValue(static_cast<double>(value));
+            return band.SetNoDataValue(static_cast<NoDataValue>(value));
         }
 
 

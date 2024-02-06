@@ -33,7 +33,7 @@ namespace lue {
             hdf5::Shape read_gdal_raster(std::string const& pathname, Collection& collection)
             {
                 // Open dataset
-                gdal::Raster raster{pathname};
+                gdal::Raster raster{gdal::open_dataset(pathname, GDALAccess::GA_ReadOnly)};
 
                 // Verify dataset is OK for us
                 assert(raster.nr_bands() == 1);
@@ -126,7 +126,7 @@ namespace lue {
             template<typename Coordinate>
             std::vector<Coordinate> read_space_box(std::string const& dataset_name)
             {
-                auto const raster = gdal::Raster{dataset_name};
+                auto const raster = gdal::Raster{gdal::open_dataset(dataset_name, GDALAccess::GA_ReadOnly)};
                 auto const [nr_rows, nr_cols] = raster.shape();
                 auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
                     raster.geo_transform();

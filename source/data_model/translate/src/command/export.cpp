@@ -102,7 +102,7 @@ options:
             else if (std::filesystem::path(output_dataset_name).extension() == ".tif")
             {
                 // Write information from the dataset to one or more rasters
-                translate_lue_dataset_to_raster(*lue_dataset, output_dataset_name, metadata);
+                translate_lue_dataset_to_gdal_raster(*lue_dataset, output_dataset_name, metadata);
             }
             // else if(std::filesystem::path(output_dataset_name).extension() == ".vtk") {
             //     // Create a VTK file of the dataset.
