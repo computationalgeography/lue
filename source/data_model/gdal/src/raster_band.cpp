@@ -13,7 +13,7 @@ namespace lue::gdal {
     }
 
 
-    auto block_size(GDALRasterBand& band) -> Shape
+    auto block_shape(GDALRasterBand& band) -> Shape
     {
         int size_x{};
         int size_y{};
@@ -24,7 +24,7 @@ namespace lue::gdal {
     }
 
 
-    auto band_size(GDALRasterBand& band) -> Shape
+    auto shape(GDALRasterBand& band) -> Shape
     {
         return {band.GetYSize(), band.GetXSize()};
     }

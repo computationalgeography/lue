@@ -81,7 +81,7 @@ The folowing listing shows an example of a metadata file:
 
 In this case, the rasters are added to the same property-set,
 referenced by the pointer to the phenomenon containing the property-set
-(`/phenomena/0`, the first phenomenon in the `phenomana` list. The
+(`/phenomena/0`, the first phenomenon in the `phenomena` list). The
 rasters will share the same discretization property.
 
 

@@ -5,6 +5,25 @@
 
 BOOST_AUTO_TEST_CASE(driver)
 {
-    // TODO
-    BOOST_CHECK(true);
+    namespace lgd = lue::gdal;
+
+    lgd::register_gdal_drivers();
+
+    {
+        std::string const driver_name{"GTiff"};
+
+        BOOST_CHECK_NO_THROW(lgd::driver(driver_name));
+    }
+
+    {
+        std::string const driver_name{"MEM"};
+
+        BOOST_CHECK_NO_THROW(lgd::driver(driver_name));
+    }
+
+    {
+        std::string const driver_name{"hotseknots"};
+
+        BOOST_CHECK_THROW(lgd::driver(driver_name), std::runtime_error);
+    }
 }

@@ -16,27 +16,27 @@ namespace lue::gdal {
     /*!
         @sa         gdal::data_type
     */
-    auto Raster::Band::data_type() const -> GDALDataType
+    auto Raster::Band::data_type() -> GDALDataType
     {
         return gdal::data_type(*_band_ptr);
     }
 
 
     /*!
-        @sa         gdal::shape(GDALRasterBand const&)
+        @sa         gdal::shape(GDALRasterBand&)
     */
-    auto Raster::Band::size() const -> Shape
+    auto Raster::Band::shape() -> Shape
     {
-        return gdal::band_size(*_band_ptr);
+        return gdal::shape(*_band_ptr);
     }
 
 
     /*!
-        @sa         gdal::block_size
+        @sa         gdal::block_shape
     */
-    auto Raster::Band::block_size() const -> Shape
+    auto Raster::Band::block_shape() -> Shape
     {
-        return gdal::block_size(*_band_ptr);
+        return gdal::block_shape(*_band_ptr);
     }
 
 
@@ -54,7 +54,7 @@ namespace lue::gdal {
     */
     auto Raster::Band::read(void* buffer) -> void
     {
-        gdal::read(*_band_ptr, size(), data_type(), buffer);
+        gdal::read(*_band_ptr, shape(), data_type(), buffer);
     }
 
 
@@ -63,7 +63,7 @@ namespace lue::gdal {
     */
     auto Raster::Band::write(void* buffer) -> void
     {
-        gdal::write(*_band_ptr, size(), data_type(), buffer);
+        gdal::write(*_band_ptr, shape(), data_type(), buffer);
     }
 
 
@@ -99,9 +99,18 @@ namespace lue::gdal {
 
 
     /*!
-        @sa         gdal::shape(GDALDataset const&)
+        @sa         gdal::data_type(GDALDataset&)
     */
-    auto Raster::shape() const -> Shape
+    auto Raster::data_type() -> GDALDataType
+    {
+        return gdal::data_type(*_dataset_ptr);
+    }
+
+
+    /*!
+        @sa         gdal::shape(GDALDataset&)
+    */
+    auto Raster::shape() -> Shape
     {
         return gdal::shape(*_dataset_ptr);
     }
@@ -110,7 +119,7 @@ namespace lue::gdal {
     /*!
         @sa         gdal::geo_transform
     */
-    auto Raster::geo_transform() const -> GeoTransform
+    auto Raster::geo_transform() -> GeoTransform
     {
         return gdal::geo_transform(*_dataset_ptr);
     }
@@ -128,7 +137,7 @@ namespace lue::gdal {
     /*!
         @sa         gdal::nr_raster_bands
     */
-    auto Raster::nr_bands() const -> Count
+    auto Raster::nr_bands() -> Count
     {
         return nr_raster_bands(*_dataset_ptr);
     }
@@ -137,7 +146,7 @@ namespace lue::gdal {
     /*!
         @sa         gdal::raster_band
     */
-    auto Raster::band(Count const band_nr) const -> Band
+    auto Raster::band(Count const band_nr) -> Band
     {
         return Raster::Band{raster_band(*_dataset_ptr, band_nr)};
     }

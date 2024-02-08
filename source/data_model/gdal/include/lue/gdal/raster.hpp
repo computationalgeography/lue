@@ -34,18 +34,18 @@ namespace lue::gdal {
 
                     auto operator=(Band&&) -> Band& = default;
 
-                    [[nodiscard]] auto data_type() const -> GDALDataType;
+                    [[nodiscard]] auto data_type() -> GDALDataType;
 
-                    [[nodiscard]] auto block_size() const -> Shape;
+                    [[nodiscard]] auto block_shape() -> Shape;
 
-                    [[nodiscard]] auto size() const -> Shape;
+                    [[nodiscard]] auto shape() -> Shape;
 
 
                     /*!
                         @sa         gdal::no_data_value
                     */
                     template<typename Element>
-                    [[nodiscard]] auto no_data_value() const -> std::tuple<Element, bool>
+                    [[nodiscard]] auto no_data_value() -> std::tuple<Element, bool>
                     {
                         return gdal::no_data_value<Element>(*_band_ptr);
                     }
@@ -93,15 +93,17 @@ namespace lue::gdal {
 
             auto operator=(Raster&&) -> Raster& = default;
 
-            [[nodiscard]] auto shape() const -> Shape;
+            [[nodiscard]] auto data_type() -> GDALDataType;
 
-            [[nodiscard]] auto geo_transform() const -> GeoTransform;
+            [[nodiscard]] auto shape() -> Shape;
+
+            [[nodiscard]] auto geo_transform() -> GeoTransform;
 
             auto set_geo_transform(GeoTransform const& geo_transform) -> void;
 
-            [[nodiscard]] auto band(Count band_nr) const -> Band;
+            [[nodiscard]] auto band(Count band_nr) -> Band;
 
-            [[nodiscard]] auto nr_bands() const -> Count;
+            [[nodiscard]] auto nr_bands() -> Count;
 
         private:
 

@@ -30,6 +30,8 @@ namespace lue {
                 std::string const& key,
                 std::string const& value);
 
+            JSON object(JSON const& object, std::string const& key, std::string const& value);
+
             std::string string(JSON const& object, std::string const& name);
 
             std::string string(JSON const& object, JSONPointer const& pointer);

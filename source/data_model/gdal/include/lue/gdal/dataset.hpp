@@ -52,7 +52,9 @@ namespace lue::gdal {
 
     auto create_dataset(std::string const& driver_name, std::string const& dataset_name) -> DatasetPtr;
 
-    auto create_copy(std::string const& name, DatasetPtr& clone_dataset) -> DatasetPtr;
+    auto create_copy(std::string const& name, GDALDataset& clone_dataset) -> DatasetPtr;
+
+    auto delete_dataset(GDALDriver& driver, std::string const& dataset_name) -> void;
 
     auto data_type(std::string const& name) -> GDALDataType;
 

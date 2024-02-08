@@ -12,6 +12,7 @@ configure_file(
 
 add_library(lue_gdal STATIC
     src/blocks.cpp
+    src/compare_rasters.cpp
     src/dataset.cpp
     src/driver.cpp
     src/error.cpp

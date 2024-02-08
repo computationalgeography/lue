@@ -15,9 +15,9 @@ namespace lue::gdal {
 
     auto data_type(GDALRasterBand& band) -> GDALDataType;
 
-    auto block_size(GDALRasterBand& band) -> Shape;
+    auto block_shape(GDALRasterBand& band) -> Shape;
 
-    auto band_size(GDALRasterBand& band) -> Shape;
+    auto shape(GDALRasterBand& band) -> Shape;
 
     auto read_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
 

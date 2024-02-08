@@ -31,6 +31,15 @@ namespace lue::utility {
             return {{nr_cols, nr_rows}, {block_size_x, block_size_y}};
         }
 
+
+        auto hdf5_shape_to_gdal_shape(hdf5::Shape const& hdf5_shape) -> gdal::Shape
+        {
+            assert(std::size(hdf5_shape) == 2);
+
+            return gdal::Shape{
+                static_cast<gdal::Count>(hdf5_shape[0]), static_cast<gdal::Count>(hdf5_shape[1])};
+        }
+
     }  // Anonymous namespace
 
 
@@ -159,7 +168,7 @@ namespace lue::utility {
         // locations in time. The 2D array to write to the raster band is
         // located at the index passed in.
 
-        auto const blocks = utility::blocks(raster_band.size(), raster_band.block_size());
+        auto const blocks = utility::blocks(raster_band.shape(), raster_band.block_shape());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -254,7 +263,7 @@ namespace lue::utility {
     void lue_to_gdal(data_model::Array const& array, gdal::Raster::Band& raster_band)
     {
         // It is assumed here that array only contains a 2D array
-        auto const blocks = utility::blocks(raster_band.size(), raster_band.block_size());
+        auto const blocks = utility::blocks(raster_band.shape(), raster_band.block_shape());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -331,113 +340,43 @@ namespace lue::utility {
     }
 
 
-    auto hdf5_shape_to_gdal_shape(hdf5::Shape const& hdf5_shape) -> gdal::Shape
-    {
-        assert(std::size(hdf5_shape) == 2);
-
-        return gdal::Shape{static_cast<gdal::Count>(hdf5_shape[0]), static_cast<gdal::Count>(hdf5_shape[1])};
-    }
-
-
     auto translate_lue_dataset_to_gdal_raster(
         data_model::Dataset& dataset, std::string const& raster_name, Metadata const& metadata) -> void
     {
-        // Figure out which property-sets are selected
+        // Find information about where to read the raster from: phenomenon/property_set/property
+        std::string const dataset_name{std::filesystem::path(raster_name).stem().string()};
+
         auto const& root_json = metadata.object();
-        std::string const lue_dataset_name = std::filesystem::path(dataset.pathname()).stem().string();
+        auto const datasets_json = json::object(root_json, "datasets");
+        auto const dataset_json = json::object(datasets_json, "name", dataset_name);
+        std::string const phenomenon_name{json::string(dataset_json, "phenomenon")};
+        std::string const property_set_name{json::string(dataset_json, "property_set")};
+        auto const raster_json = json::object(dataset_json, "raster");
+        auto const bands_json = json::object(raster_json, "bands");
 
-        // Dataset -----------------------------------------------------------------
-        if (!json::has_key(root_json, lue_dataset_name))
+        gdal::Count const nr_bands{static_cast<gdal::Count>(bands_json.size())};
+
+        if (nr_bands == 0)
         {
-            throw std::runtime_error(
-                fmt::format("No information for dataset {} present in metadata", lue_dataset_name));
+            return;
         }
 
-        auto const dataset_json = json::object(root_json, lue_dataset_name);
-
-        // Phenomena ---------------------------------------------------------------
-        if (!json::has_key(dataset_json, "phenomena"))
-        {
-            throw std::runtime_error(fmt::format(
-                "No information about phenomena present in metadata for "
-                "dataset {}",
-                lue_dataset_name));
-        }
-
-        auto const phenomena_json = json::object(dataset_json, "phenomena");
-
-        if (phenomena_json.size() != 1)
-        {
-            throw std::runtime_error(fmt::format(
-                "Expected information about 1 phenomenon in metadata for "
-                "dataset {}, but got {}",
-                lue_dataset_name,
-                phenomena_json.size()));
-        }
-
-        auto const phenomenon_json = phenomena_json.front();
-        std::string const phenomenon_name = json::string(phenomenon_json, "name");
-
-        // Property-sets -----------------------------------------------------------
-        if (!json::has_key(phenomenon_json, "property_sets"))
-        {
-            throw std::runtime_error(fmt::format(
-                "No information about property-sets present in metadata for "
-                "phenomenon {} in dataset {}",
-                phenomenon_name,
-                lue_dataset_name));
-        }
-
-        auto const property_sets_json = json::object(phenomenon_json, "property_sets");
-
-        if (property_sets_json.size() != 1)
-        {
-            throw std::runtime_error(fmt::format(
-                "Expected information about 1 property-set in metadata for "
-                "phenomenon {} in dataset {}, but got {}",
-                phenomenon_name,
-                lue_dataset_name,
-                property_sets_json.size()));
-        }
-
-        auto const property_set_json = property_sets_json.front();
-        std::string const property_set_name = json::string(property_set_json, "name");
-
-        // Properties --------------------------------------------------------------
-        std::string property_name;
-
-        if (json::has_key(property_set_json, "properties"))
-        {
-            auto const properties_json = json::object(property_set_json, "properties");
-
-            if (properties_json.size() != 1)
-            {
-                throw std::runtime_error(fmt::format(
-                    "Expected information about 1 property in metadata for "
-                    "property-set {} in phenomenon {} in dataset {}, but got {}",
-                    property_set_name,
-                    phenomenon_name,
-                    lue_dataset_name,
-                    properties_json.size()));
-            }
-
-            auto const property_json = properties_json.front();
-            property_name = json::string(property_json, "name");
-        }
-        else
-        {
-            property_name = std::filesystem::path{raster_name}.stem().string();
-        }
+        // TODO std::string const driver_name{gdal::driver_name(raster_name)};
+        std::string const driver_name{"GTiff"};
 
         // If the constant raster view finds a raster with the property name
         // requested, export it to a single GDAL raster
         if (data_model::constant::contains_raster(dataset, phenomenon_name, property_set_name))
         {
-
             using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
             using RasterLayer = RasterView::Layer;
 
             RasterView raster_view{&dataset, phenomenon_name, property_set_name};
+
+            gdal::Count band_nr{1};
+
+            auto it = bands_json.begin();
+            auto const property_name = json::string(*it, "name");
 
             if (!raster_view.contains(property_name))
             {
@@ -447,20 +386,17 @@ namespace lue::utility {
                     property_set_name));
             }
 
-            assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
-
-            data_model::Count const nr_bands{1};
             RasterLayer layer{raster_view.layer(property_name)};
             auto const& space_box{raster_view.space_box()};
 
             gdal::Raster raster{gdal::create_dataset(
-                "GTiff",
+                driver_name,
                 raster_name,
                 hdf5_shape_to_gdal_shape(raster_view.grid_shape()),
                 nr_bands,
                 memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
 
-            // FIXME
+            // TODO
             double const cell_size{0.000992063492063};
             double const west{space_box[0]};
             double const north{space_box[3]};
@@ -468,7 +404,7 @@ namespace lue::utility {
 
             raster.set_geo_transform(geo_transform);
 
-            // TODO(KDJ)
+            // TODO
             // OGRSpatialReference oSRS;
             // char *pszSRS_WKT = NULL;
             // GDALRasterBand *poBand;
@@ -479,73 +415,234 @@ namespace lue::utility {
             // poDstDS->SetProjection( pszSRS_WKT );
             // CPLFree( pszSRS_WKT );
 
-            gdal::Raster::Band raster_band{raster.band(1)};
+            gdal::Raster::Band raster_band{raster.band(band_nr)};
             lue_to_gdal(layer, raster_band);
-        }
 
+            for (; it != bands_json.end(); ++it, ++band_nr)
+            {
+                auto const property_name = json::string(*it, "name");
+
+                if (!raster_view.contains(property_name))
+                {
+                    throw std::runtime_error(fmt::format(
+                        "Constant raster layer named {} is not part of property_set {}",
+                        property_name,
+                        property_set_name));
+                }
+
+                gdal::Raster::Band raster_band{raster.band(band_nr)};
+                lue_to_gdal(layer, raster_band);
+            }
+        }
         // If the variable raster view finds a raster layer with the property
         // name requested, export it to a stack of GDAL rasters
         else if (data_model::variable::contains_raster(dataset, phenomenon_name, property_set_name))
         {
-
             using RasterView = data_model::variable::RasterView<data_model::Dataset*>;
             using RasterLayer = RasterView::Layer;
 
             RasterView raster_view{&dataset, phenomenon_name, property_set_name};
 
-            if (!raster_view.contains(property_name))
-            {
-                throw std::runtime_error(fmt::format(
-                    "Variable raster layer named {} is not part of property_set {}",
-                    property_name,
-                    property_set_name));
-            }
 
-            assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
+            // TODO
 
-            data_model::Count const nr_bands{1};
-            data_model::Index const time_point_idx{0};  // Single time box
-            StackName stack_name{raster_name};
-            RasterLayer layer{raster_view.layer(property_name)};
-            auto const& space_box{raster_view.space_box()};
 
-            for (data_model::Count time_step = 0; time_step < raster_view.nr_time_steps(); ++time_step)
-            {
-                gdal::Raster raster{gdal::create_dataset(
-                    "GTiff",
-                    stack_name[time_step],
-                    hdf5_shape_to_gdal_shape(raster_view.grid_shape()),
-                    nr_bands,
-                    memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
+            ///     if (!raster_view.contains(property_name))
+            ///     {
+            ///         throw std::runtime_error(fmt::format(
+            ///             "Variable raster layer named {} is not part of property_set {}",
+            ///             property_name,
+            ///             property_set_name));
+            ///     }
 
-                // FIXME
-                double const cell_size{0.000992063492063};
-                double const west{space_box[0]};
-                double const north{space_box[3]};
-                gdal::GeoTransform geo_transform{west, cell_size, 0, north, 0, -cell_size};
+            ///     assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
 
-                raster.set_geo_transform(geo_transform);
+            ///     data_model::Count const nr_bands{1};
+            ///     data_model::Index const time_point_idx{0};  // Single time box
+            ///     StackName stack_name{raster_name};
+            ///     RasterLayer layer{raster_view.layer(property_name)};
+            ///     auto const& space_box{raster_view.space_box()};
 
-                // TODO(KDJ)
-                // OGRSpatialReference oSRS;
-                // char *pszSRS_WKT = NULL;
-                // GDALRasterBand *poBand;
-                // GByte abyRaster[512*512];
-                // oSRS.SetUTM( 11, TRUE );
-                // oSRS.SetWellKnownGeogCS( "NAD27" );
-                // oSRS.exportToWkt( &pszSRS_WKT );
-                // poDstDS->SetProjection( pszSRS_WKT );
-                // CPLFree( pszSRS_WKT );
+            ///     for (data_model::Count time_step = 0; time_step < raster_view.nr_time_steps();
+            ///     ++time_step)
+            ///     {
+            ///         gdal::Raster raster{gdal::create_dataset(
+            ///             "GTiff",
+            ///             stack_name[time_step],
+            ///             hdf5_shape_to_gdal_shape(raster_view.grid_shape()),
+            ///             nr_bands,
+            ///             memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
 
-                gdal::Raster::Band raster_band{raster.band(1)};
-                lue_to_gdal(layer, time_point_idx, time_step, raster_band);
-            }
+            ///         // FIXME
+            ///         double const cell_size{0.000992063492063};
+            ///         double const west{space_box[0]};
+            ///         double const north{space_box[3]};
+            ///         gdal::GeoTransform geo_transform{west, cell_size, 0, north, 0, -cell_size};
+
+            ///         raster.set_geo_transform(geo_transform);
+
+            ///         // TODO(KDJ)
+            ///         // OGRSpatialReference oSRS;
+            ///         // char *pszSRS_WKT = NULL;
+            ///         // GDALRasterBand *poBand;
+            ///         // GByte abyRaster[512*512];
+            ///         // oSRS.SetUTM( 11, TRUE );
+            ///         // oSRS.SetWellKnownGeogCS( "NAD27" );
+            ///         // oSRS.exportToWkt( &pszSRS_WKT );
+            ///         // poDstDS->SetProjection( pszSRS_WKT );
+            ///         // CPLFree( pszSRS_WKT );
+
+            ///         gdal::Raster::Band raster_band{raster.band(1)};
+            ///         lue_to_gdal(layer, time_point_idx, time_step, raster_band);
+            ///     }
         }
         else
         {
-            throw std::runtime_error(
-                fmt::format("No raster named {} found in property_set {}", property_name, property_set_name));
+            throw std::runtime_error(fmt::format(
+                "No property-set named {} found in phenomenon {}", property_set_name, phenomenon_name));
         }
+
+
+        /// // Figure out which property-sets are selected
+        /// auto const& root_json = metadata.object();
+        /// std::string const lue_dataset_name = std::filesystem::path(dataset.pathname()).stem().string();
+
+        /// // Dataset -----------------------------------------------------------------
+        /// if (!json::has_key(root_json, lue_dataset_name))
+        /// {
+        ///     throw std::runtime_error(
+        ///         fmt::format("No information for dataset {} present in metadata", lue_dataset_name));
+        /// }
+
+        /// auto const dataset_json = json::object(root_json, lue_dataset_name);
+
+        /// // Phenomena -----------------------------------------------------------
+        /// if (!json::has_key(dataset_json, "phenomena"))
+        /// {
+        ///     throw std::runtime_error(fmt::format(
+        ///         "No information about phenomena present in metadata for "
+        ///         "dataset {}",
+        ///         lue_dataset_name));
+        /// }
+
+        /// auto const phenomena_json = json::object(dataset_json, "phenomena");
+
+        /// if (phenomena_json.size() != 1)
+        /// {
+        ///     throw std::runtime_error(fmt::format(
+        ///         "Expected information about 1 phenomenon in metadata for "
+        ///         "dataset {}, but got {}",
+        ///         lue_dataset_name,
+        ///         phenomena_json.size()));
+        /// }
+
+        /// auto const phenomenon_json = phenomena_json.front();
+        /// std::string const phenomenon_name = json::string(phenomenon_json, "name");
+
+        /// // Property-sets -----------------------------------------------------------
+        /// if (!json::has_key(phenomenon_json, "property_sets"))
+        /// {
+        ///     throw std::runtime_error(fmt::format(
+        ///         "No information about property-sets present in metadata for "
+        ///         "phenomenon {} in dataset {}",
+        ///         phenomenon_name,
+        ///         lue_dataset_name));
+        /// }
+
+        /// auto const property_sets_json = json::object(phenomenon_json, "property_sets");
+
+        /// if (property_sets_json.size() != 1)
+        /// {
+        ///     throw std::runtime_error(fmt::format(
+        ///         "Expected information about 1 property-set in metadata for "
+        ///         "phenomenon {} in dataset {}, but got {}",
+        ///         phenomenon_name,
+        ///         lue_dataset_name,
+        ///         property_sets_json.size()));
+        /// }
+
+        /// auto const property_set_json = property_sets_json.front();
+        /// std::string const property_set_name = json::string(property_set_json, "name");
+
+        /// // Properties --------------------------------------------------------------
+        /// std::string property_name;
+
+        /// if (json::has_key(property_set_json, "properties"))
+        /// {
+        ///     auto const properties_json = json::object(property_set_json, "properties");
+
+        ///     if (properties_json.size() != 1)
+        ///     {
+        ///         throw std::runtime_error(fmt::format(
+        ///             "Expected information about 1 property in metadata for "
+        ///             "property-set {} in phenomenon {} in dataset {}, but got {}",
+        ///             property_set_name,
+        ///             phenomenon_name,
+        ///             lue_dataset_name,
+        ///             properties_json.size()));
+        ///     }
+
+        ///     auto const property_json = properties_json.front();
+        ///     property_name = json::string(property_json, "name");
+        /// }
+        /// else
+        /// {
+        ///     property_name = std::filesystem::path{raster_name}.stem().string();
+        /// }
+
+        /// // If the constant raster view finds a raster with the property name
+        /// // requested, export it to a single GDAL raster
+        /// if (data_model::constant::contains_raster(dataset, phenomenon_name, property_set_name))
+        /// {
+
+        ///     using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
+        ///     using RasterLayer = RasterView::Layer;
+
+        ///     RasterView raster_view{&dataset, phenomenon_name, property_set_name};
+
+        ///     if (!raster_view.contains(property_name))
+        ///     {
+        ///         throw std::runtime_error(fmt::format(
+        ///             "Constant raster layer named {} is not part of property_set {}",
+        ///             property_name,
+        ///             property_set_name));
+        ///     }
+
+        ///     assert(hdf5::size_of_shape(raster_view.grid_shape()) > 0);
+
+        ///     data_model::Count const nr_bands{1};
+        ///     RasterLayer layer{raster_view.layer(property_name)};
+        ///     auto const& space_box{raster_view.space_box()};
+
+        ///     gdal::Raster raster{gdal::create_dataset(
+        ///         "GTiff",
+        ///         raster_name,
+        ///         hdf5_shape_to_gdal_shape(raster_view.grid_shape()),
+        ///         nr_bands,
+        ///         memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
+
+        ///     // FIXME
+        ///     double const cell_size{0.000992063492063};
+        ///     double const west{space_box[0]};
+        ///     double const north{space_box[3]};
+        ///     gdal::GeoTransform geo_transform{west, cell_size, 0, north, 0, -cell_size};
+
+        ///     raster.set_geo_transform(geo_transform);
+
+        ///     // TODO(KDJ)
+        ///     // OGRSpatialReference oSRS;
+        ///     // char *pszSRS_WKT = NULL;
+        ///     // GDALRasterBand *poBand;
+        ///     // GByte abyRaster[512*512];
+        ///     // oSRS.SetUTM( 11, TRUE );
+        ///     // oSRS.SetWellKnownGeogCS( "NAD27" );
+        ///     // oSRS.exportToWkt( &pszSRS_WKT );
+        ///     // poDstDS->SetProjection( pszSRS_WKT );
+        ///     // CPLFree( pszSRS_WKT );
+
+        ///     gdal::Raster::Band raster_band{raster.band(1)};
+        ///     lue_to_gdal(layer, raster_band);
+        /// }
 
 
         /// ///     // Find requested information in LUE dataset -------------------------------
@@ -695,12 +792,16 @@ namespace lue::utility {
     }
 
 
-    template<
-        typename RasterView,
-        typename T>  // In-file GDAL element type
+    /*!
+        @brief      .
+        @tparam     T In-file GDAL element type
+        @return     .
+        @exception  .
+    */
+    template<typename RasterView, typename T>
     void gdal_to_lue(gdal::Raster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
     {
-        auto const blocks = utility::blocks(gdal_raster_band.size(), gdal_raster_band.block_size());
+        auto const blocks = utility::blocks(gdal_raster_band.shape(), gdal_raster_band.block_shape());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
 
@@ -798,13 +899,26 @@ namespace lue::utility {
         std::vector<std::string> const& gdal_dataset_names,
         std::string const& lue_dataset_name,
         bool add,
-        [[maybe_unused]] Metadata const& metadata) -> void
+        Metadata const& metadata) -> void
     {
+        // TODO
+        // Scenarios:
+        // - Import a bunch of rasters covering the same space box. All
+        //     rasters belong to the same object. For each raster a different
+        //     property is made.
+        // - Import a bunch of rasters covering different space boxes. All
+        //     rasters belong to different objects. A single property is made.
+
         namespace lh5 = lue::hdf5;
         namespace lgd = lue::gdal;
         namespace ldm = lue::data_model;
 
-        // Create / open dataset
+        if (gdal_dataset_names.empty())
+        {
+            return;
+        }
+
+        // Create or open the output dataset
         auto create_dataset = [lue_dataset_name]() { return ldm::create_dataset(lue_dataset_name); };
         auto open_dataset = [lue_dataset_name, add]()
         {
@@ -818,98 +932,70 @@ namespace lue::utility {
 
         ldm::Dataset dataset{!ldm::dataset_exists(lue_dataset_name) ? create_dataset() : open_dataset()};
 
-        // Each dataset passed in is a GDAL raster dataset. Each of these
-        // can contain multiple layers. Layers from rasters with the same
-        // domain and discretization can be stored in the same property-set.
+        // Find information about where to write the raster to: phenomenon/property_set/property
+        auto const& root_json = metadata.object();
+        auto const datasets_json = json::object(root_json, "datasets");
 
-        // TODO We are assuming all rasters passed in can be stored in the
-        //     same property-set (have the same domain +
-        //     discretization). Update this logic if that is not the case.
-
-        assert(!gdal_dataset_names.empty());
-
-        gdal::Raster const gdal_raster{gdal::open_dataset(gdal_dataset_names[0], GDALAccess::GA_ReadOnly)};
-        auto const [nr_rows, nr_cols] = gdal_raster.shape();
-        auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
-            gdal_raster.geo_transform();
-        double const east = west + nr_cols * cell_width;
-        double const south = north - nr_rows * cell_height;
-
-        // Create / open raster view
-        using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
-        using SpaceBox = RasterView::SpaceBox;
-
-        lh5::Shape const grid_shape{
-            static_cast<lh5::Shape::value_type>(nr_rows), static_cast<lh5::Shape::value_type>(nr_cols)};
-        SpaceBox const space_box{west, south, east, north};
-
-        // TODO For now, we use default names. These could also be obtained
-        //     from the metadata passed in.
-        std::string const phenomenon_name{"area"};
-        std::string const property_set_name{"raster"};
-
-        auto contains_raster = [dataset, phenomenon_name, property_set_name]()
-        {
-            return dataset.phenomena().contains(phenomenon_name) &&
-                   dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
-                   ldm::constant::contains_raster(dataset, phenomenon_name, property_set_name);
-        };
-
-        RasterView raster_view{
-            !contains_raster()
-                ? ldm::constant::create_raster_view(
-                      &dataset, phenomenon_name, property_set_name, grid_shape, space_box)
-                : ldm::constant::open_raster_view(&dataset, phenomenon_name, property_set_name)};
-
-        // Add raster layers from input raster(s)
-        using RasterLayer = RasterView::Layer;
-
+        // Each dataset passed in is a GDAL raster dataset. Each of these can contain multiple
+        // layers. Layers from rasters with the same domain and discretization can be stored in
+        // the same property-set. Whether this should be done depends on the metadata passed in.
         for (std::string const& gdal_dataset_name : gdal_dataset_names)
         {
-            gdal::Raster const gdal_raster{gdal::open_dataset(gdal_dataset_name, GDALAccess::GA_ReadOnly)};
+            // Find information about where to store the raster dataset in the metadata
+            std::string const dataset_name{std::filesystem::path(gdal_dataset_name).stem().string()};
 
-            std::string const raster_layer_name{std::filesystem::path(gdal_dataset_name).stem().string()};
+            auto const dataset_json = json::object(datasets_json, "name", dataset_name);
+            std::string const phenomenon_name{json::string(dataset_json, "phenomenon")};
+            std::string const property_set_name{json::string(dataset_json, "property_set")};
+            auto const raster_json = json::object(dataset_json, "raster");
 
-            auto band_name = [raster_layer_name,
-                              nr_bands = gdal_raster.nr_bands()](int const band_idx) -> std::string {
-                return nr_bands == 1 ? raster_layer_name
-                                     : fmt::format("{}-{}", raster_layer_name, band_idx + 1);
+            gdal::Raster gdal_raster{gdal::open_dataset(gdal_dataset_name, GDALAccess::GA_ReadOnly)};
+
+            auto const [nr_rows, nr_cols] = gdal_raster.shape();
+            auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
+                gdal_raster.geo_transform();
+            double const east = west + nr_cols * cell_width;
+            double const south = north - nr_rows * cell_height;
+
+            // Create / open raster view
+            using RasterView = data_model::constant::RasterView<data_model::Dataset*>;
+            using SpaceBox = RasterView::SpaceBox;
+
+            lh5::Shape const grid_shape{
+                static_cast<lh5::Shape::value_type>(nr_rows), static_cast<lh5::Shape::value_type>(nr_cols)};
+            SpaceBox const space_box{west, south, east, north};
+
+            auto contains_raster = [dataset, phenomenon_name, property_set_name]()
+            {
+                return dataset.phenomena().contains(phenomenon_name) &&
+                       dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
+                       ldm::constant::contains_raster(dataset, phenomenon_name, property_set_name);
             };
 
-            for (int band_idx = 0; band_idx < gdal_raster.nr_bands(); ++band_idx)
+            RasterView raster_view{
+                !contains_raster()
+                    ? ldm::constant::create_raster_view(
+                          &dataset, phenomenon_name, property_set_name, grid_shape, space_box)
+                    : ldm::constant::open_raster_view(&dataset, phenomenon_name, property_set_name)};
+
+            // Add raster layers from input raster(s)
+            using RasterLayer = RasterView::Layer;
+
+            auto const bands_json = json::object(raster_json, "bands");
+
+            gdal::Count band_nr{1};
+            for (auto it = bands_json.begin(); it != bands_json.end(); ++it, ++band_nr)
             {
-                gdal::Raster::Band gdal_raster_band{gdal_raster.band(band_idx + 1)};
+                auto const band_name = json::string(*it, "name");
+
+                gdal::Raster::Band gdal_raster_band{gdal_raster.band(band_nr)};
 
                 RasterLayer lue_raster_layer{raster_view.add_layer(
-                    band_name(band_idx), gdal_data_type_to_memory_data_type(gdal_raster_band.data_type()))};
+                    band_name, gdal_data_type_to_memory_data_type(gdal_raster_band.data_type()))};
 
                 gdal_to_lue<RasterView>(gdal_raster_band, lue_raster_layer);
             }
         }
-
-
-        /// // Create data structure that can be converted to a JSON object. This
-        /// // data structure represents the import request.
-
-        /// // hier verder
-
-        /// // auto datasets{open_gdal_datasets(gdal_dataset_names)};
-
-        /// // Scenarios:
-        /// // - Import a bunch of rasters covering the same space box. All
-        /// //     rasters belong to the same object. For each raster a different
-        /// //     property is made.
-        /// // - Import a bunch of rasters covering different space boxes. All
-        /// //     rasters belong to different objects. A single property is made.
-
-        /// // Figure out whether the space boxes differ
-        /// // auto const space_boxes{space_boxes(datasets)};
-
-        /// // bool space_boxes_differ
-
-
-        /// // // Translate to LUE format using common JSON import
-        /// // translate_json_to_lue(lue_json, lue_dataset_name, add, metadata);
     }
 
 }  // namespace lue::utility
@@ -1653,7 +1739,7 @@ namespace lue::utility {
 ///
 ///                 auto const blocks = natural_blocks(raster_band);
 ///
-///                 std::vector<T> values(blocks.block_size());
+///                 std::vector<T> values(blocks.block_shape());
 ///
 ///                 // Copy blocks for value at specific index to raster band
 ///                 for (size_t block_y = 0; block_y < blocks.nr_blocks_y(); ++block_y)
@@ -1746,7 +1832,7 @@ namespace lue::utility {
 ///                 // It is assumed here that array only contains a 2D array
 ///                 auto const blocks = natural_blocks(raster_band);
 ///
-///                 std::vector<T> values(blocks.block_size());
+///                 std::vector<T> values(blocks.block_shape());
 ///                 hdf5::Datatype const memory_datatype{hdf5::native_datatype<T>()};
 ///
 ///                 // Copy blocks for array at specific index to raster band

@@ -110,16 +110,13 @@ namespace lue::gdal {
         @param      clone_dataset Dataset to copy
         @exception  std::runtime_error In case the dataset cannot be created
     */
-    auto create_copy(std::string const& name, DatasetPtr& clone_dataset) -> DatasetPtr
+    auto create_copy(std::string const& name, GDALDataset& clone_dataset) -> DatasetPtr
     {
-        assert(clone_dataset);
-
         // TODO let GDAL pick the driver and/or use extension(?)
         DriverPtr driver{gdal::driver("GTiff")};
 
         DatasetPtr dataset_ptr{
-            driver->CreateCopy(name.c_str(), clone_dataset.get(), FALSE, nullptr, nullptr, nullptr),
-            gdal_close};
+            driver->CreateCopy(name.c_str(), &clone_dataset, FALSE, nullptr, nullptr, nullptr), gdal_close};
 
         if (!dataset_ptr)
         {
@@ -133,6 +130,17 @@ namespace lue::gdal {
 #endif
 
         return dataset_ptr;
+    }
+
+
+    auto delete_dataset(GDALDriver& driver, std::string const& dataset_name) -> void
+    {
+        CPLErr const status = driver.Delete(dataset_name.c_str());
+
+        if (status != CE_None)
+        {
+            throw std::runtime_error(fmt::format("Cannot delete dataset {}", dataset_name));
+        }
     }
 
 

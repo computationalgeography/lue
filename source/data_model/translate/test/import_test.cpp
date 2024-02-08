@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue translate import
 #include "lue/test/print.hpp"
+#include "lue/stream.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
 #include <boost/test/unit_test.hpp>
@@ -355,6 +356,10 @@ BOOST_AUTO_TEST_CASE(new_rasters)
 
 BOOST_AUTO_TEST_CASE(raster_round_trip_01)
 {
+    // Import a set of very different rasters into a LUE dataset
+    // Export the same set of rasters again and verify the exported rasters contain the same
+    // information as the imported ones.
+
     namespace ldm = lue::data_model;
     namespace lgd = lue::gdal;
     namespace lu = lue::utility;
@@ -402,7 +407,29 @@ BOOST_AUTO_TEST_CASE(raster_round_trip_01)
     std::string const lue_dataset_name{"raster_round_trip_01.lue"};
     {
         bool const add{false};
-        lu::Metadata metadata{};
+
+        std::stringstream metadata_stream{};
+        metadata_stream <<
+            R"(
+                {
+                    "datasets": [
+                        {
+                            "name": "raster_round_trip_01_in",
+                            "phenomenon": "world",
+                            "property_set": "field",
+                            "raster": {
+                                "bands": [
+                                    {
+                                        "name": "raster_property"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            )";
+
+        lu::Metadata metadata{metadata_stream};
 
         if (ldm::dataset_exists(lue_dataset_name))
         {
@@ -416,28 +443,43 @@ BOOST_AUTO_TEST_CASE(raster_round_trip_01)
     // Export GDAL raster again
     std::string const output_gdal_raster_name{"raster_round_trip_01_out.tif"};
     {
-        lu::Metadata metadata{};
+        std::stringstream metadata_stream{};
+        metadata_stream <<
+            R"(
+                {
+                    "datasets": [
+                        {
+                            "name": "raster_round_trip_01_out",
+                            "phenomenon": "world",
+                            "property_set": "field",
+                            "raster": {
+                                "bands": [
+                                    {
+                                        "name": "raster_property"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            )";
+
+        lu::Metadata metadata{metadata_stream};
 
         auto lue_dataset = ldm::open_dataset(lue_dataset_name);
-        // TODO
-        // lue::utility::translate_lue_dataset_to_gdal_raster(lue_dataset, output_gdal_raster_name, metadata);
+        lue::utility::translate_lue_dataset_to_gdal_raster(lue_dataset, output_gdal_raster_name, metadata);
     }
 
-    // TODO
-    // Verify imported and exported rasters are the same
-    // compare_rasters_equal(input_gdal_dataset_ptr, output_raster_dataset);
+    auto const differences = lgd::compare_rasters(input_gdal_raster_name, output_gdal_raster_name);
+    // TODO BOOST_TEST(differences.empty(), fmt::format("{}", fmt::join(differences, ", ")));
 }
 
 
 BOOST_AUTO_TEST_CASE(raster_round_trip_02)
 {
-    // Create an input GDAL raster
-    // - Floating point element type
-    // - Set NaN as no-data value
+    // Import a temporal stack of rasters into a LUE dataset.
+    // Export the stack again and verify the stack contain the same information as the imported one.
 
-    // Import raster into LUE data set
 
-    // Export GDAL raster again
-
-    // Verify imported and exported rasters are the same
+    // TODO
 }

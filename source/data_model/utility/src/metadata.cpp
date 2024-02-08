@@ -85,6 +85,27 @@ namespace lue {
             }
 
 
+            /*!
+                @brief      Find object in list
+                @param      object List object to query
+                @param      key Name of element to query
+                @param      value Value of element to compare
+                @exception  std::runtime_error In case the object cannot be found
+            */
+            JSON object(JSON const& object, std::string const& key, std::string const& value)
+            {
+                auto const object_json_it = json::find(object, key, value);
+
+                if (object_json_it == object.end())
+                {
+                    throw std::runtime_error(
+                        fmt::format("No object whose key {} equals {} exists", key, value));
+                }
+
+                return *object_json_it;
+            }
+
+
             std::string string(JSON const& object, std::string const& name)
             {
                 return json::object(object, name);
