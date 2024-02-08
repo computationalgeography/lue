@@ -1,4 +1,5 @@
 #include "lue/gdal/compare_rasters.hpp"
+#include "lue/gdal/data_type.hpp"
 #include "lue/gdal/raster.hpp"
 #include <fmt/format.h>
 #include <cassert>
@@ -108,8 +109,8 @@ namespace lue::gdal {
 
             if (!data_types_equal)
             {
-                differences.emplace_back(
-                    fmt::format("different data types: {} != {}", data_type1, data_type2));
+                differences.emplace_back(fmt::format(
+                    "different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
             }
 
 
@@ -217,7 +218,8 @@ namespace lue::gdal {
 
         if (!data_types_equal)
         {
-            differences.emplace_back(fmt::format("different data types: {} != {}", data_type1, data_type2));
+            differences.emplace_back(
+                fmt::format("different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
         }
 
         auto const nr_bands1 = raster1.nr_bands();
