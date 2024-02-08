@@ -1,9 +1,29 @@
 #include "lue/gdal/driver.hpp"
 #include <fmt/format.h>
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <map>
 #include <stdexcept>
 
 
 namespace lue::gdal {
+    namespace {
+
+        // GDAL driver name mapped by lower-cased file extension. Add to it whenever useful.
+        const std::map<std::string, std::string> driver_name_by_extension{
+            {".tif", "GTiff"},
+            {".hdf4", "HDF4"},
+            {".h4", "HDF4"},
+            {".hdf5", "HDF5"},
+            {".h5", "HDF5"},
+            {".nc", "netCDF"},
+            {".map", "PCRaster"},
+            {".csf", "PCRaster"},
+            {".img", "HFA"},  // Erdas Imagine
+        };
+
+    }  // namespace
 
     /*!
         @brief      Register all GDAL drivers
@@ -37,6 +57,30 @@ namespace lue::gdal {
         }
 
         return driver_ptr;
+    }
+
+
+    /*!
+        @brief      Return the name of the driver that is (likely) able to handle the dataset
+    */
+    auto driver_name(std::string const& dataset_name) -> std::string
+    {
+        std::string extension{std::filesystem::path(dataset_name).extension().string()};
+
+        std::transform(
+            extension.begin(),
+            extension.end(),
+            extension.begin(),
+            [](unsigned char const character) { return std::tolower(character); });
+
+        std::string result{"Unknown"};
+
+        if (auto it = driver_name_by_extension.find(extension); it != driver_name_by_extension.end())
+        {
+            result = (*it).second;
+        }
+
+        return result;
     }
 
 }  // namespace lue::gdal

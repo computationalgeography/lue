@@ -262,6 +262,9 @@ namespace lue::utility {
     template<typename T>
     void lue_to_gdal(data_model::Array const& array, gdal::Raster::Band& raster_band)
     {
+        // TODO If a no-data value is set in the array, set it in the raster band
+
+
         // It is assumed here that array only contains a 2D array
         auto const blocks = utility::blocks(raster_band.shape(), raster_band.block_shape());
         auto const& block_shape = blocks.block_shape();
@@ -361,8 +364,7 @@ namespace lue::utility {
             return;
         }
 
-        // TODO std::string const driver_name{gdal::driver_name(raster_name)};
-        std::string const driver_name{"GTiff"};
+        std::string const driver_name{gdal::driver_name(raster_name)};
 
         // If the constant raster view finds a raster with the property name
         // requested, export it to a single GDAL raster
@@ -388,21 +390,23 @@ namespace lue::utility {
 
             RasterLayer layer{raster_view.layer(property_name)};
             auto const& space_box{raster_view.space_box()};
+            gdal::Shape const raster_shape{hdf5_shape_to_gdal_shape(raster_view.grid_shape())};
+            auto const [nr_rows, nr_cols] = raster_shape;
 
-            gdal::Raster raster{gdal::create_dataset(
-                driver_name,
-                raster_name,
-                hdf5_shape_to_gdal_shape(raster_view.grid_shape()),
-                nr_bands,
-                memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
-
-            // TODO
-            double const cell_size{0.000992063492063};
             double const west{space_box[0]};
+            double const south{space_box[1]};
+            double const east{space_box[2]};
             double const north{space_box[3]};
-            gdal::GeoTransform geo_transform{west, cell_size, 0, north, 0, -cell_size};
 
-            raster.set_geo_transform(geo_transform);
+            assert(east >= west);
+            assert(north >= south);
+            assert(nr_rows > 0);
+            assert(nr_cols > 0);
+
+            double const cell_width{(east - west) / nr_cols};
+            double const cell_height{(north - south) / nr_rows};
+
+            gdal::GeoTransform geo_transform{west, cell_width, 0, north, 0, -cell_height};
 
             // TODO
             // OGRSpatialReference oSRS;
@@ -414,6 +418,15 @@ namespace lue::utility {
             // oSRS.exportToWkt( &pszSRS_WKT );
             // poDstDS->SetProjection( pszSRS_WKT );
             // CPLFree( pszSRS_WKT );
+
+            gdal::Raster raster{gdal::create_dataset(
+                driver_name,
+                raster_name,
+                raster_shape,
+                nr_bands,
+                memory_data_type_to_gdal_data_type(layer.memory_datatype()))};
+
+            raster.set_geo_transform(geo_transform);
 
             gdal::Raster::Band raster_band{raster.band(band_nr)};
             lue_to_gdal(layer, raster_band);
@@ -439,13 +452,12 @@ namespace lue::utility {
         else if (data_model::variable::contains_raster(dataset, phenomenon_name, property_set_name))
         {
             using RasterView = data_model::variable::RasterView<data_model::Dataset*>;
-            using RasterLayer = RasterView::Layer;
+            // using RasterLayer = RasterView::Layer;
 
-            RasterView raster_view{&dataset, phenomenon_name, property_set_name};
-
+            [[maybe_unused]] RasterView raster_view{&dataset, phenomenon_name, property_set_name};
 
             // TODO
-
+            throw std::runtime_error("Importing stacks not supported yet. WIP.");
 
             ///     if (!raster_view.contains(property_name))
             ///     {
@@ -955,7 +967,12 @@ namespace lue::utility {
             auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
                 gdal_raster.geo_transform();
             double const east = west + nr_cols * cell_width;
-            double const south = north - nr_rows * cell_height;
+            double const south = north - (nr_rows * std::abs(cell_height));
+
+            assert(east >= west);
+            assert(north >= south);
+            assert(nr_rows > 0);
+            assert(nr_cols > 0);
 
             // Create / open raster view
             using RasterView = data_model::constant::RasterView<data_model::Dataset*>;

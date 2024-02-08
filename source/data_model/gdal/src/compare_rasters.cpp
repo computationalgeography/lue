@@ -305,7 +305,8 @@ namespace lue::gdal {
                     }
                     default:
                     {
-                        differences.emplace_back(fmt::format("Unsupported GDAL data type: {}", data_type1));
+                        differences.emplace_back(
+                            fmt::format("Unsupported GDAL data type: {}", as_string(data_type1)));
                     }
                 }
             }

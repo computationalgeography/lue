@@ -17,4 +17,6 @@ namespace lue::gdal {
 
     auto driver(std::string const& name) -> DriverPtr;
 
+    auto driver_name(std::string const& dataset_name) -> std::string;
+
 }  // namespace lue::gdal

@@ -1,4 +1,5 @@
 #include "lue/gdal/data_type.hpp"
+#include <cassert>
 
 
 namespace lue::gdal {
@@ -86,6 +87,12 @@ namespace lue::gdal {
             case GDT_CFloat64:
             {
                 result = "GDT_CFloat64";
+                break;
+            }
+            case GDT_TypeCount:
+            {
+                // This should never happen
+                assert(false);
                 break;
             }
         }
