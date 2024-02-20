@@ -10,11 +10,24 @@ namespace lue::image_land {
         template<typename ZoneElement, typename FloatingPointElement, Rank rank>
         auto integrate_and_allocate(
             SerialRoute<ZoneElement, rank> const& route,
-            PartitionedArray<ZoneElement, rank> const& zone,
             std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
-                crop_fractions)
+                sdp_factors,
+            std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
+                yield_factors,
+            std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
+                crop_fractions,
+            std::map<ZoneElement, std::vector<FloatingPointElement>> const& demands,
+            std::map<ZoneElement, std::vector<FloatingPointElement>> const& current_production,
+            PartitionedArray<FloatingPointElement, rank> const& irrigated_crop_fractions)
         {
-            return lue::value_policies::integrate_and_allocate(route, zone, crop_fractions);
+            return lue::value_policies::integrate_and_allocate(
+                route,
+                sdp_factors,
+                yield_factors,
+                crop_fractions,
+                demands,
+                current_production,
+                irrigated_crop_fractions);
         }
 
 

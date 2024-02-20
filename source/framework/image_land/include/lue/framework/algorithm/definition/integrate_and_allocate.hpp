@@ -460,29 +460,52 @@ namespace lue::detail::integrate_and_allocate {
 
 namespace lue {
 
+    // TODO Determine how dict values are obtained. If computed, turn them into futures to values!
+    // TODO Turn elements in dicts into future to elements!
+
     template<typename Policies, Rank rank>
     auto integrate_and_allocate(
         Policies const& policies,
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const& route,
-        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& zone,
+        std::vector<
+            std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 1>, rank> const>> const&
+            sdp_factors,
         std::vector<
             std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 2>, rank> const>> const&
-            crop_fractions)
+            yield_factors,
+        std::vector<
+            std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 3>, rank> const>> const&
+            crop_fractions,
+        std::map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 4>>> const&
+            demands,
+        std::map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 5>>> const&
+            current_production,
+        PartitionedArray<policy::InputElementT<Policies, 6>, rank> const& irrigated_crop_fractions)
         -> std::tuple<
             std::vector<PartitionedArray<policy::OutputElementT<Policies, 0>, rank>>,
-            std::map<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 1>>>
+            std::map<policy::InputElementT<Policies, 0>, std::vector<policy::OutputElementT<Policies, 1>>>>
     {
         using RouteID = policy::InputElementT<Policies, 0>;
-        using ZoneElement = policy::InputElementT<Policies, 1>;
-        using CropFractionElement = policy::InputElementT<Policies, 2>;
+        using ZoneElement = RouteID;
+
+        using SDPFactorElement = policy::InputElementT<Policies, 1>;
+        using YieldFactorElement = policy::InputElementT<Policies, 2>;
+        using CropFractionElement = policy::InputElementT<Policies, 3>;
+        using DemandElement = policy::InputElementT<Policies, 4>;
+        using ProductionElement = policy::InputElementT<Policies, 5>;
 
         static_assert(std::is_integral_v<RouteID>);
-        static_assert(std::is_integral_v<ZoneElement>);
+        static_assert(std::is_floating_point_v<SDPFactorElement>);
+        static_assert(std::is_floating_point_v<YieldFactorElement>);
         static_assert(std::is_floating_point_v<CropFractionElement>);
+        static_assert(std::is_floating_point_v<DemandElement>);
+        static_assert(std::is_floating_point_v<ProductionElement>);
 
+        static_assert(std::is_same_v<CropFractionElement, policy::InputElementT<Policies, 6>>);
         static_assert(std::is_same_v<CropFractionElement, policy::OutputElementT<Policies, 0>>);
+        static_assert(std::is_same_v<ProductionElement, policy::OutputElementT<Policies, 1>>);
 
-        using ProductionElement = policy::OutputElementT<Policies, 1>;
+        // using ProductionElement = policy::OutputElementT<Policies, 1>;
 
         static_assert(std::is_floating_point_v<ProductionElement>);
 
@@ -490,16 +513,29 @@ namespace lue {
         using RoutePartition = PartitionT2<Route>;
         using RoutePartitions = PartitionsT2<Route>;
 
-        using ZoneArray = PartitionedArray<ZoneElement, rank>;
-        using ZonePartition = PartitionT<ZoneArray>;
-        using ZonePartitions = PartitionsT<ZoneArray>;
+        using SDPFactorArray = PartitionedArray<SDPFactorElement, rank>;
+        using SDPFactorPartition = PartitionT<SDPFactorArray>;
+        using SDPFactorPartitions = PartitionsT<SDPFactorArray>;
+        using SDPFactorArrays = std::vector<PartitionedArray<SDPFactorElement, rank>>;
+
+        using YieldFactorArray = PartitionedArray<YieldFactorElement, rank>;
+        using YieldFactorPartition = PartitionT<YieldFactorArray>;
+        using YieldFactorPartitions = PartitionsT<YieldFactorArray>;
+        using YieldFactorArrays = std::vector<PartitionedArray<YieldFactorElement, rank>>;
 
         using CropFractionArray = PartitionedArray<CropFractionElement, rank>;
         using CropFractionPartition = PartitionT<CropFractionArray>;
         using CropFractionPartitions = PartitionsT<CropFractionArray>;
         using CropFractionArrays = std::vector<PartitionedArray<CropFractionElement, rank>>;
 
-        using ZonalProduction = std::map<ZoneElement, ProductionElement>;
+
+        using ZonalProduction = std::map<ZoneElement, std::vector<ProductionElement>>;
+
+
+        // TODO Exceptions:
+        // - verify length of vectors is the same
+        // - verify number of routes, number of zones in dicts
+
 
         CropFractionArrays crop_fraction_arrays{};
         ZonalProduction zonal_production{};
@@ -588,10 +624,18 @@ namespace lue {
                                                                                                              \
     template LUE_IMAGE_LAND_OPERATION_EXPORT std::tuple<                                                     \
         std::vector<PartitionedArray<policy::OutputElementT<Policies, 0>, rank>>,                            \
-        std::map<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 1>>>                   \
+        std::map<policy::InputElementT<Policies, 0>, std::vector<policy::OutputElementT<Policies, 1>>>>      \
     integrate_and_allocate<ArgumentType<void(Policies)>, rank>(                                              \
         ArgumentType<void(Policies)> const&,                                                                 \
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const&,                                        \
-        PartitionedArray<policy::InputElementT<Policies, 1>, rank> const&,                                   \
         std::vector<std::reference_wrapper<                                                                  \
-            PartitionedArray<policy::InputElementT<Policies, 2>, rank> const>> const&);
+            PartitionedArray<policy::InputElementT<Policies, 1>, rank> const>> const&,                       \
+        std::vector<std::reference_wrapper<                                                                  \
+            PartitionedArray<policy::InputElementT<Policies, 2>, rank> const>> const&,                       \
+        std::vector<std::reference_wrapper<                                                                  \
+            PartitionedArray<policy::InputElementT<Policies, 3>, rank> const>> const&,                       \
+        std::                                                                                                \
+            map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 4>>> const&, \
+        std::                                                                                                \
+            map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 5>>> const&, \
+        PartitionedArray<policy::InputElementT<Policies, 6>, rank> const&)
