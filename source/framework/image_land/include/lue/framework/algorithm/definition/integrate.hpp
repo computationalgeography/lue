@@ -573,6 +573,7 @@ namespace lue {
         lue::detail::IntegrateWalkServer_##unique::SkipWalkingRouteFragmentsAction,                          \
         IntegrateWalkServerSkipWalkingRouteFragmentsAction_##unique)
 
+
 #define LUE_REGISTER_INTEGRATE_ACTIONS(Policies, rank, unique)                                               \
                                                                                                              \
     namespace lue::detail {                                                                                  \

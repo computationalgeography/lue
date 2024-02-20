@@ -84,55 +84,65 @@ namespace lue::server {
 }  // namespace lue::server
 
 
-#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, rank)                                      \
+#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, rank, unique)                              \
                                                                                                              \
-    using ArrayPartition_##Element##_##rank##_Component = lue::server::ArrayPartition<Element, rank>;        \
-                                                                                                             \
-    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::DataAction,                                           \
-        ArrayPartition_##Element##_##rank##_DataAction)                                                      \
+    namespace lue::detail {                                                                                  \
+        using ArrayPartitionServer_##unique = lue::server::ArrayPartition<Element, rank>;                    \
+    }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::SliceAction,                                          \
-        ArrayPartition_##Element##_##rank##_SliceAction)                                                     \
+        lue::detail::ArrayPartitionServer_##unique::DataAction, ArrayPartitionServerDataAction_##unique)     \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::FillAction,                                           \
-        ArrayPartition_##Element##_##rank##_FillAction)                                                      \
+        lue::detail::ArrayPartitionServer_##unique::SliceAction, ArrayPartitionServerSliceAction_##unique)   \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::SetDataAction,                                        \
-        ArrayPartition_##Element##_##rank##_SetDataAction)                                                   \
+        lue::detail::ArrayPartitionServer_##unique::FillAction, ArrayPartitionServerFillAction_##unique)     \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::OffsetAction,                                         \
-        ArrayPartition_##Element##_##rank##_OffsetAction)                                                    \
+        lue::detail::ArrayPartitionServer_##unique::SetDataAction,                                           \
+        ArrayPartitionServerSetDataAction_##unique)                                                          \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::ShapeAction,                                          \
-        ArrayPartition_##Element##_##rank##_ShapeAction)                                                     \
+        lue::detail::ArrayPartitionServer_##unique::OffsetAction, ArrayPartitionServerOffsetAction_##unique) \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
-        ArrayPartition_##Element##_##rank##_Component::NrElementsAction,                                     \
-        ArrayPartition_##Element##_##rank##_NrElementsAction)
+        lue::detail::ArrayPartitionServer_##unique::ShapeAction, ArrayPartitionServerShapeAction_##unique)   \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::ArrayPartitionServer_##unique::NrElementsAction,                                        \
+        ArrayPartitionServerNrElementsAction_##unique)
 
 
-#define LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(Element)                                           \
+#define LUE_REGISTER_ARRAY_PARTITION_ACTIONS(Element, rank, unique)                                          \
                                                                                                              \
-    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 0)                                             \
-    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 1)                                             \
-    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 2)
-
-
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(bool)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ uint8_t)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ uint32_t)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ uint64_t)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ int32_t)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(/* std:: */ int64_t)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(float)
-LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS(double)
-
-
-#undef LUE_REGISTER_ARRAY_PARTITIONS_ACTION_DECLARATIONS
-#undef LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS
+    namespace lue::detail {                                                                                  \
+        using ArrayPartitionServerComponent_##unique =                                                       \
+            hpx::components::component<lue::detail::ArrayPartitionServer_##unique>;                          \
+    }                                                                                                        \
+                                                                                                             \
+    HPX_REGISTER_COMPONENT(                                                                                  \
+        lue::detail::ArrayPartitionServerComponent_##unique, ArrayPartitionServer_##unique)                  \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::DataAction, ArrayPartitionServerDataAction_##unique)     \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::SliceAction, ArrayPartitionServerSliceAction_##unique)   \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::FillAction, ArrayPartitionServerFillAction_##unique)     \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::SetDataAction,                                           \
+        ArrayPartitionServerSetDataAction_##unique)                                                          \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::OffsetAction, ArrayPartitionServerOffsetAction_##unique) \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::ShapeAction, ArrayPartitionServerShapeAction_##unique)   \
+                                                                                                             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        lue::detail::ArrayPartitionServer_##unique::NrElementsAction,                                        \
+        ArrayPartitionServerNrElementsAction_##unique)

@@ -100,40 +100,75 @@ namespace lue::server {
 }  // namespace lue::server
 
 
-#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(RouteID, rank, unique)                                   \
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(RouteID, rank, unique)                       \
                                                                                                              \
-    namespace detail {                                                                                       \
+    namespace lue::detail {                                                                                  \
         using SerialRoutePartitionServer_##unique = lue::server::SerialRoutePartition<RouteID, rank>;        \
     }                                                                                                        \
                                                                                                              \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::OffsetAction,                                      \
+        SerialRoutePartitionServerOffsetAction_##unique)                                                     \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::ShapeAction,                                       \
+        SerialRoutePartitionServerShapeAction_##unique)                                                      \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::NrRoutesAction,                                    \
+        SerialRoutePartitionServerNrRoutesAction_##unique)                                                   \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::NrRouteFragmentsAction,                            \
+        SerialRoutePartitionServerNrRouteFragmentsAction_##unique)                                           \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::RouteIDsAction,                                    \
+        SerialRoutePartitionServerRouteIDsAction_##unique)                                                   \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::RouteFragmentsAction,                              \
+        SerialRoutePartitionServerRouteFragmentsAction_##unique)                                             \
+                                                                                                             \
+    HPX_REGISTER_ACTION_DECLARATION(                                                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::RemoteRouteFragmentLocationsAction,                \
+        SerialRoutePartitionServerRemoteRouteFragmentLocationsAction_##unique)
+
+
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(RouteID, rank, unique)                                   \
+                                                                                                             \
+    namespace lue::detail {                                                                                  \
+        using SerialRoutePartitionServerComponent_##unique =                                                 \
+            hpx::components::component<lue::detail::SerialRoutePartitionServer_##unique>;                    \
+    }                                                                                                        \
+                                                                                                             \
     HPX_REGISTER_COMPONENT(                                                                                  \
-        hpx::components::component<::detail::SerialRoutePartitionServer_##unique>,                           \
-        SerialRoutePartitionServer_##unique)                                                                 \
+        lue::detail::SerialRoutePartitionServerComponent_##unique, SerialRoutePartitionServer_##unique)      \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::OffsetAction,                                         \
+        lue::detail::SerialRoutePartitionServer_##unique::OffsetAction,                                      \
         SerialRoutePartitionServerOffsetAction_##unique)                                                     \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::ShapeAction,                                          \
+        lue::detail::SerialRoutePartitionServer_##unique::ShapeAction,                                       \
         SerialRoutePartitionServerShapeAction_##unique)                                                      \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::NrRoutesAction,                                       \
+        lue::detail::SerialRoutePartitionServer_##unique::NrRoutesAction,                                    \
         SerialRoutePartitionServerNrRoutesAction_##unique)                                                   \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::NrRouteFragmentsAction,                               \
+        lue::detail::SerialRoutePartitionServer_##unique::NrRouteFragmentsAction,                            \
         SerialRoutePartitionServerNrRouteFragmentsAction_##unique)                                           \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::RouteIDsAction,                                       \
+        lue::detail::SerialRoutePartitionServer_##unique::RouteIDsAction,                                    \
         SerialRoutePartitionServerRouteIDsAction_##unique)                                                   \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::RouteFragmentsAction,                                 \
+        lue::detail::SerialRoutePartitionServer_##unique::RouteFragmentsAction,                              \
         SerialRoutePartitionServerRouteFragmentsAction_##unique)                                             \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
-        ::detail::SerialRoutePartitionServer_##unique::RemoteRouteFragmentLocationsAction,                   \
+        lue::detail::SerialRoutePartitionServer_##unique::RemoteRouteFragmentLocationsAction,                \
         SerialRoutePartitionServerRemoteRouteFragmentLocationsAction_##unique)
