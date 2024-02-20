@@ -1,10 +1,6 @@
 #include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
 
 
-LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(
-    {{ Element }},
-    {{ rank }},
-    {{ Element }}_{{ rank }})
 LUE_REGISTER_ARRAY_PARTITION_ACTIONS(
     {{ Element }},
     {{ rank }},

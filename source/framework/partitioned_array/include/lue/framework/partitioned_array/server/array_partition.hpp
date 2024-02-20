@@ -122,7 +122,7 @@ namespace lue::server {
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \
-        lue::detail::ArrayPartitionServerComponent_##unique, ArrayPartitionServer_##unique)                  \
+        lue::detail::ArrayPartitionServerComponent_##unique, lue_ArrayPartitionServer_##unique)              \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
         lue::detail::ArrayPartitionServer_##unique::DataAction, ArrayPartitionServerDataAction_##unique)     \
@@ -146,3 +146,25 @@ namespace lue::server {
     HPX_REGISTER_ACTION(                                                                                     \
         lue::detail::ArrayPartitionServer_##unique::NrElementsAction,                                        \
         ArrayPartitionServerNrElementsAction_##unique)
+
+
+#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(Element)                                       \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 0, Element##_0)                                \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 1, Element##_1)                                \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(Element, 2, Element##_2)
+
+#define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_ELEMENT()                                           \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(bool)                                              \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(uint8_t)                                           \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(int32_t)                                           \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(uint32_t)                                          \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(int64_t)                                           \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(uint64_t)                                          \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(float)                                             \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(double)
+
+LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_ELEMENT()
+
+#undef LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS
+#undef LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_ELEMENT
+#undef LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK
