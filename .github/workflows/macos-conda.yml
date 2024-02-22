@@ -27,7 +27,7 @@ jobs:
         strategy:
             matrix:
                 include:
-                - os: "macos-13"
+                - os: "macos-latest"
                   target-platform: osx-64
             fail-fast: true
         steps:
