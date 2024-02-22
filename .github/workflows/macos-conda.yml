@@ -37,5 +37,5 @@ jobs:
               miniforge-version: latest
               auto-update-conda: false
         - run: |
-              conda install boa
-              conda mambabuild environment/conda
+              mamba install boa
+              conda mambabuild environment/conda --override-channels --channel conda-forge

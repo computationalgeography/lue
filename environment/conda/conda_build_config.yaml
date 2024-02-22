@@ -13,4 +13,4 @@ libgdal:
 numpy:
   - 1.22
 python:
-  - 3.12
+  - 3.10
