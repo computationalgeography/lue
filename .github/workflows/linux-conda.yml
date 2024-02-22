@@ -59,4 +59,4 @@ jobs:
               password: ${{ secrets.FTP_PASSWORD }}
               port: ${{ secrets.FTP_PORT }}
               uploads: |
-                  /usr/share/miniconda/envs/test/conda-bld/linux-64/ => ${{ secrets.FTP_REMOTE_DIR }}/download/linux-64/
+                  /usr/share/miniconda/envs/test/conda-bld/linux-64/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/linux-64/

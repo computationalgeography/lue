@@ -3,7 +3,7 @@ name: Windows Conda package
 on:
   push:
     branches-ignore:
-      - "gh614"
+      - "ghxyz"
     paths:
       - "conanfile.py"
       - ".github/workflows/windows-conda.yml"
@@ -56,4 +56,4 @@ jobs:
               password: ${{ secrets.FTP_PASSWORD }}
               port: ${{ secrets.FTP_PORT }}
               uploads: |
-                  C:/Miniconda/envs/test/conda-bld/win-64/ => ${{ secrets.FTP_REMOTE_DIR }}/download/win-64/
+                  C:/Miniconda/envs/test/conda-bld/win-64/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/win-64/
