@@ -3,7 +3,7 @@ name: Windows Conda package
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh614"
     paths:
       - "conanfile.py"
       - ".github/workflows/windows-conda.yml"
