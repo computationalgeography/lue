@@ -1,0 +1,62 @@
+name: macOS Conda package
+
+on:
+  push:
+    branches-ignore:
+      - "ghxyz"
+    paths:
+      - "conanfile.py"
+      - ".github/workflows/macos-conda.yml"
+      - "source/**"
+      - "!source/qa/python/qa/**"
+      - "environment/cmake/**"
+      - "environment/conda/build.sh"
+      - "environment/conda/conda_build_config.yaml"
+      - "environment/conda/meta.yaml"
+      - "environment/conda/run_test.py"
+      - "environment/script/write_conan_profile.py"
+
+jobs:
+    build:
+
+        strategy:
+            matrix:
+                os: ["macos-13"]
+                python-version: ["3.9"]
+            fail-fast: true
+
+        runs-on: ${{ matrix.os }}
+
+        name: ${{ matrix.os }} / python - ${{ matrix.python-version }} / conda
+
+        timeout-minutes: 120
+
+        steps:
+
+        - name: Checkout LUE
+          uses: actions/checkout@v4
+
+        - uses: conda-incubator/setup-miniconda@v2
+          with:
+              miniconda-version: "latest"
+              auto-update-conda: true
+              python-version: ${{ matrix.python-version }}
+              channels: conda-forge
+
+        - name: Build
+          shell: bash -l {0}
+          run: |
+              conda install boa
+              conda mambabuild environment/conda --override-channels --channel conda-forge
+
+        - name: upload
+          # TODO if: github.ref == 'refs/heads/master'
+          env:
+              ftp_server: ${{ secrets.FTP_SERVER }}
+              ftp_port: ${{ secrets.FTP_PORT }}
+              ftp_username: ${{ secrets.FTP_USERNAME }}
+              ftp_password: ${{ secrets.FTP_PASSWORD }}
+              remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
+              local_file: "/usr/share/miniconda/envs/test/conda-bld/linux-64/lue-0.3.8-py39*.tar.bz2"
+          run: |
+              lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_file $remote_dir/download/linux-64; quit" -u $ftp_username,$ftp_password $ftp_server -p $ftp_port
