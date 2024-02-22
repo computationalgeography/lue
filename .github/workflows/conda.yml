@@ -15,7 +15,7 @@ on:
 
 jobs:
     build:
-        name: ${{ matrix.os }} / ${{ matrix.target-platform }} / conda
+        name: ${{ matrix.os }} / ${{ matrix.target-platform }}
         runs-on: ${{ matrix.os }}
         timeout-minutes: 180
         defaults:
