@@ -1,9 +1,6 @@
-{% set version = "0.3.7" %}
-
-
 package:
   name: lue
-  version: {{ version }}
+  version: 0.3.8
 
 
 source:
