@@ -1,4 +1,4 @@
-{% set version = "0.3.7" %}
+{% set version = "0.3.8" %}
 
 
 package:
@@ -68,7 +68,7 @@ requirements:
 
 test:
   commands:
-    - lue_translate -h
+    - lue_translate -h                           # [not osx]
     - lue_validate -h
     - lue_calculate -h                           # [not win]
     - lue_scalability -h                         # [not win]

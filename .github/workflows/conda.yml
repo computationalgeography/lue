@@ -1,0 +1,45 @@
+name: Conda packages
+
+on:
+  push:
+    branches-ignore:
+      - "ghxyz"
+    paths:
+      - "conanfile.py"
+      - ".github/workflows/conda.yml"
+      - "source/**"
+      - "!source/qa/python/qa/**"
+      - "environment/cmake/**"
+      - "environment/conda/**"
+      - "environment/script/write_conan_profile.py"
+
+jobs:
+    build:
+        name: ${{ matrix.os }} / ${{ matrix.target-platform }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 180
+        defaults:
+            run:
+                shell: bash -l {0}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                - os: "macos-latest"
+                  target-platform: osx-64
+                - os: "ubuntu-22.04"
+                  target-platform: linux-64
+                - os: "windows-2019"
+                  target-platform: win-64
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install Conda
+              uses: conda-incubator/setup-miniconda@v3
+              with:
+                  miniforge-version: latest
+                  auto-update-conda: false
+            - name: Build package
+              run: |
+                  mamba install boa
+                  conda mambabuild environment/conda --override-channels --channel conda-forge
