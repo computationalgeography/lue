@@ -21,7 +21,7 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-13"]
+                os: ["macos-latest"]
                 python-version: ["3.9"]
             fail-fast: true
 
@@ -51,13 +51,12 @@ jobs:
 
         - name: upload
           # TODO if: github.ref == 'refs/heads/master'
-          env:
-              ftp_server: ${{ secrets.FTP_SERVER }}
-              ftp_port: ${{ secrets.FTP_PORT }}
-              ftp_username: ${{ secrets.FTP_USERNAME }}
-              ftp_password: ${{ secrets.FTP_PASSWORD }}
-              remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
-              local_file: "/usr/share/miniconda/envs/test/conda-bld/linux-64/lue-0.3.8-py39*.tar.bz2"
-          run: |
-              brew install lftp
-              lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_file $remote_dir/download/linux-64; quit" -u $ftp_username,$ftp_password $ftp_server -p $ftp_port
+          uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+          with:
+              server: ${{ secrets.FTP_SERVER }}
+              username: ${{ secrets.FTP_USERNAME }}
+              password: ${{ secrets.FTP_PASSWORD }}
+              port: ${{ secrets.FTP_PORT }}
+              protocol: ftps
+              local-dir: /Users/runner/miniconda3/envs/test/conda-bld/osx-64/
+              server-dir: ${{ secrets.FTP_REMOTE_DIR }}/download/osx-64/
