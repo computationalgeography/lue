@@ -1,4 +1,4 @@
-name: macOS Conda package
+name: Conda packages
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - "ghxyz"
     paths:
       - "conanfile.py"
-      - ".github/workflows/macos-conda.yml"
+      - ".github/workflows/conda.yml"
       - "source/**"
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
-      - "environment/conda/build.sh"
+      - "environment/conda/build.*"
       - "environment/conda/conda_build_config.yaml"
       - "environment/conda/meta.yaml"
       - "environment/conda/run_test.py"
@@ -29,6 +29,10 @@ jobs:
                 include:
                 - os: "macos-latest"
                   target-platform: osx-64
+                - os: "ubuntu-22.04"
+                  target-platform: linux-64
+                - os: ["windows-2019"]
+                  target-platform: win-64
             fail-fast: true
         steps:
         - uses: actions/checkout@v4

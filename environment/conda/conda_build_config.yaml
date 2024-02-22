@@ -10,7 +10,5 @@ hdf5:
   - 1.14.3
 libgdal:
   - 3.8
-numpy:
-  - 1.22
 python:
   - 3.10
