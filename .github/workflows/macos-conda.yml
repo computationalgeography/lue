@@ -18,33 +18,24 @@ on:
 
 jobs:
     build:
-
-        strategy:
-            matrix:
-                os: ["macos-13"]
-                python-version: ["3.9"]
-            fail-fast: true
-
+        name: ${{ matrix.os }} / ${{ matrix.target-platform }} / conda
         runs-on: ${{ matrix.os }}
-
-        name: ${{ matrix.os }} / python - ${{ matrix.python-version }} / conda
-
         timeout-minutes: 120
+        defaults:
+          run:
+            shell: bash -l {0}
+        strategy:
+          matrix:
+            include:
+              - os: "macos-13"
+                target-platform: osx-64
+          fail-fast: true
 
         steps:
 
-        - name: Checkout LUE
-          uses: actions/checkout@v4
-
-        - uses: conda-incubator/setup-miniconda@v2
+        - uses: actions/checkout@v4
+        - uses: prefix-dev/rattler-build-action@v0.2.0
           with:
-              miniconda-version: "latest"
-              auto-update-conda: true
-              python-version: ${{ matrix.python-version }}
-              channels: conda-forge
-
-        - name: Build
-          shell: bash -l {0}
-          run: |
-              conda install boa
-              conda mambabuild environment/conda --override-channels --channel conda-forge
+            recipe-path: environment/conda
+            artifact-name: lue-${{ matrix.target-platform }}
+            build-args: --target-platform ${{ matrix.target-platform }}
