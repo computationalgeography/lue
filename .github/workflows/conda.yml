@@ -32,11 +32,14 @@ jobs:
                 - os: "windows-2019"
                   target-platform: win-64
         steps:
-        - uses: actions/checkout@v4
-        - uses: conda-incubator/setup-miniconda@v3
-          with:
-              miniforge-version: latest
-              auto-update-conda: false
-        - run: |
-              mamba install boa
-              conda mambabuild environment/conda --override-channels --channel conda-forge
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install Conda
+              uses: conda-incubator/setup-miniconda@v3
+              with:
+                  miniforge-version: latest
+                  auto-update-conda: false
+            - name: Build package
+              run: |
+                  mamba install boa
+                  conda mambabuild environment/conda --override-channels --channel conda-forge
