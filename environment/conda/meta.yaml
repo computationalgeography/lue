@@ -20,7 +20,7 @@ requirements:
     - cross-python_{{ target_platform }}         # [build_platform != target_platform]
     - numpy                                      # [build_platform != target_platform]
     - pybind11                                   # [build_platform != target_platform]
-    - {{ compiler('cxx') }}
+    - ${{ compiler('cxx') }}
     - make                                       # [unix]
     - git
     - conan
@@ -58,7 +58,7 @@ requirements:
     - libgdal
     - libvulkan-loader                           # [not arm64]
     - matplotlib-base  # lue.qa
-    - {{ pin_compatible('numpy') }}
+    - ${{ pin_compatible('numpy') }}
     - python
     - python-dateutil  # lue.qa
 
