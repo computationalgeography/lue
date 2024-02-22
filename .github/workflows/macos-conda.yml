@@ -22,20 +22,20 @@ jobs:
         runs-on: ${{ matrix.os }}
         timeout-minutes: 120
         defaults:
-          run:
-            shell: bash -l {0}
+            run:
+                shell: bash -l {0}
         strategy:
-          matrix:
-            include:
-              - os: "macos-13"
-                target-platform: osx-64
-          fail-fast: true
-
+            matrix:
+                include:
+                - os: "macos-13"
+                  target-platform: osx-64
+            fail-fast: true
         steps:
-
         - uses: actions/checkout@v4
-        - uses: prefix-dev/rattler-build-action@v0.2.0
+        - uses: conda-incubator/setup-miniconda@v3
           with:
-            recipe-path: environment/conda/meta.yaml
-            artifact-name: lue-${{ matrix.target-platform }}
-            build-args: --target-platform ${{ matrix.target-platform }}
+              miniforge-version: latest
+              auto-update-conda: false
+        - run: |
+              conda install boa
+              conda mambabuild environment/conda
