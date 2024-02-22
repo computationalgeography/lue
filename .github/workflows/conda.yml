@@ -53,4 +53,4 @@ jobs:
                   password: ${{ secrets.FTP_PASSWORD }}
                   port: ${{ secrets.FTP_PORT }}
                   uploads: |
-                      ${{ conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ target-platform}}/
+                      ${{ matrix.conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
