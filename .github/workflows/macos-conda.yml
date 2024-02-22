@@ -36,6 +36,6 @@ jobs:
         - uses: actions/checkout@v4
         - uses: prefix-dev/rattler-build-action@v0.2.0
           with:
-            recipe-path: environment/conda
+            recipe-path: environment/conda/meta.yaml
             artifact-name: lue-${{ matrix.target-platform }}
             build-args: --target-platform ${{ matrix.target-platform }}
