@@ -27,7 +27,7 @@ jobs:
 
         runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / python - ${{ matrix.python-version }} / conda
+        name: ${{ matrix.os }} / python - ${{ matrix.python-version }}
 
         timeout-minutes: 120
 
@@ -48,13 +48,12 @@ jobs:
               conda install boa
               conda mambabuild environment/conda --override-channels --channel conda-forge
 
-        - name: upload
+        - uses: Dylan700/sftp-upload-action@latest
           # TODO if: github.ref == 'refs/heads/master'
-          uses: SamKirkland/FTP-Deploy-Action@v4.3.4
           with:
               server: ${{ secrets.FTP_SERVER }}
               username: ${{ secrets.FTP_USERNAME }}
               password: ${{ secrets.FTP_PASSWORD }}
               port: ${{ secrets.FTP_PORT }}
-              local-dir: C:/Miniconda/envs/test/conda-bld/win-64/
-              server-dir: ${{ secrets.FTP_REMOTE_DIR }}/download/win-64/
+              uploads: |
+                  C:/Miniconda/envs/test/conda-bld/win-64/ => ${{ secrets.FTP_REMOTE_DIR }}/download/win-64/
