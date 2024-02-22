@@ -5,13 +5,11 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
-      - "conanfile.py"
       - ".github/workflows/conda.yml"
       - "source/**"
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
       - "environment/conda/**"
-      - "environment/script/write_conan_profile.py"
 
 jobs:
     build:
@@ -48,7 +46,7 @@ jobs:
                   conda mambabuild environment/conda --override-channels --channel conda-forge
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
-              # TODO if: github.ref == 'refs/heads/master'
+              if: github.ref == 'refs/heads/master'
               with:
                   server: ${{ secrets.FTP_SERVER }}
                   username: ${{ secrets.FTP_USERNAME }}
