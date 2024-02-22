@@ -59,6 +59,5 @@ jobs:
               username: ${{ secrets.FTP_USERNAME }}
               password: ${{ secrets.FTP_PASSWORD }}
               port: ${{ secrets.FTP_PORT }}
-              protocol: ftps
               local-dir: /usr/share/miniconda/envs/test/conda-bld/linux-64/
               server-dir: ${{ secrets.FTP_REMOTE_DIR }}/download/linux-64/
