@@ -25,12 +25,15 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                - os: "macos-latest"
+                - os: "macos-13"
                   target-platform: osx-64
+                  conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/osx-64/"
                 - os: "ubuntu-22.04"
                   target-platform: linux-64
+                  conda-bld-dir: "/usr/share/miniconda/envs/test/conda-bld/linux-64/"
                 - os: "windows-2019"
                   target-platform: win-64
+                  conda-bld-dir: "C:/Miniconda/envs/test/conda-bld/win-64/"
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -43,3 +46,13 @@ jobs:
               run: |
                   mamba install boa
                   conda mambabuild environment/conda --override-channels --channel conda-forge
+            - name: Upload
+              uses: Dylan700/sftp-upload-action@latest
+              # TODO if: github.ref == 'refs/heads/master'
+              with:
+                  server: ${{ secrets.FTP_SERVER }}
+                  username: ${{ secrets.FTP_USERNAME }}
+                  password: ${{ secrets.FTP_PASSWORD }}
+                  port: ${{ secrets.FTP_PORT }}
+                  uploads: |
+                      ${{ conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ target-platform}}/
