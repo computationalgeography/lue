@@ -59,4 +59,5 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_file: "/usr/share/miniconda/envs/test/conda-bld/linux-64/lue-0.3.8-py39*.tar.bz2"
           run: |
+              brew install lftp
               lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_file $remote_dir/download/linux-64; quit" -u $ftp_username,$ftp_password $ftp_server -p $ftp_port
