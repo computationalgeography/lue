@@ -30,7 +30,6 @@ jobs:
                   target-platform: linux-64
                 - os: "windows-2019"
                   target-platform: win-64
-            fail-fast: true
         steps:
         - uses: actions/checkout@v4
         - uses: conda-incubator/setup-miniconda@v3
