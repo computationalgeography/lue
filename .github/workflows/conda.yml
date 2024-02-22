@@ -10,10 +10,7 @@ on:
       - "source/**"
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
-      - "environment/conda/build.*"
-      - "environment/conda/conda_build_config.yaml"
-      - "environment/conda/meta.yaml"
-      - "environment/conda/run_test.py"
+      - "environment/conda/**"
       - "environment/script/write_conan_profile.py"
 
 jobs:
@@ -31,7 +28,7 @@ jobs:
                   target-platform: osx-64
                 - os: "ubuntu-22.04"
                   target-platform: linux-64
-                - os: ["windows-2019"]
+                - os: "windows-2019"
                   target-platform: win-64
             fail-fast: true
         steps:
