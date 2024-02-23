@@ -42,14 +42,10 @@ the related technology.
 
 ## C/I builds
 [![Linux build status](https://github.com/computationalgeography/lue/actions/workflows/linux.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
-[![Linux Conda package](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux-conda.yml)
-
 [![macOS build status](https://github.com/computationalgeography/lue/actions/workflows/macos.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos.yml)
-[![macOS Conda package](https://github.com/computationalgeography/lue/actions/workflows/macos-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos-conda.yml)
-
 [![Windows build status](https://github.com/computationalgeography/lue/actions/workflows/windows.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows.yml)
-[![Windows Conda package](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml)
 
+[![Conda packages build status](https://github.com/computationalgeography/lue/actions/workflows/conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/conda.yml)
 
 ## Installation
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
