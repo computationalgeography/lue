@@ -52,5 +52,6 @@ jobs:
                   username: ${{ secrets.FTP_USERNAME }}
                   password: ${{ secrets.FTP_PASSWORD }}
                   port: ${{ secrets.FTP_PORT }}
+                  delete: true
                   uploads: |
                       ${{ matrix.conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
