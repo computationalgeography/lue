@@ -96,19 +96,18 @@ jobs:
         - uses: ilammy/msvc-dev-cmd@v1
           with:
               arch: ${{ matrix.architecture }}
-              toolset: ${{ matrix.msvc_toolset }}
-              # vsversion: ${{ matrix.vs.version }}
+              toolset: ${{ matrix.vs.msvc_toolset }}
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            cmake_flags: "-D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            cmake_flags: "-D BOOST_ROOT=$CONDA_PREFIX/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_version: ${{ env.hpx_version }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
