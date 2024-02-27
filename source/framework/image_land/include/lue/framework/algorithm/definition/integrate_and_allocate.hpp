@@ -1178,7 +1178,7 @@ namespace lue {
         hpx::future<iaa::Data<RouteID, ZoneElement, ProductionElement>> data_f = hpx::dataflow(
             hpx::launch::async,
             hpx::unwrapping(
-                []([[maybe_unused]] auto const& route_starts,
+                [](auto const& /* route_starts */,  // Using [[maybe_unused]] trips VS
                    auto const& zonal_demands,
                    auto const& current_zonal_productions_per_crop)
                 {
