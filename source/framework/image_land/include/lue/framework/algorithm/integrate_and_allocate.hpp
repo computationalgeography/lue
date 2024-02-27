@@ -25,27 +25,48 @@ namespace lue {
 
     template<typename Policies, Rank rank>
     auto integrate_and_allocate(
+
         Policies const& policies,
         SerialRoute<policy::InputElementT<Policies, 0>, rank> const& routes,
+
+        // [0, ~10] max depends on units
         std::vector<
             std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 1>, rank> const>> const&
-            sdp_factors,
+            sdp_factors_per_crop,
+
+        // [≥ 0]
         std::vector<
             std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 2>, rank> const>> const&
-            yield_factors,
+            yield_factors_per_crop,
+
+        // [0, 1]
+        // TODO Rename to current
         std::vector<
             std::reference_wrapper<PartitionedArray<policy::InputElementT<Policies, 3>, rank> const>> const&
-            crop_fractions,
-        std::map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 4>>> const&
-            demands,
-        std::map<policy::InputElementT<Policies, 0>, std::vector<policy::InputElementT<Policies, 5>>> const&
-            current_production,
+            initial_crop_fractions_per_crop,
+
+        // demand: ≥ 0
+        hpx::shared_future<std::map<
+            policy::InputElementT<Policies, 0>,
+            std::vector<policy::InputElementT<Policies, 4>>>> const& zonal_demands_per_crop,
+
+        // Productions are not known yet
+        // production: ≥ 0
+        hpx::shared_future<std::map<
+            policy::InputElementT<Policies, 0>,
+            std::vector<policy::InputElementT<Policies, 5>>>> const& current_zonal_production_per_crop,
+
+        // [0, 1]
         PartitionedArray<policy::InputElementT<Policies, 6>, rank> const& irrigated_crop_fractions)
+
         -> std::tuple<
-            // Crop fractions
+
+            // Updated crop fractions per crop
             std::vector<PartitionedArray<policy::OutputElementT<Policies, 0>, rank>>,
-            // Zonal production
-            // Per zone and crop a single value
-            std::map<policy::InputElementT<Policies, 0>, std::vector<policy::OutputElementT<Policies, 1>>>>;
+
+            // Zonal production per crop
+            hpx::shared_future<std::map<
+                policy::InputElementT<Policies, 0>,
+                std::vector<policy::OutputElementT<Policies, 1>>>>>;
 
 }  // namespace lue

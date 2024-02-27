@@ -34,17 +34,19 @@ namespace lue {
         auto integrate_and_allocate(
             SerialRoute<ZoneElement, rank> const& routes,
             std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
-                sdp_factors,
+                sdp_factors_per_crop,
             std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
-                yield_factors,
+                yield_factors_per_crop,
             std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
-                crop_fractions,
-            std::map<ZoneElement, std::vector<FloatingPointElement>> const& demands,
-            std::map<ZoneElement, std::vector<FloatingPointElement>> const& current_production,
+                initial_crop_fractions_per_crop,
+            hpx::shared_future<std::map<ZoneElement, std::vector<FloatingPointElement>>> const&
+                zonal_demands_per_crop,
+            hpx::shared_future<std::map<ZoneElement, std::vector<FloatingPointElement>>> const&
+                current_zonal_production_per_crop,
             PartitionedArray<FloatingPointElement, rank> const& irrigated_crop_fractions)
             -> std::tuple<
                 std::vector<PartitionedArray<FloatingPointElement, rank>>,
-                std::map<ZoneElement, std::vector<FloatingPointElement>>>
+                hpx::shared_future<std::map<ZoneElement, std::vector<FloatingPointElement>>>>
         {
             using Policies =
                 policy::integrate_and_allocate::DefaultValuePolicies<ZoneElement, FloatingPointElement>;
@@ -52,11 +54,11 @@ namespace lue {
             return integrate_and_allocate(
                 Policies{},
                 routes,
-                sdp_factors,
-                yield_factors,
-                crop_fractions,
-                demands,
-                current_production,
+                sdp_factors_per_crop,
+                yield_factors_per_crop,
+                initial_crop_fractions_per_crop,
+                zonal_demands_per_crop,
+                current_zonal_production_per_crop,
                 irrigated_crop_fractions);
         }
 

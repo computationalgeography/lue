@@ -42,6 +42,8 @@ namespace lue {
 
             PartitionedArray(PartitionedArray&& other) = default;
 
+            PartitionedArray(Shape const& shape, Localities<rank>&& localities, Partitions&& partitions);
+
             PartitionedArray(Shape const& shape, Localities<rank> const& localities, Partitions&& partitions);
 
             ~PartitionedArray() = default;
@@ -163,6 +165,26 @@ namespace lue {
         // explicitly set the shape to empty.
         _shape.fill(0);
 
+        assert_invariants();
+    }
+
+
+    /*!
+        @brief      Construct an instance
+        @param      shape Shape of the array
+        @param      partitions Collection of array partitions
+
+        The shape of the partitions together must equal the shape passed in
+    */
+    template<typename Element, Rank rank>
+    PartitionedArray<Element, rank>::PartitionedArray(
+        Shape const& shape, Localities<rank>&& localities, Partitions&& partitions):
+
+        _shape{shape},
+        _localities{std::move(localities)},
+        _partitions{std::move(partitions)}
+
+    {
         assert_invariants();
     }
 

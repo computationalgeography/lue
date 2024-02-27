@@ -1,6 +1,4 @@
 #include "lue/framework/algorithm/value_policies/integrate_and_allocate.hpp"
-// #include "lue/py/framework/core/partitioned_array.hpp"
-// #include "lue/py/framework/core/vector_of_array.hpp"
 #include <pybind11/stl.h>
 
 
@@ -16,8 +14,9 @@ namespace lue::image_land {
                 yield_factors,
             std::vector<std::reference_wrapper<PartitionedArray<FloatingPointElement, rank> const>> const&
                 crop_fractions,
-            std::map<ZoneElement, std::vector<FloatingPointElement>> const& demands,
-            std::map<ZoneElement, std::vector<FloatingPointElement>> const& current_production,
+            hpx::shared_future<std::map<ZoneElement, std::vector<FloatingPointElement>>> const& demands,
+            hpx::shared_future<std::map<ZoneElement, std::vector<FloatingPointElement>>> const&
+                current_production,
             PartitionedArray<FloatingPointElement, rank> const& irrigated_crop_fractions)
         {
             return lue::value_policies::integrate_and_allocate(

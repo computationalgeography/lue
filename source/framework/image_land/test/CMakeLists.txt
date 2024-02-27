@@ -2,6 +2,7 @@ set(scope lue_framework_algorithm_image_land)
 
 set(names
     integrate
+    integrate_and_allocate
 )
 
 foreach(name ${names})

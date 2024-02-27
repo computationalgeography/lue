@@ -63,7 +63,7 @@ namespace lue {
 
     template<typename RouteID, Rank rank, typename Component, typename Data>
     hpx::future<void> walk(
-        SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, Data&& data)
+        SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, hpx::future<Data>&& data)
     {
         // For each route:
         // - Visit all cells until some condition is false
@@ -192,12 +192,13 @@ namespace lue {
 
         hpx::future<void> walks_started{hpx::dataflow(
             hpx::launch::async,
-            [data = std::move(data)](
-                [[maybe_unused]] hpx::future<void>&& components_configured_f,
-                hpx::shared_future<RouteStarts> const& route_starts_f,
-                hpx::shared_future<std::map<hpx::id_type, Component>>&& component_by_route_partition_f)
+            []([[maybe_unused]] hpx::future<void>&& components_configured_f,
+               hpx::shared_future<RouteStarts> const& route_starts_f,
+               hpx::future<Data>&& data_f,
+               hpx::shared_future<std::map<hpx::id_type, Component>>&& component_by_route_partition_f)
             {
                 RouteStarts const& route_starts{route_starts_f.get()};
+                Data data{data_f.get()};
                 std::map<hpx::id_type, Component> const& component_by_route_partition{
                     component_by_route_partition_f.get()};
 
@@ -228,12 +229,21 @@ namespace lue {
             },
             components_configured,
             route.starts(),
+            data,
             component_by_route_partition)};
 
         // Note: this future will be finished when all walks have started. Whether or not walks
         // have finished is something else. Use it to start showing a progress bar, for
         // example. Or just let it go out of scope.
         return walks_started;
+    }
+
+
+    template<typename RouteID, Rank rank, typename Component, typename Data>
+    hpx::future<void> walk(
+        SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, Data&& data)
+    {
+        return walk(route, components, hpx::make_ready_future<Data>(std::forward<Data>(data)));
     }
 
 }  // namespace lue
