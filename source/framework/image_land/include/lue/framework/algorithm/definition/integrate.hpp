@@ -12,6 +12,7 @@
 #include <hpx/synchronization/shared_mutex.hpp>
 #include <map>
 #include <set>
+#include <shared_mutex>
 #include <vector>
 
 
@@ -155,8 +156,8 @@ namespace lue::detail::integrate {
                     // call handling an upstream fragment and subsequent calls handling
                     // downstream fragments.
 
-                    std::shared_lock read_lock{_walk_mutex, std::defer_lock};
-                    std::unique_lock write_lock{_walk_mutex, std::defer_lock};
+                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
                     // First, do stuff, *using* state veriables. Don't change stuff that
                     // is shared between threads. Changing different cells in a raster
@@ -279,8 +280,8 @@ namespace lue::detail::integrate {
                     // be changing the state of the current component, we need to obtain
                     // a write lock.
 
-                    std::shared_lock read_lock{_walk_mutex, std::defer_lock};
-                    std::unique_lock write_lock{_walk_mutex, std::defer_lock};
+                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
                     read_lock.lock();
 
@@ -582,7 +583,7 @@ namespace lue {
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \
-        lue::detail::IntegrateWalkServerComponent_##unique, IntegrateЅerverComponent_##unique)               \
+        lue::detail::IntegrateWalkServerComponent_##unique, IntegrateWalkServerComponent_##unique)           \
                                                                                                              \
     HPX_REGISTER_ACTION(                                                                                     \
         lue::detail::IntegrateWalkServer_##unique::ResultPartitionAction,                                    \
