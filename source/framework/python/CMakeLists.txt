@@ -146,6 +146,7 @@ add_library(lue_py_framework SHARED
     src/numpy/to_numpy.cpp
 
     src/partitioned_route/serial_route.cpp
+    src/partitioned_route/wait.cpp
 
     src/python_extension.cpp
     src/submodule.cpp
