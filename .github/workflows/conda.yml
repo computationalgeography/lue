@@ -46,7 +46,8 @@ jobs:
                   conda mambabuild environment/conda --override-channels --channel conda-forge
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
-              if: github.ref == 'refs/heads/master'
+              # TODO Remove false once gh590 is merged
+              if: false && github.ref == 'refs/heads/master'
               with:
                   server: ${{ secrets.FTP_SERVER }}
                   username: ${{ secrets.FTP_USERNAME }}
