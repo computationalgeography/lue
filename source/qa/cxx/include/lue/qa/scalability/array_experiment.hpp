@@ -5,18 +5,20 @@
 
 namespace lue::qa {
 
+    //! Shape type for representing the extends of an array (or partition)
     using Shape = std::tuple<Count, Count>;
 
 
-    class ArrayExperiment:
-
-        public Experiment
-
+    /*!
+        @brief      The ArrayExperiment class represents an experiment where (2D) partitioned
+                    arrays are used
+    */
+    class ArrayExperiment: public Experiment
     {
 
         public:
 
-            ArrayExperiment(Count const nr_workers, Shape const& array_shape, Shape const& partition_shape);
+            ArrayExperiment(Count nr_workers, Shape const& array_shape, Shape const& partition_shape);
 
             ArrayExperiment(ArrayExperiment const&) = default;
 
@@ -24,13 +26,13 @@ namespace lue::qa {
 
             ~ArrayExperiment() = default;
 
-            ArrayExperiment& operator=(ArrayExperiment const&) = default;
+            auto operator=(ArrayExperiment const&) -> ArrayExperiment& = default;
 
-            ArrayExperiment& operator=(ArrayExperiment&&) = default;
+            auto operator=(ArrayExperiment&&) -> ArrayExperiment& = default;
 
-            Shape const& array_shape() const;
+            [[nodiscard]] auto array_shape() const -> Shape const&;
 
-            Shape const& partition_shape() const;
+            [[nodiscard]] auto partition_shape() const -> Shape const&;
 
         private:
 

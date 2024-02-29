@@ -12,7 +12,7 @@ namespace lue::qa {
     }
 
 
-    Count Experiment::nr_workers() const
+    auto Experiment::nr_workers() const -> Count
     {
         return _nr_workers;
     }
@@ -24,7 +24,7 @@ namespace lue::qa {
     }
 
 
-    Runs const& Experiment::runs() const
+    auto Experiment::runs() const -> Runs const&
     {
         return _runs;
     }

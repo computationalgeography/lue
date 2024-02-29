@@ -14,13 +14,13 @@ namespace lue::qa {
     }
 
 
-    Shape const& ArrayExperiment::array_shape() const
+    auto ArrayExperiment::array_shape() const -> Shape const&
     {
         return _array_shape;
     }
 
 
-    Shape const& ArrayExperiment::partition_shape() const
+    auto ArrayExperiment::partition_shape() const -> Shape const&
     {
         return _partition_shape;
     }

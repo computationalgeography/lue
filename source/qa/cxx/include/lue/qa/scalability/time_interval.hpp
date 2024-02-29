@@ -32,13 +32,13 @@ namespace lue::qa {
 
             ~TimeInterval() = default;
 
-            TimeInterval& operator=(TimeInterval const&) = default;
+            auto operator=(TimeInterval const&) -> TimeInterval& = default;
 
-            TimeInterval& operator=(TimeInterval&&) = default;
+            auto operator=(TimeInterval&&) -> TimeInterval& = default;
 
             void set_stop(TimePoint const& time_point);
 
-            Duration duration() const;
+            [[nodiscard]] auto duration() const -> Duration;
 
             /*!
                 @brief      Return the duration casted to @a ToDuration
@@ -47,7 +47,7 @@ namespace lue::qa {
                 like seconds.
             */
             template<typename ToDuration>
-            ToDuration duration() const
+            [[nodiscard]] auto duration() const -> ToDuration
             {
                 return std::chrono::duration_cast<ToDuration>(duration());
             }

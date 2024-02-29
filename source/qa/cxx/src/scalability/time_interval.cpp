@@ -30,7 +30,7 @@ namespace lue::qa {
     /*!
         @brief      Return the duration of the interval
     */
-    TimeInterval::Duration TimeInterval::duration() const
+    auto TimeInterval::duration() const -> TimeInterval::Duration
     {
         return _stop - _start;
     }

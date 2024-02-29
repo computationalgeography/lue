@@ -3,24 +3,28 @@
 
 namespace lue::qa {
 
-    Run::Run()
-    {
-    }
-
-
+    /*!
+        @brief      Start the run, which means storing the current point in time
+    */
     void Run::start()
     {
         _stopwatch.start();
     }
 
 
+    /*!
+        @brief      Stop the run, which means storing the current point in time
+    */
     void Run::stop()
     {
         _stopwatch.stop();
     }
 
 
-    Stopwatch::SystemTimePoint const& Run::start_time_point() const
+    /*!
+        @brief      Return the time point when @a start() was called
+    */
+    auto Run::start_time_point() const -> Stopwatch::SystemTimePoint const&
     {
         return _stopwatch.start_time_point();
     }

@@ -17,10 +17,6 @@ target_include_directories(lue_qa
 )
 
 target_link_libraries(lue_qa
-    PUBLIC
-        # lue::framework_algorithm
-        # lue::framework_model
-        # lue::data_model_hl
-        docopt
+    PRIVATE
         nlohmann_json::nlohmann_json
 )

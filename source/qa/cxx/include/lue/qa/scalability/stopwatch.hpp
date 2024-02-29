@@ -6,6 +6,7 @@ namespace lue::qa {
 
     /*!
         @brief      Class for timing things
+        @sa         TimeInterval
     */
     class Stopwatch
     {
@@ -22,7 +23,7 @@ namespace lue::qa {
 
             using SystemTimePoint = SystemClock::time_point;
 
-            static TimePoint now();
+            static auto now() -> TimePoint;
 
             Stopwatch() = default;
 
@@ -32,15 +33,15 @@ namespace lue::qa {
 
             ~Stopwatch() = default;
 
-            Stopwatch& operator=(Stopwatch const&) = default;
+            auto operator=(Stopwatch const&) -> Stopwatch& = default;
 
-            Stopwatch& operator=(Stopwatch&&) = default;
+            auto operator=(Stopwatch&&) -> Stopwatch& = default;
 
             void start();
 
             void stop();
 
-            SystemTimePoint const& start_time_point() const;
+            [[nodiscard]] auto start_time_point() const -> SystemTimePoint const&;
 
             /*!
                 @brief      Return the duration casted to @a ToDuration
@@ -49,7 +50,7 @@ namespace lue::qa {
                 courser unit, like seconds.
             */
             template<typename ToDuration>
-            ToDuration duration() const
+            [[nodiscard]] auto duration() const -> ToDuration
             {
                 return _time_interval.duration<ToDuration>();
             }

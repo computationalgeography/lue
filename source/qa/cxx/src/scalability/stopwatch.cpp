@@ -10,7 +10,7 @@ namespace lue::qa {
         epoch. For example, this might be the number of ticks since the
         last reboot.
     */
-    Stopwatch::TimePoint Stopwatch::now()
+    auto Stopwatch::now() -> Stopwatch::TimePoint
     {
         return Clock::now();
     }
@@ -41,7 +41,7 @@ namespace lue::qa {
         Unless start has been pressed on the stopwatch, the value returned
         makes no sense.
     */
-    Stopwatch::SystemTimePoint const& Stopwatch::start_time_point() const
+    auto Stopwatch::start_time_point() const -> Stopwatch::SystemTimePoint const&
     {
         return _start;
     }

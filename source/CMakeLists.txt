@@ -13,6 +13,10 @@ if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
     add_subdirectory(python)
 endif()
 
+if(LUE_BUILD_QA)
+    add_subdirectory(qa)
+endif()
+
 if(LUE_BUILD_VIEW)
     add_subdirectory(view)
 endif()
@@ -85,7 +89,3 @@ endif()
 #             lib/cmake/lue
 #     )
 # endif()
-
-if(LUE_BUILD_QA)
-    add_subdirectory(qa)
-endif()
