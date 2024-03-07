@@ -58,11 +58,15 @@ jobs:
           with:
             path: ${{ env.lue_source_directory }}
 
+        - uses: actions/setup-python@v5
+          with:
+            python-version: ${{ matrix.python_version }}
+
         - name: setup platform
           run: |
               brew install --verbose \
                   boost \
-                  doxygen \
+                  conan \
                   fmt \
                   gdal \
                   glfw \
@@ -74,9 +78,11 @@ jobs:
                   nlohmann-json \
                   numpy \
                   pybind11 \
+                  python-jinja \
+                  python-matplotlib \
                   tree \
                   vulkan-loader
-              pip3 install conan docopt jinja2 matplotlib ruamel.yaml
+              pip3 install docopt ruamel.yaml
               conan profile detect
 
         - name: "install hpx"
