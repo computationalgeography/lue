@@ -8,30 +8,42 @@ namespace lue::framework {
 
         template<typename RouteID, typename FieldElement, Rank rank>
         auto decreasing_order_global(
-            PartitionedArray<FieldElement, rank> const& field, Count const max_length)
+            PartitionedArray<FieldElement, rank> const& value, Count const max_nr_cells)
         {
-            return lue::value_policies::decreasing_order<RouteID>(field, max_length);
+            return lue::value_policies::decreasing_order<RouteID>(value, max_nr_cells);
         }
 
 
         template<typename ZoneElement, typename FieldElement, Rank rank>
         auto decreasing_order_zonal(
-            PartitionedArray<ZoneElement, rank> const& region,
-            PartitionedArray<FieldElement, rank> const& field,
-            Count const max_length)
+            PartitionedArray<ZoneElement, rank> const& zone,
+            PartitionedArray<FieldElement, rank> const& value,
+            Count const max_nr_cells)
         {
-            return lue::value_policies::decreasing_order(region, field, max_length);
+            return lue::value_policies::decreasing_order(zone, value, max_nr_cells);
         }
 
 
         template<typename ZoneElement, typename FieldElement>
         void bind_decreasing_order(pybind11::module& module)
         {
+            using namespace pybind11::literals;
             using RouteID = ZoneElement;
             Rank const rank{2};
 
-            module.def("decreasing_order", decreasing_order_global<RouteID, FieldElement, rank>);
-            module.def("decreasing_order", decreasing_order_zonal<ZoneElement, FieldElement, rank>);
+            module.def(
+                "decreasing_order",
+                decreasing_order_global<RouteID, FieldElement, rank>,
+                "value"_a,
+                pybind11::kw_only(),
+                "max_nr_cells"_a = std::numeric_limits<Count>::max());
+            module.def(
+                "decreasing_order",
+                decreasing_order_zonal<ZoneElement, FieldElement, rank>,
+                "zone"_a,
+                "value"_a,
+                pybind11::kw_only(),
+                "max_nr_cells"_a = std::numeric_limits<Count>::max());
         }
 
     }  // namespace detail

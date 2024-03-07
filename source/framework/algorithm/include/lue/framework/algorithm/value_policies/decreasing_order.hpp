@@ -18,24 +18,24 @@ namespace lue {
 
         template<typename ZoneElement, typename InputElement, Rank rank>
         SerialRoute<ZoneElement, rank> decreasing_order(
-            PartitionedArray<ZoneElement, rank> const& region,
+            PartitionedArray<ZoneElement, rank> const& zone,
             PartitionedArray<InputElement, rank> const& value,
-            Count const max_length = std::numeric_limits<Count>::max())
+            Count const max_nr_cells = std::numeric_limits<Count>::max())
         {
             using Policies = policy::decreasing_order::DefaultValuePolicies<ZoneElement, InputElement>;
 
-            return decreasing_order(Policies{}, region, value, max_length);
+            return decreasing_order(Policies{}, zone, value, max_nr_cells);
         }
 
 
         template<typename RouteID = lue::RouteID, typename InputElement, Rank rank>
         SerialRoute<RouteID, rank> decreasing_order(
             PartitionedArray<InputElement, rank> const& value,
-            Count const max_length = std::numeric_limits<Count>::max())
+            Count const max_nr_cells = std::numeric_limits<Count>::max())
         {
             using Policies = policy::decreasing_order::DefaultValuePolicies<RouteID, InputElement>;
 
-            return decreasing_order(Policies{}, value, max_length);
+            return decreasing_order(Policies{}, value, max_nr_cells);
         }
 
     }  // namespace value_policies

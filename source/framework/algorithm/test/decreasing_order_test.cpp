@@ -1768,9 +1768,6 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
 
 BOOST_AUTO_TEST_CASE(single_partition_empty_route)
 {
-    return;  // TODO
-
-
     // Verify that a partition for which route fragments aren't recorded is still finished
     lue::Rank const rank{2};
 
@@ -1780,37 +1777,41 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
 
-    Shape const array_shape{5, 5};
+    Shape const array_shape{50, 50};
     Shape const partition_shape{array_shape};
-    lue::Count const max_route_length{0};
+    lue::Count const max_nr_cells{0};
 
     using namespace lue::value_policies;
 
     ValueArray value_array{lue::value_policies::uniform<ValueElement>(array_shape, partition_shape, 0, 100)};
 
+    // Global
     {
         Route<lue::RouteID> const route_we_got =
-            lue::value_policies::decreasing_order(value_array, max_route_length);
+            lue::value_policies::decreasing_order(value_array, max_nr_cells);
 
         route_we_got.starts().wait();
 
-        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 0);
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
 
         auto const& partitions = route_we_got.partitions();
 
         hpx::wait_all(partitions.begin(), partitions.end());
     }
 
+    // Zonal
     {
+        lue::Count const nr_zones{10};
+
         ZoneArray const zone_array{
-            lue::create_partitioned_array<ZoneElement>(array_shape, partition_shape, 1)};
+            lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
 
         Route<ZoneElement> const route_we_got =
-            lue::value_policies::decreasing_order(zone_array, value_array, max_route_length);
+            lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells);
 
         route_we_got.starts().wait();
 
-        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 0);
+        BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
         auto const& partitions = route_we_got.partitions();
 
@@ -1868,7 +1869,7 @@ BOOST_AUTO_TEST_CASE(random_input)
         return distribution(random_number_engine);
     }();
 
-    lue::Count const max_route_length = [&]()
+    lue::Count const max_nr_cells = [&]()
     {
         lue::Count const min{0};
         lue::Count const max{lue::nr_elements(array_shape)};
@@ -1887,7 +1888,7 @@ BOOST_AUTO_TEST_CASE(random_input)
         lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
 
     Route<ZoneElement> const route_we_got =
-        lue::value_policies::decreasing_order(zone_array, value_array, max_route_length);
+        lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells);
 
     route_we_got.starts().wait();
 

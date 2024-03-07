@@ -38,7 +38,9 @@ class IntegrateAndAllocateTest(lue_test.TestCase):
                 suitability = lfr.create_array(
                     array_shape, floating_point_type, suitability_fill_value
                 )
-                route = lfr.decreasing_order(zone, suitability, max_nr_cells)
+                route = lfr.decreasing_order(
+                    zone, suitability, max_nr_cells=max_nr_cells
+                )
 
                 sdp_factors_per_crop = [
                     lfr.create_array(

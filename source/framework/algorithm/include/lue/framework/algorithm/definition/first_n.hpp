@@ -242,6 +242,7 @@ namespace lue {
                             read_lock.lock();
 
                             lue_hpx_assert(!_fragment_idxs.empty());
+                            // TODO Fails when called from hello_serial_route.py
                             lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
 
                             Index& fragment_idx{_fragment_idxs.at(route_id)};

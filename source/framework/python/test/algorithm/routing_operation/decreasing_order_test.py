@@ -31,9 +31,11 @@ class DecreasingOrderTest(lue_test.TestCase):
         ]:
             values = lfr.create_array(array_shape, value_dtype, fill_value)
 
-            lfr.decreasing_order(values, max_nr_cells)
+            lfr.decreasing_order(values)
+            lfr.decreasing_order(values, max_nr_cells=max_nr_cells)
 
             for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
                 zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
 
-                lfr.decreasing_order(zones, values, max_nr_cells)
+                lfr.decreasing_order(zones, values)
+                lfr.decreasing_order(zones, values, max_nr_cells=max_nr_cells)

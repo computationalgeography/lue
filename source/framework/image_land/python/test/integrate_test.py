@@ -30,6 +30,6 @@ class IntegrateTest(lue_test.TestCase):
                 integrand = lfr.create_array(
                     array_shape, integrand_dtype, integrand_fill_value
                 )
-                route = lfr.decreasing_order(zone, field, max_nr_cells)
+                route = lfr.decreasing_order(zone, field, max_nr_cells=max_nr_cells)
 
-                img.integrate(route, integrand, max_nr_cells)
+                img.integrate(route, integrand, max_nr_cells=max_nr_cells)

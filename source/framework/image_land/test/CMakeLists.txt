@@ -18,7 +18,6 @@ foreach(name ${names})
             lue_framework_algorithm_test
             lue::framework_test
             Boost::unit_test_framework
-            HPX::iostreams_component
     )
 
     add_test(NAME ${test_name}

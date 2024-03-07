@@ -12,8 +12,7 @@ def execute_command(command):
 
 
 def lue_translate():
-    return lue_translate
-    return os.path.expandvars("$LUE_OBJECTS/bin/lue_translate")
+    return "lue_translate"
 
 
 def import_lue_json(lue_json_pathname, lue_dataset_pathname):

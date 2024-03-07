@@ -18,7 +18,15 @@ namespace lue::image_land {
         template<typename RouteID, typename IntegrandElement, Rank rank>
         void bind_integrate(pybind11::module& module)
         {
-            module.def("integrate", integrate<RouteID, IntegrandElement, rank>);
+            using namespace pybind11::literals;
+
+            module.def(
+                "integrate",
+                integrate<RouteID, IntegrandElement, rank>,
+                "route"_a,
+                "integrand"_a,
+                pybind11::kw_only(),
+                "max_nr_cells"_a = std::numeric_limits<Count>::max());
         }
 
     }  // namespace detail

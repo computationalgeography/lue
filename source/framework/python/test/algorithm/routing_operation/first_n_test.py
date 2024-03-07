@@ -23,6 +23,6 @@ class FirstNTest(lue_test.TestCase):
         for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
             values = lfr.create_array(array_shape, np.float32, fill_value)
             zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
-            route = lfr.decreasing_order(zones, values, max_nr_cells)
+            route = lfr.decreasing_order(zones, values)
 
             lfr.first_n(route, max_nr_cells)
