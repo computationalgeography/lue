@@ -74,13 +74,12 @@ jobs:
                   nlohmann-json \
                   numpy \
                   pybind11 \
-                  python-jinja \
                   python-matplotlib \
                   tree \
                   vulkan-loader
               python3 -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
-              pip3 install docopt ruamel.yaml  # Not part of homebrew yet
+              pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
         - name: "install hpx"
