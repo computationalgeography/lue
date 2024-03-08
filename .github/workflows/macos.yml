@@ -58,10 +58,6 @@ jobs:
           with:
             path: ${{ env.lue_source_directory }}
 
-        - uses: actions/setup-python@v5
-          with:
-            python-version: ${{ matrix.python_version }}
-
         - name: setup platform
           run: |
               brew install --verbose \
@@ -82,7 +78,9 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-              pip3 install docopt ruamel.yaml
+              python3 -m venv --system-site-packages --upgrade-deps env
+              source env/bin/activate
+              pip3 install docopt ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
         - name: "install hpx"
