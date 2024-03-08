@@ -109,6 +109,8 @@ jobs:
 
         - name: configure
           run: |
+              source env/bin/activate
+
               mkdir ${{ env.lue_build_directory }}
 
               python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
@@ -163,6 +165,8 @@ jobs:
 
         - name: test
           run: |
+              source env/bin/activate
+
               # Unit tests
               ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
 
