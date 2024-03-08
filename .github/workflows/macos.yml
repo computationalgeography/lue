@@ -143,8 +143,7 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
-                      -D Python3_EXECUTABLE="/usr/local/bin/python3"
+                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
 
         - name: build
           run: |
