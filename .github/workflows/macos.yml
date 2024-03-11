@@ -82,7 +82,8 @@ jobs:
                   tree \
                   vulkan-loader
               ls $(brew --prefix python)
-              $(brew --prefix python)/python -m venv --system-site-packages --upgrade-deps env
+              ls $(brew --prefix python)/bin
+              $(brew --prefix python)/bin/python -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
               pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
@@ -94,7 +95,7 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            cmake_flags: "-D Python3_EXECUTABLE=`pwd`/env/bin/python3"
+            cmake_flags: "-D Python3_EXECUTABLE=/Users/runner/work/lue/lue/env/bin/python3"
             cmake_preset: hpx_release_macos_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}
