@@ -23,7 +23,7 @@ jobs:
                 os: ["macos-13"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
-                python_version: ["3.11"]
+                python_version: ["3.12"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -60,6 +60,9 @@ jobs:
 
         - name: setup platform
           run: |
+              # GDAL is built against a specific version of Python. Here, we explicitly
+              # install this specific version of Python. If the GDAL Python version is bumped,
+              # brew will run into problems, which we can then fix by bumping our version Python.
               brew install --verbose \
                   boost \
                   conan \
@@ -74,11 +77,21 @@ jobs:
                   nlohmann-json \
                   numpy \
                   pybind11 \
+                  python@${{ matrix.python_version }} \
                   python-matplotlib \
                   tree \
                   vulkan-loader
+
+              brew --prefix python
+              type python3
+              type python
+
               python3 -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
+
+              type python3
+              type python
+
               pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
@@ -109,6 +122,9 @@ jobs:
         - name: configure
           run: |
               source env/bin/activate
+
+              type python3
+              type python
 
               mkdir ${{ env.lue_build_directory }}
 
