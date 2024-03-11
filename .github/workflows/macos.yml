@@ -81,17 +81,8 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-
-              brew --prefix python
-              type python3
-              type python
-
-              python3 -m venv --system-site-packages --upgrade-deps env
+              $(brew --prefix python) -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
-
-              type python3
-              type python
-
               pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
@@ -158,7 +149,8 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
+                      -D Python3_FIND_VIRTUALENV=ONLY
 
         - name: build
           run: |
