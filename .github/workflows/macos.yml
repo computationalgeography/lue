@@ -63,7 +63,7 @@ jobs:
               # GDAL is built against a specific version of Python. Here, we explicitly
               # install this specific version of Python. If the GDAL Python version is bumped,
               # brew will run into problems, which we can then fix by bumping our version Python.
-              brew install --verbose \
+              brew install \
                   boost \
                   conan \
                   fmt \
@@ -81,7 +81,8 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-              $(brew --prefix python) -m venv --system-site-packages --upgrade-deps env
+              ls $(brew --prefix python)
+              $(brew --prefix python)/python -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
               pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
@@ -93,6 +94,7 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
+            cmake_flags: "-D Python3_EXECUTABLE=`pwd`/env/bin/python3"
             cmake_preset: hpx_release_macos_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}
@@ -113,10 +115,6 @@ jobs:
         - name: configure
           run: |
               source env/bin/activate
-
-              type python3
-              type python
-
               mkdir ${{ env.lue_build_directory }}
 
               python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
