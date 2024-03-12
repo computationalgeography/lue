@@ -351,13 +351,14 @@ namespace lue::detail::integrate_and_allocate {
                     // call handling an upstream fragment and subsequent calls handling
                     // downstream fragments.
 
-                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    // TODO std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
                     std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
                     // First, do stuff, *using* state veriables. Don't change stuff that
                     // is shared between threads. Changing different cells in a raster
                     // is fine, just don't change the same values.
-                    read_lock.lock();
+                    // TODO read_lock.lock();
+                    write_lock.lock();
 
                     auto route_partition_server_ptr{ready_component_ptr(_route_partition)};
                     auto& route_partition_server{*route_partition_server_ptr};
@@ -693,8 +694,9 @@ namespace lue::detail::integrate_and_allocate {
                         }
                     }
 
-                    read_lock.unlock();
-                    write_lock.lock();
+                    // TODO read_lock.unlock();
+                    // TODO write_lock.lock();
+
                     ++fragment_idx;
 
                     // TODO refactor with integrate.hpp
@@ -766,10 +768,11 @@ namespace lue::detail::integrate_and_allocate {
                     // be changing the state of the current component, we need to obtain
                     // a write lock.
 
-                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    // TODO std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
                     std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
-                    read_lock.lock();
+                    // TODO read_lock.lock();
+                    write_lock.lock();
 
                     lue_hpx_assert(!_fragment_idxs.empty());
                     lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
@@ -798,8 +801,8 @@ namespace lue::detail::integrate_and_allocate {
                             .skip_walking_route_fragments(route_id);
                     }
 
-                    read_lock.unlock();
-                    write_lock.lock();
+                    // TODO read_lock.unlock();
+                    // TODO write_lock.lock();
 
                     ++fragment_idx;
 
@@ -1073,25 +1076,28 @@ namespace lue {
             YieldFactorPartitionArray yield_factors(nr_crops);
             CropFractionPartitionArray current_crop_fractions(nr_crops);
 
-            for (Index idx = 0; idx < nr_partitions; ++idx)
+            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
             {
                 std::transform(
                     sdp_factors_per_crop.begin(),
                     sdp_factors_per_crop.end(),
                     sdp_factors.begin(),
-                    [idx](SDPFactorArray const& array) { return array.partitions()[idx]; });
+                    [partition_idx](SDPFactorArray const& array)
+                    { return array.partitions()[partition_idx]; });
                 std::transform(
                     yield_factors_per_crop.begin(),
                     yield_factors_per_crop.end(),
                     yield_factors.begin(),
-                    [idx](YieldFactorArray const& array) { return array.partitions()[idx]; });
+                    [partition_idx](YieldFactorArray const& array)
+                    { return array.partitions()[partition_idx]; });
                 std::transform(
                     current_crop_fractions_per_crop.begin(),
                     current_crop_fractions_per_crop.end(),
                     current_crop_fractions.begin(),
-                    [idx](CropFractionArray const& array) { return array.partitions()[idx]; });
+                    [partition_idx](CropFractionArray const& array)
+                    { return array.partitions()[partition_idx]; });
 
-                walk_components[idx] = WalkComponentClient{hpx::dataflow(
+                walk_components[partition_idx] = WalkComponentClient{hpx::dataflow(
                     hpx::launch::async,
                     [policies](
                         RoutePartition const& route_partition,
@@ -1109,11 +1115,11 @@ namespace lue {
                             current_crop_fractions_partition_array_fs.get(),
                             current_crop_fraction_partition);
                     },
-                    route_partitions[idx],
+                    route_partitions[partition_idx],
                     hpx::when_all(sdp_factors),
                     hpx::when_all(yield_factors),
                     hpx::when_all(current_crop_fractions),
-                    irrigated_crop_fractions.partitions()[idx])};
+                    irrigated_crop_fractions.partitions()[partition_idx])};
             }
         }
 

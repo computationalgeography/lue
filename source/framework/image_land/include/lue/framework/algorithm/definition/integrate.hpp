@@ -156,13 +156,14 @@ namespace lue::detail::integrate {
                     // call handling an upstream fragment and subsequent calls handling
                     // downstream fragments.
 
-                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    // TODO std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
                     std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
                     // First, do stuff, *using* state veriables. Don't change stuff that
                     // is shared between threads. Changing different cells in a raster
                     // is fine, just don't change the same values.
-                    read_lock.lock();
+                    // TODO read_lock.lock();
+                    write_lock.lock();
 
                     auto route_partition_server_ptr{ready_component_ptr(_route_partition)};
                     auto& route_partition_server{*route_partition_server_ptr};
@@ -210,8 +211,9 @@ namespace lue::detail::integrate {
                         }
                     }
 
-                    read_lock.unlock();
-                    write_lock.lock();
+                    // TODO read_lock.unlock();
+                    // TODO write_lock.lock();
+
                     ++fragment_idx;
 
                     if (!route_fragment.is_last())
@@ -280,10 +282,11 @@ namespace lue::detail::integrate {
                     // be changing the state of the current component, we need to obtain
                     // a write lock.
 
-                    std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
+                    // TODO std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
                     std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
-                    read_lock.lock();
+                    // TODO read_lock.lock();
+                    write_lock.lock();
 
                     lue_hpx_assert(!_fragment_idxs.empty());
                     lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
@@ -312,8 +315,8 @@ namespace lue::detail::integrate {
                             .skip_walking_route_fragments(route_id);
                     }
 
-                    read_lock.unlock();
-                    write_lock.lock();
+                    // TODO read_lock.unlock();
+                    // TODO write_lock.lock();
 
                     ++fragment_idx;
 
@@ -501,9 +504,9 @@ namespace lue {
         Count const nr_partitions{nr_elements(route_partitions.shape())};
         Array<WalkComponentClient, rank> walk_components{route_partitions.shape()};
 
-        for (Index idx = 0; idx < nr_partitions; ++idx)
+        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            walk_components[idx] = WalkComponentClient{hpx::dataflow(
+            walk_components[partition_idx] = WalkComponentClient{hpx::dataflow(
                 hpx::launch::async,
                 [policies](
                     RoutePartition const& route_partition, IntegrandPartition const& integrand_partition)
@@ -514,15 +517,15 @@ namespace lue {
                         route_partition,
                         integrand_partition);
                 },
-                route_partitions[idx],
-                integrand_partitions[idx])};
+                route_partitions[partition_idx],
+                integrand_partitions[partition_idx])};
         }
 
         OutputPartitions partitions{walk_components.shape()};
 
-        for (Index idx = 0; idx < nr_partitions; ++idx)
+        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            partitions[idx] = walk_components[idx].then(
+            partitions[partition_idx] = walk_components[partition_idx].then(
                 hpx::unwrapping([](WalkComponentClient const& component)
                                 { return OutputPartition{component.result_partition()}; }));
         }
@@ -599,6 +602,7 @@ namespace lue {
     HPX_REGISTER_ACTION(                                                                                     \
         lue::detail::IntegrateWalkServer_##unique::SkipWalkingRouteFragmentsAction,                          \
         IntegrateWalkServerSkipWalkingRouteFragmentsAction_##unique)
+
 
 #define LUE_INSTANTIATE_INTEGRATE(Policies, rank)                                                            \
                                                                                                              \

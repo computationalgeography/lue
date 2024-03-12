@@ -61,6 +61,13 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Initiate a visit of all cells along all routes
+        @param      route Routes to visit the cells of
+        @param      components Components that will do the actual visiting
+        @param      data State to use while visiting the cells
+        @return     A future that becomes ready once the visiting is done
+    */
     template<typename RouteID, Rank rank, typename Component, typename Data>
     hpx::future<void> walk(
         SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, hpx::future<Data>&& data)
@@ -88,13 +95,13 @@ namespace lue {
             nr_partitions);
 
         // Per partition, obtain a future to the collection of downstream route partition IDs
-        for (Index p = 0; p < nr_partitions; ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            downstream_route_partitions_ids_ff[p] = hpx::dataflow(
+            downstream_route_partitions_ids_ff[partition_idx] = hpx::dataflow(
                 hpx::launch::async,
                 [](RoutePartition const& route_partition)
                 { return route_partition.remote_route_fragment_locations(); },
-                route_partitions[p]);
+                route_partitions[partition_idx]);
         }
 
         // What we have now:
@@ -122,9 +129,9 @@ namespace lue {
                     std::map<hpx::id_type, Component> result{};
                     Count const nr_partitions{static_cast<Count>(std::size(route_partitions))};
 
-                    for (Index p = 0; p < nr_partitions; ++p)
+                    for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                     {
-                        result[route_partitions[p].get_id()] = components[p];
+                        result[route_partitions[partition_idx].get_id()] = components[partition_idx];
                     }
 
                     return result;
@@ -163,11 +170,12 @@ namespace lue {
                     Count const nr_partitions{static_cast<Count>(std::size(components))};
                     std::vector<hpx::future<void>> components_configured(nr_partitions);
 
-                    for (Index p = 0; p < nr_partitions; ++p)
+                    for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                     {
                         std::map<hpx::id_type, Component> component_map{};
 
-                        for (hpx::id_type const& downstream_partition_id : downstream_partition_ids[p])
+                        for (hpx::id_type const& downstream_partition_id :
+                             downstream_partition_ids[partition_idx])
                         {
                             lue_hpx_assert(
                                 component_by_route_partition.find(downstream_partition_id) !=
@@ -177,8 +185,8 @@ namespace lue {
                                 component_by_route_partition.at(downstream_partition_id);
                         }
 
-                        components_configured[p] =
-                            components[p].set_downstream_components(std::move(component_map));
+                        components_configured[partition_idx] =
+                            components[partition_idx].set_downstream_components(std::move(component_map));
                     }
 
                     return hpx::future<void>{
@@ -239,6 +247,9 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+    */
     template<typename RouteID, Rank rank, typename Component, typename Data>
     hpx::future<void> walk(
         SerialRoute<RouteID, rank> const& route, Array<Component, rank>& components, Data&& data)
