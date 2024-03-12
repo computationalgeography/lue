@@ -5,16 +5,20 @@
 
 namespace lue {
 
+    // Don't use std::ptrdiff_t here. It is defined as long on macOS, which on that platform
+    // is not the same as int64, which results in undefined symbols when we use
+    // Index/Count/Size/... as template parameters.
+
     /*!
         @brief      Type of an index used for array indexing
     */
-    using Index = std::ptrdiff_t;
+    using Index = std::int64_t;
 
 
     /*!
         @brief      Type of a number of things
     */
-    using Count = std::ptrdiff_t;
+    using Count = std::int64_t;
 
 
     /*!
