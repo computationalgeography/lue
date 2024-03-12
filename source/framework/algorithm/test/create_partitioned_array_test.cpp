@@ -472,3 +472,12 @@ BOOST_AUTO_TEST_CASE(use_case_3)
         }
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(use_case_4)
+{
+    // Create a new partitioned array given a route
+
+    // TODO First be able to create a route
+    BOOST_WARN(false);
+}

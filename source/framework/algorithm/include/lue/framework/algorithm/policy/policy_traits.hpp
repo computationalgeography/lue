@@ -140,6 +140,14 @@ namespace lue::policy {
     using InputsPoliciesT = typename detail::PoliciesTraits<Policies>::InputsPolicies;
 
 
+    template<typename Policies>
+    constexpr auto nr_inputs = Policies::nr_inputs;
+
+
+    template<typename Policies>
+    constexpr auto nr_outputs = Policies::nr_outputs;
+
+
     template<typename T>
     using ElementT = typename detail::TypeTraits<lue::detail::remove_cvref_t<T>>::Element;
 
@@ -152,10 +160,26 @@ namespace lue::policy {
     template<
         // All policies related to an operation
         typename Policies,
+        // Idx of policies related to a specific input
+        std::size_t idx = 0>
+    using InputElementT = ElementT<PoliciesT<typename Policies::InputsPolicies, idx>>;
+
+
+    template<
+        // All policies related to an operation
+        typename Policies,
+        // Idx of policies related to a specific output
+        std::size_t idx = 0>
+    using OutputElementT = ElementT<PoliciesT<typename Policies::OutputsPolicies, idx>>;
+
+
+    template<
+        // All policies related to an operation
+        typename Policies,
         // Idx of policies related to a specific output
         std::size_t idx,
         // Element for which to return an output policies type
-        typename Element = ElementT<PoliciesT<typename Policies::OutputsPolicies, idx>>>
+        typename Element = OutputElementT<Policies, idx>>
     using OutputPoliciesT = typename detail::TypeTraits<
         // Policies related to a specific output
         PoliciesT<typename Policies::OutputsPolicies, idx>>::template Policies<Element>;

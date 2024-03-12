@@ -7,6 +7,7 @@
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
 #include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/serial_route.hpp"
 #include <optional>
 
 
@@ -466,7 +467,7 @@ namespace lue {
                 // In general, the number of localities should be smaller than
                 // the number of partitions. Otherwise more hardware is used than
                 // necessary. The exception is when we are building with tests
-                // turned on. Tests may have to run on less localities than there
+                // turned on. Tests may have to run on more localities than there
                 // are partitions.
                 if (nr_partitions < nr_localities)
                 {
@@ -522,6 +523,72 @@ namespace lue {
                 return instantiate_partitions2(
                     policies, shape_in_partitions, partition_shape, std::move(instantiator));
             }
+        }
+
+
+        template<typename Policies, typename InputPartitions, typename Functor>
+        std::tuple<
+            Localities<rank<InputPartitions>>,
+            PartitionsT<PartitionedArray<OutputElementT<Functor>, rank<InputPartitions>>>>
+        instantiate_partitions(
+            Policies const& policies,
+            ShapeT<InputPartitions> const& array_shape,
+            InputPartitions const& input_partitions,
+            Functor const& partition_creator)
+        {
+            // Create partitions. Each of these partitions will be a component client instance
+            // referring to a, possibly remote, component server instance.
+
+            Rank const rank{lue::rank<InputPartitions>};
+
+            using Offset = OffsetT<InputPartitions>;
+            using Shape = ShapeT<InputPartitions>;
+
+            using OutputElement = OutputElementT<Functor>;
+            using OutputArray = PartitionedArray<OutputElement, rank>;
+            using OutputPartitions = PartitionsT<OutputArray>;
+            using OutputPartition = PartitionT<OutputPartitions>;
+
+            Shape const shape_in_partitions{input_partitions.shape()};
+
+            OutputPartitions output_partitions{shape_in_partitions};
+            Count const nr_partitions = lue::nr_elements(shape_in_partitions);
+            lue_hpx_assert(output_partitions.nr_elements() == nr_partitions);
+
+            Localities<rank> localities{shape_in_partitions};
+
+            lue_hpx_assert(hpx::find_here() == hpx::find_root_locality());
+
+            for (Index p = 0; p < nr_partitions; ++p)
+            {
+                // For each partition:
+                // - Determine the locality it is located on
+                // - Spawn a task on that locality, passing in the input partition and returning
+                //   an output partition
+
+                lue_hpx_assert(input_partitions[p].valid());
+
+                input_partitions[p].wait();
+
+                output_partitions[p] = hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::unwrapping(
+
+                        [policies, array_shape, partition_idx = p, partition_creator](
+                            hpx::id_type const locality_id,
+                            Offset const& offset,
+                            Shape const& shape) -> OutputPartition {
+                            return partition_creator.instantiate(
+                                locality_id, policies, array_shape, partition_idx, offset, shape);
+                        }
+
+                        ),
+                    hpx::get_colocation_id(input_partitions[p].get_id()),
+                    input_partitions[p].offset(),
+                    input_partitions[p].shape());
+            }
+
+            return {std::move(localities), std::move(output_partitions)};
         }
 
     }  // namespace detail
@@ -594,7 +661,7 @@ namespace lue {
                 [[maybe_unused]] Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
-                Shape const& partition_shape)
+                Shape const& partition_shape) const
             {
                 return hpx::async(
 
@@ -765,7 +832,7 @@ namespace lue {
 
         public:
 
-            static constexpr bool const is_functor{true};
+            static constexpr bool is_functor{true};
     };
 
 
@@ -775,7 +842,7 @@ namespace lue {
 
         public:
 
-            static constexpr bool const is_functor{true};
+            static constexpr bool is_functor{true};
     };
 
 
@@ -785,7 +852,7 @@ namespace lue {
 
         public:
 
-            static constexpr bool const is_functor{true};
+            static constexpr bool is_functor{true};
     };
 
 
@@ -847,18 +914,22 @@ namespace lue {
         - Fill all elements with random values.
         - Fill all elements with values read from a file on disk.
     */
-    template<typename Policies, typename Functor, typename Shape>
-    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
+    template<
+        typename Policies,
+        Rank rank,
+        typename Functor,
+        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
         Policies const& policies,
-        Shape const& array_shape,
-        Shape const& partition_shape,
+        Shape<Count, rank> const& array_shape,
+        Shape<Count, rank> const& partition_shape,
         Functor const& partition_creator)
     {
         // Create the array partitions that, together make up the partitioned
         // array.
 
         using Element = OutputElementT<Functor>;
-        using OutputArray = PartitionedArray<Element, rank<Shape>>;
+        using OutputArray = PartitionedArray<Element, rank>;
 
         // Given the shape of the array and the shape of the array partitions,
         // determine the shape of the array in partitions
@@ -866,7 +937,30 @@ namespace lue {
         auto [localities, partitions] =
             detail::instantiate_partitions(policies, array_shape, partition_shape, partition_creator);
 
-        return OutputArray{array_shape, localities, std::move(partitions)};
+        return OutputArray{array_shape, std::move(localities), std::move(partitions)};
+    }
+
+
+    template<
+        typename Policies,
+        typename RouteID,
+        Rank rank,
+        typename Functor,
+        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+        Policies const& policies, SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
+    {
+        // Use the route passed in as a clone / template for creating the new array. The shape
+        // of the output array and the individual partitions, and the distribution of the
+        // partitions over the localities must be the same as that / those of the input array.
+
+        using Element = OutputElementT<Functor>;
+        using OutputArray = PartitionedArray<Element, rank>;
+
+        auto [localities, partitions] =
+            detail::instantiate_partitions(policies, route.shape(), route.partitions(), partition_creator);
+
+        return OutputArray{route.shape(), std::move(localities), std::move(partitions)};
     }
 
 
@@ -875,92 +969,95 @@ namespace lue {
 
         The partition shape is based on @a default_partition_shape.
     */
-    template<typename Policies, typename Functor, typename Shape>
-    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
-        Policies const& policies, Shape const& array_shape, Functor const& partition_creator)
+    template<
+        typename Policies,
+        Rank rank,
+        typename Functor,
+        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+        Policies const& policies, Shape<Count, rank> const& array_shape, Functor const& partition_creator)
     {
-        return create_partitioned_array(
+        return create_partitioned_array<Policies, rank, Functor>(
             policies, array_shape, default_partition_shape(array_shape), partition_creator);
     }
 
 
-    template<
-        typename Functor,
-        typename Shape,
-        // Select cases where Functor is passed, instead of Element
-        std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
-        Shape const& array_shape, Shape const& partition_shape, Functor const& partition_creator)
+    template<Rank rank, typename Functor, std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+        Shape<Count, rank> const& array_shape,
+        Shape<Count, rank> const& partition_shape,
+        Functor const& partition_creator)
     {
         using Element = OutputElementT<Functor>;
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
 
-        return create_partitioned_array(Policies{}, array_shape, partition_shape, partition_creator);
+        return create_partitioned_array<Policies, rank, Functor>(
+            Policies{}, array_shape, partition_shape, partition_creator);
+    }
+
+
+    template<Rank rank, typename Functor, std::enable_if_t<is_functor_v<Functor>>* = nullptr>
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+        Shape<Count, rank> const& array_shape, Functor const& partition_creator)
+    {
+        return create_partitioned_array<rank, Functor>(
+            array_shape, default_partition_shape(array_shape), partition_creator);
     }
 
 
     template<
+        typename RouteID,
+        Rank rank,
         typename Functor,
-        typename Shape,
-        // Select cases where Functor is passed, instead of Element
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank<Shape>> create_partitioned_array(
-        Shape const& array_shape, Functor const& partition_creator)
+    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+        SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
     {
-        return create_partitioned_array(array_shape, default_partition_shape(array_shape), partition_creator);
+        using Policies = policy::create_partitioned_array::DefaultPolicies<OutputElementT<Functor>>;
+
+        return create_partitioned_array<Policies, rank, Functor>(Policies{}, route, partition_creator);
     }
 
 
-    template<
-        typename Element,
-        typename Shape,
-        // Select cases where Element is not a Functor (but it can be a class)
-        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank<Shape>> create_partitioned_array(
-        Shape const& array_shape, Shape const& partition_shape)
+    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank> create_partitioned_array(
+        Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
-        using Functor = InstantiateDefaultInitialized<Element, rank<Shape>>;
+        using Functor = InstantiateDefaultInitialized<Element, rank>;
 
-        return create_partitioned_array(Policies{}, array_shape, partition_shape, Functor{});
+        return create_partitioned_array<Policies, rank, Functor>(
+            Policies{}, array_shape, partition_shape, Functor{});
     }
 
 
-    template<
-        typename Element,
-        typename Shape,
-        // Select cases where Element is not a Functor (but it can be a class)
-        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank<Shape>> create_partitioned_array(Shape const& array_shape)
+    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank> create_partitioned_array(Shape<Count, rank> const& array_shape)
     {
-        return create_partitioned_array(array_shape, default_partition_shape(array_shape));
+        return create_partitioned_array<Element, rank>(array_shape, default_partition_shape(array_shape));
     }
 
 
-    template<
-        typename Element,
-        typename Shape,
-        // Select cases where Element is not a Functor (but it can be a class)
-        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank<Shape>> create_partitioned_array(
-        Shape const& array_shape, Shape const& partition_shape, Element const fill_value)
+    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank> create_partitioned_array(
+        Shape<Count, rank> const& array_shape,
+        Shape<Count, rank> const& partition_shape,
+        Element const fill_value)
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
-        using Functor = InstantiateFilled<Element, rank<Shape>>;
+        using Functor = InstantiateFilled<Element, rank>;
 
-        return create_partitioned_array(Policies{}, array_shape, partition_shape, Functor{fill_value});
+        return create_partitioned_array<Policies, rank, Functor>(
+            Policies{}, array_shape, partition_shape, Functor{fill_value});
     }
 
 
-    template<
-        typename Element,
-        typename Shape,
-        // Select cases where Element is not a Functor (but it can be a class)
-        std::enable_if_t<!is_functor_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank<Shape>> create_partitioned_array(
-        Shape const& array_shape, Element const fill_value)
+    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
+    PartitionedArray<Element, rank> create_partitioned_array(
+        Shape<Count, rank> const& array_shape, Element const fill_value)
     {
-        return create_partitioned_array(array_shape, default_partition_shape(array_shape), fill_value);
+        return create_partitioned_array<Element, rank>(
+            array_shape, default_partition_shape(array_shape), fill_value);
     }
 
 }  // namespace lue

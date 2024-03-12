@@ -5,6 +5,13 @@
 
 namespace lue {
 
+    // We should not use std::ptrdiff_t here. It is defined as long on macOS, which on that
+    // platform is not the same as int64, which may result in undefined symbols when we use
+    // Index/Count/Size/... as template parameters.
+    // We still use ptrdiff_t because it allows the mdspan stuff to work (pass in a shape to
+    // the constructor). When bumping the mdspan version, we may be able to use std::int64_t here.
+
+
     /*!
         @brief      Type of an index used for array indexing
     */
@@ -20,7 +27,7 @@ namespace lue {
     /*!
         @brief      Type of the size of something
     */
-    using Size = std::int64_t;
+    using Size = std::ptrdiff_t;
 
 
     /*!

@@ -10,7 +10,10 @@
 #include <experimental/iterator>
 #define lue_make_ostream_joiner std::experimental::make_ostream_joiner
 #endif
+#include <map>
+#include <optional>
 #include <ostream>
+#include <vector>
 
 
 // The output stream operators defined here also allow the use of compound
@@ -22,14 +25,93 @@ namespace std {
 
     template<typename Element, std::size_t size>
     ostream& operator<<(ostream& stream, array<Element, size> const& array)
-    // char const prefix='[',
-    // char const suffix=']')
     {
-        // stream << prefix;
-
+        stream << '[';
         std::copy(std::begin(array), std::end(array), lue_make_ostream_joiner(stream, ", "));
+        // Prints a separator after the last element...
+        stream << ']';
 
-        // stream << suffix;
+        return stream;
+    }
+
+
+    template<typename T>
+    ostream& operator<<(ostream& stream, optional<T> const& instance)
+    {
+        stream << '(';
+        if (instance)
+        {
+            stream << *instance;
+        }
+        stream << ')';
+
+        return stream;
+    }
+
+
+    template<typename... Ts>
+    std::ostream& operator<<(std::ostream& stream, std::tuple<Ts...> const& tuple)
+    {
+        stream << '(';
+        std::apply(
+
+            [&stream](auto&&... ts) { ((stream << ts << ", "), ...); },
+
+            tuple);
+        stream << ')';
+
+        return stream;
+    }
+
+
+    template<typename T>
+    ostream& operator<<(ostream& stream, std::vector<T> const& vector)
+    {
+        stream << '[';
+
+        {
+            auto joiner = lue_make_ostream_joiner(stream, ", ");
+
+            auto const nr_elements = vector.size();
+            auto const begin = vector.begin();
+            auto const end = vector.end();
+
+            // Max number of values to print at start and end
+            std::size_t const halo = 15;
+
+            if (nr_elements <= 2 * halo)
+            {
+                // Print all values
+                std::copy(begin, end, joiner);
+            }
+            else
+            {
+                // Print first and last halo number of values
+                std::copy(begin, begin + halo, joiner);
+                stream << ", ..., ";
+                std::copy(end - halo, end, joiner);
+            }
+        }
+
+        stream << "]";
+
+        return stream;
+    }
+
+
+    template<typename Key, typename Value>
+    ostream& operator<<(ostream& stream, std::map<Key, Value> const& map_)
+    {
+        stream << '{';
+
+        {
+            for (auto const& pair : map_)
+            {
+                stream << '<' << pair.first << ": " << pair.second << ">, ";
+            }
+        }
+
+        stream << "}";
 
         return stream;
     }

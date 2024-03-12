@@ -18,7 +18,7 @@ namespace lue::framework {
     }  // Anonymous namespace
 
 
-    void bind_wait(pybind11::module& module)
+    void bind_wait_partitioned_array(pybind11::module& module)
     {
         module.def("wait", wait<std::uint8_t, 2>);
         module.def("wait", wait<std::uint32_t, 2>);

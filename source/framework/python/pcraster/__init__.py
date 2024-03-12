@@ -63,9 +63,9 @@ def setclone(*args):
 
 def numpy_scalar_type(expression):
     element_type_by_type = {
-        lfr.PartitionedArray_uint8_2: np.uint8,
-        lfr.PartitionedArray_int32_2: np.int32,
-        lfr.PartitionedArray_float32_2: np.float32,
+        getattr(lfr, "PartitionedArray<uint8, 2>"): np.uint8,
+        getattr(lfr, "PartitionedArray<int32, 2>"): np.int32,
+        getattr(lfr, "PartitionedArray<float32, 2>"): np.float32,
         int: np.int32,
         float: np.float32,
         np.uint8: np.uint8,
@@ -81,35 +81,35 @@ def is_spatial(argument):
     return isinstance(
         argument,
         (
-            lfr.PartitionedArray_uint8_2,  # Boolean, LDD
-            lfr.PartitionedArray_int32_2,  # Nominal, ordinal
-            lfr.PartitionedArray_float32_2,  # Scalar, directional
+            getattr(lfr, "PartitionedArray<uint8, 2>"),  # Boolean, LDD
+            getattr(lfr, "PartitionedArray<int32, 2>"),  # Nominal, ordinal
+            getattr(lfr, "PartitionedArray<float32, 2>"),  # Scalar, directional
         ),
     )
 
 
 def is_boolean(expression):
-    return isinstance(expression, (lfr.PartitionedArray_uint8_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<uint8, 2>")))
 
 
 def is_ldd(expression):
-    return isinstance(expression, (lfr.PartitionedArray_uint8_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<uint8, 2>")))
 
 
 def is_nominal(expression):
-    return isinstance(expression, (lfr.PartitionedArray_int32_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<int32, 2>")))
 
 
 def is_ordinal(expression):
-    return isinstance(expression, (lfr.PartitionedArray_int32_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<int32, 2>")))
 
 
 def is_scalar(expression):
-    return isinstance(expression, (lfr.PartitionedArray_float32_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<float32, 2>")))
 
 
 def is_directional(expression):
-    return isinstance(expression, (lfr.PartitionedArray_float32_2))
+    return isinstance(expression, (getattr(lfr, "PartitionedArray<float32, 2>")))
 
 
 def is_non_spatial(argument):

@@ -5,7 +5,6 @@ add_test_conditionally(test)
 
 # framework/*
 foreach(module_name __init__.py support.py)
-    message(DEBUG ${module_name})
     file(GENERATE
         OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/framework/${module_name}
         INPUT framework/${module_name}
@@ -102,6 +101,8 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/unique_id.cpp
 
     src/algorithm/routing_operation.cpp
+    src/algorithm/routing_operation/decreasing_order.cpp
+    src/algorithm/routing_operation/first_n.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
 
     src/algorithm/zonal_operation.cpp
@@ -143,6 +144,9 @@ add_library(lue_py_framework SHARED
 
     src/numpy/from_numpy.cpp
     src/numpy/to_numpy.cpp
+
+    src/partitioned_route/serial_route.cpp
+    src/partitioned_route/wait.cpp
 
     src/python_extension.cpp
     src/submodule.cpp

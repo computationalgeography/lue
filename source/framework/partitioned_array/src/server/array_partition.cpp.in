@@ -1,6 +1,12 @@
 #include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
 
 
+LUE_REGISTER_ARRAY_PARTITION_ACTIONS(
+    {{ Element }},
+    {{ rank }},
+    {{ Element }}_{{ rank }})
+
+
 namespace lue::server {
 
     template class ArrayPartition<{{ Element }}, {{ rank }}>;

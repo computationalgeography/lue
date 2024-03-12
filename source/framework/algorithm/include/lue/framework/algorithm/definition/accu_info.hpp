@@ -1011,6 +1011,20 @@ namespace lue {
     }  // namespace detail::accu_info
 
 
+    namespace detail {
+
+        template<typename CellClassArray>
+        class ArrayTraits<accu_info::OutputMaterial<CellClassArray>>
+        {
+
+            public:
+
+                using Element = typename accu_info::OutputMaterial<CellClassArray>::Element;
+        };
+
+    }  // namespace detail
+
+
     /*!
         @brief      Determine information about the flow accumulation
                     algorithm

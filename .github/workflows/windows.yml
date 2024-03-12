@@ -22,11 +22,10 @@ jobs:
             matrix:
                 os: ["windows-2022"]
                 compiler:
-                    - { name: "visual studio", c: cl, cxx: cl }
+                  - { name: "visual studio", c: cl, cxx: cl }
                 vs:
-                  # - { name: "Visual Studio 16 2019", version: "16"}  # , toolset: "v142" }
-                  - { name: "Visual Studio 17 2022", version: "17"}  # , toolset: "v143" }
-                # toolset: ["14.2", "14.3"]
+                  # HPX can't be built with toolset 14.39 yet
+                  - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14.38" }
                 python_version: ["3.9"]
                 architecture: ["amd64"]
             fail-fast: false
@@ -98,19 +97,20 @@ jobs:
         - uses: ilammy/msvc-dev-cmd@v1
           with:
               arch: ${{ matrix.architecture }}
-              # toolset: ${{ matrix.toolset }}
-              vsversion: ${{ matrix.vs.version }}
+              toolset: ${{ matrix.vs.msvc_toolset }}
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            cmake_flags: "-D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            # Boost root is here: $CONDA_PREFIX/Library, but this results in a backslashes in a Windows path in the HPXConfig.cmake
+            # That is a bug in the HPX CMake scripts. Forward slashes should be used, e.g.: file(TO_CMAKE_PATH BOOST_ROOT HPX_BOOST_ROOT).
+            cmake_flags: "-D BOOST_ROOT=C:/Miniconda/envs/test/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_version: ${{ env.hpx_version }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
@@ -160,6 +160,7 @@ jobs:
                       -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                      -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}

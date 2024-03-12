@@ -1,18 +1,7 @@
 #pragma once
 #include "lue/framework/partitioned_array.hpp"
+#include "lue/stream.hpp"
 #include <boost/range/irange.hpp>
-// TODO Refactor with similar blocks in other stream.hpp headers.
-#include <boost/predef.h>
-#if BOOST_COMP_MSVC
-#include <boost/io/ostream_joiner.hpp>
-#define lue_make_ostream_joiner boost::io::make_ostream_joiner
-#else
-#include <experimental/iterator>
-#define lue_make_ostream_joiner std::experimental::make_ostream_joiner
-#endif
-#include <array>
-#include <map>
-#include <ostream>
 
 
 // namespace boost {
@@ -54,88 +43,6 @@
 
 
 namespace std {
-
-    template<typename... Ts>
-    std::ostream& operator<<(std::ostream& stream, std::tuple<Ts...> const& tuple)
-    {
-        stream << '(';
-        std::apply(
-
-            [&stream](auto&&... ts) { ((stream << ts << ", "), ...); },
-
-            tuple);
-        stream << ')';
-
-        return stream;
-    }
-
-
-    template<typename T>
-    ostream& operator<<(ostream& stream, std::vector<T> const& vector)
-    {
-        stream << '[';
-
-        {
-            auto joiner = lue_make_ostream_joiner(stream, ", ");
-
-            auto const nr_elements = vector.size();
-            auto const begin = vector.begin();
-            auto const end = vector.end();
-
-            // Max number of values to print at start and end
-            std::size_t const halo = 15;
-
-            if (nr_elements <= 2 * halo)
-            {
-                // Print all values
-                std::copy(begin, end, joiner);
-            }
-            else
-            {
-                // Print first and last halo number of values
-                std::copy(begin, begin + halo, joiner);
-                stream << ", ..., ";
-                std::copy(end - halo, end, joiner);
-            }
-        }
-
-        stream << "]";
-
-        return stream;
-    }
-
-
-    template<typename Key, typename Value>
-    ostream& operator<<(ostream& stream, std::map<Key, Value> const& map_)
-    {
-        stream << '{';
-
-        {
-            for (auto const& pair : map_)
-            {
-                stream << '<' << pair.first << ": " << pair.second << ">, ";
-            }
-        }
-
-        stream << "}";
-
-        return stream;
-    }
-
-
-    template<typename T, std::size_t count>
-    std::ostream& operator<<(std::ostream& stream, std::array<T, count> const& array)
-    {
-        stream << '[';
-        std::copy(std::begin(array), std::end(array), lue_make_ostream_joiner(stream, ", "));
-
-        // Prints a separator after the last element...
-        // std::ostream_iterator<Index>(stream, ", "));
-        stream << ']';
-
-        return stream;
-    }
-
 
     template<typename Element, lue::Rank rank>
     std::ostream& stream_span(std::ostream& stream, lue::DynamicSpan<Element, rank> const& span)

@@ -1,4 +1,3 @@
-#include "lue/py/configure.hpp"
 #include "lue/py/framework/algorithm/abs.hpp"
 #include "lue/py/framework/algorithm/add.hpp"
 #include "lue/py/framework/algorithm/divide.hpp"
@@ -16,7 +15,7 @@
 #include "lue/py/framework/algorithm/pow.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
-#include <pybind11/stl.h>
+#include <pybind11/pybind11.h>
 
 
 namespace lue::framework {
@@ -51,7 +50,7 @@ namespace lue::framework {
         auto class_ =
             pybind11::class_<Array>(
                 module,
-                fmt::format("PartitionedArray_{}_{}", as_string<Element>(), rank).c_str(),
+                fmt::format("PartitionedArray<{}, {}>", as_string<Element>(), rank).c_str(),
                 fmt::format(
                     R"(
     Partitioned array type for arrays of rank {}, containing array

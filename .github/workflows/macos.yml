@@ -23,7 +23,7 @@ jobs:
                 os: ["macos-13"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
-                python_version: ["3.11"]
+                python_version: ["3.12"]
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -60,9 +60,12 @@ jobs:
 
         - name: setup platform
           run: |
-              brew install --verbose \
+              # GDAL is built against a specific version of Python. Here, we explicitly
+              # install this specific version of Python. If the GDAL Python version is bumped,
+              # brew will run into problems, which we can then fix by bumping our version Python.
+              brew install \
                   boost \
-                  doxygen \
+                  conan \
                   fmt \
                   gdal \
                   glfw \
@@ -74,9 +77,13 @@ jobs:
                   nlohmann-json \
                   numpy \
                   pybind11 \
+                  python@${{ matrix.python_version }} \
+                  python-matplotlib \
                   tree \
                   vulkan-loader
-              pip3 install conan docopt jinja2 matplotlib ruamel.yaml
+              $(brew --prefix python)/bin/python3 -m venv --system-site-packages --upgrade-deps env
+              source env/bin/activate
+              pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
         - name: "install hpx"
@@ -86,6 +93,7 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
+            cmake_flags: "-D CMAKE_OSX_DEPLOYMENT_TARGET=13.0"
             cmake_preset: hpx_release_macos_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}
@@ -105,6 +113,7 @@ jobs:
 
         - name: configure
           run: |
+              source env/bin/activate
               mkdir ${{ env.lue_build_directory }}
 
               python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
@@ -126,6 +135,7 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
+                      -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
                       -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
@@ -134,10 +144,11 @@ jobs:
                       -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                      -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
-                      -D Python3_EXECUTABLE="/usr/local/bin/python3"
+                      -D Python3_FIND_VIRTUALENV=ONLY
 
         - name: build
           run: |
@@ -158,6 +169,8 @@ jobs:
 
         - name: test
           run: |
+              source env/bin/activate
+
               # Unit tests
               ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
 

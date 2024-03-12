@@ -775,6 +775,7 @@ namespace lue {
                         lue_hpx_assert(all_are_ready(results));
 
                         // All output idxs must have been solved by now
+                        // TODO Unit test failed this test here once
                         lue_hpx_assert(std::all_of(
                             output_cells_idxs.begin(),
                             output_cells_idxs.end(),

@@ -1,0 +1,14 @@
+#include "lue/framework/partitioned_route/server/serial_route_partition_impl.hpp"
+
+
+LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(
+    {{ RouteID }},
+    {{ rank }},
+    {{ RouteID }}_{{ rank }})
+
+
+namespace lue::server {
+
+    template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
+
+}  // namespace lue::server

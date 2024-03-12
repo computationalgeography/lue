@@ -34,7 +34,7 @@ namespace lue {
 
             public:
 
-                using Element = typename Array::Element;
+                static constexpr bool is_partitioned_array{false};
         };
 
 
@@ -137,6 +137,10 @@ namespace lue {
         detail::remove_cvref_t<Array>>::template Partition<detail::remove_cvref_t<Element>, rank>;
 
 
+    template<typename Array, Rank rank = rank<Array>>
+    using PartitionT2 = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template Partition<rank>;
+
+
     /*!
         @brief      Alias template of type aliases for partition collection
                     types, instantiated for a given element type and rank
@@ -150,6 +154,11 @@ namespace lue {
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using PartitionsT = typename detail::ArrayTraits<
         detail::remove_cvref_t<Array>>::template Partitions<detail::remove_cvref_t<Element>, rank>;
+
+
+    template<typename Array, Rank rank = rank<Array>>
+    using PartitionsT2 =
+        typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template Partitions<rank>;
 
 
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
@@ -175,6 +184,10 @@ namespace lue {
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using PartitionedArrayT = typename detail::ArrayTraits<
         detail::remove_cvref_t<Array>>::template PartitionedArray<detail::remove_cvref_t<Element>, rank>;
+
+
+    template<typename Array>
+    inline constexpr bool is_partitioned_array_v = detail::ArrayTraits<Array>::is_partitioned_array;
 
 
     template<typename Array>

@@ -14,7 +14,7 @@ namespace lue::framework {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint8_t, 2>"};
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint8_t, 2>>"};
     };
 
 
@@ -24,7 +24,17 @@ namespace lue::framework {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint32_t, 2>"};
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint32_t, 2>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::uint64_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint64_t, 2>>"};
     };
 
 
@@ -34,7 +44,7 @@ namespace lue::framework {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int32_t, 2>"};
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int32_t, 2>>"};
     };
 
 
@@ -44,7 +54,17 @@ namespace lue::framework {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int64_t, 2>"};
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int64_t, 2>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<float, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<float, 2>>"};
     };
 
 
@@ -54,7 +74,107 @@ namespace lue::framework {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<double, 2>"};
+            inline static std::string const name{"std::vector<lue::PartitionedArray<double, 2>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint8_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint8_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint32_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint32_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint64_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint64_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int32_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int32_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int64_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int64_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint8_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint8_t, std::vector<double>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint32_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint32_t, std::vector<double>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::uint64_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint64_t, std::vector<double>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int32_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int32_t, std::vector<double>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int64_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int64_t, std::vector<double>>"};
     };
 
 
@@ -116,6 +236,24 @@ namespace lue::framework {
                 ;
         }
 
+
+        template<typename T>
+        auto make_ready_future(T const& value) -> hpx::shared_future<T>
+        {
+            return hpx::make_ready_future<T>(value).share();
+        }
+
+
+        template<typename T>
+        void bind_make_ready_future(pybind11::module& module)
+        {
+            module.def(
+                "make_ready_future",
+                make_ready_future<T>,
+                pybind11::arg("value"),
+                pybind11::return_value_policy::move);
+        }
+
     }  // Anonymous namespace
 
 
@@ -138,12 +276,26 @@ namespace lue::framework {
         bind_shared_future<std::int64_t>(module);
         bind_shared_future<float>(module);
         bind_shared_future<double>(module);
+
         bind_shared_future<std::vector<PartitionedArray<std::uint8_t, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<std::uint32_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<std::uint64_t, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<std::int32_t, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<std::int64_t, 2>>>(module);
+        bind_shared_future<std::vector<PartitionedArray<float, 2>>>(module);
         bind_shared_future<std::vector<PartitionedArray<double, 2>>>(module);
 
+        bind_shared_future<std::map<std::uint8_t, std::vector<float>>>(module);
+        bind_shared_future<std::map<std::uint32_t, std::vector<float>>>(module);
+        bind_shared_future<std::map<std::uint64_t, std::vector<float>>>(module);
+        bind_shared_future<std::map<std::int32_t, std::vector<float>>>(module);
+        bind_shared_future<std::map<std::int64_t, std::vector<float>>>(module);
+
+        bind_shared_future<std::map<std::uint8_t, std::vector<double>>>(module);
+        bind_shared_future<std::map<std::uint32_t, std::vector<double>>>(module);
+        bind_shared_future<std::map<std::uint64_t, std::vector<double>>>(module);
+        bind_shared_future<std::map<std::int32_t, std::vector<double>>>(module);
+        bind_shared_future<std::map<std::int64_t, std::vector<double>>>(module);
 
         pybind11::class_<hpx::shared_future<void>>(
             module, fmt::format("shared_future<{}>", as_string<void>()).c_str())
@@ -177,6 +329,18 @@ namespace lue::framework {
         pybind11::implicitly_convertible<hpx::shared_future<int64_t>, hpx::shared_future<void>>();
         pybind11::implicitly_convertible<hpx::shared_future<float>, hpx::shared_future<void>>();
         pybind11::implicitly_convertible<hpx::shared_future<double>, hpx::shared_future<void>>();
+
+        // bind_make_ready_future<std::map<std::uint8_t, std::vector<float>>>(module);
+        // bind_make_ready_future<std::map<std::uint32_t, std::vector<float>>>(module);
+        // bind_make_ready_future<std::map<std::uint64_t, std::vector<float>>>(module);
+        bind_make_ready_future<std::map<std::int32_t, std::vector<float>>>(module);
+        // bind_make_ready_future<std::map<std::int64_t, std::vector<float>>>(module);
+
+        // bind_make_ready_future<std::map<std::uint8_t, std::vector<double>>>(module);
+        // bind_make_ready_future<std::map<std::uint32_t, std::vector<double>>>(module);
+        // bind_make_ready_future<std::map<std::uint64_t, std::vector<double>>>(module);
+        // bind_make_ready_future<std::map<std::int32_t, std::vector<double>>>(module);
+        // bind_make_ready_future<std::map<std::int64_t, std::vector<double>>>(module);
     }
 
 }  // namespace lue::framework

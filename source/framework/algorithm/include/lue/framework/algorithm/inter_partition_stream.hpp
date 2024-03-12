@@ -296,6 +296,18 @@ namespace lue {
         }  // namespace inter_partition_stream
 
 
+        template<typename CellsIdxsArray, typename StreamClassArray, typename CountArray>
+        class ArrayTraits<
+            inter_partition_stream::OutputMaterial<CellsIdxsArray, StreamClassArray, CountArray>>
+        {
+
+            public:
+
+                using Element = typename inter_partition_stream::
+                    OutputMaterial<CellsIdxsArray, StreamClassArray, CountArray>::Element;
+        };
+
+
         template<
             typename Policies,
             typename StreamClassPartition,
