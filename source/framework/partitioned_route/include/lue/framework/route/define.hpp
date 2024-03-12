@@ -5,6 +5,6 @@
 namespace lue {
 
     //! Default type for representing route IDs
-    using RouteID = Index;
+    using RouteID = std::int64_t;
 
 }  // namespace lue
