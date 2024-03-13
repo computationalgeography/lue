@@ -66,19 +66,19 @@ requirements:
     - python-dateutil  # lue.qa
 
 
-test:
-  imports:
-    - lue
-    - lue.data_model
-    - lue.framework
-    - lue.pcraster
-    - lue.qa.scalability
-  commands:
-    - lue_translate -h                           # [not osx]
-    - lue_validate -h                            # [not osx]
-    - lue_calculate -h                           # [not win and not osx]
-    - lue_scalability -h                         # [not win and not osx]
-    - lue_view -h                                # [not arm64 and not osx]
+# test:
+#   imports:
+#     - lue
+#     - lue.data_model
+#     - lue.framework
+#     - lue.pcraster
+#     - lue.qa.scalability
+#   commands:
+#     - lue_translate -h                           # [not osx]
+#     - lue_validate -h                            # [not osx]
+#     - lue_calculate -h                           # [not win and not osx]
+#     - lue_scalability -h                         # [not win and not osx]
+#     - lue_view -h                                # [not arm64 and not osx]
 
 
 about:

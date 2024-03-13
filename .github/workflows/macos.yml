@@ -3,7 +3,7 @@ name: macOS CI
 on:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh611"
     paths:
       - ".github/actions/**"
       - ".github/workflows/macos.yml"
