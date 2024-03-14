@@ -22,15 +22,14 @@ jobs:
         strategy:
             matrix:
                 macos_version: ["13", "14"]
-                os: ["macos-${{ macos_version }}"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
                 python_version: ["3.12"]
             fail-fast: false
 
-        runs-on: ${{ matrix.os }}
+        runs-on: macos-${{ matrix.macos_version }}
 
-        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
+        name: macos-${{ matrix.macos_version }} / ${{ matrix.compiler.cxx }}
 
         timeout-minutes: 180
 
@@ -91,7 +90,7 @@ jobs:
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
