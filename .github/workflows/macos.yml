@@ -22,7 +22,7 @@ jobs:
         strategy:
             matrix:
                 macos_version: ["13", "14"]
-                os: ["macos-${{ matrix.macos_version }}"]
+                os: ["macos-${{ macos_version }}"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
                 python_version: ["3.12"]
