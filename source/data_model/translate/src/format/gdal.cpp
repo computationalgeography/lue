@@ -262,8 +262,10 @@ namespace lue::utility {
     template<typename T>
     void lue_to_gdal(data_model::Array const& array, gdal::Raster::Band& raster_band)
     {
-        // TODO If a no-data value is set in the array, set it in the raster band
-
+        if (array.has_no_data_value())
+        {
+            raster_band.set_no_data_value(array.no_data_value<T>());
+        }
 
         // It is assumed here that array only contains a 2D array
         auto const blocks = utility::blocks(raster_band.shape(), raster_band.block_shape());
@@ -375,8 +377,6 @@ namespace lue::utility {
 
             RasterView raster_view{&dataset, phenomenon_name, property_set_name};
 
-            gdal::Count band_nr{1};
-
             auto it = bands_json.begin();
             auto const property_name = json::string(*it, "name");
 
@@ -428,24 +428,28 @@ namespace lue::utility {
 
             raster.set_geo_transform(geo_transform);
 
+            gdal::Count band_nr{1};
             gdal::Raster::Band raster_band{raster.band(band_nr)};
             lue_to_gdal(layer, raster_band);
 
-            for (; it != bands_json.end(); ++it, ++band_nr)
-            {
-                auto const property_name = json::string(*it, "name");
 
-                if (!raster_view.contains(property_name))
-                {
-                    throw std::runtime_error(fmt::format(
-                        "Constant raster layer named {} is not part of property_set {}",
-                        property_name,
-                        property_set_name));
-                }
+            // TODO
+            // for (; it != bands_json.end(); ++it, ++band_nr)
+            // {
+            //     auto const property_name = json::string(*it, "name");
 
-                gdal::Raster::Band raster_band{raster.band(band_nr)};
-                lue_to_gdal(layer, raster_band);
-            }
+            //     if (!raster_view.contains(property_name))
+            //     {
+            //         throw std::runtime_error(fmt::format(
+            //             "Constant raster layer named {} is not part of property_set {}",
+            //             property_name,
+            //             property_set_name));
+            //     }
+
+            //     gdal::Raster::Band raster_band{raster.band(band_nr)};
+
+            //     lue_to_gdal(layer, raster_band);
+            // }
         }
         // If the variable raster view finds a raster layer with the property
         // name requested, export it to a stack of GDAL rasters
@@ -811,8 +815,17 @@ namespace lue::utility {
         @exception  .
     */
     template<typename RasterView, typename T>
-    void gdal_to_lue(gdal::Raster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
+    void gdal_to_lue(
+        gdal::Raster::Band& gdal_raster_band, RasterView& lue_raster_view, std::string const& layer_name)
     {
+        typename RasterView::Layer lue_raster_layer = [&]()
+        {
+            auto const [no_data_value, has_no_data_value] = gdal_raster_band.no_data_value<T>();
+
+            return has_no_data_value ? lue_raster_view.template add_layer<T>(layer_name, no_data_value)
+                                     : lue_raster_view.template add_layer<T>(layer_name);
+        }();
+
         auto const blocks = utility::blocks(gdal_raster_band.shape(), gdal_raster_band.block_shape());
         auto const& block_shape = blocks.block_shape();
         std::vector<T> values(gdal::nr_elements(block_shape));
@@ -845,7 +858,8 @@ namespace lue::utility {
 
 
     template<typename RasterView>
-    void gdal_to_lue(gdal::Raster::Band& gdal_raster_band, typename RasterView::Layer& lue_raster_layer)
+    void gdal_to_lue(
+        gdal::Raster::Band& gdal_raster_band, RasterView& lue_raster_view, std::string const& layer_name)
     {
         GDALDataType const data_type{gdal_raster_band.data_type()};
 
@@ -853,49 +867,49 @@ namespace lue::utility {
         {
             case GDT_Byte:
             {
-                gdal_to_lue<RasterView, uint8_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, uint8_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_UInt16:
             {
-                gdal_to_lue<RasterView, uint16_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, uint16_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_Int16:
             {
-                gdal_to_lue<RasterView, int16_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, int16_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_UInt32:
             {
-                gdal_to_lue<RasterView, uint32_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, uint32_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_Int32:
             {
-                gdal_to_lue<RasterView, int32_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, int32_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
 #if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             case GDT_UInt64:
             {
-                gdal_to_lue<RasterView, uint64_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, uint64_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_Int64:
             {
-                gdal_to_lue<RasterView, int64_t>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, int64_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
 #endif
             case GDT_Float32:
             {
-                gdal_to_lue<RasterView, float>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, float>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             case GDT_Float64:
             {
-                gdal_to_lue<RasterView, double>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView, double>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
             default:
@@ -996,7 +1010,6 @@ namespace lue::utility {
                     : ldm::constant::open_raster_view(&dataset, phenomenon_name, property_set_name)};
 
             // Add raster layers from input raster(s)
-            using RasterLayer = RasterView::Layer;
 
             auto const bands_json = json::object(raster_json, "bands");
 
@@ -1007,10 +1020,7 @@ namespace lue::utility {
 
                 gdal::Raster::Band gdal_raster_band{gdal_raster.band(band_nr)};
 
-                RasterLayer lue_raster_layer{raster_view.add_layer(
-                    band_name, gdal_data_type_to_memory_data_type(gdal_raster_band.data_type()))};
-
-                gdal_to_lue<RasterView>(gdal_raster_band, lue_raster_layer);
+                gdal_to_lue<RasterView>(gdal_raster_band, raster_view, band_name);
             }
         }
     }

@@ -9,7 +9,7 @@ namespace lue::hdf5 {
 
     File::AccessPropertyList::AccessPropertyList():
 
-        PropertyList{H5P_FILE_ACCESS}
+        PropertyList{Identifier{H5Pcreate(H5P_FILE_ACCESS), H5Pclose}}
 
     {
     }

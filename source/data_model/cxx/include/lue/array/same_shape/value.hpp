@@ -68,26 +68,32 @@ namespace lue {
 
 
             Value create_value(
-                hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype);
+                hdf5::Group& parent,
+                std::string const& name,
+                hdf5::Datatype const& memory_datatype,
+                void const* no_data_value = nullptr);
 
             Value create_value(
                 hdf5::Group& parent,
                 std::string const& name,
                 hdf5::Datatype const& memory_datatype,
-                hdf5::Shape const& array_shape);
-
-            Value create_value(
-                hdf5::Group& parent,
-                std::string const& name,
-                hdf5::Datatype const& file_datatype,
-                hdf5::Datatype const& memory_datatype);
+                hdf5::Shape const& array_shape,
+                void const* no_data_value = nullptr);
 
             Value create_value(
                 hdf5::Group& parent,
                 std::string const& name,
                 hdf5::Datatype const& file_datatype,
                 hdf5::Datatype const& memory_datatype,
-                hdf5::Shape const& array_shape);
+                void const* no_data_value = nullptr);
+
+            Value create_value(
+                hdf5::Group& parent,
+                std::string const& name,
+                hdf5::Datatype const& file_datatype,
+                hdf5::Datatype const& memory_datatype,
+                hdf5::Shape const& array_shape,
+                void const* no_data_value = nullptr);
 
         }  // namespace same_shape
     }      // namespace data_model

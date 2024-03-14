@@ -137,5 +137,11 @@ namespace lue {
                 _memory_datatype, memory_dataspace, hyperslab, transfer_property_list, buffer);
         }
 
+
+        auto Array::has_no_data_value() const -> bool
+        {
+            return creation_property_list().fill_value_defined();
+        }
+
     }  // namespace data_model
 }  // namespace lue

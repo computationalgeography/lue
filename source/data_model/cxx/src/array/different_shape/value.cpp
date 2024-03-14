@@ -96,9 +96,9 @@ namespace lue {
                 @param      id The object ID
                 @param      shape The shape of the object array
             */
-            void Value::expand(ID const id, hdf5::Shape const& shape)
+            void Value::expand(ID const id, hdf5::Shape const& shape, void const* no_data_value)
             {
-                expand_core(id, shape);
+                expand_core(id, shape, no_data_value);
 
                 _nr_objects += 1;
 
@@ -111,7 +111,7 @@ namespace lue {
                 @param      id The object ID
                 @param      shape The shape of the object array
             */
-            void Value::expand_core(ID const id, hdf5::Shape const& array_shape)
+            void Value::expand_core(ID const id, hdf5::Shape const& array_shape, void const* no_data_value)
             {
                 assert(!contains(id));
 
@@ -124,6 +124,11 @@ namespace lue {
                 // auto chunk_dimension_sizes =
                 //     hdf5::chunk_shape(array_shape, file_datatype.size());
                 // creation_property_list.set_chunk(chunk_dimension_sizes);
+
+                if (no_data_value)
+                {
+                    creation_property_list.set_fill_value(memory_datatype(), no_data_value);
+                }
 
                 /* auto dataset = */ hdf5::create_dataset(
                     this->id(), name, file_datatype(), dataspace, creation_property_list);
