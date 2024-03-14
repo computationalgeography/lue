@@ -24,6 +24,9 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                - os: "macos-14"
+                  target-platform: arm-64
+                  conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
                 - os: "macos-13"
                   target-platform: osx-64
                   conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/osx-64/"
