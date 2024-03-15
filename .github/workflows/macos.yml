@@ -82,9 +82,9 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-              $(brew --prefix python)/bin/python3 -m venv --system-site-packages --upgrade-deps env
+              $(brew --prefix python)/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
-              pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
+              pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
         - name: "install hpx"
@@ -132,6 +132,7 @@ jobs:
                     --output-folder=${{ env.lue_build_directory }}
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+              CONDA_BUILD=1 \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
