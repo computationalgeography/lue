@@ -72,7 +72,7 @@ jobs:
                   glfw \
                   graphviz \
                   gperftools \
-                  hdf5 \
+                  hdf5@1.10 \
                   hwloc \
                   ninja \
                   nlohmann-json \
@@ -132,7 +132,6 @@ jobs:
                     --output-folder=${{ env.lue_build_directory }}
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-              CONDA_BUILD=1 \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
