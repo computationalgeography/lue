@@ -82,7 +82,7 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-              $(brew --prefix python)/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
+              $(brew --prefix python@${{ matrix.python_version }})/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
               pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
