@@ -66,9 +66,9 @@ requirements:
     - python-dateutil  # lue.qa
 
 
-# test:
-#   imports:
-#     - lue
+test:
+  imports:
+    - lue
 #     - lue.data_model
 #     - lue.framework
 #     - lue.pcraster
