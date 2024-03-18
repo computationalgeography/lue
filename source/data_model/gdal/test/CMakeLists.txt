@@ -14,9 +14,6 @@ foreach(name ${names})
 
     set(test_name ${scope}_${name})
 
-    # set(module_name ${name}_test)
-    # set(test_name ${scope}_${module_name})
-
     add_executable(${test_name} ${name}.cpp)
 
     target_link_libraries(${test_name}

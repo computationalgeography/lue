@@ -11,11 +11,15 @@ namespace lue::gdal {
 
             QuietErrorHandler();
 
-            QuietErrorHandler(QuietErrorHandler const& other) = delete;
+            QuietErrorHandler(QuietErrorHandler const&) = delete;
+
+            QuietErrorHandler(QuietErrorHandler&&) = delete;
 
             ~QuietErrorHandler();
 
-            auto operator=(QuietErrorHandler const& other) -> QuietErrorHandler = delete;
+            auto operator=(QuietErrorHandler const&) -> QuietErrorHandler = delete;
+
+            auto operator=(QuietErrorHandler&&) -> QuietErrorHandler = delete;
     };
 
 }  // namespace lue::gdal
