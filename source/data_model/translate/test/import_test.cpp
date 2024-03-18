@@ -480,6 +480,5 @@ BOOST_AUTO_TEST_CASE(raster_round_trip_02)
     // Import a temporal stack of rasters into a LUE dataset.
     // Export the stack again and verify the stack contain the same information as the imported one.
 
-
     // TODO
 }

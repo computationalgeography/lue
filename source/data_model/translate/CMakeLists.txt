@@ -10,11 +10,8 @@ add_library(lue_translate_lib STATIC
     src/format/dot.cpp
     src/format/gdal.cpp
     src/format/gdal_vector.cpp
-    # src/format/geo_eas.cpp
     src/format/json.cpp
     src/format/lue.cpp
-    src/format/raster_discretization.cpp
-    src/format/raster_domain.cpp
 )
 
 add_library(lue::translate ALIAS lue_translate_lib)
