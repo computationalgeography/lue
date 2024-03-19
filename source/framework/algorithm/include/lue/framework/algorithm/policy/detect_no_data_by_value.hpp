@@ -19,11 +19,11 @@ namespace lue::policy {
                 {
                     static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
-                    if constexpr (std::is_signed_v<Element>)
+                    if constexpr (std::is_integral_v<Element> && std::is_signed_v<Element>)
                     {
                         return std::numeric_limits<Element>::min();
                     }
-                    else if constexpr (std::is_unsigned_v<Element>)
+                    else if constexpr (std::is_integral_v<Element> && std::is_unsigned_v<Element>)
                     {
                         return std::numeric_limits<Element>::max();
                     }
