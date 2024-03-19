@@ -132,6 +132,9 @@ jobs:
                     --output-folder=${{ env.lue_build_directory }}
 
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+              PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
+              LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
+              CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
