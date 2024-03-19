@@ -25,9 +25,57 @@ namespace lue {
 
                         CreationPropertyList();
 
+                        CreationPropertyList(Identifier&& property_list_id);
+
                         void set_chunk(Shape const& chunk);
 
                         void set_fill_time(H5D_fill_time_t fill_time);
+
+                        void set_fill_value(Datatype const& datatype, void const* value);
+
+                        template<typename Element>
+                        void set_fill_value(Element const value)
+                        {
+                            auto const datatype = []()
+                            {
+                                if constexpr (std::is_same_v<Element, bool>)
+                                {
+                                    return hdf5::native_datatype<std::uint8_t>();
+                                }
+                                else
+                                {
+                                    return hdf5::native_datatype<Element>();
+                                }
+                            }();
+
+                            set_fill_value(datatype, &value);
+                        }
+
+                        void get_fill_value(Datatype const& datatype, void* value) const;
+
+                        template<typename Element>
+                        auto get_fill_value() const -> Element
+                        {
+                            auto const datatype = []()
+                            {
+                                if constexpr (std::is_same_v<Element, bool>)
+                                {
+                                    return hdf5::native_datatype<std::uint8_t>();
+                                }
+                                else
+                                {
+                                    return hdf5::native_datatype<Element>();
+                                }
+                            }();
+
+                            Element fill_value;
+
+                            get_fill_value(datatype, &fill_value);
+
+                            return fill_value;
+                        }
+
+                        auto fill_value_defined() const -> bool;
                 };
 
 
@@ -130,6 +178,8 @@ namespace lue {
                     void const* buffer) const;
 
                 void fill(Datatype const& datatype, Hyperslab const& hyperslab, void const* buffer) const;
+
+                auto creation_property_list() const -> CreationPropertyList;
 
             private:
         };

@@ -72,6 +72,23 @@ namespace lue {
                     TransferPropertyList const& transfer_property_list,
                     void const* buffer);
 
+
+                template<typename Element>
+                void set_no_data_value(Element const no_data_value)
+                {
+                    creation_property_list().set_fill_value<Element>(no_data_value);
+                }
+
+
+                template<typename Element>
+                auto no_data_value() const -> Element
+                {
+                    return creation_property_list().get_fill_value<Element>();
+                }
+
+
+                auto has_no_data_value() const -> bool;
+
             protected:
 
             private:

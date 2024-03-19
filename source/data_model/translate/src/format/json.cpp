@@ -1,6 +1,6 @@
 #include "lue/translate/format/json.hpp"
 #include "lue/navigate.hpp"
-#include "lue/translate/format/gdal_raster.hpp"
+#include "lue/translate/format/gdal.hpp"
 #include "lue/utility/environment.hpp"
 #include <optional>
 
@@ -33,21 +33,24 @@ namespace lue {
             hdf5::Shape read_gdal_raster(std::string const& pathname, Collection& collection)
             {
                 // Open dataset
-                GDALRaster raster{pathname};
+                gdal::Raster raster{gdal::open_dataset(pathname, GDALAccess::GA_ReadOnly)};
 
                 // Verify dataset is OK for us
                 assert(raster.nr_bands() == 1);
                 auto band = raster.band(1);
 
-                assert(band.datatype() == hdf5::native_datatype<typename Collection::value_type>());
+                assert(
+                    gdal_data_type_to_memory_data_type(band.data_type()) ==
+                    hdf5::native_datatype<typename Collection::value_type>());
 
                 // Read all cells
-                auto const nr_rows = raster.discretization().nr_rows();
-                auto const nr_cols = raster.discretization().nr_cols();
+                auto const [nr_rows, nr_cols] = raster.shape();
                 collection.resize(nr_rows * nr_cols);
                 band.read(collection.data());
 
-                return hdf5::Shape{nr_rows, nr_cols};
+                return {
+                    static_cast<hdf5::Shape::value_type>(nr_rows),
+                    static_cast<hdf5::Shape::value_type>(nr_cols)};
             }
 
 
@@ -123,7 +126,14 @@ namespace lue {
             template<typename Coordinate>
             std::vector<Coordinate> read_space_box(std::string const& dataset_name)
             {
-                auto space_box = GDALRaster{dataset_name}.domain().coordinates();
+                auto raster = gdal::Raster{gdal::open_dataset(dataset_name, GDALAccess::GA_ReadOnly)};
+                auto const [nr_rows, nr_cols] = raster.shape();
+                auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
+                    raster.geo_transform();
+                double const east = west + nr_cols * cell_width;
+                double const south = north - nr_rows * cell_height;
+
+                std::array<double, 4> space_box{west, south, east, north};
 
                 return std::vector<Coordinate>(space_box.begin(), space_box.end());
             }

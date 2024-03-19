@@ -3,6 +3,7 @@
 #include "lue/framework/io/raster.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/gdal.hpp"
 #include <hpx/config.hpp>
 
 
@@ -19,6 +20,8 @@ BOOST_AUTO_TEST_CASE(round_trip_1)
     std::string const name{"lue_framework_io_raster_round_trip_1.tif"};
 
     lue::write<Element>(array_written, name).wait();
+
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
     Array array_read{lue::read<Element>(name, partition_shape)};
 
@@ -40,6 +43,8 @@ BOOST_AUTO_TEST_CASE(round_trip_2)
 
     lue::write<Element>(array_written, name).wait();
 
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+
     Array array_read{lue::read<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
@@ -60,6 +65,8 @@ BOOST_AUTO_TEST_CASE(round_trip_3)
 
     lue::write<Element>(array_written, name).wait();
 
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
+
     Array array_read{lue::read<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
@@ -79,6 +86,8 @@ BOOST_AUTO_TEST_CASE(round_trip_4)
     std::string const name{"lue_framework_io_raster_round_trip_4.tif"};
 
     lue::write<Element>(array_written, name).wait();
+
+    BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
     Array array_read{lue::read<Element>(name, partition_shape)};
 

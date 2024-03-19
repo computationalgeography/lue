@@ -1,6 +1,6 @@
 #pragma once
+#include "lue/gdal.hpp"
 #include "lue/hl/raster_stack.hpp"
-#include "lue/translate/format/gdal_raster.hpp"
 #include "lue/utility/progress_indicator.hpp"
 #include <string>
 
@@ -8,7 +8,7 @@
 namespace lue {
     namespace utility {
 
-        GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name);
+        gdal::DatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name);
 
         class GDALStack
         {

@@ -1,7 +1,6 @@
 add_test_conditionally(test)
 
 add_library(lue_framework_io
-    src/gdal.cpp
     src/raster.cpp
     src/read.cpp
     src/util.cpp
@@ -19,5 +18,5 @@ target_link_libraries(lue_framework_io
     PUBLIC
         lue::framework_algorithm
         lue::data_model_hl
-        GDAL::GDAL
+        lue::gdal
 )

@@ -1,4 +1,5 @@
 #include "lue/translate/format/gdal_vector.hpp"
+#include "lue/gdal.hpp"
 #include "lue/translate/format/gdal.hpp"
 #include <filesystem>
 
@@ -130,7 +131,7 @@ namespace lue {
                 // Write a Shapefile containing space boxes
 
                 // Create Shapefile and write information to it (possibly nothing)
-                auto gdal_dataset = create_gdal_dataset("ESRI Shapefile", shapefile_name);
+                auto gdal_dataset = gdal::create_dataset("ESRI Shapefile", shapefile_name);
 
                 assert(lue_space_box.memory_datatype() == hdf5::native_float64);
 
@@ -174,7 +175,7 @@ namespace lue {
                 }
                 assert(!has_extension(shapefile_name));
 
-                auto gdal_dataset = create_gdal_dataset("ESRI Shapefile", shapefile_name);
+                auto gdal_dataset = gdal::create_dataset("ESRI Shapefile", shapefile_name);
 
 
                 data_model::TimeCell::Count const& lue_count = lue_time_cell.count();

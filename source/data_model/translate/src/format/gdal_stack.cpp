@@ -16,7 +16,7 @@ namespace lue {
 
             namespace underscore {
 
-                GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name)
+                gdal::DatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name)
                 {
                     // What makes a raster a stack:
                     // - dataset_name matches one of the folowing patterns:
@@ -30,7 +30,7 @@ namespace lue {
 
                     auto const dataset_path = std::filesystem::path{dataset_name};
                     auto const directory_path = dataset_path.parent_path();
-                    GDALDatasetPtr result;
+                    gdal::DatasetPtr result;
                     auto stack_rule = utility::stack_rule(dataset_name);
 
                     // This only works with Boost >= 1.62.0
@@ -108,7 +108,7 @@ namespace lue {
                 }
 
 
-                GDALDatasetPtr open_slice_for_read(
+                gdal::DatasetPtr open_slice_for_read(
                     std::string const& dataset_name, GDALStack::SliceIndex const slice_idx)
                 {
                     return open_gdal_raster_dataset_for_read(slice_dataset_name(dataset_name, slice_idx));
@@ -117,12 +117,12 @@ namespace lue {
             }  // namespace underscore
 
 
-            GDALDatasetPtr open_slice_for_read(
+            gdal::DatasetPtr open_slice_for_read(
                 GDALStack::NamingConvention const naming_convention,
                 std::string const& dataset_name,
                 GDALStack::SliceIndex const slice_idx)
             {
-                GDALDatasetPtr result;
+                gdal::DatasetPtr result;
 
                 switch (naming_convention)
                 {
@@ -144,7 +144,7 @@ namespace lue {
             @return     A pointer to a ::GDALDataset instance if the dataset can be
                         opened. Otherwise a pointer containing nullptr.
         */
-        GDALDatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name)
+        gdal::DatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name)
         {
             auto result = underscore::try_open_gdal_raster_stack_dataset_for_read(dataset_name);
 
@@ -365,7 +365,7 @@ namespace lue {
                     write<int32_t>(raster_stack_band, progress_indicator);
                     break;
                 }
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
                 case GDT_UInt64:
                 {
                     write<uint64_t>(raster_stack_band, progress_indicator);
@@ -408,7 +408,7 @@ namespace lue {
 
         {
             // Open the stack and read the domain and discretization information
-            GDALDatasetPtr raster_dataset;
+            gdal::DatasetPtr raster_dataset;
 
             switch (_naming_convention)
             {

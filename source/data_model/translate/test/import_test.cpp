@@ -1,8 +1,10 @@
 #define BOOST_TEST_MODULE lue translate import
 #include "lue/test/print.hpp"
+#include "lue/stream.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
 #include <boost/test/unit_test.hpp>
+#include <numeric>
 
 
 /*
@@ -349,4 +351,134 @@ BOOST_AUTO_TEST_CASE(new_rasters)
         BOOST_CHECK_EQUAL(elements[2], 95);
         BOOST_CHECK_EQUAL(elements[3], 105);
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(raster_round_trip_01)
+{
+    // Import a set of very different rasters into a LUE dataset
+    // Export the same set of rasters again and verify the exported rasters contain the same
+    // information as the imported ones.
+
+    namespace ldm = lue::data_model;
+    namespace lgd = lue::gdal;
+    namespace lu = lue::utility;
+
+    lgd::register_gdal_drivers();
+
+    auto* gdal_driver_ptr = lgd::driver("GTiff");
+
+    // - Integral element type
+    // - Set some value as no-data value
+    lgd::Shape const& raster_shape{6, 4};
+    lue::data_model::Count const nr_bands{1};
+    using Element = std::int32_t;
+    GDALDataType const gdal_data_type{lgd::data_type_v<Element>};
+    Element const no_data_value{5};
+    std::vector<Element> elements(lgd::nr_elements(raster_shape));
+    std::iota(elements.begin(), elements.end(), 1);
+
+    // Center is at (0, 0)
+    lgd::Coordinate const west{-20};
+    lgd::Coordinate const north{30};
+    lgd::Extent const cell_width{10};
+    lgd::Extent const cell_height{10};
+
+    lgd::GeoTransform const geo_transform{west, cell_width, 0, north, 0, -cell_height};
+
+    // Create an input GDAL raster
+    std::string const input_gdal_raster_name{"raster_round_trip_01_in.tif"};
+    {
+        lgd::Raster input_raster{lgd::create_dataset(
+            *gdal_driver_ptr, input_gdal_raster_name, raster_shape, nr_bands, gdal_data_type)};
+        lgd::Raster::Band band{input_raster.band(1)};
+
+        // Set geo-transform
+        input_raster.set_geo_transform(geo_transform);
+
+        // Set no-data value
+        band.set_no_data_value<Element>(no_data_value);
+
+        // Set elements
+        band.write(elements.data());
+    }
+
+    // Import raster into LUE data set
+    std::string const lue_dataset_name{"raster_round_trip_01.lue"};
+    {
+        bool const add{false};
+
+        std::stringstream metadata_stream{};
+        metadata_stream <<
+            R"(
+                {
+                    "datasets": [
+                        {
+                            "name": "raster_round_trip_01_in",
+                            "phenomenon": "world",
+                            "property_set": "field",
+                            "raster": {
+                                "bands": [
+                                    {
+                                        "name": "raster_property"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            )";
+
+        lu::Metadata metadata{metadata_stream};
+
+        if (ldm::dataset_exists(lue_dataset_name))
+        {
+            ldm::remove_dataset(lue_dataset_name);
+        }
+
+        lue::utility::translate_gdal_raster_dataset_to_lue(
+            {input_gdal_raster_name}, lue_dataset_name, add, metadata);
+    }
+
+    // Export GDAL raster again
+    std::string const output_gdal_raster_name{"raster_round_trip_01_out.tif"};
+    {
+        std::stringstream metadata_stream{};
+        metadata_stream <<
+            R"(
+                {
+                    "datasets": [
+                        {
+                            "name": "raster_round_trip_01_out",
+                            "phenomenon": "world",
+                            "property_set": "field",
+                            "raster": {
+                                "bands": [
+                                    {
+                                        "name": "raster_property"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            )";
+
+        lu::Metadata metadata{metadata_stream};
+
+        auto lue_dataset = ldm::open_dataset(lue_dataset_name);
+        lue::utility::translate_lue_dataset_to_gdal_raster(lue_dataset, output_gdal_raster_name, metadata);
+    }
+
+    auto const differences = lgd::compare_rasters(input_gdal_raster_name, output_gdal_raster_name);
+    BOOST_TEST(differences.empty(), fmt::format("{}", fmt::join(differences, ", ")));
+}
+
+
+BOOST_AUTO_TEST_CASE(raster_round_trip_02)
+{
+    // Import a temporal stack of rasters into a LUE dataset.
+    // Export the stack again and verify the stack contain the same information as the imported one.
+
+    // TODO
 }

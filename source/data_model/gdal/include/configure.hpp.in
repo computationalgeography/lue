@@ -1,0 +1,24 @@
+#pragma once
+#include <gdal_priv.h>
+
+
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 5, 0)
+#define LUE_GDAL_SUPPORTS_64BIT_INTEGERS 1
+#else
+#define LUE_GDAL_SUPPORTS_64BIT_INTEGERS 0
+#endif
+
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3, 7, 0)
+#define LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS 1
+#else
+#define LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS 0
+#endif
+
+
+namespace lue::gdal {
+
+    static constexpr bool supports_64bit_integers{LUE_GDAL_SUPPORTS_64BIT_INTEGERS};
+
+    static constexpr bool supports_8bit_signed_integers{LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS};
+
+}  // namespace lue::gdal

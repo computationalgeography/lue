@@ -3,27 +3,25 @@
 #include <stdexcept>
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        PropertyList::PropertyList(::hid_t const class_id):
+    PropertyList::PropertyList(Identifier&& property_list_id):
 
-            _id{::H5Pcreate(class_id), ::H5Pclose}
+        _id{std::move(property_list_id)}
 
+    {
+        if (!_id.is_valid())
         {
-            if (!_id.is_valid())
-            {
-                throw std::runtime_error("Cannot create property list");
-            }
-
-            assert(_id >= 0);
+            throw std::runtime_error("Cannot create property list");
         }
 
+        assert(_id >= 0);
+    }
 
-        Identifier const& PropertyList::id() const
-        {
-            return _id;
-        }
 
-    }  // namespace hdf5
-}  // namespace lue
+    Identifier const& PropertyList::id() const
+    {
+        return _id;
+    }
+
+}  // namespace lue::hdf5

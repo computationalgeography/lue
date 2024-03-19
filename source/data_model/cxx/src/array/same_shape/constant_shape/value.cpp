@@ -137,10 +137,18 @@ namespace lue {
                     @brief      Create value @a name in @a parent
                 */
                 Value create_value(
-                    hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype)
+                    hdf5::Group& parent,
+                    std::string const& name,
+                    hdf5::Datatype const& memory_datatype,
+                    void const* no_data_value)
                 {
                     return create_value(
-                        parent, name, file_datatype(memory_datatype), memory_datatype, hdf5::Shape{});
+                        parent,
+                        name,
+                        file_datatype(memory_datatype),
+                        memory_datatype,
+                        hdf5::Shape{},
+                        no_data_value);
                 }
 
 
@@ -151,10 +159,16 @@ namespace lue {
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& memory_datatype,
-                    hdf5::Shape const& array_shape)
+                    hdf5::Shape const& array_shape,
+                    void const* no_data_value)
                 {
                     return create_value(
-                        parent, name, file_datatype(memory_datatype), memory_datatype, array_shape);
+                        parent,
+                        name,
+                        file_datatype(memory_datatype),
+                        memory_datatype,
+                        array_shape,
+                        no_data_value);
                 }
 
 
@@ -165,9 +179,11 @@ namespace lue {
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& file_datatype,
-                    hdf5::Datatype const& memory_datatype)
+                    hdf5::Datatype const& memory_datatype,
+                    void const* no_data_value)
                 {
-                    return create_value(parent, name, file_datatype, memory_datatype, hdf5::Shape{});
+                    return create_value(
+                        parent, name, file_datatype, memory_datatype, hdf5::Shape{}, no_data_value);
                 }
 
 
@@ -184,7 +200,8 @@ namespace lue {
                     std::string const& name,
                     hdf5::Datatype const& file_datatype,
                     hdf5::Datatype const& memory_datatype,
-                    hdf5::Shape const& array_shape)
+                    hdf5::Shape const& array_shape,
+                    void const* no_data_value)
                 {
                     // The rank of the underlying dataset is one larger than the rank of the
                     // object arrays. Object arrays are stored one after the other.
@@ -201,6 +218,11 @@ namespace lue {
                     hdf5::Shape const chunk_dimension_sizes{
                         hdf5::chunk_shape(array_shape, file_datatype.size())};
                     creation_property_list.set_chunk(chunk_dimension_sizes);
+
+                    if (no_data_value)
+                    {
+                        creation_property_list.set_fill_value(memory_datatype, no_data_value);
+                    }
 
                     hdf5::Dataset dataset{hdf5::create_dataset(
                         parent.id(), name, file_datatype, dataspace, creation_property_list)};

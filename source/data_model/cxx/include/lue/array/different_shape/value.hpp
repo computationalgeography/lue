@@ -42,7 +42,7 @@ namespace lue {
 
                     void expand(Count nr_objects, ID const* ids, hdf5::Shape::value_type const* shapes);
 
-                    void expand(ID id, hdf5::Shape const& shape);
+                    void expand(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
 
                     bool contains(ID id) const;
 
@@ -50,7 +50,7 @@ namespace lue {
 
                 private:
 
-                    void expand_core(ID id, hdf5::Shape const& shape);
+                    void expand_core(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
 
                     Count _nr_objects;
             };

@@ -1,5 +1,6 @@
 #include "lue/py/framework/submodule.hpp"
 #include "hpx_runtime.hpp"
+#include "lue/gdal.hpp"
 #include <pybind11/stl.h>
 
 
@@ -78,6 +79,8 @@ namespace lue::framework {
 
     The :mod:`lue.framework` package ...
 )");
+
+        gdal::register_gdal_drivers();
 
         submodule.def("start_hpx_runtime", &start_hpx_runtime);
 
