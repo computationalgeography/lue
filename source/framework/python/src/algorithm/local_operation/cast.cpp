@@ -6,15 +6,15 @@ namespace lue::framework {
     namespace {
 
         template<typename OutputElement, typename InputElement, Rank rank>
-        PartitionedArray<OutputElement, rank> cast(PartitionedArray<InputElement, rank> const& array)
+        auto cast(PartitionedArray<InputElement, rank> const& array) -> PartitionedArray<OutputElement, rank>
         {
             return value_policies::cast<OutputElement>(array);
         }
 
 
         template<typename InputElement, Rank rank>
-        pybind11::object cast(
-            PartitionedArray<InputElement, rank> const& array, pybind11::object const& dtype_args)
+        auto cast(PartitionedArray<InputElement, rank> const& array, pybind11::object const& dtype_args)
+            -> pybind11::object
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -33,10 +33,12 @@ namespace lue::framework {
                     {
                         case 4:
                         {
+                            result = pybind11::cast(cast<std::int32_t, InputElement>(array));
                             break;
                         }
                         case 8:
                         {
+                            result = pybind11::cast(cast<std::int64_t, InputElement>(array));
                             break;
                         }
                     }
@@ -50,14 +52,17 @@ namespace lue::framework {
                     {
                         case 1:
                         {
+                            result = pybind11::cast(cast<std::uint8_t, InputElement>(array));
                             break;
                         }
                         case 4:
                         {
+                            result = pybind11::cast(cast<std::uint32_t, InputElement>(array));
                             break;
                         }
                         case 8:
                         {
+                            result = pybind11::cast(cast<std::uint64_t, InputElement>(array));
                             break;
                         }
                     }
@@ -103,6 +108,8 @@ namespace lue::framework {
         module.def("cast", cast<std::int32_t, 2>);
         module.def("cast", cast<std::uint64_t, 2>);
         module.def("cast", cast<std::int64_t, 2>);
+        module.def("cast", cast<float, 2>);
+        module.def("cast", cast<double, 2>);
     }
 
 }  // namespace lue::framework

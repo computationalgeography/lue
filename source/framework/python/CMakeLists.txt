@@ -42,7 +42,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/asin.cpp
     src/algorithm/atan.cpp
     src/algorithm/atan2.cpp
-    src/algorithm/cast.cpp
     src/algorithm/cos.cpp
     src/algorithm/d8_flow_direction.cpp
     src/algorithm/divide.cpp
@@ -90,6 +89,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/global_operation/reclassify.cpp
 
     src/algorithm/local_operation.cpp
+    src/algorithm/local_operation/cast.cpp
     src/algorithm/local_operation/ceil.cpp
     src/algorithm/local_operation/floor.cpp
     src/algorithm/local_operation/log10.cpp
