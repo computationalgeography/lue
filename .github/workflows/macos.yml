@@ -192,6 +192,9 @@ jobs:
 
               # Test of imported CMake targets
               git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
+              LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
+              CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
               cmake \
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
