@@ -30,7 +30,7 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
 
-        timeout-minutes: 120
+        timeout-minutes: 180
 
         defaults:
           run:
