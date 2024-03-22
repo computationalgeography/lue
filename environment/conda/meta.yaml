@@ -37,7 +37,7 @@ requirements:
     - numpy
     - libboost-headers
     - hdf5
-    - glfw                                       # [not arm64]
+    - glfw
     - hpx
     - libgdal
     - libvulkan-headers                          # [not arm64]
