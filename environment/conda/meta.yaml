@@ -40,8 +40,8 @@ requirements:
     - glfw
     - hpx
     - libgdal
-    - libvulkan-headers                          # [not arm64]
-    - libvulkan-loader                           # [not arm64]
+    - libvulkan-headers
+    - libvulkan-loader
     - pybind11
     - fmt
     - docopt  # templatize.py
