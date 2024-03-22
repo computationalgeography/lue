@@ -131,6 +131,7 @@ jobs:
                     --build=missing \
                     --output-folder=${{ env.lue_build_directory }}
 
+              # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
               PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
               LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
@@ -192,6 +193,7 @@ jobs:
 
               # Test of imported CMake targets
               git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
               PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
               LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
               CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
