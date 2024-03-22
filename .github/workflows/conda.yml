@@ -6,7 +6,7 @@ on:
     branches-ignore:
       - "ghxyz"
     paths:
-      - ".github/workflows/conda.yml"
+#      - ".github/workflows/conda.yml"
       - "source/**"
       - "!source/qa/python/qa/**"
       - "environment/cmake/**"
