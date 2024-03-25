@@ -374,12 +374,15 @@ def atan(expression):
 
 
 def boolean(expression):
+    expression = read_if_necessary(expression)[0]
+
     if is_spatial(expression):
-        return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
+        if is_boolean(expression):
+            return expression
+        else:
+            return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
     elif is_non_spatial(expression):
         return np.uint8(expression)
-    elif isinstance(expression, str):
-        return readmap(expression)
 
     raise RuntimeError("Unsupported argument: {}".format(expression))
 
@@ -434,10 +437,17 @@ def defined(expression):
 
 
 def directional(expression):
-    if is_spatial(expression) and is_directional(expression):
-        return expression
+    expression = read_if_necessary(expression)[0]
 
-    raise NotImplementedError("directional")
+    if is_spatial(expression):
+        if is_directional(expression):
+            return expression
+        else:
+            return lfr.cast(expression, np.float32)
+    elif is_non_spatial(expression):
+        return np.float32(expression)
+
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def downstream(ldd, expression):
@@ -566,10 +576,17 @@ def kinwaveflux(*args):
 
 
 def ldd(expression):
-    if is_spatial(expression) and is_ldd(expression):
-        return expression
+    expression = read_if_necessary(expression)[0]
 
-    raise NotImplementedError("ldd")
+    if is_spatial(expression):
+        if is_ldd(expression):
+            return expression
+        else:
+            return lfr.cast(expression, np.uint8)
+    elif is_non_spatial(expression):
+        return np.uint8(expression)
+
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def lddcreate(elevation, outflowdepth, corevolume, corearea, catchmentprecipitation):
@@ -716,12 +733,15 @@ def nodirection(*args):
 
 
 def nominal(expression):
-    if is_spatial(expression) and is_nominal(expression):
-        return expression
+    expression = read_if_necessary(expression)[0]
+
+    if is_spatial(expression):
+        if is_nominal(expression):
+            return expression
+        else:
+            return lfr.cast(expression, np.int32)
     elif is_non_spatial(expression):
         return np.int32(expression)
-    elif isinstance(expression, str):
-        return readmap(expression)
 
     raise RuntimeError("Unsupported argument: {}".format(expression))
 
@@ -746,10 +766,17 @@ def order(*args):
 
 
 def ordinal(expression):
-    if is_spatial(expression) and is_ordinal(expression):
-        return expression
+    expression = read_if_necessary(expression)[0]
 
-    raise NotImplementedError("ordinal")
+    if is_spatial(expression):
+        if is_ordinal(expression):
+            return expression
+        else:
+            return lfr.cast(expression, np.int32)
+    elif is_non_spatial(expression):
+        return np.int32(expression)
+
+    raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
 def path(*args):
