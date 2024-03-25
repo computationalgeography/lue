@@ -172,7 +172,7 @@ def translate_window_length(pcraster_window_length):
 
 
 def readmap(pathname):
-    return lfr.from_gdal(pathname, configuration.partition_shape)
+    return lfr.from_gdal(pathname, partition_shape=configuration.partition_shape)
 
 
 def report(expression, pathname):
