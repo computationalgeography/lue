@@ -33,6 +33,7 @@ set(local_operation_names
     atan2
     cast
     ceil
+    cell_index
     close_to
     copy
     cos

@@ -20,7 +20,7 @@ namespace lue::framework {
 
     void bind_cell_index(pybind11::module& module)
     {
-        module.def("cell_idx", cell_index<2>);
+        module.def("cell_index", cell_index<2>);
     }
 
 }  // namespace lue::framework
