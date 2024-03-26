@@ -26,7 +26,7 @@ if(LUE_HPX_REQUIRED)
 endif()
 
 if(LUE_MDSPAN_REQUIRED)
-    find_dependency(MDSpan)
+    find_dependency(mdspan)
 endif()
 
 
