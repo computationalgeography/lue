@@ -285,13 +285,13 @@ endif()
 
 
 if(LUE_MDSPAN_REQUIRED)
-    FetchContent_Declare(MDSpan
+    FetchContent_Declare(mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
-        GIT_TAG a7990884f090365787a90cdc12e689822d642c65  # 20191010
+        GIT_TAG 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
         SYSTEM
         FIND_PACKAGE_ARGS
     )
-    FetchContent_MakeAvailable(MDSpan)
+    FetchContent_MakeAvailable(mdspan)
 endif()
 
 
