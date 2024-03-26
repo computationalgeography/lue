@@ -25,6 +25,7 @@ namespace lue::framework {
     void bind_cast(pybind11::module& module);
     void bind_cos(pybind11::module& module);
     void bind_ceil(pybind11::module& module);
+    void bind_cell_index(pybind11::module& module);
     void bind_d8_flow_direction(pybind11::module& module);
     void bind_divide(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
@@ -87,6 +88,7 @@ namespace lue::framework {
         bind_atan2(module);
         bind_cast(module);
         bind_ceil(module);
+        bind_cell_index(module);
         bind_cos(module);
         bind_d8_flow_direction(module);
         bind_divide(module);

@@ -532,6 +532,34 @@ endblock()
 block()
     set(count "0")
 
+    set(IndexElement ${LUE_FRAMEWORK_INDEX_ELEMENT})
+    set(ConditionElement ${LUE_FRAMEWORK_BOOLEAN_ELEMENT})
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(rank IN LISTS ranks)
+            math(EXPR count "${count} + 1")
+
+            # Instantiate cell_index
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cell_index-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/cell_index.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","IndexElement":"${IndexElement}","ConditionElement":"${ConditionElement}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    set(count "0")
+
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(rank IN LISTS ranks)

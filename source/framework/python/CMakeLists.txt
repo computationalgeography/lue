@@ -91,6 +91,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/cast.cpp
     src/algorithm/local_operation/ceil.cpp
+    src/algorithm/local_operation/cell_index.cpp
     src/algorithm/local_operation/floor.cpp
     src/algorithm/local_operation/log10.cpp
     src/algorithm/local_operation/logical_and.cpp

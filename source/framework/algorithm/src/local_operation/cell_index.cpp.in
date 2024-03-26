@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/default_policies/cell_index.hpp"
+#include "lue/framework/algorithm/definition/cell_index.hpp"
+#include "lue/framework/algorithm/value_policies/cell_index.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_CELL_INDEX(
+            ESC(policy::cell_index::{{ Policies }}<{{ IndexElement }}, {{ ConditionElement }}>),
+            {{ rank }}
+        );
+
+}  // namespace lue

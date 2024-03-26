@@ -89,11 +89,11 @@ namespace lue {
 
 
         template<typename Policies, typename InputPartition, typename OutputElement>
-        struct UniformPartitionAction:
+        struct NormalPartitionAction:
             hpx::actions::make_action<
                 decltype(&normal_partition<Policies, InputPartition, OutputElement>),
                 &normal_partition<Policies, InputPartition, OutputElement>,
-                UniformPartitionAction<Policies, InputPartition, OutputElement>>::type
+                NormalPartitionAction<Policies, InputPartition, OutputElement>>::type
         {
         };
 
@@ -126,7 +126,7 @@ namespace lue {
         lue_hpx_assert(mean.valid());
         lue_hpx_assert(stddev.valid());
 
-        detail::normal::UniformPartitionAction<Policies, InputPartition, OutputElement> action;
+        detail::normal::NormalPartitionAction<Policies, InputPartition, OutputElement> action;
 
         Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
