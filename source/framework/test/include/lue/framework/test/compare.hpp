@@ -56,7 +56,7 @@ namespace lue {
             PartitionData const& partition_data1, PartitionData const& partition_data2)
         {
             BOOST_REQUIRE_EQUAL(partition_data1.shape(), partition_data2.shape());
-            BOOST_REQUIRE_EQUAL(partition_data1.span(), partition_data2.span());
+            BOOST_REQUIRE(partition_data1.span().extents() == partition_data2.span().extents());
 
             if constexpr (std::is_floating_point_v<ElementT<PartitionData>>)
             {
@@ -89,7 +89,7 @@ namespace lue {
             ElementT<PartitionData> const tolerance = 1e-6)
         {
             BOOST_REQUIRE_EQUAL(partition_data1.shape(), partition_data2.shape());
-            BOOST_REQUIRE_EQUAL(partition_data1.span(), partition_data2.span());
+            BOOST_REQUIRE(partition_data1.span().extents() == partition_data2.span().extents());
 
             for (int i = 0; i < partition_data1.nr_elements(); ++i)
             {
