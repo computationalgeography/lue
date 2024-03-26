@@ -201,6 +201,7 @@ jobs:
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
+                  -D FETCHCONTENT_QUIET=OFF \
                   -D LUE_ROOT=${{ env.lue_development_install_directory }} \
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
                   -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
