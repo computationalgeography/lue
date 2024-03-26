@@ -106,6 +106,7 @@ BOOST_AUTO_TEST_CASE(same_types)
             }});
         auto const& array_we_want = array;
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("signed integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -135,6 +136,7 @@ BOOST_AUTO_TEST_CASE(same_types)
             }});
         auto const& array_we_want = array;
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("unsigned integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -164,6 +166,7 @@ BOOST_AUTO_TEST_CASE(same_types)
             }});
         auto const& array_we_want = array;
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("floating point")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -216,6 +219,7 @@ BOOST_AUTO_TEST_CASE(to_larger_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("signed integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -258,6 +262,7 @@ BOOST_AUTO_TEST_CASE(to_larger_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("unsigned integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -300,6 +305,7 @@ BOOST_AUTO_TEST_CASE(to_larger_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("floating point")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -353,6 +359,7 @@ BOOST_AUTO_TEST_CASE(to_smaller_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("signed integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -398,6 +405,7 @@ BOOST_AUTO_TEST_CASE(to_smaller_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("unsigned integer")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -442,6 +450,7 @@ BOOST_AUTO_TEST_CASE(to_smaller_type)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("floating point")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -494,6 +503,7 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("same sizes")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -536,6 +546,7 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("small to large")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -579,6 +590,7 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("large to small")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -631,6 +643,7 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("same sizes")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -673,6 +686,7 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("small to large")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -715,6 +729,7 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         BOOST_TEST_CONTEXT("large to small")
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
@@ -769,6 +784,7 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_floating_point)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
     }
@@ -820,6 +836,7 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_floating_point)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
     }
@@ -872,6 +889,7 @@ BOOST_AUTO_TEST_CASE(floating_point_to_signed_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
     }
@@ -924,6 +942,7 @@ BOOST_AUTO_TEST_CASE(floating_point_to_unsigned_integer)
                     // clang-format on
                 }});
         auto const array_we_got = cast<OutputElement>(array);
+        lue::wait_all(array_we_got.partitions());
 
         lue::test::check_arrays_are_equal(array_we_got, array_we_want);
     }
