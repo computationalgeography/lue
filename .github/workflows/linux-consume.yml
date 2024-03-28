@@ -2,6 +2,8 @@ name: Linux consume LUE
 
 on:
   pull_request:
+    branches-ignore:
+      - "*"
   push:
     branches-ignore:
       - "*"
