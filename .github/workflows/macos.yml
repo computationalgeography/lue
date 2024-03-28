@@ -21,15 +21,15 @@ jobs:
 
         strategy:
             matrix:
-                os: ["macos-13"]
+                macos_version: ["13", "14"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
                 python_version: ["3.12"]
             fail-fast: false
 
-        runs-on: ${{ matrix.os }}
+        runs-on: macos-${{ matrix.macos_version }}
 
-        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }}
+        name: macos-${{ matrix.macos_version }} / ${{ matrix.compiler.cxx }}
 
         timeout-minutes: 180
 
@@ -72,7 +72,7 @@ jobs:
                   glfw \
                   graphviz \
                   gperftools \
-                  hdf5 \
+                  hdf5@1.10 \
                   hwloc \
                   ninja \
                   nlohmann-json \
@@ -82,19 +82,19 @@ jobs:
                   python-matplotlib \
                   tree \
                   vulkan-loader
-              $(brew --prefix python)/bin/python3 -m venv --system-site-packages --upgrade-deps env
+              $(brew --prefix python@${{ matrix.python_version }})/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
               source env/bin/activate
-              pip3 install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
+              pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
               conan profile detect
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            cmake_flags: "-D CMAKE_OSX_DEPLOYMENT_TARGET=13.0"
+            cmake_flags: "-D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0"
             cmake_preset: hpx_release_macos_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}
@@ -117,10 +117,10 @@ jobs:
               source env/bin/activate
               mkdir ${{ env.lue_build_directory }}
 
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+              python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+              python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
@@ -131,12 +131,16 @@ jobs:
                     --build=missing \
                     --output-folder=${{ env.lue_build_directory }}
 
+              # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+              PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
+              LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
+              CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
-                      -D CMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+                      -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0 \
                       -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
@@ -183,12 +187,16 @@ jobs:
               export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
               export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 
-              python3 ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
-              python3 ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
-              python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+              python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
+              python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
+              python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
               # Test of imported CMake targets
               git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
+              PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
+              LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
+              CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
               cmake \
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \

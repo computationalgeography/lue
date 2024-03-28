@@ -39,7 +39,7 @@ def conan_arch():
     if machine in ["AMD64", "x86_64"]:
         arch = "x86_64"
     elif machine == "arm64":
-        if "T8101" in uname.version:
+        if "T8101" in uname.version or "VMAPPLE" in uname.version:
             arch = "armv8"
 
     assert arch is not None, uname
