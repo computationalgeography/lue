@@ -616,9 +616,9 @@ if(LUE_FMT_REQUIRED)
     set(FMT_INSTALL ON)
     FetchContent_Declare(fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG a33701196adfad74917046096bf5a2aa0ab0bb50  # 9.1.0
+        GIT_TAG e69e5f977d458f2650bb346dadf2ad30c5320281  # 10.2.1
         SYSTEM
-        FIND_PACKAGE_ARGS
+        FIND_PACKAGE_ARGS 10
     )
     FetchContent_MakeAvailable(fmt)
 endif()

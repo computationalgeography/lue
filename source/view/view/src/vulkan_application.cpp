@@ -52,6 +52,14 @@
 
 
 #ifndef NDEBUG
+auto format_as(VkDebugReportObjectTypeEXT object_type)
+{
+    // Use enum names if this can be querried from the Vulkan API
+    // https://docs.vulkan.org/spec/latest/chapters/debugging.html#VkDebugReportObjectTypeEXT
+    return static_cast<int>(object_type);
+}
+
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
     [[maybe_unused]] VkDebugReportFlagsEXT flags,
     VkDebugReportObjectTypeEXT object_type,

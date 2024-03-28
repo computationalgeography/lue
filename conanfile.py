@@ -35,7 +35,7 @@ class LUERecipe(ConanFile):
             self.requires("docopt.cpp/[>=0.6.2]")
 
         if install_conan_package("fmt"):
-            self.requires("fmt/[>=8.1.1 <10]")
+            self.requires("fmt/[>=10]")
 
         # 20230829 Conan package for more recent versions seem broken
         # https://github.com/conan-io/conan-center-index/issues/17830
