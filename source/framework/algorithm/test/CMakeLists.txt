@@ -84,6 +84,7 @@ set(routing_operation_names
 )
 
 set(zonal_operation_names
+    clump
     zonal_area
     zonal_diversity
     zonal_majority

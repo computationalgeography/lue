@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/definition/clump.hpp"
+#include "lue/framework/algorithm/value_policies/clump.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_CLUMP(
+            ESC(policy::clump::{{ Policies }}<{{ Zone }}>),
+            {{ rank }}
+        );
+
+}  // namespace lue

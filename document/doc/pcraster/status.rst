@@ -182,8 +182,9 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 1
    * - clump
-     - ❌
-     - 1
+     - ✅
+     - | LUE treats all 8 surrounding cells to be potential neighbours.
+       | This is also the default behaviour of PCRaster.
    * - cos
      - ✅
      -

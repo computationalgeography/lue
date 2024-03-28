@@ -916,6 +916,32 @@ set(Zones uint8_t uint32_t uint64_t int32_t int64_t)
 set(generated_source_files "")
 
 block()
+    # Instantiate clump
+    set(count "0")
+    set(rank "2")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Zone IN LISTS Zones)
+            math(EXPR count "${count} + 1")
+
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/clump-${count}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/clump.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Zone":"${Zone}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
     # Instantiate zonal_area
     set(count "0")
 
