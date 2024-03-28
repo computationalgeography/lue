@@ -1,5 +1,10 @@
 cmake_minimum_required(
     VERSION 3.26)
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET "12.4" CACHE STRING
+    "Minimum operating system version for deployment"
+)
+
 project(LUE
     VERSION 0.3.8
     LANGUAGES CXX)
