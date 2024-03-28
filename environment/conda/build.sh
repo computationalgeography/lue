@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+
 mkdir build
 
 if [[ $target_platform == osx* ]]; then
@@ -34,5 +35,5 @@ CMAKE_PREFIX_PATH=build \
         -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
         -D Python3_EXECUTABLE="${PYTHON}"
 
-cmake --build build --target all
-cmake --install build --component lue_runtime
+cmake --build build --config Release --target all
+cmake --install build --config Release --component lue_runtime
