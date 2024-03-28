@@ -1,16 +1,4 @@
-# Keep in sync with https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml
-# Except for: numpy, python
 c_compiler:
-  - vs2019     # [win and x86_64]
-  - vs2022     # [win and arm64]
+  - vs2022     # [win]
 cxx_compiler:
-  - vs2019     # [win and x86_64]
-  - vs2022     # [win and arm64]
-fmt:
-  - 10
-hdf5:
-  - 1.14.3
-libgdal:
-  - 3.8
-python:
-  - 3.10
+  - vs2022     # [win]
