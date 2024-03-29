@@ -299,7 +299,7 @@ namespace lue {
                 // lue_hpx_assert(_span.size() == _elements.size());
                 // lue_hpx_assert(_span.data_handle() == _elements.data());
                 lue_hpx_assert(static_cast<Count>(_span.size()) == static_cast<Count>(_elements.size()));
-                lue_hpx_assert(_span.data() == _elements.data());
+                lue_hpx_assert(_span.data_handle() == _elements.data());
             }
 
 

@@ -12,7 +12,7 @@ useCompilerCache()
 include(FetchContent)
 include(GenerateExportHeader)
 
-set(LUE_CXX_STANDARD 17)
+set(LUE_CXX_STANDARD 20)
 
 # Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)

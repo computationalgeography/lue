@@ -122,7 +122,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            mdspan_tag: a799088  # 20191010
+            mdspan_tag: 721efd8  # 20240305
             source_directory: ${{ env.mdspan_source_directory }}
             build_directory: ${{ env.mdspan_build_directory }}
             install_directory: ${{ env.mdspan_install_directory }}

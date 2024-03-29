@@ -14,7 +14,7 @@ if(LUE_BOOST_REQUIRED)
 endif()
 
 if(LUE_FMT_REQUIRED)
-    find_dependency(fmt)
+    find_dependency(fmt 10)
 endif()
 
 if(LUE_HDF5_REQUIRED)
@@ -22,11 +22,11 @@ if(LUE_HDF5_REQUIRED)
 endif()
 
 if(LUE_HPX_REQUIRED)
-    find_dependency(HPX)
+    find_dependency(HPX 1.9)
 endif()
 
 if(LUE_MDSPAN_REQUIRED)
-    find_dependency(MDSpan)
+    find_dependency(mdspan)
 endif()
 
 
