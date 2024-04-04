@@ -30,6 +30,8 @@ the related technology.
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org) (users)
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org) (developers)
 
+[![Latest release](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
+
 
 ## Source code
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/computationalgeography/lue/)
