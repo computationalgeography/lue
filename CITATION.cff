@@ -1,0 +1,26 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  LUE scientific database and environmental modelling
+  framework
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Kor
+    family-names: de Jong
+    orcid: 'https://orcid.org/0000-0002-8650-9961'
+    affiliation: Utrecht University
+  - given-names: Oliver
+    family-names: Schmitz
+    orcid: 'https://orcid.org/0000-0002-0493-851X'
+    affiliation: Utrecht University
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.5535685
+repository-code: 'https://github.com/computationalgeography/lue'
+url: 'https://lue.computationalgeography.org/'
+license: MIT
