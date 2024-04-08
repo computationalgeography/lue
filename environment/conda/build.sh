@@ -33,7 +33,7 @@ CMAKE_PREFIX_PATH=build \
         -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
         -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
         -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
-        -D Python3_EXECUTABLE="${PYTHON}"
+        -D Python_EXECUTABLE="${PYTHON}"
 
 cmake --build build --config Release --target all
 cmake --install build --config Release --component lue_runtime

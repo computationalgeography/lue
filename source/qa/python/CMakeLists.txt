@@ -50,7 +50,7 @@ if(LUE_QA_WITH_PYTHON_API)
             TARGET lue_py_qa
             APPEND
             PROPERTY INSTALL_RPATH
-                ${Python3_LIBRARY_DIRS}
+                ${Python_LIBRARY_DIRS}
         )
     endif()
 

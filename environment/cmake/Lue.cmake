@@ -58,9 +58,9 @@ file(RELATIVE_PATH LUE_BIN_TO_LIB_DIR
 # In this project we need to be able to install the Python package in a certain directory. For
 # that, we create a variable similar to the ones set by GNUInstallDirs. It can be overridden by
 # the user.
-if(Python3_FOUND)
+if(Python_FOUND)
     set(LUE_BUILD_PYTHON_PACKAGE_DIR
-        "${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
+        "${CMAKE_INSTALL_LIBDIR}/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/${LUE_LOWER_PROJECT_NAME}")
 
     set(LUE_INSTALL_PYTHON_PACKAGE_DIR "${LUE_BUILD_PYTHON_PACKAGE_DIR}" CACHE PATH
         "Relative (to install prefix) pathname of directory to install Python package in")
@@ -111,7 +111,7 @@ message(STATUS "CMAKE_INSTALL_LIBDIR          : ${CMAKE_INSTALL_LIBDIR}")
 message(STATUS "CMAKE_INSTALL_LIBEXECDIR      : ${CMAKE_INSTALL_LIBEXECDIR}")
 message(STATUS "CMAKE_INSTALL_INCLUDEDIR      : ${CMAKE_INSTALL_INCLUDEDIR}")
 message(STATUS "CMAKE_INSTALL_DOCDIR          : ${CMAKE_INSTALL_DOCDIR}")
-if(Python3_FOUND)
+if(Python_FOUND)
     message(STATUS "LUE_INSTALL_PYTHON_PACKAGE_DIR: ${LUE_INSTALL_PYTHON_PACKAGE_DIR}")
     message(STATUS "LUE_PYTHON_PACKAGE_TO_LIB_DIR : ${LUE_PYTHON_PACKAGE_TO_LIB_DIR}")
 endif()

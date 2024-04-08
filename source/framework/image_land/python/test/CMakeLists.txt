@@ -1,12 +1,12 @@
 add_test(
     NAME lue_py_image_land_python_test
     COMMAND
-        ${Python3_EXECUTABLE} ${HPXRUN}
+        ${Python_EXECUTABLE} ${HPXRUN}
             "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
             "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
             "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
             "--thread" ${LUE_QA_TEST_NR_THREADS_PER_LOCALITY} --
-                ${Python3_EXECUTABLE}
+                ${Python_EXECUTABLE}
                     -m lue_unit_test discover
                     --verbose
                     --start-directory ${CMAKE_CURRENT_SOURCE_DIR}

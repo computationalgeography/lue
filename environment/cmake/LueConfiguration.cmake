@@ -298,27 +298,27 @@ endif()
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python 3.9 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-    if((Python3_INTERPRETER_ID STREQUAL "Anaconda") OR (Python3_EXECUTABLE MATCHES "^.*conda.*$"))
+    if((Python_INTERPRETER_ID STREQUAL "Anaconda") OR (Python_EXECUTABLE MATCHES "^.*conda.*$"))
         set(LUE_PYTHON_FROM_CONDA TRUE)
 
         # If we use a Conda build environment, then packages should be searched for in the current
         # Conda environment.
-        cmake_path(GET Python3_EXECUTABLE PARENT_PATH LUE_CONDA_PREFIX)
+        cmake_path(GET Python_EXECUTABLE PARENT_PATH LUE_CONDA_PREFIX)
         cmake_path(GET LUE_CONDA_PREFIX PARENT_PATH LUE_CONDA_PREFIX)
         list(APPEND CMAKE_PREFIX_PATH "${LUE_CONDA_PREFIX}")
     endif()
 
-    message(STATUS "Found Python3:")
-    message(STATUS "    Interpreter ID        : ${Python3_INTERPRETER_ID}")
-    message(STATUS "        version           : ${Python3_VERSION}")
-    message(STATUS "        executable        : ${Python3_EXECUTABLE}")
-    message(STATUS "        site-arch         : ${Python3_SITEARCH}")
-    message(STATUS "        site-lib          : ${Python3_SITELIB}")
+    message(STATUS "Found Python:")
+    message(STATUS "    Interpreter ID        : ${Python_INTERPRETER_ID}")
+    message(STATUS "        version           : ${Python_VERSION}")
+    message(STATUS "        executable        : ${Python_EXECUTABLE}")
+    message(STATUS "        site-arch         : ${Python_SITEARCH}")
+    message(STATUS "        site-lib          : ${Python_SITELIB}")
     message(STATUS "    NumPy:")
-    message(STATUS "        version           : ${Python3_NumPy_VERSION}")
-    message(STATUS "        include           : ${Python3_NumPy_INCLUDE_DIRS}")
+    message(STATUS "        version           : ${Python_NumPy_VERSION}")
+    message(STATUS "        include           : ${Python_NumPy_INCLUDE_DIRS}")
     message(STATUS "    LUE_PYTHON_FROM_CONDA : ${LUE_PYTHON_FROM_CONDA}")
 
     if(LUE_PYTHON_FROM_CONDA)
@@ -400,7 +400,7 @@ if(LUE_HPX_REQUIRED)
 
                         # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
                         #   build of the Python bindings.
-                        # PYTHON=${Python3_EXECUTABLE} PYTHON_FOR_GENERATOR=:
+                        # PYTHON=${Python_EXECUTABLE} PYTHON_FOR_GENERATOR=:
                         execute_process(
                             COMMAND
                                 ${otf2_SOURCE_DIR}/configure
