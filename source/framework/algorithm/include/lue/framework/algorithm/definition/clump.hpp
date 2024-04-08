@@ -85,7 +85,8 @@ namespace lue {
             requests.push(SpanRequest{.west=col, .east=col, .row=row - 1, .direction=-1});  // upwards
             requests.push(SpanRequest{.west=col, .east=col, .row=row, .direction=1});  // downwards
 
-            auto row_available = [nr_rows](Index const row, Index const direction) -> bool
+            // Use init list to work around bug in Clang
+            auto row_available = [nr_rows=nr_rows](Index const row, Index const direction) -> bool
             {
                 return
                     (direction == -1 && row > 0) ||  // upwards
