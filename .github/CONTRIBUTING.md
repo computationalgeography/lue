@@ -54,6 +54,3 @@ When you're finished with the changes, create a pull request.
 - We may ask for changes to be made before a PR can be merged.
 - As you update your PR and apply changes, mark each conversation as
   [resolved](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/commenting-on-a-pull-request#resolving-conversations).
-- If you run into any merge issues, checkout this [git
-  tutorial](https://github.com/skills/resolve-merge-conflicts) to help you resolve merge
-  conflicts and other issues.
