@@ -56,7 +56,7 @@ foreach(name ${names})
 
     add_test(NAME ${test_name}
         COMMAND
-            ${Python3_EXECUTABLE} ${HPXRUN}
+            ${Python_EXECUTABLE} ${HPXRUN}
                 "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
                 "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}

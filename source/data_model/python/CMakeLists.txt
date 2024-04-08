@@ -113,7 +113,7 @@ target_link_libraries(lue_py_data_model
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
-        Python3::NumPy
+        Python::NumPy
         nonstd::span-lite
 )
 
@@ -135,7 +135,7 @@ if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
         TARGET lue_py_data_model
         APPEND
         PROPERTY INSTALL_RPATH
-            ${Python3_LIBRARY_DIRS}
+            ${Python_LIBRARY_DIRS}
     )
 endif()
 

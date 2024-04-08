@@ -193,7 +193,7 @@ target_link_libraries(lue_py_framework
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
-        Python3::Python
+        Python::Python
 )
 
 # TODO pybind11_strip does not work on macOS, when building using Conda packages
@@ -214,7 +214,7 @@ if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
         TARGET lue_py_framework
         APPEND
         PROPERTY INSTALL_RPATH
-            ${Python3_LIBRARY_DIRS}
+            ${Python_LIBRARY_DIRS}
     )
 endif()
 

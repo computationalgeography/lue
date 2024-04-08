@@ -153,7 +153,7 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
-                      -D Python3_FIND_VIRTUALENV=ONLY
+                      -D Python_FIND_VIRTUALENV=ONLY
 
         - name: build
           run: |

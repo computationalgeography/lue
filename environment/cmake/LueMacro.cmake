@@ -323,7 +323,7 @@ function(add_hpx_unit_test)
 
     add_test(NAME ${TEST_EXE_NAME}
         COMMAND
-            ${Python3_EXECUTABLE} ${HPXRUN}
+            ${Python_EXECUTABLE} ${HPXRUN}
                 "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
                 "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
@@ -558,7 +558,7 @@ function(generate_template_instantiation)
 
     add_custom_command(
         OUTPUT ${ARG_OUTPUT_PATHNAME}
-        COMMAND ${Python3_EXECUTABLE} ${LUE_TEMPLATIZE}
+        COMMAND ${Python_EXECUTABLE} ${LUE_TEMPLATIZE}
             ${ARG_INPUT_PATHNAME} ${ARG_OUTPUT_PATHNAME}
             ${ARG_DICTIONARY}
         DEPENDS ${ARG_INPUT_PATHNAME}
