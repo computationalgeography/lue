@@ -48,7 +48,7 @@ cmake --preset conan-release ^
     -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE ^
     -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE ^
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE ^
-    -D Python3_EXECUTABLE="%PYTHON%"
+    -D Python_EXECUTABLE="%PYTHON%"
 if errorlevel 1 exit /b 1
 
 cmake --build build --config Release --target all
