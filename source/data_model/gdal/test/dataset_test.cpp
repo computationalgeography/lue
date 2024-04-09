@@ -79,28 +79,28 @@ BOOST_AUTO_TEST_CASE(open_dataset)
     BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly), std::runtime_error);
 
 
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
 
     lgd::create_dataset(driver_name, dataset_name, raster_shape, nr_bands, data_type);
 
     // File exists but is not readable and not writable
     std::filesystem::permissions(dataset_name, std::filesystem::perms::none);
 #ifndef _WIN32  // TODO
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly), std::runtime_error);
 #endif
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
 
     // File exists but is write-only: not readable
     std::filesystem::permissions(dataset_name, std::filesystem::perms::owner_write);
 #ifndef _WIN32  // TODO
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly), std::runtime_error);
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
 #endif
 
     // File exists and is read-only: not writable
     std::filesystem::permissions(dataset_name, std::filesystem::perms::owner_read);
     BOOST_CHECK_NO_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly));
-    BOOST_CHECK_THROW(!lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
+    BOOST_CHECK_THROW(lgd::open_dataset(dataset_name, GDALAccess::GA_Update), std::runtime_error);
 
     // File exists and is readable and writable
     std::filesystem::permissions(

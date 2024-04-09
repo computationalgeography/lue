@@ -24,6 +24,7 @@ LUE_CONAN_PACKAGES="imgui" conan install . \
 CMAKE_PREFIX_PATH=build \
     cmake --preset conan-release \
         ${CMAKE_ARGS} \
+        -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
         -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
         -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
         -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \

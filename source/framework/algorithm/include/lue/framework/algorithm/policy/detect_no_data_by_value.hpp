@@ -101,7 +101,9 @@ namespace lue::policy {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _value;
+                // clang-format off
+                archive & _value;
+                // clang-format on
             }
 
 

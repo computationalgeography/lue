@@ -114,14 +114,19 @@ namespace lue::server {
             }
 
 
+        private:
+
+            friend class hpx::serialization::access;
+
+
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned version)
             {
-                archive& _io;
+                // clang-format off
+                archive & _io;
+                // clang-format on
             }
 
-
-        private:
 
             Data _io;
 

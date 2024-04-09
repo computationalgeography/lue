@@ -1,4 +1,5 @@
 #include "lue/gdal/data_type.hpp"
+#include "lue/gdal/configure.hpp"
 #include <cassert>
 
 
