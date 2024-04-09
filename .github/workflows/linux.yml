@@ -102,6 +102,7 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
+            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0148=OLD"
             cmake_preset: hpx_release_linux_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             hpx_version: ${{ env.hpx_version }}

@@ -20,7 +20,6 @@ foreach(name ${names})
 
     target_link_libraries(${test_name}
         PRIVATE
-            lue::framework_core
             lue::framework_test
             Boost::unit_test_framework
     )

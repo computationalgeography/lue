@@ -114,7 +114,7 @@ namespace lue {
                         // float -> int / unsigned int
                         return argument >= InputElement{std::numeric_limits<OutputElement>::min()} &&
                                argument <=
-                                   static_cast<OutputElement>(std::numeric_limits<OutputElement>::max());
+                                   static_cast<InputElement>(std::numeric_limits<OutputElement>::max());
                     }
 
                     return true;
