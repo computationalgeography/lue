@@ -63,11 +63,12 @@ jobs:
           with:
             path: ${{ env.lue_source_directory }}
 
-        - uses: conda-incubator/setup-miniconda@v2
+        - uses: conda-incubator/setup-miniconda@v3
           with:
+            miniforge-version: latest
             auto-update-conda: true
+            conda-solver: "libmamba"
             python-version: ${{ matrix.python_version }}
-            channels: conda-forge
 
         - name: setup platform
           run: |
@@ -79,9 +80,7 @@ jobs:
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
 
-              # Use different solver than the default to work around "picosat: out of memory in 'new'"
-              conda install -n base -c defaults conda-libmamba-solver
-              conda install --solver=libmamba \
+              conda install \
                   boost-cpp \
                   "conan>=2" \
                   conda-build \
