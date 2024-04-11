@@ -1,120 +1,3 @@
-
-# Also configures the environment to point to the location of shared libs.
-# The idea of this is to keep the dev's shell as clean as possible. Use
-# ctest command to run unit tests.
-#
-# SCOPE: Some prefix. Often the lib name of the lib being tested
-# NAME : Name of test module, with extension
-# UTF_ARGUMENTS_SEPARATOR: String to put between the command and the
-#     UTF arguments.
-#     TODO: This is how it could work:
-#     <command> <runtime_arguments>
-#         <utf_arguments_separator> <utf_arguments>
-#         <command_arguments_separator> <command_arguments>
-#     HPX: utf_arguments_separator == '--'
-#     UTF: command_arguments_separator == '--'
-#         (so this separator doesn't have to be passed in!)
-# LINK_LIBRARIES: Libraries to link against
-# DEPENDENCIES: Targets this test target depends on
-# ENVIRONMENT: Environment variables that should be defined for running
-#     the test
-macro(add_unit_test)
-    set(OPTIONS "")
-    set(ONE_VALUE_ARGUMENTS SCOPE NAME UTF_ARGUMENTS_SEPARATOR)
-    set(MULTI_VALUE_ARGUMENTS
-        SUPPORT_NAMES
-        INCLUDE_DIRS
-        OBJECT_LIBRARIES
-        LINK_LIBRARIES
-        DEPENDENCIES
-        ENVIRONMENT
-    )
-
-    cmake_parse_arguments(ADD_UNIT_TEST "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
-        "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
-
-    if(ADD_UNIT_TEST_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Macro called with unrecognized arguments: "
-            "${ADD_UNIT_TEST_UNPARSED_ARGUMENTS}"
-        )
-    endif()
-
-    set(TEST_MODULE_NAME ${ADD_UNIT_TEST_NAME})
-    cmake_path(REMOVE_EXTENSION TEST_MODULE_NAME OUTPUT_VARIABLE TEST_MODULE_NAME_STEM)
-    set(TEST_EXE_NAME ${ADD_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME_STEM})
-    string(REPLACE "/" "_" TEST_EXE_NAME ${TEST_EXE_NAME})
-
-    add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME}
-        ${ADD_UNIT_TEST_SUPPORT_NAMES}
-        ${ADD_UNIT_TEST_OBJECT_LIBRARIES})
-    target_include_directories(${TEST_EXE_NAME}
-        PRIVATE
-            ${ADD_UNIT_TEST_INCLUDE_DIRS})
-    target_link_libraries(${TEST_EXE_NAME}
-        PRIVATE
-            ${ADD_UNIT_TEST_LINK_LIBRARIES}
-            Boost::unit_test_framework)
-
-    add_test(NAME ${TEST_EXE_NAME}
-        # catch_system_errors: Prevent UTF to detect system errors. This
-        #     messes things up when doing system calls to Python unit tests.
-        #     See also: http://lists.boost.org/boost-users/2009/12/55048.php
-        COMMAND ${TEST_EXE_NAME} ${ADD_UNIT_TEST_UTF_ARGUMENTS_SEPARATOR}
-            --catch_system_errors=no
-    )
-
-    if(ADD_UNIT_TEST_DEPENDENCIES)
-        ADD_DEPENDENCIES(${TEST_EXE_NAME} ${ADD_UNIT_TEST_DEPENDENCIES})
-    endif()
-
-    set_tests_properties(${TEST_EXE_NAME}
-        PROPERTIES
-            ENVIRONMENT
-                "${ADD_UNIT_TEST_ENVIRONMENT}"
-    )
-endmacro()
-
-
-function(add_unit_tests)
-    set(OPTIONS "")
-    set(ONE_VALUE_ARGUMENTS SCOPE UTF_ARGUMENTS_SEPARATOR)
-    set(MULTI_VALUE_ARGUMENTS
-        NAMES
-        SUPPORT_NAMES
-        INCLUDE_DIRS
-        OBJECT_LIBRARIES
-        LINK_LIBRARIES
-        DEPENDENCIES
-        ENVIRONMENT
-    )
-
-    cmake_parse_arguments(ADD_UNIT_TESTS "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
-        "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
-
-    if(ADD_UNIT_TESTS_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Macro called with unrecognized arguments: "
-            "${ADD_UNIT_TESTS_UNPARSED_ARGUMENTS}"
-        )
-    endif()
-
-    foreach(NAME ${ADD_UNIT_TESTS_NAMES})
-        add_unit_test(
-            SCOPE ${ADD_UNIT_TESTS_SCOPE}
-            NAME ${NAME}
-            UTF_ARGUMENTS_SEPARATOR ${ADD_UNIT_TESTS_UTF_ARGUMENTS_SEPARATOR}
-            SUPPORT_NAMES ${ADD_UNIT_TESTS_SUPPORT_NAMES}
-            INCLUDE_DIRS ${ADD_UNIT_TESTS_INCLUDE_DIRS}
-            OBJECT_LIBRARIES ${ADD_UNIT_TESTS_OBJECT_LIBRARIES}
-            LINK_LIBRARIES ${ADD_UNIT_TESTS_LINK_LIBRARIES}
-            DEPENDENCIES ${ADD_UNIT_TESTS_DEPENDENCIES}
-            ENVIRONMENT ${ADD_UNIT_TESTS_ENVIRONMENT}
-        )
-    endforeach()
-endfunction()
-
-
 # Tests can be added conditionally. When the build is configured, the
 # LUE_BUILD_QA and LUE_QA_WITH_TESTS options can be set to TRUE or FALSE. Depending on
 # these settings tests are build or not.
@@ -124,6 +7,44 @@ function(add_test_conditionally
     if(LUE_BUILD_QA AND LUE_QA_WITH_TESTS)
         add_subdirectory(${DIRECTORY_NAME})
     endif()
+endfunction()
+
+
+function(add_unit_tests)
+    set(prefix ARG)
+    set(no_values "")
+    set(single_values SCOPE)
+    set(multi_values NAMES LIBRARIES)
+
+    cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
+
+    if(${prefix}_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "Function called with unrecognized arguments: "
+            "${${prefix}_UNPARSED_ARGUMENTS}")
+    endif()
+
+    foreach(name ${ARG_NAMES})
+        set(module_name ${name}_test)
+        string(REPLACE "/" "_" test_name ${ARG_SCOPE}_${module_name})
+
+        add_executable(${test_name} ${module_name}.cpp)
+
+        target_compile_definitions(${test_name}
+            PRIVATE
+                BOOST_TEST_DYN_LINK
+        )
+
+        target_link_libraries(${test_name}
+            PRIVATE
+                ${ARG_LIBRARIES}
+                Boost::unit_test_framework
+        )
+
+        add_test(NAME ${test_name}
+            COMMAND ${test_name}
+        )
+    endforeach()
 endfunction()
 
 
@@ -288,90 +209,6 @@ function(lue_add_benchmark)
             lue::framework_algorithm
             lue::benchmark
     )
-endfunction()
-
-
-function(add_hpx_unit_test)
-    set(OPTIONS "")
-    set(ONE_VALUE_ARGUMENTS SCOPE NAME)
-    set(MULTI_VALUE_ARGUMENTS
-        LINK_LIBRARIES
-        DEPENDENCIES
-        ENVIRONMENT
-    )
-
-    cmake_parse_arguments(ADD_HPX_UNIT_TEST "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
-        "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
-
-    if(ADD_HPX_UNIT_TEST_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Macro called with unrecognized arguments: "
-            "${ADD_HPX_UNIT_TEST_UNPARSED_ARGUMENTS}")
-    endif()
-
-    set(TEST_MODULE_NAME ${ADD_HPX_UNIT_TEST_NAME})
-    cmake_path(REMOVE_EXTENSION TEST_MODULE_NAME OUTPUT_VARIABLE TEST_MODULE_NAME_STEM)
-    set(TEST_EXE_NAME ${ADD_HPX_UNIT_TEST_SCOPE}_${TEST_MODULE_NAME_STEM})
-    string(REPLACE "/" "_" TEST_EXE_NAME ${TEST_EXE_NAME})
-
-    add_executable(${TEST_EXE_NAME} ${TEST_MODULE_NAME})
-
-    target_link_libraries(${TEST_EXE_NAME}
-        PRIVATE
-            ${ADD_HPX_UNIT_TEST_LINK_LIBRARIES}
-            Boost::unit_test_framework)
-
-    add_test(NAME ${TEST_EXE_NAME}
-        COMMAND
-            ${Python_EXECUTABLE} ${HPXRUN}
-                "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
-                "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
-                "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
-                "--thread" ${LUE_QA_TEST_NR_THREADS_PER_LOCALITY} --
-                    "$<TARGET_FILE:${TEST_EXE_NAME}>")
-
-    if(ADD_HPX_UNIT_TEST_DEPENDENCIES)
-        ADD_DEPENDENCIES(${TEST_EXE_NAME} ${ADD_HPX_UNIT_TEST_DEPENDENCIES})
-    endif()
-
-    set_tests_properties(${TEST_EXE_NAME}
-        PROPERTIES
-            ENVIRONMENT
-                "${ADD_HPX_UNIT_TEST_ENVIRONMENT}"
-    )
-
-    hpx_setup_target(${TEST_EXE_NAME})
-endfunction()
-
-
-function(add_hpx_unit_tests)
-    set(OPTIONS "")
-    set(ONE_VALUE_ARGUMENTS SCOPE)
-    set(MULTI_VALUE_ARGUMENTS
-        NAMES
-        LINK_LIBRARIES
-        DEPENDENCIES
-        ENVIRONMENT
-    )
-
-    cmake_parse_arguments(ADD_HPX_UNIT_TESTS "${OPTIONS}" "${ONE_VALUE_ARGUMENTS}"
-        "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
-
-    if(ADD_HPX_UNIT_TESTS_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Macro called with unrecognized arguments: "
-            "${ADD_HPX_UNIT_TESTS_UNPARSED_ARGUMENTS}")
-    endif()
-
-    foreach(name ${ADD_HPX_UNIT_TESTS_NAMES})
-        add_hpx_unit_test(
-            SCOPE ${ADD_HPX_UNIT_TESTS_SCOPE}
-            NAME ${name}
-            LINK_LIBRARIES ${ADD_HPX_UNIT_TESTS_LINK_LIBRARIES}
-            DEPENDENCIES ${ADD_HPX_UNIT_TESTS_DEPENDENCIES}
-            ENVIRONMENT ${ADD_HPX_UNIT_TESTS_ENVIRONMENT}
-        )
-    endforeach()
 endfunction()
 
 

@@ -21,7 +21,7 @@ add_library(lue::py_image_land ALIAS lue_py_image_land)
 
 target_compile_definitions(lue_py_image_land
     PRIVATE
-        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
 )
 
 set_target_properties(lue_py_image_land

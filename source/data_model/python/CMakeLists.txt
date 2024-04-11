@@ -91,7 +91,7 @@ add_library(lue::py_data_model ALIAS lue_py_data_model)
 
 target_compile_definitions(lue_py_data_model
     PRIVATE
-        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
 )
 
 set_target_properties(lue_py_data_model
