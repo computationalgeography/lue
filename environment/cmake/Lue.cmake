@@ -1,5 +1,3 @@
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
@@ -14,10 +12,12 @@ set(LUE_CXX_STANDARD 20)
 # Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)
 
-# ... only now set language settings relevant for (only) our own targets
+# ... only now set settings relevant for (only) our own targets
 set(CMAKE_CXX_STANDARD ${LUE_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_EXTENSIONS FALSE)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 include(LueMacro)
 
