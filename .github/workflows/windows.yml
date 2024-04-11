@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh636"
     paths:
       - ".github/actions/**"
       - ".github/workflows/windows.yml"
@@ -110,7 +110,7 @@ jobs:
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             # Boost root is here: $CONDA_PREFIX/Library, but this results in a backslashes in a Windows path in the HPXConfig.cmake
             # That is a bug in the HPX CMake scripts. Forward slashes should be used, e.g.: file(TO_CMAKE_PATH BOOST_ROOT HPX_BOOST_ROOT).
-            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0148=OLD -D BOOST_ROOT=C:/Miniconda/envs/test/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0148=OLD -D BOOST_ROOT=${CONDA_PREFIX//\\//}/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_version: ${{ env.hpx_version }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}

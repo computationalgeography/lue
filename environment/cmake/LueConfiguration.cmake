@@ -33,6 +33,10 @@ option(LUE_DATA_MODEL_WITH_UTILITIES
     "Include data model command line utilities"
     FALSE)
 
+option(LUE_BUILD_GDAL
+    "Build LUE GDAL wrapper library"
+    TRUE)
+
 option(LUE_BUILD_FRAMEWORK
     "Build LUE simulation framework"
     TRUE)
@@ -127,6 +131,8 @@ if(LUE_BUILD_FRAMEWORK)
     # if(LUE_FRAMEWORK_WITH_DASHBOARD)
     #     set(LUE_BUILD_IMGUI TRUE)
     # endif()
+
+    set(LUE_BUILD_GDAL TRUE)
 endif()
 
 
@@ -139,6 +145,10 @@ endif()
 if(LUE_BUILD_DATA_MODEL)
     if(LUE_DATA_MODEL_WITH_PYTHON_API)
         set(LUE_SPAN_LITE_REQUIRED TRUE)
+    endif()
+
+    if(LUE_DATA_MODEL_WITH_UTILITIES)
+        set(LUE_BUILD_GDAL TRUE)
     endif()
 endif()
 

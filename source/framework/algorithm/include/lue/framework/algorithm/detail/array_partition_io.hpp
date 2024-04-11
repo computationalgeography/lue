@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/algorithm/export.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
 #include "lue/framework/core/offset.hpp"
@@ -46,7 +45,7 @@ namespace lue::detail {
         to afterwards.
     */
     template<typename Index, Rank rank, typename Value_>
-    class LUE_FA_EXPORT ArrayPartitionIO
+    class ArrayPartitionIO
     {
 
         public:
