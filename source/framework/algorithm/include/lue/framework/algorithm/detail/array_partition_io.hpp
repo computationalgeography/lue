@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/export.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
 #include "lue/framework/core/offset.hpp"
@@ -45,7 +46,7 @@ namespace lue::detail {
         to afterwards.
     */
     template<typename Index, Rank rank, typename Value_>
-    class ArrayPartitionIO
+    class LUE_FA_EXPORT ArrayPartitionIO
     {
 
         public:
@@ -66,7 +67,10 @@ namespace lue::detail {
                 _partition_shape{},
                 _input_cells_idxs{},
                 _offsets{},
-                _values{}
+                _values{},
+                _input_cells_idxs_mutex{},
+                _offsets_mutex{},
+                _values_mutex{}
 
             {
                 std::fill(_partition_shape.begin(), _partition_shape.end(), 0);
@@ -80,7 +84,10 @@ namespace lue::detail {
                 _partition_shape{partition_shape},
                 _input_cells_idxs{input_cells_idxs},
                 _offsets{},
-                _values{}
+                _values{},
+                _input_cells_idxs_mutex{},
+                _offsets_mutex{},
+                _values_mutex{}
 
             {
                 assert_invariants();
@@ -116,6 +123,8 @@ namespace lue::detail {
                 _values = std::move(other._values);
             }
 
+
+            ~ArrayPartitionIO() = default;
 
             ArrayPartitionIO& operator=(ArrayPartitionIO const&) = delete;
 
@@ -413,23 +422,8 @@ namespace lue::detail {
             friend class hpx::serialization::access;
 
 
-            void serialize(
-                hpx::serialization::input_archive& archive, [[maybe_unused]] unsigned int const version)
-            {
-                // std::scoped_lock lock{
-                //     _input_cells_idxs_mutex,
-                //     _offsets_mutex,
-                //     _values_mutex};
-
-                archive& _partition_shape& _input_cells_idxs& _offsets& _values;
-
-                assert_invariants();
-            }
-
-
-            void serialize(
-                hpx::serialization::output_archive& archive,
-                [[maybe_unused]] unsigned int const version) const
+            template<typename Archive>
+            void serialize(Archive& archive, [[maybe_unused]] unsigned version)
             {
                 // std::scoped_lock lock{
                 //     _input_cells_idxs_mutex,
@@ -438,7 +432,11 @@ namespace lue::detail {
 
                 assert_invariants();
 
-                archive& _partition_shape& _input_cells_idxs& _offsets& _values;
+                // clang-format off
+                archive & _partition_shape & _input_cells_idxs & _offsets & _values;
+                // clang-format on
+
+                assert_invariants();
             }
 
 

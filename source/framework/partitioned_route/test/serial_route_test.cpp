@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue framework partitioned_route partitioned_serial_route
+#define BOOST_TEST_MODULE lue framework partitioned_route serial_route
 #include "lue/framework/serial_route.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/stream.hpp"

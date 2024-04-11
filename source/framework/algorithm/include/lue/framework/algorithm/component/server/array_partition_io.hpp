@@ -65,6 +65,15 @@ namespace lue::server {
             }
 
 
+            ~ArrayPartitionIO() = default;
+
+
+            auto operator=(ArrayPartitionIO const&) = delete;
+
+
+            auto operator=(ArrayPartitionIO&&) = delete;
+
+
             bool is_drained() const
             {
                 return _io.is_drained();

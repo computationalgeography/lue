@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/offset.hpp"
 #include "lue/framework/core/shape.hpp"
+#include "lue/framework/partitioned_route/export.hpp"
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
 #include "lue/framework/route/define.hpp"
@@ -16,7 +17,7 @@ namespace lue::server {
         @brief      Component server class for serial route partitions
     */
     template<typename RouteID, Rank rank>
-    class HPX_COMPONENT_EXPORT SerialRoutePartition:
+    class LUE_FPR_EXPORT SerialRoutePartition:
         public hpx::components::component_base<SerialRoutePartition<RouteID, rank>>
     {
 
