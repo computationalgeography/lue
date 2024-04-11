@@ -21,11 +21,9 @@ namespace lue::server {
         public hpx::components::component_base<SerialRoutePartition<RouteID, rank>>
     {
 
-        private:
+        public:
 
             using Base = hpx::components::component_base<SerialRoutePartition<RouteID, rank>>;
-
-        public:
 
             using RouteFragment = SerialRouteFragment<rank>;
 
@@ -104,7 +102,7 @@ namespace lue::server {
 #define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(RouteID, rank, unique)                       \
                                                                                                              \
     namespace lue::detail {                                                                                  \
-        using SerialRoutePartitionServer_##unique = lue::server::SerialRoutePartition<RouteID, rank>;        \
+        using SerialRoutePartitionServer_##unique = server::SerialRoutePartition<RouteID, rank>;        \
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
@@ -140,7 +138,7 @@ namespace lue::server {
                                                                                                              \
     namespace lue::detail {                                                                                  \
         using SerialRoutePartitionServerComponent_##unique =                                                 \
-            hpx::components::component<lue::detail::SerialRoutePartitionServer_##unique>;                    \
+            hpx::components::component<SerialRoutePartitionServer_##unique>;                    \
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \

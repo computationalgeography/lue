@@ -767,9 +767,9 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_floating_point)
                 // clang-format on
             }});
 
-        OutputElement const output_min(input_min);
-        OutputElement const output_max(input_max);
-        OutputElement const output_lowest(input_lowest);
+        OutputElement const output_min{static_cast<OutputElement>(input_min)};
+        OutputElement const output_max{static_cast<OutputElement>(input_max)};
+        OutputElement const output_lowest{static_cast<OutputElement>(input_lowest)};
         OutputElement const output_no_data{lue::policy::no_data_value<OutputElement>};
 
         auto const array_we_want =
@@ -821,7 +821,7 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_floating_point)
                 // clang-format on
             }});
 
-        OutputElement const output_max(input_max);
+        OutputElement const output_max{static_cast<OutputElement>(input_max)};
         OutputElement const output_no_data{lue::policy::no_data_value<OutputElement>};
 
         auto const array_we_want =

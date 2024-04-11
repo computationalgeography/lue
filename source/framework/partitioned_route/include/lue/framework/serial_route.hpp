@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
+#include "lue/framework/partitioned_route/export.hpp"
 #include "lue/framework/partitioned_route/serial_route_partition.hpp"
 
 
@@ -22,7 +23,7 @@ namespace lue {
         collections of route fragments (SerialRouteFragment).
     */
     template<typename RouteID, Rank rank>
-    class SerialRoute
+    class LUE_FPR_EXPORT SerialRoute
     {
 
             static_assert(std::is_integral_v<RouteID>);

@@ -1,22 +1,27 @@
 set(scope lue_framework_core)
 set(names
-    array_test
-    array_visitor_test
-    configuration_entry_test
-    domain_decomposition_test
-    hilbert_curve_test
-    index_util_test
-    linear_curve_test
-    math_test
-    shape_test
-    span_test
+    array
+    array_visitor
+    configuration_entry
+    domain_decomposition
+    hilbert_curve
+    index_util
+    linear_curve
+    math
+    shape
+    span
 )
 
 foreach(name ${names})
+    set(module_name ${name}_test)
+    string(REPLACE "/" "_" test_name ${scope}_${module_name})
 
-    set(test_name ${scope}_${name})
+    add_executable(${test_name} ${module_name}.cpp)
 
-    add_executable(${test_name} ${name}.cpp)
+    target_compile_definitions(${test_name}
+        PRIVATE
+            BOOST_TEST_DYN_LINK
+    )
 
     target_link_libraries(${test_name}
         PRIVATE
