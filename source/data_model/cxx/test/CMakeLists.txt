@@ -1,54 +1,71 @@
-add_unit_tests(
-    SCOPE lue_cxx
-    NAMES
+set(scope lue_cxx)
+set(names
+    core/time/clock
+    core/time/duration
+    core/time/tick_period
+    core/time/time_point
 
-        core/time/clock_test.cpp
-        core/time/duration_test.cpp
-        core/time/tick_period_test.cpp
-        core/time/time_point_test.cpp
+    array/same_shape/value
+    array/same_shape/constant_shape/value
+    array/same_shape/variable_shape/value
 
-        array/same_shape/value_test.cpp
-        array/same_shape/constant_shape/value_test.cpp
-        array/same_shape/variable_shape/value_test.cpp
+    array/different_shape/value
+    array/different_shape/constant_shape/value
+    array/different_shape/variable_shape/value
 
-        array/different_shape/value_test.cpp
-        array/different_shape/constant_shape/value_test.cpp
-        array/different_shape/variable_shape/value_test.cpp
+    info/identity/object_id
+    info/identity/active_object_id
+    info/identity/active_set_index
+    info/identity/active_object_index
 
-        info/identity/object_id_test.cpp
-        info/identity/active_object_id_test.cpp
-        info/identity/active_set_index_test.cpp
-        info/identity/active_object_index_test.cpp
+    info/time/time_box
+    info/time/time_cell
+    info/time/time_point
 
-        info/time/time_box_test.cpp
-        info/time/time_cell_test.cpp
-        info/time/time_point_test.cpp
+    info/space/mobile_space_point
+    info/space/stationary_space_point
+    info/space/mobile_space_box
+    info/space/stationary_space_box
 
-        info/space/mobile_space_point_test.cpp
-        info/space/stationary_space_point_test.cpp
-        info/space/mobile_space_box_test.cpp
-        info/space/stationary_space_box_test.cpp
+    info/property/same_shape/property
+    info/property/same_shape/constant_shape/property
+    info/property/same_shape/variable_shape/property
 
-        info/property/same_shape/property_test.cpp
-        info/property/same_shape/constant_shape/property_test.cpp
-        info/property/same_shape/variable_shape/property_test.cpp
+    info/property/different_shape/property
+    info/property/different_shape/constant_shape/property
+    info/property/different_shape/variable_shape/property
 
-        info/property/different_shape/property_test.cpp
-        info/property/different_shape/constant_shape/property_test.cpp
-        info/property/different_shape/variable_shape/property_test.cpp
+    object/dataset
+    object/presence_in_time
+    object/property/properties
+    object/property/property_set
+    object/space_domain
+    object/time_domain
 
-        object/dataset_test.cpp
-        object/presence_in_time_test.cpp
-        object/property/properties_test.cpp
-        object/property/property_set_test.cpp
-        object/space_domain_test.cpp
-        object/time_domain_test.cpp
-
-        scalar_test.cpp
-        raster_test.cpp
-        time_series_test-1.cpp
-        time_series_test-2.cpp
-
-    LINK_LIBRARIES
-        lue::data_model_test
+    scalar
+    raster
+    time_series_1
+    time_series_2
 )
+
+foreach(name ${names})
+    set(module_name ${name}_test)
+    string(REPLACE "/" "_" test_name ${scope}_${module_name})
+
+    add_executable(${test_name} ${module_name}.cpp)
+
+    target_compile_definitions(${test_name}
+        PRIVATE
+            BOOST_TEST_DYN_LINK
+    )
+
+    target_link_libraries(${test_name}
+        PRIVATE
+            lue::data_model_test
+            Boost::unit_test_framework
+    )
+
+    add_test(NAME ${test_name}
+        COMMAND ${test_name}
+    )
+endforeach()

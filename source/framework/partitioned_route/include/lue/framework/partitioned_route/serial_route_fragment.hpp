@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/indices.hpp"
+#include "lue/framework/partitioned_route/export.hpp"
 #include <hpx/runtime_distributed.hpp>
 #include <algorithm>
 #include <optional>
@@ -21,7 +22,7 @@ namespace lue {
         fragment is a piece of a route whose cell indxs are all located in a single partition.
     */
     template<Rank rank>
-    class SerialRouteFragment
+    class LUE_FPR_EXPORT SerialRouteFragment
     {
         public:
 
