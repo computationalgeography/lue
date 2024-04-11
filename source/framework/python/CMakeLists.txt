@@ -153,16 +153,11 @@ add_library(lue_py_framework SHARED
     src/submodule.cpp
 )
 
-# if(LUE_FRAMEWORK_WITH_DASHBOARD)
-#     list(APPEND sources
-#        src/dashboard/dashboard.cpp)
-# endif()
-
 add_library(lue::py_framework ALIAS lue_py_framework)
 
 target_compile_definitions(lue_py_framework
     PRIVATE
-        NPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
 )
 
 set_target_properties(lue_py_framework

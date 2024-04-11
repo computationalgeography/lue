@@ -40,14 +40,8 @@ option(LUE_BUILD_GDAL
 option(LUE_BUILD_FRAMEWORK
     "Build LUE simulation framework"
     TRUE)
-# option(LUE_FRAMEWORK_WITH_OPENCL
-#     "Include support for OpenCL"
-#     FALSE)
 # option(LUE_FRAMEWORK_WITH_MPI
 #     "Include support for MPI"
-#     FALSE)
-# option(LUE_FRAMEWORK_WITH_DASHBOARD
-#     "Include dashboard for simulation framework"
 #     FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
@@ -128,10 +122,6 @@ set(LUE_VIEW_USE_VULKAN TRUE)
 # Handle internal dependencies -------------------------------------------------
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_BUILD_DATA_MODEL TRUE)
-    # if(LUE_FRAMEWORK_WITH_DASHBOARD)
-    #     set(LUE_BUILD_IMGUI TRUE)
-    # endif()
-
     set(LUE_BUILD_GDAL TRUE)
 endif()
 
@@ -222,14 +212,6 @@ if(LUE_BUILD_FRAMEWORK)
     #     set(LUE_PYTHON_REQUIRED TRUE)
     # endif()
 
-    # if(LUE_FRAMEWORK_WITH_OPENCL)
-    #     set(LUE_OPENCL_REQUIRED TRUE)
-    # endif()
-
-    # if(LUE_FRAMEWORK_WITH_DASHBOARD)
-    #     set(LUE_IMGUI_REQUIRED TRUE)
-    # endif()
-
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
@@ -307,6 +289,10 @@ endif()
 
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
+    # This is the first numpy version supporting Python 3.9
+    set(LUE_MIN_NUMPY_VERSION 1.19)
+    string(REPLACE "." "_" LUE_NPY_NO_DEPRECATED_API "NPY_${LUE_MIN_NUMPY_VERSION}_API_VERSION")
+
     # Order matters: Pybind11 must be searched for after Python has been found.
     find_package(Python 3.9 REQUIRED COMPONENTS Interpreter Development NumPy)
 
@@ -651,10 +637,6 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
         FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(nlohmann_json)
-endif()
-
-if(LUE_OPENCL_REQUIRED)
-    find_package(OpenCL REQUIRED)
 endif()
 
 if(LUE_SPAN_LITE_REQUIRED)
