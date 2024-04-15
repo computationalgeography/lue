@@ -23,7 +23,7 @@ namespace lue {
         collections of route fragments (SerialRouteFragment).
     */
     template<typename RouteID, Rank rank>
-    class LUE_FPR_EXPORT SerialRoute
+    class SerialRoute
     {
 
             static_assert(std::is_integral_v<RouteID>);
