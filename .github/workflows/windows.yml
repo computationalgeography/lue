@@ -187,38 +187,36 @@ jobs:
               # Unit tests
               ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
 
-              # TODO See gh598
+              # Tests of runtime targets
+              # Add location of dependencies installed with Conan to the runtime environment
+              # Not needed yet.
+              # ${{ env.lue_build_directory }}/conanrun.bat
 
-              ### # Tests of runtime targets
-              ### # Add location of dependencies installed with Conan to the runtime environment
-              ### ${{ env.lue_build_directory }}/conanrun.bat
+              export PATH="${{ env.lue_runtime_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"
 
-              ### export PATH="${{ env.lue_runtime_install_directory }}/bin:$PATH"
+              ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+              # This doesn't work due to missing Vulkan runtime
+              # ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
-              ### ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-              ### ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-              ### ${{ env.lue_runtime_install_directory }}/bin/lue_view --version || echo "TODO: Error executing lue_view!"
+              # Add our package to the set of Conda packages
+              conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
+              ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
+              python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-              ### # Add our package to the set of Conda packages
-              ### conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
-              ### ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
-              ### ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
-              ### python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
-
-              ### dumpbin //imports ${{ env.lue_runtime_install_directory }}/bin/lue_view.exe
-
-              ### # Test of imported CMake targets
-              ### git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
-              ### cmake \
-              ###     -S ${{ env.lue_consume_source_directory }} \
-              ###     -B ${{ env.lue_consume_build_directory }} \
-              ###     -G "Ninja" \
-              ###     -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-              ###     -D CMAKE_BUILD_TYPE=Release \
-              ###     -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
-              ###     -D LUE_ROOT=${{ env.lue_development_install_directory }} \
-              ###     -D HPX_ROOT=${{ env.hpx_install_directory }} \
-              ###     -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
-              ### cmake --build ${{ env.lue_consume_build_directory }} --target all
-              ### ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ### ${{ env.lue_consume_build_directory }}/lue_consume_framework
+              # Test of imported CMake targets
+              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+              cmake \
+                  -S ${{ env.lue_consume_source_directory }} \
+                  -B ${{ env.lue_consume_build_directory }} \
+                  -G "Ninja" \
+                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                  -D CMAKE_BUILD_TYPE=Release \
+                  -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
+                  -D LUE_ROOT=${{ env.lue_development_install_directory }} \
+                  -D HPX_ROOT=${{ env.hpx_install_directory }} \
+                  -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+              cmake --build ${{ env.lue_consume_build_directory }} --target all
+              ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework

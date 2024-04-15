@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/offset.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
+#include "lue/framework/partitioned_array/export.hpp"
 #include <hpx/config.hpp>
 #include <hpx/include/components.hpp>
 
@@ -11,8 +12,7 @@ namespace lue::server {
         @brief      Component server class for partioned array partitions
     */
     template<typename Element, Rank rank>
-    class HPX_COMPONENT_EXPORT ArrayPartition:
-        public hpx::components::component_base<ArrayPartition<Element, rank>>
+    class LUE_FPA_EXPORT ArrayPartition: public hpx::components::component_base<ArrayPartition<Element, rank>>
     {
 
         private:
