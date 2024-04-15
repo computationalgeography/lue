@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/partitioned_array/export.hpp"
 #include "lue/framework/partitioned_array/server/array_partition.hpp"
 
 
