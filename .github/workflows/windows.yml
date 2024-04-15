@@ -164,7 +164,7 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D BOOST_ROOT=$CONDA_PREFIX/Library \
                       -D HWLOC_ROOT=$CONDA_PREFIX/Library \
-                      -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib" \
+                      -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib \
                       -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
                       -D HPX_ROOT=${{ env.hpx_install_directory }}
 
