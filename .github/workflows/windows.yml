@@ -81,8 +81,8 @@ jobs:
               #      Conan package actually works
 
               conda install \
-                  boost-cpp \
-                  "conan>=2" \
+                  libboost-devel \
+                  conan \
                   conda-build \
                   docopt \
                   gdal \
