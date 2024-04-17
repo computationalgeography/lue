@@ -192,8 +192,6 @@ jobs:
               # Not needed yet.
               # ${{ env.lue_build_directory }}/conanrun.bat
 
-              export PATH="${{ env.lue_runtime_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"
-
               ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
               # This doesn't work due to missing Vulkan runtime
@@ -201,10 +199,20 @@ jobs:
 
               # Add our package to the set of Conda packages
               conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
+
+              # NOTE: On Windows, locations in PATH are not used anymore by Python to lookup
+              #       dlls. Locations must be added using os.add_dll_directory(path)
+              #       We have added a slight hack to LUE's __init__.py to detect HPX' dll
+              #       directory in PATH. Otherwise HPX won't be found. See comment in that file.
+              #       Only needed on dev machines with custom HPX build, like we have here.
+              export PATH="${{ env.hpx_install_directory }}/bin:$PATH"
+
               ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
+        - name: consume
+          run: |
               # Test of imported CMake targets
               git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
               cmake \
