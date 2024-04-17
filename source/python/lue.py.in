@@ -30,7 +30,7 @@ if sys.platform == "win32":
         # This tweak can be removed once we have access to a Conda development package of HPX,
         # besides a runtime package.
         for path in os.environ["PATH"].split(";"):
-            if "hpx\\bin" in path:
+            if "hpx" in path:
                 os.add_dll_directory(path)
 
 
