@@ -20,6 +20,19 @@ if sys.platform == "win32":
             # All seems to be as expected. LUE DLLs should be stored here.
             os.add_dll_directory(bin_directory_pathname)
 
+        # This is somewhat a hack. Since Python 3.8, PATH is not searched anymore for locations
+        # from which to load dlls. Such locations need to be added using os.add_dll_directory.
+        # In one circumstance we want to add a special location before importing LUE. This
+        # is in our development environment, where HPX is built by ourselves and installed in a
+        # non-standard location. Here, we dectect whether this location has been added to the
+        # PATH, and if so, add this location to Python's search path. In 99.9% of the cases
+        # this is not needed.
+        # This tweak can be removed once we have access to a Conda development package of HPX,
+        # besides a runtime package.
+        for path in os.environ["PATH"].split(";"):
+            if "hpx\\bin" in path:
+                os.add_dll_directory(path)
+
 
 from .lue_py import *
 from .lue_py import __version__
