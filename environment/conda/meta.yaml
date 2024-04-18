@@ -35,7 +35,7 @@ requirements:
     # Dependencies required during build phase needed on the host.
     - python
     - numpy
-    - libboost-headers
+    - libboost-devel
     - hdf5
     - glfw
     - hpx

@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/define.hpp"
-#include <hpx/include/compute.hpp>
+#include <hpx/compute.hpp>
 
 
 namespace lue {
