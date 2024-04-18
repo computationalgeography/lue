@@ -205,7 +205,7 @@ jobs:
               #       We have added a slight hack to LUE's __init__.py to detect HPX' dll
               #       directory in PATH. Otherwise HPX won't be found. See comment in that file.
               #       Only needed on dev machines with custom HPX build, like we have here.
-              export PATH="${{ env.hpx_install_directory }}/bin:$PATH"
+              export PATH="`pwd`/${{ env.hpx_install_directory }}/bin:$PATH"
 
               ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
