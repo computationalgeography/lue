@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/functor_traits.hpp"
+#include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/partitioned_array.hpp"
@@ -123,6 +124,45 @@ namespace lue {
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+    }
+
+
+    template<typename Policies, typename InputElement, typename Functor>
+    auto unary_local_operation(
+        Policies const& policies, Scalar<InputElement> const& input_scalar, Functor const& functor)
+        -> Scalar<OutputElementT<Functor>>
+    {
+        using OutputElement = OutputElementT<Functor>;
+
+        return hpx::dataflow(
+            hpx::launch::async,
+            hpx::unwrapping(
+                [policies, functor](auto const& input_value) -> OutputElement
+                {
+                    auto const& dp = policies.domain_policy();
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                    auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
+
+                    OutputElement output_value;
+
+                    if (indp.is_no_data(input_value) || !dp.within_domain(input_value))
+                    {
+                        ondp.mark_no_data(output_value);
+                    }
+                    else
+                    {
+                        output_value = functor(input_value);
+
+                        if (!rp.within_range(input_value, output_value))
+                        {
+                            ondp.mark_no_data(output_value);
+                        }
+                    }
+
+                    return output_value;
+                }),
+            input_scalar.value());
     }
 
 }  // namespace lue

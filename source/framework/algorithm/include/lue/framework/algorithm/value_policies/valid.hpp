@@ -44,11 +44,21 @@ namespace lue {
     namespace value_policies {
 
         template<typename BooleanElement, typename ExpressionElement, Rank rank>
-        PartitionedArray<BooleanElement, rank> valid(PartitionedArray<ExpressionElement, rank> const& array)
+        auto valid(PartitionedArray<ExpressionElement, rank> const& array)
+            -> PartitionedArray<BooleanElement, rank>
         {
             using Policies = policy::valid::DefaultValuePolicies<BooleanElement, ExpressionElement>;
 
             return valid<BooleanElement>(Policies{}, array);
+        }
+
+
+        template<typename BooleanElement, typename ExpressionElement>
+        auto valid(Scalar<ExpressionElement> const& scalar) -> Scalar<BooleanElement>
+        {
+            using Policies = policy::valid::DefaultValuePolicies<BooleanElement, ExpressionElement>;
+
+            return valid<BooleanElement>(Policies{}, scalar);
         }
 
     }  // namespace value_policies

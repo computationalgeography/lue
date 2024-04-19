@@ -60,6 +60,7 @@ BOOST_AUTO_TEST_CASE(out_of_range)
 
     using Element = std::int32_t;
     lue::Rank const rank{2};
+    using Scalar = lue::Scalar<Element>;
     using Array = lue::PartitionedArray<Element, rank>;
 
     auto const array_shape{lue::Test<Array>::shape()};
@@ -73,7 +74,8 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     // Careful. The default no-data value for int32_t is the lowest value. Although max +
     // 1 is undefined for signed integers, this may wrap around to this minimum value. Therefore,
     // we add 2 here, instead of 1. Adding 1 confuses things.
-    BOOST_CHECK(none(valid<std::uint8_t>(2 + array)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array + 2)).get());
+    BOOST_CHECK(none(valid<std::uint8_t>(Scalar{2} + array)).get());
+    BOOST_CHECK(none(valid<std::uint8_t>(array + Scalar{2})).get());
     BOOST_CHECK(none(valid<std::uint8_t>(array + array)).get());
+    BOOST_CHECK_EQUAL((valid<std::uint8_t>(Scalar{max} + Scalar{2})).value().get(), 0);
 }

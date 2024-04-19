@@ -17,8 +17,8 @@ namespace lue {
                 using OutputElement = OutputElement_;
 
 
-                constexpr OutputElement operator()(
-                    [[maybe_unused]] InputElement const& input_element) const noexcept
+                constexpr auto operator()([[maybe_unused]] InputElement const& input_element) const noexcept
+                    -> OutputElement
                 {
                     return 1;
                 }
@@ -28,10 +28,17 @@ namespace lue {
 
 
     template<typename BooleanElement, typename Policies, typename ExpressionElement, Rank rank>
-    PartitionedArray<BooleanElement, rank> valid(
-        Policies const& policies, PartitionedArray<ExpressionElement, rank> const& array)
+    auto valid(Policies const& policies, PartitionedArray<ExpressionElement, rank> const& array)
+        -> PartitionedArray<BooleanElement, rank>
     {
         return unary_local_operation(policies, array, detail::Valid<ExpressionElement>{});
+    }
+
+
+    template<typename BooleanElement, typename Policies, typename ExpressionElement>
+    auto valid(Policies const& policies, Scalar<ExpressionElement> const& scalar) -> Scalar<BooleanElement>
+    {
+        return unary_local_operation(policies, scalar, detail::Valid<ExpressionElement>{});
     }
 
 }  // namespace lue
@@ -39,6 +46,12 @@ namespace lue {
 
 #define LUE_INSTANTIATE_VALID(Policies, BooleanElement, ExpressionElement, rank)                             \
                                                                                                              \
-    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<BooleanElement, rank>                               \
+    template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     valid<BooleanElement, ArgumentType<void(Policies)>, ExpressionElement, rank>(                            \
-        ArgumentType<void(Policies)> const&, PartitionedArray<ExpressionElement, rank> const&);
+        ArgumentType<void(Policies)> const&, PartitionedArray<ExpressionElement, rank> const&)               \
+        ->PartitionedArray<BooleanElement, rank>;                                                            \
+                                                                                                             \
+    template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
+    valid<BooleanElement, ArgumentType<void(Policies)>, ExpressionElement>(                                  \
+        ArgumentType<void(Policies)> const&, Scalar<ExpressionElement> const&)                               \
+        ->Scalar<BooleanElement>;
