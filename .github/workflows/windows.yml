@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches-ignore:
-      - "ghxyz"
+      - "gh636"
     paths:
       - ".github/actions/**"
       - ".github/workflows/windows.yml"
