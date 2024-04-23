@@ -85,6 +85,34 @@ BOOST_AUTO_TEST_CASE(add_value_raster)
 }
 
 
+BOOST_AUTO_TEST_CASE(add_scalar_value)
+{
+    using Scalar = lue::Scalar<std::int32_t>;
+    using Element = std::int32_t;
+
+    lue::Field scalar = Scalar{};
+    lue::Field value = Element{};
+
+    lue::Field result = lue::add(scalar, value);
+
+    // TODO test result is a Scalar as well
+}
+
+
+BOOST_AUTO_TEST_CASE(add_value_scalar)
+{
+    using Element = std::int32_t;
+    using Scalar = lue::Scalar<std::int32_t>;
+
+    lue::Field scalar = Scalar{};
+    lue::Field value = Element{};
+
+    lue::Field result = lue::add(value, scalar);
+
+    // TODO test result is a Scalar as well
+}
+
+
 BOOST_AUTO_TEST_CASE(add_value_value)
 {
     using Element = std::int32_t;
@@ -92,10 +120,7 @@ BOOST_AUTO_TEST_CASE(add_value_value)
     lue::Field value1 = Element{};
     lue::Field value2 = Element{};
 
-    // TODO Maybe make it possible for values to be auto-converted into Scalars and work with
-    //      that? LUE is fully asynchronous. Let's try to skip adding support for synchronous
-    //      computations.
-    // lue::Field result = lue::add(value1, value2);
+    lue::Field result = lue::add(value1, value2);
 
     // TODO test result is a Scalar
 }

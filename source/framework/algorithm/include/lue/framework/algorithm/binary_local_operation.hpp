@@ -634,6 +634,7 @@ namespace lue {
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
+    /* f(policies, scalar, scalar) */                                                                        \
     template<typename Policies, typename OutputElement, typename InputElement>                               \
     auto name(                                                                                               \
         Policies const& policies, Scalar<InputElement> const& scalar1, Scalar<InputElement> const& scalar2)  \
@@ -644,6 +645,7 @@ namespace lue {
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
+    /* f(policies, scalar, scalar) */                                                                        \
     template<typename Policies, typename InputElement>                                                       \
     auto name(                                                                                               \
         Policies const& policies, Scalar<InputElement> const& scalar1, Scalar<InputElement> const& scalar2)  \
@@ -651,6 +653,70 @@ namespace lue {
         using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
                                                                                                              \
         return name<Policies, OutputElement, InputElement>(policies, scalar1, scalar2);                      \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, scalar, value) */                                                                         \
+    template<typename Policies, typename OutputElement, typename InputElement>                               \
+    auto name(Policies const& policies, Scalar<InputElement> const& scalar, InputElement const& value)       \
+        ->Scalar<OutputElement>                                                                              \
+    {                                                                                                        \
+        return name<Policies, OutputElement, InputElement>(                                                  \
+            policies, scalar.value(), Scalar<InputElement>{value});                                          \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, scalar, value) */                                                                         \
+    template<typename Policies, typename InputElement>                                                       \
+    auto name(Policies const& policies, Scalar<InputElement> const& scalar, InputElement const& value)       \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+                                                                                                             \
+        return name<Policies, OutputElement, InputElement>(policies, scalar, Scalar<InputElement>{value});   \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value, scalar) */                                                                         \
+    template<typename Policies, typename OutputElement, typename InputElement>                               \
+    auto name(Policies const& policies, InputElement const& value, Scalar<InputElement> const& scalar)       \
+        ->Scalar<OutputElement>                                                                              \
+    {                                                                                                        \
+        return name<Policies, OutputElement, InputElement>(                                                  \
+            policies, Scalar<InputElement>{value}, scalar.value());                                          \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value, scalar) */                                                                         \
+    template<typename Policies, typename InputElement>                                                       \
+    auto name(Policies const& policies, InputElement const& value, Scalar<InputElement> const& scalar)       \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+                                                                                                             \
+        return name<Policies, OutputElement, InputElement>(policies, Scalar<InputElement>{value}, scalar);   \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value, value) */                                                                          \
+    template<typename Policies, typename OutputElement, typename InputElement>                               \
+    auto name(Policies const& policies, InputElement const& value1, InputElement const& value2)              \
+        ->Scalar<OutputElement>                                                                              \
+    {                                                                                                        \
+        return name<Policies, OutputElement, InputElement>(                                                  \
+            policies,                                                                                        \
+            Scalar<InputElement>{value1},                                                                    \
+            Scalar<InputElement>{value2},                                                                    \
+            Functor<InputElement, OutputElement>{});                                                         \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value, value) */                                                                          \
+    template<typename Policies, typename InputElement>                                                       \
+    auto name(Policies const& policies, InputElement const& value1, InputElement const& value2)              \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+                                                                                                             \
+        return name<Policies, OutputElement, InputElement>(                                                  \
+            policies, Scalar<InputElement>{value1}, Scalar<InputElement>{value2});                           \
     }
 
 
@@ -815,4 +881,73 @@ namespace lue {
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
         return name<Policies_, OutputElement, InputElement>(Policies_{}, scalar1, scalar2);                  \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(scalar, value) */                                                                                   \
+    template<typename OutputElement, typename InputElement>                                                  \
+    auto name(Scalar<InputElement> const& scalar, InputElement const& value)->Scalar<OutputElement>          \
+    {                                                                                                        \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, scalar.value(), Scalar<InputElement>{value});                                       \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(scalar, value) */                                                                                   \
+    template<typename InputElement>                                                                          \
+    auto name(Scalar<InputElement> const& scalar, InputElement const& value)                                 \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, scalar, Scalar<InputElement>{value});                                               \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value, scalar) */                                                                                   \
+    template<typename OutputElement, typename InputElement>                                                  \
+    auto name(InputElement const& value, Scalar<InputElement> const& scalar)->Scalar<OutputElement>          \
+    {                                                                                                        \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, Scalar<InputElement>{value}, scalar.value());                                       \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value, scalar) */                                                                                   \
+    template<typename InputElement>                                                                          \
+    auto name(InputElement const& value, Scalar<InputElement> const& scalar)                                 \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, Scalar<InputElement>{value}, scalar);                                               \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value, value) */                                                                                    \
+    template<typename OutputElement, typename InputElement>                                                  \
+    auto name(InputElement const& value1, InputElement const& value2)                                        \
+    {                                                                                                        \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, Scalar<InputElement>{value1}, Scalar<InputElement>{value2});                        \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value, value) */                                                                                    \
+    template<typename InputElement>                                                                          \
+    auto name(InputElement const& value1, InputElement const& value2)                                        \
+    {                                                                                                        \
+        using OutputElement = OutputElementT<Functor<InputElement>>;                                         \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return name<Policies_, OutputElement, InputElement>(                                                 \
+            Policies_{}, Scalar<InputElement>{value1}, Scalar<InputElement>{value2});                        \
     }
