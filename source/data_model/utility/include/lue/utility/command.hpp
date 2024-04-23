@@ -1,5 +1,5 @@
 #pragma once
-#include <docopt/docopt.h>
+#include <docopt.h>
 #include <exception>
 #include <functional>
 #include <map>
