@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches-ignore:
-      - "gh636"
+      - "ghxyz"
     paths:
       - ".github/actions/**"
       - ".github/workflows/macos.yml"
@@ -191,12 +191,16 @@ jobs:
               python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
               python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
+        - name: consume
+          run: |
               # Test of imported CMake targets
               git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+
               # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
               PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
               LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
               CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
+
               cmake \
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
@@ -208,5 +212,6 @@ jobs:
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
                   -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
               cmake --build ${{ env.lue_consume_build_directory }} --target all
+
               ${{ env.lue_consume_build_directory }}/lue_consume_data_model
               ${{ env.lue_consume_build_directory }}/lue_consume_framework
