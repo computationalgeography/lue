@@ -19,6 +19,9 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+        @brief      A variant of all types that can be used to represent continuous fields
+    */
     using Field = std::variant<
         detail::Array<std::uint8_t, 2>,
         detail::Array<std::int32_t, 2>,
