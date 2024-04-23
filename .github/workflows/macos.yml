@@ -124,7 +124,7 @@ jobs:
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
-              LUE_CONAN_PACKAGES="docopt.cpp imgui" \
+              LUE_CONAN_PACKAGES="imgui" \
                   conan install ${{ env.lue_source_directory }} \
                     --profile:host=${{ env.lue_source_directory }}/host_profile \
                     --profile:build=${{ env.lue_source_directory }}/build_profile \

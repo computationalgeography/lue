@@ -571,21 +571,16 @@ endif()
 
 
 if(LUE_DOCOPT_REQUIRED)
-    find_package(docopt REQUIRED)
+    FetchContent_Declare(docopt
+        GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
+        GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
+        SYSTEM
+        FIND_PACKAGE_ARGS
+    )
+    FetchContent_MakeAvailable(docopt)
 
-    # FetchContent_Declare(docopt
-    #     GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
-    #     GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
-    #     SYSTEM
-    #     FIND_PACKAGE_ARGS
-    # )
-    # FetchContent_MakeAvailable(docopt)
-
-    # The docopt package shipѕ with CMake scripts that define a target names docopt. The
-    # Conan docopt package defines a target named docopt_s instead...
-    if(TARGET docopt_s AND NOT TARGET docopt)
-        add_library(docopt ALIAS docopt_s)
-    endif()
+    # The docopt package shipѕ with CMake scripts that define a target named docopt (shared
+    # library) and docopt_s (static library).
 endif()
 
 
