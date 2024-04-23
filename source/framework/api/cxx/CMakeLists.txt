@@ -9,7 +9,7 @@ add_library(lue::framework_api_cxx ALIAS lue_framework_api_cxx)
 
 set_target_properties(lue_framework_api_cxx
     PROPERTIES
-        EXPORT_NAME framework_partitioned_array
+        EXPORT_NAME framework_api_cxx
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
 )
