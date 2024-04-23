@@ -52,6 +52,13 @@
             ]
         },
         {
+            "name": "lue_debug_cluster",
+            "inherits": [
+                "hpx_debug_cluster_configuration",
+                "lue_debug_configuration"
+            ]
+        },
+        {
             "name": "lue_relwithdebinfo_linux_node",
             "inherits": [
                 "hpx_relwithdebinfo_linux_node_configuration",
@@ -73,6 +80,13 @@
             ]
         },
         {
+            "name": "lue_relwithdebinfo_cluster",
+            "inherits": [
+                "hpx_relwithdebinfo_cluster_configuration",
+                "lue_relwithdebinfo_configuration"
+            ]
+        },
+        {
             "name": "lue_release_linux_node",
             "inherits": [
                 "hpx_release_linux_node_configuration",
@@ -90,6 +104,13 @@
             "name": "lue_release_windows_node",
             "inherits": [
                 "hpx_release_windows_node_configuration",
+                "lue_release_configuration"
+            ]
+        },
+        {
+            "name": "lue_release_cluster",
+            "inherits": [
+                "hpx_release_cluster_configuration",
                 "lue_release_configuration"
             ]
         }
