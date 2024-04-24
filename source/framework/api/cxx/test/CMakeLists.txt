@@ -13,8 +13,6 @@ foreach(name ${names})
     string(REPLACE "/" "_" test_name ${module_name})
     set(test_name ${scope}_${test_name})
 
-    message(${test_name})
-    message(${module_name}.cpp)
     add_executable(${test_name} ${module_name}.cpp)
 
     target_link_libraries(${test_name}
@@ -30,7 +28,7 @@ foreach(name ${names})
 
     add_test(NAME ${test_name}
         COMMAND
-            ${Python3_EXECUTABLE} ${HPXRUN}
+            ${Python_EXECUTABLE} ${HPXRUN}
                 "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
                 "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
                 "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
@@ -47,6 +45,7 @@ foreach(name ${names})
             PROPERTY
                 ENVIRONMENT_MODIFICATION
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
+                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_api_cxx>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_route>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
