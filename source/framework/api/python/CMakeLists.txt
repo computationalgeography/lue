@@ -11,7 +11,7 @@ endforeach()
 add_library(lue_py_framework_x SHARED
     src/extension.cpp
     src/field.cpp
-    src/local_operations.cpp
+    src/local_operation.cpp
     src/submodule.cpp
 )
 
