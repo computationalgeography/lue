@@ -56,13 +56,13 @@ foreach(name ${names})
     endif()
 endforeach()
 
-foreach(name ${local_operation_names})
-    set(module_name ${name}_test)
-    string(REPLACE "/" "_" test_name ${module_name})
-    set(test_name ${scope}_${test_name})
-
-    target_link_libraries(${test_name}
-        PRIVATE
-            lue_framework_api_cxx
-    )
-endforeach()
+# foreach(name ${local_operation_names})
+#     set(module_name ${name}_test)
+#     string(REPLACE "/" "_" test_name ${module_name})
+#     set(test_name ${scope}_${test_name})
+#
+#     target_link_libraries(${test_name}
+#         PRIVATE
+#             lue_framework_api_cxx
+#     )
+# endforeach()
