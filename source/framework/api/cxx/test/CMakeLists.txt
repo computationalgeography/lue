@@ -1,5 +1,6 @@
 set(local_operation_names
     local/add
+    local/uniform
 )
 
 set(names

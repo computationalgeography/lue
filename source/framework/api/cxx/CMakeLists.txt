@@ -2,6 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue_framework_api_cxx SHARED
     src/local/add.cpp
+    src/local/uniform.cpp
     src/detail/unsupported_overload.cpp
 )
 

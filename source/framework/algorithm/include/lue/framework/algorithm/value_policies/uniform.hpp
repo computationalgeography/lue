@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/uniform.hpp"
+#include "lue/concept.hpp"
 
 
 namespace lue {
@@ -7,54 +8,53 @@ namespace lue {
 
         // The min/max values are the input arguments whose values are
         // relevant. These have the same element type as the output element.
-        template<typename OutputElement>
+        template<Arithmetic Element, Arithmetic... SomeElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<OutputElement, OutputElement>,
-            OutputElements<OutputElement>,
-            InputElements<OutputElement, OutputElement>>;
+            AllValuesWithinDomain<SomeElement..., Element, Element>,
+            OutputElements<Element>,
+            InputElements<SomeElement..., Element, Element>>;
 
     }  // namespace policy::uniform
 
 
     namespace value_policies {
 
-        template<typename InputElement, typename OutputElement, Rank rank>
-        PartitionedArray<OutputElement, rank> uniform(
-            PartitionedArray<InputElement, rank> const& input_array,
-            hpx::shared_future<OutputElement> const& min_value,
-            hpx::shared_future<OutputElement> const& max_value)
+        template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
+        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            PartitionedArray<SomeElement, rank> const& input_array,
+            hpx::shared_future<Element> const& min_value,
+            hpx::shared_future<Element> const& max_value) -> PartitionedArray<Element, rank>
         {
-            using Policies = policy::uniform::DefaultValuePolicies<OutputElement>;
+            using Policies = policy::uniform::DefaultValuePolicies<Element, SomeElement>;
 
             return uniform(Policies{}, input_array, min_value, max_value);
         }
 
 
-        template<typename InputElement, typename OutputElement, Rank rank>
-        PartitionedArray<OutputElement, rank> uniform(
-            PartitionedArray<InputElement, rank> const& input_array,
-            OutputElement const min_value,
-            OutputElement const max_value)
+        template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
+        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            PartitionedArray<SomeElement, rank> const& input_array,
+            Element const min_value,
+            Element const max_value) -> PartitionedArray<Element, rank>
         {
             return uniform(
                 input_array,
-                hpx::make_ready_future<OutputElement>(min_value).share(),
-                hpx::make_ready_future<OutputElement>(max_value).share());
+                hpx::make_ready_future<Element>(min_value).share(),
+                hpx::make_ready_future<Element>(max_value).share());
         }
 
 
-        template<typename Element, typename Count, Rank rank>
-        PartitionedArray<Element, rank> uniform(
+        template<Arithmetic Element, typename Count, Rank rank>
+        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
             Shape<Count, rank> const& array_shape,
             Shape<Count, rank> const& partition_shape,
             Element const min_value,
-            Element const max_value)
+            Element const max_value) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::uniform::DefaultValuePolicies<Element>;
 
-            return lue::uniform<Element>(Policies{}, array_shape, partition_shape, min_value, max_value);
+            return lue::uniform(Policies{}, array_shape, partition_shape, min_value, max_value);
         }
 
     }  // namespace value_policies
-
 }  // namespace lue

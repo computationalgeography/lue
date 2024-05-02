@@ -13,9 +13,6 @@ namespace lue {
         template<typename T>
         using Ptr = std::shared_ptr<T>;
 
-        template<typename T, Rank rank>
-        using Array = PartitionedArray<T, rank>;
-
     }  // namespace detail
 
 
@@ -23,13 +20,13 @@ namespace lue {
         @brief      A variant of all types that can be used to represent continuous fields
     */
     using Field = std::variant<
-        detail::Array<std::uint8_t, 2>,
-        detail::Array<std::int32_t, 2>,
-        detail::Array<std::uint32_t, 2>,
-        detail::Array<std::int64_t, 2>,
-        detail::Array<std::uint64_t, 2>,
-        detail::Array<float, 2>,
-        detail::Array<double, 2>,
+        PartitionedArray<std::uint8_t, 2>,
+        PartitionedArray<std::int32_t, 2>,
+        PartitionedArray<std::uint32_t, 2>,
+        PartitionedArray<std::int64_t, 2>,
+        PartitionedArray<std::uint64_t, 2>,
+        PartitionedArray<float, 2>,
+        PartitionedArray<double, 2>,
         Scalar<std::uint8_t>,
         Scalar<std::int32_t>,
         Scalar<std::uint32_t>,
