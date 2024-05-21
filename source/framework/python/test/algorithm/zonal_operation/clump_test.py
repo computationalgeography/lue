@@ -20,4 +20,9 @@ class ClumpTest(lue_test.TestCase):
 
         for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
             zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
-            lfr.clump(zones)
+
+            for connectivity in [
+                lfr.Connectivity.diagonal,
+                lfr.Connectivity.nondiagonal,
+            ]:
+                lfr.clump(zones, connectivity)

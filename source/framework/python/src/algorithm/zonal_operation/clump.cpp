@@ -26,11 +26,11 @@ namespace lue::framework {
             // .export_values()
             ;
 
-        module.def("clump", clump<std::uint8_t, 2>, "zones"_a);
-        module.def("clump", clump<std::uint32_t, 2>, "zones"_a);
-        module.def("clump", clump<std::uint64_t, 2>, "zones"_a);
-        module.def("clump", clump<std::int32_t, 2>, "zones"_a);
-        module.def("clump", clump<std::int64_t, 2>, "zones"_a);
+        module.def("clump", clump<std::uint8_t, 2>, "zones"_a, "connectivity"_a);
+        module.def("clump", clump<std::uint32_t, 2>, "zones"_a, "connectivity"_a);
+        module.def("clump", clump<std::uint64_t, 2>, "zones"_a, "connectivity"_a);
+        module.def("clump", clump<std::int32_t, 2>, "zones"_a, "connectivity"_a);
+        module.def("clump", clump<std::int64_t, 2>, "zones"_a, "connectivity"_a);
     }
 
 }  // namespace lue::framework
