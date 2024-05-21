@@ -17,11 +17,12 @@ namespace lue {
     namespace default_policies {
 
         template<typename ZoneElement, Rank rank>
-        auto clump(PartitionedArray<ZoneElement, rank> const& zone) -> PartitionedArray<ZoneElement, rank>
+        auto clump(PartitionedArray<ZoneElement, rank> const& zone, Connectivity const connectivity)
+            -> PartitionedArray<ZoneElement, rank>
         {
             using Policies = policy::clump::DefaultPolicies<ZoneElement>;
 
-            return clump(Policies{}, zone);
+            return clump(Policies{}, zone, connectivity);
         }
 
     }  // namespace default_policies

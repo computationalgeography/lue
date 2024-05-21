@@ -9,9 +9,10 @@ namespace lue::framework {
     namespace {
 
         template<typename Zone, Rank rank>
-        auto clump(PartitionedArray<Zone, rank> const& zones) -> PartitionedArray<Zone, rank>
+        auto clump(PartitionedArray<Zone, rank> const& zones, Connectivity const connectivity)
+            -> PartitionedArray<Zone, rank>
         {
-            return value_policies::clump(zones);
+            return value_policies::clump(zones, connectivity);
         }
 
     }  // Anonymous namespace
@@ -19,6 +20,12 @@ namespace lue::framework {
 
     void bind_clump(pybind11::module& module)
     {
+        pybind11::enum_<Connectivity>(module, "Connectivity")
+            .value("diagonal", Connectivity::diagonal)
+            .value("nondiagonal", Connectivity::nondiagonal)
+            // .export_values()
+            ;
+
         module.def("clump", clump<std::uint8_t, 2>, "zones"_a);
         module.def("clump", clump<std::uint32_t, 2>, "zones"_a);
         module.def("clump", clump<std::uint64_t, 2>, "zones"_a);
