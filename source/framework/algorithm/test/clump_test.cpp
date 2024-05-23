@@ -1,12 +1,12 @@
 #define BOOST_TEST_MODULE lue framework algorithm clump
 #include "lue/framework/algorithm/value_policies/clump.hpp"
+#include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include <random>
-
-#include <hpx/iostream.hpp>
 
 
 template<typename Element>
@@ -27,7 +27,7 @@ void test_clump(
 
 
 template<typename Element>
-void test_clump_single_partition(
+void test_clump(
     lue::Shape<lue::Count, 2> const& array_shape,
     lue::Shape<lue::Count, 2> const& partition_shape,
     std::initializer_list<std::initializer_list<Element>> const& zone_elements,
@@ -57,7 +57,7 @@ void test_clump_single_partition(
 
 BOOST_AUTO_TEST_CASE(constant_1x1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(constant_1x1)
 
 BOOST_AUTO_TEST_CASE(constant_2x2)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 {
     auto const x{lue::policy::no_data_value<std::int32_t>};
 
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 
 BOOST_AUTO_TEST_CASE(increasing_range_1x1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(increasing_range_1x1)
 
 BOOST_AUTO_TEST_CASE(increasing_range_1x2)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 6},
         {3, 3},
         // clang-format off
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(increasing_range_1x2)
 
 BOOST_AUTO_TEST_CASE(increasing_range_2x1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {6, 3},
         {3, 3},
         // clang-format off
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(increasing_range_2x1)
 
 BOOST_AUTO_TEST_CASE(decreasing_range)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE(seed_to_south_west)
 {
     auto const x{lue::policy::no_data_value<std::int32_t>};
 
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(seed_to_south_east)
 {
     auto const x{lue::policy::no_data_value<std::int32_t>};
 
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(seed_to_south_east)
 
 BOOST_AUTO_TEST_CASE(checker_board_1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(checker_board_2)
 {
     auto const x{lue::policy::no_data_value<std::int32_t>};
 
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(checker_board_3)
 {
     auto const x{lue::policy::no_data_value<std::int32_t>};
 
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(checker_board_3)
 
 BOOST_AUTO_TEST_CASE(rows)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -437,7 +437,7 @@ BOOST_AUTO_TEST_CASE(rows)
 
 BOOST_AUTO_TEST_CASE(cols)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -462,7 +462,7 @@ BOOST_AUTO_TEST_CASE(cols)
 
 BOOST_AUTO_TEST_CASE(diagonal_1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE(diagonal_1)
 
 BOOST_AUTO_TEST_CASE(diagonal_2)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -512,7 +512,7 @@ BOOST_AUTO_TEST_CASE(diagonal_2)
 
 BOOST_AUTO_TEST_CASE(diagonal_2x2)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -564,7 +564,7 @@ BOOST_AUTO_TEST_CASE(diagonal_2x2)
 
 BOOST_AUTO_TEST_CASE(reclass)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -646,7 +646,7 @@ BOOST_AUTO_TEST_CASE(reclass)
 
 BOOST_AUTO_TEST_CASE(u_turn_1)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 10},
         {3, 10},
         // clang-format off
@@ -671,7 +671,7 @@ BOOST_AUTO_TEST_CASE(u_turn_1)
 
 BOOST_AUTO_TEST_CASE(u_turn_2)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 10},
         {3, 10},
         // clang-format off
@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE(u_turn_2)
 
 BOOST_AUTO_TEST_CASE(u_turn_3)
 {
-    test_clump_single_partition<std::int32_t>(
+    test_clump<std::int32_t>(
         {3, 12},
         {3, 12},
         // clang-format off
@@ -719,71 +719,219 @@ BOOST_AUTO_TEST_CASE(u_turn_3)
 }
 
 
-// BOOST_AUTO_TEST_CASE(random_input)
-// {
-//     // Random distribution of zone IDs and no-data values. Verify the algorithm finishes
-//     // without crashing.
-//     lue::Rank const rank{2};
-//
-//     using ZoneElement = std::int32_t;
-//     using ClumpElement = ZoneElement;
-//     using Shape = lue::Shape<lue::Count, rank>;
-//     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
-//     using ClumpArray = lue::PartitionedArray<ClumpElement, rank>;
-//
-//     std::random_device random_device{};
-//     std::default_random_engine random_number_engine(random_device());
-//
-//     Shape const array_shape = [&]()
-//     {
-//         lue::Count const min{100};
-//         lue::Count const max{500};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return Shape{
-//             distribution(random_number_engine),
-//             distribution(random_number_engine),
-//         };
-//     }();
-//     Shape const partition_shape = [&]()
-//     {
-//         lue::Count const min{40};
-//         lue::Count const max{50};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return Shape{
-//             distribution(random_number_engine),
-//             distribution(random_number_engine),
-//         };
-//     }();
-//     lue::Count const nr_zones = [&]()
-//     {
-//         lue::Count const min{1};
-//         lue::Count const max{10};
-//         std::uniform_int_distribution<lue::Count> distribution(min, max);
-//
-//         return distribution(random_number_engine);
-//     }();
-//
-//     using namespace lue::value_policies;
-//
-//     ZoneArray const zone_array{
-//         lue::value_policies::uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
-//
-//     hpx::cout << "\n\n---------------- (" << array_shape[0] << ", " << array_shape[1] << ")\n";
-//
-//     BOOST_TEST_CONTEXT("nondiagonal")
-//     {
-//         ClumpArray const result_we_got = lue::value_policies::clump(zone_array,
-//         lue::Connectivity::nondiagonal); auto const& partitions = result_we_got.partitions();
-//         hpx::wait_all(partitions.begin(), partitions.end());
-//     }
-//
-//     BOOST_TEST_CONTEXT("diagonal")
-//     {
-//         ClumpArray const result_we_got = lue::value_policies::clump(zone_array,
-//         lue::Connectivity::diagonal); auto const& partitions = result_we_got.partitions();
-//         hpx::wait_all(partitions.begin(), partitions.end());
-//     }
-//     hpx::cout << "/----------------\n\n";
-// }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    test_clump<std::int32_t>(
+        {5, 5},
+        {5, 5},
+        // clang-format off
+        {{
+            2, 4, 1, 4, 5,
+            1, 2, 3, 4, 4,
+            1, 2, 5, 2, 2,
+            4, 5, 2, 5, 2,
+            4, 4, 1, 4, 2,
+        }},
+        {{
+             0,  1,  2,  3,  4,
+             5,  6,  7,  3,  3,
+             5,  6,  8,  9,  9,
+            10, 11, 12, 13,  9,
+            10, 10, 14, 15,  9,
+        }},
+        {{
+             0,  1,  2,  3,  4,
+             5,  0,  6,  3,  3,
+             5,  0,  7,  0,  0,
+             8,  7,  0,  7,  0,
+             8,  8,  9, 10,  0,
+        }}  // clang-format on
+    );
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_02)
+{
+    test_clump<std::int32_t>(
+        {5, 5},
+        {5, 5},
+        // clang-format off
+        {{
+            1, 2, 2, 1, 1,
+            1, 1, 1, 1, 1,
+            1, 1, 2, 1, 1,
+            1, 2, 1, 2, 1,
+            1, 2, 1, 1, 1,
+        }},
+        {{
+            0, 1, 1, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 2, 0, 0,
+            0, 3, 0, 4, 0,
+            0, 3, 0, 0, 0,
+        }},
+        {{
+            0, 1, 1, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 2, 0, 0,
+            0, 2, 0, 2, 0,
+            0, 2, 0, 0, 0,
+        }}  // clang-format on
+    );
+}
+
+
+BOOST_AUTO_TEST_CASE(use_case_03)
+{
+    test_clump<std::int32_t>(
+        {5, 5},
+        {5, 5},
+        // clang-format off
+        {{
+            2, 2, 2, 2, 1,
+            1, 2, 2, 2, 2,
+            1, 2, 1, 2, 1,
+            1, 2, 2, 2, 2,
+            2, 1, 2, 2, 1,
+        }},
+        {{
+            0, 0, 0, 0, 1,
+            2, 0, 0, 0, 0,
+            2, 0, 3, 0, 4,
+            2, 0, 0, 0, 0,
+            5, 6, 0, 0, 7,
+        }},
+        {{
+            0, 0, 0, 0, 1,
+            2, 0, 0, 0, 0,
+            2, 0, 3, 0, 4,
+            2, 0, 0, 0, 0,
+            0, 2, 0, 0, 5,
+        }}  // clang-format on
+    );
+}
+
+
+BOOST_AUTO_TEST_CASE(random_input_single_partition)
+{
+    // Random distribution of zone IDs and no-data values. Verify the algorithm finishes
+    // without crashing.
+    lue::Rank const rank{2};
+
+    using ZoneElement = std::int32_t;
+    using ClumpElement = ZoneElement;
+    using Shape = lue::Shape<lue::Count, rank>;
+    using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
+    using ClumpArray = lue::PartitionedArray<ClumpElement, rank>;
+
+    std::random_device random_device{};
+    std::default_random_engine random_number_engine(random_device());
+
+    Shape const array_shape = [&]()
+    {
+        lue::Count const min{100};
+        lue::Count const max{500};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    }();
+    Shape const partition_shape{array_shape};
+
+    lue::Count const nr_zones = [&]()
+    {
+        lue::Count const min{1};
+        lue::Count const max{5};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return distribution(random_number_engine);
+    }();
+
+    using namespace lue::value_policies;
+
+    ZoneArray zone_array{uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones)};
+    zone_array = where(zone_array > 1, zone_array);
+
+    BOOST_TEST_CONTEXT("nondiagonal")
+    {
+        ClumpArray const result_we_got = clump(zone_array, lue::Connectivity::nondiagonal);
+        auto const& partitions = result_we_got.partitions();
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
+
+    BOOST_TEST_CONTEXT("diagonal")
+    {
+        ClumpArray const result_we_got = clump(zone_array, lue::Connectivity::diagonal);
+        auto const& partitions = result_we_got.partitions();
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(random_input_multiple_partitions)
+{
+    // Random distribution of zone IDs and no-data values. Verify the algorithm finishes
+    // without crashing.
+    lue::Rank const rank{2};
+
+    using ZoneElement = std::int32_t;
+    using ClumpElement = ZoneElement;
+    using Shape = lue::Shape<lue::Count, rank>;
+    using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
+    using ClumpArray = lue::PartitionedArray<ClumpElement, rank>;
+
+    std::random_device random_device{};
+    std::default_random_engine random_number_engine(random_device());
+
+    Shape const array_shape = [&]()
+    {
+        lue::Count const min{100};
+        lue::Count const max{500};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    }();
+    Shape const partition_shape = [&]()
+    {
+        lue::Count const min{40};
+        lue::Count const max{50};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    }();
+    lue::Count const nr_zones = [&]()
+    {
+        lue::Count const min{1};
+        lue::Count const max{5};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return distribution(random_number_engine);
+    }();
+
+    using namespace lue::value_policies;
+
+    ZoneArray zone_array = uniform<ZoneElement>(array_shape, partition_shape, 1, nr_zones);
+    zone_array = where(zone_array > 1, zone_array);
+
+    BOOST_TEST_CONTEXT("nondiagonal")
+    {
+        ClumpArray const result_we_got = clump(zone_array, lue::Connectivity::nondiagonal);
+        auto const& partitions = result_we_got.partitions();
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
+
+    BOOST_TEST_CONTEXT("diagonal")
+    {
+        ClumpArray const result_we_got = clump(zone_array, lue::Connectivity::diagonal);
+        auto const& partitions = result_we_got.partitions();
+        hpx::wait_all(partitions.begin(), partitions.end());
+    }
+}

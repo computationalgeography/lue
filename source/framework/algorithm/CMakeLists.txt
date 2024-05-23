@@ -1224,6 +1224,7 @@ target_link_libraries(lue_framework_zonal_operation
     PUBLIC
         lue::framework_algorithm
         lue::framework_global_operation  # unique
+        # HPX::iostreams_component  # TODO remove
 )
 
 

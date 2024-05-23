@@ -196,8 +196,7 @@ foreach(name ${zonal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
-            lue::framework_zonal_operation
-            HPX::iostreams_component)
+            lue::framework_zonal_operation)
 endforeach()
 
 foreach(name ${routing_operation_names})

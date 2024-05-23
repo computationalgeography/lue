@@ -4,7 +4,7 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
 
-#include <hpx/iostream.hpp>
+// #include <hpx/iostream.hpp>
 #include <hpx/serialization.hpp>
 
 #include <stack>
@@ -36,14 +36,15 @@ namespace lue {
         void add_to_clump(
             Array& clump_elements, Index const row, Index const col, ElementT<Array> const& clump_id)
         {
-            // hpx::cout << "    add to clump: (" << row << ", " << col << ") → " << clump_id << std::endl;
+            // hpx::cout << "        add to clump: (" << row << ", " << col << ") → " << clump_id <<
+            // std::endl;
             clump_elements(row, col) = clump_id;
         }
 
 
         // SpanRequest defines a span of cells in the parent (previous, upper or lower row)
-        // that is part of the clump. Each cell in the current row that is connected to one of
-        // these span cells is part of the clump.
+        // *that is part of the clump*. Each cell in the current row that is connected to one of
+        // these span cells is also part of the clump.
         // Span request definition:
         // - west:         Left-most col of span of cells in parent row
         // - east:         Right-most col of span of cells in parent row
@@ -56,29 +57,46 @@ namespace lue {
         {
             public:
 
+                Index row;
                 Index west;
                 Index east;
-                Index row;
                 Index direction;
         };
 
 
-        /*!
-            @brief      Detect which cells are part of the clump at @a cell_idxs in @a
-                        zone_elements, and mark it as clump @a clump in clump_elements
-            @param      .
-            @return     .
-            @exception  .
-        */
+#ifndef NDEBUG
+        void assert_request_is_valid(
+            SpanRequest const& request, auto const& clump_elements, auto const clump_id)
+        {
+            auto const [row, west, east, direction] = request;
+            auto const [nr_rows, nr_cols] = clump_elements.shape();
+
+            lue_hpx_assert(row >= 0);
+            lue_hpx_assert(row < nr_rows);
+            lue_hpx_assert(west >= 0);
+            lue_hpx_assert(west < nr_cols);
+            lue_hpx_assert(east < nr_cols);
+            lue_hpx_assert(west <= east);
+            lue_hpx_assert(direction == -1 || direction == 1);
+
+            for (Index col = west; col <= east; ++col)
+            {
+                lue_hpx_assert(clump_elements(row + -direction, col) == clump_id);
+            }
+        }
+#else
+#define assert_request_is_valid(request, clump_elements, clump_id)
+#endif
+
+
         template<typename InputNoDataPolicy, typename OutputNoDataPolicy, typename Array>
-        void flood_fill(
+        void flood_fill_nondiagonal(
             InputNoDataPolicy const& indp,
             OutputNoDataPolicy const& ondp,
             Array const& zone_elements,
             std::tuple<Index, Index> const& cell_idxs,
             Array& clump_elements,
-            ElementT<Array> const clump_id,
-            Connectivity const connectivity)
+            ElementT<Array> const clump_id)
         {
             using ZoneElement = ElementT<Array>;
 
@@ -95,8 +113,9 @@ namespace lue {
             ZoneElement const zone_id{zone_elements(row, col)};
             lue_hpx_assert(in_clump(zone_elements, row, col, zone_id));
 
+
+            // TODO Move to some helper class instance
             // Use init list to work around bug in Clang
-            // auto row_available = [nr_rows=nr_rows](Index const current_row, Index const direction) -> bool
             auto row_available = [nr_rows = nr_rows](Index const current_row, Index const direction) -> bool
             {
                 return (direction == -1 && current_row > 0) ||         // upwards
@@ -109,18 +128,23 @@ namespace lue {
                        in_clump(zone_elements, row, col, zone_id);
             };
 
+
             std::stack<SpanRequest> requests{};
 
             // Push span request definitions to the stack. One for moving in upwards direction
             // and one for moving in downwards direction.
 
             // downwards, start with current row
-            requests.push(SpanRequest{.west = col, .east = col, .row = row, .direction = 1});
+            // hpx::cout << "    push span request 1: (" << row << ", " << col << ", " << col << ", " << 1 <<
+            // ")" << std::endl;
+            requests.push(SpanRequest{.row = row, .west = col, .east = col, .direction = 1});
 
             // upwards, start with row above us, if available
             if (row_available(row, -1))
             {
-                requests.push(SpanRequest{.west = col, .east = col, .row = row - 1, .direction = -1});
+                // hpx::cout << "    push span request 2: (" << row - 1 << ", " << col << ", " << col << ", "
+                // << -1 << ")" << std::endl;
+                requests.push(SpanRequest{.row = row - 1, .west = col, .east = col, .direction = -1});
             }
 
             while (!requests.empty())
@@ -128,9 +152,9 @@ namespace lue {
                 SpanRequest request{requests.top()};
                 requests.pop();
 
-                auto [west, east, row, direction] = request;
+                auto [row, west, east, direction] = request;
 
-                // hpx::cout << "    handle span request: (" << west << ", " << east << ", " << row << ", " <<
+                // hpx::cout << "    handle span request: (" << row << ", " << west << ", " << east << ", " <<
                 // direction << ")" << std::endl;
 
                 Index col = west;
@@ -138,9 +162,9 @@ namespace lue {
                 // Changed WRT floodfill algorithm on Wikipedia:
                 //     Add support for diagonal cell connectivity
 
-                // Test whether the cell to the west of the span is potentially connected to the span
-                if ((cell_is_connected(row, col) || connectivity == Connectivity::diagonal) && col > 0 &&
-                    cell_is_connected(row, col - 1) &&
+                // Test whether the cell to the west of the parent span is potentially connected
+                if (cell_is_connected(row, col) &&
+                    // col > 0 && cell_is_connected(row, col - 1) &&
                     !added_to_clump_already(ondp, clump_elements, row, col - 1))
                 {
                     // Focus in this block is on cells to the west of the current span
@@ -148,15 +172,9 @@ namespace lue {
                     // Scan cells to the left of the west cell of the current span (exclude
                     // this west cell). While scanning, add cells that are part of the clump
                     // to the clump.
-                    // if(col > 0 && cell_is_connected(row, col - 1) && !added_to_clump_already(ondp,
-                    // clump_elements, row, col - 1))
-                    // {
                     for (; col > 0 && cell_is_connected(row, col - 1); --col)
                     {
-                        // TODO
                         lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, col - 1));
-                        // lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, col - 1) ||
-                        // clump_elements(row, col - 1) == clump_id);
 
                         add_to_clump(clump_elements, row, col - 1, clump_id);
 
@@ -164,7 +182,6 @@ namespace lue {
                         lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, col - 1));
                         lue_hpx_assert(clump_elements(row, col - 1) == clump_id);
                     }
-                    // }
 
                     if (col < west - 1)
                     {
@@ -187,11 +204,14 @@ namespace lue {
                             //     Used east = west - 2 instead of east = west - 1, for the
                             //     same reason as above. west - 1 in the parent row should
                             //     already be part of the clump.
+                            // hpx::cout << "    push span request 3: (" << row - direction << ", " << col <<
+                            // ", " << west - 2 << ", " << -direction << ")" << std::endl;
                             requests.push(SpanRequest{
+                                .row = row - direction,
                                 .west = col,
                                 .east = west - 2,
-                                .row = row - direction,
                                 .direction = -direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
                 }
@@ -205,38 +225,25 @@ namespace lue {
                     // Scan cells to the right of the current west cell (including this west
                     // cell). Add cells that are part of the clump to the clump. It is possible
                     // that west ends up to the right of east.
-                    while (west < nr_cols &&
-                           cell_is_connected(
-                               row, west))  //  && !added_to_clump_already(ondp, clump_elements, row, west))
+                    if (!added_to_clump_already(ondp, clump_elements, row, west))  // )
                     {
-                        // lue_hpx_assert(
-                        //     !added_to_clump_already(ondp, clump_elements, row, west) ||
-                        //     (clump_elements(row, west) == clump_id));
+                        while (west < nr_cols && cell_is_connected(row, west))
+                        {
+                            lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, west));
 
-                        // if(!added_to_clump_already(ondp, clump_elements, row, west))
-                        // {
+                            add_to_clump(clump_elements, row, west, clump_id);
 
-                        // TODO
-                        lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, west));
-                        // lue_hpx_assert(
-                        //     !added_to_clump_already(ondp, clump_elements, row, west) ||
-                        //     clump_elements(row, west) == clump_id);
-                        add_to_clump(clump_elements, row, west, clump_id);
+                            lue_hpx_assert(cell_is_connected(row, west));
+                            lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, west));
+                            lue_hpx_assert(clump_elements(row, west) == clump_id);
 
-                        lue_hpx_assert(cell_is_connected(row, west));
-                        lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, west));
-                        lue_hpx_assert(clump_elements(row, west) == clump_id);
-
-                        // }
-                        west += 1;
+                            west += 1;
+                        }
                     }
 
                     // By now, west is pointing to the cell outside of the row, the cell at
                     // east + 1, or a no-data cell, or an outside-of-clump cell
                     // TODO or is already connected
-
-                    // if(west <= nr_cols && cell_is_connected(row, west - 1) && !added_to_clump_already(ondp,
-                    // clump_elements, row, west - 1
 
                     if (west > col)
                     {
@@ -245,11 +252,14 @@ namespace lue {
                         // in the same direction.
                         if (row_available(row, direction))
                         {
+                            // hpx::cout << "    push span request 4: (" << row + direction << ", " << col <<
+                            // ", " << west - 1 << ", " << direction << ")" << std::endl;
                             requests.push(SpanRequest{
+                                .row = row + direction,
                                 .west = col,
                                 .east = west - 1,
-                                .row = row + direction,
                                 .direction = direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
 
@@ -265,11 +275,250 @@ namespace lue {
                             //     Used west = east + 2 instead of west = east + 1. The direct eastern
                             //     neighbour of the east cell in the previous scan should already
                             //     be part of the clump.
+                            // hpx::cout << "    push span request 5: (" << row - direction << ", " << east +
+                            // 1 << ", " << west - 1 << ", " << -direction << ")" << std::endl;
                             requests.push(SpanRequest{
-                                .west = east + 2,
-                                .east = west - 1,
                                 .row = row - direction,
+                                .west = east + 1,
+                                .east = west - 1,
                                 .direction = -direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
+                        }
+                    }
+
+                    // If we end up to the left of east, we are still within the span of
+                    // the previous row. All clump cells we may encounter are still connected
+                    // to the parent's clump cells.
+
+                    // Move to at least one cell to the right of the current cell
+                    west += 1;
+
+                    // While scanning to the right, skip all no-data and non-clump cells
+                    while (west <= east && !cell_is_connected(row, west))
+                    {
+                        west += 1;
+                    }
+
+                    // Set column of current cell to the first clump cell found, if any
+                    col = west;
+                }
+            }
+        }
+
+
+        /*!
+            @brief      Detect which cells are part of the clump at @a cell_idxs in @a
+                        zone_elements, and mark it as clump @a clump in clump_elements
+            @param      .
+            @return     .
+            @exception  .
+        */
+        template<typename InputNoDataPolicy, typename OutputNoDataPolicy, typename Array>
+        void flood_fill_diagonal(
+            InputNoDataPolicy const& indp,
+            OutputNoDataPolicy const& ondp,
+            Array const& zone_elements,
+            std::tuple<Index, Index> const& cell_idxs,
+            Array& clump_elements,
+            ElementT<Array> const clump_id)
+        {
+            using ZoneElement = ElementT<Array>;
+
+            lue_hpx_assert(rank<Array> == 2);
+            lue_hpx_assert(zone_elements.shape() == clump_elements.shape());
+
+            auto const [nr_rows, nr_cols] = zone_elements.shape();
+            lue_hpx_assert(nr_rows > 0 && nr_cols > 0);
+
+            auto const [row, col] = cell_idxs;
+            lue_hpx_assert(!indp.is_no_data(zone_elements, row, col));
+            // hpx::cout << "flood_fill (" << row << ", " << col << ") → " << clump_id << std::endl;
+
+            ZoneElement const zone_id{zone_elements(row, col)};
+            lue_hpx_assert(in_clump(zone_elements, row, col, zone_id));
+
+
+            // Use init list to work around bug in Clang
+            // auto row_available = [nr_rows=nr_rows](Index const current_row, Index const direction) -> bool
+            auto row_available = [nr_rows = nr_rows](Index const current_row, Index const direction) -> bool
+            {
+                return (direction == -1 && current_row > 0) ||         // upwards
+                       (direction == 1 && current_row < nr_rows - 1);  // downwards
+            };
+
+            auto cell_is_connected =
+                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool {
+                return !indp.is_no_data(zone_elements, row, col) &&
+                       in_clump(zone_elements, row, col, zone_id);
+            };
+
+
+            std::stack<SpanRequest> requests{};
+
+            // Push span request definitions to the stack. One for moving in upwards direction
+            // and one for moving in downwards direction.
+
+            // downwards, start with current row
+            // hpx::cout << "    push span request 1: (" << row << ", " << col << ", " << col << ", " << 1 <<
+            // ")" << std::endl;
+            requests.push(SpanRequest{.row = row, .west = col, .east = col, .direction = 1});
+            // assert_request_is_valid(requests.top(), clump_elements, clump_id);
+
+            // upwards, start with row above us, if available
+            if (row_available(row, -1))
+            {
+                // hpx::cout << "    push span request 2: (" << row - 1 << ", " << col << ", " << col << ", "
+                // << -1 << ")" << std::endl;
+                requests.push(SpanRequest{.row = row - 1, .west = col, .east = col, .direction = -1});
+                // assert_request_is_valid(requests.top(), clump_elements, clump_id);
+            }
+
+            while (!requests.empty())
+            {
+                SpanRequest request{requests.top()};
+                requests.pop();
+
+                auto [row, west, east, direction] = request;
+
+                // hpx::cout << "    handle span request: (" << row << ", " << west << ", " << east << ", " <<
+                // direction << ")" << std::endl;
+
+                // if(connectivity == Connectivity::diagonal && added_to_clump_already(ondp, clump_elements,
+                // row, west))
+                // {
+                //     continue;
+                // }
+
+                // if(added_to_clump_already(ondp, clump_elements, row, west))
+                // {
+                //     continue;
+                // }
+
+                Index col = west;
+
+                // Changed WRT floodfill algorithm on Wikipedia:
+                //     Add support for diagonal cell connectivity
+
+                // Test whether the cell to the west of the parent span is potentially connected
+                if (col > 0 && cell_is_connected(row, col - 1) &&
+                    !added_to_clump_already(ondp, clump_elements, row, col - 1))
+                {
+                    // Focus in this block is on cells to the west of the current span
+
+                    // Scan cells to the left of the west cell of the current span (exclude
+                    // this west cell). While scanning, add cells that are part of the clump
+                    // to the clump.
+                    for (; col > 0 && cell_is_connected(row, col - 1); --col)
+                    {
+                        lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, col - 1));
+
+                        add_to_clump(clump_elements, row, col - 1, clump_id);
+
+                        lue_hpx_assert(cell_is_connected(row, col - 1));
+                        lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, col - 1));
+                        lue_hpx_assert(clump_elements(row, col - 1) == clump_id);
+                    }
+
+                    if (col < west - 1)
+                    {
+                        // Here, col is pointing to the left-most cell *that is part of the clump*
+                        lue_hpx_assert(cell_is_connected(row, col));
+                        lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, col));
+                        lue_hpx_assert(clump_elements(row, col) == clump_id);
+
+                        // Changed WRT floodfill algorithm on Wikipedia:
+                        //     Used (col < west - 1) instead of (col < west). The direct western
+                        //     neighbour of the west cell in the previous scan should already
+                        //     be part of the clump.
+
+                        // Found cells to the left of the west cell we started with. Push span
+                        // request definition to stack, for continuing moving in the previous
+                        // direction (U-turn).
+                        if (row_available(row, -direction))
+                        {
+                            // Changed WRT floodfill algorithm on Wikipedia:
+                            //     Used east = west - 2 instead of east = west - 1, for the
+                            //     same reason as above. west - 1 in the parent row should
+                            //     already be part of the clump.
+                            // hpx::cout << "    push span request 3: (" << row - direction << ", " << col <<
+                            // ", " << west - 2 << ", " << -direction << ")" << std::endl;
+                            requests.push(SpanRequest{
+                                .row = row - direction,
+                                .west = col,
+                                .east = west - 2,
+                                .direction = -direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
+                        }
+                    }
+                }
+
+                while (west <= east)
+                {
+                    // Focus in this block is on cells within the parent's span and to the
+                    // right of it. As long as west <= east, cells with the right zone_id are
+                    // part of the clump. Cells with another zone_id should just be skipped.
+
+                    // Scan cells to the right of the current west cell (including this west
+                    // cell). Add cells that are part of the clump to the clump. It is possible
+                    // that west ends up to the right of east.
+                    if (!added_to_clump_already(ondp, clump_elements, row, west))
+                    {
+                        while (west < nr_cols && cell_is_connected(row, west))
+                        {
+                            lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, west));
+
+                            add_to_clump(clump_elements, row, west, clump_id);
+
+                            lue_hpx_assert(cell_is_connected(row, west));
+                            lue_hpx_assert(added_to_clump_already(ondp, clump_elements, row, west));
+                            lue_hpx_assert(clump_elements(row, west) == clump_id);
+
+                            west += 1;
+                        }
+                    }
+
+                    // By now, west is pointing to the cell outside of the row, the cell at
+                    // east + 1, or a no-data cell, or an outside-of-clump cell
+                    // TODO or is already connected
+
+                    if (west > col)
+                    {
+                        // Found cells to the right of the western-most cell in the current
+                        // span. Push span request definition to stack, for continuing moving
+                        // in the same direction.
+                        if (row_available(row, direction))
+                        {
+                            // hpx::cout << "    push span request 4: (" << row + direction << ", " << col <<
+                            // ", " << west - 1 << ", " << direction << ")" << std::endl;
+                            requests.push(SpanRequest{
+                                .row = row + direction,
+                                .west = col,
+                                .east = west - 1,
+                                .direction = direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
+                        }
+                    }
+
+                    if (west - 1 > east)
+                    {
+                        // Found cells to the right of the east clump cell in the parent's span.
+                        // Push span request definition to stack, for continuing moving in the
+                        // previous direction (U-turn).
+                        // Since west > east, this is that last thing that happens in this loop.
+                        if (row_available(row, -direction))
+                        {
+                            // Changed WRT floodfill algorithm on Wikipedia:
+                            //     Used west = east + 2 instead of west = east + 1. The direct eastern
+                            //     neighbour of the east cell in the previous scan should already
+                            //     be part of the clump.
+                            // hpx::cout << "    push span request 5: (" << row - direction << ", " << east +
+                            // 1 << ", " << west - 1 << ", " << -direction << ")" << std::endl;
+                            requests.push(SpanRequest{
+                                .row = row - direction,
+                                .west = east + 1,
+                                .east = west - 1,
+                                .direction = -direction});
+                            assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
 
@@ -292,15 +541,12 @@ namespace lue {
 
                 // Changed WRT floodfill algorithm on Wikipedia:
                 //     Add support for diagonal cell connectivity
-                if (connectivity == Connectivity::diagonal && west - 1 == east &&
-                    cell_is_connected(row, west) && !added_to_clump_already(ondp, clump_elements, row, west))
+                if (east < nr_cols - 1 && west - 1 == east && cell_is_connected(row, west) &&
+                    !added_to_clump_already(ondp, clump_elements, row, west))
                 {
                     while (west < nr_cols && cell_is_connected(row, west))
                     {
                         lue_hpx_assert(!added_to_clump_already(ondp, clump_elements, row, west));
-                        // lue_hpx_assert(
-                        //     !added_to_clump_already(ondp, clump_elements, row, west) ||
-                        //     clump_elements(row, west) == clump_id);
 
                         add_to_clump(clump_elements, row, west, clump_id);
 
@@ -316,21 +562,53 @@ namespace lue {
 
                     if (row_available(row, direction))
                     {
+                        // hpx::cout << "    push span request 6: (" << row + direction << ", " << east + 1 <<
+                        // ", " << west - 1 << ", " << direction << ")" << std::endl;
                         requests.push(SpanRequest{
+                            .row = row + direction,
                             .west = east + 1,
                             .east = west - 1,
-                            .row = row + direction,
                             .direction = direction});
+                        assert_request_is_valid(requests.top(), clump_elements, clump_id);
                     }
 
                     if (row_available(row, -direction))
                     {
+                        // hpx::cout << "    push span request 7: (" << row - direction << ", " << east + 1 <<
+                        // ", " << west - 1 << ", " << -direction << ")" << std::endl;
                         requests.push(SpanRequest{
-                            .west = east + 2,
-                            .east = west - 1,
                             .row = row - direction,
+                            .west = east + 1,
+                            .east = west - 1,
                             .direction = -direction});
+                        assert_request_is_valid(requests.top(), clump_elements, clump_id);
                     }
+                }
+            }
+        }
+
+
+        template<typename InputNoDataPolicy, typename OutputNoDataPolicy, typename Array>
+        void flood_fill(
+            InputNoDataPolicy const& indp,
+            OutputNoDataPolicy const& ondp,
+            Array const& zone_elements,
+            std::tuple<Index, Index> const& cell_idxs,
+            Array& clump_elements,
+            ElementT<Array> const clump_id,
+            Connectivity const connectivity)
+        {
+            switch (connectivity)
+            {
+                case Connectivity::nondiagonal:
+                {
+                    flood_fill_nondiagonal(indp, ondp, zone_elements, cell_idxs, clump_elements, clump_id);
+                    break;
+                }
+                case Connectivity::diagonal:
+                {
+                    flood_fill_diagonal(indp, ondp, zone_elements, cell_idxs, clump_elements, clump_id);
+                    break;
                 }
             }
         }
