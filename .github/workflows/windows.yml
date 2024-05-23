@@ -108,7 +108,7 @@ jobs:
             build_type: Release
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            cmake_flags: "-D BOOST_ROOT=$CONDA_PREFIX/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=$CONDA_PREFIX/Library"
             hpx_version: ${{ env.hpx_version }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
@@ -159,7 +159,7 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }} \
+                      -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
                       -D HPX_ROOT=${{ env.hpx_install_directory }}
 
         - name: build
@@ -219,9 +219,9 @@ jobs:
                   -G "Ninja" \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
-                  -D LUE_ROOT=${{ env.lue_development_install_directory }} \
+                  -D lue_ROOT=${{ env.lue_development_install_directory }} \
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                  -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+                  -D mdspan_ROOT=${{ env.mdspan_install_directory }}
               cmake --build ${{ env.lue_consume_build_directory }} --target all
 
               export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"
