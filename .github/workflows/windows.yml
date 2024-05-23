@@ -52,7 +52,7 @@ jobs:
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
-          mdspan_version: mdspan-0.6.0
+          mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
           mdspan_source_directory: mdspan_source
           mdspan_build_directory: mdspan_build
           mdspan_install_directory: mdspan_install
@@ -119,7 +119,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            mdspan_version: ${{ env.mdspan_version }}
+            mdspan_tag: ${{ env.mdspan_tag }}
             source_directory: ${{ env.mdspan_source_directory }}
             build_directory: ${{ env.mdspan_build_directory }}
             install_directory: ${{ env.mdspan_install_directory }}

@@ -50,7 +50,6 @@ runs:
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
             ${{ inputs.cmake_flags }}
         cmake --build ${{ inputs.build_directory }} --target all
         cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip

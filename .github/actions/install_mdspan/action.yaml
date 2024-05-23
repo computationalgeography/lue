@@ -5,7 +5,7 @@ inputs:
     required: true
   build_type:
     required: true
-  mdspan_version:
+  mdspan_tag:
     required: true
   source_directory:
     required: true
@@ -22,7 +22,7 @@ runs:
         git clone https://github.com/kokkos/mdspan.git ${{ inputs.source_directory }}
 
         cd ${{ inputs.source_directory }}
-        git checkout ${{ inputs.mdspan_version }}
+        git checkout ${{ inputs.mdspan_tag }}
         cd -
 
         mkdir ${{ inputs.build_directory }}
