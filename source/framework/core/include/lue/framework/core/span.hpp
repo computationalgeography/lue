@@ -1,19 +1,21 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
-#include <mdspan/mdspan.hpp>
+#include <experimental/mdspan>
 
 
 namespace lue {
 
     template<Rank rank>
-    using DynamicExtents = Kokkos::dextents<Index, rank>;
+    using DynamicExtents = std::experimental::dextents<Index, rank>;
 
     template<typename Element, Rank rank>
-    using DynamicSpan = Kokkos::mdspan<Element, DynamicExtents<rank>, Kokkos::layout_right>;
+    using DynamicSpan =
+        std::experimental::mdspan<Element, DynamicExtents<rank>, std::experimental::layout_right>;
 
     template<typename Element, Rank rank>
-    using DynamicSubspan = Kokkos::mdspan<Element, DynamicExtents<rank>, Kokkos::layout_stride>;
+    using DynamicSubspan =
+        std::experimental::mdspan<Element, DynamicExtents<rank>, std::experimental::layout_stride>;
 
-    using Kokkos::submdspan;
+    using std::experimental::submdspan;
 
 }  // namespace lue

@@ -25,8 +25,7 @@ jobs:
                 compiler:
                   - { name: "visual studio", c: cl, cxx: cl }
                 vs:
-                  # HPX can't be built with toolset 14.39 yet
-                  - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14.38" }
+                  - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14" }
                 python_version: ["3.9"]
                 architecture: ["amd64"]
             fail-fast: false
@@ -49,10 +48,11 @@ jobs:
           lue_development_install_directory: lue_development_install
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
-          hpx_version: 1.9.1
+          hpx_version: 1.10.0-rc2
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
+          mdspan_version: mdspan-0.6.0
           mdspan_source_directory: mdspan_source
           mdspan_build_directory: mdspan_build
           mdspan_install_directory: mdspan_install
@@ -108,9 +108,7 @@ jobs:
             build_type: Release
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            # Boost root is here: $CONDA_PREFIX/Library, but this results in a backslashes in a Windows path in the HPXConfig.cmake
-            # That is a bug in the HPX CMake scripts. Forward slashes should be used, e.g.: file(TO_CMAKE_PATH BOOST_ROOT HPX_BOOST_ROOT).
-            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0148=OLD -D BOOST_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            cmake_flags: "-D BOOST_ROOT=$CONDA_PREFIX/Library -D HWLOC_ROOT=$CONDA_PREFIX/Library -D HWLOC_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_version: ${{ env.hpx_version }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
@@ -121,7 +119,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            mdspan_tag: 721efd8  # 20240305
+            mdspan_version: ${{ env.mdspan_version }}
             source_directory: ${{ env.mdspan_source_directory }}
             build_directory: ${{ env.mdspan_build_directory }}
             install_directory: ${{ env.mdspan_install_directory }}
@@ -152,7 +150,6 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
-                      -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
@@ -222,7 +219,6 @@ jobs:
                   -G "Ninja" \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
-                  -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                   -D LUE_ROOT=${{ env.lue_development_install_directory }} \
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
                   -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
