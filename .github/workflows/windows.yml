@@ -48,7 +48,8 @@ jobs:
           lue_development_install_directory: lue_development_install
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
-          hpx_version: 1.10.0-rc2
+          hpx_version: 1.10.0
+          hpx_branch: 1.10.X  # TODO Replace with v1.10.0 once HPX is released
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
@@ -109,7 +110,7 @@ jobs:
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
             cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=$CONDA_PREFIX/Library"
-            hpx_version: ${{ env.hpx_version }}
+            hpx_branch: ${{ env.hpx_branch }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
             install_directory: ${{ env.hpx_install_directory }}

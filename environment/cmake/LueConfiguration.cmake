@@ -472,6 +472,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
+                list(APPEND hpx_versions_to_try v1.10.0)
                 list(APPEND hpx_versions_to_try v1.9.1)
                 list(APPEND hpx_versions_to_try v1.9.0)
             endif()
