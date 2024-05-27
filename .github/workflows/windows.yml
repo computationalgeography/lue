@@ -161,7 +161,10 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
-                      -D HPX_ROOT=${{ env.hpx_install_directory }}
+                      -D HPX_ROOT=${{ env.hpx_install_directory }} \
+                      -D Hwloc_ROOT=$CONDA_PREFIX/Library \
+                      -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
+
 
         - name: build
           run: |
