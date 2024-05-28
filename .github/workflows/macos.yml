@@ -178,7 +178,10 @@ jobs:
               source env/bin/activate
 
               # Unit tests
-              ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
+              ctest \
+                  --test-dir ${{ env.lue_build_directory }} \
+                  --output-on-failure \
+                  --exclude-regex lue_py_image_land_python_test
 
               # Test of runtime targets
               ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version

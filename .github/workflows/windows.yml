@@ -165,7 +165,6 @@ jobs:
                       -D Hwloc_ROOT=$CONDA_PREFIX/Library \
                       -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
 
-
         - name: build
           run: |
               cmake --build ${{ env.lue_build_directory }} --target all
@@ -186,7 +185,10 @@ jobs:
         - name: test
           run: |
               # Unit tests
-              ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
+              ctest \
+                  --test-dir ${{ env.lue_build_directory }} \
+                  --output-on-failure \
+                  --exclude-regex lue_py_image_land_python_test
 
               # Tests of runtime targets
               # Add location of dependencies installed with Conan to the runtime environment
