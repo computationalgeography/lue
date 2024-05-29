@@ -52,7 +52,7 @@ jobs:
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
           hpx_version: 1.10.0
-          hpx_branch: release-1.10.X  # TODO Replace with v1.10.0 once HPX is released
+          hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
