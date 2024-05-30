@@ -49,7 +49,6 @@ target_link_libraries(lue_framework_algorithm
         lue::framework_partitioned_array
         lue::framework_partitioned_route
         lue::framework_core
-        # HPX::iostreams_component
         HPX::hpx
 )
 
@@ -1224,9 +1223,7 @@ target_link_libraries(lue_framework_zonal_operation
     PUBLIC
         lue::framework_algorithm
         lue::framework_global_operation  # unique
-        # HPX::iostreams_component  # TODO remove
 )
-
 
 
 # Instantiate global operations ------------------------------------------------

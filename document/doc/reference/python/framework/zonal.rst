@@ -4,6 +4,7 @@
 Zonal
 =====
 .. autosummary::
+    clump
     zonal_area
     zonal_diversity
     zonal_majority
@@ -14,6 +15,7 @@ Zonal
     zonal_sum
     zonal_uniform
 
+.. autofunction:: clump
 .. autofunction:: zonal_area
 .. autofunction:: zonal_diversity
 .. autofunction:: zonal_majority

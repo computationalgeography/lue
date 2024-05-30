@@ -95,3 +95,10 @@ class ZonalOperationTest(OperationTest):
             areaclass = self.spatial[areaclass_type]
 
             _ = lpr.areauniform(areaclass)
+
+    @lue_test.framework_test_case
+    def test_clump(self):
+        for areaclass_type in [np.uint8, np.int32]:
+            areaclass = self.spatial[areaclass_type]
+
+            _ = lpr.clump(areaclass)

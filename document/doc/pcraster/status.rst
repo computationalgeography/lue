@@ -183,8 +183,9 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - clump
      - ✅
-     - | LUE treats all 8 surrounding cells to be potential neighbours.
-       | This is also the default behaviour of PCRaster.
+     - | LUE has support for diagonal and nondiagonal connectivity.
+       | Use diagonal connectivity to get the same behaviour as
+       | PCRaster's clump.
    * - cos
      - ✅
      -

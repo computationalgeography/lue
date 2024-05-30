@@ -403,8 +403,8 @@ def celllength(*args):
     return configuration.cell_size
 
 
-def clump(*args):
-    raise NotImplementedError("clump")
+def clump(expression):
+    return lfr.clump(expression, lfr.Connectivity.diagonal)
 
 
 def cos(expression):
