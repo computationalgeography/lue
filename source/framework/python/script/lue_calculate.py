@@ -251,7 +251,7 @@ Options:
     statement            Assignment statement to evaluate
     -h --help            Show this screen
     --version            Show version
-    --partition=<shape>  Shape of partitions
+    --partition=<shape>  Shape of partitions, formatted as #rows,#cols
 
 The right-hand side expression of the assignment statement must be a
 valid Python expression. It is assumed that all functions and operators
@@ -286,7 +286,7 @@ Examples:
 
     partition_shape: typing.Optional[tuple[int, int]] = None
 
-    if "--partition_shape" in arguments:
+    if arguments["--partition"] is not None:  # type: ignore
         partition_shape = tuple(
             int(extent) for extent in arguments["--partition"].split(",")  # type: ignore
         )
