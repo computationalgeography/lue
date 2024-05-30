@@ -279,7 +279,7 @@ endif()
 if(LUE_MDSPAN_REQUIRED)
     FetchContent_Declare(mdspan
         GIT_REPOSITORY https://github.com/kokkos/mdspan.git
-        GIT_TAG 721efd80b222b2c2c472fc7cae210c66cac194d6  # 20240305
+        GIT_TAG 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
         SYSTEM
         FIND_PACKAGE_ARGS
     )
@@ -472,6 +472,7 @@ if(LUE_HPX_REQUIRED)
                 list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
             else()
                 # Try these versions in turn
+                list(APPEND hpx_versions_to_try v1.10.0)
                 list(APPEND hpx_versions_to_try v1.9.1)
                 list(APPEND hpx_versions_to_try v1.9.0)
             endif()

@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single row
     {
-        auto const row = lue::submdspan(raster, 3, Kokkos::full_extent);
+        auto const row = lue::submdspan(raster, 3, std::experimental::full_extent);
         BOOST_CHECK_EQUAL(row.rank(), 1);
         BOOST_REQUIRE_EQUAL(row.extent(0), nr_cols);
         BOOST_CHECK_EQUAL(row(0), idx(3, 0));
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
 
     // Select a single column
     {
-        auto const col = lue::submdspan(raster, Kokkos::full_extent, 4);
+        auto const col = lue::submdspan(raster, std::experimental::full_extent, 4);
         BOOST_CHECK_EQUAL(col.rank(), 1);
         BOOST_REQUIRE_EQUAL(col.extent(0), nr_rows);
         BOOST_CHECK_EQUAL(col(0), idx(0, 4));

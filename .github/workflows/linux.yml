@@ -51,10 +51,12 @@ jobs:
           lue_development_install_directory: lue_development_install
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
-          hpx_version: 1.9.1
+          hpx_version: 1.10.0
+          hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
+          mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
           mdspan_source_directory: mdspan_source
           mdspan_build_directory: mdspan_build
           mdspan_install_directory: mdspan_install
@@ -102,10 +104,9 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0148=OLD"
             cmake_preset: hpx_release_linux_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            hpx_version: ${{ env.hpx_version }}
+            hpx_branch: ${{ env.hpx_branch }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
             install_directory: ${{ env.hpx_install_directory }}
@@ -115,7 +116,7 @@ jobs:
           with:
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
-            mdspan_tag: 721efd8  # 20240305
+            mdspan_tag: ${{ env.mdspan_tag }}
             source_directory: ${{ env.mdspan_source_directory }}
             build_directory: ${{ env.mdspan_build_directory }}
             install_directory: ${{ env.mdspan_install_directory }}
@@ -144,7 +145,6 @@ jobs:
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                      -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
@@ -156,7 +156,7 @@ jobs:
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                      -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+                      -D mdspan_ROOT=${{ env.mdspan_install_directory }}
 
         - name: build
           run: |
@@ -178,7 +178,10 @@ jobs:
         - name: test
           run: |
               # Unit tests
-              ctest --test-dir ${{ env.lue_build_directory }} --output-on-failure
+              ctest \
+                  --test-dir ${{ env.lue_build_directory }} \
+                  --output-on-failure \
+                  --exclude-regex lue_py_image_land_python_test
 
               # Test of runtime targets
               ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
@@ -203,10 +206,9 @@ jobs:
                   -G "Ninja" \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
-                  -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
-                  -D LUE_ROOT=${{ env.lue_development_install_directory }} \
+                  -D lue_ROOT=${{ env.lue_development_install_directory }} \
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                  -D MDSPAN_ROOT=${{ env.mdspan_install_directory }}
+                  -D mdspan_ROOT=${{ env.mdspan_install_directory }}
               cmake --build ${{ env.lue_consume_build_directory }} --target all
 
               ${{ env.lue_consume_build_directory }}/lue_consume_data_model

@@ -13,7 +13,7 @@ inputs:
     required: true
   cmake_flags:
     required: true
-  hpx_version:
+  hpx_branch:
     required: true
   cache_key:
     required: true
@@ -38,7 +38,7 @@ runs:
       shell: bash -l {0}
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       run: |
-        git clone --depth 1 --branch v${{ inputs.hpx_version }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
         mkdir ${{ inputs.build_directory }}
@@ -50,7 +50,6 @@ runs:
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
             -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0144=NEW \
             ${{ inputs.cmake_flags }}
         cmake --build ${{ inputs.build_directory }} --target all
         cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
