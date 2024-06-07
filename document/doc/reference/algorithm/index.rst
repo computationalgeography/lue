@@ -1,8 +1,10 @@
 Algorithms
 ==========
 
+High-level descriptions of algorithms used in LUE operations.
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    clump
