@@ -331,7 +331,6 @@ namespace lue {
             return array_shape;
         }
 
-        Count partition_size{};
         Count dimension_size{};
         Shape<Index, rank> partition_shape{};
 
@@ -341,22 +340,21 @@ namespace lue {
         {
             // Shrink the partition. Try to end up with enough partitions to use all cores. It
             // is OK if that is not possible.
-            partition_size = array_size / nr_worker_threads;
-            dimension_size =
-                std::max(Count{1}, static_cast<Count>(std::floor(std::pow(partition_size, 1.0 / rank))));
+            Count const min_array_dimension_extent{*std::min_element(array_shape.begin(), array_shape.end())};
 
-            partition_shape.fill(dimension_size);
+            dimension_size = std::max(Count{1}, min_array_dimension_extent / nr_worker_threads);
         }
         else
         {
             // Try the default partition size. This should result in enough partitions to
             // distribute over all cores.
-            partition_size = default_partition_size;
-            dimension_size =
-                std::max(Count{1}, static_cast<Count>(std::floor(std::pow(partition_size, 1.0 / rank))));
-
-            partition_shape.fill(dimension_size);
+            dimension_size = std::max(
+                Count{1}, static_cast<Count>(std::floor(std::pow(default_partition_size, 1.0 / rank))));
         }
+
+        partition_shape.fill(dimension_size);
+
+        lue_hpx_assert(detail::is_subset_of(partition_shape, array_shape));
 
         return partition_shape;
     }
