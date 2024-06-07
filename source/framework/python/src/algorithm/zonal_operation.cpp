@@ -3,6 +3,7 @@
 
 namespace lue::framework {
 
+    void bind_clump(pybind11::module& module);
     void bind_zonal_area(pybind11::module& module);
     void bind_zonal_diversity(pybind11::module& module);
     void bind_zonal_majority(pybind11::module& module);
@@ -16,6 +17,7 @@ namespace lue::framework {
 
     void bind_zonal_operations(pybind11::module& module)
     {
+        bind_clump(module);
         bind_zonal_area(module);
         bind_zonal_diversity(module);
         bind_zonal_majority(module);

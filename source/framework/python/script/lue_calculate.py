@@ -109,6 +109,11 @@ def pathname_to_variable_name(pathname: str) -> str:
     basename = os.path.basename(pathname)
     variable_name = remove_extensions(basename)
 
+    # Some characters aften used in variable names are actually operators in Python.
+    # Replace them all by underscores. Add to the list if needed.
+    for operator in ["-"]:
+        variable_name = variable_name.replace(operator, "_")
+
     return variable_name
 
 

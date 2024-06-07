@@ -663,4 +663,31 @@ BOOST_AUTO_TEST_CASE(default_partition_shape_2d)
 
         BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
     }
+
+    {
+        Count const nr_worker_threads{1};
+        Shape const array_shape{2000, 1000};
+        Shape const shape_we_want{1000, 1000};
+        Shape const shape_we_got{lue::default_partition_shape(array_shape, nr_worker_threads)};
+
+        BOOST_CHECK_EQUAL(shape_we_got, shape_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(is_subset_of)
+{
+    lue::Rank const rank{2};
+    using Shape = lue::Shape<lue::Index, rank>;
+
+    BOOST_CHECK(lue::detail::is_subset_of(Shape{10000, 10000}, Shape{10000, 10000}));
+    BOOST_CHECK(lue::detail::is_subset_of(Shape{500, 10000}, Shape{10000, 10000}));
+    BOOST_CHECK(lue::detail::is_subset_of(Shape{10000, 500}, Shape{10000, 10000}));
+    BOOST_CHECK(lue::detail::is_subset_of(Shape{500, 500}, Shape{10000, 10000}));
+
+    BOOST_CHECK(!lue::detail::is_subset_of(Shape{10500, 10500}, Shape{10000, 10000}));
+    BOOST_CHECK(!lue::detail::is_subset_of(Shape{500, 10500}, Shape{10000, 10000}));
+    BOOST_CHECK(!lue::detail::is_subset_of(Shape{10500, 500}, Shape{10000, 10000}));
+
+    BOOST_CHECK(!lue::detail::is_subset_of(Shape{1414, 1414}, Shape{2000, 1000}));
 }

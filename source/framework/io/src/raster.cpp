@@ -1,6 +1,7 @@
 #include "lue/framework/io/raster.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/assert.hpp"
 #include "lue/gdal.hpp"
 // #include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
@@ -189,6 +190,8 @@ namespace lue {
                     Offset const& offset,
                     Shape const& shape)
                 {
+                    AnnotateFunction const annotate{"read_partition"};
+
                     Data data{shape};
 
                     _band_ptr->read_partition(offset, data);
@@ -252,6 +255,9 @@ namespace lue {
 
             ReadPartition<Element> partition_reader{
                 std::move(dataset_ptr), std::make_shared<Band>(std::move(band_ptr))};
+
+            // Asynchronously read all partitions, *one after the other*. Partitions read can immidiately
+            // participate in subsequent work, even when other partitions still need to be read.
 
             partitions[0] = hpx::async(
 
@@ -348,6 +354,8 @@ namespace lue {
         void write_partition(
             [[maybe_unused]] Policies const& policies, std::string const& name, Partition const& partition)
         {
+            AnnotateFunction const annotate{"write_partition"};
+
             using Element = ElementT<Partition>;
 
             lue_hpx_assert(partition.is_ready());

@@ -107,6 +107,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/routing_operation/kinematic_wave.cpp
 
     src/algorithm/zonal_operation.cpp
+    src/algorithm/zonal_operation/clump.cpp
     src/algorithm/zonal_operation/zonal_area.cpp
     src/algorithm/zonal_operation/zonal_diversity.cpp
     src/algorithm/zonal_operation/zonal_majority.cpp

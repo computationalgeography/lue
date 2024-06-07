@@ -182,8 +182,10 @@ added to the LUE framework. The number of model developers requesting one is one
      - ❌
      - 1
    * - clump
-     - ❌
-     - 1
+     - ✅
+     - | LUE has support for diagonal and nondiagonal connectivity.
+       | Use diagonal connectivity to get the same behaviour as
+       | PCRaster's clump.
    * - cos
      - ✅
      -

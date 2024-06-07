@@ -12,3 +12,4 @@ Reference
    Python <python/index>
    C++ <cpp/index>
    Utilities <utility/index>
+   Algorithms <algorithm/index>
