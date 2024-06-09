@@ -227,4 +227,4 @@ jobs:
               cmake --build ${{ env.lue_build_directory }} --target cpp_doc py_doc
               cmake --build ${{ env.lue_build_directory }} --target sphinx_doc
               cd ${{ env.lue_build_directory }}/document/doc
-              lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+              lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
