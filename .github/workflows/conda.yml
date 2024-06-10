@@ -51,7 +51,7 @@ jobs:
                   conda mambabuild environment/conda --override-channels --channel conda-forge
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
-              if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/ghxyz'
+              if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
               with:
                   server: ${{ secrets.FTP_SERVER }}
                   username: ${{ secrets.FTP_USERNAME }}
