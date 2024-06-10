@@ -3,22 +3,6 @@ echo on
 mkdir build
 if errorlevel 1 exit /b 1
 
-:: Unset CMAKE_GENERATOR_PLATFORM. The platform is already specified in Conan's preset. Otherwise:
-:: Generator
-::     Ninja
-:: does not support platform specification, but platform
-::     x64
-:: was specified.
-set CMAKE_GENERATOR_PLATFORM=
-
-:: Unset CMAKE_GENERATOR_TOOLSET. Otherwise:
-:: Generator
-::   Ninja
-:: does not support toolset specification, but toolset
-::   v142
-:: was specified.
-set CMAKE_GENERATOR_TOOLSET=
-
 cmake -S . -B build %CMAKE_ARGS% ^
     --preset lue_release_windows_node ^
     -G Ninja ^
