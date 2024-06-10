@@ -21,8 +21,6 @@ requirements:
     - numpy                                      # [build_platform != target_platform]
     - pybind11                                   # [build_platform != target_platform]
     - {{ compiler('cxx') }}
-    - {{ stdlib("c") }}
-    - conan
     - ninja
 
   host:
