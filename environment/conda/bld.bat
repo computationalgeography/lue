@@ -5,7 +5,7 @@ if errorlevel 1 exit /b 1
 
 cmake -S . -B build %CMAKE_ARGS% ^
     --preset lue_release_windows_node ^
-    -G Ninja \
+    -G Ninja ^
     -D CMAKE_INSTALL_LIBDIR=lib ^
     -D LUE_INSTALL_PYTHON_PACKAGE_DIR="%SP_DIR%/lue" ^
     -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE ^
