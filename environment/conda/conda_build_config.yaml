@@ -3,6 +3,8 @@
 # depend on the same versions of 3rd party libraries. See meta.yaml, run section,
 # for the relevant packages to mention below.
 
+# Python version is set in workflows/conda.yml
+
 # Keep in sync with https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml
 
 c_compiler:
@@ -15,21 +17,5 @@ hdf5:
   - 1.14.3
 libgdal:
   - 3.8
-numpy:
-  # part of a zip_keys: python, python_impl, numpy
-  - 1.22
-  - 1.22
-  - 1.23
-  - 1.26
 python:
-  # part of a zip_keys: python, python_impl, numpy
-  - 3.9.* *_cpython
-  - 3.10.* *_cpython
-  - 3.11.* *_cpython
-  - 3.12.* *_cpython
-python_impl:
-  # part of a zip_keys: python, python_impl, numpy
-  - cpython
-  - cpython
-  - cpython
-  - cpython
+  - 3.12

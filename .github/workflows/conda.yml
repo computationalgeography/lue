@@ -40,7 +40,7 @@ jobs:
                   #   target-platform: linux-64
                   #   conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
 
-                  # OK
+                  # OK (almost)
                   - os: "windows-2022"
                     target-platform: win-64
                     conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
@@ -51,11 +51,11 @@ jobs:
               uses: conda-incubator/setup-miniconda@v3
               with:
                   miniforge-version: latest
-                  auto-update-conda: false
+                  python-version: 3.12
             - name: Build package
               run: |
                   mamba install boa conda-verify
-                  conda mambabuild environment/conda --override-channels --channel conda-forge
+                  conda mambabuild environment/conda
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
               if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
