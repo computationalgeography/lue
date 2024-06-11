@@ -26,9 +26,9 @@ jobs:
                 include:
 
                   # SEGFAULT
-                  # - os: "macos-14"
-                  #   target-platform: arm-64
-                  #   conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
+                  - os: "macos-14"
+                    target-platform: arm-64
+                    conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
 
                   # Timeout
                   # - os: "macos-13"
@@ -41,9 +41,9 @@ jobs:
                   #   conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
 
                   # OK (almost)
-                  - os: "windows-2022"
-                    target-platform: win-64
-                    conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
+                  # - os: "windows-2022"
+                  #   target-platform: win-64
+                  #   conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
         steps:
             - name: Checkout
               uses: actions/checkout@v4
