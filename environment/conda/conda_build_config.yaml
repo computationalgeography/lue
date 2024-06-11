@@ -1,4 +1,35 @@
-c_compiler:    # [win]
-  - vs2022     # [win]
-cxx_compiler:  # [win]
-  - vs2022     # [win]
+# The Conda packages we build as part of a GitHub workflow can be used in
+# combination with "official" Conda packages, but only when these packages built
+# depend on the same versions of 3rd party libraries. See meta.yaml, run section,
+# for the relevant packages to mention below.
+
+# Keep in sync with https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml
+
+c_compiler:
+  - vs2019     # [win and x86_64]
+  - vs2022     # [win and arm64]
+cxx_compiler:
+  - vs2019     # [win and x86_64]
+  - vs2022     # [win and arm64]
+hdf5:
+  - 1.14.3
+libgdal:
+  - 3.8
+numpy:
+  # part of a zip_keys: python, python_impl, numpy
+  - 1.22
+  - 1.22
+  - 1.23
+  - 1.26
+python:
+  # part of a zip_keys: python, python_impl, numpy
+  - 3.9.* *_cpython
+  - 3.10.* *_cpython
+  - 3.11.* *_cpython
+  - 3.12.* *_cpython
+python_impl:
+  # part of a zip_keys: python, python_impl, numpy
+  - cpython
+  - cpython
+  - cpython
+  - cpython

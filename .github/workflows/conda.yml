@@ -40,7 +40,7 @@ jobs:
                   #   target-platform: linux-64
                   #   conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
 
-                  # CMake configure issue
+                  # OK
                   - os: "windows-2022"
                     target-platform: win-64
                     conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
