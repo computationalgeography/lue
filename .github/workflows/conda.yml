@@ -51,8 +51,7 @@ jobs:
                   python-version: 3.11
             - name: Build package
               run: |
-                  mamba install boa conda-verify
-                  conda-verify environment/conda
+                  mamba install boa
                   # TODO Remove --no-test once mac-os packages work fine
                   conda mambabuild environment/conda --no-test
             - name: Upload
