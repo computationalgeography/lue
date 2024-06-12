@@ -10,9 +10,9 @@
 # vs2019 results in compiler error...
 
 c_compiler:
-  - vs2022     # [win]
+  - vs2022                                       # [win]
 cxx_compiler:
-  - vs2022     # [win]
+  - vs2022                                       # [win]
 hdf5:
   - 1.14.3
 libgdal:
@@ -20,6 +20,5 @@ libgdal:
 python:
   - 3.11
 
-MACOSX_DEPLOYMENT_TARGET:      # [osx]
-  - 11.0                       # [osx and arm64]
-  - 10.13                      # [osx and x86_64]
+MACOSX_DEPLOYMENT_TARGET:                        # [osx]
+  - 11.0                                         # [osx and arm64]

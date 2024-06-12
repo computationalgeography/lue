@@ -7,11 +7,6 @@ mkdir build
 if [[ $target_platform == linux* ]]; then
     lue_preset="lue_release_linux_node"
 elif [[ $target_platform == osx* ]]; then
-    # export CXXFLAGS="${CXXFLAGS} -DTARGET_OS_OSX"
-
-    if [[ $target_platform == "osx-64" ]]; then
-        export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    fi
     lue_preset="lue_release_macos_node"
 fi
 
