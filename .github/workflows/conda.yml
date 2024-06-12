@@ -24,23 +24,22 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-
-                  # SEGFAULT
                   - os: "macos-14"
                     target-platform: arm-64
                     conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
-
-                  # SEGFAULT
+                    conda-bld-arg: "--no-test"  # TODO
                   - os: "macos-13"
                     target-platform: osx-64
                     conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/osx-64/"
-
-                  # - os: "ubuntu-22.04"
-                  #   target-platform: linux-64
-                  #   conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
-                  # - os: "windows-2022"
-                  #   target-platform: win-64
-                  #   conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
+                    conda-bld-arg: "--no-test"  # TODO
+                  - os: "ubuntu-22.04"
+                    target-platform: linux-64
+                    conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
+                    conda-bld-arg: ""
+                  - os: "windows-2022"
+                    target-platform: win-64
+                    conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
+                    conda-bld-arg: ""
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -52,8 +51,7 @@ jobs:
             - name: Build package
               run: |
                   mamba install boa
-                  # TODO Remove --no-test once mac-os packages work fine
-                  conda mambabuild environment/conda --no-test
+                  conda mambabuild environment/conda ${{ matrix.conda-bld-arg }}
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
               if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
