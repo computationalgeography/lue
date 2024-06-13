@@ -1,4 +1,24 @@
-c_compiler:    # [win]
-  - vs2022     # [win]
-cxx_compiler:  # [win]
-  - vs2022     # [win]
+# The Conda packages we build as part of a GitHub workflow can be used in
+# combination with "official" Conda packages, but only when these packages built
+# depend on the same versions of 3rd party libraries. See meta.yaml, run section,
+# for the relevant packages to mention below.
+
+# Python version is set in workflows/conda.yml
+
+# Keep in sync with https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml
+
+# vs2019 results in compiler error...
+
+c_compiler:
+  - vs2022                                       # [win]
+cxx_compiler:
+  - vs2022                                       # [win]
+hdf5:
+  - 1.14.3
+libgdal:
+  - 3.8
+python:
+  - 3.11
+
+MACOSX_DEPLOYMENT_TARGET:                        # [osx]
+  - 11.0                                         # [osx and arm64]
