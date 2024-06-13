@@ -659,9 +659,8 @@ def mapnormal():
     return normal(1)
 
 
-def maptotal():
-    # TODO C++ side is ready, just add the Python wrapper
-    raise NotImplementedError("maptotal")
+def maptotal(expression):
+    return lfr.sum(expression)
 
 
 def mapuniform():

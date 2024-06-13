@@ -1262,6 +1262,33 @@ endblock()
 block()
     set(count "0")
 
+    foreach(Policies IN LISTS all_policies)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            foreach(rank IN LISTS ranks)
+                math(EXPR count "${count} + 1")
+
+                # Instantiate sum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/sum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+block()
+    set(count "0")
+
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)

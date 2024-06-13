@@ -87,6 +87,7 @@ add_library(lue_py_framework SHARED
 
     src/algorithm/global_operation.cpp
     src/algorithm/global_operation/reclassify.cpp
+    src/algorithm/global_operation/sum.cpp
 
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/cast.cpp

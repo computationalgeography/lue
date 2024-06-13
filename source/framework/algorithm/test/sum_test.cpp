@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm sum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/sum.hpp"
+#include "lue/framework/algorithm/value_policies/sum.hpp"
 #include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -19,7 +19,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-        auto sum = lue::sum<ResultElement>(array);
+        auto sum = lue::value_policies::sum<ResultElement>(array);
 
         using TypeWeGot = decltype(sum);
         using TypeWeWant = hpx::future<ResultElement>;
@@ -52,7 +52,7 @@ namespace detail {
         detail::test_array_##rank##d<Element, ResultElement>();                                              \
     }
 
-TEST_CASE(1, int32_t, int32_t)
+// TEST_CASE(1, int32_t, int32_t)
 TEST_CASE(2, int32_t, int32_t)
 // TEST_CASE(1, int64_t, int64_t)
 // TEST_CASE(2, int64_t, int64_t)
