@@ -1267,6 +1267,32 @@ block()
             foreach(rank IN LISTS ranks)
                 math(EXPR count "${count} + 1")
 
+                # Instantiate maximum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/maximum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/maximum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate minimum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/minimum-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/minimum.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # Instantiate sum
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sum-${count}.cpp")
 

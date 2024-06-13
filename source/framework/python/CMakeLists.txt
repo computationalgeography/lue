@@ -59,8 +59,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/less_than_equal_to.cpp
     src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
-    src/algorithm/maximum.cpp
-    src/algorithm/minimum.cpp
     src/algorithm/multiply.cpp
     src/algorithm/normal.cpp
     src/algorithm/not_equal_to.cpp
@@ -87,6 +85,8 @@ add_library(lue_py_framework SHARED
 
     src/algorithm/global_operation.cpp
     src/algorithm/global_operation/reclassify.cpp
+    src/algorithm/global_operation/maximum.cpp
+    src/algorithm/global_operation/minimum.cpp
     src/algorithm/global_operation/sum.cpp
 
     src/algorithm/local_operation.cpp

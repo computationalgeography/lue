@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/default_policies/minimum.hpp"
+#include "lue/framework/algorithm/definition/minimum.hpp"
+#include "lue/framework/algorithm/value_policies/minimum.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_MINIMUM(
+        ESC(policy::minimum::{{ Policies }}<{{ Element }}>),
+        {{ rank }});
+
+}  // namespace lue

@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         template<typename Element, Rank rank>
-        hpx::future<Element> minimum(PartitionedArray<Element, rank> const& array)
+        auto minimum(PartitionedArray<Element, rank> const& array) -> hpx::future<Element>
         {
             using Policies = policy::minimum::DefaultPolicies<Element>;
 

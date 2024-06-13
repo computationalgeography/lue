@@ -305,16 +305,16 @@ added to the LUE framework. The number of model developers requesting one is one
      - 1
    * - mapmaximum
      - ✅
-     -
+     - maximum
    * - mapminimum
      - ✅
-     -
+     - minimum
    * - mapnormal
      - ✅
      - normal(array, dtype, 0, 1), normal(array_shape, partition_shape, dtype, 0, 1)
    * - maptotal
      - ✅
-     -
+     - sum
    * - mapuniform
      - ✅
      - uniform(array, dtype, 0, 1), uniform(array_shape, partition_shape, dtype, 0, 1)
