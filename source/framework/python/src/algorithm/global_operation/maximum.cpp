@@ -16,7 +16,6 @@ namespace lue::framework {
 
     void bind_maximum(pybind11::module& module)
     {
-        // TODO How to document these?
         module.def("maximum", maximum<std::uint8_t, 2>);
         module.def("maximum", maximum<std::uint32_t, 2>);
         module.def("maximum", maximum<std::uint64_t, 2>);

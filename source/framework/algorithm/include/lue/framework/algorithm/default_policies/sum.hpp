@@ -1,27 +1,26 @@
 #pragma once
-#include "lue/framework/algorithm/minimum.hpp"
+#include "lue/framework/algorithm/sum.hpp"
 
 
 namespace lue {
-    namespace policy::minimum {
+    namespace policy::sum {
 
         template<typename Element>
         using DefaultPolicies = policy::
             DefaultPolicies<AllValuesWithinDomain<Element>, OutputElements<Element>, InputElements<Element>>;
 
-    }  // namespace policy::minimum
+    }  // namespace policy::sum
 
 
     namespace default_policies {
 
         template<typename Element, Rank rank>
-        auto minimum(PartitionedArray<Element, rank> const& array) -> hpx::future<Element>
+        auto sum(PartitionedArray<Element, rank> const& array) -> hpx::future<Element>
         {
-            using Policies = policy::minimum::DefaultPolicies<Element>;
+            using Policies = policy::sum::DefaultPolicies<Element>;
 
-            return minimum(Policies{}, array);
+            return sum(Policies{}, array);
         }
 
     }  // namespace default_policies
-
 }  // namespace lue

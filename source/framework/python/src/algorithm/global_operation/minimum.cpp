@@ -16,7 +16,6 @@ namespace lue::framework {
 
     void bind_minimum(pybind11::module& module)
     {
-        // TODO How to document these?
         module.def("minimum", minimum<std::uint8_t, 2>);
         module.def("minimum", minimum<std::uint32_t, 2>);
         module.def("minimum", minimum<std::uint64_t, 2>);

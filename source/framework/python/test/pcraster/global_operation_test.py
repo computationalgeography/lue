@@ -28,5 +28,12 @@ class GlobalOperationTest(OperationTest):
         _ = lpr.mapnormal()
 
     @lue_test.framework_test_case
+    def test_maptotal(self):
+        for expression_type in [np.float32]:
+            expression = self.spatial[expression_type]
+
+            _ = lpr.maptotal(expression)
+
+    @lue_test.framework_test_case
     def test_mapuniform(self):
         _ = lpr.mapuniform()

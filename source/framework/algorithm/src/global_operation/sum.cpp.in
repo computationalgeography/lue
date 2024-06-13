@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/default_policies/sum.hpp"
+#include "lue/framework/algorithm/definition/sum.hpp"
+#include "lue/framework/algorithm/value_policies/sum.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_SUM(
+        ESC(policy::sum::{{ Policies }}<{{ Element }}>),
+        {{ rank }});
+
+}  // namespace lue

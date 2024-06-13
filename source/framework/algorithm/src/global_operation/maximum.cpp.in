@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/default_policies/maximum.hpp"
+#include "lue/framework/algorithm/definition/maximum.hpp"
+#include "lue/framework/algorithm/value_policies/maximum.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_MAXIMUM(
+        ESC(policy::maximum::{{ Policies }}<{{ Element }}>),
+        {{ rank }});
+
+}  // namespace lue

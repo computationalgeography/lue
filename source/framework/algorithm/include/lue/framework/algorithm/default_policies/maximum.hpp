@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         template<typename Element, Rank rank>
-        hpx::future<Element> maximum(PartitionedArray<Element, rank> const& array)
+        auto maximum(PartitionedArray<Element, rank> const& array) -> hpx::future<Element>
         {
             using Policies = policy::maximum::DefaultPolicies<Element>;
 
