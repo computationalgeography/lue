@@ -3,16 +3,51 @@
 #include "lue/framework/partitioned_array.hpp"
 #include <fmt/format.h>
 #include <string>
+#include <type_traits>
 #include <typeinfo>
 
 
 namespace lue::detail {
 
     template<typename Element>
-    auto type_name() -> std::string
+    requires(std::is_arithmetic_v<Element>) constexpr auto type_name() -> char const*
     {
-        // TODO Make this name nicer in a portable way
-        return typeid(Element).name();
+        if constexpr (std::is_same_v<Element, std::uint8_t>)
+        {
+            return "uint8";
+        }
+        else if (std::is_same_v<Element, std::int32_t>)
+        {
+            return "int32";
+        }
+        else if (std::is_same_v<Element, std::uint32_t>)
+        {
+            return "uint32";
+        }
+        else if (std::is_same_v<Element, std::int64_t>)
+        {
+            return "int64";
+        }
+        else if (std::is_same_v<Element, std::uint64_t>)
+        {
+            return "uint64";
+        }
+        else if (std::is_same_v<Element, float>)
+        {
+            return "float32";
+        }
+        else if (std::is_same_v<Element, double>)
+        {
+            return "float64";
+        }
+        // else if (std::is_same_v<Element, char*> || std::is_same_v<Element, std::string>)
+        // {
+        //     return "string";
+        // }
+        else
+        {
+            return typeid(Element).name();
+        }
     }
 
 

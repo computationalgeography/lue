@@ -5,69 +5,74 @@
 
 BOOST_AUTO_TEST_CASE(add_raster_raster)
 {
-    using Raster = lue::PartitionedArray<std::int32_t, 2>;
+    using Element = std::int32_t;
+    using Raster = lue::PartitionedArray<Element, 2>;
 
-    lue::Field raster1 = Raster{};
-    lue::Field raster2 = Raster{};
+    lue::Field const raster1 = Raster{};
+    lue::Field const raster2 = Raster{};
 
     lue::Field result = lue::add(raster1, raster2);
 
-    // TODO test result is a Raster as well
+    BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_raster_scalar)
 {
-    using Raster = lue::PartitionedArray<std::int32_t, 2>;
-    using Scalar = lue::Scalar<std::int32_t>;
+    using Element = std::int32_t;
+    using Raster = lue::PartitionedArray<Element, 2>;
+    using Scalar = lue::Scalar<Element>;
 
-    lue::Field raster = Raster{};
-    lue::Field scalar = Scalar{};
+    lue::Field const raster = Raster{};
+    lue::Field const scalar = Scalar{};
 
     lue::Field result = lue::add(raster, scalar);
 
-    // TODO test result is a Raster as well
+    BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_scalar_raster)
 {
-    using Scalar = lue::Scalar<std::int32_t>;
-    using Raster = lue::PartitionedArray<std::int32_t, 2>;
+    using Element = std::int32_t;
+    using Scalar = lue::Scalar<Element>;
+    using Raster = lue::PartitionedArray<Element, 2>;
 
-    lue::Field scalar = Scalar{};
-    lue::Field raster = Raster{};
+    lue::Field const scalar = Scalar{};
+    lue::Field const raster = Raster{};
 
     lue::Field result = lue::add(scalar, raster);
 
-    // TODO test result is a Raster as well
+    BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_scalar_scalar)
 {
-    using Scalar = lue::Scalar<std::int32_t>;
+    using Element = std::int32_t;
+    using Scalar = lue::Scalar<Element>;
 
-    lue::Field scalar1 = Scalar{};
-    lue::Field scalar2 = Scalar{};
+    lue::Field const scalar1 = Scalar{};
+    lue::Field const scalar2 = Scalar{};
 
     lue::Field result = lue::add(scalar1, scalar2);
 
-    // TODO test result is a Scalar as well
+    BOOST_CHECK(std::holds_alternative<Scalar>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_raster_value)
 {
-    using Raster = lue::PartitionedArray<std::int32_t, 2>;
     using Element = std::int32_t;
+    using Raster = lue::PartitionedArray<Element, 2>;
+    using Element = Element;
 
-    lue::Field raster = Raster{};
-    lue::Field value = Element{};
+    lue::Field const raster = Raster{};
+    lue::Field const value = Element{};
 
     lue::Field result = lue::add(raster, value);
 
-    // TODO test result is a Raster as well
+    BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
 
 
@@ -76,51 +81,52 @@ BOOST_AUTO_TEST_CASE(add_value_raster)
     using Element = std::int32_t;
     using Raster = lue::PartitionedArray<std::int32_t, 2>;
 
-    lue::Field value = Element{};
-    lue::Field raster = Raster{};
+    lue::Field const value = Element{};
+    lue::Field const raster = Raster{};
 
     lue::Field result = lue::add(value, raster);
 
-    // TODO test result is a Raster as well
+    BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_scalar_value)
 {
-    using Scalar = lue::Scalar<std::int32_t>;
     using Element = std::int32_t;
+    using Scalar = lue::Scalar<Element>;
 
-    lue::Field scalar = Scalar{};
-    lue::Field value = Element{};
+    lue::Field const scalar = Scalar{};
+    lue::Field const value = Element{};
 
     lue::Field result = lue::add(scalar, value);
 
-    // TODO test result is a Scalar as well
+    BOOST_CHECK(std::holds_alternative<Scalar>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_value_scalar)
 {
     using Element = std::int32_t;
-    using Scalar = lue::Scalar<std::int32_t>;
+    using Scalar = lue::Scalar<Element>;
 
-    lue::Field scalar = Scalar{};
-    lue::Field value = Element{};
+    lue::Field const scalar = Scalar{};
+    lue::Field const value = Element{};
 
     lue::Field result = lue::add(value, scalar);
 
-    // TODO test result is a Scalar as well
+    BOOST_CHECK(std::holds_alternative<Scalar>(result));
 }
 
 
 BOOST_AUTO_TEST_CASE(add_value_value)
 {
     using Element = std::int32_t;
+    using Scalar = lue::Scalar<Element>;
 
-    lue::Field value1 = Element{};
-    lue::Field value2 = Element{};
+    lue::Field const value1 = Element{};
+    lue::Field const value2 = Element{};
 
     lue::Field result = lue::add(value1, value2);
 
-    // TODO test result is a Scalar
+    BOOST_CHECK(std::holds_alternative<Scalar>(result));
 }

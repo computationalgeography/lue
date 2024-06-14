@@ -1,13 +1,14 @@
+set(scope lue_framework_api_cxx)
+
 set(local_operation_names
     local/add
     local/uniform
 )
 
 set(names
+    create_array
     ${local_operation_names}
 )
-
-set(scope lue_framework_api_cxx)
 
 foreach(name ${names})
     set(module_name ${name}_test)

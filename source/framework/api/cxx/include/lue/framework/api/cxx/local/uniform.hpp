@@ -11,4 +11,7 @@ namespace lue {
         Field const& min_value,
         Field const& max_value) -> Field;
 
+    auto LUE_FAPI_EXPORT
+    uniform(Shape<Count, 2> const& array_shape, Field const& min_value, Field const& max_value) -> Field;
+
 }  // namespace lue

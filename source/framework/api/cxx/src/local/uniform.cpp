@@ -18,6 +18,15 @@ namespace lue {
             return {};
         }
 
+
+        auto uniform([[maybe_unused]] auto const& array_shape, auto const& min_value, auto const& max_value)
+            -> Field
+        {
+            detail::unsupported_overload("uniform", min_value, max_value);
+
+            return {};
+        }
+
     }  // namespace value_policies
 
 
@@ -30,6 +39,17 @@ namespace lue {
         return std::visit(
             overload{[&array_shape, &partition_shape](auto const& min_value, auto const& max_value) -> Field {
                 return value_policies::uniform(array_shape, partition_shape, min_value, max_value);
+            }},
+            min_value,
+            max_value);
+    }
+
+
+    auto uniform(Shape<Count, 2> const& array_shape, Field const& min_value, Field const& max_value) -> Field
+    {
+        return std::visit(
+            overload{[&array_shape](auto const& min_value, auto const& max_value) -> Field {
+                return value_policies::uniform(array_shape, min_value, max_value);
             }},
             min_value,
             max_value);

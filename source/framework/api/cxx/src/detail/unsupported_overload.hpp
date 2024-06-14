@@ -1,17 +1,29 @@
 #pragma once
 #include "detail/type_name.hpp"
 #include "lue/framework/api/cxx/field.hpp"
+#include <fmt/format.h>
+#include <concepts>
+#include <initializer_list>
 #include <string>
 
 
 namespace lue::detail {
 
-    void unsupported_overload(std::string const& name, std::string const& field1, std::string const& field2);
-
-
-    void unsupported_overload(std::string const& name, auto const& field1, auto const& field2)
+    template<std::convertible_to<std::string_view>... ArgumentTypeNames>
+    void throw_unsupported_overload_exception(
+        std::string_view const& name, ArgumentTypeNames const&... type_names)
     {
-        unsupported_overload(name, type_name(field1), type_name(field2));
+        throw std::runtime_error{fmt::format(
+            "Invalid overload called: {}({})",
+            name,
+            fmt::join(std::initializer_list<std::string_view>{type_names...}, ", "))};
+    }
+
+
+    template<typename... Arguments>
+    void unsupported_overload(std::string const& name, Arguments const&... arguments)
+    {
+        throw_unsupported_overload_exception(name, type_name(arguments)...);
     }
 
 }  // namespace lue::detail

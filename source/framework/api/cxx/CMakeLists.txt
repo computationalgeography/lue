@@ -1,9 +1,9 @@
 add_test_conditionally(test)
 
 add_library(lue_framework_api_cxx SHARED
+    src/create_array.cpp
     src/local/add.cpp
     src/local/uniform.cpp
-    src/detail/unsupported_overload.cpp
 )
 
 add_library(lue::framework_api_cxx ALIAS lue_framework_api_cxx)
