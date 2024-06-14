@@ -34,7 +34,7 @@ jobs:
 
         name: ${{ matrix.os }} / ${{ matrix.vs.name }} / python - ${{ matrix.python_version }}
 
-        timeout-minutes: 180
+        timeout-minutes: 240
 
         defaults:
           run:
