@@ -12,8 +12,9 @@ namespace lue::api {
     };
 
 
-    // // Custom template argument deduction (CTAD) guide. Not needed since C++20.
-    // template<class... Ts>
-    // overload(Ts...) -> overload<Ts...>;
+    // Custom template argument deduction (CTAD) guide. Not needed since C++20.
+    // g++-10, clang++-15, AppleClang-15 still require it...
+    template<class... Ts>
+    overload(Ts...) -> overload<Ts...>;
 
 }  // namespace lue::api

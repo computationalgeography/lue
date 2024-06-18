@@ -79,7 +79,7 @@ namespace lue {
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
         framework::init_submodule(module);
-        init_framework_x(module);
+        api::init_framework_x(module);
 #ifdef LUE_FRAMEWORK_WITH_IMAGE_LAND
         image_land::init_submodule(module);
 #endif
