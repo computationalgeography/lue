@@ -16,19 +16,19 @@ def write_benchmark_settings(lue_dataset, cluster, benchmark, experiment):
 
     cluster_json = json.dumps(cluster.to_json(), sort_keys=False, indent=4)
     cluster_property = property_set.add_property(
-        "cluster_settings", dtype=np.dtype(np.unicode_)
+        "cluster_settings", dtype=np.dtype(np.str_)
     )
     cluster_property.value.expand(1)[:] = np.array([cluster_json.encode("utf8")])
 
     benchmark_json = json.dumps(benchmark.to_json(), sort_keys=False, indent=4)
     benchmark_property = property_set.add_property(
-        "benchmark_settings", dtype=np.dtype(np.unicode_)
+        "benchmark_settings", dtype=np.dtype(np.str_)
     )
     benchmark_property.value.expand(1)[:] = np.array([benchmark_json.encode("utf8")])
 
     experiment_json = json.dumps(experiment.to_json(), sort_keys=False, indent=4)
     experiment_property = property_set.add_property(
-        "experiment_settings", dtype=np.dtype(np.unicode_)
+        "experiment_settings", dtype=np.dtype(np.str_)
     )
     experiment_property.value.expand(1)[:] = np.array([experiment_json.encode("utf8")])
 
@@ -39,7 +39,7 @@ def write_script(lue_dataset, script):
     ldm.assert_is_valid(lue_dataset)
 
     script_property = lue_dataset.benchmark.meta_information.add_property(
-        "script", dtype=np.dtype(np.unicode_)
+        "script", dtype=np.dtype(np.str_)
     )
     script_property.value.expand(1)[:] = np.array([script.encode("utf8")])
 

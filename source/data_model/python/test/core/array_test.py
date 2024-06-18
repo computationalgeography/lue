@@ -22,7 +22,7 @@ class ArrayTest(lue_test.TestCase):
         self.nr_cols = 2
         self.value_shape = (self.nr_rows, self.nr_cols)
         self.numeric_value_type = np.int32
-        self.string_value_type = np.unicode_
+        self.string_value_type = np.str_
 
         self.property_set = self.phenomenon.add_property_set("my_property_set")
         numeric_property = self.property_set.add_property(
