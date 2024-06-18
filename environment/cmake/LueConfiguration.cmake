@@ -325,15 +325,18 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    # find_package(pybind11 2.10 REQUIRED)
+    # pybind11 ≥ 2.12 is needed for numpy 2.0 support
 
     FetchContent_Declare(pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG 8a099e44b3d5f85b20f05828d919d2332a8de841  # 2.11.1
+        GIT_TAG 3e9dfa2866941655c56877882565e7577de6fc7b  # 2.12.0
         SYSTEM
-        FIND_PACKAGE_ARGS
+        FIND_PACKAGE_ARGS 2.12
     )
     FetchContent_MakeAvailable(pybind11)
+
+    # Disable support for numpy 2.0 for now
+    set(PYBIND11_NUMPY_1_ONLY TRUE)
 endif()
 
 
