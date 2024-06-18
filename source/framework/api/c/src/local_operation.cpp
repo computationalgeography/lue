@@ -4,9 +4,9 @@
 
 auto add(Field const* field1, Field const* field2) -> Field*
 {
-    lue::Field const& instance1 = *static_cast<lue::Field*>(field1->instance);
-    lue::Field const& instance2 = *static_cast<lue::Field*>(field2->instance);
-    lue::Field result = lue::add(instance1, instance2);
+    lue::api::Field const& instance1 = *static_cast<lue::api::Field*>(field1->instance);
+    lue::api::Field const& instance2 = *static_cast<lue::api::Field*>(field2->instance);
+    lue::api::Field result = lue::api::add(instance1, instance2);
 
-    return new Field{.instance = new lue::Field{std::move(result)}};
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
 }

@@ -2,11 +2,7 @@
 #include "lue/framework/api/cxx/local/add.hpp"
 
 
-namespace lue {
-
-    inline auto operator+(Field const& lhs, Field const& rhs)
-    {
-        return add(lhs, rhs);
-    }
-
-}  // namespace lue
+inline auto operator+(lue::api::Field const& lhs, lue::api::Field const& rhs)
+{
+    return lue::api::add(lhs, rhs);
+}

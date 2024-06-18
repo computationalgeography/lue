@@ -1,9 +1,9 @@
 #pragma once
 
 
-namespace lue {
+namespace lue::api {
 
-    // Inherit from each T passed in as a template parameter and add its opertor() to the
+    // Inherit from each T passed in as a template parameter and add its operator() to the
     // overload set
     template<class... Ts>
     struct overload: Ts...
@@ -12,8 +12,8 @@ namespace lue {
     };
 
 
-    // Custom template argument deduction (CTAD) guide. Not needed since C++20.
-    template<class... Ts>
-    overload(Ts...) -> overload<Ts...>;
+    // // Custom template argument deduction (CTAD) guide. Not needed since C++20.
+    // template<class... Ts>
+    // overload(Ts...) -> overload<Ts...>;
 
-}  // namespace lue
+}  // namespace lue::api

@@ -9,9 +9,11 @@ foreach(module_name __init__.py)
 endforeach()
 
 add_library(lue_py_framework_x SHARED
+    # TODO src/array.cpp
     src/extension.cpp
     src/field.cpp
     src/local_operation.cpp
+    # TODO src/scalar.cpp
     src/submodule.cpp
 )
 
@@ -37,6 +39,7 @@ target_include_directories(lue_py_framework_x
     PRIVATE
     #     ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
         ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
+    #   $<TARGET_PROPERTY:lue::py_framework,SOURCE_DIR>/src  # shape.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     #     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>

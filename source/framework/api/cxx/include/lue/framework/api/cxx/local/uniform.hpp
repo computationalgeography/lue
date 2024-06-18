@@ -3,7 +3,7 @@
 #include "lue/framework/api/cxx/field.hpp"
 
 
-namespace lue {
+namespace lue::api {
 
     auto LUE_FAPI_EXPORT uniform(
         Shape<Count, 2> const& array_shape,
@@ -14,4 +14,4 @@ namespace lue {
     auto LUE_FAPI_EXPORT
     uniform(Shape<Count, 2> const& array_shape, Field const& min_value, Field const& max_value) -> Field;
 
-}  // namespace lue
+}  // namespace lue::api

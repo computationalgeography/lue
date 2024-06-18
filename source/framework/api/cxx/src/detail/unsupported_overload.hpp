@@ -7,7 +7,7 @@
 #include <string>
 
 
-namespace lue::detail {
+namespace lue::api::detail {
 
     template<std::convertible_to<std::string_view>... ArgumentTypeNames>
     void throw_unsupported_overload_exception(
@@ -26,4 +26,4 @@ namespace lue::detail {
         throw_unsupported_overload_exception(name, type_name(arguments)...);
     }
 
-}  // namespace lue::detail
+}  // namespace lue::api::detail

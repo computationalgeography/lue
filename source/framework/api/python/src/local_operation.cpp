@@ -2,7 +2,7 @@
 #include <pybind11/pybind11.h>
 
 
-namespace lue {
+namespace lue::api {
 
     void bind_local_operations(pybind11::module& module)
     {
@@ -22,4 +22,4 @@ namespace lue {
             { return uniform(array_shape, min_value, max_value); });
     }
 
-}  // namespace lue
+}  // namespace lue::api

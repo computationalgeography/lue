@@ -8,7 +8,7 @@ void destruct(Field* field)
     {
         if (field->instance != nullptr)
         {
-            auto* instance = static_cast<lue::Field*>(field->instance);
+            auto* instance = static_cast<lue::api::Field*>(field->instance);
             delete instance;
         }
     }

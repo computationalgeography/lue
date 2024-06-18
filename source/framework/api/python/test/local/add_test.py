@@ -22,6 +22,7 @@ class AddTest(lue_test.TestCase):
 
         # Create field?
         # Create array in lfrx
+        # Also test operators
 
         # raster1 = lfr.create_array(array_shape, element_type, fill_value)
         # raster2 = lfr.create_array(array_shape, element_type, fill_value)

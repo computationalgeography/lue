@@ -12,10 +12,10 @@ BOOST_AUTO_TEST_CASE(uniform_element_element)
     Shape const array_shape{1, 1};
     Shape const partition_shape{1, 1};
 
-    lue::Field const min_value = Element{};
-    lue::Field const max_value = Element{};
+    lue::api::Field const min_value = Element{};
+    lue::api::Field const max_value = Element{};
 
-    lue::Field result = lue::uniform(array_shape, partition_shape, min_value, max_value);
+    lue::api::Field result = lue::api::uniform(array_shape, partition_shape, min_value, max_value);
 
     BOOST_CHECK(std::holds_alternative<Raster>(result));
 }
@@ -29,10 +29,10 @@ BOOST_AUTO_TEST_CASE(uniform_without_partition_shape)
 
     Shape const array_shape{1, 1};
 
-    lue::Field const min_value = Element{};
-    lue::Field const max_value = Element{};
+    lue::api::Field const min_value = Element{};
+    lue::api::Field const max_value = Element{};
 
-    lue::Field result = lue::uniform(array_shape, min_value, max_value);
+    lue::api::Field result = lue::api::uniform(array_shape, min_value, max_value);
 
     BOOST_CHECK(std::holds_alternative<Raster>(result));
 }

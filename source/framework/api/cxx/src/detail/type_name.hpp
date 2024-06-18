@@ -7,7 +7,7 @@
 #include <typeinfo>
 
 
-namespace lue::detail {
+namespace lue::api::detail {
 
     template<typename Element>
     requires(std::is_arithmetic_v<Element>) constexpr auto type_name() -> char const*
@@ -59,7 +59,7 @@ namespace lue::detail {
 
 
     template<typename Element>
-    auto type_name([[maybe_unused]] Scalar<Element> const& argument) -> std::string
+    auto type_name([[maybe_unused]] lue::Scalar<Element> const& argument) -> std::string
     {
         return fmt::format("Scalar<{}>", type_name<Element>());
     }
@@ -71,4 +71,4 @@ namespace lue::detail {
         return fmt::format("Array<{}, {}>", type_name<Element>(), rank);
     }
 
-}  // namespace lue::detail
+}  // namespace lue::api::detail
