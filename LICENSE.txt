@@ -20,24 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Third-Party tools and libraries
-This project uses the following third-party tools and libraries:
-- GDAL
-- HPX
-- Boost
-- libasio-dev
-- libboost-all-dev
-- libdocopt-dev
-- libfmt-dev
+## Third-Party libraries
+This project uses the following third-party libraries:
+- gdal
+- hpx
+- boost
+- hdf5
+- docopt
+- fmt
 - libglfw3-dev
-- libgdal-dev
 - libgoogle-perftools-dev
-- libhdf5-dev
 - libvulkan-dev
 - nlohmann-json3-dev
-- NumPy
-- Pybind11
-- hwloc
+- numPy
+- pybind11
 - imgui
 
-The licenses for these tools and libraries can be found in the `licenses_third_party` folder.
+The licenses for these libraries can be found in the `license` folder.
