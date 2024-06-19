@@ -15,7 +15,7 @@ class ConstantTest(lue_test.TestCase):
 
         constants = planets.add_property_set("constants")
 
-        name = constants.add_property("name", dtype=np.unicode_)
+        name = constants.add_property("name", dtype=np.str_)
         name.value.expand(nr_planets)[:] = np.array(["ñeptùne", "mærß", "ùræñùß"])
 
         gravity = constants.add_property("gravity", dtype=np.float32)

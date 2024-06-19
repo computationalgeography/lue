@@ -210,8 +210,8 @@ jobs:
               #       Only needed on dev machines with custom HPX build, like we have here.
               export PATH="`pwd`/${{ env.hpx_install_directory }}/bin:$PATH"
 
-              ${{ env.lue_runtime_install_directory }}/bin/lue_calculate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_scalability --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
+              ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
               python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
         - name: consume

@@ -17,12 +17,11 @@ build:
 
 requirements:
   build:
+    - {{ compiler('cxx') }}
+    - ninja
     - python                                     # [build_platform != target_platform]
     - cross-python_{{ target_platform }}         # [build_platform != target_platform]
     - numpy                                      # [build_platform != target_platform]
-    - pybind11                                   # [build_platform != target_platform]
-    - {{ compiler('cxx') }}
-    - ninja
 
   host:
     - python
@@ -60,8 +59,8 @@ test:
   commands:
     - lue_translate -h                           # [not (osx and arm64)]
     - lue_validate -h                            # [not (osx and arm64)]
-    - lue_calculate -h                           # [not (osx and arm64) and not win]
-    - lue_scalability -h                         # [not (osx and arm64) and not win]
+    - lue_calculate.py -h                        # [not (osx and arm64)]
+    - lue_scalability.py -h                      # [not (osx and arm64)]
 
 
 about:
