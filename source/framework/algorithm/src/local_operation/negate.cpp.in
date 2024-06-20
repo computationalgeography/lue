@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/default_policies/negate.hpp"
+#include "lue/framework/algorithm/definition/negate.hpp"
+#include "lue/framework/algorithm/value_policies/negate.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_NEGATE(
+            ESC(policy::negate::{{ Policies }}<{{ Element }}>),
+            {{ rank }}
+        );
+
+}  // namespace lue
