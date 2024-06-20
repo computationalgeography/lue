@@ -16,7 +16,7 @@ jobs:
     build:
         name: ${{ matrix.os }} / ${{ matrix.target-platform }}
         runs-on: ${{ matrix.os }}
-        timeout-minutes: 180
+        timeout-minutes: 240
         defaults:
             run:
                 shell: bash -l {0}
