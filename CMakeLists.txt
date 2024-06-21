@@ -2,14 +2,16 @@ cmake_minimum_required(
     VERSION 3.26)
 project(LUE
     VERSION 0.3.8
-    LANGUAGES CXX)
+    LANGUAGES CXX
+    DESCRIPTION "A modelling framework for simulating large geographical systems of agents and fields"
+    HOMEPAGE_URL "https://github.com/computationalgeography/lue"
+)
 
 set(${PROJECT_NAME}_ORGANISATION_NAME "Computational Geography")
 set(${PROJECT_NAME}_COPYRIGHT "2015-now LUE developers")
 set(${PROJECT_NAME}_PROJECT_NAME "${PROJECT_NAME}")
 set(${PROJECT_NAME}_HOMEPAGE "https://lue.computationalgeography.org")
 set(${PROJECT_NAME}_EMAIL "https://lue@computationalgeography.org")
-set(CMAKE_PROJECT_DESCRIPTION "A modelling framework for simulating large geographical systems of agents and fields")
 
 
 # PROJECT_NAME can be used to generate variable names. The next variables can be used if casing

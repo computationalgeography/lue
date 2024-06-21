@@ -3,6 +3,8 @@
 
 File
 ====
-.. autosummary::
-    File
-.. autoclass:: File
+
+..
+   .. autosummary::
+       File
+   .. autoclass:: File
