@@ -19,21 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Third-Party libraries
-This project uses the following third-party libraries:
-- gdal
-- hpx
-- boost
-- hdf5
-- docopt
-- fmt
-- libglfw3-dev
-- libgoogle-perftools-dev
-- libvulkan-dev
-- nlohmann-json3-dev
-- numPy
-- pybind11
-- imgui
-
-The licenses for these libraries can be found in the `license` folder.
