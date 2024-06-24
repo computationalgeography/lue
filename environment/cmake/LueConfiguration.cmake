@@ -337,11 +337,15 @@ if(LUE_PYBIND11_REQUIRED)
 
     # Disable support for numpy 2.0 for now
     # https://github.com/computationalgeography/lue/issues/664
-    set(PYBIND11_NUMPY_1_ONLY TRUE)
+    target_compile_definitions(pybind11::module
+        INTERFACE
+            PYBIND11_NUMPY_1_ONLY)
 
     # Silence pybind11 for now
     # https://github.com/computationalgeography/lue/issues/484
-    set(PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF TRUE)
+    target_compile_definitions(pybind11::module
+        INTERFACE
+            PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF)
 endif()
 
 

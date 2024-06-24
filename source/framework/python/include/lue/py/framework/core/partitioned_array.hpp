@@ -11,6 +11,7 @@
 #include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
 #include "lue/py/framework/algorithm/logical_not.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
+#include "lue/py/framework/algorithm/negate.hpp"
 #include "lue/py/framework/algorithm/not_equal_to.hpp"
 #include "lue/py/framework/algorithm/pow.hpp"
 #include "lue/py/framework/algorithm/subtract.hpp"
@@ -289,6 +290,12 @@ namespace lue::framework {
             class_.def(
                 "__abs__",
                 [](Array const& argument) { return lfr::abs<ElementT<Array>, rank>(argument); },
+                pybind11::is_operator());
+
+            // -a
+            class_.def(
+                "__neg__",
+                [](Array const& argument) { return lfr::negate<ElementT<Array>, rank>(argument); },
                 pybind11::is_operator());
         }
 

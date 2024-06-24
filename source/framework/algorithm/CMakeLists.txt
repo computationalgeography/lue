@@ -255,6 +255,19 @@ block()
                         '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate negate
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/negate-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/negate.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
             endforeach()
         endforeach()
     endforeach()

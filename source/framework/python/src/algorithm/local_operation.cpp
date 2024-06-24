@@ -49,6 +49,7 @@ namespace lue::framework {
     void bind_logical_inclusive_or(pybind11::module& module);
     void bind_logical_not(pybind11::module& module);
     void bind_multiply(pybind11::module& module);
+    void bind_negate(pybind11::module& module);
     void bind_normal(pybind11::module& module);
     void bind_not_equal_to(pybind11::module& module);
     void bind_pow(pybind11::module& module);
@@ -111,6 +112,7 @@ namespace lue::framework {
         bind_logical_inclusive_or(module);
         bind_logical_not(module);
         bind_multiply(module);
+        bind_negate(module);
         bind_normal(module);
         bind_not_equal_to(module);
         bind_pow(module);
