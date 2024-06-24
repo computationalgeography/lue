@@ -15,6 +15,7 @@ LUE documentation
    Publications <publication/index>
    About <about>
    Related <related>
+   Code <code/index>
 
 
 What is LUE?
