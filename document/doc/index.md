@@ -1,5 +1,3 @@
-% TODO Publications <publication/index>
-
 # LUE
 
 :::{margin}

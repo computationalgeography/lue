@@ -3,6 +3,7 @@ conan==2.4.1
 docopt==0.6.2
 jinja2==3.1.4
 matplotlib==3.9.0
+mypy==1.10.1
 numpy==1.26.4
 pre-commit==3.7.1
 pybind11==2.12.0

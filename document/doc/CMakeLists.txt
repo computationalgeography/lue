@@ -114,6 +114,7 @@ foreach(name IN ITEMS
     manual/framework/python/index.md
     manual/framework/scalability.md
     manual/view/index.md
+    publication/index.md
     reference/algorithm/clump.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md

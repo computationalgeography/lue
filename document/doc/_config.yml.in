@@ -1,0 +1,84 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: @LUE_TITLE@
+copyright: 2016 -- This work is licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0)
+author: @LUE_AUTHOR@
+# TODO logo: logo.png
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  execute_notebooks: force
+
+# Define the name of the latex output file for PDF builds
+latex:
+  latex_documents:
+    targetname: @LUE_BOOK_BASENAME@.tex
+
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+  - references.bib
+
+# Information about where the book exists on the web
+repository:
+  url: @CMAKE_PROJECT_HOMEPAGE_URL@
+  # path_to_book: doc  # Optional path to your book, relative to the repository root
+  branch: master  # Which branch of the repository should be used when creating links (optional)
+
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
+sphinx:
+  config:
+    # html_theme_options:
+    #   logo:
+    #     image_light: YOUR_LIGHT_LOGO.png
+    #     image_dark: YOUR_DARK_LOGO.png
+    html_context:
+      default_mode: light
+
+    # https://breathe.readthedocs.io/en/latest/index.html
+    breathe_projects: {
+      "lue": "@DOXYGEN_OUTPUT_DIR@/xml/"
+    }
+    breathe_default_project: "lue"
+
+    # # https://sphinx-autodoc2.readthedocs.io/en/latest/index.html
+    # autodoc2_packages:
+    #   # - "@AUTODOC2_PACKAGE_DIR@"
+    #   - {
+    #       "path": "@AUTODOC2_PACKAGE_DIR@",
+    #       "module": "lue.framework"
+    #   }
+    # autodoc2_output_dir: "reference/python/apidocs"
+
+    autodoc_default_options: {
+        "members": True,
+        "undoc-members": True
+    }
+
+    intersphinx_mapping: {
+        "python": ["https://docs.python.org/3", ""],
+        "numpy": ["https://numpy.org/doc/stable", ""]
+    }
+
+    # bibtex_default_style: "plain"
+
+  extra_extensions:
+    - "breathe"
+    # - "autodoc2"
+    - "sphinx.ext.autodoc"
+    # - "sphinx.ext.autosummary"
+    - "sphinx.ext.graphviz"
+    - "sphinx.ext.intersphinx"
+    - "sphinxcontrib.mermaid"
+    - "sphinxcontrib.bibtex"
+
+# parse:
+#   myst_enable_extensions:
+#     - aside
+#     - deflist
+#     - colon_fence
