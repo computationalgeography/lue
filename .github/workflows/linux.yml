@@ -222,7 +222,7 @@ jobs:
               ftp_username: ${{ secrets.FTP_USERNAME }}
               ftp_password: ${{ secrets.FTP_PASSWORD }}
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
-              local_dir: "build/html"
+              local_dir: "_build/html"
           run: |
               cmake --build ${{ env.lue_build_directory }} --target documentation.html
               cd ${{ env.lue_build_directory }}/document/doc
