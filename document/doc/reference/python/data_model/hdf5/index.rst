@@ -1,16 +1,22 @@
-.. currentmodule:: lue.data_model.hdf5
+..
+   .. currentmodule:: lue.data_model.hdf5
 
 
-hdf5
-====
-.. toctree::
-   :hidden:
-   :maxdepth: 1
+lue.data_model.hdf5
+===================
 
-   file
-   issues
+..
+   .. automodule:: lue.data_model.hdf5
+
+..
+  .. toctree::
+     :hidden:
+     :maxdepth: 1
+
+     file
+     issues
 
 
-.. autosummary::
-    File
-    Issues
+  .. autosummary::
+      File
+      Issues

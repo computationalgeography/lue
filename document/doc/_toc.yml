@@ -1,0 +1,71 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: index
+parts:
+  - caption: Manual
+    chapters:
+    - file: install/index.md
+      sections:
+      - file: install/conda.md
+      - file: install/source.md
+    - file: manual/data_model/index.md
+      sections:
+      - file: manual/data_model/concept.md
+      - file: manual/data_model/format.md
+    - file: manual/framework/index.md
+      sections:
+      - file: manual/framework/python/index.md
+      - file: manual/framework/cpp/index.md
+      - file: manual/framework/execute.md
+      - file: manual/framework/scalability.md
+    - file: manual/view/index.md
+  - caption: Reference
+    chapters:
+    - file: reference/python/index.md
+    #   sections:
+    #   - file: reference/python/data_model/index.rst
+    #   - file: reference/python/data_model/hdf5/index.rst
+    #   - file: reference/python/framework/index.rst
+    # - file: reference/python/api/lue.rst
+    #   - url: file:///genindex.html
+    #     title: genindex
+    #   - url: file:///py-modindex.html
+    #     title: py-modindex
+    #   - url: file:///search.html
+    #     title: search
+    #   - file: reference/python/apidocs/index.rst
+    #   sections:
+    #   - file: reference/python/data_model/hdf5/file.rst
+    #   chapters:
+    #   - file: genindex.html
+    - file: reference/cpp/index.md
+    #   sections:
+    #   - file: reference/cpp/dataset.md
+    - file: reference/utility/index.md
+      sections:
+      - file: reference/utility/lue_calculate.md
+      - file: reference/utility/lue_scalability.md
+      - file: reference/utility/lue_translate.md
+      - file: reference/utility/lue_validate.md
+      - file: reference/utility/lue_view.md
+    - file: reference/algorithm/index.md
+      sections:
+      - file: reference/algorithm/clump.md
+  - caption: PCRaster
+    chapters:
+    - file: pcraster/port.md
+    - file: pcraster/status.md
+  - caption: Development
+    chapters:
+    - file: contribute/index.md
+    - file: contribute/documentation.md
+    - file: contribute/release.md
+  - caption: About
+    chapters:
+    - file: about.md
+    - file: release.md
+    - file: example/index.md
+    - file: publication/index.md
+    - file: related.md
