@@ -64,8 +64,9 @@ parts:
     - file: contribute/release.md
   - caption: About
     chapters:
-    - file: about.md
-    - file: release.md
+    - file: about/project.md
+    - file: about/release.md
     - file: example/index.md
-    - file: publication/index.md
-    - file: related.md
+    - file: about/publication.md
+    - file: about/license.md
+    - file: about/related.md
