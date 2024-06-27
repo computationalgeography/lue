@@ -33,6 +33,7 @@ html:
   use_repository_button: true
 sphinx:
   config:
+
     # html_theme_options:
     #   logo:
     #     image_light: YOUR_LIGHT_LOGO.png

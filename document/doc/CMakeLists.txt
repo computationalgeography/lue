@@ -96,7 +96,11 @@ configure_file(
 )
 
 foreach(name IN ITEMS
-    about.md
+    about/project.md
+    about/license.md
+    about/publication.md
+    about/related.md
+    about/release.md
     contribute/index.md
     contribute/documentation.md
     contribute/release.md
@@ -114,12 +118,11 @@ foreach(name IN ITEMS
     manual/framework/python/index.md
     manual/framework/scalability.md
     manual/view/index.md
-    publication/index.md
     reference/algorithm/clump.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md
     reference/cpp/index.md
-    reference/python/data_model/index.rst
+    # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
     # reference/python/framework/index.rst
     reference/python/index.md
@@ -133,8 +136,6 @@ foreach(name IN ITEMS
     reference/utility/lue_translate.md
     reference/utility/lue_validate.md
     reference/utility/lue_view.md
-    related.md
-    release.md
     _toc.yml
 )
     configure_file(${name} ${name} COPYONLY)

@@ -86,11 +86,11 @@ At the top of the LUE data model the [phenomena](#concept-phenomenon) are locate
 objects of the same kind. Objects can represent abstract things, like economies, or very concrete things, like
 birds. Whatever makes sense in a certain context. Within a phenomenon all information related to the objects
 is aggregated into [property-sets](#concept-property-set). Property-sets aggregate information about objects
-that share the same [time domain](#concept-time-domain) and [space domain](#concept-space-domain) In the time
-domain, information is stored about *when* something was or is, whereas in the space domain, information is
-store about *where* something was or is. Often, information about when and where something is differs,
-depending on the kind of information. For example, the sex of animals does not change through time and space,
-but the weight does. In the data model, such information is stored in different
+that share the same [time domain](#concept-time-domain) and [space domain](#concept-space-domain). In the time
+domain, information is stored about *when* something was, is, or will be, whereas in the space domain,
+information is store about *where* something was, is, or will be. Often, information about when and where
+something is differs, depending on the kind of information. For example, the sex of animals does not change
+through time and space, but the weight does. In the data model, such information is stored in different
 [properties](#concept-property) and properties sharing a time and space domain are aggregated into
 property-sets.
 

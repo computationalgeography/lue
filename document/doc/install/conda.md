@@ -9,10 +9,11 @@ and in education, for example. But,
 :::{warning}
 In case you want the best possible performance, you must build LUE yourself, from the sources and using
 settings that match your specific platform.
-:::
 
 Building LUE yourself is also required if you want to perform distributed calculations, using multiple
 cooroperating processes. For more information about building LUE, see [](#install-source).
+:::
+
 
 Installing LUE using Conda is as easy as:
 
