@@ -336,12 +336,6 @@ if(LUE_PYBIND11_REQUIRED)
     )
     FetchContent_MakeAvailable(pybind11)
 
-    # Disable support for numpy 2.0 for now
-    # https://github.com/computationalgeography/lue/issues/664
-    target_compile_definitions(pybind11::module
-        INTERFACE
-            PYBIND11_NUMPY_1_ONLY)
-
     # Silence pybind11 for now
     # https://github.com/computationalgeography/lue/issues/484
     target_compile_definitions(pybind11::module

@@ -9,16 +9,13 @@ foreach(name ${names})
 
     add_executable(${test_name} ${module_name}.cpp)
 
-    target_compile_definitions(${test_name}
-        PRIVATE
-            BOOST_TEST_DYN_LINK
-    )
-
     target_link_libraries(${test_name}
         PRIVATE
             lue::framework_partitioned_route
             lue::framework_test
+            Boost::disable_autolinking
             Boost::unit_test_framework
+            Boost::dynamic_linking
     )
 
     add_test(NAME ${test_name}
@@ -49,16 +46,13 @@ foreach(name ${names})
 
     add_executable(${test_name} ${module_name}.cpp)
 
-    target_compile_definitions(${test_name}
-        PRIVATE
-            BOOST_TEST_DYN_LINK
-    )
-
     target_link_libraries(${test_name}
         PRIVATE
             lue::framework_partitioned_route
             lue::framework_test
+            Boost::disable_autolinking
             Boost::unit_test_framework
+            Boost::dynamic_linking
     )
 
     add_test(NAME ${test_name}
