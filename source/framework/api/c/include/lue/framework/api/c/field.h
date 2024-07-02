@@ -10,6 +10,9 @@ extern "C" {
 struct Field
 {
 
+        /*!
+            @brief      Opaque pointer to the C++ Field instance
+        */
         void* instance;
 };
 

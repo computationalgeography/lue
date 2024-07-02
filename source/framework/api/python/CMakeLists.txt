@@ -13,7 +13,7 @@ add_library(lue_py_framework_x SHARED
     src/extension.cpp
     src/field.cpp
     src/local_operation.cpp
-    # TODO src/scalar.cpp
+    src/scalar.cpp
     src/submodule.cpp
 )
 

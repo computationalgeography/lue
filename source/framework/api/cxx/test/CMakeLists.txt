@@ -7,6 +7,7 @@ set(local_operation_names
 
 set(names
     create_array
+    create_scalar
     ${local_operation_names}
 )
 

@@ -15,7 +15,6 @@ namespace lue::framework {
     void bind_accu_threshold3(pybind11::module& module);
     void bind_acos(pybind11::module& module);
     void bind_add(pybind11::module& module);
-    void bind_array_partition_id(pybind11::module& module);
     void bind_all(pybind11::module& module);
     void bind_array_partition_id(pybind11::module& module);
     void bind_aspect(pybind11::module& module);

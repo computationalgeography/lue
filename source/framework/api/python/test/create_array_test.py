@@ -19,13 +19,13 @@ class CreateArrayTest(lue_test.TestCase):
         array_shape = (60, 40)
         partition_shape = (6, 4)
         element_type = np.int32
-        fill_value = 5
 
         # TODO Pass in a scalar of the right dtype. Don't pass in a dtype.
         # TODO partition_shape *must* be a keyword argument
-        #     fill_value = lfrx.scalar(np.int32, 5)
 
-        # field = lfrx.create_array(array_shape, element_type, fill_value, partition_shape=partition_shape)
+        # fill_value = lfrx.create_scalar(5, element_type)
+
+        # field = lfrx.create_array(array_shape, fill_value, partition_shape=partition_shape)
 
         # # print(result)
 

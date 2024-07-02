@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/partitioned_array.hpp"
 
-#include <cstdlib>
+#include <cstdint>
 #include <variant>
 
 
@@ -19,13 +19,13 @@ namespace lue::api {
         PartitionedArray<std::uint64_t, 2>,
         PartitionedArray<float, 2>,
         PartitionedArray<double, 2>,
-        Scalar<std::uint8_t>,
-        Scalar<std::int32_t>,
-        Scalar<std::uint32_t>,
-        Scalar<std::int64_t>,
-        Scalar<std::uint64_t>,
-        Scalar<float>,
-        Scalar<double>,
+        lue::Scalar<std::uint8_t>,
+        lue::Scalar<std::int32_t>,
+        lue::Scalar<std::uint32_t>,
+        lue::Scalar<std::int64_t>,
+        lue::Scalar<std::uint64_t>,
+        lue::Scalar<float>,
+        lue::Scalar<double>,
         std::uint8_t,
         std::int32_t,
         std::uint32_t,

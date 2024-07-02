@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/scalar.hpp"
 
-#include <cstdlib>
+#include <cstdint>
 #include <variant>
 
 
