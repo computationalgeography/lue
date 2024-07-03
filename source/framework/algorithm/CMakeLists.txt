@@ -187,6 +187,19 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # Instantiate modulus
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/modulus.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # Instantiate subtract
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/subtract-${count}.cpp")
 

@@ -200,4 +200,63 @@ namespace lue {
         return !divide_within_range(argument1, argument2, result);
     }
 
+
+    /*!
+        @brief      Calculate modulus of two numbers and return whether the result is valid
+    */
+    template<typename T>
+    bool safe_modulus(T const& argument1, T const& argument2, T& result) noexcept
+    {
+        // inout check ?
+        lue_assert(argument2 != T{0});
+
+        static_assert(std::is_arithmetic_v<T>);
+
+        if constexpr (std::is_integral_v<T>)
+        {
+            namespace bsf = boost::safe_numerics;
+
+            bool status{false};
+
+            try
+            {
+                bsf::safe<T> a1{argument1};
+                bsf::safe<T> a2{argument2};
+                bsf::safe<T> r{a1 % a2};
+
+                result = r;
+                status = true;
+            }
+            catch ([[maybe_unused]] std::exception const& exception)
+            {
+            }
+
+            return status;
+        }
+        else
+        {
+            // Floating point     // If it can be inf?
+            result = std::fmod(argument1, argument2);
+
+            return !std::isinf(result);
+        }
+    }
+
+
+    template<typename T>
+    bool modulus_within_range(
+        T const& argument1, T const& argument2, [[maybe_unused]] T const& result) noexcept
+    {
+        T r;
+        return safe_modulus(argument1, argument2, r);
+    }
+
+
+    template<typename T>
+    bool modulus_out_of_range(T const& argument1, T const& argument2, T const& result) noexcept
+    {
+        return !modulus_within_range(argument1, argument2, result);
+    }
+
+
 }  // namespace lue
