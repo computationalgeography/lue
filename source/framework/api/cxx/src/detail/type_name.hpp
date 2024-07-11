@@ -58,6 +58,13 @@ namespace lue::api::detail {
     }
 
 
+    template<typename Element, std::size_t size>
+    auto type_name([[maybe_unused]] std::array<Element, size> const& array) -> std::string
+    {
+        return fmt::format("std::array<{}, {}>", type_name<Element>(), size);
+    }
+
+
     template<typename Element>
     auto type_name([[maybe_unused]] lue::Scalar<Element> const& argument) -> std::string
     {

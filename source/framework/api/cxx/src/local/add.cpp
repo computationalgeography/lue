@@ -23,7 +23,7 @@ namespace lue {
     namespace api {
 
         /*!
-            @brief      Add two fields together and return a new field containing the resultin values
+            @brief      Add two fields together and return a new field containing the resultin value
         */
         auto add(Field const& field1, Field const& field2) -> Field
         {

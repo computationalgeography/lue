@@ -9,7 +9,7 @@ foreach(module_name __init__.py)
 endforeach()
 
 add_library(lue_py_framework_x SHARED
-    # TODO src/array.cpp
+    src/array.cpp
     src/extension.cpp
     src/field.cpp
     src/local_operation.cpp

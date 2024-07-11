@@ -8,9 +8,8 @@ BOOST_AUTO_TEST_CASE(create_scalar)
     using Element = std::int32_t;
     using Scalar = lue::Scalar<Element>;
 
-    lue::api::Literal const fill_value = Element{};
-
-    lue::api::Scalar result = lue::api::create_scalar(fill_value);
+    lue::api::Literal const value = Element{};
+    lue::api::Field const result = lue::api::create_scalar(value);
 
     BOOST_CHECK(std::holds_alternative<Scalar>(result));
 }

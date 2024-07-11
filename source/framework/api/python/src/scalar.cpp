@@ -1,7 +1,7 @@
 #include "lue/framework/api/cxx/create_scalar.hpp"
+#include "lue/framework/api/cxx/scalar.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
-#include <pybind11/operators.h>
 
 
 using namespace pybind11::literals;
@@ -11,7 +11,7 @@ namespace lue::api {
 
     namespace {
 
-        auto create_scalar(double const value, pybind11::dtype const& dtype) -> Scalar
+        auto create_scalar(double const value, pybind11::dtype const& dtype) -> Field
         {
             // TODO Out of range values must result in no-data values. This logic must be in the API layer or
             // higher. All bindings need it.
@@ -20,7 +20,7 @@ namespace lue::api {
 
             auto const kind = dtype.kind();
             auto const size = dtype.itemsize();  // bytes
-            std::optional<Scalar> scalar{};
+            std::optional<Field> field{};
 
             switch (kind)
             {
@@ -31,12 +31,12 @@ namespace lue::api {
                     {
                         case 4:
                         {
-                            scalar = lue::api::create_scalar(static_cast<std::int32_t>(value));
+                            field = lue::api::create_scalar(static_cast<std::int32_t>(value));
                             break;
                         }
                         case 8:
                         {
-                            scalar = lue::api::create_scalar(static_cast<std::int64_t>(value));
+                            field = lue::api::create_scalar(static_cast<std::int64_t>(value));
                             break;
                         }
                     }
@@ -50,17 +50,17 @@ namespace lue::api {
                     {
                         case 1:
                         {
-                            scalar = lue::api::create_scalar(static_cast<std::uint8_t>(value));
+                            field = lue::api::create_scalar(static_cast<std::uint8_t>(value));
                             break;
                         }
                         case 4:
                         {
-                            scalar = lue::api::create_scalar(static_cast<std::uint32_t>(value));
+                            field = lue::api::create_scalar(static_cast<std::uint32_t>(value));
                             break;
                         }
                         case 8:
                         {
-                            scalar = lue::api::create_scalar(static_cast<std::uint64_t>(value));
+                            field = lue::api::create_scalar(static_cast<std::uint64_t>(value));
                             break;
                         }
                     }
@@ -74,12 +74,12 @@ namespace lue::api {
                     {
                         case 4:
                         {
-                            scalar = lue::api::create_scalar(static_cast<float>(value));
+                            field = lue::api::create_scalar(static_cast<float>(value));
                             break;
                         }
                         case 8:
                         {
-                            scalar = lue::api::create_scalar(value);
+                            field = lue::api::create_scalar(value);
                             break;
                         }
                     }
@@ -88,13 +88,13 @@ namespace lue::api {
                 }
             }
 
-            if (!scalar)
+            if (!field)
             {
                 throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind,
                 size));
             }
 
-            return *scalar;
+            return std::move(*field);
         }
 
     }  // Anonymous namespace
@@ -102,29 +102,19 @@ namespace lue::api {
 
     void bind_scalar(pybind11::module& module)
     {
+        module.def(
+            "create_scalar",
+            [](
+                double const value,
+                pybind11::object const& dtype_args) -> Field
+            {
+                pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
-        pybind11::class_<Scalar>(module, "Scalar")
-
-            .def(pybind11::init(
-                [](
-                   double const value,
-                   pybind11::object const& dtype_args)
-                {
-                    pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
-
-                    return create_scalar(value, dtype);
-                }))
-
-            // bool(a), not a, if a, while a, ...
-            .def(
-                "__bool__",
-                []([[maybe_unused]] Scalar const& scalar)
-                {
-                    // ValueError
-                    throw std::invalid_argument("The truth value of a scalar is ambiguous");
-                })
-
-            ;
+                return create_scalar(value, dtype);
+            },
+            "value"_a,
+            "dtype"_a,
+            pybind11::return_value_policy::move);
     }
 
 }  // namespace lue::api

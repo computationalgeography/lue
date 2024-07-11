@@ -42,3 +42,14 @@ instance of that variant type.
 Destruction happens in the destructor of the variant type:
 - Python: happens automatically
 - C: Call `destroy_<variant_type`, which can call `delete` on the layered opaque pointer
+
+20240710
+- Having different types for Literal, Scalar, Array, Field gets us into overload hell again. What about only
+  using Field instances and let overload resolution figure out what is supported (and document this so users
+  know what to expect).
+    - A field is a value that varies through time and over space, or not
+    - Some functions require a field's value to not vary
+
+
+
+

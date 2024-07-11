@@ -6,21 +6,21 @@
 BOOST_AUTO_TEST_CASE(add_raster_raster)
 {
     using Element = std::int32_t;
-    using Raster = lue::PartitionedArray<Element, 2>;
+    using Array = lue::PartitionedArray<Element, 2>;
 
-    lue::api::Field const raster1 = Raster{};
-    lue::api::Field const raster2 = Raster{};
+    lue::api::Field const raster1 = Array{};
+    lue::api::Field const raster2 = Array{};
 
     {
         lue::api::Field result = lue::api::add(raster1, raster2);
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 
     {
         lue::api::Field result = raster1 + raster2;
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 }
 
@@ -28,22 +28,22 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 BOOST_AUTO_TEST_CASE(add_raster_scalar)
 {
     using Element = std::int32_t;
-    using Raster = lue::PartitionedArray<Element, 2>;
+    using Array = lue::PartitionedArray<Element, 2>;
     using Scalar = lue::Scalar<Element>;
 
-    lue::api::Field const raster = Raster{};
+    lue::api::Field const raster = Array{};
     lue::api::Field const scalar = Scalar{};
 
     {
         lue::api::Field result = lue::api::add(raster, scalar);
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 
     {
         lue::api::Field result = raster + scalar;
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 }
 
@@ -52,21 +52,21 @@ BOOST_AUTO_TEST_CASE(add_scalar_raster)
 {
     using Element = std::int32_t;
     using Scalar = lue::Scalar<Element>;
-    using Raster = lue::PartitionedArray<Element, 2>;
+    using Array = lue::PartitionedArray<Element, 2>;
 
     lue::api::Field const scalar = Scalar{};
-    lue::api::Field const raster = Raster{};
+    lue::api::Field const raster = Array{};
 
     {
         lue::api::Field result = lue::api::add(scalar, raster);
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 
     {
         lue::api::Field result = scalar + raster;
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 }
 
@@ -96,22 +96,22 @@ BOOST_AUTO_TEST_CASE(add_scalar_scalar)
 BOOST_AUTO_TEST_CASE(add_raster_value)
 {
     using Element = std::int32_t;
-    using Raster = lue::PartitionedArray<Element, 2>;
+    using Array = lue::PartitionedArray<Element, 2>;
     using Element = Element;
 
-    lue::api::Field const raster = Raster{};
+    lue::api::Field const raster = Array{};
     lue::api::Field const value = Element{};
 
     {
         lue::api::Field result = lue::api::add(raster, value);
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 
     {
         lue::api::Field result = raster + value;
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 }
 
@@ -119,21 +119,21 @@ BOOST_AUTO_TEST_CASE(add_raster_value)
 BOOST_AUTO_TEST_CASE(add_value_raster)
 {
     using Element = std::int32_t;
-    using Raster = lue::PartitionedArray<std::int32_t, 2>;
+    using Array = lue::PartitionedArray<std::int32_t, 2>;
 
     lue::api::Field const value = Element{};
-    lue::api::Field const raster = Raster{};
+    lue::api::Field const raster = Array{};
 
     {
         lue::api::Field result = lue::api::add(value, raster);
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 
     {
         lue::api::Field result = value + raster;
 
-        BOOST_CHECK(std::holds_alternative<Raster>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result));
     }
 }
 

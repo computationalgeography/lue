@@ -8,29 +8,24 @@ namespace lue {
 
     template<
         Arithmetic T>
-    auto create_scalar(T const& fill_value) -> lue::Scalar<T>
+    auto create_scalar(T const& value) -> lue::Scalar<T>
     {
-        return lue::Scalar<T>{fill_value};
-    }
-
-
-    auto create_scalar(auto const& fill_value) -> api::Scalar
-    {
-        api::detail::unsupported_overload("create_scalar", fill_value);
-
-        return {};
+        return lue::Scalar<T>{value};
     }
 
 
     namespace api {
 
-        auto create_scalar(Literal const& fill_value) -> Scalar
+        /*!
+            @brief      Create a scalar given a literal value
+        */
+        auto create_scalar(Literal const& value) -> Field
         {
             return std::visit(
-                overload{[](auto const& fill_value) -> Scalar {
-                    return lue::create_scalar(fill_value);
+                overload{[](auto const& value) -> Field {
+                    return lue::create_scalar(value);
                 }},
-                fill_value);
+                value);
         }
 
     }  // namespace api

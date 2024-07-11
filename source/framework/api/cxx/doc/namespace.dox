@@ -1,0 +1,11 @@
+namespace lue {
+
+    /*!
+        @brief      Namespace containing the public API
+
+        This namespace contains high-level code for the library end-user.
+    */
+    namespace api {
+    }
+
+}

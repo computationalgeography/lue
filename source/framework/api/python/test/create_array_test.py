@@ -1,6 +1,5 @@
 import numpy as np
 
-import lue.framework as lfr
 import lue.framework_x as lfrx
 import lue_test
 
@@ -20,14 +19,10 @@ class CreateArrayTest(lue_test.TestCase):
         partition_shape = (6, 4)
         element_type = np.int32
 
-        # TODO Pass in a scalar of the right dtype. Don't pass in a dtype.
-        # TODO partition_shape *must* be a keyword argument
+        fill_value = lfrx.create_scalar(5, element_type)
+        array = lfrx.create_array(array_shape, fill_value, partition_shape=partition_shape)
 
-        # fill_value = lfrx.create_scalar(5, element_type)
-
-        # field = lfrx.create_array(array_shape, fill_value, partition_shape=partition_shape)
-
-        # # print(result)
+        print(array)
 
         # TODO Mirror c++ tests
 
