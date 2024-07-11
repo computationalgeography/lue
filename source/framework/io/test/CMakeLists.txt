@@ -30,16 +30,16 @@ foreach(name ${names})
                     "$<TARGET_FILE:${test_name}>"
     )
 
-    if(WIN32)
-        # Ensure required DLLs can be found at runtime
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
-        )
-    endif()
+    set_property(
+        TEST
+            ${test_name}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:Boost::unit_test_framework>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:GDAL::GDAL>/../bin>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
+    )
 endforeach()

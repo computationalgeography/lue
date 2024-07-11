@@ -13,7 +13,7 @@ endfunction()
 function(add_unit_tests)
     set(prefix ARG)
     set(no_values "")
-    set(single_values SCOPE)
+    set(single_values SCOPE TARGETS)
     set(multi_values NAMES LIBRARIES)
 
     cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
@@ -43,14 +43,22 @@ function(add_unit_tests)
         )
 
         set_property(
-           TEST
-               ${test_name}
-           APPEND
-           PROPERTY
-               ENVIRONMENT_MODIFICATION
-                   PATH=path_list_prepend:${Boost_LIBRARY_DIRS}
+            TEST
+                ${test_name}
+            APPEND
+            PROPERTY
+                ENVIRONMENT_MODIFICATION
+                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:Boost::unit_test_framework>>
+                    # TODO: This should be enough on Windows, but it isn't...
+                    # https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html#genex:TARGET_RUNTIME_DLL_DIRS
+                    # TODO Use this info and add missing stuff whenever necessary
+                    # PATH=path_list_prepend:$<TARGET_RUNTIME_DLL_DIRS:${test_name}>
         )
+
+        list(APPEND test_names ${test_name})
     endforeach()
+
+    set(${ARG_TARGETS} ${test_names} PARENT_SCOPE)
 endfunction()
 
 
