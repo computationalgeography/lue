@@ -109,7 +109,15 @@ jobs:
             build_type: Release
             cmake_preset: hpx_release_windows_node_configuration
             cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=$CONDA_PREFIX/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            # Passing path for Hwloc_ROOT to prevent:
+            #     HPXConfig.cmake:160 (set):
+            #     Syntax error in cmake code at
+            #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
+            #     when parsing string
+            #       C:\Users\runneradmin\miniconda3\envs\test/Library
+            #     Invalid character escape '\U'.
+            # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
+            cmake_flags: "-D CMAKE_POLICY_DEFAULT_CMP0167=OLD -D CMAKE_POLICY_DEFAULT_CMP0169=OLD -D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_branch: ${{ env.hpx_branch }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
@@ -151,6 +159,7 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
+                      -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
