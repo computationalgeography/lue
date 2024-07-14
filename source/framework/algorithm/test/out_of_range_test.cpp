@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm out_of_range
 #include "lue/framework/algorithm/out_of_range.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace {

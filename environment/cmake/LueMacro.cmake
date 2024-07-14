@@ -33,26 +33,11 @@ function(add_unit_tests)
         target_link_libraries(${test_name}
             PRIVATE
                 ${ARG_LIBRARIES}
-                Boost::unit_test_framework
-                Boost::disable_autolinking
-                Boost::dynamic_linking
+                Boost::headers
         )
 
         add_test(NAME ${test_name}
             COMMAND ${test_name}
-        )
-
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:Boost::unit_test_framework>>
-                    # TODO: This should be enough on Windows, but it isn't...
-                    # https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html#genex:TARGET_RUNTIME_DLL_DIRS
-                    # TODO Use this info and add missing stuff whenever necessary
-                    # PATH=path_list_prepend:$<TARGET_RUNTIME_DLL_DIRS:${test_name}>
         )
 
         list(APPEND test_names ${test_name})

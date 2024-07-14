@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue core time tick_period
 #include "lue/core/time.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(seconds)

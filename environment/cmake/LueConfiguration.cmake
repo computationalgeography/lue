@@ -350,9 +350,8 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    set(Boost_NO_BOOST_CMAKE TRUE)
-
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    # Use Boost's own FindBoost module instead of the deprecated CMake version
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR

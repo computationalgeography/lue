@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework core configuration_entry
 #include "lue/framework/core/configuration_entry.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(cast_vector_uint64)

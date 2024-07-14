@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework core shape
 #include "lue/framework/core/shape.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace {

@@ -2,7 +2,7 @@
 #include "lue/core/tag.hpp"
 #include "lue/info/time/time_cell.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <iostream>
 
 

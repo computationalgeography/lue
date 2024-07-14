@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue info property same_shape variable_shape property
 #include "lue/info/property/same_shape/variable_shape/property.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 class Fixture: public lue::data_model::test::FileFixture

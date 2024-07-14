@@ -137,9 +137,7 @@ foreach(name ${names})
             lue::framework_algorithm
             lue::framework_global_operation  # unique
             lue::framework_test
-            Boost::disable_autolinking
-            Boost::unit_test_framework
-            Boost::dynamic_linking
+            Boost::headers
     )
 
     add_test(NAME ${test_name}
@@ -158,7 +156,6 @@ foreach(name ${names})
         APPEND
         PROPERTY
             ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:Boost::unit_test_framework>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>

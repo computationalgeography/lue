@@ -1,7 +1,7 @@
 #include "lue/gdal/compare_rasters.hpp"
 #include "lue/gdal/data_type.hpp"
 #include "lue/gdal/raster.hpp"
-#include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <cassert>
 
 

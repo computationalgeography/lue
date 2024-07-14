@@ -5,7 +5,7 @@
 #include <hpx/config.hpp>
 #include <hpx/hpx_init.hpp>
 #include <boost/cstdlib.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 // https://stellar-group.github.io/hpx/docs/html/hpx.html#hpx.manual.applications

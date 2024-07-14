@@ -2,7 +2,7 @@
 #include "lue/core/tag.hpp"
 #include "lue/info/time/time_box.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 class Fixture: public lue::data_model::test::FileFixture

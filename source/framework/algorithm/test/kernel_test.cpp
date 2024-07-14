@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(kernel_bool_1d)

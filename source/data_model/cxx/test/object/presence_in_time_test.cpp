@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue object presence_in_time
 #include "lue/object/property/property_set.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixture)

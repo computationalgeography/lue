@@ -16,9 +16,7 @@ foreach(name ${names})
             lue::image_land
             lue_framework_algorithm_test
             lue::framework_test
-            Boost::disable_autolinking
-            Boost::unit_test_framework
-            Boost::dynamic_linking
+            Boost::headers
     )
 
     add_test(NAME ${test_name}
