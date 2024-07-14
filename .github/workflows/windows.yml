@@ -86,7 +86,8 @@ jobs:
                   conan \
                   conda-build \
                   docopt \
-                  gdal \
+                  libgdal \
+                  hdf5 \
                   jinja2 \
                   libhwloc \
                   matplotlib \
