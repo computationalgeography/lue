@@ -2,6 +2,7 @@ name: Windows CI
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize]
   push:
     branches-ignore:
       - "ghxyz"
