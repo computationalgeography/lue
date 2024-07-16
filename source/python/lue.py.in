@@ -36,32 +36,27 @@ if sys.platform == "win32":
                 # All seems to be as expected. LUE DLLs should be stored here.
                 os.add_dll_directory(bin_directory_pathname)
 
+            # In one circumstance we want to add a special location before importing LUE. This is in our
+            # development environment, where HPX is built by ourselves and installed in a non-standard
+            # location.  Here, we dectect whether this location has been added to the PATH, and if so, add
+            # this location to Python's search path. In 99.9% of the cases this is not needed.
+            # This tweak can be removed once we have access to a Conda development package of HPX, besides a
+            # runtime package. In that case, we don't have to build HPX ourselves anymore.
+            for path in os.environ["PATH"].split(";"):
+                if "hpx" in path:
+                    os.add_dll_directory(path)
+
     else:
         # LUE is not installed, but used from the build directory. Our own shared libraries and some shared
         # libraries they depend on (not all unfortunately...) should have been copied already to the current
         # directory by CMake logic. What remains are some paths to directories containing shared libraries our
         # shared libraries depend on.
-
-
-
-
-
-        # In one circumstance we want to add a special location before importing LUE. This
-        # is in our development environment, where HPX is built by ourselves and installed in a
-        # non-standard location. Here, we dectect whether this location has been added to the
-        # PATH, and if so, add this location to Python's search path. In 99.9% of the cases
-        # this is not needed.
-        # This tweak can be removed once we have access to a Conda development package of HPX,
-        # besides a runtime package. In that case, we don't have to build HPX ourselves anymore.
         for path in os.environ["PATH"].split(";"):
             if "hpx" in path:
-                print(path)
                 os.add_dll_directory(path)
             elif "release-1930" in path:
-                print(path)
                 os.add_dll_directory(path)
             elif "hwloc" in path:
-                print(path)
                 os.add_dll_directory(path)
 
 
