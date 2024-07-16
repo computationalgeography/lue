@@ -1,0 +1,21 @@
+cd build
+
+export PATH=~/software/HPX/hpx_1.9.1/hpx_install/bin:$PATH
+export LD_LIBRARY_PATH=~/software/HPX/hpx_1.9.1/hpx_install/lib:$LD_LIBRARY_PATH
+
+cmake -S .. -B .  -DLUE_BUILD_VIEW=FALSE -DBUILD_TYPE=Debug
+or
+cmake -S .. -B . -DLUE_BUILD_VIEW=FALSE -DCMAKE_BUILD_TYPE=Release
+
+
+----- if neede set configuration by ----
+
+ccmake .
+-----------------------------------------
+
+cmake --build . -j 6
+
+cmake --install . --prefix ../lue_install_release
+or
+cmake --install . --prefix ../lue_install_debug
+cmake --install . --prefix ../lue_dev_install_debug   --component lue_development

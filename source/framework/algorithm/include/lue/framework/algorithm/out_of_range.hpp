@@ -210,6 +210,7 @@ namespace lue {
         // inout check ?
         lue_assert(argument2 != T{0});
 
+        // static_assert(std::is_integral_v<T>, "Input arguments for modulus must be an integral type");
         static_assert(std::is_arithmetic_v<T>);
 
         if constexpr (std::is_integral_v<T>)
@@ -233,12 +234,11 @@ namespace lue {
 
             return status;
         }
+
         else
         {
-            // Floating point     // If it can be inf?
-            result = std::fmod(argument1, argument2);
-
-            return !std::isinf(result);
+            bool status{false};
+            return status;
         }
     }
 

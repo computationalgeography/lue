@@ -75,7 +75,9 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "source_location": "cpp",
+        "span": "cpp"
     },
 
     "C_Cpp.errorSquiggles": "disabled",
