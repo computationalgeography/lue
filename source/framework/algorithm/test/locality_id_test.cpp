@@ -1,9 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm locality_id
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/locality_id.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 namespace detail {

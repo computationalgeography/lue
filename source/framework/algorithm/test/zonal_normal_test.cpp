@@ -4,8 +4,6 @@
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/comparison.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_normal.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

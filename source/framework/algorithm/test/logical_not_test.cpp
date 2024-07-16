@@ -3,7 +3,6 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/logical_not.hpp"
 #include "lue/framework/algorithm/default_policies/none.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

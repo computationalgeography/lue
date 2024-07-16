@@ -3,8 +3,6 @@
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/value_policies/focal_diversity.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

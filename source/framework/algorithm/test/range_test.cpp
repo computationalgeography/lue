@@ -1,11 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm range
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/range.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include <boost/test/tools/old/interface.hpp>
-#include <fmt/format.h>
 
 
 BOOST_AUTO_TEST_CASE(range_2d_int32)

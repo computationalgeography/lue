@@ -11,8 +11,6 @@
 #include "lue/framework/algorithm/value_policies/logical_not.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
