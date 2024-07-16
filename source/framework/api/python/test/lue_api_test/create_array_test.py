@@ -20,9 +20,9 @@ class CreateArrayTest(lue_test.TestCase):
         element_type = np.int32
 
         fill_value = lfrx.create_scalar(5, element_type)
-        array = lfrx.create_array(array_shape, fill_value, partition_shape=partition_shape)
+        # array = lfrx.create_array(array_shape, fill_value, partition_shape=partition_shape)
 
-        print(array)
+        # print(array)
 
         # TODO Mirror c++ tests
 

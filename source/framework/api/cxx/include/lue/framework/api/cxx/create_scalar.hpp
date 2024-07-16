@@ -6,6 +6,6 @@
 
 namespace lue::api {
 
-    auto LUE_FAPI_EXPORT create_scalar(Literal const& value) -> Field;
+    LUE_FAPI_EXPORT auto create_scalar(Literal const& value) -> Field;
 
 }  // namespace lue::api

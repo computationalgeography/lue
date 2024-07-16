@@ -14,7 +14,7 @@ namespace lue::api::detail {
         std::string_view const& name, ArgumentTypeNames const&... type_names)
     {
         throw std::runtime_error{fmt::format(
-            "Invalid overload called: {}({})",
+            "Unsupported C++ overload called: {}({})",
             name,
             fmt::join(std::initializer_list<std::string_view>{type_names...}, ", "))};
     }

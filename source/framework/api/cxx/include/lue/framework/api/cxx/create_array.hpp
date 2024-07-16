@@ -5,9 +5,9 @@
 
 namespace lue::api {
 
-    auto LUE_FAPI_EXPORT create_array(Shape<Count, 2> const& array_shape, Field const& fill_value) -> Field;
+    LUE_FAPI_EXPORT auto create_array(Shape<Count, 2> const& array_shape, Field const& fill_value) -> Field;
 
-    auto LUE_FAPI_EXPORT create_array(
+    LUE_FAPI_EXPORT auto create_array(
         Shape<Count, 2> const& array_shape, Shape<Count, 2> const& partition_shape, Field const& fill_value)
         -> Field;
 

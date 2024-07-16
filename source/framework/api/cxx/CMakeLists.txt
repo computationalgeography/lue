@@ -3,6 +3,7 @@ add_test_conditionally(test)
 add_library(lue_framework_api_cxx SHARED
     src/create_array.cpp
     src/create_scalar.cpp
+    src/io/from_gdal.cpp
     src/local/add.cpp
     src/local/uniform.cpp
 )
@@ -42,6 +43,7 @@ target_sources(lue_framework_api_cxx
 
 target_link_libraries(lue_framework_api_cxx
     PRIVATE
+        lue::framework_io
         lue::framework_local_operation
         fmt::fmt
     PUBLIC
