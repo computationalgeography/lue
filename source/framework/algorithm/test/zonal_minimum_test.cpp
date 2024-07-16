@@ -2,8 +2,6 @@
 #include "lue/framework/algorithm/array_partition_id.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_minimum.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

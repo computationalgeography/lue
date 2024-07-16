@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework partitioned_route serial_route_fragment
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/stream.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(default_construct)

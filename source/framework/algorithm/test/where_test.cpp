@@ -2,7 +2,6 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/where.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

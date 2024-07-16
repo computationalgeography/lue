@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue utility environment
 #include "lue/utility/environment.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(expand_environment_variables)

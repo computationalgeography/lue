@@ -3,7 +3,7 @@
 #include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(nr_2d_partitions)

@@ -1,4 +1,3 @@
-set(scope lue_utility)
 set(names
     environment
 )
@@ -8,4 +7,6 @@ add_unit_tests(
     NAMES ${names}
     LIBRARIES
         lue::utility
+    TARGETS
+        test_names
 )

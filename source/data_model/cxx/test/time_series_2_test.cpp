@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue time_series 2
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)

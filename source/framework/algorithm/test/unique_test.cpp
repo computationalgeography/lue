@@ -3,7 +3,6 @@
 #include "lue/framework/algorithm/value_policies/unique.hpp"
 #include "lue/framework/algorithm/value_policies/unique_id.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

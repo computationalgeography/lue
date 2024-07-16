@@ -2,8 +2,6 @@
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/accu_threshold.hpp"
 #include "lue/framework/algorithm/value_policies/accu_threshold3.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

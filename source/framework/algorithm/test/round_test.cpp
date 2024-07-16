@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm round
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/round.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

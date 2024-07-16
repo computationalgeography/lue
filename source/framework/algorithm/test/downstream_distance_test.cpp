@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm downstream_distance
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/downstream_distance.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

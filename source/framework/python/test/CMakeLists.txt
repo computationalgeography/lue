@@ -22,6 +22,7 @@ set_property(
         ENVIRONMENT
             $<$<AND:$<NOT:$<PLATFORM_ID:Windows>>,$<STREQUAL:${HPX_WITH_MALLOC},tcmalloc>>:$<IF:$<PLATFORM_ID:Darwin>,DYLD_INSERT_LIBRARIES,LD_PRELOAD>=${TCMALLOC_LIBRARY}>
 )
+
 set_property(
     TEST
         lue_py_framework_python_test
@@ -30,8 +31,13 @@ set_property(
         # Add the path to our Python modules to PYTHONPATH.
         ENVIRONMENT_MODIFICATION
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
-            PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}
+            PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}  # lue_unit_test.py
+
+            # This should not be necessary, but copying in all shared libs we depend on skips a few
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
 )
+
 set_property(
     TEST
         lue_py_framework_python_test

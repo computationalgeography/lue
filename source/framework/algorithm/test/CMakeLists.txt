@@ -131,18 +131,13 @@ foreach(name ${names})
 
     add_executable(${test_name} ${module_name}.cpp)
 
-    target_compile_definitions(${test_name}
-        PRIVATE
-            BOOST_TEST_DYN_LINK
-    )
-
     target_link_libraries(${test_name}
         PRIVATE
             lue_framework_algorithm_test
             lue::framework_algorithm
             lue::framework_global_operation  # unique
             lue::framework_test
-            Boost::unit_test_framework
+            Boost::headers
     )
 
     add_test(NAME ${test_name}
@@ -155,23 +150,22 @@ foreach(name ${names})
                     "$<TARGET_FILE:${test_name}>"
     )
 
-    if(WIN32)
-        # Ensure required DLLs can be found at runtime
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_route>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_routing_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
-        )
-    endif()
+    set_property(
+        TEST
+            ${test_name}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_local_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_focal_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_routing_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_zonal_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
+    )
 endforeach()
 
 foreach(name ${local_operation_names})
@@ -212,38 +206,26 @@ set(names
     out_of_range
 )
 
-foreach(name ${names})
-    set(module_name ${name}_test)
-    string(REPLACE "/" "_" test_name ${scope}_${module_name})
+add_unit_tests(
+    SCOPE ${scope}
+    NAMES ${names}
+    LIBRARIES
+        lue_framework_algorithm_test
+        lue::framework_algorithm
+        lue::framework_test
+    TARGETS
+        test_names
+)
 
-    add_executable(${test_name} ${module_name}.cpp)
-
-    target_compile_definitions(${test_name}
-        PRIVATE
-            BOOST_TEST_DYN_LINK
+foreach(test_name ${test_names})
+    set_property(
+        TEST
+            ${test_name}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
     )
-
-    target_link_libraries(${test_name}
-        PRIVATE
-            lue_framework_algorithm_test
-            lue::framework_algorithm
-            lue::framework_test
-            Boost::unit_test_framework
-    )
-
-    add_test(NAME ${test_name}
-        COMMAND ${test_name}
-    )
-
-    if(WIN32)
-        # Ensure required DLLs can be found at runtime
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
-        )
-    endif()
 endforeach()

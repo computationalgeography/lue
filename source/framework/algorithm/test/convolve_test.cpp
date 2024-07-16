@@ -3,8 +3,6 @@
 #include "lue/framework/algorithm/definition/convolve.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

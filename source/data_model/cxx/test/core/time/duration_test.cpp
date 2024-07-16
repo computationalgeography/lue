@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue core time duration
 #include "lue/core/time.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace ldm = lue::data_model;

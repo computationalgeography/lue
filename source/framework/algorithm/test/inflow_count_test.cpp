@@ -3,8 +3,6 @@
 #include "lue/framework/algorithm/definition/inflow_count3.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

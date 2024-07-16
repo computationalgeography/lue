@@ -3,34 +3,60 @@ import sys
 
 
 if sys.platform == "win32":
-    # We are about to import the lue_py Python extension. Iff this version of LUE is installed,
-    # we can help Python to find LUE DLLs the LUE Python package depends on. In all other cases
-    # we should do nothing.
+    # We are about to import the lue_py Python extension. Since Python 3.8, PATH is not searched anymore for
+    # locations from which to load shared libraries. Such locations need to be added using
+    # os.add_dll_directory. This needs to be done for those shared libraries that are not automatically found
+    # by Python, because they are located in non-standard locations.
+
+
+    def lue_is_installed(package_directory_pathname) -> bool:
+        install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
+
+        return not os.path.exists(os.path.join(install_prefix, "CMakeCache.txt"))
+
+
     package_directory_pathname = os.path.dirname(os.path.dirname(__file__))
 
-    if os.path.basename(package_directory_pathname) != "site_packages":
-        # LUE is installed outside of a Python installation. We need to tell Python where our
-        # DLLs are located.
-        # Normally, assumes the package is installed in a location like lib/python<x>.<y>/lue. In
-        # that case, the DLLs are located in bin.
-        install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
-        bin_directory_pathname = os.path.join(install_prefix, "bin")
 
-        if os.path.isdir(bin_directory_pathname):
-            # All seems to be as expected. LUE DLLs should be stored here.
-            os.add_dll_directory(bin_directory_pathname)
+    if lue_is_installed(package_directory_pathname):
+        if os.path.basename(package_directory_pathname) == "site_packages":
+            # LUE is installed in a Python installation / virtual environment. All shared libraries should be
+            # found automatically.
+            pass
+        else:
+            # LUE is installed outside of a Python installation / virtual environment. We need to tell Python
+            # where our shared libraries are located.  The LUE Python package should be installed in a
+            # location like lib/python<x>.<y>/lue. Our shared libraries are located in bin. We assume shared
+            # libraries our shared libraries depend on are all located in standard locations and therefore
+            # will be found.
+            install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
+            bin_directory_pathname = os.path.join(install_prefix, "bin")
 
-        # This is somewhat a hack. Since Python 3.8, PATH is not searched anymore for locations
-        # from which to load dlls. Such locations need to be added using os.add_dll_directory.
-        # In one circumstance we want to add a special location before importing LUE. This
-        # is in our development environment, where HPX is built by ourselves and installed in a
-        # non-standard location. Here, we dectect whether this location has been added to the
-        # PATH, and if so, add this location to Python's search path. In 99.9% of the cases
-        # this is not needed.
-        # This tweak can be removed once we have access to a Conda development package of HPX,
-        # besides a runtime package.
+            if os.path.isdir(bin_directory_pathname):
+                # All seems to be as expected. LUE DLLs should be stored here.
+                os.add_dll_directory(bin_directory_pathname)
+
+            # In one circumstance we want to add a special location before importing LUE. This is in our
+            # development environment, where HPX is built by ourselves and installed in a non-standard
+            # location.  Here, we dectect whether this location has been added to the PATH, and if so, add
+            # this location to Python's search path. In 99.9% of the cases this is not needed.
+            # This tweak can be removed once we have access to a Conda development package of HPX, besides a
+            # runtime package. In that case, we don't have to build HPX ourselves anymore.
+            for path in os.environ["PATH"].split(";"):
+                if "hpx" in path:
+                    os.add_dll_directory(path)
+
+    else:
+        # LUE is not installed, but used from the build directory. Our own shared libraries and some shared
+        # libraries they depend on (not all unfortunately...) should have been copied already to the current
+        # directory by CMake logic. What remains are some paths to directories containing shared libraries our
+        # shared libraries depend on.
         for path in os.environ["PATH"].split(";"):
             if "hpx" in path:
+                os.add_dll_directory(path)
+            elif "release-1930" in path:
+                os.add_dll_directory(path)
+            elif "hwloc" in path:
                 os.add_dll_directory(path)
 
 

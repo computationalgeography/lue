@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm timestamp
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/timestamp.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

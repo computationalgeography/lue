@@ -2,6 +2,7 @@ name: Linux CI
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize, closed]
   push:
     branches-ignore:
       - "ghxyz"
@@ -144,6 +145,7 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
+                      -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \

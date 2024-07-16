@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue array different_shape constant_shape value
 #include "lue/array/different_shape/constant_shape/value.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 class Fixture: public lue::data_model::test::FileFixture

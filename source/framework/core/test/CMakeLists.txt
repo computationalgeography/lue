@@ -1,4 +1,3 @@
-set(scope lue_framework_core)
 set(names
     array
     array_visitor
@@ -12,36 +11,24 @@ set(names
     span
 )
 
-foreach(name ${names})
-    set(module_name ${name}_test)
-    string(REPLACE "/" "_" test_name ${scope}_${module_name})
+add_unit_tests(
+    SCOPE lue_framework_core
+    NAMES ${names}
+    LIBRARIES
+        lue::framework_test
+    TARGETS
+        test_names
+)
 
-    add_executable(${test_name} ${module_name}.cpp)
-
-    target_compile_definitions(${test_name}
-        PRIVATE
-            BOOST_TEST_DYN_LINK
+foreach(test_name ${test_names})
+    set_property(
+        TEST
+            ${test_name}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
     )
-
-    target_link_libraries(${test_name}
-        PRIVATE
-            lue::framework_test
-            Boost::unit_test_framework
-    )
-
-    add_test(NAME ${test_name}
-        COMMAND ${test_name}
-    )
-
-    if(WIN32)
-        # Ensure required DLLs can be found at runtime
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
-        )
-    endif()
 endforeach()

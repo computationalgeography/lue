@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue object dataset
 #include "lue/object/dataset.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(create_new_dataset)

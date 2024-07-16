@@ -3,8 +3,6 @@
 #include "lue/framework/algorithm/default_policies/accu3.hpp"
 #include "lue/framework/algorithm/definition/accu.hpp"
 #include "lue/framework/algorithm/value_policies/accu3.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

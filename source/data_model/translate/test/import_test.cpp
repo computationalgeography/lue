@@ -3,7 +3,8 @@
 #include "lue/stream.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
+#include <fmt/ranges.h>
 #include <numeric>
 
 

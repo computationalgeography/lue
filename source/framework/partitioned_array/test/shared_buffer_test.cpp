@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework partitioned_array shared_buffer
 #include "lue/framework/partitioned_array/shared_buffer.hpp"
 #include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <numeric>
 
 

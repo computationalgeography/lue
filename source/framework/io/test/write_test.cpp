@@ -3,7 +3,6 @@
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include "lue/framework/io/write_into.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include <hpx/config.hpp>

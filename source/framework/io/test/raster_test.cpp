@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework io raster
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/io/raster.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/gdal.hpp"
 #include <hpx/config.hpp>

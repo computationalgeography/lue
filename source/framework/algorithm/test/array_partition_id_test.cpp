@@ -3,9 +3,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 namespace detail {

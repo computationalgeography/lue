@@ -2,7 +2,7 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/test/print.hpp"
 #include "lue/validate.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace ldm = lue::data_model;

@@ -2,7 +2,7 @@
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <boost/range/irange.hpp>
-#include <boost/test/test_tools.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace utf = boost::unit_test;

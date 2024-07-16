@@ -2,6 +2,7 @@ name: macOS CI
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize]
   push:
     branches-ignore:
       - "ghxyz"
@@ -143,6 +144,7 @@ jobs:
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
                       -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0 \
+                      -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
