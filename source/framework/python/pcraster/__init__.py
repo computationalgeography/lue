@@ -203,7 +203,7 @@ def accucapacitystate(ldd, material, transportcapacity):
 
 
 def accuflux(ldd, material):
-    raise NotImplementedError("accuflux")
+    return accuthreshold(ldd, material, 0)[1]
 
 
 def accufraction(ldd, material, transportcapacity):
@@ -392,8 +392,10 @@ def catchment(*args):
     raise NotImplementedError("catchment")
 
 
-def catchmenttotal(*args):
-    raise NotImplementedError("catchmenttotal")
+def catchmenttotal(amount, ldd):
+    # TODO This assumes accuthreshold can handle negative values
+    # https://github.com/computationalgeography/lue/issues/673
+    return accuthreshold(ldd, amount, 0)[1]
 
 
 def cellarea(*args):
@@ -402,6 +404,10 @@ def cellarea(*args):
 
 def celllength(*args):
     return configuration.cell_size
+
+
+def cellvalue(*args):
+    raise NotImplementedError("cellvalue")
 
 
 def clump(expression):
@@ -599,7 +605,7 @@ def lddcreatedem(*args):
 
 
 def ldddist(*args):
-    raise NotImplementedError("lddcreatedist")
+    raise NotImplementedError("ldddist")
 
 
 def lddmask(*args):
@@ -679,45 +685,43 @@ def markwhilesumge(*args):
 def max(*args):
     if len(args) == 1:
         return args[0]
+    elif len(args) > 2:
+        return max(args[0], max(*args[1:]))
+    else:
+        expression1, expression2 = args
+        type1 = numpy_scalar_type(expression1)
+        type2 = numpy_scalar_type(expression2)
 
-    if len(args) != 2:
-        raise NotImplementedError("max with more than 2 arguments")
+        if is_non_spatial(expression1):
+            expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
 
-    expression1, expression2 = args
-    type1 = numpy_scalar_type(expression1)
-    type2 = numpy_scalar_type(expression2)
+        if is_non_spatial(expression2):
+            expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
 
-    if is_non_spatial(expression1):
-        expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
+        condition = lfr.greater_than_equal_to(expression1, expression2)
 
-    if is_non_spatial(expression2):
-        expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
-
-    condition = lfr.greater_than_equal_to(expression1, expression2)
-
-    return lfr.where(condition, expression1, expression2)
+        return lfr.where(condition, expression1, expression2)
 
 
 def min(*args):
     if len(args) == 1:
         return args[0]
+    elif len(args) > 2:
+        return min(args[0], min(*args[1:]))
+    else:
+        expression1, expression2 = args
+        type1 = numpy_scalar_type(expression1)
+        type2 = numpy_scalar_type(expression2)
 
-    if len(args) != 2:
-        raise NotImplementedError("min with more than 2 arguments")
+        if is_non_spatial(expression1):
+            expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
 
-    expression1, expression2 = args
-    type1 = numpy_scalar_type(expression1)
-    type2 = numpy_scalar_type(expression2)
+        if is_non_spatial(expression2):
+            expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
 
-    if is_non_spatial(expression1):
-        expression1 = non_spatial_to_spatial(fill_value=type2(expression1))
+        condition = lfr.less_than_equal_to(expression1, expression2)
 
-    if is_non_spatial(expression2):
-        expression2 = non_spatial_to_spatial(fill_value=type1(expression2))
-
-    condition = lfr.less_than_equal_to(expression1, expression2)
-
-    return lfr.where(condition, expression1, expression2)
+        return lfr.where(condition, expression1, expression2)
 
 
 def mod(*args):
