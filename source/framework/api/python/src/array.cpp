@@ -1,5 +1,5 @@
 #include "lue/framework/api/cxx/create_array.hpp"
-#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
 
 
 using namespace pybind11::literals;
@@ -12,10 +12,9 @@ namespace lue::api {
 
         module.def(
             "create_array",
-            [](
-                Shape<Count, 2> const& array_shape,
-                Field const& fill_value,
-                std::optional<Shape<Count, 2>> const& partition_shape) -> Field
+            [](Shape<Count, 2> const& array_shape,
+               Field const& fill_value,
+               std::optional<Shape<Count, 2>> const& partition_shape) -> Field
             {
                 return partition_shape ? create_array(array_shape, *partition_shape, fill_value)
                                        : create_array(array_shape, fill_value);
