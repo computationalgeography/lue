@@ -161,6 +161,7 @@ jobs:
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
                       -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+                      -D CMAKE_POLICY_DEFAULT_CMP0169=OLD \
                       -D LUE_BUILD_QA=TRUE \
                       -D LUE_QA_WITH_PYTHON_API=TRUE \
                       -D LUE_QA_WITH_TESTS=TRUE \
