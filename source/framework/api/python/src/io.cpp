@@ -22,6 +22,12 @@ namespace lue::api {
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<Shape<Count, 2>>{},
             pybind11::return_value_policy::move);
+
+        module.def(
+            "to_gdal",
+            to_gdal,
+            "field"_a,
+            "name"_a);
     }
 
 }  // namespace lue::api

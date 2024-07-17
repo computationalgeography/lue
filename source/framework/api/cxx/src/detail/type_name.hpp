@@ -58,6 +58,12 @@ namespace lue::api::detail {
     }
 
 
+    inline auto type_name([[maybe_unused]] std::string const& string) -> std::string
+    {
+        return "std::string";
+    }
+
+
     template<typename Element, std::size_t size>
     auto type_name([[maybe_unused]] std::array<Element, size> const& array) -> std::string
     {

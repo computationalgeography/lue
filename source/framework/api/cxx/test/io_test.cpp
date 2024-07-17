@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE lue framework api cxx io from_gdal
-#include "lue/framework/api/cxx/io/from_gdal.hpp"
+#define BOOST_TEST_MODULE lue framework api cxx io
+#include "lue/framework/api/cxx/io.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

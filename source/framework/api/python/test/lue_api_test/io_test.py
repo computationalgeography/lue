@@ -12,7 +12,7 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
-class FromGDALTest(lue_test.TestCase):
+class IOTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_from_gdal(self):
         name = "x"

@@ -3,7 +3,7 @@ add_test_conditionally(test)
 add_library(lue_framework_api_cxx SHARED
     src/create_array.cpp
     src/create_scalar.cpp
-    src/io/from_gdal.cpp
+    src/io.cpp
     src/local/add.cpp
     src/local/uniform.cpp
 )
