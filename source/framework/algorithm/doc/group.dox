@@ -1,0 +1,27 @@
+/*!
+    @defgroup local_operation Local operations
+*/
+
+/*!
+    @defgroup focal_operation Focal operations
+*/
+
+/*!
+    @defgroup zonal_operation Zonal operations
+*/
+
+/*!
+    @defgroup global_operation Global operations
+*/
+
+/*!
+    @defgroup routing_operation Routing operations
+*/
+
+/*!
+    @defgroup mathematical_operation Mathematical operations
+*/
+
+/*!
+    @defgroup random_number_operation Random number operations
+*/

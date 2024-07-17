@@ -1,30 +1,23 @@
-# LUE framework  {#lue_framework}
-
-[TOC]
+# Algorithms
 
 
-The LUE framework contains code for translating environmental modelling
-state variables.
-
-
-# Algorithms  {#lue_framework_algorithms}
-These are top-level algorithms that can be called in any order. They
-take one or more partitioned arrays as arguments and spawn tasks at the
-same localities are where the array partitions are located. These
-top-level tasks may continue to spawn additional tasks at these
-localities.
+These are top-level algorithms that can be called in any order. They take one or more partitioned arrays as
+arguments and spawn tasks at the same localities are where the array partitions are located. These top-level
+tasks may continue to spawn additional tasks at these localities.
 
 
 ## Arithmetic
+
 Name   | Description
 -------|------------
-lue::add, operator+ | Return the result of adding something to a partitioned array
+{cpp:func}`lue::add`, operator+ | Return the result of adding something to a partitioned array
 lue::divide, operator/ | Return the result of multiplying something with a partitioned array
 lue::multiply, operator* | Return the result of multiplying something with a partitioned array
 lue::subtract, operator- | Return the result of subtracting something from a partitioned array
 
 
 ## Comparison
+
 Name   | Description
 -------|------------
 lue::equal_to, operator== | Return the result of comparing something with a partitioned array
@@ -37,6 +30,7 @@ lue::less_than_equal_to, operator<= | Return the result of comparing something w
 
 
 ## Logical
+
 Name   | Description
 -------|------------
 lue::logical_and, operator&& | Logical conjunction
@@ -45,6 +39,7 @@ lue::logical_not, operator! | Logical negation
 
 
 ## Trigonometric
+
 Name   | Description
 -------|------------
 lue::cos | cos...
@@ -54,6 +49,7 @@ lue::atan2 | atan2...
 
 
 ## Mathematical
+
 Name   | Description
 -------|------------
 lue::pow | Return the result of rasing the elements in a partitioned array by the power of an exponent
@@ -61,6 +57,7 @@ lue::sqrt | Return the result of taking the square root of the elements in a par
 
 
 ## Focal
+
 Name   | Description
 -------|------------
 lue::convolve | Return the result of convolving a kernel with weights with a partitioned array
@@ -71,6 +68,7 @@ lue::slope | Return the slope of a digital elevation model
 
 
 ## Global
+
 Name   | Description
 -------|------------
 lue::minimum | Return the minimum value in an array
@@ -79,12 +77,14 @@ lue::sum | Return the result of summing the elements in a partitioned array
 
 
 ## Random
+
 Name   | Description
 -------|------------
 lue::uniform | Fill a partitioned array in-place with a uniform random value
 
 
 ## Statistic
+
 Name   | Description
 -------|------------
 lue::minimum | Return the minimum value in an array
@@ -95,6 +95,7 @@ lue::focal_sum | focal_sum...
 
 
 ## I/O
+
 Name   | Description
 -------|------------
 lue::read | Read a partitioned array from a dataset
@@ -102,6 +103,7 @@ lue::write | Write a partitioned array to a dataset
 
 
 ## Uncategorized
+
 Name   | Description
 -------|------------
 lue::all | Return whether a partitioned array contains only elements that evaluate to true
@@ -120,6 +122,3 @@ lue::unique_id | Fill a partitioned array in-place with unique IDs
 lue::where | Conditionally assign values to the result
 lue::mesh_grid | Create arrays with multidimensional `mesh grid`
 lue::scale | Return the result of scaling values in a partitioned array to a range defined by a minimum and maximum value
-
-
-# Data structures  {#lue_framework_data_structures}

@@ -28,9 +28,13 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+        @brief      Return an array with the absolute value of each element in the array passed in
+        @ingroup    local_operation
+    */
     template<typename Policies, typename Element, Rank rank>
-    PartitionedArray<Element, rank> abs(
-        Policies const& policies, PartitionedArray<Element, rank> const& array)
+    auto abs(Policies const& policies, PartitionedArray<Element, rank> const& array)
+        -> PartitionedArray<Element, rank>
     {
         return unary_local_operation(policies, array, detail::Abs<Element>{});
     }
