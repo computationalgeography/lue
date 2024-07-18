@@ -11,4 +11,6 @@ if(LUE_FRAMEWORK_WITH_PYTHON_API)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/python)
 endif()
 
+# TODO Conditionally add the other language bindings
+
 set(doxygen_input ${doxygen_input} PARENT_SCOPE)

@@ -49,7 +49,3 @@ Destruction happens in the destructor of the variant type:
   know what to expect).
     - A field is a value that varies through time and over space, or not
     - Some functions require a field's value to not vary
-
-
-
-
