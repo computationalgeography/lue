@@ -2,7 +2,6 @@
 #include "lue/framework/partitioned_array/array_partition.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 namespace {

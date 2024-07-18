@@ -8,6 +8,7 @@
 #include "hpx/runtime_distributed/get_locality_name.hpp"
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
+#include <fmt/ranges.h>
 #include <algorithm>
 #include <sstream>
 

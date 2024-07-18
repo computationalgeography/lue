@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue py data_model
 #include <boost/algorithm/string.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <pybind11/pybind11.h>
 
 

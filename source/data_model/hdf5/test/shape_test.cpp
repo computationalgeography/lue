@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue hdf5 shape
 #include "lue/hdf5/shape.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace lh5 = lue::hdf5;

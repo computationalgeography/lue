@@ -2,7 +2,7 @@
 #include "lue/gdal/dataset.hpp"
 #include "lue/gdal/driver.hpp"
 #include "lue/stream.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <filesystem>
 
 

@@ -1,7 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm cell_index
 #include "lue/framework/algorithm/value_policies/cell_index.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

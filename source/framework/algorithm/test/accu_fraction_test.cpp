@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu_fraction
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/accu_fraction.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

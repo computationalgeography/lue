@@ -1015,6 +1015,8 @@ namespace lue {
             //   (partition_idxs, local_clump_id) record, if not there yet, and add a global clump ID to the
             //   collection.
 
+            using ClumpElement = ElementT<Partition>;
+
             auto const nr_cols = clump_data.shape()[1];
             auto const boundary_clump_id = clump_data[north_idx];
             lue_hpx_assert(clump_data[nr_cols + south_idx] == boundary_clump_id);
@@ -1026,7 +1028,7 @@ namespace lue {
             // already seen any of these (partition_idxs, local_clump_id) combinations.
             {
                 auto const [row_in_partitions, col_in_partitions] = north_partition_idxs;
-                auto key = std::make_tuple(row_in_partitions, col_in_partitions, Index{-1});
+                auto key = std::make_tuple(row_in_partitions, col_in_partitions, ClumpElement{});
 
                 for (Index idx = north_idx; idx < nr_cols; ++idx)
                 {
@@ -1053,7 +1055,7 @@ namespace lue {
             if (/* connectivity == Connectivity::diagonal && */ global_clump_ids_idx == -1)
             {
                 auto const [row_in_partitions, col_in_partitions] = south_partition_idxs;
-                auto key = std::make_tuple(row_in_partitions, col_in_partitions, Index{-1});
+                auto key = std::make_tuple(row_in_partitions, col_in_partitions, ClumpElement{});
 
                 for (Index idx = south_idx; idx < nr_cols; ++idx)
                 {
@@ -1094,7 +1096,7 @@ namespace lue {
                 // one.
 
                 auto const [row_in_partitions, col_in_partitions] = north_partition_idxs;
-                auto key = std::make_tuple(row_in_partitions, col_in_partitions, Index{-1});
+                auto key = std::make_tuple(row_in_partitions, col_in_partitions, ClumpElement{});
 
                 for (Index idx = north_idx; idx < nr_cols; ++idx)
                 {
@@ -1119,7 +1121,7 @@ namespace lue {
                 // Same thing, for the south row.
 
                 auto const [row_in_partitions, col_in_partitions] = south_partition_idxs;
-                auto key = std::make_tuple(row_in_partitions, col_in_partitions, Index{-1});
+                auto key = std::make_tuple(row_in_partitions, col_in_partitions, ClumpElement{});
 
                 for (Index idx = south_idx; idx < nr_cols; ++idx)
                 {

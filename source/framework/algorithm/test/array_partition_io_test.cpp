@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm array_partition_io
 #include "lue/framework/algorithm/detail/array_partition_io.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(default_construct)

@@ -2,30 +2,12 @@ set(LUE_TITLE "LUE documentation")
 set(LUE_AUTHOR "Computational Geography R&D Team")
 set(LUE_BOOK_BASENAME "lue-${CMAKE_PROJECT_VERSION}")
 
-if(LUE_BUILD_DATA_MODEL)
-    set(data_model_root "${PROJECT_SOURCE_DIR}/source/data_model")
-
-    list(APPEND DOXYGEN_INPUT_DIR
-        ${data_model_root}/cxx
-        ${data_model_root}/doc
-        ${data_model_root}/hdf5
-        ${data_model_root}/hl)
-
-    if(LUE_DATA_MODEL_WITH_UTILITIES)
-        list(APPEND DOXYGEN_INPUT_DIR
-            ${data_model_root}/translate
-            ${data_model_root}/utility
-            ${data_model_root}/validate)
-    endif()
-
-    if(LUE_DATA_MODEL_WITH_PYTHON_API)
-        list(APPEND DOXYGEN_INPUT_DIR
-            ${data_model_root}/python)
-    endif()
-endif()
-
-
-set(DOXYGEN_GENERATE_HTML YES)
+set(DOXYGEN_HAVE_DOT YES)
+set(DOXYGEN_DOT_MULTI_TARGETS YES)
+set(DOXYGEN_EXCLUDE_PATTERNS
+    */*.py
+)
+set(DOXYGEN_GENERATE_HTML NO)
 set(DOXYGEN_GENERATE_LATEX NO)
 set(DOXYGEN_GENERATE_XML YES)
 set(DOXYGEN_OUTPUT_DIRECTORY doxygen)
@@ -33,11 +15,11 @@ set(DOXYGEN_WARN_IF_UNDOCUMENTED NO)
 
 doxygen_add_docs(
         doxygen_doc
-        ${DOXYGEN_INPUT_DIR}
+        ${PROJECT_SOURCE_DIR}/source
     )
 
 set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${DOXYGEN_OUTPUT_DIRECTORY})
-set(AUTODOC2_PACKAGE_DIR ../../${LUE_BUILD_PYTHON_PACKAGE_DIR})
+# set(AUTODOC2_PACKAGE_DIR ../../${LUE_BUILD_PYTHON_PACKAGE_DIR})
 
 
 # set(SPHINX_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -141,6 +123,35 @@ foreach(name IN ITEMS
     configure_file(${name} ${name} COPYONLY)
 endforeach()
 
+
+foreach(name IN ITEMS
+    data_model/doc/index.md
+    doc/index.md
+    framework/algorithm/doc/design.md
+    framework/algorithm/doc/index.md
+    framework/algorithm/doc/policy.md
+    framework/algorithm/doc/template.md
+
+    framework/doc/howto/index.md
+    framework/doc/howto/add_local_operation.md
+
+    framework/algorithm/doc/group.dox
+
+    framework/algorithm/doc/grouped_operation/index.md
+    framework/algorithm/doc/grouped_operation/local_operation.md
+    framework/algorithm/doc/grouped_operation/focal_operation.md
+    framework/algorithm/doc/grouped_operation/zonal_operation.md
+    framework/algorithm/doc/grouped_operation/global_operation.md
+    framework/algorithm/doc/grouped_operation/routing_operation.md
+    framework/algorithm/doc/grouped_operation/mathematical_operation.md
+    framework/algorithm/doc/grouped_operation/random_number_operation.md
+
+    framework/doc/index.md
+)
+    configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)
+endforeach()
+
+
 add_custom_target(documentation.html
     VERBATIM
     COMMAND
@@ -149,9 +160,9 @@ add_custom_target(documentation.html
                 ${JupyterBook_EXECUTABLE} build --builder html
                     # --warningiserror --nitpick --keep-going
                     ${CMAKE_CURRENT_BINARY_DIR}
-        # DEPENDS
-        #     # doxygen_doc
-        #     # python_api
+        DEPENDS
+            doxygen_doc
+            # python_api
 )
 
 add_custom_target(documentation.pdf

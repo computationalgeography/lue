@@ -2,7 +2,7 @@
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/file.hpp"
 #include "lue/hdf5/vlen_memory.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace lh5 = lue::hdf5;

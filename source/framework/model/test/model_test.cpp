@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework model model
 #include "lue/framework/model/model.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(default_construct)

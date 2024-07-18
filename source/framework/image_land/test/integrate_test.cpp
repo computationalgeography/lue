@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework image_land integrate
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

@@ -2,10 +2,12 @@
 #define BOOST_TEST_NO_MAIN
 #define BOOST_TEST_ALTERNATIVE_INIT_API
 #include "lue/gdal.hpp"
+#include "lue/framework/test/array.hpp"
+#include "lue/framework/test/compare.hpp"
 #include <hpx/config.hpp>
 #include <hpx/hpx_init.hpp>
 #include <boost/cstdlib.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 // https://stellar-group.github.io/hpx/docs/html/hpx.html#hpx.manual.applications

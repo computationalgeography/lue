@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework partitioned_array array_partition_data
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/test/stream.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 #include <algorithm>
 
 

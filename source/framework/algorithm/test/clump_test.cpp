@@ -4,10 +4,7 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/algorithm/value_policies/unique.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 #include <random>
 
 

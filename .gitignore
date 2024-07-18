@@ -1,7 +1,2 @@
 __pycache__
 CMakeUserPresets.json
-build*/
-install*/
-.vscode
-.gitignore
-.vscode

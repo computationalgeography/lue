@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm any
 #include "lue/framework/algorithm/any.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

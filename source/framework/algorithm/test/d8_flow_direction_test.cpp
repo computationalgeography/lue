@@ -1,7 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm d8_flow_direction
 #include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

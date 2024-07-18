@@ -10,7 +10,6 @@
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

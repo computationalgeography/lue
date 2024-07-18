@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue hdf5 attribute
 #include "lue/hdf5/attribute.hpp"
 #include "lue/hdf5/file.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace {

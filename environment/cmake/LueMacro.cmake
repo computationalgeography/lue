@@ -13,7 +13,7 @@ endfunction()
 function(add_unit_tests)
     set(prefix ARG)
     set(no_values "")
-    set(single_values SCOPE)
+    set(single_values SCOPE TARGETS)
     set(multi_values NAMES LIBRARIES)
 
     cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
@@ -30,21 +30,20 @@ function(add_unit_tests)
 
         add_executable(${test_name} ${module_name}.cpp)
 
-        target_compile_definitions(${test_name}
-            PRIVATE
-                BOOST_TEST_DYN_LINK
-        )
-
         target_link_libraries(${test_name}
             PRIVATE
                 ${ARG_LIBRARIES}
-                Boost::unit_test_framework
+                Boost::headers
         )
 
         add_test(NAME ${test_name}
             COMMAND ${test_name}
         )
+
+        list(APPEND test_names ${test_name})
     endforeach()
+
+    set(${ARG_TARGETS} ${test_names} PARENT_SCOPE)
 endfunction()
 
 

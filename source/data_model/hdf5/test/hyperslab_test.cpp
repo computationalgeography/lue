@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue hdf5 hyperslab
 #include "lue/hdf5/hyperslab.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace lh5 = lue::hdf5;

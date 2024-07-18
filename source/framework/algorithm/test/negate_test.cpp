@@ -3,13 +3,10 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/negate.hpp"
-
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/negate.hpp"
 #include "lue/framework/algorithm/value_policies/none.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
-
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include <limits>
 

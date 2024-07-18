@@ -336,12 +336,6 @@ if(LUE_PYBIND11_REQUIRED)
     )
     FetchContent_MakeAvailable(pybind11)
 
-    # Disable support for numpy 2.0 for now
-    # https://github.com/computationalgeography/lue/issues/664
-    target_compile_definitions(pybind11::module
-        INTERFACE
-            PYBIND11_NUMPY_1_ONLY)
-
     # Silence pybind11 for now
     # https://github.com/computationalgeography/lue/issues/484
     target_compile_definitions(pybind11::module
@@ -356,9 +350,8 @@ if(LUE_BOOST_REQUIRED)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
     endif()
 
-    set(Boost_NO_BOOST_CMAKE TRUE)
-
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    # Use Boost's own FindBoost module instead of the deprecated CMake version
+    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR

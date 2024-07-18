@@ -11,6 +11,6 @@ target_include_directories(lue_framework_test
 
 target_link_libraries(lue_framework_test
     INTERFACE
-        lue::framework_partitioned_array
+        lue::framework_algorithm  # create_partitioned_array
         lue::gdal
 )

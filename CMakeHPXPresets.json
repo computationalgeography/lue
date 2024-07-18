@@ -52,6 +52,7 @@
             "hidden": true,
             "cacheVariables": {
                 "HPX_WITH_MALLOC": "mimalloc",
+                "HPX_WITH_FETCH_HWLOC": "TRUE",
                 "HPX_WITH_GOOGLE_PERFTOOLS": "FALSE"
             }
         },

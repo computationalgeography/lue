@@ -6,9 +6,7 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/stream.hpp"
 #include <random>
 
 

@@ -2,9 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/mesh_grid.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/framework/test/compare.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
-#include "lue/framework/test/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)

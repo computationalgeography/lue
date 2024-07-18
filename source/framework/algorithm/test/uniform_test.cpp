@@ -4,7 +4,6 @@
 #include "lue/framework/algorithm/default_policies/comparison.hpp"
 #include "lue/framework/algorithm/default_policies/logical_and.hpp"
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
-#include "lue/framework/test/array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

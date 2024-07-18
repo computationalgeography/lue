@@ -42,10 +42,13 @@ sphinx:
       default_mode: light
 
     # https://breathe.readthedocs.io/en/latest/index.html
+    # https://breathe.readthedocs.io/en/latest/directives.html#config-values
     breathe_projects: {
       "lue": "@DOXYGEN_OUTPUT_DIR@/xml/"
     }
     breathe_default_project: "lue"
+    # breathe_default_members: ('members')
+    breathe_show_include: True
 
     # # https://sphinx-autodoc2.readthedocs.io/en/latest/index.html
     # autodoc2_packages:
@@ -69,6 +72,8 @@ sphinx:
     # bibtex_default_style: "plain"
 
   extra_extensions:
+    # - "sphinx.ext.pngmath"
+    - "sphinx.ext.todo"
     - "breathe"
     # - "autodoc2"
     - "sphinx.ext.autodoc"

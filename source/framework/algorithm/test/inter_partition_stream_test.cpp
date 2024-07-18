@@ -1,10 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm inter_partition_stream
 #include "flow_accumulation.hpp"
-#include "stream.hpp"
 #include "lue/framework/algorithm/inter_partition_stream.hpp"
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/test/array.hpp"
-#include "lue/framework/test/hpx_unit_test.hpp"
 
 
 namespace {
@@ -17,6 +14,22 @@ namespace {
     using ArrayPartitionIO = lue::ArrayPartitionIO<Index, rank, Material<Index, rank>>;
 
 }  // Anonymous namespace
+
+
+// Forward declare check_component_is_equal ...
+namespace lue::test {
+
+    template<typename Index, Rank rank>
+    void check_component_is_equal(
+        ::ArrayPartitionIO<Index, rank> const& array_partition_io_we_have,
+        ::ArrayPartitionIO<Index, rank> const& array_partition_io_we_want);
+
+}  // namespace lue::test
+
+
+// ... and only now include compare.hpp which uses check_component_is_equal
+#include "lue/framework/test/hpx_unit_test.hpp"
+#include "stream.hpp"
 
 
 namespace lue::test {
@@ -104,8 +117,8 @@ namespace lue::test {
 }  // namespace lue::test
 
 
-// Only now include this header. void check_component_is_equal must have been seen first.
-#include "lue/framework/test/compare.hpp"
+// // Only now include this header. void check_component_is_equal must have been seen first.
+// #include "lue/framework/test/compare.hpp"
 
 
 namespace {

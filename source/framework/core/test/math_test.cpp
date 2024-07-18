@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework core math
 #include "lue/framework/core/math.hpp"
 #include <hpx/config.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 namespace detail {

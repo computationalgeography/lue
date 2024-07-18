@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue object property property_set
 #include "lue/object/property/property_set.hpp"
 #include "lue/test.hpp"
-#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 
 class Fixture: public lue::data_model::test::FileFixture
