@@ -65,9 +65,11 @@ sphinx:
     }
 
     intersphinx_mapping: {
-        "python": ["https://docs.python.org/3", ""],
-        "numpy": ["https://numpy.org/doc/stable", ""]
+        "python": ["https://docs.python.org/3", null],
+        "numpy": ["https://numpy.org/doc/stable", null]
     }
+
+    intersphinx_disabled_reftypes: ["*"]
 
     # bibtex_default_style: "plain"
 
