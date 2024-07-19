@@ -213,7 +213,8 @@ namespace lue {
 
             // The value for only a single output element is calculated here
 
-            static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
+            // TODO gcc-14 doesn't like this
+            // static_assert(std::is_convertible_v<ElementT<Kernel>, bool>);
 
             static_assert(rank<Kernel> == 2);
 
@@ -853,7 +854,7 @@ namespace lue {
 
                             HPX_UNUSED(input_partitions);
 
-                            auto const& first_partition_data{std::get<0>(std::make_tuple(partition_data...))};
+                            auto const& first_partition_data{std::get<0>(std::forward_as_tuple(partition_data...))};
                             auto const& partition_shape{first_partition_data.shape()};
 
                             auto const [nr_elements0, nr_elements1] = partition_shape;
@@ -1804,7 +1805,7 @@ namespace lue {
                 InputPartitionsT<WrappedPartitionedArray<InputPolicies, InputElements>>...>
                 action;
 
-            auto const& first_input_array = std::get<0>(std::make_tuple(input_arrays...)).array();
+            auto const& first_input_array = std::get<0>(std::forward_as_tuple(input_arrays...)).array();
             OutputPartitions output_partitions{shape_in_partitions(first_input_array)};
 
             Rank const rank = lue::rank<Kernel>;
