@@ -3,15 +3,13 @@ name: Linux CI
 on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
-  push:
-    branches-ignore:
-      - "ghxyz"
     paths:
       - ".github/actions/**"
       - ".github/workflows/linux.yml"
       - "conanfile.py"
       - "CMakePresets.json"
       - "CMakeHPXPresets.json"
+      - "documentation/doc/**"
       - "environment/cmake/**"
       - "environment/script/write_conan_profile.py"
       - "source/**"
