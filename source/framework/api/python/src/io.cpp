@@ -18,7 +18,16 @@ namespace lue::api {
             "partition_shape"_a = std::optional<Shape<Count, 2>>{},
             pybind11::return_value_policy::move);
 
-        module.def("to_gdal", to_gdal, "field"_a, "name"_a);
+        module.def(
+            "to_gdal",
+            [](Field const& field,
+               std::string const& name,
+               std::optional<std::string> const& clone_name) -> hpx::future<void>
+            { return clone_name ? to_gdal(field, name, *clone_name) : to_gdal(field, name); },
+            "field"_a,
+            "name"_a,
+            pybind11::kw_only(),
+            "clone_name"_a = std::optional<std::string>{});
     }
 
 }  // namespace lue::api

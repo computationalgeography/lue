@@ -1,20 +1,32 @@
 #include "lue/framework/api/cxx/io.hpp"
 #include "detail/unsupported_overload.hpp"
+#include "fmt/format.h"
 #include "overload.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/gdal.hpp"
 #include "lue/framework/io/raster.hpp"
-#include "fmt/format.h"
+#include "lue/gdal.hpp"
 #include <optional>
 
 
 namespace lue {
 
-    void write(
+    auto write(
         [[maybe_unused]] auto const& field,
-        [[maybe_unused]] std::string const& name)
+        [[maybe_unused]] std::string const& name,
+        [[maybe_unused]] std::string const& clone_name) -> hpx::future<void>
+    {
+        api::detail::unsupported_overload("write", field, name, clone_name);
+
+        return hpx::make_ready_future();
+    }
+
+
+    auto write([[maybe_unused]] auto const& field, [[maybe_unused]] std::string const& name)
+        -> hpx::future<void>
     {
         api::detail::unsupported_overload("write", field, name);
+
+        return hpx::make_ready_future();
     }
 
 
@@ -22,9 +34,8 @@ namespace lue {
         namespace {
 
             auto from_gdal(
-                std::string const& name,
-                Shape<Count, 2> const& partition_shape,
-                GDALDataType const data_type) -> Field
+                std::string const& name, Shape<Count, 2> const& partition_shape, GDALDataType const data_type)
+                -> Field
             {
                 std::optional<Field> result{};
 
@@ -74,9 +85,7 @@ namespace lue {
         /*!
             @brief      Read a raster from a data set using the GDAL API
         */
-        auto from_gdal(
-            std::string const& name,
-            Shape<Count, 2> const& partition_shape) -> Field
+        auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape) -> Field
         {
             gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
             GDALDataType const data_type{gdal::data_type(*dataset)};
@@ -88,8 +97,7 @@ namespace lue {
         /*!
             @overload
         */
-        auto from_gdal(
-            std::string const& name) -> Field
+        auto from_gdal(std::string const& name) -> Field
         {
             gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
             GDALDataType const data_type{gdal::data_type(*dataset)};
@@ -101,12 +109,21 @@ namespace lue {
         }
 
 
-        void to_gdal(Field const& field, std::string const& name)
+        auto to_gdal(Field const& field, std::string const& name, std::string const& clone_name)
+            -> hpx::future<void>
         {
             return std::visit(
-                overload{[&name](auto const& field) -> void {
-                    write(field, name);
+                overload{[&name, &clone_name](auto const& field) -> hpx::future<void> {
+                    return write(field, name, clone_name);
                 }},
+                field);
+        }
+
+
+        auto to_gdal(Field const& field, std::string const& name) -> hpx::future<void>
+        {
+            return std::visit(
+                overload{[&name](auto const& field) -> hpx::future<void> { return write(field, name); }},
                 field);
         }
 
