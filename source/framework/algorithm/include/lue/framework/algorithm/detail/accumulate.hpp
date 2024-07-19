@@ -14,6 +14,8 @@ namespace lue::detail {
     template<typename Index, Rank rank>
     Offset<Index, rank> invert(Offset<Index, rank> const& offset)
     {
+        static_assert(rank == 2);
+
         Offset<Index, rank> result{offset};
 
         result[0] *= -1;

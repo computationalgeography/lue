@@ -3,9 +3,6 @@ name: macOS CI
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-  push:
-    branches-ignore:
-      - "ghxyz"
     paths:
       - ".github/actions/**"
       - ".github/workflows/macos.yml"

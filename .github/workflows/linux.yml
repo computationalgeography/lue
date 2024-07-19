@@ -3,9 +3,6 @@ name: Linux CI
 on:
   pull_request:
     types: [opened, reopened, synchronize, closed]
-  push:
-    branches-ignore:
-      - "ghxyz"
     paths:
       - ".github/actions/**"
       - ".github/workflows/linux.yml"
