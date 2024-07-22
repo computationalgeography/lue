@@ -8,7 +8,7 @@ set(local_operation_names
 set(names
     create_array
     create_scalar
-    io
+    # io
     ${local_operation_names}
 )
 

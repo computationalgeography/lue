@@ -1,8 +1,8 @@
-#include "lue/framework/api/cxx/runtime.hpp"
+#include "lue/framework/core/runtime.hpp"
 #include <hpx/hpx_start.hpp>
 
 
-namespace lue::api {
+namespace lue {
 
     Runtime::Runtime(int const argc, char* argv[], std::vector<std::string> configuration):
 
@@ -82,4 +82,4 @@ namespace lue::api {
         return hpx::finalize();
     }
 
-}  // namespace lue::api
+}  // namespace lue

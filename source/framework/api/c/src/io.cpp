@@ -11,7 +11,7 @@ auto from_gdal(char const* name) -> Field*
 }
 
 
-void to_gdal(Field* field, char const* name)
-{
-    lue::api::to_gdal(as_cxx_field(field), name);
-}
+// void to_gdal(Field* field, char const* name)
+// {
+//     lue::api::to_gdal(as_cxx_field(field), name);
+// }

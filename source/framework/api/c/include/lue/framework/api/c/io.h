@@ -10,7 +10,7 @@ extern "C" {
 
 LUE_FCAPI_EXPORT Field* from_gdal(char const* name);
 
-LUE_FCAPI_EXPORT void to_gdal(Field const* field, char const* name);
+// LUE_FCAPI_EXPORT void to_gdal(Field const* field, char const* name);
 
 
 #ifdef __cplusplus

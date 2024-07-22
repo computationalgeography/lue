@@ -9,6 +9,7 @@ add_library(lue_framework_core STATIC
     src/configuration_entry.cpp
     src/debug.cpp
     src/numa_domain.cpp
+    src/runtime.cpp
 )
 
 add_library(lue::framework_core ALIAS lue_framework_core)

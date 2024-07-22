@@ -21,13 +21,13 @@ namespace lue {
     }
 
 
-    auto write([[maybe_unused]] auto const& field, [[maybe_unused]] std::string const& name)
-        -> hpx::future<void>
-    {
-        api::detail::unsupported_overload("write", field, name);
+    // auto write([[maybe_unused]] auto const& field, [[maybe_unused]] std::string const& name)
+    //     -> hpx::future<void>
+    // {
+    //     api::detail::unsupported_overload("write", field, name);
 
-        return hpx::make_ready_future();
-    }
+    //     return hpx::make_ready_future();
+    // }
 
 
     namespace api {
@@ -120,12 +120,12 @@ namespace lue {
         }
 
 
-        auto to_gdal(Field const& field, std::string const& name) -> hpx::future<void>
-        {
-            return std::visit(
-                overload{[&name](auto const& field) -> hpx::future<void> { return write(field, name); }},
-                field);
-        }
+        // auto to_gdal(Field const& field, std::string const& name) -> hpx::future<void>
+        // {
+        //     return std::visit(
+        //         overload{[&name](auto const& field) -> hpx::future<void> { return write(field, name); }},
+        //         field);
+        // }
 
     }  // namespace api
 }  // namespace lue

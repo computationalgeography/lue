@@ -1,5 +1,5 @@
 #include "lue/framework/api/cxx/create_array.hpp"
-#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;

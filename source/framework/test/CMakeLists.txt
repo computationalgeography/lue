@@ -1,11 +1,9 @@
-add_library(lue_framework_test STATIC
-    src/hpx_fixture.cpp
-)
+add_library(lue_framework_test INTERFACE)
 
 add_library(lue::framework_test ALIAS lue_framework_test)
 
 target_include_directories(lue_framework_test
-    PUBLIC
+    INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 

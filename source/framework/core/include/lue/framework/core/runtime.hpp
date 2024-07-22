@@ -2,7 +2,7 @@
 #include <hpx/hpx.hpp>
 
 
-namespace lue::api {
+namespace lue {
 
     class Runtime
     {
@@ -38,4 +38,4 @@ namespace lue::api {
             hpx::condition_variable_any _shutdown_condition_variable;
     };
 
-}  // namespace lue::api
+}  // namespace lue
