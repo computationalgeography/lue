@@ -146,6 +146,9 @@ foreach(name IN ITEMS
     framework/algorithm/doc/grouped_operation/mathematical_operation.md
     framework/algorithm/doc/grouped_operation/random_number_operation.md
 
+    framework/partitioned_array/doc/index.md
+    framework/partitioned_route/doc/index.md
+
     framework/doc/index.md
 )
     configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)

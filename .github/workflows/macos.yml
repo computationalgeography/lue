@@ -2,17 +2,9 @@ name: macOS CI
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
-    paths:
-      - ".github/actions/**"
-      - ".github/workflows/macos.yml"
-      - "conanfile.py"
-      - "CMakePresets.json"
-      - "CMakeHPXPresets.json"
-      - "environment/cmake/**"
-      - "environment/script/write_conan_profile.py"
-      - "source/**"
-      - "!source/qa/python/qa/**"
+  push:
+    branches:
+      - "master"
 
 jobs:
     build:

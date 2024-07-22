@@ -67,6 +67,8 @@ parts:
       - file: source/data_model/doc/index.md
       - file: source/framework/doc/index.md
         sections:
+        - file: source/framework/partitioned_array/doc/index.md
+        - file: source/framework/partitioned_route/doc/index.md
         - file: source/framework/algorithm/doc/index.md
           sections:
           - file: source/framework/algorithm/doc/design.md

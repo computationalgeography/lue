@@ -3,11 +3,14 @@
 
 Here you will find information about how to add a new local operation to the LUE sources.
 
-- All relative paths are relative to `source/framework/algorithm/`
 - Compare with / mimic implementation of recently added local operations that have similar properties
   (e.g.: number of arguments, operator syntax or not, type of elements).
 - When implementing an algorithm that has an equivalent in C++, try to name and mimic the behaviour of that
   algorithm.
+
+:::{note}
+All relative paths are relative to `source/framework/algorithm/`
+:::
 
 
 ## Algorithm
@@ -32,16 +35,16 @@ This is all just boilerplate code.
 - [](#source-framework-algorithm-templates)
 - Decide on template parameters: name
 - Decide on parameters: name
-- Declaration: `include/lue/framework/my_local_operation.hpp`
-- Definition: `include/lue/framework/default_policies/my_local_operation.hpp`
-- Definition: `include/lue/framework/value_policies/my_local_operation.hpp`
+- Declaration: `include/lue/framework/algorithm/my_local_operation.hpp`
+- Definition: `include/lue/framework/algorithm/default_policies/my_local_operation.hpp`
+- Definition: `include/lue/framework/algorithm/value_policies/my_local_operation.hpp`
 
 
 ### Add definition
 
 This is the one and only place for the code that implements the algorithm.
 
-- `include/lue/framework/definition/my_local_operation.hpp`
+- `include/lue/framework/algorithm/definition/my_local_operation.hpp`
 
 
 ### Add explicit instantiations
@@ -52,7 +55,6 @@ This is the one and only place for the code that implements the algorithm.
 
 
 ## Python binding
-
 
 ### Add unit test(s)
 

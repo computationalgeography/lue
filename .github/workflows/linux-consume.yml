@@ -2,15 +2,11 @@ name: Linux consume LUE
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
     branches-ignore:
       - "*"
-    paths:
-      - "conanfile.py"
-      - ".github/workflows/linux-consume.yml"
-      - "environment/cmake/**"
-      - "source/**"
-      - "!source/qa/python/qa/**"
+  push:
+    branches-ignore:
+      - "*"
 
 jobs:
     build:

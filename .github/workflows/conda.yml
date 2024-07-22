@@ -2,13 +2,9 @@ name: Conda packages
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
-    paths:
-      - ".github/workflows/conda.yml"
-      - "source/**"
-      - "!source/qa/python/qa/**"
-      - "environment/cmake/**"
-      - "environment/conda/**"
+  push:
+    branches:
+      - "master"
 
 jobs:
     build:
