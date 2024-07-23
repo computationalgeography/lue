@@ -10,6 +10,13 @@ namespace lue {
     using Localities = Array<hpx::id_type, rank>;
 
 
+    /*!
+        @brief      Class for representing partitioned arrays
+        @tparam     Element Type for representing element values
+        @tparam     rank Array rank
+
+        The array is partitioned, which can be located in multiple processes.
+    */
     template<typename Element, Rank rank>
     class PartitionedArray
     {
@@ -152,6 +159,11 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+        @brief      Default-construct an instance with an empty shape
+
+        The array will have zero elements.
+    */
     template<typename Element, Rank rank>
     PartitionedArray<Element, rank>::PartitionedArray():
 
@@ -172,6 +184,7 @@ namespace lue {
     /*!
         @brief      Construct an instance
         @param      shape Shape of the array
+        @param      localities Localities where the partitions are located
         @param      partitions Collection of array partitions
 
         The shape of the partitions together must equal the shape passed in
@@ -192,6 +205,7 @@ namespace lue {
     /*!
         @brief      Construct an instance
         @param      shape Shape of the array
+        @param      localities Localities where the partitions are located
         @param      partitions Collection of array partitions
 
         The shape of the partitions together must equal the shape passed in
@@ -223,6 +237,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the number of elements
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Count PartitionedArray<Element, rank>::nr_elements() const
     {
@@ -230,6 +247,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the shape
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Shape const& PartitionedArray<Element, rank>::shape() const
     {
@@ -237,6 +257,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the number of partitions
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Count PartitionedArray<Element, rank>::nr_partitions() const
     {
@@ -244,6 +267,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the partitions
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Partitions& PartitionedArray<Element, rank>::partitions()
     {
@@ -251,6 +277,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the partitions
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Partitions const& PartitionedArray<Element, rank>::partitions()
         const
@@ -259,6 +288,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return an iterator to the first partition
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::ConstIterator PartitionedArray<Element, rank>::begin() const
     {
@@ -266,6 +298,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return an iterator to the first partition
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Iterator PartitionedArray<Element, rank>::begin()
     {
@@ -273,6 +308,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return an iterator to the one-past-the-last partition
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::ConstIterator PartitionedArray<Element, rank>::end() const
     {
@@ -280,6 +318,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return an iterator to the one-past-the-last partition
+    */
     template<typename Element, Rank rank>
     typename PartitionedArray<Element, rank>::Iterator PartitionedArray<Element, rank>::end()
     {
@@ -287,6 +328,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return the localities
+    */
     template<typename Element, Rank rank>
     Localities<rank> const& PartitionedArray<Element, rank>::localities() const
     {
@@ -295,42 +339,44 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    ShapeT<PartitionedArray<Element, rank>> shape(PartitionedArray<Element, rank> const& array)
+    static ShapeT<PartitionedArray<Element, rank>> shape(PartitionedArray<Element, rank> const& array)
     {
         return array.shape();
     }
 
 
     template<typename Element, Rank rank>
-    ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(PartitionedArray<Element, rank> const& array)
+    static ShapeT<PartitionedArray<Element, rank>> shape_in_partitions(
+        PartitionedArray<Element, rank> const& array)
     {
         return array.partitions().shape();
     }
 
 
     template<typename Element, Rank rank>
-    Count nr_partitions(PartitionedArray<Element, rank> const& array)
+    static Count nr_partitions(PartitionedArray<Element, rank> const& array)
     {
         return array.nr_partitions();
     }
 
 
     template<typename Element, Rank rank>
-    Count nr_partitions(ArrayPartitionData<ArrayPartition<Element, rank>, rank> const& partitions)
+    static Count nr_partitions(ArrayPartitionData<ArrayPartition<Element, rank>, rank> const& partitions)
     {
         return partitions.nr_elements();
     }
 
 
     template<typename Element, Rank rank>
-    typename PartitionedArray<Element, rank>::Count nr_elements(PartitionedArray<Element, rank> const& array)
+    static typename PartitionedArray<Element, rank>::Count nr_elements(
+        PartitionedArray<Element, rank> const& array)
     {
         return array.nr_elements();
     }
 
 
     template<typename Element, Rank rank>
-    std::string describe(Shape<Element, rank> const& shape)
+    static std::string describe(Shape<Element, rank> const& shape)
     {
         // FIXME Requires fmt >= 6
         // return fmt::format("({})", shape);
@@ -353,7 +399,7 @@ namespace lue {
 
     // TODO Move this elsewhere
     template<typename Element, Rank rank>
-    std::string describe(PartitionedArray<Element, rank> const& array)
+    static std::string describe(PartitionedArray<Element, rank> const& array)
     {
         return fmt::format(
             "- PartitionedArray:\n"

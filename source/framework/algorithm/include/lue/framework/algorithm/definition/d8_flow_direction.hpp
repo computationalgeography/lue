@@ -157,6 +157,10 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+      @brief      Determine the D8 flow direction in each cell ofr the array passed in
+      @ingroup    routing_operation
+    */
     template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>
     PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
         Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation)

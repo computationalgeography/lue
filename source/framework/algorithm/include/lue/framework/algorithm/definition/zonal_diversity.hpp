@@ -88,6 +88,11 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+      @brief      Return an array with per cell the number of unique element values found in the cells within
+                  the corresponding zone
+      @ingroup    zonal_operation
+    */
     template<typename Count, typename Policies, typename Element, typename Zone, Rank rank>
     PartitionedArray<Count, rank> zonal_diversity(
         Policies const& policies,

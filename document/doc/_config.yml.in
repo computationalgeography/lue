@@ -47,7 +47,8 @@ sphinx:
       "lue": "@DOXYGEN_OUTPUT_DIR@/xml/"
     }
     breathe_default_project: "lue"
-    # breathe_default_members: ('members')
+    breathe_default_members:
+        - "members"
     breathe_show_include: True
 
     # # https://sphinx-autodoc2.readthedocs.io/en/latest/index.html

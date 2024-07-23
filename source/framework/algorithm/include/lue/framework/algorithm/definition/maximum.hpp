@@ -48,6 +48,10 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+      @brief      Return the maximum element value in the array passed in
+      @ingroup    global_operation
+    */
     template<typename Policies, Rank rank>
     auto maximum(
         Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array)

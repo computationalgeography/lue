@@ -1,5 +1,6 @@
 # Partitioned array
 
 ```{eval-rst}
-.. doxygenclass:: PartitionedArray
+.. doxygenclass:: lue::PartitionedArray
+.. doxygenclass:: lue::ArrayPartition
 ```

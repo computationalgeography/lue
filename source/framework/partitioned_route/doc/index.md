@@ -1,5 +1,7 @@
 # Partitioned route
 
 ```{eval-rst}
-.. doxygenclass:: PartitionedRoute
+.. doxygenclass:: lue::SerialRoute
+.. doxygenclass:: lue::SerialRoutePartition
+.. doxygenclass:: lue::SerialRouteFragment
 ```

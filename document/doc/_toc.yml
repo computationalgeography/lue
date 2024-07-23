@@ -21,6 +21,7 @@ parts:
       - file: manual/framework/execute.md
       - file: manual/framework/scalability.md
     - file: manual/view/index.md
+    - file: manual/glossary.md
   - caption: Reference
     chapters:
     - file: reference/python/index.md

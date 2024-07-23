@@ -6,13 +6,15 @@ namespace lue {
 
     /*!
         @brief      Class for array partition component client instances
-        @param      .
-        @return     .
-        @exception  .
+        @tparam     Element Type for representing element values
+        @tparam     rank Array rank
 
-        Each instance is associated with a single array partition component
-        server instance. Multiple instances can be associated with a single
-        server instance.
+        Each instance is associated with a single array partition component server instance. Multiple
+        instances can be associated with a single server instance.
+
+        A partition has an offset, which represents the location of the partition within the array. An offset
+        contains an index along each dimension of the array. For example, the first partition in a 2D array is
+        located at offset [0, 0].
     */
     template<typename Element, Rank rank>
     class LUE_FPA_EXPORT ArrayPartition:
