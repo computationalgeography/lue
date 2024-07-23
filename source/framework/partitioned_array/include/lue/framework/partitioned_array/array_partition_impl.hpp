@@ -4,6 +4,9 @@
 
 namespace lue {
 
+    /*!
+        @brief      Default-construct an instance
+    */
     template<typename Element, Rank rank>
     ArrayPartition<Element, rank>::ArrayPartition():
 
@@ -81,6 +84,7 @@ namespace lue {
     /*!
         @brief      Construct a server instance on locality @a locality_id
         @param      locality_id ID of locality to create instance on
+        @param      offset Offset of partition within the array
         @param      shape Shape of partition to create
     */
     template<typename Element, Rank rank>
@@ -96,6 +100,7 @@ namespace lue {
     /*!
         @brief      Construct a server instance on locality @a locality_id
         @param      locality_id ID of locality to create instance on
+        @param      offset Offset of partition within the array
         @param      shape Shape of partition to create
         @param      value Initial value used to fill the partition
     */
@@ -112,6 +117,7 @@ namespace lue {
     /*!
         @brief      Construct a server instance on locality @a locality_id
         @param      locality_id ID of locality to create instance on
+        @param      offset Offset of partition within the array
         @param      data Initial data
 
         The @data passed in is moved from.
@@ -126,105 +132,8 @@ namespace lue {
     }
 
 
-    // /*!
-    //     @brief      Construct a server instance on the same locality as an existing
-    //                 component's ID and initial @a data
-    //     @param      component_id ID of an existing component
-    //     @param      data Initial data
-    // */
-    // template<
-    //     typename Element,
-    //     Rank rank>
-    // ArrayPartition<Element, rank>::ArrayPartition(
-    //     hpx::id_type component_id,
-    //     Data const& data):
-    //
-    //     Base{hpx::new_<Server>(hpx::colocated(component_id), data)}
-    //
-    // {
-    // }
-
-
-    // template<
-    //     typename Element,
-    //     Rank rank>
-    // ArrayPartition<Element, rank>::ArrayPartition(
-    //     ArrayPartition const& other):
-    //
-    //     Base{other}
-    //
-    // {
-    // }
-
-
-    // template<
-    //     typename Value,
-    //     typename Data>
-    // ArrayPartition<Value, Data>::ArrayPartition(
-    //     ArrayPartition&& other):
-    //
-    //     Base{std::move(other)}
-    //
-    // {
-    // }
-
-
-    // template<
-    //     typename Value,
-    //     typename Data>
-    // ArrayPartition<Value, Data>& ArrayPartition<Value, Data>::operator=(
-    //     ArrayPartition const& other)
-    // {
-    //     Base::operator=(other);
-    //
-    //     return *this;
-    // }
-
-
-    // template<
-    //     typename Value,
-    //     typename Data>
-    // ArrayPartition<Value, Data>& ArrayPartition<Value, Data>::operator=(
-    //     ArrayPartition&& other)
-    // {
-    //     Base::operator=(std::move(other));
-    //
-    //     return *this;
-    // }
-
-
-    // /*!
-    //     @brief      Return a pointer to the underlying component server instance
-    // */
-    // template<
-    //     typename Value,
-    //     typename Data>
-    // std::shared_ptr<typename ArrayPartition<Value, Data>::Server>
-    //     ArrayPartition<Value, Data>::component() const
-    // {
-    //     // this->get_id() identifies the server instance
-    //     return hpx::get_ptr<Server>(this->get_id()).get();
-    // }
-
-
-    // template<
-    //     typename Element,
-    //     Rank rank>
-    // hpx::future<hpx::id_type> ArrayPartition<Element, rank>::locality_id() const
-    // {
-    //     return hpx::get_colocation_id(this->get_id());
-    //
-    //     // lue_hpx_assert(_locality_id || this->get_id());
-    //
-    //     // return _locality_id
-    //     //     ? hpx::make_ready_future<hpx::id_type>(_locality_id)
-    //     //     : hpx::async(typename Server::LocalityIDAction{}, this->get_id())
-    //     //     ;
-    // }
-
-
     /*!
-        @brief      Return underlying data
+        @brief      Return a future to the underlying data
     */
     template<typename Element, Rank rank>
     hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::data() const
@@ -239,6 +148,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return a future to a subset of the underlying data
+    */
     template<typename Element, Rank rank>
     hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::slice(
         Slices const& slices) const
@@ -253,6 +165,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return a future to the number of elements
+    */
     template<typename Element, Rank rank>
     hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
     {
@@ -266,6 +181,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return a future to the offset
+    */
     template<typename Element, Rank rank>
     hpx::future<typename ArrayPartition<Element, rank>::Offset> ArrayPartition<Element, rank>::offset() const
     {
@@ -279,6 +197,9 @@ namespace lue {
     }
 
 
+    /*!
+        @brief      Return a future to the shape
+    */
     template<typename Element, Rank rank>
     hpx::future<typename ArrayPartition<Element, rank>::Shape> ArrayPartition<Element, rank>::shape() const
     {
@@ -294,6 +215,7 @@ namespace lue {
 
     /*!
         @brief      Asynchronously fill the partition with @a value
+        @return     A future that will become ready once the partition is filled
     */
     template<typename Element, Rank rank>
     hpx::future<void> ArrayPartition<Element, rank>::fill(Element const value)
@@ -310,19 +232,13 @@ namespace lue {
 
     /*!
         @brief      Asynchronously assign @a data to the partition
+        @return     A future that will become ready once the data is assigned
     */
     template<typename Element, Rank rank>
     hpx::future<void> ArrayPartition<Element, rank>::set_data(Data const& data)
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
-
-        // lue_hpx_assert(
-        //     // In case copy mode is share, we and the server instance must be
-        //     // located on the same locality
-        //     (mode == CopyMode::share &&
-        //         (this->locality_id()).get() == hpx::find_here())) ||
-        //     mode != CopyMode::share);
 
         typename Server::SetDataAction action;
 

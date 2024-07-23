@@ -96,6 +96,11 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+      @brief      Return an array with per cell the number of unique element values found in the cells within
+                  the corresponding focal window
+      @ingroup    focal_operation
+    */
     template<typename Count, typename Policies, typename Element, Rank rank, typename Kernel>
     PartitionedArray<Count, rank> focal_diversity(
         Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)

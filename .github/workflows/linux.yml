@@ -2,17 +2,9 @@ name: Linux CI
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
-    paths:
-      - ".github/actions/**"
-      - ".github/workflows/linux.yml"
-      - "conanfile.py"
-      - "CMakePresets.json"
-      - "CMakeHPXPresets.json"
-      - "environment/cmake/**"
-      - "environment/script/write_conan_profile.py"
-      - "source/**"
-      - "!source/qa/python/qa/**"
+  push:
+    branches:
+      - "master"
 
 jobs:
     build:

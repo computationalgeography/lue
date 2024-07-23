@@ -15,11 +15,10 @@ namespace lue {
 
     /*!
         @brief      Class for keeping track of array partition data values
-        @warning    Copies of ArrayPartitionData instances share the
-                    underlying array with elements
+        @warning    Copies of ArrayPartitionData instances share the underlying array with elements
 
-        There is a specialization for array scalars (arrays with rank ==
-        0). This allows scalars to be handled the same as arrays.
+        There is a specialization for array scalars (arrays with rank == 0). This allows scalars to be handled
+        the same as arrays.
     */
     template<typename Element, Rank rank>
     class ArrayPartitionData

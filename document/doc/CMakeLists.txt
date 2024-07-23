@@ -100,6 +100,7 @@ foreach(name IN ITEMS
     manual/framework/python/index.md
     manual/framework/scalability.md
     manual/view/index.md
+    manual/glossary.md
     reference/algorithm/clump.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md
@@ -145,6 +146,9 @@ foreach(name IN ITEMS
     framework/algorithm/doc/grouped_operation/routing_operation.md
     framework/algorithm/doc/grouped_operation/mathematical_operation.md
     framework/algorithm/doc/grouped_operation/random_number_operation.md
+
+    framework/partitioned_array/doc/index.md
+    framework/partitioned_route/doc/index.md
 
     framework/doc/index.md
 )

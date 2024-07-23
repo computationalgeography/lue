@@ -21,6 +21,7 @@ parts:
       - file: manual/framework/execute.md
       - file: manual/framework/scalability.md
     - file: manual/view/index.md
+    - file: manual/glossary.md
   - caption: Reference
     chapters:
     - file: reference/python/index.md
@@ -67,6 +68,8 @@ parts:
       - file: source/data_model/doc/index.md
       - file: source/framework/doc/index.md
         sections:
+        - file: source/framework/partitioned_array/doc/index.md
+        - file: source/framework/partitioned_route/doc/index.md
         - file: source/framework/algorithm/doc/index.md
           sections:
           - file: source/framework/algorithm/doc/design.md
