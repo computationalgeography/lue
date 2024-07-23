@@ -25,7 +25,7 @@ def serve_documentation(
         f"{documentation_source_prefix}/_config.yml.in",
         f"{documentation_source_prefix}/_toc.yml",
         # f"{documentation_source_prefix}/*.md",
-        f"{documentation_source_prefix}/short_description.rst",
+        f"{documentation_source_prefix}/short_description.md",
         f"{documentation_source_prefix}/CMakeLists.txt",
         f"{documentation_source_prefix}/references.bib",
     ]
