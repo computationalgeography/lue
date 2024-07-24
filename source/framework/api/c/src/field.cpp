@@ -3,7 +3,7 @@
 #include "field.hpp"
 
 
-void destruct(Field* field)
+void destruct_field(Field* field)
 {
     if (field != nullptr)
     {

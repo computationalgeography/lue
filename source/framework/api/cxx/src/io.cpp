@@ -21,13 +21,13 @@ namespace lue {
     }
 
 
-    // auto write([[maybe_unused]] auto const& field, [[maybe_unused]] std::string const& name)
-    //     -> hpx::future<void>
-    // {
-    //     api::detail::unsupported_overload("write", field, name);
+    auto write([[maybe_unused]] auto const& field, [[maybe_unused]] std::string const& name)
+        -> hpx::future<void>
+    {
+        api::detail::unsupported_overload("write", field, name);
 
-    //     return hpx::make_ready_future();
-    // }
+        return hpx::make_ready_future();
+    }
 
 
     namespace api {
@@ -43,6 +43,12 @@ namespace lue {
                 {
                     result = read<uint8_t>(name, partition_shape);
                 }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+                else if (data_type == GDT_Int8)
+                {
+                    result = read<int8_t>(name, partition_shape);
+                }
+#endif
                 else if (data_type == GDT_UInt32)
                 {
                     result = read<uint32_t>(name, partition_shape);
@@ -114,20 +120,18 @@ namespace lue {
         {
             return std::visit(
                 overload{[&name, &clone_name](auto const& field) -> hpx::future<void> {
-                    api::detail::unsupported_overload("write", field, name, clone_name);
-                    return hpx::make_ready_future();
-                    // return write(field, name, clone_name);
+                    return write(field, name, clone_name);
                 }},
                 field.variant());
         }
 
 
-        // auto to_gdal(Field const& field, std::string const& name) -> hpx::future<void>
-        // {
-        //     return std::visit(
-        //         overload{[&name](auto const& field) -> hpx::future<void> { return write(field, name); }},
-        //         field);
-        // }
+        auto to_gdal(Field const& field, std::string const& name) -> hpx::future<void>
+        {
+            return std::visit(
+                overload{[&name](auto const& field) -> hpx::future<void> { return write(field, name); }},
+                field.variant());
+        }
 
     }  // namespace api
 }  // namespace lue

@@ -53,6 +53,12 @@ namespace lue::framework {
             {
                 result = from_gdal<uint8_t>(name, static_partition_shape);
             }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+            else if (data_type == GDT_Int8)
+            {
+                result = from_gdal<int8_t>(name, static_partition_shape);
+            }
+#endif
             else if (data_type == GDT_UInt32)
             {
                 result = from_gdal<uint32_t>(name, static_partition_shape);

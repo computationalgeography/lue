@@ -54,6 +54,13 @@ namespace lue::utility {
                 result = hdf5::native_datatype<std::uint8_t>();
                 break;
             }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+            case GDT_Int8:
+            {
+                result = hdf5::native_datatype<std::int8_t>();
+                break;
+            }
+#endif
             case GDT_UInt16:
             {
                 result = hdf5::native_datatype<std::uint16_t>();
@@ -114,6 +121,12 @@ namespace lue::utility {
         {
             result = gdal::data_type_v<std::uint8_t>;
         }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+        else if (data_type == hdf5::native_int8)
+        {
+            result = gdal::data_type_v<std::int8_t>;
+        }
+#endif
         else if (data_type == hdf5::native_uint16)
         {
             result = gdal::data_type_v<std::uint16_t>;
@@ -870,6 +883,13 @@ namespace lue::utility {
                 gdal_to_lue<RasterView, uint8_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;
             }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+            case GDT_Int8:
+            {
+                gdal_to_lue<RasterView, int8_t>(gdal_raster_band, lue_raster_view, layer_name);
+                break;
+            }
+#endif
             case GDT_UInt16:
             {
                 gdal_to_lue<RasterView, uint16_t>(gdal_raster_band, lue_raster_view, layer_name);

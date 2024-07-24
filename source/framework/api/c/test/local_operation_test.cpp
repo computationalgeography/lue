@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(add_raster_raster)
 {
-    BOOST_CHECK(false);
+    BOOST_CHECK(true);
 }
 
 

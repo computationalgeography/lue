@@ -2,6 +2,7 @@ add_test_conditionally(test)
 
 add_library(lue_framework_api_c SHARED
     src/field.cpp
+    src/future.cpp
     src/io.cpp
     src/local_operation.cpp
 )

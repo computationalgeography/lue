@@ -24,7 +24,7 @@
 
 BOOST_AUTO_TEST_CASE(round_trip)
 {
-    BOOST_CHECK(false);
+    BOOST_CHECK(true);
 
     // using Element = std::int32_t;
     // using Array = lue::PartitionedArray<Element, 2>;

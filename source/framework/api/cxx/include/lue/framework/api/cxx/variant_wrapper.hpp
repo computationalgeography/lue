@@ -80,6 +80,12 @@ namespace lue::api {
             }
 
 
+            // operator Variant const&() const
+            // {
+            //     return _variant;
+            // }
+
+
         private:
 
             Variant _variant;

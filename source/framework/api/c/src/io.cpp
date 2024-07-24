@@ -11,7 +11,13 @@ auto from_gdal(char const* name) -> Field*
 }
 
 
-// void to_gdal(Field* field, char const* name)
-// {
-//     lue::api::to_gdal(as_cxx_field(field), name);
-// }
+void to_gdal(Field* field, char const* name, char const* clone_name)
+{
+    hpx::future<void> result = clone_name == nullptr
+        ? lue::api::to_gdal(as_cxx_field(field), name)
+        : lue::api::to_gdal(as_cxx_field(field), name, clone_name);
+        ;
+
+    // TODO What to return? The caller may need the future<void>...
+    /* return new Future{.instance = new hpx::future<void>{std::move(result)}}; */
+}
