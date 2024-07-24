@@ -54,6 +54,7 @@ set(local_operation_names
     logical_inclusive_or
     logical_not
     multiply
+    modulus
     negate
     normal
     not_equal_to
