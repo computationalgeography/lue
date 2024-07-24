@@ -44,7 +44,7 @@ namespace lue {
                 overload{[&array_shape, &partition_shape](auto const& fill_value) -> Field {
                     return create_partitioned_array(array_shape, partition_shape, fill_value);
                 }},
-                fill_value);
+                fill_value.variant());
         }
 
 
@@ -57,7 +57,7 @@ namespace lue {
                 overload{[&array_shape](auto const& fill_value) -> Field {
                     return create_partitioned_array(array_shape, fill_value);
                 }},
-                fill_value);
+                fill_value.variant());
         }
 
     }  // namespace api

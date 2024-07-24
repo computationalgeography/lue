@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(round_trip)
 
     lue::api::Field field = lue::api::create_array(array_shape, partition_shape, fill_value);
 
-    BOOST_CHECK(std::holds_alternative<Array>(field));
+    BOOST_CHECK(std::holds_alternative<Array>(field.variant()));
 
     std::string const name{"api_cxx_io_round_trip.tif"};
 
@@ -25,5 +25,5 @@ BOOST_AUTO_TEST_CASE(round_trip)
 
     lue::api::Field result = lue::api::from_gdal(name);
 
-    BOOST_CHECK(std::holds_alternative<Array>(result));
+    BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
 }

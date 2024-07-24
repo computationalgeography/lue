@@ -25,7 +25,7 @@ namespace lue {
                 overload{[](auto const& value) -> Field {
                     return lue::create_scalar(value);
                 }},
-                value);
+                value.variant());
         }
 
     }  // namespace api

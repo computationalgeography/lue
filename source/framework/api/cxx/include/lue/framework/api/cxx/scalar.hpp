@@ -1,29 +1,37 @@
 #pragma once
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
-
 #include <cstdint>
-#include <variant>
 
 
 namespace lue::api {
 
     /*!
-        @brief      A variant of all types that can be used to represent scalars
+        @brief      Class for representing scalars
     */
-    using Scalar = std::variant<
-        Scalar<std::uint8_t>,
-        Scalar<std::int32_t>,
-        Scalar<std::uint32_t>,
-        Scalar<std::int64_t>,
-        Scalar<std::uint64_t>,
-        Scalar<float>,
-        Scalar<double>,
-        std::uint8_t,
-        std::int32_t,
-        std::uint32_t,
-        std::int64_t,
-        std::uint64_t,
-        float,
-        double>;
+    class Scalar:
+        public VariantWrapper<
+            lue::Scalar<std::uint8_t>,
+            lue::Scalar<std::int32_t>,
+            lue::Scalar<std::uint32_t>,
+            lue::Scalar<std::int64_t>,
+            lue::Scalar<std::uint64_t>,
+            lue::Scalar<float>,
+            lue::Scalar<double>,
+            std::uint8_t,
+            std::int32_t,
+            std::uint32_t,
+            std::int64_t,
+            std::uint64_t,
+            float,
+            double>
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+
+    };
 
 }  // namespace lue::api

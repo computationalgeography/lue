@@ -1,5 +1,4 @@
 #define BOOST_TEST_MODULE lue framework api cxx local uniform
-#include "lue/framework/api/cxx/array.hpp"
 #include "lue/framework/api/cxx/local/uniform.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -18,7 +17,7 @@ BOOST_AUTO_TEST_CASE(uniform_element_element)
 
     lue::api::Field result = lue::api::uniform(array_shape, partition_shape, min_value, max_value);
 
-    BOOST_CHECK(std::holds_alternative<Array>(result));
+    BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
 }
 
 
@@ -35,5 +34,5 @@ BOOST_AUTO_TEST_CASE(uniform_without_partition_shape)
 
     lue::api::Field result = lue::api::uniform(array_shape, min_value, max_value);
 
-    BOOST_CHECK(std::holds_alternative<Array>(result));
+    BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
 }

@@ -11,7 +11,7 @@ namespace lue::api {
 
     namespace {
 
-        auto create_scalar(double const value, pybind11::dtype const& dtype) -> Field
+        auto create_scalar(double value, pybind11::dtype const& dtype) -> Field
         {
             // TODO Out of range values must result in no-data values. This logic must be in the API layer or
             // higher. All bindings need it.
@@ -79,7 +79,7 @@ namespace lue::api {
                         }
                         case 8:
                         {
-                            field = lue::api::create_scalar(value);
+                            field = lue::api::create_scalar(std::move(value));
                             break;
                         }
                     }

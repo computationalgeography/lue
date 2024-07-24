@@ -14,13 +14,13 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
     {
         lue::api::Field result = lue::api::add(raster1, raster2);
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 
     {
         lue::api::Field result = raster1 + raster2;
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 }
 
@@ -37,13 +37,13 @@ BOOST_AUTO_TEST_CASE(add_raster_scalar)
     {
         lue::api::Field result = lue::api::add(raster, scalar);
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 
     {
         lue::api::Field result = raster + scalar;
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 }
 
@@ -60,13 +60,13 @@ BOOST_AUTO_TEST_CASE(add_scalar_raster)
     {
         lue::api::Field result = lue::api::add(scalar, raster);
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 
     {
         lue::api::Field result = scalar + raster;
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 }
 
@@ -82,13 +82,13 @@ BOOST_AUTO_TEST_CASE(add_scalar_scalar)
     {
         lue::api::Field result = lue::api::add(scalar1, scalar2);
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 
     {
         lue::api::Field result = scalar1 + scalar2;
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 }
 
@@ -105,13 +105,13 @@ BOOST_AUTO_TEST_CASE(add_raster_value)
     {
         lue::api::Field result = lue::api::add(raster, value);
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 
     {
         lue::api::Field result = raster + value;
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 }
 
@@ -127,13 +127,13 @@ BOOST_AUTO_TEST_CASE(add_value_raster)
     {
         lue::api::Field result = lue::api::add(value, raster);
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 
     {
         lue::api::Field result = value + raster;
 
-        BOOST_CHECK(std::holds_alternative<Array>(result));
+        BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }
 }
 
@@ -149,13 +149,13 @@ BOOST_AUTO_TEST_CASE(add_scalar_value)
     {
         lue::api::Field result = lue::api::add(scalar, value);
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 
     {
         lue::api::Field result = scalar + value;
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 }
 
@@ -171,13 +171,13 @@ BOOST_AUTO_TEST_CASE(add_value_scalar)
     {
         lue::api::Field result = lue::api::add(value, scalar);
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 
     {
         lue::api::Field result = value + scalar;
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 }
 
@@ -193,12 +193,12 @@ BOOST_AUTO_TEST_CASE(add_value_value)
     {
         lue::api::Field result = lue::api::add(value1, value2);
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 
     {
         lue::api::Field result = value1 + value2;
 
-        BOOST_CHECK(std::holds_alternative<Scalar>(result));
+        BOOST_CHECK(std::holds_alternative<Scalar>(result.variant()));
     }
 }

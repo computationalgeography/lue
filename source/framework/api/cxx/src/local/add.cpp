@@ -42,8 +42,8 @@ namespace lue {
                 overload{[](auto const& field1, auto const& field2) -> Field {
                     return value_policies::add(field1, field2);
                 }},
-                field1,
-                field2);
+                field1.variant(),
+                field2.variant());
         }
 
     }  // namespace api

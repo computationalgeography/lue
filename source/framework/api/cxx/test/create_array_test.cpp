@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(create_array)
 
     lue::api::Field result = lue::api::create_array(array_shape, partition_shape, fill_value);
 
-    BOOST_CHECK(std::holds_alternative<Array>(result));
+    BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
 }
 
 
@@ -32,5 +32,5 @@ BOOST_AUTO_TEST_CASE(create_array_without_partition_shape)
 
     lue::api::Field result = lue::api::create_array(array_shape, fill_value);
 
-    BOOST_CHECK(std::holds_alternative<Array>(result));
+    BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
 }

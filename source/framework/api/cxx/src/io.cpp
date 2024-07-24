@@ -37,7 +37,7 @@ namespace lue {
                 std::string const& name, Shape<Count, 2> const& partition_shape, GDALDataType const data_type)
                 -> Field
             {
-                std::optional<Field> result{};
+                std::optional<Field::Variant> result{};
 
                 if (data_type == GDT_Byte)
                 {
@@ -114,9 +114,11 @@ namespace lue {
         {
             return std::visit(
                 overload{[&name, &clone_name](auto const& field) -> hpx::future<void> {
-                    return write(field, name, clone_name);
+                    api::detail::unsupported_overload("write", field, name, clone_name);
+                    return hpx::make_ready_future();
+                    // return write(field, name, clone_name);
                 }},
-                field);
+                field.variant());
         }
 
 

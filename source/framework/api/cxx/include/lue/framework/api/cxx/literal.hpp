@@ -1,20 +1,29 @@
 #pragma once
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
 #include <cstdint>
-#include <variant>
 
 
 namespace lue::api {
 
     /*!
-        @brief      A variant of all types that can be used to represent literals
+        @brief      Class for representing literals
     */
-    using Literal = std::variant<
-        std::uint8_t,
-        std::int32_t,
-        std::uint32_t,
-        std::int64_t,
-        std::uint64_t,
-        float,
-        double>;
+    class Literal:
+        public VariantWrapper<
+            std::uint8_t,
+            std::int32_t,
+            std::uint32_t,
+            std::int64_t,
+            std::uint64_t,
+            float,
+            double>
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+
+    };
 
 }  // namespace lue::api
