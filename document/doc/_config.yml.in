@@ -34,6 +34,8 @@ html:
 sphinx:
   config:
 
+    bibtex_reference_style: author_year
+
     # html_theme_options:
     #   logo:
     #     image_light: YOUR_LIGHT_LOGO.png

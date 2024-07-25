@@ -74,7 +74,11 @@ parts:
           sections:
           - file: source/framework/algorithm/doc/design.md
           - file: source/framework/algorithm/doc/template.md
-          - file: source/framework/algorithm/doc/policy.md
+          - file: source/framework/algorithm/doc/policy/index.md
+            sections:
+            - file: source/framework/algorithm/doc/policy/no_data.md
+            - file: source/framework/algorithm/doc/policy/domain.md
+            - file: source/framework/algorithm/doc/policy/range.md
           - file: source/framework/algorithm/doc/grouped_operation/index.md
             sections:
             - file: source/framework/algorithm/doc/grouped_operation/local_operation.md

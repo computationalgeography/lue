@@ -110,7 +110,7 @@ foreach(name IN ITEMS
     # reference/python/framework/index.rst
     reference/python/index.md
     references.bib
-    short_description.rst
+    short_description.md
     pcraster/port.md
     pcraster/status.md
     reference/utility/index.md
@@ -130,7 +130,10 @@ foreach(name IN ITEMS
     doc/index.md
     framework/algorithm/doc/design.md
     framework/algorithm/doc/index.md
-    framework/algorithm/doc/policy.md
+    framework/algorithm/doc/policy/index.md
+    framework/algorithm/doc/policy/no_data.md
+    framework/algorithm/doc/policy/domain.md
+    framework/algorithm/doc/policy/range.md
     framework/algorithm/doc/template.md
 
     framework/doc/howto/index.md
@@ -155,8 +158,7 @@ foreach(name IN ITEMS
     configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)
 endforeach()
 
-
-add_custom_target(documentation.html
+add_custom_target(documentation
     VERBATIM
     COMMAND
         ${CMAKE_COMMAND}
@@ -167,12 +169,6 @@ add_custom_target(documentation.html
         DEPENDS
             doxygen_doc
             # python_api
-)
-
-add_custom_target(documentation.pdf
-    VERBATIM
-    COMMAND
-        ${JupyterBook_EXECUTABLE} build --builder pdflatex ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 set_property(

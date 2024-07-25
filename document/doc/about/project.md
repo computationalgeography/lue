@@ -1,3 +1,4 @@
+(doc-about-project)=
 # Project
 
 LUE is the result of multiple research projects performed by the [Computational

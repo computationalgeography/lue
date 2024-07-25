@@ -3,7 +3,7 @@
 ```{glossary}
 Array
     A collection of {term}`elements <element>` of the same type. An array has a {term}`rank` and a
-    {term}`Shape`.
+    {term}`shape`.
 
 Element
     Depending on the context this is the type or the value of a single item in an array. An array contains

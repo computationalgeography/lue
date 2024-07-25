@@ -215,6 +215,6 @@ jobs:
               remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
               local_dir: "_build/html"
           run: |
-              cmake --build ${{ env.lue_build_directory }} --target documentation.html
+              cmake --build ${{ env.lue_build_directory }} --target documentation
               cd ${{ env.lue_build_directory }}/document/doc
               lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port

@@ -17,13 +17,24 @@ namespace lue {
 
             public:
 
-                template<typename Data>
-                static constexpr void mark_no_data(Data& /* data */)
+                /*!
+                    @brief      Mark @a element as no-data
+
+                    This function does nothing.
+                */
+                static constexpr void mark_no_data([[maybe_unused]] Element& element)
                 {
                 }
 
+
+                /*!
+                    @brief      Mark the element at @a idx in @a data as no-data
+
+                    This function does nothing.
+                */
                 template<typename Data>
-                static constexpr void mark_no_data(Data& /* data */, Index /* idx */...)
+                static constexpr void mark_no_data(
+                    [[maybe_unused]] Data& data, [[maybe_unused]] Index const idx...)
                 {
                 }
         };
