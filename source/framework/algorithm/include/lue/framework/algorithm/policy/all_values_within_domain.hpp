@@ -3,12 +3,21 @@
 
 namespace lue::policy {
 
-    template<typename... InputElement>
+    /*!
+        @brief      Domain policy which assumes all input values are within the algorithm's domain
+        @tparam     Element Types of the input elements
+    */
+    template<typename... Element>
     class AllValuesWithinDomain
     {
         public:
 
-            constexpr static bool within_domain([[maybe_unused]] InputElement const... element)
+            /*!
+                @brief      Return whether all @a element values are within the domain
+
+                This function always returns `true`.
+            */
+            static constexpr auto within_domain([[maybe_unused]] Element const... element) -> bool
             {
                 return true;
             }

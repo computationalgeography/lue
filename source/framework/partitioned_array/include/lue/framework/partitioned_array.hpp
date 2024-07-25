@@ -15,7 +15,7 @@ namespace lue {
         @tparam     Element Type for representing element values
         @tparam     rank Array rank
 
-        The array is partitioned, which can be located in multiple processes.
+        The array is partitioned. Partitions can be located in multiple processes.
     */
     template<typename Element, Rank rank>
     class PartitionedArray

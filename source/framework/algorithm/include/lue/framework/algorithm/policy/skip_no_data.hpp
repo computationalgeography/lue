@@ -19,13 +19,25 @@ namespace lue {
 
             public:
 
-                static constexpr bool is_no_data(Element const& /* element */)
+                /*!
+                    @brief      Return whether @a element contains no-data
+
+                    This function always returns `false`.
+                */
+                static constexpr auto is_no_data([[maybe_unused]] Element const& element) -> bool
                 {
                     return false;
                 }
 
+                /*!
+                    @brief      Return whether the element at index @a idx in @a data contains no-data
+                    @tparam     Data Collection of elements
+
+                    This function always returns `false`.
+                */
                 template<typename Data>
-                static constexpr bool is_no_data(Data const& /* data */, Index /* idx */...)
+                static constexpr auto is_no_data(
+                    [[maybe_unused]] Data const& data, [[maybe_unused]] Index const idx...) -> bool
                 {
                     static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 

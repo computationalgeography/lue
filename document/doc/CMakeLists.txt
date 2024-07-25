@@ -130,7 +130,10 @@ foreach(name IN ITEMS
     doc/index.md
     framework/algorithm/doc/design.md
     framework/algorithm/doc/index.md
-    framework/algorithm/doc/policy.md
+    framework/algorithm/doc/policy/index.md
+    framework/algorithm/doc/policy/no_data.md
+    framework/algorithm/doc/policy/domain.md
+    framework/algorithm/doc/policy/range.md
     framework/algorithm/doc/template.md
 
     framework/doc/howto/index.md

@@ -17,7 +17,6 @@ This documentation is work in progress. It is improved continuously, but nowhere
 
 The documentation is split into several parts:
 
-
 |             |     |
 | ---         | --- |
 | Manual      | General information about LUE. Start here if you are new to the software. |
