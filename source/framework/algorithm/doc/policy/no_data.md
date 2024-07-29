@@ -41,6 +41,8 @@ optimizing compiler will completely remove the "check" from the code.
 
 ```{eval-rst}
 .. doxygenclass:: lue::policy::SkipNoData
+.. doxygenclass:: lue::policy::DetectNoDataByValue
+.. doxygenclass:: lue::policy::DetectNoDataByNaN
 ```
 
 
@@ -73,4 +75,6 @@ compiler will completely remove the "marking" from the code.
 
 ```{eval-rst}
 .. doxygenclass:: lue::policy::DontMarkNoData
+.. doxygenclass:: lue::policy::MarkNoDataByValue
+.. doxygenclass:: lue::policy::MarkNoDataByNaN
 ```

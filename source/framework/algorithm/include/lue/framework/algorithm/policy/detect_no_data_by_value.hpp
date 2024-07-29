@@ -8,12 +8,32 @@
 
 namespace lue::policy {
 
+    /*!
+        @brief      Input no-data policy
+        @warning    Don't use this policy when @a Element is a floating point type and when the no-data value
+                    must be represented by a NaN
+        @sa         MarkNoDataByValue, DetectNoDataByNaN
+
+        Policy suitable for those cases where no-data is represented by some "special" value, like a minimum
+        value, maximum value, or a very small value.
+    */
     template<typename Element>
     class DetectNoDataByValue
     {
 
         public:
 
+            /*!
+                @brief      The default no-data value to use in tests
+
+                These values are used, depending on @a Element:
+
+                | Type | value |
+                | ---  | ---   |
+                | signed integral | std::numeric_limits<Element>::min() |
+                | unsigned integral | std::numeric_limits<Element>::max() |
+                | floating point | std::numeric_limits<Element>::lowest() |
+            */
             static constexpr Element no_data_value{
                 []()
                 {
@@ -34,6 +54,10 @@ namespace lue::policy {
                 }()};
 
 
+            /*!
+                @brief      Construct an instance, using the default DetectNoDataByValue::no_data_value as
+                            the no-data value in tests
+            */
             DetectNoDataByValue():
 
                 DetectNoDataByValue{no_data_value}
@@ -42,6 +66,10 @@ namespace lue::policy {
             }
 
 
+            /*!
+                @brief      Construct an instance, using @a value as the no-data value in tests
+                @warning    If @a Element is a floating point type, @a value must not by NaN
+            */
             DetectNoDataByValue(Element const value):
 
                 _value{value}
@@ -58,8 +86,21 @@ namespace lue::policy {
             }
 
 
+            /*!
+                @brief      Return whether @a value is no-data
+            */
+            auto is_no_data(Element const& value) const -> bool
+            {
+                return value == _value;
+            }
+
+
+            /*!
+                @brief      Return whether the element at index @a idx in @a data contains no-data
+                @tparam     Data Collection of elements
+            */
             template<typename Data>
-            bool is_no_data(Data const& data, Index const idx) const
+            auto is_no_data(Data const& data, Index const idx) const -> bool
             {
                 static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
@@ -67,27 +108,22 @@ namespace lue::policy {
             }
 
 
+            /*!
+                @brief      Return whether the element at index @a idx in @a data contains no-data
+                @tparam     Data Collection of elements
+            */
             template<typename Data, typename... Idxs>
-            bool is_no_data(Data const& data, Idxs const... idxs) const
+            auto is_no_data(Data const& data, Idxs const... idxs) const -> bool
             {
-                if constexpr (sizeof...(Idxs) == 0)
-                {
-                    static_assert(std::is_arithmetic_v<Data>);
+                static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
 
-                    return data == _value;
-                }
-                else
-                {
-                    static_assert(std::is_same_v<lue::ElementT<Data>, Element>);
-
-                    return data(idxs...) == _value;
-                }
+                return data(idxs...) == _value;
             }
 
 
         protected:
 
-            Element value() const
+            auto value() const -> Element
             {
                 return _value;
             }

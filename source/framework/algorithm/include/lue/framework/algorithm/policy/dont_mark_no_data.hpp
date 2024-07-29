@@ -2,60 +2,58 @@
 #include "lue/framework/algorithm/policy/skip_no_data.hpp"
 
 
-namespace lue {
-    namespace policy {
+namespace lue::policy {
 
-        /*!
-            @brief      Output no-data policy that does nothing
+    /*!
+        @brief      Output no-data policy that does nothing
+        @sa         SkipNoData
 
-            Use this policy if you do not want to mark no-data values in
-            the output.
-        */
-        template<typename Element>
-        class DontMarkNoData: public SkipNoData<Element>
+        Use this policy if you do not want to mark no-data values in the output.
+    */
+    template<typename Element>
+    class DontMarkNoData: public SkipNoData<Element>
+    {
+
+        public:
+
+            /*!
+                @brief      Mark @a value as no-data
+
+                This function does nothing.
+            */
+            static constexpr void mark_no_data([[maybe_unused]] Element& value)
+            {
+            }
+
+
+            /*!
+                @brief      Mark the value at @a idx in @a data as no-data
+
+                This function does nothing.
+            */
+            template<typename Data, typename... Idxs>
+            static constexpr void mark_no_data(
+                [[maybe_unused]] Data& data, [[maybe_unused]] Idxs const... idx)
+            {
+            }
+    };
+
+
+    namespace detail {
+
+        template<typename E>
+        class TypeTraits<DontMarkNoData<E>>
         {
 
             public:
 
-                /*!
-                    @brief      Mark @a element as no-data
+                using Element = E;
 
-                    This function does nothing.
-                */
-                static constexpr void mark_no_data([[maybe_unused]] Element& element)
-                {
-                }
+                template<typename E_>
+                using Policy = DontMarkNoData<E_>;
 
-
-                /*!
-                    @brief      Mark the element at @a idx in @a data as no-data
-
-                    This function does nothing.
-                */
-                template<typename Data>
-                static constexpr void mark_no_data(
-                    [[maybe_unused]] Data& data, [[maybe_unused]] Index const idx...)
-                {
-                }
+                using InputNoDataPolicy = SkipNoData<Element>;
         };
 
-
-        namespace detail {
-
-            template<typename E>
-            class TypeTraits<DontMarkNoData<E>>
-            {
-
-                public:
-
-                    using Element = E;
-
-                    template<typename E_>
-                    using Policy = DontMarkNoData<E_>;
-
-                    using InputNoDataPolicy = SkipNoData<Element>;
-            };
-
-        }  // namespace detail
-    }      // namespace policy
-}  // namespace lue
+    }  // namespace detail
+}  // namespace lue::policy
