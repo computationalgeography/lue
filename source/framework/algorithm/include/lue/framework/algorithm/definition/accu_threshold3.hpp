@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
@@ -668,6 +669,8 @@ namespace lue {
         PartitionedArray<MaterialElement, rank> const& threshold)
     {
         AnnotateFunction annotation{"accu_threshold_meh"};
+
+        detail::verify_compatible(flow_direction, external_inflow, threshold);
 
         // This function must:
         // - Return as soon as possible

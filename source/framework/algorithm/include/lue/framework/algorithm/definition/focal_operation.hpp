@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/detail/halo_partition.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
 #include "lue/framework/algorithm/export.hpp"
 #include "lue/framework/algorithm/policy.hpp"
@@ -854,7 +855,8 @@ namespace lue {
 
                             HPX_UNUSED(input_partitions);
 
-                            auto const& first_partition_data{std::get<0>(std::forward_as_tuple(partition_data...))};
+                            auto const& first_partition_data{
+                                std::get<0>(std::forward_as_tuple(partition_data...))};
                             auto const& partition_shape{first_partition_data.shape()};
 
                             auto const [nr_elements0, nr_elements1] = partition_shape;
@@ -1958,6 +1960,8 @@ namespace lue {
             Functor functor,
             PartitionedArray<InputElements, rank<Kernel>> const&... input_arrays)
         {
+            verify_compatible(input_arrays...);
+
             // Replace the input arrays by a type that will help in the
             // implementation of this operation
             return focal_operation_2d(

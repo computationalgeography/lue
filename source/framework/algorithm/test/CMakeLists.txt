@@ -123,6 +123,7 @@ set(names
     sum
     timestamp
     upstream
+    verify_compatible
 )
 
 foreach(name ${names})

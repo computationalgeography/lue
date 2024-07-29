@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/decreasing_order.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
@@ -1225,7 +1226,7 @@ namespace lue {
         static_assert(
             std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
 
-        lue_hpx_assert(zone.shape() == value.shape());
+        detail::verify_compatible(zone, value);
 
         using Zone = policy::InputElementT<Policies, 0>;
         using ZoneArray = PartitionedArray<Zone, rank>;
