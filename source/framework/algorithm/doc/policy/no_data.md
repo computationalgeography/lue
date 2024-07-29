@@ -26,8 +26,8 @@ class InputNoDataPolicy
 
         auto is_no_data(Element const& element) -> bool;
 
-        template<typename Data>
-        auto is_no_data(Data const& data, Index const idx...) -> bool;
+        template<typename Data, typename... Idxs>
+        auto is_no_data(Data const& data, Idxs const... idx) -> bool;
 };
 ```
 
@@ -59,8 +59,8 @@ class OutputNoDataPolicy
 
         void mark_no_data(Element& element)
 
-        template<typename Data>
-        void mark_no_data(Data& data, Index const idx...);
+        template<typename Data, typename... Idxs>
+        void mark_no_data(Data& data, Idxs const... idx);
 };
 
 ```
