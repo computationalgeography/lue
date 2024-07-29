@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/partitioned_array.hpp"
@@ -389,8 +390,9 @@ namespace lue {
         using Aggregator = AggregatorT<Functor>;
         using Aggregators = std::vector<hpx::future<Aggregator>>;
 
+        detail::verify_compatible(input_array, zones_array);
+
         Count const nr_partitions{lue::nr_partitions(zones_array)};
-        lue_hpx_assert(lue::nr_partitions(input_array) == nr_partitions);
 
         Localities<rank> const& localities{zones_array.localities()};
         ZonesPartitions const& zones_partitions{zones_array.partitions()};

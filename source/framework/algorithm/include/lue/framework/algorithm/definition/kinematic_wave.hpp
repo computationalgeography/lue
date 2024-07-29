@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/kinematic_wave.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
@@ -850,6 +851,8 @@ namespace lue {
         using Material = Element;
         using MaterialArray = PartitionedArray<Material, rank>;
         using MaterialPartitions = PartitionsT<MaterialArray>;
+
+        detail::verify_compatible(flow_direction, current_discharge, inflow, channel_length);
 
         auto const& shape_in_partitions{flow_direction.partitions().shape()};
         Localities<rank> const& localities{flow_direction.localities()};

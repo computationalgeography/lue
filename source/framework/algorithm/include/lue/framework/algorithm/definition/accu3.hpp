@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
@@ -580,6 +581,8 @@ namespace lue {
         PartitionedArray<MaterialElement, rank> const& external_inflow)
     {
         AnnotateFunction annotation{"accu_meh"};
+
+        detail::verify_compatible(flow_direction, external_inflow);
 
         using MaterialArray = PartitionedArray<MaterialElement, rank>;
         using MaterialPartitions = PartitionsT<MaterialArray>;

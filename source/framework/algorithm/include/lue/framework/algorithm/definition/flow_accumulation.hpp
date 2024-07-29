@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/detail/partition.hpp"
 #include "lue/framework/algorithm/detail/promise.hpp"
 #include "lue/framework/algorithm/detail/spawn.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/type_traits.hpp"
@@ -1498,6 +1499,8 @@ namespace lue {
         [[maybe_unused]] Accumulator&& accumulator,
         PartitionedArray<CriterionElement, rank> const& criterion)
     {
+        detail::verify_compatible(flow_direction, material, criterion);
+
         lue::Localities<rank> const& localities{flow_direction.localities()};
 
         using FlowDirectionArray = PartitionedArray<FlowDirectionElement, rank>;

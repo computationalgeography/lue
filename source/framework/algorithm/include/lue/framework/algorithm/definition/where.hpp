@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/definition/binary_local_operation.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/where.hpp"
 #include "lue/macro.hpp"
@@ -522,10 +523,7 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        lue_hpx_assert(nr_partitions(condition) == nr_partitions(true_array));
-        lue_hpx_assert(nr_partitions(condition) == nr_partitions(false_array));
-        lue_hpx_assert(shape_in_partitions(condition) == shape_in_partitions(true_array));
-        lue_hpx_assert(shape_in_partitions(condition) == shape_in_partitions(false_array));
+        detail::verify_compatible(condition, true_array, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Partition> action;
 
@@ -575,8 +573,7 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        lue_hpx_assert(nr_partitions(condition) == nr_partitions(true_array));
-        lue_hpx_assert(shape_in_partitions(condition) == shape_in_partitions(true_array));
+        detail::verify_compatible(condition, true_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Element> action;
 
@@ -625,8 +622,7 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        lue_hpx_assert(nr_partitions(condition) == nr_partitions(false_array));
-        lue_hpx_assert(shape_in_partitions(condition) == shape_in_partitions(false_array));
+        detail::verify_compatible(condition, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Partition> action;
 

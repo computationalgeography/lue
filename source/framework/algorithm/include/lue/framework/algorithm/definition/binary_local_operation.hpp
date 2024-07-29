@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
@@ -481,11 +482,10 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
+        detail::verify_compatible(input_array1, input_array2);
+
         lue_hpx_assert(all_are_valid(input_array1.partitions()));
         lue_hpx_assert(all_are_valid(input_array2.partitions()));
-        lue_hpx_assert(nr_partitions(input_array1) == nr_partitions(input_array2));
-        lue_hpx_assert(input_array1.shape() == input_array2.shape());
-        lue_hpx_assert(shape_in_partitions(input_array1) == shape_in_partitions(input_array2));
 
         detail::BinaryLocalOperationPartitionAction<
             Policies,
