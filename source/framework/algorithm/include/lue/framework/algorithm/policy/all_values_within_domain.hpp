@@ -13,11 +13,11 @@ namespace lue::policy {
         public:
 
             /*!
-                @brief      Return whether all @a element values are within the domain
+                @brief      Return whether all element @a value (s) are within the domain
 
                 This function always returns `true`.
             */
-            static constexpr auto within_domain([[maybe_unused]] Element const... element) -> bool
+            static constexpr auto within_domain([[maybe_unused]] Element const... value) -> bool
             {
                 return true;
             }

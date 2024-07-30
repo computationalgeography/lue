@@ -36,25 +36,27 @@ namespace lue {
 
                         OutputData output_partition_data{shape};
 
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                        // NOTE Can't use indp to check for no-data in the (output!) fill_value
+                        // auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        // auto const& ondp =
+                        // std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
                         Count const nr_elements{lue::nr_elements(output_partition_data)};
 
-                        if (indp.is_no_data(fill_value))
+                        // if (indp.is_no_data(fill_value))
+                        // {
+                        //     for (Index i = 0; i < nr_elements; ++i)
+                        //     {
+                        //         ondp.mark_no_data(output_partition_data, i);
+                        //     }
+                        // }
+                        // else
+                        // {
+                        for (Index i = 0; i < nr_elements; ++i)
                         {
-                            for (Index i = 0; i < nr_elements; ++i)
-                            {
-                                ondp.mark_no_data(output_partition_data, i);
-                            }
+                            output_partition_data[i] = fill_value;
                         }
-                        else
-                        {
-                            for (Index i = 0; i < nr_elements; ++i)
-                            {
-                                output_partition_data[i] = fill_value;
-                            }
-                        }
+                        // }
 
                         return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                     }

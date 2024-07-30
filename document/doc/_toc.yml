@@ -88,6 +88,7 @@ parts:
             - file: source/framework/algorithm/doc/grouped_operation/routing_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/mathematical_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/random_number_operation.md
+        - file: source/framework/doc/test/index.md
         - file: source/framework/doc/howto/index.md
           sections:
           - file: source/framework/doc/howto/add_local_operation.md

@@ -136,6 +136,8 @@ foreach(name IN ITEMS
     framework/algorithm/doc/policy/range.md
     framework/algorithm/doc/template.md
 
+    framework/doc/test/index.md
+
     framework/doc/howto/index.md
     framework/doc/howto/add_local_operation.md
 

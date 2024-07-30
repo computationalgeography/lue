@@ -9,7 +9,7 @@ namespace lue::policy {
         @tparam     OutputElement Type of the output element
         @tparam     InputElement Types of the input elements
 
-        Use this policy if you do not want to check for out-of-rangeness in the output
+        Use this policy if you do not want to check for "out-of-rangeness" in the output
     */
     template<typename OutputElement, typename... InputElement>
     class AllValuesWithinRange
@@ -17,13 +17,13 @@ namespace lue::policy {
         public:
 
             /*!
-                @brief      Return whether all @a element values are within the range
+                @brief      Return whether all element @a value (s) are within the range
                 @param      result Result value
 
                 This function always returns `true`.
             */
             static constexpr auto within_range(
-                [[maybe_unused]] InputElement const... element, [[maybe_unused]] OutputElement const result)
+                [[maybe_unused]] InputElement const... value, [[maybe_unused]] OutputElement const result)
                 -> bool
             {
                 return true;

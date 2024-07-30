@@ -27,8 +27,11 @@ Currently there are several kinds of policies used by the algorithms:
     - Mark an output element value as no-data
 :::
 
-How the various policies perform their responsibility is up to the implementation. This way, same algorithm
-can support multiple conventions, like for representing no-data values.
+How the various policies perform their responsibility is up to the implementation. This way, the same
+algorithm can support multiple conventions, like for representing no-data values.
+
+In general, the various policies are aggregated into a single {cpp:class}`lue::policy::Policies` instance,
+which is passed as an argument to an algorithm.
 
 :::{margin}
 Please suggest a better name for the "default" and "value" policies...
@@ -45,6 +48,7 @@ for all use-cases. Different policies can be created and used by 3rd-party users
 - Optimizer should remove all checks
 
 These policies are typically used as default policies:
+
 - {cpp:class}`lue::policy::SkipNoData`
 - {cpp:class}`lue::policy::AllValuesWithinDomain`
 - {cpp:class}`lue::policy::AllValuesWithinRange`
@@ -58,3 +62,18 @@ These policies are typically used as default policies:
 - Check input no-data, if relevant
 - Write output no-data, if relevant
 - Use LUE's default no-data policies
+
+These policies are typically used as value policies:
+- {cpp:class}`lue::policy::DetectNoDataByValue`
+- {cpp:class}`lue::policy::DetectNoDataByNaN`
+- {cpp:class}`lue::policy::MarkNoDataByValue`
+- {cpp:class}`lue::policy::MarkNoDataByNaN`
+
+Algorithms that require a domain check typically use an custom, algorithm-specific domain policy.
+
+
+### Policies
+
+```{eval-rst}
+.. doxygenclass:: lue::policy::Policies
+```
