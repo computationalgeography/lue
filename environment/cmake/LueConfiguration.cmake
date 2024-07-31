@@ -244,15 +244,6 @@ if(LUE_BUILD_DOCUMENTATION)
     if(NOT EDIT_DOT_GRAPH)
         message(FATAL_ERROR "edit_dot_graph.py not found")
     endif()
-
-    # find_package(LATEX)
-
-    # if(NOT LATEX_FOUND)
-    #     message(WARNING
-    #         "LaTeX could not be found. Latex documents will not be generated")
-    # else()
-    #     include(UseLATEX)
-    # endif()
 endif()
 
 

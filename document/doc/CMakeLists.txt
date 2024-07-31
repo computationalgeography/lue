@@ -65,6 +65,8 @@ foreach(name IN ITEMS
     reference/index.md
     reference/java/index.md
     reference/julia/index.md
+    reference/operation/index.md
+    reference/operation/uniform.md
     # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
     # reference/python/data_model/index.rst
@@ -126,7 +128,7 @@ add_custom_target(documentation
     COMMAND
         ${CMAKE_COMMAND}
             -E env "PYTHONPATH=${PROJECT_BINARY_DIR}/${LUE_INSTALL_PYTHON_PACKAGE_DIR}/..:$ENV{PYTHONPATH}"
-                ${JupyterBook_EXECUTABLE} build --builder html
+                ${JupyterBook_EXECUTABLE} build --builder html --all
                     # --warningiserror --nitpick --keep-going
                     ${CMAKE_CURRENT_BINARY_DIR}
         DEPENDS

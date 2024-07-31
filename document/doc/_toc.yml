@@ -32,6 +32,9 @@ parts:
 
     - file: reference/index.md
       sections:
+      - file: reference/operation/index.md
+        sections:
+        - file: reference/operation/uniform.md
       - file: reference/c/index.md
       - file: reference/cpp/index.md
       - file: reference/java/index.md
