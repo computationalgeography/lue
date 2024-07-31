@@ -1,5 +1,5 @@
 add_test(
-    NAME lue_py_framework_x_python_test
+    NAME lue_framework_api_python_test
     COMMAND
         ${Python_EXECUTABLE} ${HPXRUN}
             "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
@@ -15,7 +15,7 @@ add_test(
 
 set_property(
     TEST
-        lue_py_framework_x_python_test
+        lue_framework_api_python_test
     APPEND
     PROPERTY
         # Preload the tcmalloc shared library, if necessary.
@@ -24,7 +24,7 @@ set_property(
 )
 set_property(
     TEST
-        lue_py_framework_x_python_test
+        lue_framework_api_python_test
     APPEND
     PROPERTY
         # Add the path to our Python modules to PYTHONPATH.
@@ -35,7 +35,7 @@ set_property(
 )
 set_property(
     TEST
-        lue_py_framework_x_python_test
+        lue_framework_api_python_test
     APPEND
     PROPERTY
         FIXTURES_REQUIRED

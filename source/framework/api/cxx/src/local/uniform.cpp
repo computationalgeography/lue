@@ -13,7 +13,7 @@ namespace lue {
             auto const& min_value,
             auto const& max_value) -> api::Field
         {
-            api::detail::unsupported_overload("uniform", min_value, max_value);
+            api::detail::unsupported_overload("uniform", array_shape, partition_shape, min_value, max_value);
 
             return {};
         }
@@ -22,7 +22,7 @@ namespace lue {
         auto uniform([[maybe_unused]] auto const& array_shape, auto const& min_value, auto const& max_value)
             -> api::Field
         {
-            api::detail::unsupported_overload("uniform", min_value, max_value);
+            api::detail::unsupported_overload("uniform", array_shape, min_value, max_value);
 
             return {};
         }

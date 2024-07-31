@@ -20,7 +20,10 @@ namespace lue::framework {
             using Functor = lue::InstantiateFilled<Element, rank>;
 
             return lue::create_partitioned_array(
-                Policies{}, array_shape, partition_shape, Functor{pybind11::cast<Element>(fill_value)});
+                Policies{},
+                array_shape,
+                partition_shape,
+                Functor{hpx::make_ready_future<Element>(pybind11::cast<Element>(fill_value))});
         }
 
 

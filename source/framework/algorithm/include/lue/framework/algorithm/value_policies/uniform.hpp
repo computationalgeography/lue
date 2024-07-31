@@ -48,12 +48,37 @@ namespace lue {
         requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
             Shape<Count, rank> const& array_shape,
             Shape<Count, rank> const& partition_shape,
+            Scalar<Element> const& min_value,
+            Scalar<Element> const& max_value) -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::uniform::DefaultValuePolicies<Element>;
+
+            return lue::uniform(Policies{}, array_shape, partition_shape, min_value, max_value);
+        }
+
+
+        template<Arithmetic Element, typename Count, Rank rank>
+        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            Shape<Count, rank> const& array_shape,
+            Shape<Count, rank> const& partition_shape,
             Element const min_value,
             Element const max_value) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::uniform::DefaultValuePolicies<Element>;
 
             return lue::uniform(Policies{}, array_shape, partition_shape, min_value, max_value);
+        }
+
+
+        template<Arithmetic Element, typename Count, Rank rank>
+        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            Shape<Count, rank> const& array_shape,
+            Scalar<Element> const& min_value,
+            Scalar<Element> const& max_value) -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::uniform::DefaultValuePolicies<Element>;
+
+            return lue::uniform(Policies{}, array_shape, min_value, max_value);
         }
 
 

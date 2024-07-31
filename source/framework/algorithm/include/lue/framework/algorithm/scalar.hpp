@@ -165,7 +165,7 @@ namespace lue {
             /*!
                 @brief      Return the layered future
 
-                The result can be used to attach continuation to.
+                The result can be used to attach continuations to.
             */
             auto value() const -> hpx::shared_future<Element> const&
             {

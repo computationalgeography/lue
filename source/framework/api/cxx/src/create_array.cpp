@@ -6,8 +6,6 @@
 
 namespace lue {
 
-    // TODO These should not be needed. Add support for all overloads to algorithm/create_partitioned_array
-
     auto create_partitioned_array(
         [[maybe_unused]] auto const& array_shape,
         [[maybe_unused]] auto const& partition_shape,
@@ -29,8 +27,6 @@ namespace lue {
 
 
     namespace api {
-
-        // TODO create_partitioned_array must support Scalar<Element> const& fill_value argument
 
         /*!
             @brief      Create an array filled with a scalar value

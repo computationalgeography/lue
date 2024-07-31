@@ -266,7 +266,8 @@ namespace lue {
             static constexpr bool instantiate_per_locality{false};
 
 
-            InstantiateUniform(Element const min_value, Element const max_value):
+            InstantiateUniform(
+                hpx::shared_future<Element> const& min_value, hpx::shared_future<Element> const& max_value):
 
                 _min_value{min_value},
                 _max_value{max_value}
@@ -286,16 +287,30 @@ namespace lue {
             {
                 using Action = detail::UniformPartitionAction2<Policies, rank>;
 
-                return hpx::async(
-                    Action{}, locality_id, policies, offset, partition_shape, _min_value, _max_value);
+                return hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::unwrapping(
+                        [locality_id, policies, offset, partition_shape](
+                            Element const min_value, Element const max_value) -> Partition {
+                            return hpx::async(
+                                Action{},
+                                locality_id,
+                                policies,
+                                offset,
+                                partition_shape,
+                                min_value,
+                                max_value);
+                        }),
+                    _min_value,
+                    _max_value);
             }
 
 
         private:
 
-            Element const _min_value;
+            hpx::shared_future<Element> _min_value;
 
-            Element const _max_value;
+            hpx::shared_future<Element> _max_value;
     };
 
 
@@ -314,14 +329,46 @@ namespace lue {
         Policies const& policies,
         Shape const& array_shape,
         Shape const& partition_shape,
-        policy::InputElementT<Policies, 0> const min_value,
-        policy::InputElementT<Policies, 1> const max_value)
+        Scalar<policy::InputElementT<Policies, 0>> const& min_value,
+        Scalar<policy::InputElementT<Policies, 1>> const& max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
         using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
         return create_partitioned_array(
-            policies, array_shape, partition_shape, Functor{min_value, max_value});
+            policies, array_shape, partition_shape, Functor{min_value.value(), max_value.value()});
+    }
+
+
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        Shape const& partition_shape,
+        policy::InputElementT<Policies, 0> const min_value,
+        policy::InputElementT<Policies, 1> const max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
+    {
+        return uniform(
+            policies,
+            array_shape,
+            partition_shape,
+            Scalar<policy::InputElementT<Policies, 0>>{min_value},
+            Scalar<policy::InputElementT<Policies, 1>>{max_value});
+    }
+
+
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        Scalar<policy::InputElementT<Policies, 0>> const& min_value,
+        Scalar<policy::InputElementT<Policies, 1>> const& max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
+    {
+        using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
+
+        return create_partitioned_array(policies, array_shape, Functor{min_value.value(), max_value.value()});
     }
 
 
@@ -333,9 +380,11 @@ namespace lue {
         policy::InputElementT<Policies, 1> const max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
-        using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
-
-        return create_partitioned_array(policies, array_shape, Functor{min_value, max_value});
+        return uniform(
+            policies,
+            array_shape,
+            Scalar<policy::InputElementT<Policies, 0>>{min_value},
+            Scalar<policy::InputElementT<Policies, 1>>{max_value});
     }
 
 }  // namespace lue
