@@ -27,7 +27,10 @@ LUE does not have the notion of non-spatial. This is relevant when passing two "
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
 
+import enum
+
 import numpy as np
+from osgeo import gdal
 
 import lue.framework as lfr
 
@@ -53,13 +56,58 @@ wrappers
 configuration = Configuration()
 
 
-def setclone(*args):
-    raise NotImplementedError(
-        "Please assign to this module's configuration variable. E.g.:\n"
-        "lue.pcraster.configuration.array_shape = array_shape\n"
-        "lue.pcraster.configuration.partition_shape = partition_shape\n"
-        "lue.pcraster.configuration.cell_size = 10"
-    )
+def setclone(pathname):
+    raster_dataset = gdal.Open(pathname)
+    assert raster_dataset, f"Could not open {pathname}"
+
+    array_shape = raster_dataset.RasterYSize, raster_dataset.RasterXSize
+
+    # assert pcr.partition_shape is not None, "Assign partition shape to package"
+    # partition_shape = pcr.partition_shape
+
+    # partition_shape = (
+    #     (2000, 2000) if all(extent > 2000 for extent in array_shape) else array_shape
+    # )
+    # TODO
+    # partition_shape = (360, 720)
+    # partition_shape = (2000, 2000)
+    partition_shape = None
+
+    geo_transform = raster_dataset.GetGeoTransform()
+    cell_shape = geo_transform[1], -geo_transform[5]
+    assert cell_shape[0] == cell_shape[1]
+    cell_size = cell_shape[0]
+
+    configuration.array_shape = array_shape
+    configuration.partition_shape = partition_shape
+    configuration.cell_size = cell_size
+
+
+def clone():
+    if not hasattr(Configuration, "cellSize"):
+
+        def cellSize(self):
+            return self.cell_size
+
+        setattr(Configuration, "cellSize", cellSize)
+    if not hasattr(Configuration, "nrRows"):
+
+        def nrRows(self):
+            return self.array_shape[0]
+
+        setattr(Configuration, "nrRows", nrRows)
+    if not hasattr(Configuration, "nrCols"):
+
+        def nrCols(self):
+            return self.array_shape[1]
+
+        setattr(Configuration, "nrCols", nrCols)
+
+    return configuration
+
+
+def setglobaloption(option):
+    print(f"lue.pcraster: discarding global option {option}\n")
 
 
 def numpy_scalar_type(expression):
@@ -76,6 +124,45 @@ def numpy_scalar_type(expression):
     }
 
     return element_type_by_type[type(expression)]
+
+
+VALUESCALE = enum.Enum(
+    "VALUESCALE",
+    ["Boolean", "Directional", "Ldd", "Nominal", "Ordinal", "Scalar"],
+)
+(
+    Boolean,
+    Directional,
+    Ldd,
+    Nominal,
+    Ordinal,
+    Scalar,
+) = VALUESCALE
+
+
+# NOTE to_numpy is a synchronization point
+def pcr2numpy(array, no_data_value):
+    return lfr.to_numpy(array, no_data_value)
+
+
+def numpy2pcr(data_type, array, no_data_value):
+    assert (
+        data_type == Ldd
+        and array.dtype == np.uint8
+        or data_type == Scalar
+        and array.dtype == np.float32
+    ), f"{data_type} vs {array.dtype}"
+
+    # TODO LUE get rid of the wait, if possible
+    # Why is the wait needed? OK, don't change the array while LUE is working with
+    # it, but this should not result in a segfault.
+    array = lfr.from_numpy(
+        array,
+        partition_shape=configuration.partition_shape,
+        no_data_value=no_data_value,
+    )
+    lfr.wait(array)
+    return array
 
 
 def is_spatial(argument):
@@ -381,7 +468,12 @@ def boolean(expression):
         if is_boolean(expression):
             return expression
         else:
-            return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
+            # TODO where doesn't handle dypes correctly
+            # https://github.com/computationalgeography/lue/issues/687
+            # return lfr.where(expression != 0, np.uint8(1), np.uint8(0))
+            return lfr.cast(
+                lfr.where(expression != 0, np.uint8(1), np.uint8(0)), np.uint8
+            )
     elif is_non_spatial(expression):
         return np.uint8(expression)
 
@@ -941,8 +1033,18 @@ def timeinputordinal(*args):
     raise NotImplementedError("timeinputordinal")
 
 
-def timeinputscalar(*args):
-    raise NotImplementedError("timeinputscalar")
+def timeinputscalar(timeseries_pathname: str, id_expression, timestep: int):
+    lines = open(timeseries_pathname).readlines()
+    nr_rows_to_skip = int(lines[1]) + 2
+    lines = lines[nr_rows_to_skip:]
+    line = lines[timestep - 1]
+    values = line.split()[1:]
+    lookup_table = {id_ + 1: float(values[id_]) for id_ in range(len(values))}
+
+    if isinstance(id_expression, int):
+        return lookup_table[id_expression]
+    else:
+        return lfr.reclassify(id_expression, lookup_table, dtype=np.float32)
 
 
 def timeinputdirectional(*args):
@@ -1067,13 +1169,19 @@ def windowtotal(expression, window_length):
     return lfr.focal_sum(expression, window)
 
 
-def xcoordinate(*args):
-    raise NotImplementedError("xcoordinate")
+def xcoordinate(expression):
+    return (
+        lfr.cast(lfr.cell_index(defined(expression), 1), np.float32)
+        * configuration.cell_size
+    )
 
 
 def pcrxor(expression1, expression2):
     return expression1 ^ expression2
 
 
-def ycoordinate(*args):
-    raise NotImplementedError("ycoordinate")
+def ycoordinate(expression):
+    return (
+        lfr.cast(lfr.cell_index(defined(expression), 0), np.float32)
+        * configuration.cell_size
+    )

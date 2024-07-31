@@ -101,8 +101,14 @@ class DynamicFramework(lfr.DynamicModelRunner):
         super().__init__(model, last_time_step, first_time_step)
 
     def setQuiet(self, quiet=True):
-        # Skip for now
-        pass
+        self.quiet = quiet
+
+    def run(self):
+        if self.quiet:
+            progressor = lfr.SilentProgressor()
+        else:
+            progressor = lfr.DefaultProgressor()
+        super().run(progressor=progressor)
 
 
 class MonteCarloModel(lfr.MonteCarloModel):
