@@ -3,75 +3,170 @@
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
-BOOST_AUTO_TEST_CASE(cell_index)
+template<typename ConditionElement, typename IndexElement>
+void test_cell_index(
+    lue::Shape<lue::Count, 2> const& array_shape,
+    lue::Shape<lue::Count, 2> const& partition_shape,
+    std::initializer_list<std::initializer_list<ConditionElement>> const& condition_elements,
+    std::initializer_list<std::initializer_list<IndexElement>> const& cell_index_elements,
+    IndexElement const index)
 {
-    using namespace lue::value_policies;
+    auto const condition = lue::test::create_partitioned_array<lue::PartitionedArray<ConditionElement, 2>>(
+        array_shape, partition_shape, condition_elements);
+    auto const result_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<IndexElement, 2>>(
+        array_shape, partition_shape, cell_index_elements);
+    auto const result_we_got = lue::value_policies::cell_index<IndexElement>(condition, index);
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
+}
 
-    lue::Shape<lue::Count, 2> const array_shape{3, 3};
-    lue::Shape<lue::Count, 2> const partition_shape{3, 3};
 
+BOOST_AUTO_TEST_CASE(single_partition)
+{
     using ConditionElement = std::uint8_t;
     using IndexElement = std::uint64_t;
 
-    auto const condition_nd{lue::no_data<ConditionElement>};
-    auto const index_nd{lue::no_data<IndexElement>};
+    auto const cx{lue::no_data<ConditionElement>};
+    auto const ix{lue::no_data<IndexElement>};
 
-    auto const condition = lue::test::create_partitioned_array<lue::PartitionedArray<ConditionElement, 2>>(
-        array_shape,
-        partition_shape,
+    test_cell_index<ConditionElement, IndexElement>(
+        {3, 3},
+        {3, 3},
+        // clang-format off
         {{
-            0,
-            condition_nd,
-            1,
-            1,
-            0,
-            1,
-            1,
-            condition_nd,
-            0,
-        }});
+            0, cx, 1,
+            1, 0, 1,
+            1, cx, 0,
+        }},
+        {{
+            ix, ix, 0,
+            1, ix, 1,
+            2, ix, ix,
+        }},  // clang-format on
+        0);
 
-    {
-        auto const result_we_want =
-            lue::test::create_partitioned_array<lue::PartitionedArray<IndexElement, 2>>(
-                array_shape,
-                partition_shape,
-                {{
-                    index_nd,
-                    index_nd,
-                    0,
-                    1,
-                    index_nd,
-                    1,
-                    2,
-                    index_nd,
-                    index_nd,
-                }});
+    test_cell_index<ConditionElement, IndexElement>(
+        {3, 3},
+        {3, 3},
+        // clang-format off
+        {{
+            0, cx, 1,
+            1, 0, 1,
+            1, cx, 0,
+        }},
+        {{
+            ix, ix, 2,
+            0, ix, 2,
+            0, ix, ix,
+        }},  // clang-format on
+        1);
+}
 
-        auto const result_we_got = lue::value_policies::cell_index<IndexElement>(condition, 0);
 
-        lue::test::check_arrays_are_equal(result_we_got, result_we_want);
-    }
+BOOST_AUTO_TEST_CASE(multiple_partitions)
+{
+    using ConditionElement = std::uint8_t;
+    using IndexElement = std::uint64_t;
 
-    {
-        auto const result_we_want =
-            lue::test::create_partitioned_array<lue::PartitionedArray<IndexElement, 2>>(
-                array_shape,
-                partition_shape,
-                {{
-                    index_nd,
-                    index_nd,
-                    2,
-                    0,
-                    index_nd,
-                    2,
-                    0,
-                    index_nd,
-                    index_nd,
-                }});
+    auto const cx{lue::no_data<ConditionElement>};
+    auto const ix{lue::no_data<IndexElement>};
 
-        auto const result_we_got = lue::value_policies::cell_index<IndexElement>(condition, 1);
+    test_cell_index<ConditionElement, IndexElement>(
+        {6, 6},
+        {3, 3},
+        // clang-format off
+        {
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+        },
+        {
+            {
+                ix, ix, 0,
+                1, ix, 1,
+                2, ix, ix,
+            },
+            {
+                ix, ix, 0,
+                1, ix, 1,
+                2, ix, ix,
+            },
+            {
+                ix, ix, 3,
+                4, ix, 4,
+                5, ix, ix,
+            },
+            {
+                ix, ix, 3,
+                4, ix, 4,
+                5, ix, ix,
+            },
+        },  // clang-format on
+        0);
 
-        lue::test::check_arrays_are_equal(result_we_got, result_we_want);
-    }
+    test_cell_index<ConditionElement, IndexElement>(
+        {6, 6},
+        {3, 3},
+        // clang-format off
+        {
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+            {
+                0, cx, 1,
+                1, 0, 1,
+                1, cx, 0,
+            },
+        },
+        {
+            {
+                ix, ix, 2,
+                0, ix, 2,
+                0, ix, ix,
+            },
+            {
+                ix, ix, 5,
+                3, ix, 5,
+                3, ix, ix,
+            },
+            {
+                ix, ix, 2,
+                0, ix, 2,
+                0, ix, ix,
+            },
+            {
+                ix, ix, 5,
+                3, ix, 5,
+                3, ix, ix,
+            },
+        },  // clang-format on
+        1);
 }

@@ -11,7 +11,9 @@ namespace lue {
         auto cell_index_partition(
             Policies const& policies,
             ConditionPartition const& condition_partition,
-            Index const dimension_idx) -> PartitionT<ConditionPartition, IndexElement>
+            Index const dimension_idx,
+            Index const idx_offset)
+            -> std::tuple<PartitionT<ConditionPartition, IndexElement>, hpx::future<Count>>
         {
             // TODO Generalize for all ranks and all dimension_idx values. Use mdspan?
             static_assert(rank<ConditionPartition> == 2);
@@ -24,15 +26,17 @@ namespace lue {
 
             lue_hpx_assert(condition_partition.is_ready());
 
-            return hpx::dataflow(
+            return hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 hpx::unwrapping(
-                    [policies, condition_partition, dimension_idx](
-                        Offset const& offset, ConditionData const& condition_data)
+                    [policies, condition_partition, dimension_idx, idx_offset](
+                        Offset const& offset,
+                        ConditionData const& condition_data) -> std::tuple<IndexPartition, Count>
                     {
                         HPX_UNUSED(condition_partition);
 
                         auto const partition_shape = condition_data.shape();
+                        Count count{};
                         IndexData index_data{partition_shape};
 
                         auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
@@ -55,13 +59,15 @@ namespace lue {
                                     {
                                         if (condition_data[idx])
                                         {
-                                            index_data[idx] = idx0;
+                                            index_data[idx] = idx_offset + idx0;
                                         }
                                     }
 
                                     ++idx;
                                 }
                             }
+
+                            count = std::get<1>(partition_shape);
                         }
                         else if (dimension_idx == 1)
                         {
@@ -78,18 +84,22 @@ namespace lue {
                                     }
                                     else
                                     {
-                                        index_data[idx] = idx1;
+                                        index_data[idx] = idx_offset + idx1;
                                     }
 
                                     ++idx;
                                 }
                             }
+
+                            count = std::get<0>(partition_shape);
                         }
 
-                        return IndexPartition{hpx::find_here(), offset, std::move(index_data)};
+                        IndexPartition partition{hpx::find_here(), offset, std::move(index_data)};
+
+                        return {std::move(partition), count};
                     }),
                 condition_partition.offset(),
-                condition_partition.data());
+                condition_partition.data()));
         }
 
 
@@ -105,6 +115,16 @@ namespace lue {
     }  // namespace detail::cell_index
 
 
+    /*!
+        @brief      Return an array with for each valid true value in @a condition, the cell index along the
+                    dimension @a dimension_idx
+        @ingroup    local_operation
+
+        All elements with a non-valid or false value in @a condition will become non-valid in the result.
+
+        Cell indices don't vary along the dimension @a dimension_idx. They range from [0,
+        array_shape[dimension_idx] - 1].
+    */
     template<typename Policies, Rank rank>
     auto cell_index(
         Policies const& policies,
@@ -117,6 +137,7 @@ namespace lue {
 
         using IndexElement = policy::OutputElementT<Policies, 0>;
         using IndexArray = PartitionedArray<IndexElement, rank>;
+        using IndexPartition = PartitionT<IndexArray>;
         using IndexPartitions = PartitionsT<IndexArray>;
 
         static_assert(std::is_integral_v<ConditionElement>);
@@ -129,16 +150,137 @@ namespace lue {
         Localities<rank> const& localities{condition.localities()};
         auto const& condition_partitions{condition.partitions()};
         IndexPartitions index_partitions{condition_partitions.shape()};
-        Count const nr_partitions{nr_elements(condition_partitions.shape())};
 
-        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+        // TODO Generalize for all ranks and all dimension_idx values. Use mdspan?
+        static_assert(rank == 2);
+
+        auto const shape_in_partitions = condition_partitions.shape();
+
+        if (dimension_idx == 0)
         {
-            index_partitions[partition_idx] = hpx::dataflow(
-                hpx::launch::async,
-                [locality_id = localities[partition_idx], action, policies, dimension_idx](
-                    ConditionPartition const& condition_partition)
-                { return action(locality_id, policies, condition_partition, dimension_idx); },
-                condition_partitions[partition_idx]);
+            // Spawn tasks for all partitions with idx 0 in the dimension at idx 0
+            Index const partition_idx0{0};
+            hpx::shared_future<Count> nr_elements0_f{};
+
+            IndexPartition partition{};
+            hpx::future<Count> nr_elements0_f_{};
+
+            for (Index partition_idx1 = 0; partition_idx1 < std::get<1>(shape_in_partitions);
+                 ++partition_idx1)
+            {
+                std::tie(partition, nr_elements0_f_) = hpx::split_future(hpx::dataflow(
+                    hpx::launch::async,
+                    [locality_id = localities(partition_idx0, partition_idx1),
+                     action,
+                     policies,
+                     dimension_idx](ConditionPartition const& condition_partition)
+                    {
+                        Index const offset{0};
+
+                        return action(locality_id, policies, condition_partition, dimension_idx, offset);
+                    },
+                    condition_partitions(partition_idx0, partition_idx1)));
+
+                index_partitions(partition_idx0, partition_idx1) = std::move(partition);
+
+                if (partition_idx1 == 0)
+                {
+                    nr_elements0_f = nr_elements0_f_.share();
+                }
+            }
+
+            // Given that we now know how many cells are in a partition, we can spawn tasks for all other
+            // partitions
+
+            for (Index partition_idx0 = 1; partition_idx0 < std::get<0>(shape_in_partitions);
+                 ++partition_idx0)
+            {
+                for (Index partition_idx1 = 0; partition_idx1 < std::get<1>(shape_in_partitions);
+                     ++partition_idx1)
+                {
+                    std::tie(partition, std::ignore) = hpx::split_future(hpx::dataflow(
+                        hpx::launch::async,
+                        [locality_id = localities(partition_idx0, partition_idx1),
+                         action,
+                         policies,
+                         dimension_idx,
+                         partition_idx0](
+                            ConditionPartition const& condition_partition,
+                            hpx::shared_future<Count> const& nr_elements)
+                        {
+                            Index const offset{partition_idx0 * nr_elements.get()};
+
+                            return action(locality_id, policies, condition_partition, dimension_idx, offset);
+                        },
+                        condition_partitions(partition_idx0, partition_idx1),
+                        nr_elements0_f));
+
+                    index_partitions(partition_idx0, partition_idx1) = std::move(partition);
+                }
+            }
+        }
+        else if (dimension_idx == 1)
+        {
+            // Spawn tasks for all partitions with idx 0 in the dimension at idx 1
+            Index const partition_idx1{0};
+            hpx::shared_future<Count> nr_elements1_f{};
+
+            IndexPartition partition{};
+            hpx::future<Count> nr_elements1_f_{};
+
+            for (Index partition_idx0 = 0; partition_idx0 < std::get<0>(shape_in_partitions);
+                 ++partition_idx0)
+            {
+                std::tie(partition, nr_elements1_f_) = hpx::split_future(hpx::dataflow(
+                    hpx::launch::async,
+                    [locality_id = localities(partition_idx0, partition_idx1),
+                     action,
+                     policies,
+                     dimension_idx](ConditionPartition const& condition_partition)
+                    {
+                        Index const offset{0};
+
+                        return action(locality_id, policies, condition_partition, dimension_idx, offset);
+                    },
+                    condition_partitions(partition_idx0, partition_idx1)));
+
+                index_partitions(partition_idx0, partition_idx1) = std::move(partition);
+
+                if (partition_idx0 == 0)
+                {
+                    nr_elements1_f = nr_elements1_f_.share();
+                }
+            }
+
+            // Given that we now know how many cells are in a partition, we can spawn tasks for all other
+            // partitions
+
+            for (Index partition_idx0 = 0; partition_idx0 < std::get<0>(shape_in_partitions);
+                 ++partition_idx0)
+            {
+                for (Index partition_idx1 = 1; partition_idx1 < std::get<1>(shape_in_partitions);
+                     ++partition_idx1)
+                {
+                    std::tie(partition, std::ignore) = hpx::split_future(hpx::dataflow(
+                        hpx::launch::async,
+                        [locality_id = localities(partition_idx0, partition_idx1),
+                         action,
+                         policies,
+                         dimension_idx,
+                         partition_idx1](
+                            ConditionPartition const& condition_partition,
+                            hpx::shared_future<Count> const& nr_elements)
+                        {
+                            Index const offset{partition_idx1 * nr_elements.get()};
+
+                            return action(locality_id, policies, condition_partition, dimension_idx, offset);
+                        },
+                        condition_partitions(partition_idx0, partition_idx1),
+                        nr_elements1_f));
+
+                    index_partitions(partition_idx0, partition_idx1) = std::move(partition);
+                }
+            }
         }
 
         return {shape(condition), localities, std::move(index_partitions)};
