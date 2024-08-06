@@ -17,3 +17,4 @@
 - [Zonal operations](#source-framework-algorithm-zonal)
 - [Global operations](#source-framework-algorithm-global)
 - [Routing operations](#source-framework-algorithm-routing)
+- [Array operations](#source-framework-algorithm-array)

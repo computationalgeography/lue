@@ -88,9 +88,15 @@ foreach(name IN ITEMS
     contribute/release.md
     example/index.md
     index.md
+
+    quick_start/index.md
+    quick_start/python.md
+    quick_start/cpp.md
+
     install/conda.md
     install/index.md
     install/source.md
+    manual/index.md
     manual/data_model/concept.md
     manual/data_model/format.md
     manual/data_model/index.md
@@ -101,6 +107,7 @@ foreach(name IN ITEMS
     manual/framework/scalability.md
     manual/view/index.md
     manual/glossary.md
+    reference/index.md
     reference/algorithm/clump.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md
@@ -111,6 +118,7 @@ foreach(name IN ITEMS
     reference/python/index.md
     references.bib
     short_description.md
+    pcraster/index.md
     pcraster/port.md
     pcraster/status.md
     reference/utility/index.md
@@ -150,6 +158,7 @@ foreach(name IN ITEMS
     framework/algorithm/doc/grouped_operation/global_operation.md
     framework/algorithm/doc/grouped_operation/routing_operation.md
     framework/algorithm/doc/grouped_operation/mathematical_operation.md
+    framework/algorithm/doc/grouped_operation/array_operation.md
     framework/algorithm/doc/grouped_operation/random_number_operation.md
 
     framework/partitioned_array/doc/index.md
