@@ -28,11 +28,24 @@ arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in
 """
 
 import enum
+from dataclasses import dataclass
 
 import numpy as np
 from osgeo import gdal
 
 import lue.framework as lfr
+
+
+@dataclass(kw_only=True)
+class BoundingBox:
+    """
+    Class for keeping track of the bounding box of a raster
+    """
+
+    north: float = 0.0
+    west: float = 0.0
+    south: float = 0.0
+    east: float = 0.0
 
 
 class Configuration(object):
@@ -43,10 +56,18 @@ class Configuration(object):
     the underlying array and the size of the raster cells. This class fulfills the same role.
     """
 
-    def __init__(self, array_shape=None, partition_shape=None, cell_size=None):
+    def __init__(
+        self,
+        *,
+        bounding_box=None,
+        cell_size=None,
+        array_shape=None,
+        partition_shape=None,
+    ):
+        self.bounding_box = bounding_box
+        self.cell_size = cell_size
         self.array_shape = array_shape
         self.partition_shape = partition_shape
-        self.cell_size = cell_size
 
 
 """
@@ -78,9 +99,18 @@ def setclone(pathname):
     assert cell_shape[0] == cell_shape[1]
     cell_size = cell_shape[0]
 
+    nr_rows, nr_cols = array_shape
+
+    west = geo_transform[0]
+    north = geo_transform[3]
+    east = west + nr_cols * cell_size
+    south = north - nr_rows * cell_size
+    bounding_box = BoundingBox(north=north, west=west, south=south, east=east)
+
+    configuration.bounding_box = bounding_box
+    configuration.cell_size = cell_size
     configuration.array_shape = array_shape
     configuration.partition_shape = partition_shape
-    configuration.cell_size = cell_size
 
 
 def clone():
@@ -255,6 +285,8 @@ def translate_window_length(pcraster_window_length):
     assert window_length > 0, window_length  # Must be positive
 
     window_length = int(window_length)
+
+    # assert window_length > 1, "Window lengths should be larger than one cell size"
 
     return window_length
 
@@ -1171,8 +1203,12 @@ def windowtotal(expression, window_length):
 
 def xcoordinate(expression):
     return (
-        lfr.cast(lfr.cell_index(defined(expression), 1), np.float32)
-        * configuration.cell_size
+        configuration.bounding_box.west
+        + 0.5 * configuration.cell_size
+        + (
+            lfr.cast(lfr.cell_index(defined(expression), 1), np.float32)
+            * configuration.cell_size
+        )
     )
 
 
@@ -1182,6 +1218,13 @@ def pcrxor(expression1, expression2):
 
 def ycoordinate(expression):
     return (
-        lfr.cast(lfr.cell_index(defined(expression), 0), np.float32)
-        * configuration.cell_size
+        configuration.bounding_box.south
+        + 0.5 * configuration.cell_size
+        + (
+            (
+                -lfr.cast(lfr.cell_index(defined(expression), 0), np.float32)
+                + (configuration.array_shape[0] - 1)
+            )
+            * configuration.cell_size
+        )
     )
