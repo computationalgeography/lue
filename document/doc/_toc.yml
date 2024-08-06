@@ -1,68 +1,63 @@
-# Table of contents
-# Learn more at https://jupyterbook.org/customize/toc.html
+# https://jupyterbook.org/en/stable/structure/toc.html
 
 format: jb-book
 root: index
 parts:
-  - caption: Manual
+  - caption: User
     chapters:
-    - file: install/index.md
+
+    - file: quick_start/index.md
       sections:
-      - file: install/conda.md
-      - file: install/source.md
-    - file: manual/data_model/index.md
+      - file: quick_start/python.md
+      - file: quick_start/cpp.md
+
+    - file: manual/index.md
       sections:
-      - file: manual/data_model/concept.md
-      - file: manual/data_model/format.md
-    - file: manual/framework/index.md
+      - file: manual/install/index.md
+        sections:
+        - file: manual/install/conda.md
+        - file: manual/install/source.md
+      - file: manual/data_model/index.md
+        sections:
+        - file: manual/data_model/concept.md
+        - file: manual/data_model/format.md
+      - file: manual/framework/index.md
+        sections:
+        - file: manual/framework/python/index.md
+        - file: manual/framework/cpp/index.md
+        - file: manual/framework/execute.md
+        - file: manual/framework/scalability.md
+      - file: manual/view/index.md
+      - file: manual/glossary.md
+
+    - file: reference/index.md
       sections:
-      - file: manual/framework/python/index.md
-      - file: manual/framework/cpp/index.md
-      - file: manual/framework/execute.md
-      - file: manual/framework/scalability.md
-    - file: manual/view/index.md
-    - file: manual/glossary.md
-  - caption: Reference
+      - file: reference/python/index.md
+      - file: reference/cpp/index.md
+      - file: reference/utility/index.md
+        sections:
+        - file: reference/utility/lue_calculate.md
+        - file: reference/utility/lue_scalability.md
+        - file: reference/utility/lue_translate.md
+        - file: reference/utility/lue_validate.md
+        - file: reference/utility/lue_view.md
+      - file: reference/algorithm/index.md
+        sections:
+        - file: reference/algorithm/clump.md
+
+    - file: pcraster/index.md
+      sections:
+      - file: pcraster/port.md
+      - file: pcraster/status.md
+
+  - caption: Developer
     chapters:
-    - file: reference/python/index.md
-    #   sections:
-    #   - file: reference/python/data_model/index.rst
-    #   - file: reference/python/data_model/hdf5/index.rst
-    #   - file: reference/python/framework/index.rst
-    # - file: reference/python/api/lue.rst
-    #   - url: file:///genindex.html
-    #     title: genindex
-    #   - url: file:///py-modindex.html
-    #     title: py-modindex
-    #   - url: file:///search.html
-    #     title: search
-    #   - file: reference/python/apidocs/index.rst
-    #   sections:
-    #   - file: reference/python/data_model/hdf5/file.rst
-    #   chapters:
-    #   - file: genindex.html
-    - file: reference/cpp/index.md
-    #   sections:
-    #   - file: reference/cpp/dataset.md
-    - file: reference/utility/index.md
-      sections:
-      - file: reference/utility/lue_calculate.md
-      - file: reference/utility/lue_scalability.md
-      - file: reference/utility/lue_translate.md
-      - file: reference/utility/lue_validate.md
-      - file: reference/utility/lue_view.md
-    - file: reference/algorithm/index.md
-      sections:
-      - file: reference/algorithm/clump.md
-  - caption: PCRaster
-    chapters:
-    - file: pcraster/port.md
-    - file: pcraster/status.md
-  - caption: Development
-    chapters:
+
     - file: contribute/index.md
-    - file: contribute/documentation.md
-    - file: contribute/release.md
+      sections:
+      - file: contribute/documentation.md
+      - file: contribute/release.md
+
     - file: source/doc/index.md
       sections:
       - file: source/data_model/doc/index.md
@@ -86,13 +81,17 @@ parts:
             - file: source/framework/algorithm/doc/grouped_operation/zonal_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/global_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/routing_operation.md
+            - file: source/framework/algorithm/doc/grouped_operation/array_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/mathematical_operation.md
             - file: source/framework/algorithm/doc/grouped_operation/random_number_operation.md
+        - file: source/framework/doc/test/index.md
         - file: source/framework/doc/howto/index.md
           sections:
           - file: source/framework/doc/howto/add_local_operation.md
+
   - caption: About
     chapters:
+
     - file: about/project.md
     - file: about/release.md
     - file: example/index.md

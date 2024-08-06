@@ -9,7 +9,7 @@ class RangePolicy
 {
     public:
 
-        auto within_range(InputElement const... element, OutputElement const result) -> bool;
+        auto within_range(InputElement const... value, OutputElement const result) -> bool;
 };
 
 ```

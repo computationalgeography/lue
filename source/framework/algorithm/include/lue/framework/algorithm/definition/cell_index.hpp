@@ -118,7 +118,7 @@ namespace lue {
     /*!
         @brief      Return an array with for each valid true value in @a condition, the cell index along the
                     dimension @a dimension_idx
-        @ingroup    local_operation
+        @ingroup    array_operation
 
         All elements with a non-valid or false value in @a condition will become non-valid in the result.
 

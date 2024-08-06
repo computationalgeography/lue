@@ -18,6 +18,12 @@ namespace lue::policy {
     using Elements = detail::TypeList<Element...>;
 
 
+    /*!
+        @brief      Primary class template for a class aggregating all algorithm policies
+        @tparam     DomainPolicy_ Domain policy class
+        @tparam     OutputsPolicies_ Policies related to zero or more outputs
+        @tparam     InputsPolicies_ Policies related to zero or more inputs
+    */
     template<typename DomainPolicy_, typename OutputsPolicies_, typename InputsPolicies_>
     class Policies
     {
@@ -29,6 +35,21 @@ namespace lue::policy {
             using OutputsPolicies = OutputsPolicies_;
 
             using InputsPolicies = InputsPolicies_;
+
+            /*!
+                @brief      Return the domain policy
+            */
+            auto domain_policy() const -> DomainPolicy const&;
+
+            /*!
+                @brief      Return the inputs policies
+            */
+            auto inputs_policies() const -> InputsPolicies const&;
+
+            /*!
+                @brief      Return the outputs policies
+            */
+            auto outputs_policies() const -> OutputsPolicies const&;
     };
 
 
@@ -40,6 +61,15 @@ namespace lue::policy {
     //         - NoDataFocusElementPolicy
 
 
+    /*!
+        @brief      Partial specialization of a class template for a class aggregating all algorithm policies
+        @tparam     DomainPolicy_ Domain policy class
+        @tparam     OutputsPolicies_ Policies related to the algorithm's output(s)
+        @tparam     InputsPolicies_ Policies related to the algorithm's input(s)
+
+        This specialization uses detail::TypeList to be able to separate between an unknown number of output
+        policies and an unknown number of input policies.
+    */
     template<typename DomainPolicy_, typename... OutputPolicy, typename... InputPolicy>
     class Policies<DomainPolicy_, detail::TypeList<OutputPolicy...>, detail::TypeList<InputPolicy...>>
     {
@@ -57,8 +87,8 @@ namespace lue::policy {
 
             Policies(
                 DomainPolicy const& domain_policy,
-                OutputPolicy... output_policies,
-                InputPolicy... input_policies):
+                OutputPolicy const&... output_policies,
+                InputPolicy const&... input_policies):
 
                 _dp{domain_policy},
                 _op{output_policies...},
@@ -67,17 +97,17 @@ namespace lue::policy {
             {
             }
 
-            DomainPolicy const& domain_policy() const
+            auto domain_policy() const -> DomainPolicy const&
             {
                 return _dp;
             }
 
-            InputsPolicies const& inputs_policies() const
+            auto inputs_policies() const -> InputsPolicies const&
             {
                 return _ip;
             }
 
-            OutputsPolicies const& outputs_policies() const
+            auto outputs_policies() const -> OutputsPolicies const&
             {
                 return _op;
             }

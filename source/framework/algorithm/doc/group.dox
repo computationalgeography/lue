@@ -25,3 +25,7 @@
 /*!
     @defgroup random_number_operation Random number operations
 */
+
+/*!
+    @defgroup array_operation Array operations
+*/
