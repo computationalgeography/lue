@@ -1,6 +1,6 @@
 # Game of Life in Python
 
-### Install
+## Install
 ```bash
 conda install -c conda-forge lue
 ```
@@ -8,7 +8,7 @@ conda install -c conda-forge lue
 See also [](#install-conda).
 
 
-### Implement
+## Implement
 
 
-### Execute
+## Execute

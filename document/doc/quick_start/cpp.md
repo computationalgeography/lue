@@ -1,15 +1,15 @@
 # Game of Life in C++
 
-### Install
+## Install
 
 TODO
 
 
-### Implement
+## Implement
 
 TODO
 
 
-### Execute
+## Execute
 
 TODO
