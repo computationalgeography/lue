@@ -1265,9 +1265,6 @@ BOOST_AUTO_TEST_CASE(random_input)
     std::random_device random_device{};
     std::default_random_engine random_number_engine(random_device());
 
-    // Shape const array_shape{10, 10};
-    // Shape const partition_shape{5, 5};
-
     Shape const array_shape = [&]()
     {
         lue::Count const min{100};
@@ -1332,9 +1329,6 @@ BOOST_AUTO_TEST_CASE(random_input)
         lue::create_partitioned_array(array_shape, partition_shape, functor);
 
     using namespace lue::value_policies;
-
-    // lue::wait_all(zone_array.partitions());
-    // hpx::cout << zone_array << std::endl;
 
     // Test whether clumping the different partitioned arrays result in the same number of clumps. If so,
     // merging clumps seems to have worked.

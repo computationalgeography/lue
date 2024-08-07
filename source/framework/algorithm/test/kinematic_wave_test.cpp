@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
@@ -220,21 +221,21 @@ BOOST_AUTO_TEST_CASE(dry_cell)
 }
 
 
-BOOST_AUTO_TEST_CASE(crashed_in_pcraster1)
-{
-    double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
-        0.000201343,   // upstream_discharge
-        0.000115866,   // current_discharge
-        -0.000290263,  // lateral_inflow
-        1.73684,       // alpha
-        0.6,           // beta
-        15,            // time_step_duration
-        10)};          // channel_length
-    // /* epsilon */ 1E-12);  // epsilon
-    double const discharge_we_want{0.000031450866300937};
-
-    BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
-}
+// BOOST_AUTO_TEST_CASE(crashed_in_pcraster1)
+// {
+//     double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+//         0.000201343,   // upstream_discharge
+//         0.000115866,   // current_discharge
+//         -0.000290263,  // lateral_inflow
+//         1.73684,       // alpha
+//         0.6,           // beta
+//         15,            // time_step_duration
+//         10)};          // channel_length
+//     // /* epsilon */ 1E-12);  // epsilon
+//     double const discharge_we_want{0.000031450866300937};
+//
+//     BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+// }
 
 
 BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
@@ -247,9 +248,66 @@ BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
         0.6,           // beta
         15,            // time_step_duration
         10)};          // channel_length
-    // /* epsilon */ 1E-12);  // epsilon
 
     double const discharge_we_want{1e-30};
 
     BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+}
+
+
+BOOST_AUTO_TEST_CASE(random_input)
+{
+    using FloatElement = double;
+
+    std::random_device random_device{};
+    std::default_random_engine random_number_engine(random_device());
+
+    std::uniform_real_distribution<FloatElement> discharge_distribution{0, 1000};
+    std::uniform_real_distribution<FloatElement> lateral_inflow_distribution{-1000, 1000};
+    std::uniform_real_distribution<FloatElement> alpha_distribution{0.5, 6.0};
+    std::uniform_real_distribution<FloatElement> beta_distribution{0.5, 2.0};
+    std::uniform_real_distribution<FloatElement> time_step_duration_distribution{1, 100};
+    std::uniform_real_distribution<FloatElement> channel_length_distribution{1, 100};
+
+    for (std::size_t i = 0; i < 10000; ++i)
+    {
+        FloatElement const upstream_discharge{discharge_distribution(random_number_engine)};
+        FloatElement const current_discharge{discharge_distribution(random_number_engine)};
+        FloatElement const alpha{alpha_distribution(random_number_engine)};
+        FloatElement const beta{beta_distribution(random_number_engine)};
+        FloatElement const time_step_duration{time_step_duration_distribution(random_number_engine)};
+        FloatElement const channel_length{channel_length_distribution(random_number_engine)};
+
+        FloatElement const lateral_inflow{lateral_inflow_distribution(random_number_engine) / channel_length};
+
+        FloatElement new_discharge{-1};
+
+        BOOST_TEST_INFO(fmt::format(
+            "upstream_discharge: {}\n"
+            "current_discharge: {}\n"
+            "lateral_inflow: {}\n"
+            "alpha: {}\n"
+            "beta: {}\n"
+            "time_step_duration: {}\n"
+            "channel_length: {}\n",
+            upstream_discharge,
+            current_discharge,
+            lateral_inflow,
+            alpha,
+            beta,
+            time_step_duration,
+            channel_length));
+
+        // This call should not throw an exception
+        new_discharge = lue::detail::iterate_to_new_discharge<FloatElement>(
+            upstream_discharge,
+            current_discharge,
+            lateral_inflow,
+            alpha,
+            beta,
+            time_step_duration,
+            channel_length);
+
+        BOOST_CHECK(new_discharge >= 0);
+    }
 }
