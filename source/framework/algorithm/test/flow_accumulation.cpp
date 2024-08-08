@@ -126,17 +126,21 @@ namespace lue::test {
     {
         using Shape = ShapeT<FlowDirectionArray>;
 
-        Shape array_shape{{5, 5}};
-        Shape partition_shape{{5, 5}};
+        Shape const array_shape{{5, 5}};
+        Shape const partition_shape{{5, 5}};
 
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,
-            {
-                {
-                    s, s, s, sw, sw, s, s, sw, sw, sw, se, s, sw, w, sw, se, s, sw, w, w, e, p, w, w, w,
-                },
-            });
+            // clang-format off
+            {{
+                 s,  s,  s, sw, sw,
+                 s,  s, sw, sw, sw,
+                se,  s, sw,  w, sw,
+                se,  s, sw,  w,  w,
+                 e,  p,  w,  w,  w,
+            }}  // clang-format on
+        );
     }
 
 

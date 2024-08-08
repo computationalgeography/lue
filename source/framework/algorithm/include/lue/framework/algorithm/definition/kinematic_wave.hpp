@@ -4,6 +4,8 @@
 #include "lue/framework/algorithm/kinematic_wave.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
+#include <limits>
+// #define BOOST_MATH_INSTRUMENT
 #include <boost/math/tools/roots.hpp>
 #include <fmt/format.h>
 #include <cmath>
@@ -21,7 +23,7 @@ namespace lue {
                 NonLinearKinematicWave(
                     Float const upstream_discharge,
                     Float const current_discharge,
-                    Float const inflow,
+                    Float const lateral_inflow,
                     Float const alpha,
                     Float const beta,
                     Float const time_step_duration,
@@ -29,45 +31,59 @@ namespace lue {
 
                     _upstream_discharge{upstream_discharge},
                     _current_discharge{current_discharge},
-                    _inflow{inflow},
+                    _lateral_inflow{lateral_inflow},
                     _alpha{alpha},
                     _beta{beta},
+                    _alpha_beta{_alpha * _beta},
                     _time_step_duration{time_step_duration}
 
                 {
+                    lue_hpx_assert(_upstream_discharge >= Float{0});
+                    lue_hpx_assert(_current_discharge >= Float{0});
+                    lue_hpx_assert(_upstream_discharge + _current_discharge + _lateral_inflow > Float{0});
+                    lue_hpx_assert(_alpha > Float{0});
+                    lue_hpx_assert(_beta > Float{0});
+                    lue_hpx_assert(_time_step_duration > Float{0});
+                    lue_hpx_assert(channel_length > Float{0});
+
                     // Known terms, independent of new discharge
                     _time_step_duration_over_channel_length = _time_step_duration / channel_length;
 
-                    lue_hpx_assert(_time_step_duration_over_channel_length > Float{0});
-
                     _known_terms = _time_step_duration_over_channel_length * _upstream_discharge +
                                    _alpha * std::pow(_current_discharge, _beta) +
-                                   _time_step_duration * _inflow;
+                                   _time_step_duration * _lateral_inflow;
                 }
 
 
                 /*!
                     @brief      Return a valid initial guess for the new discharge
+
+                    Note that fq is only defined for discharges larger than zero. In case the initial guess
+                    ends up being zero or negative, a small positive value is returned.
                 */
-                Float guess() const
+                auto guess() const -> Float
                 {
                     // Small, but not zero!
-                    Float discharge_guess{1e-30};
+                    static Float const min_discharge{std::numeric_limits<Float>::min()};
+                    Float discharge_guess{min_discharge};
 
                     // pow(0, -) is not defined
-                    if (_current_discharge + _upstream_discharge > Float{0})
+                    if ((_current_discharge + _upstream_discharge != Float{0}) || _beta >= Float{1})
                     {
                         Float const a_b_pq =
-                            _alpha * _beta *
+                            _alpha_beta *
                             std::pow((_current_discharge + _upstream_discharge) / Float{2}, _beta - Float{1});
 
                         lue_hpx_assert(!std::isnan(a_b_pq));
 
-                        discharge_guess = (_time_step_duration_over_channel_length * _upstream_discharge +
-                                           a_b_pq * _current_discharge + _time_step_duration * _inflow) /
-                                          (_time_step_duration_over_channel_length + a_b_pq);
+                        discharge_guess =
+                            (_time_step_duration_over_channel_length * _upstream_discharge +
+                             a_b_pq * _current_discharge + _time_step_duration * _lateral_inflow) /
+                            (_time_step_duration_over_channel_length + a_b_pq);
 
                         lue_hpx_assert(!std::isnan(discharge_guess));
+
+                        discharge_guess = std::max<Float>(discharge_guess, min_discharge);
                     }
 
                     lue_hpx_assert(discharge_guess > Float{0});
@@ -76,39 +92,47 @@ namespace lue {
                 }
 
 
-                std::pair<Float, Float> operator()(Float const new_discharge) const
+                auto operator()(Float const new_discharge) const -> std::pair<Float, Float>
                 {
                     return std::make_pair(fq(new_discharge), dfq(new_discharge));
                 }
 
 
-                Float fq(Float const new_discharge) const
+                auto fq(Float const new_discharge) const -> Float
                 {
+                    lue_hpx_assert(new_discharge > Float{0});  // pow(0, -) is not defined
+
                     return _time_step_duration_over_channel_length * new_discharge +
                            _alpha * std::pow(new_discharge, _beta) - _known_terms;
                 }
 
 
-                Float dfq(Float const new_discharge) const
+                auto dfq(Float const new_discharge) const -> Float
                 {
                     lue_hpx_assert(new_discharge > Float{0});  // pow(0, -) is not defined
 
                     return _time_step_duration_over_channel_length +
-                           _alpha * _beta * std::pow(new_discharge, _beta - Float{1});
+                           _alpha_beta * std::pow(new_discharge, _beta - Float{1});
                 }
 
 
             private:
 
+                //! Updated / new discharge in the upstream cell
                 Float _upstream_discharge;
 
+                //! Current / previous discharge in the current cell
                 Float _current_discharge;
 
-                Float _inflow;
+                //! Lateral inflow
+                Float _lateral_inflow;
 
                 Float _alpha;
 
+                //! Momentum coefficient / Boussinesq coefficient [1.01, 1.33] (Chow, p278)
                 Float _beta;
+
+                Float _alpha_beta;
 
                 Float _time_step_duration;
 
@@ -122,53 +146,107 @@ namespace lue {
         Float iterate_to_new_discharge(
             Float const upstream_discharge,  // Summed discharge for cells draining into current cell
             Float const current_discharge,
-            Float const inflow,
+            Float const lateral_inflow,
             Float const alpha,
             Float const beta,
             Float const time_step_duration,
             Float const channel_length)
         {
-            if (upstream_discharge + current_discharge + inflow == 0)
+            lue_hpx_assert(upstream_discharge >= Float{0});
+            lue_hpx_assert(current_discharge >= Float{0});
+            lue_hpx_assert(alpha >= Float{0});
+            lue_hpx_assert(beta >= Float{0});
+            lue_hpx_assert(time_step_duration > Float{0});
+            lue_hpx_assert(channel_length > Float{0});
+
+            // Lateral inflow can represent two things:
+            // - Actual inflow from an external source (positive value): e.g.: precepitation
+            // - Potential extraction to an internal sink (negative value): e.g.: infiltration, pumping
+            //
+            // Inflow:
+            // Add the amount of water to the discharge computed
+            //
+            // Extraction:
+            // Subtract as much water from the discharge computed as possible. To allow for water balance
+            // checks, we should output the actual amount of water that got extracted from the cell. This is
+            // the difference between the discharge computed and the potential extraction passed in.
+            // https://github.com/computationalgeography/lue/issues/527
+
+            Float new_discharge{0};
+
+            if (upstream_discharge + current_discharge > 0 || lateral_inflow > 0)
             {
-                // It's a dry place. No need to do anything fancy.
-                return Float{0};
-            }
+                // The cell receives water, from upstream and/or from an external source
+                Float const inflow = lateral_inflow >= 0 ? lateral_inflow : Float{0};
 
-            NonLinearKinematicWave<Float> kinematic_wave{
-                upstream_discharge,
-                current_discharge,
-                inflow,
-                alpha,
-                beta,
-                time_step_duration,
-                channel_length};
+                NonLinearKinematicWave<Float> kinematic_wave{
+                    upstream_discharge,
+                    current_discharge,
+                    inflow,
+                    alpha,
+                    beta,
+                    time_step_duration,
+                    channel_length};
 
-            Float const discharge_guess{kinematic_wave.guess()};
+                Float const discharge_guess{kinematic_wave.guess()};
 
-            // These brackets are crucial for obtaining a good performance
-            Float const min_discharge{discharge_guess < Float{1} ? Float{0} : discharge_guess / Float{1000}};
-            Float const max_discharge{
-                discharge_guess < Float{1} ? Float{1000} : Float{1000} * discharge_guess};
+                // "If the function is 'Really Well Behaved' (is monotonic and has only one root) the bracket
+                // bounds min and max may as well be set to the widest limits"
+                Float const min_discharge{0};
+                Float const max_discharge{std::numeric_limits<Float>::max()};
+                int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
 
-            int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
+                // In general, 2-3 iterations are enough. In rare cases more are needed. The unit tests don't
+                // seem to reach 8, so max 10 should be enough. This max is used in special cases:
+                // - upstream_discharge + current_discharge == 0 and beta <  1
+                std::uintmax_t const max_nr_iterations{10};
+                std::uintmax_t actual_nr_iterations{max_nr_iterations};
 
-            std::uintmax_t const max_nr_iterations{20};
-            std::uintmax_t nr_iterations{max_nr_iterations};
-
-            Float new_discharge = boost::math::tools::newton_raphson_iterate(
-                kinematic_wave, discharge_guess, min_discharge, max_discharge, digits, nr_iterations);
-
-            if (nr_iterations == max_nr_iterations)
-            {
-                throw std::runtime_error(fmt::format(
-                    "Iterating to a solution took more iterations than expected (initial guess: {}, "
-                    "brackets: [{}, {}])",
+                // https://www.boost.org/doc/libs/1_85_0/libs/math/doc/html/math_toolkit/roots_deriv.html
+                // std::cout.precision(std::numeric_limits<Float>::digits10);
+                new_discharge = boost::math::tools::newton_raphson_iterate(
+                    kinematic_wave,
                     discharge_guess,
                     min_discharge,
-                    max_discharge));
+                    max_discharge,
+                    digits,
+                    actual_nr_iterations);
+
+                // TODO We can't throw an exception as this actually happens once in a while
+                // https://github.com/computationalgeography/lue/issues/703
+                // if (actual_nr_iterations == max_nr_iterations)
+                // {
+                //     // This only seems to happen when upstream_discharge == 0, current_discharge == 0, and
+                //     // lateral_inflow > 0
+                //     throw std::runtime_error(fmt::format(
+                //         "Iterating to a solution took more iterations than expected: "
+                //         "    upstream discharge: {}, "
+                //         "    current discharge: {}, "
+                //         "    lateral inflow: {}, "
+                //         "    alpha: {}, "
+                //         "    beta: {}, "
+                //         "    time step duration: {}, "
+                //         "    channel length: {}, "
+                //         "    initial guess: {}",
+                //         upstream_discharge,
+                //         current_discharge,
+                //         inflow,
+                //         alpha,
+                //         beta,
+                //         time_step_duration,
+                //         channel_length,
+                //         discharge_guess));
+                // }
             }
 
-            lue_hpx_assert(nr_iterations < max_nr_iterations);
+            if (lateral_inflow < Float{0})
+            {
+                // Convert units: m³ / m / s → m³ / s
+                Float const extraction{std::min(channel_length * std::abs(lateral_inflow), new_discharge)};
+
+                new_discharge -= extraction;
+            }
+
             lue_hpx_assert(new_discharge >= Float{0});
 
             return new_discharge;
