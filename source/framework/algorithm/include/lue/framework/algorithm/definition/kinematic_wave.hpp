@@ -64,7 +64,6 @@ namespace lue {
                 auto guess() const -> Float
                 {
                     // Small, but not zero!
-                    // TODO static Float const min_discharge{1e-30};
                     static Float const min_discharge{std::numeric_limits<Float>::min()};
                     Float discharge_guess{min_discharge};
 
@@ -153,6 +152,13 @@ namespace lue {
             Float const time_step_duration,
             Float const channel_length)
         {
+            lue_hpx_assert(upstream_discharge >= Float{0});
+            lue_hpx_assert(current_discharge >= Float{0});
+            lue_hpx_assert(alpha >= Float{0});
+            lue_hpx_assert(beta >= Float{0});
+            lue_hpx_assert(time_step_duration > Float{0});
+            lue_hpx_assert(channel_length > Float{0});
+
             // Lateral inflow can represent two things:
             // - Actual inflow from an external source (positive value): e.g.: precepitation
             // - Potential extraction to an internal sink (negative value): e.g.: infiltration, pumping
@@ -184,13 +190,15 @@ namespace lue {
 
                 Float const discharge_guess{kinematic_wave.guess()};
 
-                // These brackets are crucial for obtaining a good performance
+                // "If the function is 'Really Well Behaved' (is monotonic and has only one root) the bracket
+                // bounds min and max may as well be set to the widest limits"
                 Float const min_discharge{0};
                 Float const max_discharge{std::numeric_limits<Float>::max()};
                 int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
 
                 // In general, 2-3 iterations are enough. In rare cases more are needed. The unit tests don't
-                // seem to reach 8, so max 10 should be enough.
+                // seem to reach 8, so max 10 should be enough. This max is used in special cases:
+                // - upstream_discharge + current_discharge == 0 and beta <  1
                 std::uintmax_t const max_nr_iterations{10};
                 std::uintmax_t actual_nr_iterations{max_nr_iterations};
 
@@ -204,14 +212,30 @@ namespace lue {
                     digits,
                     actual_nr_iterations);
 
+                // TODO We can't throw an exception as this actually happens once in a while
+                // https://github.com/computationalgeography/lue/issues/703
                 // if (actual_nr_iterations == max_nr_iterations)
                 // {
+                //     // This only seems to happen when upstream_discharge == 0, current_discharge == 0, and
+                //     // lateral_inflow > 0
                 //     throw std::runtime_error(fmt::format(
-                //         "Iterating to a solution took more iterations than expected (initial guess: {}, "
-                //         "brackets: [{}, {}])",
-                //         discharge_guess,
-                //         min_discharge,
-                //         max_discharge));
+                //         "Iterating to a solution took more iterations than expected: "
+                //         "    upstream discharge: {}, "
+                //         "    current discharge: {}, "
+                //         "    lateral inflow: {}, "
+                //         "    alpha: {}, "
+                //         "    beta: {}, "
+                //         "    time step duration: {}, "
+                //         "    channel length: {}, "
+                //         "    initial guess: {}",
+                //         upstream_discharge,
+                //         current_discharge,
+                //         inflow,
+                //         alpha,
+                //         beta,
+                //         time_step_duration,
+                //         channel_length,
+                //         discharge_guess));
                 // }
             }
 

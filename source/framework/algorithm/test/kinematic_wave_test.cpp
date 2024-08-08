@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
         15,            // time_step_duration
         10)};          // channel_length
 
-    double const discharge_we_want{1e-30};
+    double const discharge_we_want{std::numeric_limits<double>::min()};
 
     BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
 }
