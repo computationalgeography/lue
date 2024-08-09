@@ -3,20 +3,20 @@
 
 namespace lue {
     namespace policy::modulus {
-    
-    template<typename OutputElement, typename InputElement>
+
+    template<typename Element>
     using DefaultValuePolicies = policy::DefaultValuePolicies<
-            DomainPolicy<InputElement>,
-            OutputElements<OutputElement>,
-            InputElements<InputElement, InputElement>>;
+            DomainPolicy<Element>,
+            OutputElements<Element>,
+            InputElements<Element, Element>>;
 
     }  // namespace policy::modulus
 
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
-            modulus, detail::Modulus, policy::modulus::DefaultValuePolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            modulus, policy::modulus::DefaultValuePolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(%, modulus)
 
     }  // namespace value_policies

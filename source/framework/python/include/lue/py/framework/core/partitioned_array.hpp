@@ -10,6 +10,7 @@
 #include "lue/framework/algorithm/value_policies/logical_exclusive_or.hpp"
 #include "lue/framework/algorithm/value_policies/logical_inclusive_or.hpp"
 #include "lue/framework/algorithm/value_policies/logical_not.hpp"
+#include "lue/framework/algorithm/value_policies/modulus.hpp"
 #include "lue/framework/algorithm/value_policies/multiply.hpp"
 #include "lue/framework/algorithm/value_policies/negate.hpp"
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
@@ -307,6 +308,34 @@ namespace lue::framework {
                 "__invert__",
                 [](Array const& self) { return logical_not<BooleanElement>(self); },
                 pybind11::is_operator());
+
+            // a % b
+            class_
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, Array const& argument2)
+                    { return modulus(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, Element const argument2)
+                    { return modulus(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, Scalar const& argument2)
+                    { return modulus(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__rmod__",
+                    [](Array const& argument2, Element const argument1)
+                    { return modulus(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__rmod__",
+                    [](Array const& argument2, Scalar const& argument1)
+                    { return modulus(argument1, argument2); },
+                    pybind11::is_operator());
         }
 
         if constexpr (std::is_floating_point_v<Element>)

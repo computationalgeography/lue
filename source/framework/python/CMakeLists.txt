@@ -75,6 +75,7 @@ add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/modulus.cpp
     src/algorithm/local_operation/multiply.cpp
     src/algorithm/local_operation/negate.cpp
     src/algorithm/local_operation/not_equal_to.cpp

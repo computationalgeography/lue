@@ -174,3 +174,16 @@ class CreatePartitionedArrayTest(OperationTest):
         for type_ in self.integral_types:
             array = self.array[type_]
             _ = ~array
+
+    @lue_test.framework_test_case
+    def test_operator_mod_overloads(self):
+        for type_ in self.integral_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array % array
+            _ = array % scalar
+            _ = array % value
+            _ = scalar % array
+            _ = value % array
