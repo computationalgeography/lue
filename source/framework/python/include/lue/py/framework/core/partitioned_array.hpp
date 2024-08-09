@@ -10,6 +10,7 @@
 #include "lue/py/framework/algorithm/logical_exclusive_or.hpp"
 #include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
 #include "lue/py/framework/algorithm/logical_not.hpp"
+#include "lue/py/framework/algorithm/modulus.hpp"
 #include "lue/py/framework/algorithm/multiply.hpp"
 #include "lue/py/framework/algorithm/negate.hpp"
 #include "lue/py/framework/algorithm/not_equal_to.hpp"
@@ -327,6 +328,34 @@ namespace lue::framework {
                 "__invert__",
                 [](Array const& argument) { return lfr::logical_not<ElementT<Array>, rank>(argument); },
                 pybind11::is_operator());
+
+            // a % b
+            class_
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, Array const& argument2)
+                    { return lfr::modulus<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, Element const argument2)
+                    { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__mod__",
+                    [](Array const& argument1, ElementF const& argument2)
+                    { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__rmod__",
+                    [](Array const& argument2, Element const argument1)
+                    { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__rmod__",
+                    [](Array const& argument2, ElementF const& argument1)
+                    { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
+                    pybind11::is_operator());
         }
 
         if constexpr (std::is_floating_point_v<Element>)
