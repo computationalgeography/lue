@@ -60,6 +60,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
     src/algorithm/multiply.cpp
+    src/algorithm/modulus.cpp
     src/algorithm/normal.cpp
     src/algorithm/not_equal_to.cpp
     src/algorithm/pow.cpp

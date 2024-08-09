@@ -11,9 +11,7 @@ namespace lue {
         {
             public:
 
-            static_assert(
-                        std::is_integral_v<InputElement>,
-                        "Input arguments for modulus must be an integral type");
+                static_assert(std::is_integral_v<InputElement>);
 
                 using OutputElement = OutputElement_;
 

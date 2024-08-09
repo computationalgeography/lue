@@ -139,3 +139,12 @@ class CreatePartitionedArrayTest(lue_test.TestCase):
     def test_operator_negate(self):
         array = self.array
         tmp = -array
+    
+    @lue_test.framework_test_case
+    def test_operator_mod_overloads(self):
+        array, value, value_f = self.array, self.value, self.value_f
+        tmp = array % array
+        tmp = array % value
+        tmp = array % value_f
+        tmp = value % array
+        tmp = value_f % array
