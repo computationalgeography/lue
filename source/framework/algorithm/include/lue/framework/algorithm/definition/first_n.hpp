@@ -126,7 +126,7 @@ namespace lue {
                         // std::shared_lock read_lock{_walk_mutex, std::defer_lock};
                         std::unique_lock write_lock{_walk_mutex, std::defer_lock};
 
-                        // First, do stuff, *using* state veriables. Don't change stuff that
+                        // First, do stuff, *using* state variables. Don't change stuff that
                         // is shared between threads. Changing different cells in a raster
                         // is fine, just don't change the same values.
                         // TODO read_lock.lock();
@@ -459,7 +459,7 @@ namespace lue {
         using WalkComponentServer = detail::first_n::server::Walk<Policies, rank>;
 
         // TODO
-        // Since a partioned array currently caches locality IDs, we need to retrieve them,
+        // Since a partitioned array currently caches locality IDs, we need to retrieve them,
         // unfortunately. The localities stuff can be removed once arrays don't cache locality
         // IDs anymore.
 

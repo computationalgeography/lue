@@ -24,7 +24,7 @@ endif()
 if(LUE_BUILD_DOCUMENTATION)
     ### edit_data_model_graphs(
     ###     TARGET data_model_graphs
-    ###     DESTINATIONS editted_dot_graphs
+    ###     DESTINATIONS edited_dot_graphs
     ###     TEMPLATE
     ###         logical_data_model
     ###     OBJECTS
@@ -48,7 +48,7 @@ if(LUE_BUILD_DOCUMENTATION)
     ###         doc/space_domain_taxonomy.dot
     ###         doc/time_domain_taxonomy.dot
     ###         doc/value_taxonomy.dot
-    ###         ${editted_dot_graphs}
+    ###         ${edited_dot_graphs}
     ### )
 
     ### add_custom_target(copy_svg_files

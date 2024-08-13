@@ -7,3 +7,16 @@ profile = "black"
 [tool.codespell]
 skip = "*.cpp,*.hpp,*.tex,*_test.py,pyproject.toml"
 ignore-words-list = "nD"
+
+[tool.typos]
+
+# [tool.typos.default]
+default.extend-ignore-identifiers-re = [
+    ".*_FPR_.*",
+    "InputElemenT",
+    "nd",
+    "ND",
+]
+default.extend-ignore-words-re = [
+    "PN",
+]

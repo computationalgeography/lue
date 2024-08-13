@@ -455,7 +455,7 @@ namespace lue {
                                 // max_nr_cells), to record remaining values. We need to insert
                                 // our new maximum value back to the downstream_maxima collection.
 
-                                // Grab new maximum. This is the first one in our colleciton.
+                                // Grab new maximum. This is the first one in our collection.
                                 Value const new_maximum = std::get<0>(local_values[0]);
 
                                 lue_hpx_assert(new_maximum < std::get<0>(downstream_maxima.front()));

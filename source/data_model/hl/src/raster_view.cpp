@@ -210,7 +210,7 @@ namespace lue::data_model {
             @brief      Construct an instance
             @param      dataset Dataset to manage
 
-            It is assumed that @a dataset is already layed out per this class'
+            It is assumed that @a dataset is already laid out per this class'
             conventions. Typically, it is the result of calling
             create_raster_view(), or similar.
         */
@@ -440,7 +440,7 @@ namespace lue::data_model {
             @brief      Construct an instance
             @param      dataset Dataset to manage
 
-            It is assumed that @a dataset is already layed out per this class'
+            It is assumed that @a dataset is already laid out per this class'
             conventions. Typically, it is the result of calling
             create_raster_view(), or similar.
         */

@@ -77,7 +77,7 @@ namespace lue {
                 void save(hdf5::Attributes& attributes) const;
 
                 /*!
-                    @brief      Return wheter @a lhs equals @a rhs
+                    @brief      Return whether @a lhs equals @a rhs
 
                     Configuration instances are considered equal when their collections
                     of aspects are equal.

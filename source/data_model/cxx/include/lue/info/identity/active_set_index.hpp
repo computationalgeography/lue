@@ -14,7 +14,7 @@ namespace lue {
             can be stored using the ActiveID class.
 
             Tracking the indices of active sets is needed in combination with
-            the folowing array kinds:
+            the following array kinds:
             - same_shape::constant_shape::Value
             - same_shape::variable_shape::Value
             - different_shape::constant_shape::Value

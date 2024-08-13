@@ -239,7 +239,7 @@ namespace lue {
                 std::stringstream stream;
                 stream << "(";
 
-                // Prevent seperator at end of string.
+                // Prevent separator at end of string.
                 if (!shape.empty())
                 {
                     std::copy(

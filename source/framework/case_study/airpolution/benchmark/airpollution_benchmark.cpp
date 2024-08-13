@@ -1,4 +1,4 @@
-#include "polute_air.hpp"
+#include "pollute_air.hpp"
 #include "lue/framework/benchmark/benchmark.hpp"
 #include "lue/framework/benchmark/hpx_main.hpp"
 
@@ -21,7 +21,7 @@ auto setup_benchmark(
         std::copy(task.partition_shape().begin(), task.partition_shape().end(), partition_shape.begin());
 
         lue_assert(!environment.max_tree_depth());
-        lue::polute_air(task.nr_time_steps(), array_shape, partition_shape);
+        lue::pollute_air(task.nr_time_steps(), array_shape, partition_shape);
     };
 
     return lue::benchmark::Benchmark{std::move(callable), environment, task};

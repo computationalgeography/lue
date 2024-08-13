@@ -158,7 +158,7 @@ namespace lue {
 
 
     /*!
-      @brief      Determine the D8 flow direction in each cell ofr the array passed in
+      @brief      Determine the D8 flow direction in each cell for the array passed in
       @ingroup    routing_operation
     */
     template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>

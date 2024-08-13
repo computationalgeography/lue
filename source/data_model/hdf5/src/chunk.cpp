@@ -40,7 +40,7 @@ namespace lue {
             dataset. The resulting shape has one additional dimension, representing
             the (domain) items for which values are stored.
 
-            The folowing guidelines are implemented:
+            The following guidelines are implemented:
             - Try to express the 'natural' access pattern
             - Don't make the shapes too small
             - Don't make the shapes too large

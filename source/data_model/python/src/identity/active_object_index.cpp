@@ -43,7 +43,7 @@ namespace lue {
     :class:`ActiveSetIndex` instance.
 
     Use this class when, for each object, object arrays are stored in
-    a seperate value array. This is the case when storing object arrays
+    a separate value array. This is the case when storing object arrays
     whose shape is different per object, but constant through time
     (:class:`different_shape.constant_shape.Value`).
 

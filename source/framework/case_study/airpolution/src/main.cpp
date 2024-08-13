@@ -1,4 +1,4 @@
-#include "polute_air.hpp"
+#include "pollute_air.hpp"
 #include "lue/framework/core/configuration_entry.hpp"
 #include <hpx/hpx_init.hpp>
 
@@ -18,7 +18,7 @@ int hpx_main(int const /* argc */, char* /* argv */[])
     Shape const array_shape = lue::required_configuration_entry<Shape>("array_shape");
     Shape const partition_shape = lue::required_configuration_entry<Shape>("partition_shape");
 
-    lue::polute_air(nr_time_steps, array_shape, partition_shape);
+    lue::pollute_air(nr_time_steps, array_shape, partition_shape);
 
     return hpx::finalize();
 }
@@ -33,7 +33,7 @@ int main(int const argc, char* argv[])
     std::vector<std::string> cfg = {
         // // Run hpx_main on all localities
         // "hpx.run_hpx_main!=1",
-        // "application.lue_polute_air.mah!=1"
+        // "application.lue_pollute_air.mah!=1"
     };
 
     return hpx::init(argc, argv, cfg);

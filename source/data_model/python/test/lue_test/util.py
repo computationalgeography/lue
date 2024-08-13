@@ -1,7 +1,7 @@
 import os
 
 
-def remove_file_if_existant(pathname):
+def remove_file_if_existent(pathname):
     if os.path.isfile(pathname):
         os.remove(pathname)
 

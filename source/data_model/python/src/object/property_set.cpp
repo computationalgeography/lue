@@ -371,7 +371,7 @@ namespace lue {
     Class aggregating a time domain, space domain, and properties of a
     set of objects
 
-    The information stored in a property-set is a consistant whole. In
+    The information stored in a property-set is a consistent whole. In
     case a time domain is present, and a space domain is present and
     one or more properties are present, then for each location in time
     and for each active object, a location in space is stored, and

@@ -756,7 +756,7 @@ namespace lue {
 
                 // TODO(KDJ) Actually, if we allow boxes to overlap, we should test the
                 //      start coordinates and end coordinates of the boxes
-                //      seperately. A start coordinate of a next box can be
+                //      separately. A start coordinate of a next box can be
                 //      smaller than an end coordinate of a previous box.
                 assert_increasing(time_box.id(), boxes, issues);
             }
@@ -795,7 +795,7 @@ namespace lue {
 
                 // TODO(KDJ) Actually, if we allow boxes to overlap, we should test the
                 //      start coordinates and end coordinates of the boxes
-                //      seperately. A start coordinate of a next box can be
+                //      separately. A start coordinate of a next box can be
                 //      smaller than an end coordinate of a previous box.
                 assert_increasing(time_cell.id(), boxes, issues);
             }
@@ -1572,7 +1572,7 @@ namespace lue {
                                             }
 
                                             // TODO(KDJ) The presence property's value must contain
-                                            // unsigned integers (= convertable to boolean)
+                                            // unsigned integers (= convertible to boolean)
 
                                             break;
                                         }

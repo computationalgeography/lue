@@ -76,7 +76,7 @@ namespace lue {
     necessary, to be able to interpret the origin string, a calendar
     can be passed in also.
 
-    The origin and calendar are not used internally. They are usefull for
+    The origin and calendar are not used internally. They are useful for
     clients that need to translate locations in time to more user-friendly
     formats.
 )");

@@ -256,7 +256,7 @@ namespace lue {
             ReadPartition<Element> partition_reader{
                 std::move(dataset_ptr), std::make_shared<Band>(std::move(band_ptr))};
 
-            // Asynchronously read all partitions, *one after the other*. Partitions read can immidiately
+            // Asynchronously read all partitions, *one after the other*. Partitions read can immediately
             // participate in subsequent work, even when other partitions still need to be read.
 
             partitions[0] = hpx::async(

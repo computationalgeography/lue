@@ -9,7 +9,7 @@ import lue_test
 class ArrayTest(lue_test.TestCase):
     def setUp(self):
         dataset_name = "my_dataset.lue"
-        lue_test.remove_file_if_existant(dataset_name)
+        lue_test.remove_file_if_existent(dataset_name)
         self.dataset = ldm.create_dataset(dataset_name)
         self.phenomenon = self.dataset.add_phenomenon("my_phenomenon")
 

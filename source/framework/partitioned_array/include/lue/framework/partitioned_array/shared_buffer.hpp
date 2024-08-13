@@ -142,7 +142,7 @@ namespace lue {
 
 
             /*!
-                @brief      Return an iterator to the begining of the buffer
+                @brief      Return an iterator to the beginning of the buffer
             */
             Iterator begin()
             {

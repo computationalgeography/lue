@@ -509,7 +509,7 @@ namespace lue {
         //     std::stringstream stream;
         //     stream << "(";
         //
-        //     // Prevent seperator at end of string.
+        //     // Prevent separator at end of string.
         //     // C++17: ostream_joiner
         //     if(!collection.empty()) {
         //         std::copy(collection.begin(), collection.end() - 1,

@@ -349,7 +349,7 @@ namespace lue {
     void ArrayPartitionData<Element, rank>::reshape(Shape const& shape)
     {
         // Reshaping the elements while multiple ArrayPartitionData instances
-        // refer to it is dangereous because of the _span member. The other
+        // refer to it is dangerous because of the _span member. The other
         // instance(s) do not have there _span member updated.
         // If this fires, move the span and shape into the
         // SharedBuffer(?). Still there might be an issue with multiple threads
