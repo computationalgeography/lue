@@ -15,6 +15,7 @@ configurable at compile-time, LUE can support most of them, without sacrificing 
 
 
 (source-framework-algorithm-policy-input-no-data)=
+
 ## Input no-data
 
 An input no-data policy is any class that provides an interface similar to the following class:
@@ -48,6 +49,7 @@ optimizing compiler will completely remove the "check" from the code.
 
 
 (source-framework-algorithm-policy-output-no-data)=
+
 ## Output no-data
 
 An output no-data policy is any class that provides an interface similar to the following class:

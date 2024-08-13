@@ -1,4 +1,5 @@
 (source-framework-howto-add-local-operation)=
+
 # Add local operation
 
 Here you will find information about how to add a new local operation to the LUE sources.
@@ -15,7 +16,7 @@ All relative paths are relative to `source/framework/algorithm/`
 
 ## Algorithm
 
-### Add unit test(s):
+### Add unit test(s)
 
 The idea is to, before implementing anything, decide on a convenient API for the algorithm. How should it be
 named, which arguments should be passed in, in which order? Also, having unit tests in place and being able to
@@ -27,7 +28,7 @@ quickly add more while implementing the algorithm greatly helps getting things c
 - Decide on results: order, type
 
 
-### Add declaration(s) and "forwarding definitions":
+### Add declaration(s) and "forwarding definitions"
 
 This is all just boilerplate code.
 

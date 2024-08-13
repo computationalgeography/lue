@@ -1,4 +1,5 @@
 (source-framework-algorithm-policies)=
+
 # Policies
 
 
@@ -25,6 +26,7 @@ Currently there are several kinds of policies used by the algorithms:
     - Determine whether an output element value can be represented by the output element's type
 *   - [Output no-data policy](#source-framework-algorithm-policy-output-no-data)
     - Mark an output element value as no-data
+
 :::
 
 How the various policies perform their responsibility is up to the implementation. This way, the same
@@ -64,6 +66,7 @@ These policies are typically used as default policies:
 - Use LUE's default no-data policies
 
 These policies are typically used as value policies:
+
 - {cpp:class}`lue::policy::DetectNoDataByValue`
 - {cpp:class}`lue::policy::DetectNoDataByNaN`
 - {cpp:class}`lue::policy::MarkNoDataByValue`

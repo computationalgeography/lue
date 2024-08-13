@@ -13,11 +13,14 @@
 %    rasdaman / SciDB (distributed storage, computing?)
 %
 %    https://geotrellis.io/
-%    GeoTrellis provides a number of operations to manipulate raster data, including cropping/warping, Map Algebra operations, and rendering operations, as well as vector to raster operations such as Kernel Density and vectorization of raster data.
+%    GeoTrellis provides a number of operations to manipulate raster data, including cropping/warping, Map
+%    Algebra operations, and rendering operations, as well as vector to raster operations such as Kernel
+%    Density and vectorization of raster data.
 %
 %
 %    https://openeo.org/
-%    openEO develops an open API to connect R, Python, JavaScript and other clients to big Earth observation cloud back-ends in a simple and unified way.
+%    openEO develops an open API to connect R, Python, JavaScript and other clients to big Earth observation
+%    cloud back-ends in a simple and unified way.
 %
 %
 %    xarray combined with dask (distributed  computing)
@@ -27,7 +30,8 @@
 %    agents:
 %
 %    https://en.wikipedia.org/wiki/SARL_language
-%    SARL language level are supported by this run-time environment: fully distributed, parallel execution of agent’s behaviors
+%    SARL language level are supported by this run-time environment: fully distributed, parallel execution of
+%    agent’s behaviors
 %
 %    hier vandaan...
 %    https://en.wikipedia.org/wiki/Comparison_of_agent-based_modeling_software

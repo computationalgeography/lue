@@ -502,6 +502,7 @@ these differences as much as possible.
 *   - ycoordinate
     - 🗑
     - Not sure why this is useful...
+
 :::
 
 %    In LUE, not in PCRaster:

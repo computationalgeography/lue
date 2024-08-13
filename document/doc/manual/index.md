@@ -1,2 +1,3 @@
 (doc-manual)=
+
 # Manual

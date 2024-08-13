@@ -1,4 +1,5 @@
 (source-lue-data-model)=
+
 # Data model
 
 The data model code is divided into libraries that depend on each other. From lower to higher levels of

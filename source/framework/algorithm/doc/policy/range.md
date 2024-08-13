@@ -1,4 +1,5 @@
 (source-framework-algorithm-policy-range)=
+
 # Range policies
 
 A range policy is any class that provides an interface similar to the following class:

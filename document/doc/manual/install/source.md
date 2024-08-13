@@ -92,8 +92,8 @@ Optional features:
 | ---                                   | ---     | --- |
 | `LUE_QA_WITH_PYTHON_API`              | `FALSE` | Build QA Python API |
 | `LUE_QA_WITH_TESTS`                   | `FALSE` | Build test targets |
-| `LUE_QA_TEST_NR_LOCALITIES_PER_TEST`  | `1`     | Number of localities used when testing the framework |
-| `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` | `1`     | Number of threads per locality used when testing the framework |
+| `LUE_QA_TEST_NR_LOCALITIES_PER_TEST`  | `1`     | Localities used when testing the framework |
+| `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` | `1`     | Threads per locality used when testing the framework |
 | `LUE_QA_TEST_HPX_RUNWRAPPER`          | `none`  | Runwrapper to use (see `hpxrun.py`) |
 | `LUE_QA_TEST_HPX_PARCELPORT`          | `tcp`   | Parcelport to use (see `hpxrun.py`) |
 
@@ -115,8 +115,8 @@ requires that HPX is built with support for networking.
 There are at least three options for installing prerequisite libraries and tools:
 
 1. Install using platform specific package manager
-2. Install using Conan, either before building LUE or by the LUE build scripts
-3. Build by the LUE build scripts
+1. Install using Conan, either before building LUE or by the LUE build scripts
+1. Build by the LUE build scripts
 
 The next variables determine what happens in each case by default.
 

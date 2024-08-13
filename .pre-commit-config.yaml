@@ -45,31 +45,14 @@ repos:
         .*\.py|
         .*\.py.in|
       )$
-- repo: https://github.com/pocc/pre-commit-hooks
-  rev: v1.3.5
+- repo: https://github.com/markdownlint/markdownlint
+  rev: v0.13.0
   hooks:
-  - id: clang-format
-    args: [--style=file, -i]
-  - id: clang-tidy
-    args: [--quiet]
-    exclude: |
-      (?x)^(
-        source/data_model/cxx/.*|
-        source/data_model/hl/.*|
-        source/data_model/python/.*|
-        source/data_model/test/.*|
-        source/data_model/translate/.*|
-        source/data_model/utility/.*|
-        source/data_model/validate/.*|
-        source/framework/.*|
-        source/python/.*|
-        source/qa/.*|
-        source/view/.*|
-      )$
-# - repo: https://github.com/markdownlint/markdownlint
-#   rev: v0.13.0
-#   hooks:
-#   - id: markdownlint
+  - id: markdownlint
+
+
+
+
 # - repo: https://github.com/codespell-project/codespell
 #   rev: v2.3.0
 #   hooks:
@@ -82,3 +65,27 @@ repos:
 #   rev: 0.14.0
 #   hooks:
 #   - id: proselint
+
+
+# TODO # This one last. It is the slowest.
+# TODO - repo: https://github.com/pocc/pre-commit-hooks
+# TODO   rev: v1.3.5
+# TODO   hooks:
+# TODO   - id: clang-format
+# TODO     args: [--style=file, -i]
+# TODO   - id: clang-tidy
+# TODO     args: [--quiet]
+# TODO     exclude: |
+# TODO       (?x)^(
+# TODO         source/data_model/cxx/.*|
+# TODO         source/data_model/hl/.*|
+# TODO         source/data_model/python/.*|
+# TODO         source/data_model/test/.*|
+# TODO         source/data_model/translate/.*|
+# TODO         source/data_model/utility/.*|
+# TODO         source/data_model/validate/.*|
+# TODO         source/framework/.*|
+# TODO         source/python/.*|
+# TODO         source/qa/.*|
+# TODO         source/view/.*|
+# TODO       )$

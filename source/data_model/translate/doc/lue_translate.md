@@ -4,28 +4,34 @@
 
 
 # Introduction  {#lue_translate_introduction}
+
 TODO
 
 
 # Import  {#lue_translate_import}
+
 TODO
 
 
 ## GDAL raster  {#lue_translate_import_gdal_raster}
+
 TODO
 
 
 ## GDAL raster stack  {#lue_translate_import_gdal_raster_stack}
+
 TODO
 
 
 ## GDAL feature  {#lue_translate_import_gdal_feature}
+
 TODO
 
 
 # Export  {#lue_translate_export}
 
 ## DOT  {#lue_translate_export_to_dot}
+
 To get an impression of the layout of a LUE dataset, a
 [Graphviz](http://www.graphviz.org) graph in DOT format can be generated
 and written to a file. The `dot` tool can then be used to generate yet
@@ -98,6 +104,7 @@ dot -Tsvg -o my_dataset.svg my_dataset.dot
 
 
 ## Shapefile  {#lue_translate_export_to_shapefile}
+
 A single domain in a LUE dataset can be translated to a Shapefile:
 
 ~~~bash

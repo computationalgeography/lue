@@ -1,4 +1,5 @@
 (source-framework-algorithm-policy-domain)=
+
 # Domain policies
 
 A domain policy is any class that provides an interface similar to the following class:

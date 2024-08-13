@@ -1,4 +1,5 @@
 (source-framework-algorithm-focal)=
+
 # Focal operations
 
 
