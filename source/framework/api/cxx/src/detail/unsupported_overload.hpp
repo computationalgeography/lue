@@ -1,7 +1,7 @@
 #pragma once
 #include "detail/type_name.hpp"
 #include "lue/framework/api/cxx/field.hpp"
-#include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <concepts>
 #include <initializer_list>
 #include <string>
