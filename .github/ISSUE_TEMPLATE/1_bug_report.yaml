@@ -17,7 +17,7 @@ body:
       required: true
 
   - type: textarea
-    id: bug_expexted
+    id: bug_expected
     attributes:
       label: Expected behaviour
       placeholder: A concise description of what you expected to happen.
