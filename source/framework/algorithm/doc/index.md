@@ -52,7 +52,7 @@ tasks may continue to spawn additional tasks at these localities.
 
 | Name   | Description |
 | ------ | ----------- |
-| lue::pow | Return the result of rasing the elements in a partitioned array by the power of an exponent |
+| lue::pow | Return the result of raising the elements in a partitioned array by the power of an exponent |
 | lue::sqrt | Return the result of taking the square root of the elements in a partitioned array |
 
 

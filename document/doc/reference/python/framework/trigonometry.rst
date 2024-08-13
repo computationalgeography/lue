@@ -17,7 +17,7 @@ Trigonometry
 
    Compute the principal value of the arc cosine
 
-   :parm cosine: Datastructure containing cosines
+   :param cosine: Datastructure containing cosines
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -27,7 +27,7 @@ Trigonometry
 
    Compute the principal value of the arc sine
 
-   :parm sine: Datastructure containing sines
+   :param sine: Datastructure containing sines
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -37,7 +37,7 @@ Trigonometry
 
    Compute the principal value of the arc tangent
 
-   :parm tangent: Datastructure containing tangents
+   :param tangent: Datastructure containing tangents
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -47,8 +47,8 @@ Trigonometry
 
    Compute the arc tangent of y/x
 
-   :parm y: Datastructure containing distances in y-direction
-   :parm x: Datastructure containing distances in x-direction
+   :param y: Datastructure containing distances in y-direction
+   :param x: Datastructure containing distances in x-direction
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -60,7 +60,7 @@ Trigonometry
 
    Compute the cosine
 
-   :parm angle: Datastructure containing angles in radians
+   :param angle: Datastructure containing angles in radians
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -70,7 +70,7 @@ Trigonometry
 
    Compute the sine
 
-   :parm angle: Datastructure containing angles in radians
+   :param angle: Datastructure containing angles in radians
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.
@@ -80,7 +80,7 @@ Trigonometry
 
    Compute the tangent
 
-   :parm angle: Datastructure containing angles in radians
+   :param angle: Datastructure containing angles in radians
    :return: New instance of the same datastructure as passed in
 
    This function is overloaded for arrays containing float32 and float64 elements.

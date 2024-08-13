@@ -323,8 +323,8 @@ def write_conan_profile(compiler_filename, profile_pathname):
         compiler_versions = conan_settings["compiler"][compiler]["version"]
 
         # This happens if the compiler is more recent than the Conan settings file. Here,
-        # we just add the newer version to the list of supported versions. Otherwise Conan wil
-        # not install packages.
+        # we just add the newer version to the list of supported versions. Otherwise Conan
+        # will not install packages.
         if compiler_version not in compiler_versions:
             String = type(compiler_versions[0])
 

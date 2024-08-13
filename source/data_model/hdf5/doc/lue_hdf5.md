@@ -84,7 +84,7 @@ against our application. Our application will now automatically depend
 on the public dependencies of `lue_hdf5`.
 
 To make CMake find the LUE package, we need to tell it where it is
-installed. Given the example above the folowing commands build our
+installed. Given the example above the following commands build our
 `hello_hdf5` project:
 
 

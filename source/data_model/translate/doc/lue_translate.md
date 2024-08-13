@@ -51,7 +51,7 @@ can contains three sections:
 | hdf5  | Formatting HDF5 objects        |
 | lue   | Formatting LUE objects         |
 
-The folowing listing shows an example.
+The following listing shows an example.
 
 ~~~json
 {
@@ -113,7 +113,7 @@ lue_translate export --meta meta.json my_dataset.lue my_dataset.shp
 
 The domain-items end up as geometries in the Shapefile. Which domain
 to translate is determined by the contents of the metadata file. In the
-folowing example, (the domain of) `my_property_set` is selected.
+following example, (the domain of) `my_property_set` is selected.
 
 ~~~json
 {

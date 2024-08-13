@@ -38,7 +38,7 @@ if sys.platform == "win32":
 
             # In one circumstance we want to add a special location before importing LUE. This is in our
             # development environment, where HPX is built by ourselves and installed in a non-standard
-            # location.  Here, we dectect whether this location has been added to the PATH, and if so, add
+            # location.  Here, we detect whether this location has been added to the PATH, and if so, add
             # this location to Python's search path. In 99.9% of the cases this is not needed.
             # This tweak can be removed once we have access to a Conda development package of HPX, besides a
             # runtime package. In that case, we don't have to build HPX ourselves anymore.

@@ -38,7 +38,7 @@ Information about this can be found on the [lue-feedstock page](https://github.c
 at Github.
 
 The pull request is based on a new branch in a clone of the `lue-feedstock` repository, located in the
-`regro-cf-autotick-bot` Github organisation. To make changes to this branch, the folowing workflow can be
+`regro-cf-autotick-bot` Github organisation. To make changes to this branch, the following workflow can be
 used:
 
 ```bash

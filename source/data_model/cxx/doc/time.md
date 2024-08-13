@@ -10,7 +10,7 @@ LUE time library contains various classes for handling time.
 Notes:
 
 ```cpp
-// A Calendar maps a clock to real-world time. There are differend kinds:
+// A Calendar maps a clock to real-world time. There are different kinds:
 // - Gregorian calendar
 // - Julian calendar
 // - Islamic calendar

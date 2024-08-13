@@ -106,7 +106,7 @@ requires that HPX is built with support for networking.
 #### Dependencies
 
 - Nlohmann JSON
-- `LUE_QA_WITH_TESTS`: Boost filesytem, sytem, unit-test framework libraries
+- `LUE_QA_WITH_TESTS`: Boost filesystem, system, unit-test framework libraries
 - `LUE_QA_WITH_PYTHON_API`: pybind11, Python
 
 

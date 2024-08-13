@@ -459,7 +459,7 @@ if(LUE_HPX_REQUIRED)
                 foreach(hpx_version_ ${hpx_versions_to_try})
                     if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
                         # Use local archive
-                        set(hpx_version ${hpx_version_})  # Loop veriables are not available outside a loop
+                        set(hpx_version ${hpx_version_})  # Loop variables are not available outside a loop
                         set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
                         break()
                     endif()
