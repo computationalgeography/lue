@@ -23,7 +23,12 @@
 
 ## Description
 
-Blahblah.
+TODO
+
+
+## No-data handling
+
+TODO
 
 
 ## Example
@@ -31,19 +36,19 @@ Blahblah.
 ````{tab-set-code}
 
 ```{code-block} c
-int c = 1;
+/* TODO */
 ```
 
 ```{code-block} c++
-int cpp = 1;
+// TODO
 ```
 
 ```{code-block} java
-int java = 1;
+// TODO
 ```
 
 ```{code-block} python
-python = True
+# TODO
 ```
 
 ````

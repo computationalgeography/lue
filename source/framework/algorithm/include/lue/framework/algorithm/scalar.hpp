@@ -5,7 +5,7 @@
 namespace lue {
 
     /*!
-        @brief      Class for scalar values, representing a omnipresent value
+        @brief      Class for scalar values, representing an omnipresent value
 
         The actual value is "pointed to" by a shared future. This implies that it can be the
         result of an asynchronous computation. Continuations can be attached to the value,
