@@ -32,8 +32,11 @@ parts:
 
     - file: reference/index.md
       sections:
-      - file: reference/python/index.md
+      - file: reference/c/index.md
       - file: reference/cpp/index.md
+      - file: reference/java/index.md
+      - file: reference/python/index.md
+      - file: reference/r/index.md
       - file: reference/utility/index.md
         sections:
         - file: reference/utility/lue_calculate.md

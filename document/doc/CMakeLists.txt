@@ -60,12 +60,16 @@ foreach(name IN ITEMS
     reference/algorithm/clump.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md
+    reference/c/index.md
     reference/cpp/index.md
     reference/index.md
+    reference/java/index.md
+    # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
     # reference/python/data_model/index.rst
     # reference/python/framework/index.rst
     reference/python/index.md
+    reference/r/index.md
     references.bib
     reference/utility/index.md
     reference/utility/lue_calculate.md
