@@ -404,177 +404,196 @@ namespace lue {
 
 
     template<typename Element>
-    PartitionedArray<Element, 2> read(std::string const& name, Shape<Count, 2> const& partition_shape)
+    auto read(std::string const& name, Shape<Count, 2> const& partition_shape) -> PartitionedArray<Element, 2>
     {
-        // Create a new partitioned array. Each partition is filled with the corresponding
-        // subset of raster cells found in the raster pointed to by the name passed in.
-        // Each process is allowed to read partitions concurrently. Within each process,
-        // partitions are read one after the other.
-        // Each partition read can already participate in subsequent calculations. This results
-        // in subsequent I/O being hidden by calculations.
-        // Even though I/O is always relatively slow, and reading relatively small partitions
-        // is even slower, I/O hidden by computations is free.
-
-        // On the / this root locality:
-        // - Determine shape of the array to create
-        // - Determine the no-data value to use
-        // Only then can we call the logic that creates a partitioned array asynchronously.
-
-        Shape<Count, 2> array_shape;
-        bool no_data_value_is_valid{};
-        Element no_data_value;
-
+        if constexpr (!gdal::supports<Element>())
         {
-            gdal::Raster raster{gdal::open_dataset(name, ::GA_ReadOnly)};
-            gdal::Raster::Band raster_band{raster.band(1)};
-
-            auto const raster_shape = raster.shape();
-            array_shape[0] = static_cast<Count>(raster_shape[0]);
-            array_shape[1] = static_cast<Count>(raster_shape[1]);
-            std::tie(no_data_value, no_data_value_is_valid) = raster_band.no_data_value<Element>();
-        }
-
-        using Functor = ReadPartitionsPerLocality<Element>;
-
-        if (!no_data_value_is_valid)
-        {
-            // No no-data value is set in the band. Don't bother with no-data.
-
-            using Policies = policy::read::DefaultPolicies<Element>;
-            Policies policies{};
-            return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+            gdal::verify_support<Element>();
+            return PartitionedArray<Element, 2>{};
         }
         else
         {
-            // A no-data value is set in the band. Let's be nice and use it. Upon reading,
-            // it will be converted to our own conventions for handling no-data.
+            // Create a new partitioned array. Each partition is filled with the corresponding
+            // subset of raster cells found in the raster pointed to by the name passed in.
+            // Each process is allowed to read partitions concurrently. Within each process,
+            // partitions are read one after the other.
+            // Each partition read can already participate in subsequent calculations. This results
+            // in subsequent I/O being hidden by calculations.
+            // Even though I/O is always relatively slow, and reading relatively small partitions
+            // is even slower, I/O hidden by computations is free.
 
-            if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
+            // On the / this root locality:
+            // - Determine shape of the array to create
+            // - Determine the no-data value to use
+            // Only then can we call the logic that creates a partitioned array asynchronously.
+
+            Shape<Count, 2> array_shape;
+            bool no_data_value_is_valid{};
+            Element no_data_value;
+
             {
-                // No-data value is a NaN. This is what LUE uses as no-data for floating point
-                // by default.
-                using Policies = policy::read::ValuePolicies<Element>;
+                gdal::Raster raster{gdal::open_dataset(name, ::GA_ReadOnly)};
+                gdal::Raster::Band raster_band{raster.band(1)};
+
+                auto const raster_shape = raster.shape();
+                array_shape[0] = static_cast<Count>(raster_shape[0]);
+                array_shape[1] = static_cast<Count>(raster_shape[1]);
+                std::tie(no_data_value, no_data_value_is_valid) = raster_band.no_data_value<Element>();
+            }
+
+            using Functor = ReadPartitionsPerLocality<Element>;
+
+            if (!no_data_value_is_valid)
+            {
+                // No no-data value is set in the band. Don't bother with no-data.
+
+                using Policies = policy::read::DefaultPolicies<Element>;
                 Policies policies{};
                 return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
             }
             else
             {
-                // No-data value is not NaN. Use a special no-data policy for this special value.
-                using Policies = policy::read::SpecialValuePolicy<Element>;
-                Policies policies{no_data_value};
-                return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+                // A no-data value is set in the band. Let's be nice and use it. Upon reading,
+                // it will be converted to our own conventions for handling no-data.
+
+                if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
+                {
+                    // No-data value is a NaN. This is what LUE uses as no-data for floating point
+                    // by default.
+                    using Policies = policy::read::ValuePolicies<Element>;
+                    Policies policies{};
+                    return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+                }
+                else
+                {
+                    // No-data value is not NaN. Use a special no-data policy for this special value.
+                    using Policies = policy::read::SpecialValuePolicy<Element>;
+                    Policies policies{no_data_value};
+                    return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+                }
             }
         }
     }
 
 
     template<typename Element>
-    hpx::future<void> write(
+    auto write(
         PartitionedArray<Element, 2> const& array, std::string const& name, std::string const& clone_name)
+        -> hpx::future<void>
     {
-        using Policies = WritePolicies<Element>;
-        using Array = PartitionedArray<Element, 2>;
-        using Partition = PartitionT<Array>;
-
-        // Write a partitioned array to a raster band using the GDAL API.
-        // All localities containing partitions are iterated over. For each partition within
-        // a locality for which the data is ready, the data will be written. Only for
-        // one ready partition will the data be written at the same time. This requires some
-        // synchronization:
-        // - Iterate over all localities. Only move to next locality once all partitions within
-        //   a locality are written.
-        // - Within a locality, write all partitions.
-
-        // On the / this root locality:
-        // - Create the dataset to write a band in
-
-        Policies policies{};
-        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-        Element no_data_value;
-        ondp.mark_no_data(no_data_value);
-
+        if constexpr (!gdal::supports<Element>())
         {
-            Count const nr_bands{1};
-            GDALDataType const data_type{gdal::data_type_v<Element>};
-            gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
-                "GTiff",
-                name,
-                gdal::Shape{
-                    static_cast<gdal::Count>(array.shape()[0]), static_cast<gdal::Count>(array.shape()[1])},
-                nr_bands,
-                data_type)};
-            gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
+            gdal::verify_support<Element>();
+            return hpx::future<void>{};
+        }
+        else
+        {
+            using Policies = WritePolicies<Element>;
+            using Array = PartitionedArray<Element, 2>;
+            using Partition = PartitionT<Array>;
 
-            gdal::set_no_data_value(*band_ptr, no_data_value);
+            // Write a partitioned array to a raster band using the GDAL API.
+            // All localities containing partitions are iterated over. For each partition within
+            // a locality for which the data is ready, the data will be written. Only for
+            // one ready partition will the data be written at the same time. This requires some
+            // synchronization:
+            // - Iterate over all localities. Only move to next locality once all partitions within
+            //   a locality are written.
+            // - Within a locality, write all partitions.
 
-            if (!clone_name.empty())
+            // On the / this root locality:
+            // - Create the dataset to write a band in
+
+            Policies policies{};
+            auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+            Element no_data_value;
+            ondp.mark_no_data(no_data_value);
+
             {
-                // Copy stuff from clone dataset
+                Count const nr_bands{1};
+                GDALDataType const data_type{gdal::data_type_v<Element>};
+                gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
+                    "GTiff",
+                    name,
+                    gdal::Shape{
+                        static_cast<gdal::Count>(array.shape()[0]),
+                        static_cast<gdal::Count>(array.shape()[1])},
+                    nr_bands,
+                    data_type)};
+                gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
-                gdal::DatasetPtr clone_dataset_ptr{gdal::open_dataset(clone_name, ::GA_ReadOnly)};
+                gdal::set_no_data_value(*band_ptr, no_data_value);
 
-                Shape<Count, 2> const shape{
-                    clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
-
-                if (shape != array.shape())
+                if (!clone_name.empty())
                 {
-                    throw std::runtime_error("Shapes of clone raster and raster to write differ");
-                }
+                    // Copy stuff from clone dataset
 
-                double geo_transform[6];
+                    gdal::DatasetPtr clone_dataset_ptr{gdal::open_dataset(clone_name, ::GA_ReadOnly)};
 
-                if (clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
-                {
-                    dataset_ptr->SetGeoTransform(geo_transform);
-                }
+                    Shape<Count, 2> const shape{
+                        clone_dataset_ptr->GetRasterYSize(), clone_dataset_ptr->GetRasterXSize()};
 
-                if (OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
-                {
-                    dataset_ptr->SetSpatialRef(spatial_reference);
+                    if (shape != array.shape())
+                    {
+                        throw std::runtime_error("Shapes of clone raster and raster to write differ");
+                    }
+
+                    double geo_transform[6];
+
+                    if (clone_dataset_ptr->GetGeoTransform(geo_transform) == CE_None)
+                    {
+                        dataset_ptr->SetGeoTransform(geo_transform);
+                    }
+
+                    if (OGRSpatialReference const* spatial_reference = clone_dataset_ptr->GetSpatialRef())
+                    {
+                        dataset_ptr->SetSpatialRef(spatial_reference);
+                    }
                 }
             }
-        }
 
-        // Asynchronously spawn a task that will write each ready partition to the dataset,
-        // one after the other. This task stops once all partitions have been written to the dataset.
+            // Asynchronously spawn a task that will write each ready partition to the dataset,
+            // one after the other. This task stops once all partitions have been written to the dataset.
 
-        std::vector<Partition> partitions(array.partitions().begin(), array.partitions().end());
+            std::vector<Partition> partitions(array.partitions().begin(), array.partitions().end());
 
-        hpx::future<void> result = hpx::async(
-            [name, partitions = std::move(partitions)]() mutable
-            {
-                using Action = WritePartitionAction<Policies, Partition>;
-
-                std::size_t nr_partitions_to_write{partitions.size()};
-                Action action{};
-                hpx::when_any_result<std::vector<Partition>> when_any_result;
-                std::size_t idx;
-
-                while (nr_partitions_to_write > 0)
+            hpx::future<void> result = hpx::async(
+                [name, partitions = std::move(partitions)]() mutable
                 {
-                    // Find a ready partition. Wait for it if necessary.
-                    when_any_result =
-                        hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write).get();
-                    partitions = std::move(when_any_result.futures);
-                    idx = when_any_result.index;
+                    using Action = WritePartitionAction<Policies, Partition>;
 
-                    // Write the ready partition to the dataset. Wait for it to finish.
-                    hpx::id_type const locality{
-                        hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
-                    action(locality, Policies{}, name, partitions[idx]);
+                    std::size_t nr_partitions_to_write{partitions.size()};
+                    Action action{};
+                    hpx::when_any_result<std::vector<Partition>> when_any_result;
+                    std::size_t idx;
 
-                    // Move the ready and written partition to just after the range with still
-                    // not written partitions
-                    std::rotate(
-                        partitions.begin() + idx,
-                        partitions.begin() + idx + 1,
-                        partitions.begin() + nr_partitions_to_write);
+                    while (nr_partitions_to_write > 0)
+                    {
+                        // Find a ready partition. Wait for it if necessary.
+                        when_any_result =
+                            hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write)
+                                .get();
+                        partitions = std::move(when_any_result.futures);
+                        idx = when_any_result.index;
 
-                    --nr_partitions_to_write;
-                }
-            });
+                        // Write the ready partition to the dataset. Wait for it to finish.
+                        hpx::id_type const locality{
+                            hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
+                        action(locality, Policies{}, name, partitions[idx]);
 
-        return result;
+                        // Move the ready and written partition to just after the range with still
+                        // not written partitions
+                        std::rotate(
+                            partitions.begin() + idx,
+                            partitions.begin() + idx + 1,
+                            partitions.begin() + nr_partitions_to_write);
+
+                        --nr_partitions_to_write;
+                    }
+                });
+
+            return result;
+        }
     }
 
 }  // namespace lue
@@ -589,15 +608,13 @@ namespace lue {
         lue::PartitionedArray<type, 2> const&, std::string const&, std::string const&);
 
 
+INSTANTIATE(int8_t)
 INSTANTIATE(uint8_t)
 INSTANTIATE(uint32_t)
 INSTANTIATE(int32_t)
-#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
 INSTANTIATE(uint64_t)
 INSTANTIATE(int64_t)
-#endif
 INSTANTIATE(float)
 INSTANTIATE(double)
-
 
 #undef INSTANTIATE

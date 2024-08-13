@@ -2,6 +2,7 @@
 #include "hpx/runtime_distributed/find_localities.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/hilbert_curve.hpp"
 #include "lue/framework/core/linear_curve.hpp"
@@ -646,7 +647,7 @@ namespace lue {
             static constexpr bool instantiate_per_locality{false};
 
 
-            InstantiateFilled(Element const fill_value):
+            InstantiateFilled(hpx::shared_future<Element> const& fill_value):
 
                 _fill_value{fill_value}
 
@@ -655,27 +656,24 @@ namespace lue {
 
 
             template<typename Policies>
-            Partition instantiate(
+            auto instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
-                Shape const& partition_shape) const
+                Shape const& partition_shape) const -> Partition
             {
-                return hpx::async(
-
-                    [locality_id, offset, partition_shape, fill_value = _fill_value]() {
-                        return Partition{locality_id, offset, partition_shape, fill_value};
-                    }
-
-                );
+                return _fill_value.then(
+                    [locality_id, offset, partition_shape](hpx::shared_future<Element> const& fill_value) {
+                        return Partition{locality_id, offset, partition_shape, fill_value.get()};
+                    });
             }
 
 
         private:
 
-            Element const _fill_value;
+            hpx::shared_future<Element> _fill_value;
     };
 
 
@@ -919,11 +917,11 @@ namespace lue {
         Rank rank,
         typename Functor,
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+    auto create_partitioned_array(
         Policies const& policies,
         Shape<Count, rank> const& array_shape,
         Shape<Count, rank> const& partition_shape,
-        Functor const& partition_creator)
+        Functor const& partition_creator) -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         // Create the array partitions that, together make up the partitioned
         // array.
@@ -947,8 +945,9 @@ namespace lue {
         Rank rank,
         typename Functor,
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+    auto create_partitioned_array(
         Policies const& policies, SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         // Use the route passed in as a clone / template for creating the new array. The shape
         // of the output array and the individual partitions, and the distribution of the
@@ -974,8 +973,9 @@ namespace lue {
         Rank rank,
         typename Functor,
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+    auto create_partitioned_array(
         Policies const& policies, Shape<Count, rank> const& array_shape, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         return create_partitioned_array<Policies, rank, Functor>(
             policies, array_shape, default_partition_shape(array_shape), partition_creator);
@@ -983,10 +983,10 @@ namespace lue {
 
 
     template<Rank rank, typename Functor, std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
+    auto create_partitioned_array(
         Shape<Count, rank> const& array_shape,
         Shape<Count, rank> const& partition_shape,
-        Functor const& partition_creator)
+        Functor const& partition_creator) -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         using Element = OutputElementT<Functor>;
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
@@ -997,8 +997,8 @@ namespace lue {
 
 
     template<Rank rank, typename Functor, std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
-        Shape<Count, rank> const& array_shape, Functor const& partition_creator)
+    auto create_partitioned_array(Shape<Count, rank> const& array_shape, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         return create_partitioned_array<rank, Functor>(
             array_shape, default_partition_shape(array_shape), partition_creator);
@@ -1010,8 +1010,8 @@ namespace lue {
         Rank rank,
         typename Functor,
         std::enable_if_t<is_functor_v<Functor>>* = nullptr>
-    PartitionedArray<OutputElementT<Functor>, rank> create_partitioned_array(
-        SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
+    auto create_partitioned_array(SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<OutputElementT<Functor>>;
 
@@ -1019,9 +1019,12 @@ namespace lue {
     }
 
 
+    // create array, fill with default initialized value -----------------------------------------------------
+
     template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank> create_partitioned_array(
+    auto create_partitioned_array(
         Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
+        -> PartitionedArray<Element, rank>
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
         using Functor = InstantiateDefaultInitialized<Element, rank>;
@@ -1032,32 +1035,53 @@ namespace lue {
 
 
     template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank> create_partitioned_array(Shape<Count, rank> const& array_shape)
+    auto create_partitioned_array(Shape<Count, rank> const& array_shape) -> PartitionedArray<Element, rank>
     {
         return create_partitioned_array<Element, rank>(array_shape, default_partition_shape(array_shape));
     }
 
 
-    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank> create_partitioned_array(
+    // create array, fill with fill value --------------------------------------------------------------------
+
+    template<typename Element, Rank rank>
+    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
         Shape<Count, rank> const& array_shape,
         Shape<Count, rank> const& partition_shape,
-        Element const fill_value)
+        Scalar<Element> const& fill_value) -> PartitionedArray<Element, rank>
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
         using Functor = InstantiateFilled<Element, rank>;
 
-        return create_partitioned_array<Policies, rank, Functor>(
-            Policies{}, array_shape, partition_shape, Functor{fill_value});
+        return create_partitioned_array(
+            Policies{}, array_shape, partition_shape, Functor{fill_value.value()});
     }
 
 
-    template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
-    PartitionedArray<Element, rank> create_partitioned_array(
-        Shape<Count, rank> const& array_shape, Element const fill_value)
+    template<typename Element, Rank rank>
+    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
+        Shape<Count, rank> const& array_shape,
+        Shape<Count, rank> const& partition_shape,
+        Element const fill_value) -> PartitionedArray<Element, rank>
     {
-        return create_partitioned_array<Element, rank>(
-            array_shape, default_partition_shape(array_shape), fill_value);
+        return create_partitioned_array(array_shape, partition_shape, Scalar<Element>{fill_value});
+    }
+
+
+    template<typename Element, Rank rank>
+    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
+        Shape<Count, rank> const& array_shape, Scalar<Element> const& fill_value)
+        -> PartitionedArray<Element, rank>
+    {
+        return create_partitioned_array(array_shape, default_partition_shape(array_shape), fill_value);
+    }
+
+
+    template<typename Element, Rank rank>
+    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
+        Shape<Count, rank> const& array_shape, Element const fill_value) -> PartitionedArray<Element, rank>
+    {
+        return create_partitioned_array(
+            array_shape, default_partition_shape(array_shape), Scalar<Element>{fill_value});
     }
 
 }  // namespace lue

@@ -43,4 +43,6 @@ if(LUE_BUILD_QA AND LUE_QA_WITH_TESTS)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/test)
 endif()
 
+add_subdirectory(api)
+
 set(doxygen_input ${doxygen_input} PARENT_SCOPE)

@@ -261,6 +261,13 @@ namespace lue::gdal {
                         compare_raster_bands<std::uint8_t>(band1, band2, differences);
                         break;
                     }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+                    case GDT_Int8:
+                    {
+                        compare_raster_bands<std::int8_t>(band1, band2, differences);
+                        break;
+                    }
+#endif
                     case GDT_UInt16:
                     {
                         compare_raster_bands<std::uint16_t>(band1, band2, differences);

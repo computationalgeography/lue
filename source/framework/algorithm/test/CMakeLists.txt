@@ -120,6 +120,7 @@ set(names
     none
     partition_count_unique
     range
+    scalar
     sum
     timestamp
     upstream

@@ -7,124 +7,115 @@
 
 
 namespace lue {
-    namespace detail {
-        namespace uniform {
+    namespace detail::uniform {
 
-            template<typename Policies, typename InputPartition, typename OutputElement>
-            PartitionT<InputPartition, OutputElement> uniform_partition(
-                Policies const& policies,
-                InputPartition const& input_partition,
-                OutputElement const min_value,
-                OutputElement const max_value)
-            {
-                using Offset = OffsetT<InputPartition>;
-                using Shape = ShapeT<InputPartition>;
-                using OutputPartition = PartitionT<InputPartition, OutputElement>;
-                using OutputData = DataT<OutputPartition>;
+        template<typename Policies, typename InputPartition>
+        auto uniform_partition(
+            Policies const& policies,
+            InputPartition const& input_partition,
+            policy::OutputElementT<Policies, 0> const min_value,
+            policy::OutputElementT<Policies, 0> const max_value)
+            -> PartitionT<InputPartition, policy::OutputElementT<Policies, 0>>
+        {
+            using Offset = OffsetT<InputPartition>;
+            using Shape = ShapeT<InputPartition>;
+            using Element = policy::OutputElementT<Policies, 0>;
+            // using SomeElement = policy::InputElementT<Policies, 0>;
+            using OutputPartition = PartitionT<InputPartition, Element>;
+            using OutputData = DataT<OutputPartition>;
 
-                static_assert(std::is_floating_point_v<OutputElement> || std::is_integral_v<OutputElement>);
+            static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
-                lue_hpx_assert(input_partition.is_ready());
+            lue_hpx_assert(input_partition.is_ready());
 
-                return hpx::dataflow(
-                    hpx::launch::async,
-                    hpx::unwrapping(
+            return hpx::dataflow(
+                hpx::launch::async,
+                hpx::unwrapping(
 
-                        [policies, input_partition, min_value, max_value](
-                            Offset const& offset, Shape const& shape)
+                    [policies, input_partition, min_value, max_value](
+                        Offset const& offset, Shape const& shape)
+                    {
+                        AnnotateFunction annotation{"uniform_partition"};
+
+                        HPX_UNUSED(input_partition);
+
+                        OutputData output_partition_data{shape};
+
+                        // TODO Use indp1 to test for no-data-ness in input partition's data(?)
+                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                        if (indp2.is_no_data(min_value) || indp3.is_no_data(max_value))
                         {
-                            AnnotateFunction annotation{"uniform_partition"};
+                            Count const nr_elements{lue::nr_elements(output_partition_data)};
 
-                            HPX_UNUSED(input_partition);
-
-                            OutputData output_partition_data{shape};
-
-                            auto const& indp1 =
-                                std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                            auto const& indp2 =
-                                std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                            auto const& ondp =
-                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                            if (indp1.is_no_data(min_value) || indp2.is_no_data(max_value))
+                            for (Index i = 0; i < nr_elements; ++i)
                             {
-                                Count const nr_elements{lue::nr_elements(output_partition_data)};
+                                ondp.mark_no_data(output_partition_data, i);
+                            }
+                        }
+                        else
+                        {
+                            // Will be used to obtain a seed for the random number engine
+                            std::random_device random_device;
 
-                                for (Index i = 0; i < nr_elements; ++i)
+                            // Standard mersenne_twister_engine seeded with the random_device
+                            std::mt19937 random_number_engine(random_device());
+
+                            auto distribution = [min_value, max_value]()
+                            {
+                                if constexpr (std::is_floating_point_v<Element>)
                                 {
-                                    ondp.mark_no_data(output_partition_data, i);
+                                    return std::uniform_real_distribution<Element>{min_value, max_value};
                                 }
-                            }
-                            else
-                            {
-                                // Will be used to obtain a seed for the random number engine
-                                std::random_device random_device;
-
-                                // Standard mersenne_twister_engine seeded with the random_device
-                                std::mt19937 random_number_engine(random_device());
-
-                                auto distribution = [min_value, max_value]()
+                                else if constexpr (std::is_integral_v<Element>)
                                 {
-                                    if constexpr (std::is_floating_point_v<OutputElement>)
-                                    {
-                                        return std::uniform_real_distribution<OutputElement>{
-                                            min_value, max_value};
-                                    }
-                                    else if constexpr (std::is_integral_v<OutputElement>)
-                                    {
-                                        // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
-                                        static_assert(!std::is_same_v<OutputElement, std::int8_t>);
-                                        static_assert(!std::is_same_v<OutputElement, std::uint8_t>);
-                                        return std::uniform_int_distribution<OutputElement>{
-                                            min_value, max_value};
-                                    }
-                                }();
+                                    // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
+                                    static_assert(!std::is_same_v<Element, std::int8_t>);
+                                    static_assert(!std::is_same_v<Element, std::uint8_t>);
+                                    return std::uniform_int_distribution<Element>{min_value, max_value};
+                                }
+                            }();
 
-                                std::generate(
-                                    output_partition_data.begin(),
-                                    output_partition_data.end(),
+                            std::generate(
+                                output_partition_data.begin(),
+                                output_partition_data.end(),
 
-                                    [&distribution, &random_number_engine]()
-                                    { return distribution(random_number_engine); }
+                                [&distribution, &random_number_engine]()
+                                { return distribution(random_number_engine); }
 
-                                );
-                            }
-
-                            return OutputPartition{
-                                hpx::find_here(), offset, std::move(output_partition_data)};
+                            );
                         }
 
-                        ),
-                    input_partition.offset(),
-                    input_partition.shape());
-            }
+                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    }
+
+                    ),
+                input_partition.offset(),
+                input_partition.shape());
+        }
 
 
-            template<typename Policies, typename InputPartition, typename OutputElement>
-            struct UniformPartitionAction:
-                hpx::actions::make_action<
-                    decltype(&uniform_partition<Policies, InputPartition, OutputElement>),
-                    &uniform_partition<Policies, InputPartition, OutputElement>,
-                    UniformPartitionAction<Policies, InputPartition, OutputElement>>::type
-            {
-            };
+        template<typename Policies, typename InputPartition>
+        struct UniformPartitionAction:
+            hpx::actions::make_action<
+                decltype(&uniform_partition<Policies, InputPartition>),
+                &uniform_partition<Policies, InputPartition>,
+                UniformPartitionAction<Policies, InputPartition>>::type
+        {
+        };
 
-        }  // namespace uniform
-    }      // namespace detail
-
-
-    /// template<
-    ///     typename Policies,
-    ///     typename T>
-    /// using UniformAction = typename detail::uniform::OverloadPicker<Policies, T>::Action;
+    }  // namespace detail::uniform
 
 
-    template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
-    PartitionedArray<OutputElement, rank> uniform(
+    template<typename Policies, Rank rank>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
         Policies const& policies,
-        PartitionedArray<InputElement, rank> const& input_array,
-        hpx::shared_future<OutputElement> const& min_value,
-        hpx::shared_future<OutputElement> const& max_value)
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
+        hpx::shared_future<policy::InputElementT<Policies, 1>> const& min_value,
+        hpx::shared_future<policy::InputElementT<Policies, 2>> const& max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
         // Reimplement as ternary local operation?
 
@@ -132,20 +123,23 @@ namespace lue {
         // location as the input array, but the elements might be of a different
         // type.
 
-        using InputArray = PartitionedArray<InputElement, rank>;
+        using Element = policy::OutputElementT<Policies, 0>;
+        using SomeElement = policy::InputElementT<Policies, 0>;
+
+        using InputArray = PartitionedArray<SomeElement, rank>;
         using InputPartitions = PartitionsT<InputArray>;
         using InputPartition = PartitionT<InputArray>;
 
-        using OutputArray = PartitionedArray<OutputElement, rank>;
+        using OutputArray = PartitionedArray<Element, rank>;
         using OutputPartitions = PartitionsT<OutputArray>;
 
-        static_assert(std::is_floating_point_v<OutputElement> || std::is_integral_v<OutputElement>);
+        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
         lue_hpx_assert(all_are_valid(input_array.partitions()));
         lue_hpx_assert(min_value.valid());
         lue_hpx_assert(max_value.valid());
 
-        detail::uniform::UniformPartitionAction<Policies, InputPartition, OutputElement> action;
+        detail::uniform::UniformPartitionAction<Policies, InputPartition> action;
 
         Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
@@ -158,8 +152,8 @@ namespace lue {
 
                 [locality_id = localities[p], action, policies](
                     InputPartition const& input_partition,
-                    hpx::shared_future<OutputElement> const& min_value,
-                    hpx::shared_future<OutputElement> const& max_value)
+                    hpx::shared_future<Element> const& min_value,
+                    hpx::shared_future<Element> const& max_value)
                 {
                     AnnotateFunction annotation{"uniform"};
                     return action(locality_id, policies, input_partition, min_value.get(), max_value.get());
@@ -174,18 +168,19 @@ namespace lue {
     }
 
 
-    template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
-    PartitionedArray<OutputElement, rank> uniform(
+    template<typename Policies, Rank rank>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
         Policies const& policies,
-        PartitionedArray<InputElement, rank> const& input_array,
-        OutputElement const min_value,
-        OutputElement const max_value)
+        PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
+        policy::InputElementT<Policies, 1> const min_value,
+        policy::InputElementT<Policies, 2> const max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
         return uniform(
             policies,
             input_array,
-            hpx::make_ready_future<OutputElement>(min_value).share(),
-            hpx::make_ready_future<OutputElement>(max_value).share());
+            hpx::make_ready_future<policy::InputElementT<Policies, 1>>(min_value).share(),
+            hpx::make_ready_future<policy::InputElementT<Policies, 2>>(max_value).share());
     }
 
 
@@ -194,14 +189,16 @@ namespace lue {
 
     namespace detail {
 
-        template<typename Policies, typename Element, Rank rank>
-        ArrayPartition<Element, rank> uniform_partition(
+        template<typename Policies, Rank rank>
+        auto uniform_partition(
             [[maybe_unused]] Policies const& policies,
-            OffsetT<ArrayPartition<Element, rank>> const& offset,
-            ShapeT<ArrayPartition<Element, rank>> const& partition_shape,
-            Element const min_value,
-            Element const max_value)
+            OffsetT<ArrayPartition<policy::OutputElementT<Policies, 0>, rank>> const& offset,
+            ShapeT<ArrayPartition<policy::OutputElementT<Policies, 0>, rank>> const& partition_shape,
+            policy::InputElementT<Policies, 0> const min_value,
+            policy::InputElementT<Policies, 1> const max_value)
+            -> ArrayPartition<policy::OutputElementT<Policies, 0>, rank>
         {
+            using Element = policy::OutputElementT<Policies, 0>;
             using Partition = ArrayPartition<Element, rank>;
             using PartitionData = DataT<Partition>;
 
@@ -223,6 +220,9 @@ namespace lue {
                 else if constexpr (std::is_integral_v<Element>)
                 {
                     // [min, max]
+                    // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
+                    static_assert(!std::is_same_v<Element, std::int8_t>);
+                    static_assert(!std::is_same_v<Element, std::uint8_t>);
                     return std::uniform_int_distribution<Element>{min_value, max_value};
                 }
             }();
@@ -239,12 +239,12 @@ namespace lue {
         }
 
 
-        template<typename Policies, typename Element, Rank rank>
+        template<typename Policies, Rank rank>
         struct UniformPartitionAction2:
             hpx::actions::make_action<
-                decltype(&uniform_partition<Policies, Element, rank>),
-                &uniform_partition<Policies, Element, rank>,
-                UniformPartitionAction2<Policies, Element, rank>>::type
+                decltype(&uniform_partition<Policies, rank>),
+                &uniform_partition<Policies, rank>,
+                UniformPartitionAction2<Policies, rank>>::type
         {
         };
 
@@ -258,7 +258,7 @@ namespace lue {
         public:
 
             using OutputElement = Element;
-            using Partition = lue::ArrayPartition<OutputElement, rank>;
+            using Partition = lue::ArrayPartition<Element, rank>;
             using Offset = lue::OffsetT<Partition>;
             using Shape = lue::ShapeT<Partition>;
 
@@ -266,7 +266,8 @@ namespace lue {
             static constexpr bool instantiate_per_locality{false};
 
 
-            InstantiateUniform(Element const min_value, Element const max_value):
+            InstantiateUniform(
+                hpx::shared_future<Element> const& min_value, hpx::shared_future<Element> const& max_value):
 
                 _min_value{min_value},
                 _max_value{max_value}
@@ -276,26 +277,40 @@ namespace lue {
 
 
             template<typename Policies>
-            Partition instantiate(
+            auto instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
-                Shape const& partition_shape)
+                Shape const& partition_shape) -> Partition
             {
-                using Action = detail::UniformPartitionAction2<Policies, Element, rank>;
+                using Action = detail::UniformPartitionAction2<Policies, rank>;
 
-                return hpx::async(
-                    Action{}, locality_id, policies, offset, partition_shape, _min_value, _max_value);
+                return hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::unwrapping(
+                        [locality_id, policies, offset, partition_shape](
+                            Element const min_value, Element const max_value) -> Partition {
+                            return hpx::async(
+                                Action{},
+                                locality_id,
+                                policies,
+                                offset,
+                                partition_shape,
+                                min_value,
+                                max_value);
+                        }),
+                    _min_value,
+                    _max_value);
             }
 
 
         private:
 
-            Element const _min_value;
+            hpx::shared_future<Element> _min_value;
 
-            Element const _max_value;
+            hpx::shared_future<Element> _max_value;
     };
 
 
@@ -309,28 +324,67 @@ namespace lue {
     };
 
 
-    template<typename Element, typename Policies, typename Shape>
-    PartitionedArray<Element, rank<Shape>> uniform(
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
         Policies const& policies,
         Shape const& array_shape,
         Shape const& partition_shape,
-        Element const min_value,
-        Element const max_value)
+        Scalar<policy::InputElementT<Policies, 0>> const& min_value,
+        Scalar<policy::InputElementT<Policies, 1>> const& max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
-        using Functor = InstantiateUniform<Element, rank<Shape>>;
+        using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
         return create_partitioned_array(
-            policies, array_shape, partition_shape, Functor{min_value, max_value});
+            policies, array_shape, partition_shape, Functor{min_value.value(), max_value.value()});
     }
 
 
-    template<typename Element, typename Policies, typename Shape>
-    PartitionedArray<Element, rank<Shape>> uniform(
-        Policies const& policies, Shape const& array_shape, Element const min_value, Element const max_value)
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        Shape const& partition_shape,
+        policy::InputElementT<Policies, 0> const min_value,
+        policy::InputElementT<Policies, 1> const max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
-        using Functor = InstantiateUniform<Element, rank<Shape>>;
+        return uniform(
+            policies,
+            array_shape,
+            partition_shape,
+            Scalar<policy::InputElementT<Policies, 0>>{min_value},
+            Scalar<policy::InputElementT<Policies, 1>>{max_value});
+    }
 
-        return create_partitioned_array(policies, array_shape, Functor{min_value, max_value});
+
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        Scalar<policy::InputElementT<Policies, 0>> const& min_value,
+        Scalar<policy::InputElementT<Policies, 1>> const& max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
+    {
+        using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
+
+        return create_partitioned_array(policies, array_shape, Functor{min_value.value(), max_value.value()});
+    }
+
+
+    template<typename Policies, typename Shape>
+    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        Policies const& policies,
+        Shape const& array_shape,
+        policy::InputElementT<Policies, 0> const min_value,
+        policy::InputElementT<Policies, 1> const max_value)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
+    {
+        return uniform(
+            policies,
+            array_shape,
+            Scalar<policy::InputElementT<Policies, 0>>{min_value},
+            Scalar<policy::InputElementT<Policies, 1>>{max_value});
     }
 
 }  // namespace lue

@@ -345,6 +345,13 @@ namespace lue {
                     write<uint8_t>(raster_stack_band, progress_indicator);
                     break;
                 }
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+                case GDT_Int8:
+                {
+                    write<int8_t>(raster_stack_band, progress_indicator);
+                    break;
+                }
+#endif
                 case GDT_UInt16:
                 {
                     write<uint16_t>(raster_stack_band, progress_indicator);

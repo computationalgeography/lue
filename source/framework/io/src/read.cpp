@@ -61,7 +61,7 @@ namespace lue {
     INSTANTIATE_READ(uint8_t)
     INSTANTIATE_READ(uint32_t)
     INSTANTIATE_READ(uint64_t)
-    // INSTANTIATE_READ(int8_t)
+    INSTANTIATE_READ(int8_t)
     INSTANTIATE_READ(int32_t)
     INSTANTIATE_READ(int64_t)
     INSTANTIATE_READ(float)

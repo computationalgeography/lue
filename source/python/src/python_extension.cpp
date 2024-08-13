@@ -9,6 +9,7 @@
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
 #include "lue/py/framework/submodule.hpp"
+#include "lue/py/framework_x/submodule.hpp"
 #ifdef LUE_FRAMEWORK_WITH_IMAGE_LAND
 #include "lue/py/image_land/submodule.hpp"
 #endif
@@ -38,6 +39,7 @@ namespace lue {
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
         automodules.push_back("framework");
+        automodules.push_back("framework_x");
 #ifdef LUE_FRAMEWORK_WITH_IMAGE_LAND
         automodules.push_back("image_land");
 #endif
@@ -77,6 +79,7 @@ namespace lue {
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
         framework::init_submodule(module);
+        api::init_framework_x(module);
 #ifdef LUE_FRAMEWORK_WITH_IMAGE_LAND
         image_land::init_submodule(module);
 #endif

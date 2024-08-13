@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gdal/configure.hpp"
 #include <gdal_priv.h>
 
 
@@ -25,6 +26,18 @@ namespace lue::gdal {
 
             static constexpr GDALDataType data_type{GDT_Byte};
     };
+
+
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
+    template<>
+    class TypeTraits<std::int8_t>
+    {
+
+        public:
+
+            static constexpr GDALDataType data_type{GDT_Int8};
+    };
+#endif
 
 
     template<>

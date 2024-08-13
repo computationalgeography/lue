@@ -124,6 +124,7 @@ endif()
 
 if(LUE_BUILD_QA)
     if(LUE_QA_WITH_TESTS)
+        set(ENV{CTEST_OUTPUT_ON_FAILURE} "1")
     endif()
 endif()
 
@@ -139,7 +140,7 @@ set(LUE_FRAMEWORK_CONDITION_ELEMENT uint8_t)
 set(LUE_FRAMEWORK_BOOLEAN_ELEMENT uint8_t)
 set(LUE_FRAMEWORK_INDEX_ELEMENT uint64_t)
 set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS int32_t int64_t)
+set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS int8_t int32_t int64_t)
 set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS uint8_t uint32_t uint64_t)
 set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
     ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
@@ -244,15 +245,6 @@ if(LUE_BUILD_DOCUMENTATION)
     if(NOT EDIT_DOT_GRAPH)
         message(FATAL_ERROR "edit_dot_graph.py not found")
     endif()
-
-    # find_package(LATEX)
-
-    # if(NOT LATEX_FOUND)
-    #     message(WARNING
-    #         "LaTeX could not be found. Latex documents will not be generated")
-    # else()
-    #     include(UseLATEX)
-    # endif()
 endif()
 
 
