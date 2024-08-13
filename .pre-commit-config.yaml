@@ -66,10 +66,10 @@ repos:
         source/qa/.*|
         source/view/.*|
       )$
-- repo: https://github.com/markdownlint/markdownlint
-  rev: v0.13.0
-  hooks:
-  - id: markdownlint
+# - repo: https://github.com/markdownlint/markdownlint
+#   rev: v0.13.0
+#   hooks:
+#   - id: markdownlint
 # - repo: https://github.com/codespell-project/codespell
 #   rev: v2.3.0
 #   hooks:

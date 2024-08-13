@@ -114,10 +114,10 @@ class TreeCrownTest(lue_test.TestCase):
             )
 
             # [0, nr_trees, 2 * nr_tree, ..., t * nr_trees]
-            crown_boxes.object_tracker.active_set_index.expand(nr_time_boxes)[
-                :
-            ] = np.array(
-                [t * nr_trees for t in range(nr_time_boxes)], dtype=ldm.dtype.Index
+            crown_boxes.object_tracker.active_set_index.expand(nr_time_boxes)[:] = (
+                np.array(
+                    [t * nr_trees for t in range(nr_time_boxes)], dtype=ldm.dtype.Index
+                )
             )
 
             # [0, 0, 0, ..., nr_time_boxes-1, nr_time_boxes-1]

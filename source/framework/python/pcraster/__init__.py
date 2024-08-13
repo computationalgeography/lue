@@ -26,6 +26,7 @@ LUE itself supports additional cell represenations (uint32, int64, uint64, float
 LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
+
 import numpy as np
 
 import lue.framework as lfr

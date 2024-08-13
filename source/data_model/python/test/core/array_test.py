@@ -205,9 +205,9 @@ class ArrayTest(lue_test.TestCase):
         )
 
         # Last row of last item
-        self.lue_numeric_values[
-            nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows
-        ] = new_numpy_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows]
+        self.lue_numeric_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows] = (
+            new_numpy_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows]
+        )
 
         self.assertArraysEqual(
             self.lue_numeric_values[nr_objects - 1 : nr_objects, nr_rows - 1 : nr_rows],
@@ -361,9 +361,9 @@ class ArrayTest(lue_test.TestCase):
         # )
 
         # Last cell of last item
-        self.lue_numeric_values[
-            nr_objects - 1, nr_rows - 1, nr_cols - 1
-        ] = new_numpy_values[nr_objects - 1, nr_rows - 1, nr_cols - 1]
+        self.lue_numeric_values[nr_objects - 1, nr_rows - 1, nr_cols - 1] = (
+            new_numpy_values[nr_objects - 1, nr_rows - 1, nr_cols - 1]
+        )
 
         # TODO More than two indices doesn't work. Bug in set_item. gh536
         # self.assertArraysEqual(

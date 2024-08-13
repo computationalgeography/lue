@@ -1,6 +1,6 @@
 #pragma once
-#include <array>
 #include "lue/framework/core/define.hpp"  // Rank
+#include <array>
 
 
 namespace lue {

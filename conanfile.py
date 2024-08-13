@@ -1,6 +1,7 @@
 """
 Conan recipe
 """
+
 import os
 import shutil
 

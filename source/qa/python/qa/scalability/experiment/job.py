@@ -243,9 +243,9 @@ def create_slurm_script(
         sbatch_options="\n".join(
             ["#SBATCH {}".format(option) for option in sbatch_options]
         ),
-        max_duration="#SBATCH --time={}".format(max_duration)
-        if max_duration is not None
-        else "",
+        max_duration=(
+            "#SBATCH --time={}".format(max_duration) if max_duration is not None else ""
+        ),
         software_environment=cluster.software_environment.configuration,
         job_steps="\n".join(job_steps),
     )
