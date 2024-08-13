@@ -155,6 +155,7 @@ namespace lue::server {
 
 #define LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_ELEMENT()                                           \
     LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(bool)                                              \
+    LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(int8_t)                                            \
     LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(uint8_t)                                           \
     LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(int32_t)                                           \
     LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS_RANK(uint32_t)                                          \

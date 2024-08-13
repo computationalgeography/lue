@@ -102,7 +102,7 @@ namespace lue::server {
 #define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(RouteID, rank, unique)                       \
                                                                                                              \
     namespace lue::detail {                                                                                  \
-        using SerialRoutePartitionServer_##unique = server::SerialRoutePartition<RouteID, rank>;        \
+        using SerialRoutePartitionServer_##unique = server::SerialRoutePartition<RouteID, rank>;             \
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
@@ -138,7 +138,7 @@ namespace lue::server {
                                                                                                              \
     namespace lue::detail {                                                                                  \
         using SerialRoutePartitionServerComponent_##unique =                                                 \
-            hpx::components::component<SerialRoutePartitionServer_##unique>;                    \
+            hpx::components::component<SerialRoutePartitionServer_##unique>;                                 \
     }                                                                                                        \
                                                                                                              \
     HPX_REGISTER_COMPONENT(                                                                                  \
@@ -178,6 +178,7 @@ namespace lue::server {
     LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(Element, 2, Element##_2)
 
 #define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_ELEMENT()                                    \
+    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(int8_t)                                     \
     LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(uint8_t)                                    \
     LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(int32_t)                                    \
     LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(uint32_t)                                   \

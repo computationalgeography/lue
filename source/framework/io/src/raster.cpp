@@ -478,7 +478,8 @@ namespace lue {
 
     template<typename Element>
     auto write(
-        PartitionedArray<Element, 2> const& array, std::string const& name, std::string const& clone_name) -> hpx::future<void>
+        PartitionedArray<Element, 2> const& array, std::string const& name, std::string const& clone_name)
+        -> hpx::future<void>
     {
         if constexpr (!gdal::supports<Element>())
         {
@@ -515,7 +516,8 @@ namespace lue {
                     "GTiff",
                     name,
                     gdal::Shape{
-                        static_cast<gdal::Count>(array.shape()[0]), static_cast<gdal::Count>(array.shape()[1])},
+                        static_cast<gdal::Count>(array.shape()[0]),
+                        static_cast<gdal::Count>(array.shape()[1])},
                     nr_bands,
                     data_type)};
                 gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
@@ -569,7 +571,8 @@ namespace lue {
                     {
                         // Find a ready partition. Wait for it if necessary.
                         when_any_result =
-                            hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write).get();
+                            hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write)
+                                .get();
                         partitions = std::move(when_any_result.futures);
                         idx = when_any_result.index;
 
@@ -605,6 +608,7 @@ namespace lue {
         lue::PartitionedArray<type, 2> const&, std::string const&, std::string const&);
 
 
+INSTANTIATE(int8_t)
 INSTANTIATE(uint8_t)
 INSTANTIATE(uint32_t)
 INSTANTIATE(int32_t)

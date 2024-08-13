@@ -37,7 +37,7 @@ function(add_unit_tests)
         )
 
         add_test(NAME ${test_name}
-            COMMAND ${test_name} --output-on-failure
+            COMMAND ${test_name}
         )
 
         list(APPEND test_names ${test_name})
