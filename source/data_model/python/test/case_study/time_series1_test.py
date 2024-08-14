@@ -113,9 +113,9 @@ class TimeSeriesTest(lue_test.TestCase):
             ]
 
             for t in range(nr_time_boxes):
-                discharge.value.expand(t, active_set_sizes[t], (shapes[t],))[
-                    :
-                ] = discharge_values[t]
+                discharge.value.expand(t, active_set_sizes[t], (shapes[t],))[:] = (
+                    discharge_values[t]
+                )
 
             return discharge
 

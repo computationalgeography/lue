@@ -22,16 +22,16 @@ namespace lue {
 
         auto const nr_partitions{lue::nr_partitions(array)};
 
-        std::vector<hpx::future<PartitionData>> partition_datas(nr_partitions);
+        std::vector<hpx::future<PartitionData>> partition_data(nr_partitions);
         std::vector<hpx::future<Offset>> partition_offsets(nr_partitions);
 
         for (Index p = 0; p < nr_partitions; ++p)
         {
-            partition_datas[p] = array.partitions()[p].data();
+            partition_data[p] = array.partitions()[p].data();
             partition_offsets[p] = array.partitions()[p].offset();
         }
 
-        hpx::wait_all_n(partition_datas.begin(), partition_datas.size());
+        hpx::wait_all_n(partition_data.begin(), partition_data.size());
         hpx::wait_all_n(partition_offsets.begin(), partition_offsets.size());
 
         // Shape of object array: (nr_rows, nr_cols)
@@ -42,9 +42,9 @@ namespace lue {
         for (Index p = 0; p < nr_partitions; ++p)
         {
 
-            auto const& partition_data{partition_datas[p].get()};
+            auto const& partition_data_{partition_data[p].get()};
             auto const& partition_offset{partition_offsets[p].get()};
-            auto const& partition_shape{partition_data.shape()};
+            auto const& partition_shape{partition_data_.shape()};
 
             // Location of partition in HDF5 dataset
             std::copy(partition_offset.begin(), partition_offset.end(), offset.begin());
@@ -54,7 +54,7 @@ namespace lue {
 
             hdf5::Hyperslab hyperslab{offset, count};
 
-            layer.write(hyperslab, &(*partition_data.begin()));
+            layer.write(hyperslab, &(*partition_data_.begin()));
         }
 
         return hpx::make_ready_future<void>();
@@ -96,16 +96,16 @@ namespace lue {
 
         auto const nr_partitions{lue::nr_partitions(array)};
 
-        std::vector<hpx::future<PartitionData>> partition_datas(nr_partitions);
+        std::vector<hpx::future<PartitionData>> partition_data(nr_partitions);
         std::vector<hpx::future<Offset>> partition_offsets(nr_partitions);
 
         for (Index p = 0; p < nr_partitions; ++p)
         {
-            partition_datas[p] = array.partitions()[p].data();
+            partition_data[p] = array.partitions()[p].data();
             partition_offsets[p] = array.partitions()[p].offset();
         }
 
-        hpx::wait_all_n(partition_datas.begin(), partition_datas.size());
+        hpx::wait_all_n(partition_data.begin(), partition_data.size());
         hpx::wait_all_n(partition_offsets.begin(), partition_offsets.size());
 
         // Shape of object array: (nr_time_steps, nr_rows, nr_cols)
@@ -128,9 +128,9 @@ namespace lue {
         for (Index p = 0; p < nr_partitions; ++p)
         {
 
-            auto const& partition_data{partition_datas[p].get()};
+            auto const& partition_data_{partition_data[p].get()};
             auto const& partition_offset{partition_offsets[p].get()};
-            auto const& partition_shape{partition_data.shape()};
+            auto const& partition_shape{partition_data_.shape()};
 
             // Location of partition in HDF5 dataset
             std::copy(partition_offset.begin(), partition_offset.end(), offset.begin() + 2);
@@ -140,7 +140,7 @@ namespace lue {
 
             hdf5::Hyperslab hyperslab{offset, count};
 
-            layer.write(hyperslab, &(*partition_data.begin()));
+            layer.write(hyperslab, &(*partition_data_.begin()));
         }
 
         return hpx::make_ready_future<void>();

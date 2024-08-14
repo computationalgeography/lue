@@ -89,7 +89,7 @@ namespace lue {
 
             private:
 
-                //! Stream to wite informational message to
+                //! Stream to write informational message to
                 std::ostream& _info_stream;
 
                 //! Stream to write error messages to

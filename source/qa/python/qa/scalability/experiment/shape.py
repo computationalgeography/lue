@@ -80,7 +80,7 @@ def partition_shapes(min_shape, max_shape, step):
 
 def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
     """
-    Determine a range of shapes given the folowing requirements:
+    Determine a range of shapes given the following requirements:
     - First shape equals min_shape
     - Number of cells in last shape smaller or equal to max_nr_elements
     - Each next shape contains multiplier times more elements than the

@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
     // 3. Connect the component client instance created in step 1 with
     //    the component server instance created in step 2.
 
-    // Reasons for not just returning a client instance that whill become
+    // Reasons for not just returning a client instance that will become
     // ready after some continuation has finished executing is that such
     // a continuation cannot be written easily. In some algorithms that
     // result in array of client instances:

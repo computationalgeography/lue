@@ -3,3 +3,18 @@ known_lue = "lue, lue_test"
 lines_after_imports = 2
 sections = "FUTURE,STDLIB,THIRDPARTY,LUE,FIRSTPARTY,LOCALFOLDER"
 profile = "black"
+
+[tool.codespell]
+skip = "*.cpp,*.hpp,*.tex,*_test.py,pyproject.toml"
+ignore-words-list = "nD"
+
+[tool.typos]
+default.extend-ignore-identifiers-re = [
+    ".*_FPR_.*",
+    "InputElemenT",
+    "nd",
+    "ND",
+]
+default.extend-ignore-words-re = [
+    "PN",
+]

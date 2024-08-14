@@ -55,7 +55,7 @@ class ToNumPyTest(lue_test.TestCase):
     def test_dtype(self):
         """
         The element type of the LUE array determines the element type of the numpy array. The
-        element type of the no-data value must be convertable to the element type of the LUE array.
+        element type of the no-data value must be convertible to the element type of the LUE array.
         """
         array_shape = (60, 40)
 

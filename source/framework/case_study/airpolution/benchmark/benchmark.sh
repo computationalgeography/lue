@@ -10,7 +10,7 @@ set -e
 #     - Run experiment on a number of nodes in a cluster
 #         - Iterate over nr_nodes: 1, 2, 4, 8, 16
 # - All this results in raw outputs per run. Postprocess this as a
-#     seperate step.
+#     separate step.
 #     - Wait until results are available
 #     - Create graphs
 

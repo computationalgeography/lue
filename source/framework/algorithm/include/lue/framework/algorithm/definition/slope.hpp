@@ -71,7 +71,7 @@ namespace lue {
 
         This algorithm implements Horne's slope algorithm (Horn, B.K.P. (1981)
         Hill shading and the reflectance map. Proceedings of IEEE 69(1), 14-47).
-        In pseudo-code this works as folows:
+        In pseudo-code this works as follows:
 
         @code
         dz_dx = convolve(value, dz_dx_kernel) / (8 * cell_size)

@@ -719,7 +719,7 @@ namespace lue {
             // determine inflow counts based on flow directions, and merge
             // the information about input cells. This could be split
             // into to tasks, but experiments show that the result scales
-            // worse. Apparantly, the resulting tasks become too small.
+            // worse. Apparently, the resulting tasks become too small.
             // Guideline: sometimes it is better to wait on more
             // information in order to be able to do more within a single
             // task.

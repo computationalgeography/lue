@@ -19,7 +19,7 @@ namespace lue {
                 gdal::DatasetPtr try_open_gdal_raster_stack_dataset_for_read(std::string const& dataset_name)
                 {
                     // What makes a raster a stack:
-                    // - dataset_name matches one of the folowing patterns:
+                    // - dataset_name matches one of the following patterns:
                     //     - <name>_<step>.map
                     //   Only the name part is provided by the user, we need to see whether
                     //   files exists that match the pattern. If they do, pick the first one and

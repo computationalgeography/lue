@@ -1,4 +1,5 @@
 # LUE
+
 LUE scientific database and environmental modelling framework
 
 LUE is software for storing and manipulating large amounts of information
@@ -27,13 +28,16 @@ the related technology.
     - [Documentation](https://lue.computationalgeography.org/doc)
     - [Publications](https://lue.computationalgeography.org/publication)
 - [R&D team](https://www.computationalgeography.org)
-- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org) (users)
-- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org) (developers)
+- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org)
+  (users)
+- [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue-dev:matrix.org)
+  (developers)
 
 [![Latest release](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
 
 
 ## Source code
+
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/computationalgeography/lue/)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/2c02fc1c5b13424abfc414b82104801d)](https://www.codacy.com/gh/computationalgeography/lue/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=computationalgeography/lue&amp;utm_campaign=Badge_Grade)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
@@ -43,6 +47,7 @@ the related technology.
 
 
 ## C/I builds
+
 [![Linux build status](https://github.com/computationalgeography/lue/actions/workflows/linux.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
 [![macOS build status](https://github.com/computationalgeography/lue/actions/workflows/macos.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos.yml)
 [![Windows build status](https://github.com/computationalgeography/lue/actions/workflows/windows.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows.yml)
@@ -50,11 +55,13 @@ the related technology.
 [![Conda packages build status](https://github.com/computationalgeography/lue/actions/workflows/conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/conda.yml)
 
 ## Installation
+
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/downloads.svg)](https://anaconda.org/conda-forge/lue)
 
 The easiest way to install LUE is using Conda:
+
 ```bash
 conda install -c conda-forge lue
 ```

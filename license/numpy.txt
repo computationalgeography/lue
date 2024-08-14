@@ -67,4 +67,3 @@ Name: spin
 Files: .spin/cmds.py
 License: BSD-3
   For license text, see https://github.com/numpy/numpy/tree/main/.spin/LICENSE
-

@@ -5,7 +5,7 @@ exist to do this. To support these conventions, algorithms can make use of input
 Depending on the policies used when instantiating an algorithm, it will use a specific concrete convention.
 A single application can support multiple conventions.
 
-Often a special value is used to mark no-data. This special value is then dependant on the element type. In
+Often a special value is used to mark no-data. This special value is then dependent on the element type. In
 case of floating point values, `NaN` is a popular option to represent no-data. In case of signed integral
 values, `std::numeric_limits<Element>::min` is an option, and in case of unsigned integral values,
 `std::numeric_limits<Element>::max`. But other conventions exist as well.
@@ -15,6 +15,7 @@ configurable at compile-time, LUE can support most of them, without sacrificing 
 
 
 (source-framework-algorithm-policy-input-no-data)=
+
 ## Input no-data
 
 An input no-data policy is any class that provides an interface similar to the following class:
@@ -48,6 +49,7 @@ optimizing compiler will completely remove the "check" from the code.
 
 
 (source-framework-algorithm-policy-output-no-data)=
+
 ## Output no-data
 
 An output no-data policy is any class that provides an interface similar to the following class:

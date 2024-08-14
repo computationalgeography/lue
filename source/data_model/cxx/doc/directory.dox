@@ -3,7 +3,7 @@
     @brief  Code related to storing object arrays
 
     ## Design
-    - Seperate *object array packing* from *active object tracking*. Some
+    - Separate *object array packing* from *active object tracking*. Some
         optimizations can be made, which should be handled at a higher
         level. So, nothing in the interface should suggest how active
         objects are tracked.

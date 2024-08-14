@@ -10,7 +10,7 @@ from .configuration import Configuration
 from .experiment import Experiment
 
 
-# TODO perf countrs
+# TODO perf counters
 # from tqdm import trange
 # import collections
 # import os.path
@@ -543,7 +543,7 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
 #
 #     for counter_name in counter_names:
 #         # Classify counter and add to group. Create group if not
-#         # existant yet.
+#         # existent yet.
 #         counter = parse_performance_counter_name(counter_name)
 #
 #         # Counters related to the same object

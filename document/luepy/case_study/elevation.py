@@ -36,7 +36,7 @@ object_tracker = variable.object_tracker
 ### time_boxes = time_domain.reserve(nr_time_boxes)
 ### # A box is defined by a begin and end time point (two coordinates per box)
 ### # Here, we configure time boxes with a duration of 10 days. The time
-### # inbetween the boxes is time were we don't have information.
+### # in between the boxes is time were we don't have information.
 ### time_boxes[:] = np.array([  # Dummy data...
 ###         [10,  20],
 ###         [30,  40],
@@ -67,7 +67,7 @@ object_tracker = variable.object_tracker
 ### nr_cells = nr_cells.reshape(nr_areas, 2)
 ### space_discretization.values.reserve(nr_areas)[:] = nr_cells
 ###
-### # Re-use nr_cells array with shapes of spatial fields, but add information
+### # Reuse nr_cells array with shapes of spatial fields, but add information
 ### # about the number of time steps. The resulting values will be
 ### # [nr_time_steps, nr_rows, nr_cols], where nr_rows, nr_cols is different
 ### # for each raster.

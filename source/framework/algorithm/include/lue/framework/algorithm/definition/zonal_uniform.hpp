@@ -23,7 +23,7 @@ namespace lue {
 
         // Determine unique values in zones array passed in
 
-        // TODO Link errors. I think because we instantiate for specific policie using base
+        // TODO Link errors. I think because we instantiate for specific policy using base
         // classes (e.g. DefaultValuePolicies), which result in a different type than what we do
         // here, although the actual policies used are exactly the same. We must get rid of the
         // base classes.

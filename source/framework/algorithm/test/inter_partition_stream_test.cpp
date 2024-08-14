@@ -28,8 +28,8 @@ namespace lue::test {
 
 
 // ... and only now include compare.hpp which uses check_component_is_equal
-#include "lue/framework/test/hpx_unit_test.hpp"
 #include "stream.hpp"
+#include "lue/framework/test/hpx_unit_test.hpp"
 
 
 namespace lue::test {

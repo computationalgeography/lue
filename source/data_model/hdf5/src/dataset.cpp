@@ -308,7 +308,7 @@ namespace lue::hdf5 {
         TransferPropertyList const& transfer_property_list,
         void const* buffer) const
     {
-        // Assume values in memory are layed out contiguously in all dimensions
+        // Assume values in memory are laid out contiguously in all dimensions
         Dataspace const memory_dataspace{
             create_dataspace(Shape{hyperslab.count().begin(), hyperslab.count().end()})};
 

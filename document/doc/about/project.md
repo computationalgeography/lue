@@ -1,4 +1,5 @@
 (doc-about-project)=
+
 # Project
 
 ```{include} short_description.md

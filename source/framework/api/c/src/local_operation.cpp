@@ -1,6 +1,6 @@
 #include "lue/framework/api/c/local_operation.h"
-#include "lue/framework/api/cxx/local_operation.hpp"
 #include "field.hpp"
+#include "lue/framework/api/cxx/local_operation.hpp"
 
 
 auto add(Field const* field1, Field const* field2) -> Field*

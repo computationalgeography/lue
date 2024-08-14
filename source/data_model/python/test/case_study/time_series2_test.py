@@ -32,7 +32,7 @@ class TimeSeriesTest(lue_test.TestCase):
 
         # Assume we are simulating some temporal variable (discharge at
         # catchment outlets).
-        # The existance of the objects is modelled using time cells,
+        # The existence of the objects is modelled using time cells,
         # which are discretized time boxes (daily time steps). Per cell we
         # can store which objects are active.
         # Property values are located in time at time cells.

@@ -6,8 +6,7 @@
 
 namespace lue {
 
-    template<
-        Arithmetic T>
+    template<Arithmetic T>
     auto create_scalar(T const& value) -> lue::Scalar<T>
     {
         return lue::Scalar<T>{value};
@@ -22,9 +21,7 @@ namespace lue {
         auto create_scalar(Literal const& value) -> Field
         {
             return std::visit(
-                overload{[](auto const& value) -> Field {
-                    return lue::create_scalar(value);
-                }},
+                overload{[](auto const& value) -> Field { return lue::create_scalar(value); }},
                 value.variant());
         }
 

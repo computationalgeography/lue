@@ -9,7 +9,6 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 }
 
 
-
 // #include "lue/framework/api/c/local_operation.h"
 //
 //

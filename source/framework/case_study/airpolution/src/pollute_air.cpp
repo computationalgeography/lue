@@ -1,4 +1,4 @@
-#include "polute_air.hpp"
+#include "pollute_air.hpp"
 #include "lue/framework/algorithm.hpp"
 #include "lue/framework/core/component/partitioned_array.hpp"
 
@@ -84,12 +84,12 @@ namespace {
 
     // char const* gather_basename()
     // {
-    //     // static char const* basename = "/polute_air/gather/";
+    //     // static char const* basename = "/pollute_air/gather/";
     //     // static auto const nr_localities = hpx::get_num_localities().get();
     //     // static std::string const basename =
-    //     //     fmt::format("/{}/polute_air/gather/", nr_localities);
+    //     //     fmt::format("/{}/pollute_air/gather/", nr_localities);
     //
-    //     static std::string const basename = "/polute_air/gather/";
+    //     static std::string const basename = "/pollute_air/gather/";
     //
     //     return basename.c_str();
     // }
@@ -126,7 +126,7 @@ namespace lue {
     /*!
         @brief      Calculate average airpolution based on synthetic data
     */
-    void polute_air(
+    void pollute_air(
         lue::Count const nr_time_steps,
         Shape<lue::Count, 2> const& array_shape,
         Shape<lue::Count, 2> const& partition_shape)
@@ -163,7 +163,7 @@ namespace lue {
         {
             // array = array * parameter1 + array * parameter2 + array * parameter3
 
-            // The arguments used in the calculations are not editted.
+            // The arguments used in the calculations are not edited.
             // The results are newly created partitioned arrays with
             // partitions that may not be ready yet.
 

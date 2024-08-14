@@ -6,7 +6,7 @@ namespace lue {
     namespace data_model {
 
         /*!
-            - Zero or more space boxs per item
+            - Zero or more space boxes per item
             - Each space box has a unique location in space
         */
         class MobileSpaceBox: public same_shape::constant_shape::Value

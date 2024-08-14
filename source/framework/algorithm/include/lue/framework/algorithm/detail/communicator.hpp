@@ -132,7 +132,7 @@ namespace lue::detail {
                 if (extent0 > 1 || extent1 > 1)
                 {
                     // There is at least one neighbour. Setup channels
-                    // to our neigbouring communicators.
+                    // to our neighbouring communicators.
 
                     if (idx0 > 0)
                     {

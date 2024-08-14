@@ -1,4 +1,5 @@
 (source-framework-algorithm-global)=
+
 # Global operations
 
 

@@ -15,7 +15,7 @@ namespace lue::detail {
         ShapeT<ArrayPartition<Element, 2>> const& min_shape, Element const fill_value)
     {
         // Asynchronously create a new partition:
-        // - With a shape based on the partition passsed in
+        // - With a shape based on the partition paѕsed in
         // - Filled with the fill_value passed in
 
         using Partition = ArrayPartition<Element, 2>;
@@ -32,7 +32,7 @@ namespace lue::detail {
         Element const fill_value)
     {
         // Asynchronously create a new partition:
-        // - With a shape based on the partition passsed in
+        // - With a shape based on the partition paѕsed in
         // - Filled with the fill_value passed in
 
         using Partition = ArrayPartition<Element, 2>;
@@ -61,7 +61,7 @@ namespace lue::detail {
         Element const fill_value)
     {
         // Asynchronously create a new partition:
-        // - With a shape based on the partition passsed in
+        // - With a shape based on the partition paѕsed in
         // - Filled with the fill_value passed in
 
         using Partition = ArrayPartition<Element, 2>;

@@ -354,7 +354,7 @@ namespace lue::detail::integrate_and_allocate {
                     // TODO std::shared_lock<hpx::shared_mutex> read_lock{_walk_mutex, std::defer_lock};
                     std::unique_lock<hpx::shared_mutex> write_lock{_walk_mutex, std::defer_lock};
 
-                    // First, do stuff, *using* state veriables. Don't change stuff that
+                    // First, do stuff, *using* state variables. Don't change stuff that
                     // is shared between threads. Changing different cells in a raster
                     // is fine, just don't change the same values.
                     // TODO read_lock.lock();

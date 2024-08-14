@@ -15,7 +15,7 @@ namespace lue {
             object in a set can be stored using the ActiveSetIndex class.
 
             Tracking the indices of the active objects is needed in combination
-            with the folowing object array kinds:
+            with the following object array kinds:
             - different_shape::constant_shape::Value
 
             The indices stored are the indices into the value array of each

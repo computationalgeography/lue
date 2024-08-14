@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
         BOOST_CHECK(data.begin() == data.end());
     }
 
-    // Value intialization
+    // Value initialization
     {
         Data<2> data{};
 

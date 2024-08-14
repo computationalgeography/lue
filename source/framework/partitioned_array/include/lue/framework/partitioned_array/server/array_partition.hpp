@@ -9,7 +9,7 @@
 namespace lue::server {
 
     /*!
-        @brief      Component server class for partioned array partitions
+        @brief      Component server class for partitioned array partitions
     */
     template<typename Element, Rank rank>
     class LUE_FPA_EXPORT ArrayPartition: public hpx::components::component_base<ArrayPartition<Element, rank>>

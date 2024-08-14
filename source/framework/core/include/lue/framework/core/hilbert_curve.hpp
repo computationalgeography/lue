@@ -4,7 +4,7 @@
 
 // The Hilbert curve algorithm is inspired by the Gilbert code:
 //     https://github.com/jakubcerveny/gilbert
-// That code is release under the folowing license:
+// That code is release under the following license:
 
 // BSD 2-Clause License
 //

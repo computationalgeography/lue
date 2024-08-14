@@ -12,7 +12,7 @@ namespace lue::vulkan {
     {
         if (result != VK_SUCCESS)
         {
-            throw std::runtime_error("Unexpected error occured while using the Vulkan API");
+            throw std::runtime_error("Unexpected error occurred while using the Vulkan API");
         }
     }
 

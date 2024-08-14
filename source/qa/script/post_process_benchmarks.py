@@ -91,7 +91,7 @@ def post_process_strong_scaling_benchmarks(
     figure, axes = plt.subplots(
         nrows=1,
         ncols=3,
-        figsize=(15, 5)
+        figsize=(15, 5),
         # sharex=False
     )  # Inches...
 

@@ -31,7 +31,7 @@ int main(int const argc, char* argv[])
     std::vector<std::string> cfg = {
         // // Run hpx_main on all localities
         // "hpx.run_hpx_main!=1",
-        // "application.lue_polute_air.mah!=1"
+        // "application.lue_pollute_air.mah!=1"
     };
 
     return hpx::init(argc, argv, cfg);

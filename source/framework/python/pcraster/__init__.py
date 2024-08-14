@@ -21,11 +21,12 @@ used are the PCRaster ones:
 - int32 for nominal and ordinal values
 - float32 for scalar and directional values
 
-LUE itself supports additional cell represenations (uint32, int64, uint64, float64).
+LUE itself supports additional cell representations (uint32, int64, uint64, float64).
 
 LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
 """
+
 import numpy as np
 
 import lue.framework as lfr
@@ -156,7 +157,7 @@ def translate_window_length(pcraster_window_length):
     The assumption here is that @a pcraster_window_length passed in:
     - is dividable by the cell size
     - corresponds with an odd number of cells (odd_number * cell_size)
-    - is possitive
+    - is positive
     """
     assert is_non_spatial(pcraster_window_length), pcraster_window_length
 

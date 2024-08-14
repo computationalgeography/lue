@@ -791,7 +791,7 @@ namespace lue {
 
                             if (no_data_value)
                             {
-                                // Mark occurences of no_data_value in the input as no-data
+                                // Mark occurrences of no_data_value in the input as no-data
                                 for (Index i = 0; i < partition_shape[1]; ++i)
                                 {
                                     if (destination[i] == *no_data_value)

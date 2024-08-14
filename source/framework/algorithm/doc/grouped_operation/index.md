@@ -1,4 +1,5 @@
 (source-framework-algorithm-grouped)=
+
 # Grouped operations
 
 % Operations can be part of multiple groups.

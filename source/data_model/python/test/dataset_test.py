@@ -11,7 +11,7 @@ class DatasetTest(lue_test.TestCase):
     def test_create(self):
         dataset_name = "dataset_create.lue"
 
-        lue_test.remove_file_if_existant(dataset_name)
+        lue_test.remove_file_if_existent(dataset_name)
 
         dataset = ldm.create_dataset(dataset_name)
 
@@ -98,7 +98,7 @@ class DatasetTest(lue_test.TestCase):
         # This issue surfaced only on Windows.
 
         dataset_name = "dataset_release_dataset.lue"
-        lue_test.remove_file_if_existant(dataset_name)
+        lue_test.remove_file_if_existent(dataset_name)
 
         def create_dataset():
             dataset = self.create_dataset(dataset_name)
@@ -158,7 +158,7 @@ class DatasetTest(lue_test.TestCase):
         # gh570: Similar problem as with gh431, tested above in test_release_dataset
 
         dataset_name = "dataset_release_dataset2.lue"
-        lue_test.remove_file_if_existant(dataset_name)
+        lue_test.remove_file_if_existent(dataset_name)
 
         def create_dataset():
             dataset = self.create_dataset(dataset_name)

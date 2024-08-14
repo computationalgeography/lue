@@ -20,7 +20,7 @@ namespace lue {
             not needed.
 
             Tracking the IDs of the active objects is needed in combination with
-            the folowing object array kinds:
+            the following object array kinds:
             - same_shape::constant_shape::Value
             - same_shape::variable_shape::Value
             - different_shape::constant_shape::Value

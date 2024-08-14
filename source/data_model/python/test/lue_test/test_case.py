@@ -34,7 +34,7 @@ class TestCase(unittest.TestCase):
         """
         Create dataset, removing an existing dataset first
         """
-        lue_test.remove_file_if_existant(name)
+        lue_test.remove_file_if_existent(name)
 
         return ldm.create_dataset(name)
 

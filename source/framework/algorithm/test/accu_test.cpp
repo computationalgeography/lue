@@ -3722,7 +3722,7 @@ BOOST_AUTO_TEST_CASE(all_no_data_material)
 
 BOOST_AUTO_TEST_CASE(merging_streams_case_01)
 {
-    // No-data material in ridge cell. From there on, it must propage
+    // No-data material in ridge cell. From there on, it must propagate
     // down to all downstream cells, in all downstream partitions.
 
     auto flow_direction = lue::test::merging_streams();

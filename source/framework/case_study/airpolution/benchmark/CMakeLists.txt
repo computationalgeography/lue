@@ -1,10 +1,10 @@
-add_hpx_executable(lue_airpolution_benchmark
+add_hpx_executable(lue_airpollution_benchmark
     SOURCES
-        airpolution_benchmark.cpp
+        airpollution_benchmark.cpp
 )
 
-target_link_libraries(lue_airpolution_benchmark
+target_link_libraries(lue_airpollution_benchmark
     PRIVATE
-        lue::airpolution
+        lue::airpollution
         lue::benchmark
 )

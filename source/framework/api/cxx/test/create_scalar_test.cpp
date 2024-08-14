@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx create_scalar
-#include "lue/framework/api/cxx/create_scalar.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
+#include "lue/framework/api/cxx/create_scalar.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

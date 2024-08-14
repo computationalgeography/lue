@@ -5,7 +5,7 @@ The LUE datamodel requires you to provide names for various things. Here, we pro
 
 Style
 -----
-See `PEP 8 -- Style Guide for Python Code`_, especially the `section about naming conventions`_ for information about styling Python code in general. Given the information in PEP 8, we adopted the folowing naming rule for naming things in de LUE datamodel: "use lowercase with words separated by underscores as necessary to improve readability".
+See `PEP 8 -- Style Guide for Python Code`_, especially the `section about naming conventions`_ for information about styling Python code in general. Given the information in PEP 8, we adopted the following naming rule for naming things in de LUE datamodel: "use lowercase with words separated by underscores as necessary to improve readability".
 
 
 .. _PEP 8 -- Style Guide for Python Code: https://www.python.org/dev/peps/pep-0008/

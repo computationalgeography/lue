@@ -1,5 +1,5 @@
-#include "lue/framework/api/cxx/create_scalar.hpp"
 #include "lue/framework/api/cxx/scalar.hpp"
+#include "lue/framework/api/cxx/create_scalar.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 
@@ -90,8 +90,7 @@ namespace lue::api {
 
             if (!field)
             {
-                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind,
-                size));
+                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
             }
 
             return std::move(*field);
@@ -104,9 +103,7 @@ namespace lue::api {
     {
         module.def(
             "create_scalar",
-            [](
-                double const value,
-                pybind11::object const& dtype_args) -> Field
+            [](double const value, pybind11::object const& dtype_args) -> Field
             {
                 pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
