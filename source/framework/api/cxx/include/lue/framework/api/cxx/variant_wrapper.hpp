@@ -1,23 +1,24 @@
 #pragma once
-#include <variant>
 #include <type_traits>
+#include <variant>
 
 
 namespace lue::api {
 
     namespace detail {
 
-        template <class T, class U> struct is_one_of;
+        template<class T, class U>
+        struct is_one_of;
 
         template<typename T, typename U>
         inline constexpr bool is_one_of_v = is_one_of<T, U>::value;
 
-        template <class T, class... Ts>
-        struct is_one_of<T, std::variant<Ts...>>:
-            std::bool_constant<(std::is_same_v<T, Ts> || ...)>
-            { };
+        template<class T, class... Ts>
+        struct is_one_of<T, std::variant<Ts...>>: std::bool_constant<(std::is_same_v<T, Ts> || ...)>
+        {
+        };
 
-    }
+    }  // namespace detail
 
 
     /*!
@@ -31,7 +32,10 @@ namespace lue::api {
 
         Copying is disabled.
     */
-    template<typename... Ts> class VariantWrapper { public:
+    template<typename... Ts>
+    class VariantWrapper
+    {
+        public:
 
             using Variant = std::variant<Ts...>;
 
@@ -46,8 +50,7 @@ namespace lue::api {
 
 
             template<typename T>
-            requires is_allowed_v<T>
-            VariantWrapper(T&& value):
+            requires is_allowed_v<T> VariantWrapper(T&& value):
 
                 _variant{std::forward<T>(value)}
 

@@ -23,7 +23,6 @@ namespace lue::api {
         public:
 
             using VariantWrapper::VariantWrapper;
-
     };
 
 }  // namespace lue::api

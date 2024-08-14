@@ -1,6 +1,6 @@
 #pragma once
-#include "lue/framework/api/cxx/variant_wrapper.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
 #include <cstdint>
 
 
@@ -31,7 +31,6 @@ namespace lue::api {
         public:
 
             using VariantWrapper::VariantWrapper;
-
     };
 
 }  // namespace lue::api

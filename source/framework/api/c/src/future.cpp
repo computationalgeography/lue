@@ -1,6 +1,6 @@
 #include "lue/framework/api/c/future.h"
-#include "lue/framework/api/cxx/future.hpp"
 #include "future.hpp"
+#include "lue/framework/api/cxx/future.hpp"
 
 
 void destruct_future(Future* future)

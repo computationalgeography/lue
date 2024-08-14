@@ -1,4 +1,5 @@
 Goals:
+
 - Keep the amount of code needed to get the Python package working correctly and conveniently
   as small as possible
 - Keep the amount of (public) documentation needed as small as possible
