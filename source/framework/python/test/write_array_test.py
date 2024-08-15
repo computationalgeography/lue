@@ -54,7 +54,7 @@ class WriteArrayTest(lue_test.TestCase):
 
         array_read = lfr.read_array(array_pathname, partition_shape=partition_shape)
 
-        self.assertTrue(lfr.all(array_read == array).get())
+        self.assertTrue(lfr.all(array_read == array).future.get())
 
     @lue_test.framework_test_case
     def test_write_variable_array(self):
@@ -120,4 +120,4 @@ class WriteArrayTest(lue_test.TestCase):
                 array_pathname, t, partition_shape=partition_shape
             )
 
-            self.assertTrue(lfr.all(array_read == arrays[t]).get())
+            self.assertTrue(lfr.all(array_read == arrays[t]).future.get())

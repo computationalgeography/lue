@@ -22,7 +22,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-        BOOST_CHECK(all(asin(array) == std::asin(fill_value)).get());
+        BOOST_CHECK(all(asin(array) == std::asin(fill_value)).future().get());
     }
 
 }  // namespace detail

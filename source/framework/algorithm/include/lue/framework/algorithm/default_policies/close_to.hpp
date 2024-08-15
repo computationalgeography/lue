@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/close_to.hpp"
+#include "lue/framework/algorithm/pow.hpp"
 
 
 namespace lue {
@@ -16,7 +17,8 @@ namespace lue {
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(close_to, detail::CloseTo, policy::close_to::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
+            close_to, detail::CloseTo, policy::close_to::DefaultPolicies)
 
     }  // namespace default_policies
 

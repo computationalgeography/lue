@@ -38,21 +38,21 @@ BOOST_AUTO_TEST_CASE(default_policies)
         Element const fill_value{0};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).get());
+        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
     }
 
     {
         Element const fill_value{-1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).get());
+        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
     }
 
     {
         Element const fill_value{1};
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).get());
+        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
     }
 }
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(default_value_policies)
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array == fill_value, array);
         BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).get());
+        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
     }
 
     {
@@ -81,6 +81,6 @@ BOOST_AUTO_TEST_CASE(default_value_policies)
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
         array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array != fill_value, array);
         BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{0}).get());
+        BOOST_CHECK(all(result == BooleanElement{0}).future().get());
     }
 }

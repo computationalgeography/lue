@@ -42,7 +42,7 @@ namespace lue {
         }
 
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
             equal_to, detail::EqualTo, policy::equal_to::DefaultValuePolicies)
         LUE_BINARY_COMPARISON_OPERATOR(==, equal_to)
 

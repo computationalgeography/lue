@@ -27,7 +27,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{-5})};
 
-        BOOST_CHECK(all(abs(array) == Element{5}).get());
+        BOOST_CHECK(all(abs(array) == Element{5}).future().get());
     }
 
 }  // namespace detail
@@ -64,12 +64,12 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     {
         Array array{lue::create_partitioned_array(
             array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest() + 1})};
-        BOOST_CHECK(all(valid<BooleanElement>(abs(array))).get());
+        BOOST_CHECK(all(valid<BooleanElement>(abs(array))).future().get());
     }
 
     {
         Array array{lue::create_partitioned_array(
             array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest()})};
-        BOOST_CHECK(none(valid<BooleanElement>(abs(array))).get());
+        BOOST_CHECK(none(valid<BooleanElement>(abs(array))).future().get());
     }
 }

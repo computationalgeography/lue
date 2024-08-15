@@ -32,6 +32,7 @@ foreach(name IN ITEMS
     about/publication.md
     about/related.md
     about/release.md
+    about/short_description.md
     contribute/documentation.md
     contribute/index.md
     contribute/release.md
@@ -63,8 +64,9 @@ foreach(name IN ITEMS
     reference/c/index.md
     reference/cpp/index.md
     reference/index.md
-    reference/java/index.md
-    reference/julia/index.md
+    # reference/fortran/index.md
+    # reference/java/index.md
+    # reference/julia/index.md
     reference/operation/index.md
     reference/operation/uniform.md
     # reference/python/data_model/index.rst
@@ -72,8 +74,8 @@ foreach(name IN ITEMS
     # reference/python/data_model/index.rst
     # reference/python/framework/index.rst
     reference/python/index.md
-    reference/r/index.md
-    reference/rust/index.md
+    # reference/r/index.md
+    # reference/rust/index.md
     references.bib
     reference/utility/index.md
     reference/utility/lue_calculate.md
@@ -81,7 +83,6 @@ foreach(name IN ITEMS
     reference/utility/lue_translate.md
     reference/utility/lue_validate.md
     reference/utility/lue_view.md
-    short_description.md
     _toc.yml
 )
     configure_file(${name} ${name} COPYONLY)
@@ -97,6 +98,9 @@ foreach(name IN ITEMS
     framework/algorithm/doc/policy/domain.md
     framework/algorithm/doc/policy/range.md
     framework/algorithm/doc/template.md
+
+    framework/api/doc/index.md
+    framework/api/cxx/doc/index.md
 
     framework/doc/test/index.md
 
@@ -115,6 +119,7 @@ foreach(name IN ITEMS
     framework/algorithm/doc/grouped_operation/array_operation.md
     framework/algorithm/doc/grouped_operation/random_number_operation.md
 
+    framework/core/doc/index.md
     framework/partitioned_array/doc/index.md
     framework/partitioned_route/doc/index.md
 

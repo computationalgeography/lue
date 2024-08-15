@@ -22,7 +22,7 @@ class ValidTest(lue_test.TestCase):
 
         result = lfr.valid(array)
 
-        self.assertTrue(lfr.all(result == 1).get())
+        self.assertTrue(lfr.all(result == 1).future.get())
 
     @lue_test.framework_test_case
     def test_all_invalid(self):
@@ -36,4 +36,4 @@ class ValidTest(lue_test.TestCase):
 
         result = lfr.valid(array)
 
-        self.assertTrue(lfr.all(result == 0).get())
+        self.assertTrue(lfr.all(result == 0).future.get())

@@ -25,6 +25,6 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(less_than_equal_to, detail::LessThanEqualTo)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(less_than_equal_to, detail::LessThanEqualTo)
 
 }  // namespace lue

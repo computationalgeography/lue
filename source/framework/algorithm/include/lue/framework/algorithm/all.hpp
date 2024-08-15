@@ -56,7 +56,7 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    hpx::future<Element> all(Policies const& policies, PartitionedArray<Element, rank> const& array)
+    auto all(Policies const& policies, PartitionedArray<Element, rank> const& array) -> Scalar<Element>
     {
         using Functor = detail::All<Element>;
 
@@ -65,10 +65,10 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    hpx::future<Element> all(
+    auto all(
         hpx::id_type const locality_id,
         Policies const& policies,
-        ArrayPartition<Element, rank> const& partition)
+        ArrayPartition<Element, rank> const& partition) -> Scalar<Element>
     {
         using Functor = detail::All<Element>;
 

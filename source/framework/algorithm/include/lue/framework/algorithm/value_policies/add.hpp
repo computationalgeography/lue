@@ -37,8 +37,9 @@ namespace lue {
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS5(add, detail::Add, policy::add::DefaultValuePolicies)
-        LUE_BINARY_ARITHMETIC_OPERATOR2(+, add)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
+            add, detail::Add, policy::add::DefaultValuePolicies)
+        LUE_BINARY_ARITHMETIC_OPERATOR(+, add)
 
     }  // namespace value_policies
 }  // namespace lue

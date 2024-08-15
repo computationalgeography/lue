@@ -22,7 +22,7 @@ namespace lue {
         /*!
             @brief      Primary template for traits of an array-like type
             @tparam     Array-like type
-            @todo       Rename to TypeTraits
+            @todo       Rename to TypeTraits (FieldTraits?)
 
             Specializations add traits that are relevant for the actual array-like
             type. Some of these traits are relevant for all array-like types

@@ -27,7 +27,7 @@ class CreateArrayTest(lue_test.TestCase):
 
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
-        self.assertTrue(lfr.all(array == fill_value).get())
+        self.assertTrue(lfr.all(array == fill_value).future.get())
 
     @lue_test.framework_test_case
     def test_create_array02(self):
@@ -40,4 +40,4 @@ class CreateArrayTest(lue_test.TestCase):
 
         self.assertEqual(array.dtype, dtype)
         # self.assertEqual(array.shape, (?, ?))
-        self.assertTrue(lfr.all(array == fill_value).get())
+        self.assertTrue(lfr.all(array == fill_value).future.get())

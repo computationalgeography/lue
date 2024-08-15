@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
     // The number of unique values per partition is 1
     // Per partition a single count >= 0
     lue::PartitionedArray<std::int64_t, 2> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
+    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).future().get());
 
     // The number of unique values in the array equals the number of partitions
     std::set<Element> const unique_values = unique(array).get();
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
 
     // The number of unique values per partition is 1
     lue::PartitionedArray<std::int64_t, rank> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).get());
+    BOOST_CHECK(all(equal_to(counts, std::int64_t{1})).future().get());
 
     // The number of unique values in the array equals the number of localities
     std::set<Element> const unique_values = unique(array).get();
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, fill_value);
 
-    BOOST_CHECK(all(equal_to(array, fill_value)).get());
+    BOOST_CHECK(all(equal_to(array, fill_value)).future().get());
 }
 
 
@@ -448,7 +448,8 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 
     // In each partition we put a no-data value, so the number of no-data values must be equal
     // to the number of partitions.
-    BOOST_CHECK_EQUAL(lue::default_policies::sum(!valid<std::uint8_t>(array)).get(), array.nr_partitions());
+    BOOST_CHECK_EQUAL(
+        lue::default_policies::sum(!valid<std::uint8_t>(array)).future().get(), array.nr_partitions());
 
     // Now test these explicitly. All other values must then be valid, by definition.
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();

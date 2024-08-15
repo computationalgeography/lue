@@ -28,7 +28,7 @@ namespace detail {
         {
             auto divide = array1 / array2;
 
-            BOOST_CHECK(all(divide == fill_value1 / fill_value2).get());
+            BOOST_CHECK(all(divide == fill_value1 / fill_value2).future().get());
         }
 
         // Divide scalar by array
@@ -36,7 +36,7 @@ namespace detail {
         {
             auto divide = array1 / fill_value1;
 
-            BOOST_CHECK(all(divide == fill_value1 / fill_value1).get());
+            BOOST_CHECK(all(divide == fill_value1 / fill_value1).future().get());
         }
 
         // Divide scalar by array
@@ -44,7 +44,7 @@ namespace detail {
         {
             auto divide = fill_value1 / array1;
 
-            BOOST_CHECK(all(divide == fill_value1 / fill_value1).get());
+            BOOST_CHECK(all(divide == fill_value1 / fill_value1).future().get());
         }
     }
 

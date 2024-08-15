@@ -25,8 +25,8 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{-5})};
 
-        BOOST_CHECK(all(negate(array) == Element{5}).get());
-        BOOST_CHECK(all(negate(negate(array)) == Element{-5}).get());
+        BOOST_CHECK(all(negate(array) == Element{5}).future().get());
+        BOOST_CHECK(all(negate(negate(array)) == Element{-5}).future().get());
     }
 
 }  // namespace detail

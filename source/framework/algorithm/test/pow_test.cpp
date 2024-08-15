@@ -23,9 +23,9 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-        auto pow = lue::pow(array, exponent);
+        auto pow = lue::default_policies::pow(array, exponent);
 
-        BOOST_CHECK(all(pow == std::pow(fill_value, exponent)).get());
+        BOOST_CHECK(all(pow == std::pow(fill_value, exponent)).future().get());
     }
 
 }  // namespace detail

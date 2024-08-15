@@ -73,7 +73,7 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    hpx::future<Element> any(PartitionedArray<Element, rank> const& array)
+    auto any(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
     {
         using Functor = detail::Any<Element>;
         using Policies = policy::any::DefaultPolicies<Element>;

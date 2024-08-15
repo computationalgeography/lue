@@ -35,15 +35,15 @@ namespace detail {
             array1 = uniform(array1, min_value, max_value);
 
             // min_value <= array1 < max_value
-            BOOST_CHECK(all(array1 >= min_value).get());
+            BOOST_CHECK(all(array1 >= min_value).future().get());
 
             if constexpr (std::is_floating_point_v<Element>)
             {
-                BOOST_CHECK(all(array1 < max_value).get());
+                BOOST_CHECK(all(array1 < max_value).future().get());
             }
             else if constexpr (std::is_integral_v<Element>)
             {
-                BOOST_CHECK(all(array1 <= max_value).get());
+                BOOST_CHECK(all(array1 <= max_value).future().get());
             }
         }
 
@@ -51,15 +51,15 @@ namespace detail {
             array2 = uniform(array2, min_value, max_value);
 
             // min_value <= array2 < max_value
-            BOOST_CHECK(all(array2 >= min_value).get());
+            BOOST_CHECK(all(array2 >= min_value).future().get());
 
             if constexpr (std::is_floating_point_v<Element>)
             {
-                BOOST_CHECK(all(array2 < max_value).get());
+                BOOST_CHECK(all(array2 < max_value).future().get());
             }
             else if constexpr (std::is_integral_v<Element>)
             {
-                BOOST_CHECK(all(array2 <= max_value).get());
+                BOOST_CHECK(all(array2 <= max_value).future().get());
             }
         }
 
@@ -67,15 +67,15 @@ namespace detail {
             auto result = uniform(array1, min_value, max_value);
 
             // min_value <= result < max_value
-            BOOST_CHECK(all(result >= min_value).get());
+            BOOST_CHECK(all(result >= min_value).future().get());
 
             if constexpr (std::is_floating_point_v<Element>)
             {
-                BOOST_CHECK(all(result < max_value).get());
+                BOOST_CHECK(all(result < max_value).future().get());
             }
             else if constexpr (std::is_integral_v<Element>)
             {
-                BOOST_CHECK(all(result <= max_value).get());
+                BOOST_CHECK(all(result <= max_value).future().get());
             }
         }
     }
@@ -135,5 +135,6 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     BOOST_CHECK(
         all(logical_and(greater_than_equal_to(array, min_value), less_than_equal_to(array, max_value)))
+            .future()
             .get());
 }

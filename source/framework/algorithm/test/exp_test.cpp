@@ -25,7 +25,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-        BOOST_CHECK(all(exp(array) == std::exp(fill_value)).get());
+        BOOST_CHECK(all(exp(array) == std::exp(fill_value)).future().get());
     }
 
 }  // namespace detail
@@ -59,5 +59,5 @@ BOOST_AUTO_TEST_CASE(out_of_range)
 
     Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-    BOOST_CHECK(none(valid<std::uint8_t>(exp(array))).get());
+    BOOST_CHECK(none(valid<std::uint8_t>(exp(array))).future().get());
 }

@@ -10,6 +10,7 @@ namespace detail {
     void test_array()
     {
         using Array = lue::PartitionedArray<Element, rank>;
+        using Scalar = lue::Scalar<ResultElement>;
 
         auto const array_shape{lue::Test<Array>::shape()};
         auto const partition_shape{lue::Test<Array>::partition_shape()};
@@ -21,10 +22,11 @@ namespace detail {
         auto sum = lue::value_policies::sum<ResultElement>(array);
 
         using TypeWeGot = decltype(sum);
-        using TypeWeWant = hpx::future<ResultElement>;
+        using TypeWeWant = Scalar;
         static_assert(std::is_same_v<TypeWeGot, TypeWeWant>);
 
-        BOOST_CHECK_EQUAL(sum.get(), static_cast<Element>(lue::nr_elements(array_shape) * fill_value));
+        BOOST_CHECK_EQUAL(
+            sum.future().get(), static_cast<Element>(lue::nr_elements(array_shape) * fill_value));
     }
 
 

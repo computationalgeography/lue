@@ -29,8 +29,8 @@ class FromNumPyTest(lue_test.TestCase):
 
     #     self.assertEqual(lue_array.dtype, dtype)
     #     self.assertEqual(lue_array.shape, array_shape)
-    #     self.assertEqual(lfr.minimum(lue_array).get(), 0)
-    #     self.assertEqual(lfr.maximum(lue_array).get(), nr_cells - 1)
+    #     self.assertEqual(lfr.minimum(lue_array).future.get(), 0)
+    #     self.assertEqual(lfr.maximum(lue_array).future.get(), nr_cells - 1)
 
     # @lue_test.framework_test_case
     # def test_mark_no_data(self):
@@ -47,8 +47,8 @@ class FromNumPyTest(lue_test.TestCase):
     #         numpy_array, partition_shape=partition_shape, no_data_value=999
     #     )
 
-    #     self.assertEqual(lfr.minimum(lue_array).get(), 5)
-    #     self.assertEqual(lfr.maximum(lue_array).get(), 5)
+    #     self.assertEqual(lfr.minimum(lue_array).future.get(), 5)
+    #     self.assertEqual(lfr.maximum(lue_array).future.get(), 5)
 
     #     # TODO Verify that the array contains three no-data elements
 
@@ -64,8 +64,8 @@ class FromNumPyTest(lue_test.TestCase):
 
     #     self.assertEqual(lue_array.dtype, dtype)
     #     self.assertEqual(lue_array.shape, array_shape)
-    #     self.assertEqual(lfr.minimum(lue_array).get(), 0)
-    #     self.assertEqual(lfr.maximum(lue_array).get(), 0)
+    #     self.assertEqual(lfr.minimum(lue_array).future.get(), 0)
+    #     self.assertEqual(lfr.maximum(lue_array).future.get(), 0)
 
     # @lue_test.framework_test_case
     # def test_dtype(self):

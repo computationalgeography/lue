@@ -53,6 +53,7 @@ namespace lue::framework {
     void bind_routing_operations(pybind11::module& module);
     void bind_zonal_operations(pybind11::module& module);
     void bind_partitioned_array(pybind11::module& module);
+    void bind_scalar(pybind11::module& module);
     void bind_serial_route(pybind11::module& module);
     void bind_wait_serial_route(pybind11::module& module);
 
@@ -91,6 +92,7 @@ namespace lue::framework {
         bind_hpx(submodule);
 
         // Wrap high-level data structures
+        bind_scalar(submodule);
         bind_partitioned_array(submodule);
         bind_serial_route(submodule);
         bind_wait_serial_route(submodule);

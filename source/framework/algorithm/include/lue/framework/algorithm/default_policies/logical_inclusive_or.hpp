@@ -17,7 +17,7 @@ namespace lue {
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
             logical_inclusive_or, detail::LogicalInclusiveOr, policy::logical_inclusive_or::DefaultPolicies)
         LUE_BINARY_LOGICAL_OPERATOR(||, logical_inclusive_or)
 

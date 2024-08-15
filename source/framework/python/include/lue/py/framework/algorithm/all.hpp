@@ -5,9 +5,9 @@
 namespace lue::framework {
 
     template<typename Element, Rank rank>
-    hpx::shared_future<Element> all(PartitionedArray<Element, rank> const& array)
+    auto all(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
     {
-        return value_policies::all(array).share();
+        return value_policies::all(array);
     }
 
 }  // namespace lue::framework

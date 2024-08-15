@@ -4,24 +4,37 @@
 
 namespace lue::framework {
 
-#define LUE_ADD_OVERLOADS(type, rank)                                                                        \
-    module.def("add", add<type, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);          \
-    module.def("add", add<type, rank, PartitionedArray<type, rank>, type>);                                  \
-    module.def("add", add<type, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>);              \
-    module.def("add", add<type, rank, type, PartitionedArray<type, rank>>);                                  \
-    module.def("add", add<type, rank, hpx::shared_future<type>, PartitionedArray<type, rank>>);
+    namespace {
+
+        template<typename Element>
+        constexpr void define_add_overloads(pybind11::module& module)
+        {
+            Rank const rank{2};
+
+            module.def(
+                "add", add<Element, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);
+            module.def("add", add<Element, rank, PartitionedArray<Element, rank>, Scalar<Element>>);
+            module.def("add", add<Element, rank, PartitionedArray<Element, rank>, Element>);
+
+            module.def("add", add<Element, rank, Scalar<Element>, PartitionedArray<Element, rank>>);
+            module.def("add", add<Element, rank, Element, PartitionedArray<Element, rank>>);
+
+            module.def("add", add<Element, Scalar<Element>, Element>);
+            module.def("add", add<Element, Element, Scalar<Element>>);
+        }
+
+    }  // Anonymous namespace
 
 
     void bind_add(pybind11::module& module)
     {
-        // TODO How to document these?
-        LUE_ADD_OVERLOADS(std::uint8_t, 2)
-        LUE_ADD_OVERLOADS(std::uint32_t, 2)
-        LUE_ADD_OVERLOADS(std::uint64_t, 2)
-        LUE_ADD_OVERLOADS(std::int32_t, 2)
-        LUE_ADD_OVERLOADS(std::int64_t, 2)
-        LUE_ADD_OVERLOADS(float, 2)
-        LUE_ADD_OVERLOADS(double, 2)
+        define_add_overloads<std::uint8_t>(module);
+        define_add_overloads<std::uint32_t>(module);
+        define_add_overloads<std::uint64_t>(module);
+        define_add_overloads<std::int32_t>(module);
+        define_add_overloads<std::int64_t>(module);
+        define_add_overloads<float>(module);
+        define_add_overloads<double>(module);
     }
 
 }  // namespace lue::framework

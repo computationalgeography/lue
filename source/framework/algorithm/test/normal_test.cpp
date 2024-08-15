@@ -32,8 +32,8 @@ namespace detail {
 
         array = normal(array, mean, stddev);
 
-        BOOST_CHECK(all(array > mean - (10 * stddev)).get());
-        BOOST_CHECK(all(array < mean + (10 * stddev)).get());
+        BOOST_CHECK(all(array > mean - (10 * stddev)).future().get());
+        BOOST_CHECK(all(array < mean + (10 * stddev)).future().get());
     }
 
 }  // namespace detail
@@ -85,6 +85,6 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Array array = normal(array_shape, partition_shape, mean, stddev);
 
-    BOOST_CHECK(all(array > mean - (10 * stddev)).get());
-    BOOST_CHECK(all(array < mean + (10 * stddev)).get());
+    BOOST_CHECK(all(array > mean - (10 * stddev)).future().get());
+    BOOST_CHECK(all(array < mean + (10 * stddev)).future().get());
 }

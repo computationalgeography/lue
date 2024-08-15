@@ -6,9 +6,9 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        hpx::shared_future<Element> maximum(PartitionedArray<Element, rank> const& array)
+        auto maximum(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
-            return value_policies::maximum(array).share();
+            return value_policies::maximum(array);
         }
 
     }  // Anonymous namespace

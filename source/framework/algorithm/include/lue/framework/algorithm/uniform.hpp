@@ -336,7 +336,7 @@ namespace lue {
         using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
         return create_partitioned_array(
-            policies, array_shape, partition_shape, Functor{min_value.value(), max_value.value()});
+            policies, array_shape, partition_shape, Functor{min_value.future(), max_value.future()});
     }
 
 
@@ -368,7 +368,8 @@ namespace lue {
     {
         using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
-        return create_partitioned_array(policies, array_shape, Functor{min_value.value(), max_value.value()});
+        return create_partitioned_array(
+            policies, array_shape, Functor{min_value.future(), max_value.future()});
     }
 
 

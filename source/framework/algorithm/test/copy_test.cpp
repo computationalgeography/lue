@@ -24,7 +24,7 @@ namespace detail {
 
         auto copy = lue::copy(array);
 
-        BOOST_CHECK(all(copy == array).get());
+        BOOST_CHECK(all(copy == array).future().get());
     }
 
 }  // namespace detail

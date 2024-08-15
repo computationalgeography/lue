@@ -51,7 +51,7 @@ namespace lue {
     template<typename Policies, Rank rank>
     auto minimum(
         Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array)
-        -> hpx::future<policy::OutputElementT<Policies, 0>>
+        -> Scalar<policy::OutputElementT<Policies, 0>>
     {
         using Functor =
             detail::Minimum<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>;
@@ -67,4 +67,4 @@ namespace lue {
     template LUE_GLOBAL_OPERATION_EXPORT auto minimum<ArgumentType<void(Policies)>, rank>(                   \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const&)                                   \
-        ->hpx::future<policy::OutputElementT<Policies, 0>>;
+        ->Scalar<policy::OutputElementT<Policies, 0>>;

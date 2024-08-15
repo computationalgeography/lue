@@ -26,8 +26,8 @@ namespace detail {
 
         // !array
         {
-            BOOST_CHECK(none(!array1).get());  // !true
-            BOOST_CHECK(all(!array2).get());   // !false
+            BOOST_CHECK(none(!array1).future().get());  // !true
+            BOOST_CHECK(all(!array2).future().get());   // !false
         }
     }
 

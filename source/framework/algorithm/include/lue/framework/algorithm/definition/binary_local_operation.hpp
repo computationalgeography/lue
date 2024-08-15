@@ -685,7 +685,7 @@ namespace lue {
         hpx::shared_future<InputElement2> const& input_scalar,                                               \
         ArgumentType<void(Functor)> const&);
 
-#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                              \
+#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION_REMOVE(                                                       \
     Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                                    \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<OutputElement, rank> binary_local_operation<        \
@@ -767,3 +767,8 @@ namespace lue {
         hpx::shared_future<InputElement2> const&,                                                            \
         ArgumentType<void(Functor)> const&)                                                                  \
         ->hpx::future<OutputElement>;
+
+#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(                                                              \
+    Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                                    \
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION2(                                                                 \
+        (Policies), OutputElement, InputElement1, InputElement2, rank, (Functor))

@@ -162,7 +162,7 @@ namespace lue {
 
                     return output_value;
                 }),
-            input_scalar.value());
+            input_scalar.future());
     }
 
 }  // namespace lue
