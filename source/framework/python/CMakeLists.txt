@@ -60,7 +60,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
     src/algorithm/multiply.cpp
-    src/algorithm/modulus.cpp
     src/algorithm/normal.cpp
     src/algorithm/not_equal_to.cpp
     src/algorithm/pow.cpp
@@ -100,6 +99,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/modulus.cpp
     src/algorithm/local_operation/negate.cpp
     src/algorithm/local_operation/round.cpp
     src/algorithm/local_operation/unique_id.cpp

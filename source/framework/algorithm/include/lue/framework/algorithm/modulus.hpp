@@ -12,6 +12,7 @@ namespace lue {
             public:
 
                 static_assert(std::is_integral_v<InputElement>);
+                static_assert(std::is_same_v<InputElement, OutputElement_>);
 
                 using OutputElement = OutputElement_;
 
@@ -36,7 +37,7 @@ namespace lue {
                 static constexpr bool within_domain(
                     [[maybe_unused]] Element const numerator, Element const denominator) noexcept
                 {
-                    return denominator != 0;
+                    return denominator != Element{0};
                 }
         };
 
