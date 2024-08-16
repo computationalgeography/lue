@@ -19,7 +19,7 @@ namespace lue {
             ESC(detail::EqualTo<{{ ExpressionElement }}, {{ BooleanElement }}>)
         );
 
-    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION2(
+    LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(
             ESC(policy::equal_to::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
             {{ BooleanElement }},
             {{ ExpressionElement }},
