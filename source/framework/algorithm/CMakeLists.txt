@@ -228,7 +228,7 @@ block()
             endforeach()
         endforeach()
     endforeach()
-	
+
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
@@ -239,9 +239,9 @@ block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(rank IN LISTS ranks)
-			
+
 			    math(EXPR count "${count} + 1")
-			
+
                 # Instantiate modulus
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${count}.cpp")
 
@@ -258,7 +258,7 @@ block()
             endforeach()
         endforeach()
     endforeach()
-	
+
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 

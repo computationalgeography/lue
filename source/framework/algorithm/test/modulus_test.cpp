@@ -1,10 +1,7 @@
-#define BOOST_TEST_MODULE lue framework algorithm multiply
+#define BOOST_TEST_MODULE lue framework algorithm modulus
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/all.hpp"
-#include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/modulus.hpp"
 #include "lue/framework/algorithm/value_policies/modulus.hpp"
-#include "lue/framework/algorithm/value_policies/none.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
@@ -76,7 +73,7 @@ namespace detail {
     }
 
     template<typename Element, std::size_t rank>
-    void test_modulus_random_array()
+    void test_modulus_nonuniform_array()
     {
         using namespace lue::value_policies;
 
@@ -91,10 +88,10 @@ namespace detail {
 
             {
                 // clang-format off
-            {908, 12, 200, 5}, 
-            {-5, -10, 809, -1}, 
-            {0, 0, 0, 0}, 
-            {5, 5, 5, 5}
+                {908, 12, 200, 5},
+                {-5, -10, 809, -1},
+                {0, 0, 0, 0},
+                {5, 5, 5, 5}
                 // clang-format on
             });
 
@@ -103,10 +100,10 @@ namespace detail {
             partition_shape_specific,
             {
                 // clang-format off
-            {2, 3, 6, 5}, 
-            {-5, 10, -10, 8}, 
-            {2, 2, 2, 2}, 
-            {5, 5, 5, 5}
+                {2, 3, 6, 5},
+                {-5, 10, -10, 8},
+                {2, 2, 2, 2},
+                {5, 5, 5, 5}
                 // clang-format on
             });
 
@@ -115,10 +112,10 @@ namespace detail {
             partition_shape_specific,
             {
                 // clang-format off
-            {908 % 2, 12 % 3, 200 % 6, 5 % 5},
-            {-5 % -5, -10 % 10, 809 % -10, -1 % 8},
-            {0, 0, 0, 0},
-            {0, 0, 0, 0}
+                {908 % 2, 12 % 3, 200 % 6, 5 % 5},
+                {-5 % -5, -10 % 10, 809 % -10, -1 % 8},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
                 // clang-format on
             });
 
@@ -139,81 +136,117 @@ namespace detail {
 
         Element const nd{lue::policy::no_data_value<Element>};
 
-        Array<Element, rank> array1 = lue::test::create_partitioned_array<Array<Element, rank>>(
-            array_shape_specific,
-            partition_shape_specific,
-            {
-                // clang-format off
-            {nd, nd, nd, nd}, 
-            {nd, nd, nd, nd},
-            {nd, nd, nd, nd}, 
-            {nd, nd, nd, nd}
-                // clang-format on
-            });
+        {
+            // Test case 1: First input array contains no-data values, second input array has values
 
-        Array<Element, rank> array2 = lue::test::create_partitioned_array<Array<Element, rank>>(
-            array_shape_specific,
-            partition_shape_specific,
-            {
-                // clang-format off
-            {2, 3, 6, 5},
-            {-5, 10, -10, 8}, 
-            {0, 0, 0, 0}, 
-            {nd, nd, nd, nd}
-                // clang-format on
-            });
+            Array<Element, rank> array1 = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd}
+                    // clang-format on
+                });
 
-        Array<Element, rank> array_we_want = lue::test::create_partitioned_array<Array<Element, rank>>(
-            array_shape_specific,
-            partition_shape_specific,
-            {
-                // clang-format off
-            {nd, nd, nd, nd}, 
-            {nd, nd, nd, nd},
-            {nd, nd, nd, nd},
-            {nd, nd, nd, nd}
-                // clang-format on
-            });
+            Array<Element, rank> array2 = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {2, 3, 6, 5},
+                {-5, 10, -10, 8},
+                {0, 0, 0, 0},
+                {nd, nd, nd, nd}
+                    // clang-format on
+                });
 
-        auto modulus = array1 % array2;
+            Array<Element, rank> array_we_want = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd}
+                    // clang-format on
+                });
 
-        lue::test::check_arrays_are_equal(modulus, array_we_want);
+            auto modulus = array1 % array2;
+
+            lue::test::check_arrays_are_equal(modulus, array_we_want);
+        }
+
+        {
+            // Test case 2: First input array has values, second input array contains no-data values
+
+            Array<Element, rank> array1 = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {2, 3, 6, 5},
+                {-5, 10, -10, 8},
+                {0, 0, 0, 0},
+                {7, 8, 9, 10}
+                    // clang-format on
+                });
+
+            Array<Element, rank> array2 = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd}
+                    // clang-format on
+                });
+
+            Array<Element, rank> array_we_want = lue::test::create_partitioned_array<Array<Element, rank>>(
+                array_shape_specific,
+                partition_shape_specific,
+                {
+                    // clang-format off
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd},
+                {nd, nd, nd, nd}
+                    // clang-format on
+                });
+
+            auto modulus = array1 % array2;
+            lue::test::check_arrays_are_equal(modulus, array_we_want);
+        }
     }
 
 }  // namespace detail
 
+BOOST_AUTO_TEST_CASE(array_2d_int32_t_modulus_array)
+{
+    detail::test_array_modulus_array<int32_t, 2>();
+}
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_modulus_array)                                          \
-    {                                                                                                        \
-        detail::test_array_modulus_array<Element, rank>();                                                   \
-    }                                                                                                        \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_modulus_scalar)                                         \
-    {                                                                                                        \
-        detail::test_array_modulus_scalar<Element, rank>();                                                  \
-    }                                                                                                        \
-    BOOST_AUTO_TEST_CASE(scalar_##rank##d_##Element##_modulus_array)                                         \
-    {                                                                                                        \
-        detail::test_scalar_modulus_array<Element, rank>();                                                  \
-    }                                                                                                        \
-    BOOST_AUTO_TEST_CASE(modulus_##rank##d_##Element##_random_values)                                        \
-    {                                                                                                        \
-        detail::test_modulus_random_array<Element, rank>();                                                  \
-    }                                                                                                        \
-    BOOST_AUTO_TEST_CASE(modulus_##rank##d_##Element##_no_data_values)                                       \
-    {                                                                                                        \
-        detail::test_modulus_no_data_values<Element, rank>();                                                \
-    }
+BOOST_AUTO_TEST_CASE(array_2d_int32_t_modulus_scalar)
+{
+    detail::test_array_modulus_scalar<int32_t, 2>();
+}
 
+BOOST_AUTO_TEST_CASE(scalar_2d_int32_t_modulus_array)
+{
+    detail::test_scalar_modulus_array<int32_t, 2>();
+}
 
-// TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-//  TEST_CASE(1, float)
-//  TEST_CASE(2, float)
-//  TEST_CASE(1, double)
-//  TEST_CASE(2, double)
+BOOST_AUTO_TEST_CASE(modulus_2d_int32_t_random_values)
+{
+    detail::test_modulus_nonuniform_array<int32_t, 2>();
+}
 
-#undef TEST_CASE
+BOOST_AUTO_TEST_CASE(modulus_2d_int32_t_no_data_values)
+{
+    detail::test_modulus_no_data_values<int32_t, 2>();
+}

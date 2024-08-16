@@ -1,11 +1,12 @@
 #pragma once
 #include "lue/framework/algorithm/modulus.hpp"
 
+
 namespace lue {
     namespace policy::modulus {
 
-    template<typename Element>
-    using DefaultValuePolicies = policy::DefaultValuePolicies<
+        template<typename Element>
+        using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<Element>,
             OutputElements<Element>,
             InputElements<Element, Element>>;

@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/modulus.hpp"
 
 
@@ -21,5 +20,4 @@ namespace lue {
         LUE_BINARY_ARITHMETIC_OPERATOR(%, modulus)
 
     }  // namespace default_policies
-
 }  // namespace lue
