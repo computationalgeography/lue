@@ -46,6 +46,6 @@ namespace lue {
     }  // namespace policy::divide
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(divide, detail::Divide)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(divide, detail::Divide)
 
 }  // namespace lue

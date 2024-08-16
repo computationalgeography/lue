@@ -20,7 +20,7 @@ namespace detail {
 
         Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{25})};
 
-        BOOST_CHECK(all(log(array) == std::log(Element{25})).get());
+        BOOST_CHECK(all(log(array) == std::log(Element{25})).future().get());
     }
 
 }  // namespace detail

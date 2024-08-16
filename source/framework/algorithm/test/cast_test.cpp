@@ -33,7 +33,7 @@ namespace detail {
         auto array_we_got = cast<OutputElement>(array);
         auto array_we_want = lue::array_like(array, static_cast<OutputElement>(fill_value));
 
-        BOOST_CHECK(all(array_we_got == array_we_want).get());
+        BOOST_CHECK(all(array_we_got == array_we_want).future().get());
     }
 
 }  // namespace detail

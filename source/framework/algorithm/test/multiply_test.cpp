@@ -32,7 +32,7 @@ namespace detail {
             auto multiply = array1 * array2;
             auto equal_to = multiply == fill_value1 * fill_value2;
 
-            BOOST_CHECK(all(equal_to).get());
+            BOOST_CHECK(all(equal_to).future().get());
         }
 
         // Multiply scalar with array
@@ -41,7 +41,7 @@ namespace detail {
             auto multiply = array1 * fill_value1;
             auto equal_to = multiply == fill_value1 * fill_value1;
 
-            BOOST_CHECK(all(equal_to).get());
+            BOOST_CHECK(all(equal_to).future().get());
         }
 
         // Multiply scalar with array
@@ -50,7 +50,7 @@ namespace detail {
             auto multiply = fill_value1 * array1;
             auto equal_to = multiply == fill_value1 * fill_value1;
 
-            BOOST_CHECK(all(equal_to).get());
+            BOOST_CHECK(all(equal_to).future().get());
         }
     }
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(out_of_range)
 
     Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-    BOOST_CHECK(none(valid<std::uint8_t>(2 * array)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array * 2)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array * array)).get());
+    BOOST_CHECK(none(valid<std::uint8_t>(2 * array)).future().get());
+    BOOST_CHECK(none(valid<std::uint8_t>(array * 2)).future().get());
+    BOOST_CHECK(none(valid<std::uint8_t>(array * array)).future().get());
 }

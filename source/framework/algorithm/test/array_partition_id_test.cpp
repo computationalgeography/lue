@@ -32,6 +32,7 @@ namespace detail {
         {
             BOOST_CHECK(
                 all(localities[p], equal_to(localities[p], partitions[p], static_cast<std::uint64_t>(p)))
+                    .future()
                     .get());
         }
     }

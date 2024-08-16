@@ -37,7 +37,7 @@ namespace lue {
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
             subtract, detail::Subtract, policy::subtract::DefaultValuePolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(-, subtract)
 

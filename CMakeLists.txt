@@ -1,5 +1,5 @@
 cmake_minimum_required(
-    VERSION 3.26)
+    VERSION 3.28)
 project(LUE
     VERSION 0.3.8
     LANGUAGES C CXX

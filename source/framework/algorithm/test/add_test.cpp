@@ -29,7 +29,7 @@ namespace detail {
 
         Array add = array1 + array2;
 
-        BOOST_CHECK(all(add == fill_value1 + fill_value2).get());
+        BOOST_CHECK(all(add == fill_value1 + fill_value2).future().get());
     }
 
 }  // namespace detail
@@ -74,8 +74,26 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     // Careful. The default no-data value for int32_t is the lowest value. Although max +
     // 1 is undefined for signed integers, this may wrap around to this minimum value. Therefore,
     // we add 2 here, instead of 1. Adding 1 confuses things.
-    BOOST_CHECK(none(valid<std::uint8_t>(2 + array)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array + 2)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array + array)).get());
-    BOOST_CHECK_EQUAL((valid<std::uint8_t>(Scalar{max} + 2)).value().get(), 0);
+    BOOST_CHECK(none(valid<std::uint8_t>(2 + array)).future().get());
+    BOOST_CHECK(none(valid<std::uint8_t>(array + 2)).future().get());
+    BOOST_CHECK(none(valid<std::uint8_t>(array + array)).future().get());
+    BOOST_CHECK_EQUAL((valid<std::uint8_t>(Scalar{max} + 2)).future().get(), 0);
+}
+
+
+BOOST_AUTO_TEST_CASE(value_icw_scalar)
+{
+    using namespace lue::value_policies;
+
+    using Value = std::int32_t;
+    using Scalar = lue::Scalar<Value>;
+
+    Value const max{std::numeric_limits<Value>::max()};
+
+    Value const value{5};
+    Scalar const scalar{6};
+
+    BOOST_CHECK_EQUAL((value + scalar).future().get(), 11);
+    BOOST_CHECK_EQUAL((scalar + value).future().get(), 11);
+    BOOST_CHECK(!valid<std::uint8_t>(scalar + max).future().get());
 }

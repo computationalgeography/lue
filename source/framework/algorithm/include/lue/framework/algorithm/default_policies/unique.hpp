@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         template<typename Element, Rank rank>
-        hpx::future<std::set<Element>> unique(PartitionedArray<Element, rank> const& array)
+        auto unique(PartitionedArray<Element, rank> const& array) -> hpx::future<std::set<Element>>
         {
             using Policies = policy::unique::DefaultPolicies<Element>;
 

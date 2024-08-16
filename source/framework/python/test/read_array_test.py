@@ -45,7 +45,7 @@ class ReadArrayTest(lue_test.TestCase):
 
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
-        self.assertTrue(lfr.all(array == fill_value).get())
+        self.assertTrue(lfr.all(array == fill_value).future.get())
 
     @lue_test.framework_test_case
     def test_read_variable_array(self):
@@ -98,7 +98,7 @@ class ReadArrayTest(lue_test.TestCase):
 
         self.assertEqual(array.dtype, dtype)
         self.assertEqual(array.shape, array_shape)
-        self.assertTrue(lfr.all(array == fill_value).get())
+        self.assertTrue(lfr.all(array == fill_value).future.get())
 
     @lue_test.framework_test_case
     def test_read_array_subset(self):

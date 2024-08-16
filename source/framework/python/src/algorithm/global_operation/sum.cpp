@@ -6,9 +6,9 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        hpx::shared_future<Element> sum(PartitionedArray<Element, rank> const& array)
+        auto sum(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
-            return value_policies::sum(array).share();
+            return value_policies::sum(array);
         }
 
     }  // Anonymous namespace

@@ -59,6 +59,6 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(close_to, detail::CloseTo)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(close_to, detail::CloseTo)
 
 }  // namespace lue

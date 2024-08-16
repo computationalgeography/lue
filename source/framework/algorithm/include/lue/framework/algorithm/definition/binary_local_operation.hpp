@@ -719,42 +719,6 @@ namespace lue {
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<InputElement1, rank> const&,                                                        \
         PartitionedArray<InputElement2, rank> const&,                                                        \
-        ArgumentType<void(Functor)> const&);
-
-#define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION2(                                                             \
-    Policies, OutputElement, InputElement1, InputElement2, rank, Functor)                                    \
-                                                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<OutputElement, rank> binary_local_operation<        \
-        ArgumentType<void(Policies)>,                                                                        \
-        InputElement1,                                                                                       \
-        InputElement2,                                                                                       \
-        rank,                                                                                                \
-        ArgumentType<void(Functor)>>(                                                                        \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        hpx::shared_future<InputElement1> const&,                                                            \
-        PartitionedArray<InputElement2, rank> const&,                                                        \
-        ArgumentType<void(Functor)> const&);                                                                 \
-                                                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<OutputElement, rank> binary_local_operation<        \
-        ArgumentType<void(Policies)>,                                                                        \
-        InputElement1,                                                                                       \
-        InputElement2,                                                                                       \
-        rank,                                                                                                \
-        ArgumentType<void(Functor)>>(                                                                        \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<InputElement1, rank> const&,                                                        \
-        hpx::shared_future<InputElement2> const&,                                                            \
-        ArgumentType<void(Functor)> const&);                                                                 \
-                                                                                                             \
-    template LUE_LOCAL_OPERATION_EXPORT PartitionedArray<OutputElement, rank> binary_local_operation<        \
-        ArgumentType<void(Policies)>,                                                                        \
-        InputElement1,                                                                                       \
-        InputElement2,                                                                                       \
-        rank,                                                                                                \
-        ArgumentType<void(Functor)>>(                                                                        \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<InputElement1, rank> const&,                                                        \
-        PartitionedArray<InputElement2, rank> const&,                                                        \
         ArgumentType<void(Functor)> const&);                                                                 \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT auto binary_local_operation<                                         \

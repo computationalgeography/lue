@@ -21,7 +21,7 @@ namespace detail {
 
         lue::range(array, Element{5}).get();
 
-        BOOST_CHECK_EQUAL(minimum(array).get(), Element{5});
+        BOOST_CHECK_EQUAL(minimum(array).future().get(), Element{5});
     }
 
 }  // namespace detail

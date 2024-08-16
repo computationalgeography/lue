@@ -21,7 +21,7 @@ namespace detail {
 
         lue::range(array, Element{0}).get();
 
-        BOOST_CHECK_EQUAL(maximum(array).get(), lue::nr_elements(array_shape) - 1);
+        BOOST_CHECK_EQUAL(maximum(array).future().get(), lue::nr_elements(array_shape) - 1);
     }
 
 }  // namespace detail

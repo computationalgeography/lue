@@ -51,6 +51,19 @@ namespace lue {
     }  // namespace policy::pow
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS(pow, detail::Pow)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(pow, detail::Pow)
+
+    namespace default_policies {
+
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(pow, detail::Pow, policy::pow::DefaultPolicies)
+
+    }  // namespace default_policies
+
+    namespace value_policies {
+
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
+            pow, detail::Pow, policy::pow::DefaultValuePolicies)
+
+    }  // namespace value_policies
 
 }  // namespace lue

@@ -27,6 +27,6 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     using namespace lue::value_policies;
 
-    BOOST_CHECK(all(zonal_uniform >= Element{0}).get());
-    BOOST_CHECK(all(zonal_uniform < Element{1}).get());
+    BOOST_CHECK(all(zonal_uniform >= Element{0}).future().get());
+    BOOST_CHECK(all(zonal_uniform < Element{1}).future().get());
 }

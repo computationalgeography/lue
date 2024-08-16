@@ -1053,7 +1053,7 @@ namespace lue {
         using Functor = InstantiateFilled<Element, rank>;
 
         return create_partitioned_array(
-            Policies{}, array_shape, partition_shape, Functor{fill_value.value()});
+            Policies{}, array_shape, partition_shape, Functor{fill_value.future()});
     }
 
 

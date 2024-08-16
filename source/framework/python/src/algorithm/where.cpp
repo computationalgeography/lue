@@ -2,274 +2,84 @@
 #include <pybind11/pybind11.h>
 
 
-using namespace pybind11::literals;
-
-
 namespace lue::framework {
     namespace {
 
-        template<typename Condition, Rank rank, typename... Expression>
-        class Where
+        template<typename Element>
+        constexpr void define_where_overloads(pybind11::module& module)
         {
-        };
+            using namespace lue::value_policies;
 
+            Rank const rank{2};
 
-        // where(condition_array, true_array)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<PartitionedArray<ConditionElement, rank>, rank, PartitionedArray<ExpressionElement, rank>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    PartitionedArray<ExpressionElement, rank> const& true_array)
-                {
-                    return lue::value_policies::where(condition_array, true_array);
-                }
-        };
-
-
-        // where(condition_array, true_value_f)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<PartitionedArray<ConditionElement, rank>, rank, hpx::shared_future<ExpressionElement>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    hpx::shared_future<ExpressionElement> const& true_value_f)
-                {
-                    return lue::value_policies::where(condition_array, true_value_f);
-                }
-        };
-
-
-        // where(condition_array, true_value)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<PartitionedArray<ConditionElement, rank>, rank, ExpressionElement>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    ExpressionElement const& true_value)
-                {
-                    return lue::value_policies::where(condition_array, true_value);
-                }
-        };
-
-
-        // where(condition_array, true_array, false_array)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            PartitionedArray<ExpressionElement, rank>,
-            PartitionedArray<ExpressionElement, rank>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    PartitionedArray<ExpressionElement, rank> const& true_array,
-                    PartitionedArray<ExpressionElement, rank> const& false_array)
-                {
-                    return lue::value_policies::where(condition_array, true_array, false_array);
-                }
-        };
-
-
-        // where(condition_array, true_array, false_value_f)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            PartitionedArray<ExpressionElement, rank>,
-            hpx::shared_future<ExpressionElement>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    PartitionedArray<ExpressionElement, rank> const& true_array,
-                    hpx::shared_future<ExpressionElement> const& false_value_f)
-                {
-                    return lue::value_policies::where(condition_array, true_array, false_value_f);
-                }
-        };
-
-
-        // where(condition_array, true_array, false_value)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            PartitionedArray<ExpressionElement, rank>,
-            ExpressionElement>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    PartitionedArray<ExpressionElement, rank> const& true_array,
-                    ExpressionElement const& false_value)
-                {
-                    return lue::value_policies::where(condition_array, true_array, false_value);
-                }
-        };
-
-
-        // where(condition_array, true_value_f, false_array)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            hpx::shared_future<ExpressionElement>,
-            PartitionedArray<ExpressionElement, rank>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    hpx::shared_future<ExpressionElement> const& true_value_f,
-                    PartitionedArray<ExpressionElement, rank> const& false_array)
-                {
-                    return lue::value_policies::where(condition_array, true_value_f, false_array);
-                }
-        };
-
-
-        // where(condition_array, true_value, false_array)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            ExpressionElement,
-            PartitionedArray<ExpressionElement, rank>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    ExpressionElement const& true_value,
-                    PartitionedArray<ExpressionElement, rank> const& false_array)
-                {
-                    return lue::value_policies::where(condition_array, true_value, false_array);
-                }
-        };
-
-
-        // where(condition_array, true_value_f, false_value_f)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<
-            PartitionedArray<ConditionElement, rank>,
-            rank,
-            hpx::shared_future<ExpressionElement>,
-            hpx::shared_future<ExpressionElement>>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    hpx::shared_future<ExpressionElement> const& true_value_f,
-                    hpx::shared_future<ExpressionElement> const& false_value_f)
-                {
-                    return lue::value_policies::where(condition_array, true_value_f, false_value_f);
-                }
-        };
-
-
-        // where(condition_array, true_value, false_value)
-        template<typename ConditionElement, Rank rank, typename ExpressionElement>
-        class Where<PartitionedArray<ConditionElement, rank>, rank, ExpressionElement, ExpressionElement>
-        {
-
-            public:
-
-                using OutputElement = ExpressionElement;
-
-                static PartitionedArray<ExpressionElement, rank> operation(
-                    PartitionedArray<ConditionElement, rank> const& condition_array,
-                    ExpressionElement const& true_value,
-                    ExpressionElement const& false_value)
-                {
-                    return lue::value_policies::where(condition_array, true_value, false_value);
-                }
-        };
-
-
-        template<typename ConditionElement, Rank rank, typename... Expression>
-        PartitionedArray<
-            typename Where<PartitionedArray<ConditionElement, rank>, rank, Expression...>::OutputElement,
-            rank>
-        where(
-            PartitionedArray<ConditionElement, rank> const& condition_array, Expression const&... expression)
-        {
+            using ConditionElement = std::uint8_t;
             using ConditionArray = PartitionedArray<ConditionElement, rank>;
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
 
-            return Where<ConditionArray, rank, Expression...>::operation(condition_array, expression...);
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Array const& true_array)
+                { return where(condition_array, true_array); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Scalar const& true_scalar)
+                { return where(condition_array, true_scalar); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Value const true_value)
+                { return where(condition_array, true_value); });
+
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Array const& true_array, Array const& false_array)
+                { return where(condition_array, true_array, false_array); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Scalar const& true_scalar, Array const& false_array)
+                { return where(condition_array, true_scalar, false_array); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Value const true_value, Array const& false_array)
+                { return where(condition_array, true_value, false_array); });
+
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Array const& true_array, Array const& false_array)
+                { return where(condition_array, true_array, false_array); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Array const& true_array, Scalar const& false_scalar)
+                { return where(condition_array, true_array, false_scalar); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Array const& true_array, Value const false_value)
+                { return where(condition_array, true_array, false_value); });
+
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array,
+                   Scalar const& true_scalar,
+                   Scalar const& false_scalar) { return where(condition_array, true_scalar, false_scalar); });
+            module.def(
+                "where",
+                [](ConditionArray const& condition_array, Value const true_value, Value const false_value)
+                { return where(condition_array, true_value, false_value); });
         }
 
     }  // Anonymous namespace
 
 
-    // TODO Add overloads for numpy scalar types
-
-#define WHERE_OVERLOADS(Element, rank)                                                                       \
-    module.def("where", where<std::uint8_t, rank, PartitionedArray<Element, rank>>);                         \
-    module.def("where", where<std::uint8_t, rank, hpx::shared_future<Element>>);                             \
-    module.def("where", where<std::uint8_t, rank, Element>, "condition"_a, "true_expression"_a.noconvert()); \
-    module.def(                                                                                              \
-        "where",                                                                                             \
-        where<std::uint8_t, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);        \
-    module.def(                                                                                              \
-        "where", where<std::uint8_t, rank, PartitionedArray<Element, rank>, hpx::shared_future<Element>>);   \
-    module.def("where", where<std::uint8_t, rank, PartitionedArray<Element, rank>, Element>);                \
-    module.def(                                                                                              \
-        "where", where<std::uint8_t, rank, hpx::shared_future<Element>, PartitionedArray<Element, rank>>);   \
-    module.def("where", where<std::uint8_t, rank, Element, PartitionedArray<Element, rank>>);                \
-    module.def(                                                                                              \
-        "where", where<std::uint8_t, rank, hpx::shared_future<Element>, hpx::shared_future<Element>>);       \
-    module.def("where", where<std::uint8_t, rank, Element, Element>);
-
-
     void bind_where(pybind11::module& module)
     {
-        // TODO How to document these?
-        WHERE_OVERLOADS(std::uint8_t, 2);
-        WHERE_OVERLOADS(std::uint32_t, 2);
-        WHERE_OVERLOADS(std::uint64_t, 2);
-        WHERE_OVERLOADS(std::int32_t, 2);
-        WHERE_OVERLOADS(std::int64_t, 2);
-        WHERE_OVERLOADS(float, 2);
-        WHERE_OVERLOADS(double, 2);
+        define_where_overloads<std::uint8_t>(module);
+        define_where_overloads<std::uint32_t>(module);
+        define_where_overloads<std::uint64_t>(module);
+        define_where_overloads<std::int32_t>(module);
+        define_where_overloads<std::int64_t>(module);
+        define_where_overloads<float>(module);
+        define_where_overloads<double>(module);
     }
 
 }  // namespace lue::framework

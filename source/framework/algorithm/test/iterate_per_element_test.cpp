@@ -29,7 +29,7 @@ namespace detail {
 
         auto copy = lue::iterate_per_element(array);
 
-        BOOST_CHECK(all(copy == array).get());
+        BOOST_CHECK(all(copy == array).future().get());
     }
 
 }  // namespace detail

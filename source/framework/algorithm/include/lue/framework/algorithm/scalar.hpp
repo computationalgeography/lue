@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/core/type_traits.hpp"
 #include <hpx/future.hpp>
 
 
@@ -167,7 +168,7 @@ namespace lue {
 
                 The result can be used to attach continuations to.
             */
-            auto value() const -> hpx::shared_future<Element> const&
+            auto future() const -> hpx::shared_future<Element> const&
             {
                 return _value_f;
             }
@@ -178,5 +179,20 @@ namespace lue {
             //! A future to state that can be created asynchronously
             hpx::shared_future<Element> _value_f;
     };
+
+
+    namespace detail {
+
+        // Specialization for PartitionedArray
+        template<typename E>
+        class ArrayTraits<Scalar<E>>
+        {
+
+            public:
+
+                using Element = E;
+        };
+
+    }  // namespace detail
 
 }  // namespace lue

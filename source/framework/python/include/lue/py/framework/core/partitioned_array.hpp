@@ -46,7 +46,7 @@ namespace lue::framework {
         namespace lfr = lue::framework;
 
         using Array = PartitionedArray<Element, rank>;
-        using ElementF = hpx::shared_future<Element>;
+        using Scalar = Scalar<Element>;
 
         auto class_ =
             pybind11::class_<Array>(
@@ -124,7 +124,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__lt__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::less_than<ElementT<Array>, std::uint8_t, rank>(argument1, argument2); },
                     pybind11::is_operator())
 
@@ -145,7 +145,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__le__",
-                    [](Array const& argument1, ElementF const& argument2) {
+                    [](Array const& argument1, Scalar const& argument2) {
                         return lfr::less_than_equal_to<ElementT<Array>, std::uint8_t, rank>(
                             argument1, argument2);
                     },
@@ -164,7 +164,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__eq__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::equal_to<ElementT<Array>, std::uint8_t, rank>(argument1, argument2); },
                     pybind11::is_operator())
 
@@ -181,7 +181,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__ne__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::not_equal_to<ElementT<Array>, std::uint8_t, rank>(argument1, argument2); },
                     pybind11::is_operator())
 
@@ -198,7 +198,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__gt__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::greater_than<ElementT<Array>, std::uint8_t, rank>(argument1, argument2); },
                     pybind11::is_operator())
 
@@ -219,7 +219,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__ge__",
-                    [](Array const& argument1, ElementF const& argument2) {
+                    [](Array const& argument1, Scalar const& argument2) {
                         return lfr::greater_than_equal_to<ElementT<Array>, std::uint8_t, rank>(
                             argument1, argument2);
                     },
@@ -242,7 +242,7 @@ namespace lue::framework {
                 pybind11::is_operator())
             .def(
                 "__add__",
-                [](Array const& argument1, ElementF const& argument2)
+                [](Array const& argument1, Scalar const& argument2)
                 { return lfr::add<ElementT<Array>, rank>(argument1, argument2); },
                 pybind11::is_operator())
             .def(
@@ -252,7 +252,7 @@ namespace lue::framework {
                 pybind11::is_operator())
             .def(
                 "__radd__",
-                [](Array const& argument2, ElementF const& argument1)
+                [](Array const& argument2, Scalar const& argument1)
                 { return lfr::add<ElementT<Array>, rank>(argument1, argument2); },
                 pybind11::is_operator());
 
@@ -270,7 +270,7 @@ namespace lue::framework {
                 pybind11::is_operator())
             .def(
                 "__sub__",
-                [](Array const& argument1, ElementF const& argument2)
+                [](Array const& argument1, Scalar const& argument2)
                 { return lfr::subtract<ElementT<Array>, rank>(argument1, argument2); },
                 pybind11::is_operator())
             .def(
@@ -280,7 +280,7 @@ namespace lue::framework {
                 pybind11::is_operator())
             .def(
                 "__rsub__",
-                [](Array const& argument2, ElementF const& argument1)
+                [](Array const& argument2, Scalar const& argument1)
                 { return lfr::subtract<ElementT<Array>, rank>(argument1, argument2); },
                 pybind11::is_operator());
 
@@ -345,7 +345,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__mul__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
@@ -355,7 +355,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__rmul__",
-                    [](Array const& argument2, ElementF const& argument1)
+                    [](Array const& argument2, Scalar const& argument1)
                     { return lfr::multiply<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator());
 
@@ -373,7 +373,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__truediv__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
@@ -383,7 +383,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__rtruediv__",
-                    [](Array const& argument2, ElementF const& argument1)
+                    [](Array const& argument2, Scalar const& argument1)
                     { return lfr::divide<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator());
 
@@ -401,7 +401,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__pow__",
-                    [](Array const& argument1, ElementF const& argument2)
+                    [](Array const& argument1, Scalar const& argument2)
                     { return lfr::pow<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
@@ -411,7 +411,7 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__rpow__",
-                    [](Array const& argument2, ElementF const& argument1)
+                    [](Array const& argument2, Scalar const& argument1)
                     { return lfr::pow<ElementT<Array>, rank>(argument1, argument2); },
                     pybind11::is_operator());
         }

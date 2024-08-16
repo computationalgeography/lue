@@ -29,7 +29,7 @@ namespace detail {
 
         auto subtract = array1 - array2;
 
-        BOOST_CHECK(all(subtract == fill_value1 - fill_value2).get());
+        BOOST_CHECK(all(subtract == fill_value1 - fill_value2).future().get());
     }
 
 }  // namespace detail
@@ -71,7 +71,8 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
     // Careful. The default no-data value for int32_t is the lowest value.
-    BOOST_CHECK(none(valid<std::uint8_t>(-2 - array)).get());
-    BOOST_CHECK(none(valid<std::uint8_t>((0 - array) - 2)).get());      // For lack of unary min ATM...
-    BOOST_CHECK(none(valid<std::uint8_t>((0 - array) - array)).get());  // For lack of unary min ATM...
+    BOOST_CHECK(none(valid<std::uint8_t>(-2 - array)).future().get());
+    BOOST_CHECK(none(valid<std::uint8_t>((0 - array) - 2)).future().get());  // For lack of unary min ATM...
+    BOOST_CHECK(
+        none(valid<std::uint8_t>((0 - array) - array)).future().get());  // For lack of unary min ATM...
 }

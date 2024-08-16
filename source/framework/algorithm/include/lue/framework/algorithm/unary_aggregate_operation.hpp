@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/functor_traits.hpp"
+#include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/partitioned_array.hpp"
 
@@ -8,8 +9,9 @@ namespace lue {
     namespace detail {
 
         template<typename Policies, typename InputPartition, typename OutputElement, typename Functor>
-        hpx::future<OutputElement> unary_aggregate_operation_partition(
+        auto unary_aggregate_operation_partition(
             Policies const& policies, InputPartition const& input_partition, Functor functor)
+            -> hpx::future<OutputElement>
         {
             AnnotateFunction annotation{"unary_aggregate_operation"};
 
@@ -113,11 +115,11 @@ namespace lue {
 
 
     template<typename Policies, typename InputElement, Rank rank, typename Functor>
-    hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
+    auto unary_aggregate_operation(
         hpx::id_type const locality_id,
         Policies const& policies,
         ArrayPartition<InputElement, rank> const& input_partition,
-        Functor const& functor)
+        Functor const& functor) -> hpx::future<OutputElementT<Functor>>
     {
         AnnotateFunction annotation{"unary_aggregate_operation"};
 
@@ -138,10 +140,10 @@ namespace lue {
 
 
     template<typename Policies, typename InputElement, Rank rank, typename Functor>
-    hpx::future<OutputElementT<Functor>> unary_aggregate_operation(
+    auto unary_aggregate_operation(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
-        Functor const& functor)
+        Functor const& functor) -> Scalar<OutputElementT<Functor>>
     {
         AnnotateFunction annotation{"unary_aggregate_operation"};
 
@@ -178,7 +180,7 @@ namespace lue {
         return hpx::when_all(partition_results.begin(), partition_results.end())
             .then(hpx::unwrapping(
 
-                [policies, functor](auto&& partition_results)
+                [policies, functor](auto&& partition_results) -> OutputElement
                 {
                     AnnotateFunction annotation{"unary_aggregate_operation"};
 

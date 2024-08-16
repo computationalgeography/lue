@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(non_zero_discharge_and_zero_inflow)
 
     using namespace lue::value_policies;
 
-    BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).get());
+    BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).future().get());
 }
 
 
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(zero_discharge_and_non_zero_inflow)
 
     using namespace lue::value_policies;
 
-    BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).get());
+    BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).future().get());
 }
 
 

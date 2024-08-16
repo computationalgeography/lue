@@ -16,7 +16,7 @@ namespace lue {
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
             greater_than, detail::GreaterThan, policy::greater_than::DefaultPolicies)
         LUE_BINARY_COMPARISON_OPERATOR(>, greater_than)
 

@@ -22,11 +22,11 @@ namespace detail {
 
         // Fill the array with a value and check whether all values in the
         // array are equal to this value
-        hpx::shared_future<Element> fill_value = hpx::make_ready_future<Element>(5);
+        Element const fill_value{5};
 
         lue::fill(array, fill_value).get();
 
-        BOOST_CHECK(all(array == fill_value).get());
+        BOOST_CHECK(all(array == fill_value).future().get());
     }
 
 }  // namespace detail

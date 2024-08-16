@@ -33,6 +33,6 @@ namespace lue {
     }  // namespace policy::add
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS4(add, detail::Add)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(add, detail::Add)
 
 }  // namespace lue

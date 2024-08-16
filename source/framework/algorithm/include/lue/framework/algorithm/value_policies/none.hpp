@@ -17,7 +17,7 @@ namespace lue {
     namespace value_policies {
 
         template<typename Element, Rank rank>
-        hpx::future<Element> none(PartitionedArray<Element, rank> const& array)
+        auto none(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
             using Functor = detail::None<Element>;
             using Policies = policy::none::DefaultValuePolicies<Element>;

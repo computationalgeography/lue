@@ -6,9 +6,9 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        hpx::shared_future<Element> minimum(PartitionedArray<Element, rank> const& array)
+        auto minimum(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
-            return value_policies::minimum(array).share();
+            return value_policies::minimum(array);
         }
 
     }  // Anonymous namespace

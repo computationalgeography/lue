@@ -31,7 +31,7 @@ class ToNumPyTest(lue_test.TestCase):
 
         self.assertEqual(array_read.dtype, array_written.dtype)
         self.assertEqual(array_read.shape, array_written.shape)
-        self.assertTrue(lfr.all(array_read == array_written).get())
+        self.assertTrue(lfr.all(array_read == array_written).future.get())
 
     @lue_test.framework_test_case
     def test_round_trip2(self):
@@ -54,4 +54,4 @@ class ToNumPyTest(lue_test.TestCase):
 
         self.assertEqual(array_read.dtype, array_written.dtype)
         self.assertEqual(array_read.shape, array_written.shape)
-        self.assertTrue(lfr.all(array_read == array_written).get())
+        self.assertTrue(lfr.all(array_read == array_written).future.get())

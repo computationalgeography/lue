@@ -22,7 +22,7 @@ namespace detail {
 
         // FIXME Test by taking a diff from known values and asserting that
         //     the difference is small enough
-        BOOST_CHECK(all(sqrt(array) == Element{5}).get());
+        BOOST_CHECK(all(sqrt(array) == Element{5}).future().get());
     }
 
 }  // namespace detail

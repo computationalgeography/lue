@@ -129,6 +129,7 @@ add_library(lue_py_framework SHARED
     src/core/partitioned_array_int64.cpp
     src/core/partitioned_array_float.cpp
     src/core/partitioned_array_double.cpp
+    src/core/scalar.cpp
     src/core/wait.cpp
 
     src/io/read_array.cpp

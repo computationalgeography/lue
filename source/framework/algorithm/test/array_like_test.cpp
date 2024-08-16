@@ -25,8 +25,8 @@ namespace detail {
 
         auto output_array = lue::array_like(input_array, fill_value);
 
-        BOOST_CHECK(all(output_array == fill_value).get());
-        BOOST_CHECK(all(lue::locality_id(output_array) == lue::locality_id(input_array)).get());
+        BOOST_CHECK(all(output_array == fill_value).future().get());
+        BOOST_CHECK(all(lue::locality_id(output_array) == lue::locality_id(input_array)).future().get());
     }
 
 }  // namespace detail

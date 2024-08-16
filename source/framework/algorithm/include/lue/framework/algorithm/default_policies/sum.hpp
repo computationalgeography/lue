@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         template<typename Element, Rank rank>
-        auto sum(PartitionedArray<Element, rank> const& array) -> hpx::future<Element>
+        auto sum(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
             using Policies = policy::sum::DefaultPolicies<Element>;
 

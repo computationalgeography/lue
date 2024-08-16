@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/equal_to.hpp"
+#include "lue/framework/algorithm/operator.hpp"
 
 
 namespace lue {
@@ -42,7 +43,8 @@ namespace lue {
         }
 
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(equal_to, detail::EqualTo, policy::equal_to::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
+            equal_to, detail::EqualTo, policy::equal_to::DefaultPolicies)
         LUE_BINARY_COMPARISON_OPERATOR(==, equal_to)
 
     }  // namespace default_policies

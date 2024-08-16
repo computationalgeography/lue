@@ -26,27 +26,27 @@ namespace detail {
 
         // Compare two arrays with different values
         {
-            BOOST_CHECK(none(array1 > array2).get());
-            BOOST_CHECK(all(array2 > array1).get());
+            BOOST_CHECK(none(array1 > array2).future().get());
+            BOOST_CHECK(all(array2 > array1).future().get());
         }
 
         // Compare two arrays with the same values
         {
-            BOOST_CHECK(none(array2 > array2).get());
+            BOOST_CHECK(none(array2 > array2).future().get());
         }
 
         // Compare array with scalar
         // array < scalar
         {
-            BOOST_CHECK(none(array2 > fill_value2).get());
-            BOOST_CHECK(all(array2 > fill_value1).get());
+            BOOST_CHECK(none(array2 > fill_value2).future().get());
+            BOOST_CHECK(all(array2 > fill_value1).future().get());
         }
 
         // Compare array with scalar
         // scalar < array
         {
-            BOOST_CHECK(none(fill_value2 > array2).get());
-            BOOST_CHECK(all(fill_value2 > array1).get());
+            BOOST_CHECK(none(fill_value2 > array2).future().get());
+            BOOST_CHECK(all(fill_value2 > array1).future().get());
         }
     }
 

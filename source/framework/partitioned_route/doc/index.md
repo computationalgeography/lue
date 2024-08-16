@@ -1,4 +1,4 @@
-# Partitioned route
+# `lue_framework_partitioned_route`
 
 ```{eval-rst}
 .. doxygenclass:: lue::SerialRoute

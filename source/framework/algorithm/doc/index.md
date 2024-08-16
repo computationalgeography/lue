@@ -1,4 +1,4 @@
-# Algorithms
+# `lue_framework_algorithm`
 
 
 These are top-level algorithms that can be called in any order. They take one or more partitioned arrays as

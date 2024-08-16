@@ -24,7 +24,7 @@ namespace detail {
         Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
         Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
 
-        BOOST_CHECK(all(atan2(array1, array2) == std::atan2(fill_value1, fill_value2)).get());
+        BOOST_CHECK(all(atan2(array1, array2) == std::atan2(fill_value1, fill_value2)).future().get());
     }
 
 }  // namespace detail

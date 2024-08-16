@@ -16,7 +16,8 @@ namespace lue {
 
     namespace default_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(divide, detail::Divide, policy::divide::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
+            divide, detail::Divide, policy::divide::DefaultPolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(/, divide)
 
     }  // namespace default_policies

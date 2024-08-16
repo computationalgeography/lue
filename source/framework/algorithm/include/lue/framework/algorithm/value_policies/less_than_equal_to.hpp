@@ -16,7 +16,7 @@ namespace lue {
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS2(
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
             less_than_equal_to, detail::LessThanEqualTo, policy::less_than_equal_to::DefaultValuePolicies)
         LUE_BINARY_COMPARISON_OPERATOR(<=, less_than_equal_to)
 

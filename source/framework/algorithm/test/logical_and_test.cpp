@@ -26,21 +26,21 @@ namespace detail {
 
         // array && array
         {
-            BOOST_CHECK(none(array1 && array2).get());  // true && false
-            BOOST_CHECK(all(array1 && array1).get());   // true && true
-            BOOST_CHECK(none(array2 && array2).get());  // false && false
+            BOOST_CHECK(none(array1 && array2).future().get());  // true && false
+            BOOST_CHECK(all(array1 && array1).future().get());   // true && true
+            BOOST_CHECK(none(array2 && array2).future().get());  // false && false
         }
 
         // array && scalar
         {
-            BOOST_CHECK(all(array1 && fill_value1).get());
-            BOOST_CHECK(none(array1 && fill_value2).get());
+            BOOST_CHECK(all(array1 && fill_value1).future().get());
+            BOOST_CHECK(none(array1 && fill_value2).future().get());
         }
 
         // scalar && array
         {
-            BOOST_CHECK(all(fill_value1 && array1).get());
-            BOOST_CHECK(none(fill_value2 && array1).get());
+            BOOST_CHECK(all(fill_value1 && array1).future().get());
+            BOOST_CHECK(none(fill_value2 && array1).future().get());
         }
     }
 

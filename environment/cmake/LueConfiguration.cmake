@@ -122,17 +122,6 @@ if(LUE_BUILD_DATA_MODEL)
 endif()
 
 
-if(LUE_BUILD_QA)
-    if(LUE_QA_WITH_TESTS)
-        set(ENV{CTEST_OUTPUT_ON_FAILURE} "1")
-    endif()
-endif()
-
-
-if(LUE_BUILD_DOCUMENTATION)
-endif()
-
-
 set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
 # NOTE These can be made configurable later on
