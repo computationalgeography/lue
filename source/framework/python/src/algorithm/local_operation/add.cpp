@@ -3,7 +3,6 @@
 
 
 namespace lue::framework {
-
     namespace {
 
         template<typename Element>

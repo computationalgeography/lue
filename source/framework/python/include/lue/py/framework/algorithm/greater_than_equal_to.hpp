@@ -5,20 +5,18 @@
 
 namespace lue::framework {
 
-    template<typename InputElement, typename OutputElement, Rank rank, typename Argument1, typename Argument2>
-    PartitionedArray<OutputElement, rank> greater_than_equal_to(
-        Argument1 const& argument1, Argument2 const& argument2)
+    template<typename OutputElement, Rank rank, typename Argument1, typename Argument2>
+    auto greater_than_equal_to(Argument1 const& argument1, Argument2 const& argument2)
+        -> PartitionedArray<OutputElement, rank>
     {
-        if constexpr (!std::is_same_v<Argument1, InputElement>)
-        {
-            static_assert(std::is_same_v<ElementT<Argument1>, InputElement>);
-        }
+        return value_policies::greater_than_equal_to(argument1, argument2);
+    }
 
-        if constexpr (!std::is_same_v<Argument2, InputElement>)
-        {
-            static_assert(std::is_same_v<ElementT<Argument2>, InputElement>);
-        }
 
+    template<typename OutputElement, typename Argument1, typename Argument2>
+    auto greater_than_equal_to(Argument1 const& argument1, Argument2 const& argument2)
+        -> Scalar<OutputElement>
+    {
         return value_policies::greater_than_equal_to(argument1, argument2);
     }
 
