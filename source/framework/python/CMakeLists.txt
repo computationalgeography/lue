@@ -35,7 +35,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/accu_threshold.cpp
     src/algorithm/accu_threshold3.cpp
     src/algorithm/acos.cpp
-    src/algorithm/add.cpp
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
     src/algorithm/aspect.cpp
@@ -44,29 +43,19 @@ add_library(lue_py_framework SHARED
     src/algorithm/atan2.cpp
     src/algorithm/cos.cpp
     src/algorithm/d8_flow_direction.cpp
-    src/algorithm/divide.cpp
     src/algorithm/downstream.cpp
     src/algorithm/downstream_distance.cpp
-    src/algorithm/equal_to.cpp
     src/algorithm/exp.cpp
-    src/algorithm/greater_than.cpp
-    src/algorithm/greater_than_equal_to.cpp
     src/algorithm/inflow_count.cpp
     src/algorithm/inflow_count3.cpp
     src/algorithm/inter_partition_stream.cpp
     src/algorithm/iterate_per_element.cpp
-    src/algorithm/less_than.cpp
-    src/algorithm/less_than_equal_to.cpp
     src/algorithm/locality_id.cpp
     src/algorithm/log.cpp
-    src/algorithm/multiply.cpp
     src/algorithm/normal.cpp
-    src/algorithm/not_equal_to.cpp
-    src/algorithm/pow.cpp
     src/algorithm/sin.cpp
     src/algorithm/slope.cpp
     src/algorithm/sqrt.cpp
-    src/algorithm/subtract.cpp
     src/algorithm/tan.cpp
     src/algorithm/timestamp.cpp
     src/algorithm/uniform.cpp
@@ -90,17 +79,28 @@ add_library(lue_py_framework SHARED
     src/algorithm/global_operation/sum.cpp
 
     src/algorithm/local_operation.cpp
+    src/algorithm/local_operation/add.cpp
     src/algorithm/local_operation/cast.cpp
     src/algorithm/local_operation/ceil.cpp
     src/algorithm/local_operation/cell_index.cpp
+    src/algorithm/local_operation/divide.cpp
+    src/algorithm/local_operation/equal_to.cpp
     src/algorithm/local_operation/floor.cpp
+    src/algorithm/local_operation/greater_than.cpp
+    src/algorithm/local_operation/greater_than_equal_to.cpp
+    src/algorithm/local_operation/less_than.cpp
+    src/algorithm/local_operation/less_than_equal_to.cpp
     src/algorithm/local_operation/log10.cpp
     src/algorithm/local_operation/logical_and.cpp
     src/algorithm/local_operation/logical_exclusive_or.cpp
     src/algorithm/local_operation/logical_inclusive_or.cpp
     src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/multiply.cpp
     src/algorithm/local_operation/negate.cpp
+    src/algorithm/local_operation/not_equal_to.cpp
+    src/algorithm/local_operation/pow.cpp
     src/algorithm/local_operation/round.cpp
+    src/algorithm/local_operation/subtract.cpp
     src/algorithm/local_operation/unique_id.cpp
 
     src/algorithm/routing_operation.cpp
