@@ -11,7 +11,7 @@ namespace lue {
 
             public:
 
-                static constexpr bool within_domain(Element const element) noexcept
+                static constexpr auto within_domain(Element const element) noexcept -> bool
                 {
                     return element >= Element{-1} && element <= Element{1};
                 }
@@ -26,13 +26,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto asin(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::asin::DefaultValuePolicies<Element>;
-
-            return asin(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            asin, policy::asin::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

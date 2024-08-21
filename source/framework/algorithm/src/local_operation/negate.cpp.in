@@ -5,9 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_NEGATE(
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
             ESC(policy::negate::{{ Policies }}<{{ Element }}>),
-            {{ rank }}
+            {{ rank }},
+            ESC(detail::Negate<{{ Element }}>)
         );
 
 }  // namespace lue

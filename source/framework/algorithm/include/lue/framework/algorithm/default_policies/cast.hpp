@@ -16,13 +16,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename OutputElement, typename InputElement, Rank rank>
-        PartitionedArray<OutputElement, rank> cast(PartitionedArray<InputElement, rank> const& array)
-        {
-            using Policies = policy::cast::DefaultPolicies<OutputElement, InputElement>;
-
-            return lue::cast<OutputElement>(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+            cast, policy::cast::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

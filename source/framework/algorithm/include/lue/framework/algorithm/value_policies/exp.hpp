@@ -11,8 +11,8 @@ namespace lue {
 
             public:
 
-                constexpr static bool within_range(
-                    [[maybe_unused]] Element const& argument, Element const& result)
+                constexpr static auto within_range(
+                    [[maybe_unused]] Element const& argument, Element const& result) -> bool
                 {
                     return !std::isinf(result);
                 }
@@ -30,13 +30,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto exp(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::exp::DefaultValuePolicies<Element>;
-
-            return exp(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            exp, policy::exp::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

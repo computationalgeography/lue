@@ -131,9 +131,15 @@
 
 #define LUE_UNARY_LOGICAL_OPERATOR(symbol, name)                                                             \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(PartitionedArray<Element, rank> const& array)       \
+    auto operator symbol(PartitionedArray<Element, rank> const& array)->PartitionedArray<std::uint8_t, rank> \
     {                                                                                                        \
-        return name(array);                                                                                  \
+        return name<std::uint8_t>(array);                                                                    \
+    }                                                                                                        \
+                                                                                                             \
+    template<typename Element>                                                                               \
+    auto operator symbol(Scalar<Element> const& scalar)->Scalar<std::uint8_t>                                \
+    {                                                                                                        \
+        return name<std::uint8_t>(scalar);                                                                   \
     }
 
 

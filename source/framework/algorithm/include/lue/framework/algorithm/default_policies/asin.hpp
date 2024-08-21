@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto asin(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::asin::DefaultPolicies<Element>;
-
-            return asin(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            asin, policy::asin::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto sin(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::sin::DefaultPolicies<Element>;
-
-            return sin(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            sin, policy::sin::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

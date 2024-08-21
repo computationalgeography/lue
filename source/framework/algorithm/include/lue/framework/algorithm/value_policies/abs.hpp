@@ -11,8 +11,8 @@ namespace lue {
 
             public:
 
-                constexpr static bool within_range(
-                    Element const& argument, [[maybe_unused]] Element const& result)
+                constexpr static auto within_range(
+                    Element const& argument, [[maybe_unused]] Element const& result) -> bool
                 {
                     if constexpr (std::is_signed_v<Element>)
                     {

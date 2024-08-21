@@ -5,10 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_SQRT(
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
             ESC(policy::sqrt::{{ Policies }}<{{ Element }}>),
-            {{ Element }},
-            {{ rank }}
+            {{ rank }},
+            ESC(detail::Sqrt<{{ Element }}>)
         );
 
 }  // namespace lue

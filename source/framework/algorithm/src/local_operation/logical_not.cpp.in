@@ -5,10 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_LOGICAL_NOT(
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
             ESC(policy::logical_not::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
-            {{ ExpressionElement }},
-            {{ rank }}
+            {{ rank }},
+            ESC(detail::LogicalNot<{{ ExpressionElement }}, {{ BooleanElement }}>)
         );
 
 }  // namespace lue

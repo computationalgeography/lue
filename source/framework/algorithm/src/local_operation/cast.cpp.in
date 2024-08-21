@@ -5,10 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_CAST(
-        ESC(policy::cast::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
-        {{ OutputElement }},
-        {{ InputElement }},
-        {{ rank }});
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
+            ESC(policy::cast::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
+            {{ rank }},
+            ESC(detail::Cast<{{ InputElement }}, {{ OutputElement }}>)
+        );
 
 }  // namespace lue
