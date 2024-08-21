@@ -39,13 +39,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto abs(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::abs::DefaultValuePolicies<Element>;
-
-            return abs(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            abs, policy::abs::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

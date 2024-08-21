@@ -18,23 +18,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename BooleanElement, typename ExpressionElement, Rank rank>
-        auto valid(PartitionedArray<ExpressionElement, rank> const& array)
-            -> PartitionedArray<BooleanElement, rank>
-        {
-            using Policies = policy::valid::DefaultPolicies<BooleanElement, ExpressionElement>;
-
-            return valid<BooleanElement>(Policies{}, array);
-        }
-
-
-        template<typename BooleanElement, typename ExpressionElement>
-        auto valid(Scalar<ExpressionElement> const& scalar) -> Scalar<BooleanElement>
-        {
-            using Policies = policy::valid::DefaultPolicies<BooleanElement, ExpressionElement>;
-
-            return valid<BooleanElement>(Policies{}, scalar);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+            valid, policy::valid::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue
