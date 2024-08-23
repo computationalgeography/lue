@@ -1,6 +1,6 @@
 // #include "lue/py/framework/algorithm/abs.hpp"
-#include "lue/py/framework/algorithm/add.hpp"
-#include "lue/py/framework/algorithm/divide.hpp"
+#include "lue/framework/algorithm/value_policies/add.hpp"
+#include "lue/framework/algorithm/value_policies/divide.hpp"
 // #include "lue/py/framework/algorithm/equal_to.hpp"
 // #include "lue/py/framework/algorithm/greater_than.hpp"
 // #include "lue/py/framework/algorithm/greater_than_equal_to.hpp"
@@ -10,11 +10,11 @@
 // #include "lue/py/framework/algorithm/logical_exclusive_or.hpp"
 // #include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
 // #include "lue/py/framework/algorithm/logical_not.hpp"
-#include "lue/py/framework/algorithm/multiply.hpp"
+#include "lue/framework/algorithm/value_policies/multiply.hpp"
 // #include "lue/py/framework/algorithm/negate.hpp"
 // #include "lue/py/framework/algorithm/not_equal_to.hpp"
-#include "lue/py/framework/algorithm/pow.hpp"
-#include "lue/py/framework/algorithm/subtract.hpp"
+#include "lue/framework/algorithm/value_policies/pow.hpp"
+#include "lue/framework/algorithm/value_policies/subtract.hpp"
 #include "lue/py/framework/stream.hpp"
 #include <pybind11/pybind11.h>
 
@@ -138,8 +138,7 @@ namespace lue::framework {
     template<typename Element>
     void bind_scalar(pybind11::module& module)
     {
-        namespace lfr = lue::framework;
-
+        using namespace lue::value_policies;
         using Scalar = lue::Scalar<Element>;
         using Value = Element;
 
@@ -300,28 +299,15 @@ namespace lue::framework {
         class_
             .def(
                 "__add__",
-                [](Scalar const& argument1, Scalar const& argument2)
-                { return lfr::add<ElementT<Scalar>>(argument1, argument2); },
+                [](Scalar const& argument1, Scalar const& argument2) { return add(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__add__",
-                [](Scalar const& argument1, Element const argument2)
-                { return lfr::add<ElementT<Scalar>>(argument1, argument2); },
-                pybind11::is_operator())
-            .def(
-                "__add__",
-                [](Scalar const& argument1, Value const& argument2)
-                { return lfr::add<ElementT<Scalar>>(argument1, argument2); },
+                [](Scalar const& argument1, Value const& argument2) { return add(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__radd__",
-                [](Scalar const& argument2, Element const argument1)
-                { return lfr::add<ElementT<Scalar>>(argument1, argument2); },
-                pybind11::is_operator())
-            .def(
-                "__radd__",
-                [](Scalar const& argument2, Value const& argument1)
-                { return lfr::add<ElementT<Scalar>>(argument1, argument2); },
+                [](Scalar const& argument2, Value const& argument1) { return add(argument1, argument2); },
                 pybind11::is_operator());
 
         // a - b, b - a, a -= b
@@ -329,27 +315,27 @@ namespace lue::framework {
             .def(
                 "__sub__",
                 [](Scalar const& argument1, Scalar const& argument2)
-                { return lfr::subtract<ElementT<Scalar>>(argument1, argument2); },
+                { return subtract(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__sub__",
                 [](Scalar const& argument1, Element const argument2)
-                { return lfr::subtract<ElementT<Scalar>>(argument1, argument2); },
+                { return subtract(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__sub__",
                 [](Scalar const& argument1, Value const& argument2)
-                { return lfr::subtract<ElementT<Scalar>>(argument1, argument2); },
+                { return subtract(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__rsub__",
                 [](Scalar const& argument2, Element const argument1)
-                { return lfr::subtract<ElementT<Scalar>>(argument1, argument2); },
+                { return subtract(argument1, argument2); },
                 pybind11::is_operator())
             .def(
                 "__rsub__",
                 [](Scalar const& argument2, Value const& argument1)
-                { return lfr::subtract<ElementT<Scalar>>(argument1, argument2); },
+                { return subtract(argument1, argument2); },
                 pybind11::is_operator());
 
 
@@ -405,27 +391,27 @@ namespace lue::framework {
                 .def(
                     "__mul__",
                     [](Scalar const& argument1, Scalar const& argument2)
-                    { return lfr::multiply<ElementT<Scalar>>(argument1, argument2); },
+                    { return multiply(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__mul__",
                     [](Scalar const& argument1, Element const argument2)
-                    { return lfr::multiply<ElementT<Scalar>>(argument1, argument2); },
+                    { return multiply(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__mul__",
                     [](Scalar const& argument1, Value const& argument2)
-                    { return lfr::multiply<ElementT<Scalar>>(argument1, argument2); },
+                    { return multiply(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rmul__",
                     [](Scalar const& argument2, Element const argument1)
-                    { return lfr::multiply<ElementT<Scalar>>(argument1, argument2); },
+                    { return multiply(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rmul__",
                     [](Scalar const& argument2, Value const& argument1)
-                    { return lfr::multiply<ElementT<Scalar>>(argument1, argument2); },
+                    { return multiply(argument1, argument2); },
                     pybind11::is_operator());
 
             // a / b, b / a, a /= b
@@ -433,27 +419,27 @@ namespace lue::framework {
                 .def(
                     "__truediv__",
                     [](Scalar const& argument1, Scalar const& argument2)
-                    { return lfr::divide<ElementT<Scalar>>(argument1, argument2); },
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__truediv__",
                     [](Scalar const& argument1, Element const argument2)
-                    { return lfr::divide<ElementT<Scalar>>(argument1, argument2); },
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__truediv__",
                     [](Scalar const& argument1, Value const& argument2)
-                    { return lfr::divide<ElementT<Scalar>>(argument1, argument2); },
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rtruediv__",
                     [](Scalar const& argument2, Element const argument1)
-                    { return lfr::divide<ElementT<Scalar>>(argument1, argument2); },
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rtruediv__",
                     [](Scalar const& argument2, Value const& argument1)
-                    { return lfr::divide<ElementT<Scalar>>(argument1, argument2); },
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator());
 
             // a ** b, b ** a, a **= b
@@ -461,27 +447,25 @@ namespace lue::framework {
                 .def(
                     "__pow__",
                     [](Scalar const& argument1, Scalar const& argument2)
-                    { return lfr::pow<ElementT<Scalar>>(argument1, argument2); },
+                    { return pow(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__pow__",
                     [](Scalar const& argument1, Element const argument2)
-                    { return lfr::pow<ElementT<Scalar>>(argument1, argument2); },
+                    { return pow(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__pow__",
-                    [](Scalar const& argument1, Value const& argument2)
-                    { return lfr::pow<ElementT<Scalar>>(argument1, argument2); },
+                    [](Scalar const& argument1, Value const& argument2) { return pow(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rpow__",
                     [](Scalar const& argument2, Element const argument1)
-                    { return lfr::pow<ElementT<Scalar>>(argument1, argument2); },
+                    { return pow(argument1, argument2); },
                     pybind11::is_operator())
                 .def(
                     "__rpow__",
-                    [](Scalar const& argument2, Value const& argument1)
-                    { return lfr::pow<ElementT<Scalar>>(argument1, argument2); },
+                    [](Scalar const& argument2, Value const& argument1) { return pow(argument1, argument2); },
                     pybind11::is_operator());
         }
 

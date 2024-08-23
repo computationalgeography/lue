@@ -17,7 +17,7 @@ namespace lue {
 
                 using OutputElement = InputElement;
 
-                auto operator()(InputElement const& input_element) const noexcept -> OutputElement
+                auto operator()(InputElement const input_element) const noexcept -> OutputElement
                 {
                     return std::abs(input_element);
                 }

@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/partitioned_array.hpp"
+#include <type_traits>
 
 
 namespace lue {
@@ -49,6 +50,16 @@ namespace lue {
             policies,                                                                                        \
             scalar,                                                                                          \
             Functor<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>{});             \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value) */                                                                                 \
+    template<typename Policies>                                                                              \
+    requires std::is_arithmetic_v<policy::InputElementT<Policies, 0>> auto name(                             \
+        Policies const& policies, policy::InputElementT<Policies, 0> const value)                            \
+        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+    {                                                                                                        \
+        return name(policies, Scalar{value});                                                                \
     }
 
 
@@ -71,10 +82,21 @@ namespace lue {
         ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
     {                                                                                                        \
         return unary_local_operation(policies, scalar, Functor<policy::InputElementT<Policies, 0>>{});       \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(policies, value) */                                                                                 \
+    template<typename Policies>                                                                              \
+    requires std::is_arithmetic_v<policy::InputElementT<Policies, 0>> auto name(                             \
+        Policies const& policies, policy::InputElementT<Policies, 0> const value)                            \
+        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+    {                                                                                                        \
+        return name(policies, Scalar{value});                                                                \
     }
 
 
 // All overloads *without* a Policies template parameter
+// Create a Policies instance and call the general implementation
 #define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(name, Policies)        \
                                                                                                              \
     /* f(array) */                                                                                           \
@@ -94,10 +116,23 @@ namespace lue {
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
         return name(Policies_{}, scalar);                                                                    \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value) */                                                                                           \
+    template<typename OutputElement, typename InputElement>                                                  \
+    requires std::is_arithmetic_v<OutputElement>&& std::is_arithmetic_v<InputElement> auto name(             \
+        InputElement const value)                                                                            \
+        ->Scalar<OutputElement>                                                                              \
+    {                                                                                                        \
+        using Policies_ = Policies<OutputElement, InputElement>;                                             \
+                                                                                                             \
+        return lue::name(Policies_{}, value);                                                                \
     }
 
 
 // All overloads *without* a Policies template parameter
+// Create a Policies instance and call the general implementation
 #define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(name, Policies)             \
                                                                                                              \
     /* f(array) */                                                                                           \
@@ -117,4 +152,14 @@ namespace lue {
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
         return name(Policies_{}, scalar);                                                                    \
+    }                                                                                                        \
+                                                                                                             \
+                                                                                                             \
+    /* f(value) */                                                                                           \
+    template<typename Element>                                                                               \
+    requires std::is_arithmetic_v<Element> auto name(Element const value)->Scalar<Element>                   \
+    {                                                                                                        \
+        using Policies_ = Policies<Element>;                                                                 \
+                                                                                                             \
+        return lue::name(Policies_{}, value);                                                                \
     }

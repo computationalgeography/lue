@@ -19,10 +19,10 @@ namespace lue {
 
         // partition == scalar_f
         template<typename InputElement, typename OutputElement = std::uint8_t, Rank rank>
-        ArrayPartition<OutputElement, rank> equal_to(
+        auto equal_to(
             hpx::id_type const locality_id,
             ArrayPartition<InputElement, rank> const& partition,
-            hpx::shared_future<InputElement> const& scalar)
+            hpx::shared_future<InputElement> const& scalar) -> ArrayPartition<OutputElement, rank>
         {
             using Policies = policy::equal_to::DefaultPolicies<OutputElement, InputElement>;
 
@@ -33,18 +33,18 @@ namespace lue {
 
         // partition == scalar
         template<typename InputElement, typename OutputElement = std::uint8_t, Rank rank>
-        ArrayPartition<OutputElement, rank> equal_to(
+        auto equal_to(
             hpx::id_type const locality_id,
             ArrayPartition<InputElement, rank> const& partition,
-            InputElement const& scalar)
+            InputElement const& scalar) -> ArrayPartition<OutputElement, rank>
         {
             return equal_to<InputElement, OutputElement, rank>(
                 locality_id, partition, hpx::make_ready_future<InputElement>(scalar).share());
         }
 
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
-            equal_to, detail::EqualTo, policy::equal_to::DefaultPolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+            equal_to, policy::equal_to::DefaultPolicies)
         LUE_BINARY_COMPARISON_OPERATOR(==, equal_to)
 
     }  // namespace default_policies

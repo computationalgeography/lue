@@ -2,8 +2,7 @@ import numpy as np
 
 import lue.framework as lfr
 import lue_test
-
-from ..operation_test import OperationTest, setUpModule, tearDownModule
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
 class AddTest(OperationTest):
@@ -15,23 +14,17 @@ class AddTest(OperationTest):
             scalar = self.scalar[type_]
             array = self.array[type_]
 
-            # value icw scalar
-            _ = lfr.add(value, scalar)
-            _ = lfr.add(scalar, value)
-
-            _ = value + scalar
-            _ = scalar + value
-
-            # value icw array
-            _ = lfr.add(value, array)
-            _ = lfr.add(array, value)
-
-            _ = value + array
-            _ = array + value
-
-            # scalar icw array
-            _ = lfr.add(scalar, array)
+            # array icw something else
+            _ = lfr.add(array, array)
             _ = lfr.add(array, scalar)
+            _ = lfr.add(array, value)
+            _ = lfr.add(scalar, array)
+            _ = lfr.add(value, array)
 
-            _ = scalar + array
-            _ = array + scalar
+            # scalar icw something else, if not handled already
+            _ = lfr.add(scalar, scalar)
+            _ = lfr.add(scalar, value)
+            _ = lfr.add(value, scalar)
+
+            # value icw something else, if not handled already
+            _ = lfr.add(value, value)

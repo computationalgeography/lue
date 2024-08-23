@@ -186,6 +186,7 @@ namespace lue {
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>>, rank> const&,                  \
         ArgumentType<void(Functor)> const&)                                                                  \
         ->PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>>, rank>;                      \
+                                                                                                             \
     template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     unary_local_operation<ArgumentType<void(Policies)>, ArgumentType<void(Functor)>>(                        \
         ArgumentType<void(Policies)> const&,                                                                 \
