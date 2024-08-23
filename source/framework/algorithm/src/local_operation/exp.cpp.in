@@ -5,10 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_EXP(
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
             ESC(policy::exp::{{ Policies }}<{{ Element }}>),
-            {{ Element }},
-            {{ rank }}
+            {{ rank }},
+            ESC(detail::Exp<{{ Element }}>)
         );
 
 }  // namespace lue

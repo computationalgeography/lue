@@ -1,5 +1,4 @@
-#include "lue/py/framework/algorithm/greater_than.hpp"
-#include "lue/py/framework/type_traits.hpp"
+#include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,31 +8,52 @@ namespace lue::framework {
         template<typename Element>
         constexpr void define_greater_than_overloads(pybind11::module& module)
         {
+            using namespace value_policies;
             Rank const rank{2};
-
-            using OutputElement = std::uint8_t;
-
-            module.def(
-                "greater_than",
-                greater_than<
-                    OutputElement,
-                    rank,
-                    PartitionedArray<Element, rank>,
-                    PartitionedArray<Element, rank>>);
-            module.def(
-                "greater_than",
-                greater_than<OutputElement, rank, PartitionedArray<Element, rank>, Scalar<Element>>);
-            module.def(
-                "greater_than", greater_than<OutputElement, rank, PartitionedArray<Element, rank>, Element>);
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+            using BooleanElement = std::uint8_t;
 
             module.def(
                 "greater_than",
-                greater_than<OutputElement, rank, Scalar<Element>, PartitionedArray<Element, rank>>);
+                [](Array const& array1, Array const& array2)
+                { return greater_than<BooleanElement>(array1, array2); });
             module.def(
-                "greater_than", greater_than<OutputElement, rank, Element, PartitionedArray<Element, rank>>);
+                "greater_than",
+                [](Array const& array, Scalar const& scalar)
+                { return greater_than<BooleanElement>(array, scalar); });
+            module.def(
+                "greater_than",
+                [](Array const& array, Value const value)
+                { return greater_than<BooleanElement>(array, value); });
 
-            module.def("greater_than", greater_than<OutputElement, Scalar<Element>, Element>);
-            module.def("greater_than", greater_than<OutputElement, Element, Scalar<Element>>);
+            module.def(
+                "greater_than",
+                [](Scalar const& scalar, Array const& array)
+                { return greater_than<BooleanElement>(scalar, array); });
+            module.def(
+                "greater_than",
+                [](Scalar const& scalar1, Scalar const& scalar2)
+                { return greater_than<BooleanElement>(scalar1, scalar2); });
+            module.def(
+                "greater_than",
+                [](Scalar const& scalar, Value const value)
+                { return greater_than<BooleanElement>(scalar, value); });
+
+            module.def(
+                "greater_than",
+                [](Value const value, Array const& array)
+                { return greater_than<BooleanElement>(value, array); });
+            module.def(
+                "greater_than",
+                [](Value const value, Scalar const& scalar)
+                { return greater_than<BooleanElement>(value, scalar); });
+
+            module.def(
+                "greater_than",
+                [](Value const value1, Value const value2)
+                { return greater_than<BooleanElement>(value1, value2); });
         }
 
     }  // Anonymous namespace

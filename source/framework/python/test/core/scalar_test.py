@@ -18,40 +18,14 @@ class ScalarTest(lue_test.TestCase):
     @classmethod
     @lue_test.framework_test_case
     def setUpClass(cls):
-        cls.signed_integral_types = [
-            # np.int8,
-            np.int32,
-            np.int64,
-        ]
-        cls.unsigned_integral_types = [
-            np.uint8,
-            np.uint32,
-            np.uint64,
-        ]
-        cls.integral_types = cls.signed_integral_types + cls.unsigned_integral_types
-        cls.floating_point_types = [
-            np.float32,
-            np.float64,
-        ]
-
-        cls.numeric_types = cls.integral_types + cls.floating_point_types
-
-        cls.value_by_type = {
-            np.uint8: np.uint8(8),
-            # np.int8: np.int8(-8),
-            np.uint32: np.uint32(32),
-            np.uint64: np.uint32(64),
-            np.int32: np.int64(-32),
-            np.int64: np.int64(-64),
-            np.float32: np.float32(3.2),
-            np.float64: np.float64(6.4),
-        }
-
-        cls.dtype_by_floating_point_type = {
-            type_: np.dtype(type_) for type_ in cls.floating_point_types
-        }
-
-        cls.dtype_by_type = {type_: np.dtype(type_) for type_ in cls.numeric_types}
+        cls.signed_integral_types = lue_test.signed_integral_types
+        cls.unsigned_integral_types = lue_test.unsigned_integral_types
+        cls.integral_types = lue_test.integral_types
+        cls.floating_point_types = lue_test.floating_point_types
+        cls.numeric_types = lue_test.numeric_types
+        cls.value_by_type = lue_test.value_by_type
+        cls.dtype_by_floating_point_type = lue_test.dtype_by_floating_point_type
+        cls.dtype_by_type = lue_test.dtype_by_type
 
         cls.scalar_by_dtype = {
             cls.dtype_by_type[type_]: lfr.create_scalar(

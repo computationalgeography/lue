@@ -31,8 +31,9 @@ namespace lue {
                 }
 
 
-                constexpr OutputElement operator()(
+                constexpr auto operator()(
                     InputElement const& input_element1, InputElement const& input_element2) const noexcept
+                    -> OutputElement
                 {
                     return std::abs(input_element1 - input_element2) <=
                            (_absolute_difference + _relative_difference * std::abs(input_element2));
@@ -59,6 +60,6 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(close_to, detail::CloseTo)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(close_to, detail::CloseTo)
 
 }  // namespace lue

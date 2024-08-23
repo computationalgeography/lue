@@ -15,8 +15,9 @@ namespace lue {
 
                 using OutputElement = OutputElement_;
 
-                constexpr OutputElement operator()(
+                constexpr auto operator()(
                     InputElement const& input_element1, InputElement const& input_element2) const noexcept
+                    -> OutputElement
                 {
                     return input_element1 > input_element2;
                 }
@@ -25,6 +26,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES(greater_than, detail::GreaterThan)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        greater_than, detail::GreaterThan)
 
 }  // namespace lue

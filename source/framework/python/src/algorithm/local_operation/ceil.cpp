@@ -5,10 +5,18 @@
 namespace lue::framework {
     namespace {
 
-        template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> ceil(PartitionedArray<Element, rank> const& array)
+        template<typename Element>
+        constexpr void define_ceil_overloads(pybind11::module& module)
         {
-            return value_policies::ceil(array);
+            using namespace lue::value_policies;
+            Rank const rank{2};
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+
+            module.def("ceil", [](Array const& array) { return ceil(array); });
+            module.def("ceil", [](Scalar const& scalar) { return ceil(scalar); });
+            module.def("ceil", [](Value const value) { return ceil(value); });
         }
 
     }  // Anonymous namespace
@@ -16,8 +24,8 @@ namespace lue::framework {
 
     void bind_ceil(pybind11::module& module)
     {
-        module.def("ceil", ceil<float, 2>);
-        module.def("ceil", ceil<double, 2>);
+        define_ceil_overloads<float>(module);
+        define_ceil_overloads<double>(module);
     }
 
 }  // namespace lue::framework

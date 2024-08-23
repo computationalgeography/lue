@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/definition/pow.hpp"
+#include "lue/framework/algorithm/default_policies/pow.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 

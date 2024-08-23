@@ -1,41 +1,19 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class CastTest(lue_test.TestCase):
+class CastTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
-        array_shape = (60, 40)
-        fill_value = 5
 
-        for input_type in [
-            np.uint8,
-            np.uint32,
-            np.int32,
-            np.uint64,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
-            input_array = lfr.create_array(array_shape, input_type, fill_value)
+        for input_type in self.numeric_types:
+            value = self.value[input_type]
+            scalar = self.scalar[input_type]
+            array = self.array[input_type]
 
-            for output_type in [
-                np.uint8,
-                np.uint32,
-                np.int32,
-                np.uint64,
-                np.int64,
-                np.float32,
-                np.float64,
-            ]:
-                _ = lfr.cast(input_array, output_type)
+            for output_type in self.numeric_types:
+
+                _ = lfr.cast(array, output_type)
+                _ = lfr.cast(scalar, output_type)
+                _ = lfr.cast(value, output_type)

@@ -26,7 +26,6 @@ file(GENERATE
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 add_library(lue_py_framework SHARED
-    src/algorithm/abs.cpp
     src/algorithm/accu.cpp
     src/algorithm/accu3.cpp
     src/algorithm/accu_fraction.cpp
@@ -34,33 +33,23 @@ add_library(lue_py_framework SHARED
     src/algorithm/accu_info3.cpp
     src/algorithm/accu_threshold.cpp
     src/algorithm/accu_threshold3.cpp
-    src/algorithm/acos.cpp
     src/algorithm/all.cpp
     src/algorithm/array_partition_id.cpp
     src/algorithm/aspect.cpp
-    src/algorithm/asin.cpp
-    src/algorithm/atan.cpp
     src/algorithm/atan2.cpp
-    src/algorithm/cos.cpp
     src/algorithm/d8_flow_direction.cpp
     src/algorithm/downstream.cpp
     src/algorithm/downstream_distance.cpp
-    src/algorithm/exp.cpp
     src/algorithm/inflow_count.cpp
     src/algorithm/inflow_count3.cpp
     src/algorithm/inter_partition_stream.cpp
     src/algorithm/iterate_per_element.cpp
     src/algorithm/locality_id.cpp
-    src/algorithm/log.cpp
     src/algorithm/normal.cpp
-    src/algorithm/sin.cpp
     src/algorithm/slope.cpp
-    src/algorithm/sqrt.cpp
-    src/algorithm/tan.cpp
     src/algorithm/timestamp.cpp
     src/algorithm/uniform.cpp
     src/algorithm/upstream.cpp
-    src/algorithm/valid.cpp
     src/algorithm/where.cpp
 
     src/algorithm/focal_operation.cpp
@@ -79,17 +68,24 @@ add_library(lue_py_framework SHARED
     src/algorithm/global_operation/sum.cpp
 
     src/algorithm/local_operation.cpp
+    src/algorithm/local_operation/abs.cpp
+    src/algorithm/local_operation/acos.cpp
     src/algorithm/local_operation/add.cpp
+    src/algorithm/local_operation/asin.cpp
+    src/algorithm/local_operation/atan.cpp
     src/algorithm/local_operation/cast.cpp
-    src/algorithm/local_operation/ceil.cpp
     src/algorithm/local_operation/cell_index.cpp
+    src/algorithm/local_operation/cos.cpp
     src/algorithm/local_operation/divide.cpp
     src/algorithm/local_operation/equal_to.cpp
+    src/algorithm/local_operation/ceil.cpp
+    src/algorithm/local_operation/exp.cpp
     src/algorithm/local_operation/floor.cpp
     src/algorithm/local_operation/greater_than.cpp
     src/algorithm/local_operation/greater_than_equal_to.cpp
     src/algorithm/local_operation/less_than.cpp
     src/algorithm/local_operation/less_than_equal_to.cpp
+    src/algorithm/local_operation/log.cpp
     src/algorithm/local_operation/log10.cpp
     src/algorithm/local_operation/logical_and.cpp
     src/algorithm/local_operation/logical_exclusive_or.cpp
@@ -100,8 +96,12 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/not_equal_to.cpp
     src/algorithm/local_operation/pow.cpp
     src/algorithm/local_operation/round.cpp
+    src/algorithm/local_operation/sin.cpp
+    src/algorithm/local_operation/sqrt.cpp
     src/algorithm/local_operation/subtract.cpp
+    src/algorithm/local_operation/tan.cpp
     src/algorithm/local_operation/unique_id.cpp
+    src/algorithm/local_operation/valid.cpp
 
     src/algorithm/routing_operation.cpp
     src/algorithm/routing_operation/decreasing_order.cpp

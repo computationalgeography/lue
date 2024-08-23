@@ -17,14 +17,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        PartitionedArray<std::uint8_t, rank> logical_not(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::logical_not::DefaultPolicies<std::uint8_t, Element>;
-
-            return logical_not(Policies{}, array);
-        }
-
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+            logical_not, policy::logical_not::DefaultPolicies)
 
         LUE_UNARY_LOGICAL_OPERATOR(!, logical_not)
 

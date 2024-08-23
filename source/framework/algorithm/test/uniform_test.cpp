@@ -133,8 +133,5 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     Array array = uniform(array_shape, partition_shape, min_value, max_value);
 
-    BOOST_CHECK(
-        all(logical_and(greater_than_equal_to(array, min_value), less_than_equal_to(array, max_value)))
-            .future()
-            .get());
+    BOOST_CHECK(all(array >= min_value && array <= max_value).future().get());
 }

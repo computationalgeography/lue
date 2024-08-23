@@ -26,21 +26,24 @@ namespace detail {
 
         // array || array
         {
-            BOOST_CHECK(all(logical_exclusive_or(array1, array2)).future().get());   // true || false
-            BOOST_CHECK(none(logical_exclusive_or(array1, array1)).future().get());  // true || true
-            BOOST_CHECK(none(logical_exclusive_or(array2, array2)).future().get());  // false || false
+            BOOST_CHECK(
+                all(logical_exclusive_or<std::uint8_t>(array1, array2)).future().get());  // true || false
+            BOOST_CHECK(
+                none(logical_exclusive_or<std::uint8_t>(array1, array1)).future().get());  // true || true
+            BOOST_CHECK(
+                none(logical_exclusive_or<std::uint8_t>(array2, array2)).future().get());  // false || false
         }
 
         // array || scalar
         {
-            BOOST_CHECK(none(logical_exclusive_or(array1, fill_value1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or(array1, fill_value2)).future().get());
+            BOOST_CHECK(none(logical_exclusive_or<std::uint8_t>(array1, fill_value1)).future().get());
+            BOOST_CHECK(all(logical_exclusive_or<std::uint8_t>(array1, fill_value2)).future().get());
         }
 
         // scalar || array
         {
-            BOOST_CHECK(none(logical_exclusive_or(fill_value1, array1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or(fill_value2, array1)).future().get());
+            BOOST_CHECK(none(logical_exclusive_or<std::uint8_t>(fill_value1, array1)).future().get());
+            BOOST_CHECK(all(logical_exclusive_or<std::uint8_t>(fill_value2, array1)).future().get());
         }
     }
 

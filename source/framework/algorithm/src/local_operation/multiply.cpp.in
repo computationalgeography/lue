@@ -6,12 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(
-            ESC(policy::multiply::{{ Policies }}<{{ Element }}, {{ Element }}>),
-            {{ Element }},
-            {{ Element }},
-            {{ Element }},
+            ESC(policy::multiply::{{ Policies }}<{{ Element }}>),
             {{ rank }},
-            ESC(detail::Multiply<{{ Element }}, {{ Element }}>)
+            ESC(detail::Multiply<{{ Element }}>)
         );
 
 }  // namespace lue

@@ -1,5 +1,4 @@
-#include "lue/py/framework/algorithm/less_than_equal_to.hpp"
-#include "lue/py/framework/type_traits.hpp"
+#include "lue/framework/algorithm/value_policies/less_than_equal_to.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,33 +8,52 @@ namespace lue::framework {
         template<typename Element>
         constexpr void define_less_than_equal_to_overloads(pybind11::module& module)
         {
+            using namespace value_policies;
             Rank const rank{2};
-
-            using OutputElement = std::uint8_t;
-
-            module.def(
-                "less_than_equal_to",
-                less_than_equal_to<
-                    OutputElement,
-                    rank,
-                    PartitionedArray<Element, rank>,
-                    PartitionedArray<Element, rank>>);
-            module.def(
-                "less_than_equal_to",
-                less_than_equal_to<OutputElement, rank, PartitionedArray<Element, rank>, Scalar<Element>>);
-            module.def(
-                "less_than_equal_to",
-                less_than_equal_to<OutputElement, rank, PartitionedArray<Element, rank>, Element>);
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+            using BooleanElement = std::uint8_t;
 
             module.def(
                 "less_than_equal_to",
-                less_than_equal_to<OutputElement, rank, Scalar<Element>, PartitionedArray<Element, rank>>);
+                [](Array const& array1, Array const& array2)
+                { return less_than_equal_to<BooleanElement>(array1, array2); });
             module.def(
                 "less_than_equal_to",
-                less_than_equal_to<OutputElement, rank, Element, PartitionedArray<Element, rank>>);
+                [](Array const& array, Scalar const& scalar)
+                { return less_than_equal_to<BooleanElement>(array, scalar); });
+            module.def(
+                "less_than_equal_to",
+                [](Array const& array, Value const value)
+                { return less_than_equal_to<BooleanElement>(array, value); });
 
-            module.def("less_than_equal_to", less_than_equal_to<OutputElement, Scalar<Element>, Element>);
-            module.def("less_than_equal_to", less_than_equal_to<OutputElement, Element, Scalar<Element>>);
+            module.def(
+                "less_than_equal_to",
+                [](Scalar const& scalar, Array const& array)
+                { return less_than_equal_to<BooleanElement>(scalar, array); });
+            module.def(
+                "less_than_equal_to",
+                [](Scalar const& scalar1, Scalar const& scalar2)
+                { return less_than_equal_to<BooleanElement>(scalar1, scalar2); });
+            module.def(
+                "less_than_equal_to",
+                [](Scalar const& scalar, Value const value)
+                { return less_than_equal_to<BooleanElement>(scalar, value); });
+
+            module.def(
+                "less_than_equal_to",
+                [](Value const value, Array const& array)
+                { return less_than_equal_to<BooleanElement>(value, array); });
+            module.def(
+                "less_than_equal_to",
+                [](Value const value, Scalar const& scalar)
+                { return less_than_equal_to<BooleanElement>(value, scalar); });
+
+            module.def(
+                "less_than_equal_to",
+                [](Value const value1, Value const value2)
+                { return less_than_equal_to<BooleanElement>(value1, value2); });
         }
 
     }  // Anonymous namespace

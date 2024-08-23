@@ -14,13 +14,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto sqrt(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::sqrt::DefaultValuePolicies<Element>;
-
-            return sqrt(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            sqrt, policy::sqrt::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

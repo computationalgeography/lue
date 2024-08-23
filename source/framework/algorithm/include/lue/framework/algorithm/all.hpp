@@ -17,34 +17,36 @@ namespace lue {
 
                 using OutputElement = InputElement;
 
-                constexpr OutputElement operator()() const noexcept
+                constexpr auto operator()() const noexcept -> OutputElement
                 {
                     // The result is false if there are not values to aggregate
                     return false;
                 }
 
-                constexpr OutputElement operator()(InputElement const input_element) const noexcept
+                constexpr auto operator()(InputElement const input_element) const noexcept -> OutputElement
                 {
                     // The result is true if the input element is true
                     return input_element;
                 }
 
-                constexpr OutputElement operator()(
+                constexpr auto operator()(
                     InputElement const aggregate_value, InputElement const input_element) const noexcept
+                    -> OutputElement
                 {
                     // The result is true if the value aggregated until now is true
                     // and the input element is true
                     return aggregate_value && input_element;
                 }
 
-                constexpr OutputElement partition(OutputElement const input_element) const noexcept
+                constexpr auto partition(OutputElement const input_element) const noexcept -> OutputElement
                 {
                     // The result is true if the input element is true
                     return input_element;
                 }
 
-                constexpr OutputElement partition(
+                constexpr auto partition(
                     OutputElement const aggregated_value, OutputElement const input_element) const noexcept
+                    -> OutputElement
                 {
                     // The result is true if the value aggregated until now is true
                     // and the input element is true

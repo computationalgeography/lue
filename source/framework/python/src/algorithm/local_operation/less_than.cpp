@@ -1,5 +1,4 @@
-#include "lue/py/framework/algorithm/less_than.hpp"
-#include "lue/py/framework/type_traits.hpp"
+#include "lue/framework/algorithm/value_policies/less_than.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,29 +8,52 @@ namespace lue::framework {
         template<typename Element>
         constexpr void define_less_than_overloads(pybind11::module& module)
         {
+            using namespace value_policies;
             Rank const rank{2};
-
-            using OutputElement = std::uint8_t;
-
-            module.def(
-                "less_than",
-                less_than<
-                    OutputElement,
-                    rank,
-                    PartitionedArray<Element, rank>,
-                    PartitionedArray<Element, rank>>);
-            module.def(
-                "less_than",
-                less_than<OutputElement, rank, PartitionedArray<Element, rank>, Scalar<Element>>);
-            module.def("less_than", less_than<OutputElement, rank, PartitionedArray<Element, rank>, Element>);
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+            using BooleanElement = std::uint8_t;
 
             module.def(
                 "less_than",
-                less_than<OutputElement, rank, Scalar<Element>, PartitionedArray<Element, rank>>);
-            module.def("less_than", less_than<OutputElement, rank, Element, PartitionedArray<Element, rank>>);
+                [](Array const& array1, Array const& array2)
+                { return less_than<BooleanElement>(array1, array2); });
+            module.def(
+                "less_than",
+                [](Array const& array, Scalar const& scalar)
+                { return less_than<BooleanElement>(array, scalar); });
+            module.def(
+                "less_than",
+                [](Array const& array, Value const value)
+                { return less_than<BooleanElement>(array, value); });
 
-            module.def("less_than", less_than<OutputElement, Scalar<Element>, Element>);
-            module.def("less_than", less_than<OutputElement, Element, Scalar<Element>>);
+            module.def(
+                "less_than",
+                [](Scalar const& scalar, Array const& array)
+                { return less_than<BooleanElement>(scalar, array); });
+            module.def(
+                "less_than",
+                [](Scalar const& scalar1, Scalar const& scalar2)
+                { return less_than<BooleanElement>(scalar1, scalar2); });
+            module.def(
+                "less_than",
+                [](Scalar const& scalar, Value const value)
+                { return less_than<BooleanElement>(scalar, value); });
+
+            module.def(
+                "less_than",
+                [](Value const value, Array const& array)
+                { return less_than<BooleanElement>(value, array); });
+            module.def(
+                "less_than",
+                [](Value const value, Scalar const& scalar)
+                { return less_than<BooleanElement>(value, scalar); });
+
+            module.def(
+                "less_than",
+                [](Value const value1, Value const value2)
+                { return less_than<BooleanElement>(value1, value2); });
         }
 
     }  // Anonymous namespace

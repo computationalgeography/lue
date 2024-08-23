@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto floor(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::floor::DefaultPolicies<Element>;
-
-            return floor(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            floor, policy::floor::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

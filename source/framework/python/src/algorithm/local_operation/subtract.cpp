@@ -1,4 +1,4 @@
-#include "lue/py/framework/algorithm/subtract.hpp"
+#include "lue/framework/algorithm/value_policies/subtract.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -8,19 +8,35 @@ namespace lue::framework {
         template<typename Element>
         constexpr void define_subtract_overloads(pybind11::module& module)
         {
+            using namespace lue::value_policies;
             Rank const rank{2};
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
 
             module.def(
                 "subtract",
-                subtract<Element, rank, PartitionedArray<Element, rank>, PartitionedArray<Element, rank>>);
-            module.def("subtract", subtract<Element, rank, PartitionedArray<Element, rank>, Scalar<Element>>);
-            module.def("subtract", subtract<Element, rank, PartitionedArray<Element, rank>, Element>);
+                [](Array const& array1, Array const& array2) { return subtract(array1, array2); });
+            module.def(
+                "subtract", [](Array const& array, Scalar const& scalar) { return subtract(array, scalar); });
+            module.def(
+                "subtract", [](Array const& array, Value const value) { return subtract(array, value); });
 
-            module.def("subtract", subtract<Element, rank, Scalar<Element>, PartitionedArray<Element, rank>>);
-            module.def("subtract", subtract<Element, rank, Element, PartitionedArray<Element, rank>>);
+            module.def(
+                "subtract", [](Scalar const& scalar, Array const& array) { return subtract(scalar, array); });
+            module.def(
+                "subtract",
+                [](Scalar const& scalar1, Scalar const& scalar2) { return subtract(scalar1, scalar2); });
+            module.def(
+                "subtract", [](Scalar const& scalar, Value const value) { return subtract(scalar, value); });
 
-            module.def("subtract", subtract<Element, Scalar<Element>, Element>);
-            module.def("subtract", subtract<Element, Element, Scalar<Element>>);
+            module.def(
+                "subtract", [](Value const value, Array const& array) { return subtract(value, array); });
+            module.def(
+                "subtract", [](Value const value, Scalar const& scalar) { return subtract(value, scalar); });
+
+            module.def(
+                "subtract", [](Value const value1, Value const value2) { return subtract(value1, value2); });
         }
 
     }  // Anonymous namespace

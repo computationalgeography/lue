@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto atan(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::atan::DefaultPolicies<Element>;
-
-            return atan(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            atan, policy::atan::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue
