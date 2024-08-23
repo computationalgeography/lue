@@ -50,7 +50,6 @@ add_library(lue_py_framework SHARED
     src/algorithm/timestamp.cpp
     src/algorithm/uniform.cpp
     src/algorithm/upstream.cpp
-    src/algorithm/valid.cpp
     src/algorithm/where.cpp
 
     src/algorithm/focal_operation.cpp
@@ -102,6 +101,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/subtract.cpp
     src/algorithm/local_operation/tan.cpp
     src/algorithm/local_operation/unique_id.cpp
+    src/algorithm/local_operation/valid.cpp
 
     src/algorithm/routing_operation.cpp
     src/algorithm/routing_operation/decreasing_order.cpp

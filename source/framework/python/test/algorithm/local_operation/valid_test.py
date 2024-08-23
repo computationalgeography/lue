@@ -1,39 +1,17 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class ValidTest(lue_test.TestCase):
+class ValidTest(OperationTest):
     @lue_test.framework_test_case
-    def test_all_valid(self):
-        array_shape = (60, 40)
-        dtype = np.int32
-        fill_value = 5  # Valid value
-        array = lfr.create_array(array_shape, dtype, fill_value)
+    def test_overloads(self):
 
-        result = lfr.valid(array)
+        for type_ in self.numeric_types:
+            value = self.value[type_]
+            scalar = self.scalar[type_]
+            array = self.array[type_]
 
-        self.assertTrue(lfr.all(result == 1).future.get())
-
-    @lue_test.framework_test_case
-    def test_all_invalid(self):
-        array_shape = (60, 40)
-        dtype = np.dtype(np.int32)
-        fill_value = 5  # Valid value
-        array = lfr.create_array(array_shape, dtype, fill_value)
-
-        # Turn all valid values into invalid ones
-        array = lfr.where(array != fill_value, 7)
-
-        result = lfr.valid(array)
-
-        self.assertTrue(lfr.all(result == 0).future.get())
+            _ = lfr.valid(array)
+            _ = lfr.valid(scalar)
+            _ = lfr.valid(value)
