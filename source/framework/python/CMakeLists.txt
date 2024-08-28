@@ -25,54 +25,37 @@ file(GENERATE
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-add_library(lue_py_framework SHARED
-    src/algorithm/accu.cpp
-    src/algorithm/accu3.cpp
-    src/algorithm/accu_fraction.cpp
-    src/algorithm/accu_info.cpp
-    src/algorithm/accu_info3.cpp
-    src/algorithm/accu_threshold.cpp
-    src/algorithm/accu_threshold3.cpp
-    src/algorithm/all.cpp
-    src/algorithm/array_partition_id.cpp
-    src/algorithm/aspect.cpp
-    src/algorithm/atan2.cpp
-    src/algorithm/d8_flow_direction.cpp
-    src/algorithm/downstream.cpp
-    src/algorithm/downstream_distance.cpp
-    src/algorithm/inflow_count.cpp
-    src/algorithm/inflow_count3.cpp
-    src/algorithm/inter_partition_stream.cpp
-    src/algorithm/iterate_per_element.cpp
-    src/algorithm/locality_id.cpp
-    src/algorithm/normal.cpp
-    src/algorithm/slope.cpp
-    src/algorithm/timestamp.cpp
-    src/algorithm/uniform.cpp
-    src/algorithm/upstream.cpp
-    src/algorithm/where.cpp
 
+add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
+    src/algorithm/focal_operation/aspect.cpp
     src/algorithm/focal_operation/focal_diversity.cpp
     src/algorithm/focal_operation/focal_high_pass.cpp
     src/algorithm/focal_operation/focal_majority.cpp
     src/algorithm/focal_operation/focal_maximum.cpp
     src/algorithm/focal_operation/focal_mean.cpp
     src/algorithm/focal_operation/focal_minimum.cpp
+    src/algorithm/focal_operation/slope.cpp
     src/algorithm/focal_operation/focal_sum.cpp
+)
 
+add_library(lue_py_framework_global_operation SHARED
     src/algorithm/global_operation.cpp
     src/algorithm/global_operation/reclassify.cpp
     src/algorithm/global_operation/maximum.cpp
     src/algorithm/global_operation/minimum.cpp
     src/algorithm/global_operation/sum.cpp
+)
 
+add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/abs.cpp
     src/algorithm/local_operation/acos.cpp
     src/algorithm/local_operation/add.cpp
+    src/algorithm/local_operation/all.cpp
     src/algorithm/local_operation/asin.cpp
     src/algorithm/local_operation/atan.cpp
+    src/algorithm/local_operation/atan2.cpp
     src/algorithm/local_operation/cast.cpp
     src/algorithm/local_operation/cell_index.cpp
     src/algorithm/local_operation/cos.cpp
@@ -83,6 +66,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/floor.cpp
     src/algorithm/local_operation/greater_than.cpp
     src/algorithm/local_operation/greater_than_equal_to.cpp
+    src/algorithm/local_operation/iterate_per_element.cpp
     src/algorithm/local_operation/less_than.cpp
     src/algorithm/local_operation/less_than_equal_to.cpp
     src/algorithm/local_operation/log.cpp
@@ -102,12 +86,32 @@ add_library(lue_py_framework SHARED
     src/algorithm/local_operation/tan.cpp
     src/algorithm/local_operation/unique_id.cpp
     src/algorithm/local_operation/valid.cpp
+    src/algorithm/local_operation/where.cpp
+)
 
+add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation.cpp
+    src/algorithm/routing_operation/accu.cpp
+    src/algorithm/routing_operation/accu3.cpp
+    src/algorithm/routing_operation/accu_fraction.cpp
+    src/algorithm/routing_operation/accu_info.cpp
+    src/algorithm/routing_operation/accu_info3.cpp
+    src/algorithm/routing_operation/accu_threshold.cpp
+    src/algorithm/routing_operation/accu_threshold3.cpp
+    src/algorithm/routing_operation/d8_flow_direction.cpp
     src/algorithm/routing_operation/decreasing_order.cpp
+    src/algorithm/routing_operation/downstream.cpp
+    src/algorithm/routing_operation/downstream_distance.cpp
     src/algorithm/routing_operation/first_n.cpp
+    src/algorithm/routing_operation/inflow_count.cpp
+    src/algorithm/routing_operation/inflow_count3.cpp
+    src/algorithm/routing_operation/inter_partition_stream.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
+    src/algorithm/routing_operation/upstream.cpp
 
+)
+
+add_library(lue_py_framework_zonal_operation SHARED
     src/algorithm/zonal_operation.cpp
     src/algorithm/zonal_operation/clump.cpp
     src/algorithm/zonal_operation/zonal_area.cpp
@@ -119,6 +123,33 @@ add_library(lue_py_framework SHARED
     src/algorithm/zonal_operation/zonal_normal.cpp
     src/algorithm/zonal_operation/zonal_sum.cpp
     src/algorithm/zonal_operation/zonal_uniform.cpp
+)
+
+foreach(name focal global local routing zonal)
+    add_library(lue::py_framework_${name}_operation ALIAS lue_py_framework_${name}_operation)
+
+    target_compile_definitions(lue_py_framework_${name}_operation
+        PRIVATE
+            NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
+    )
+
+    target_link_libraries(lue_py_framework_${name}_operation
+        PRIVATE
+            lue::framework_${name}_operation
+            pybind11::module
+            pybind11::thin_lto
+            pybind11::opt_size
+            pybind11::windows_extras
+            Python::Python
+    )
+endforeach()
+
+add_library(lue_py_framework SHARED
+    src/algorithm/array_partition_id.cpp
+    src/algorithm/locality_id.cpp
+    src/algorithm/timestamp.cpp
+    src/algorithm/normal.cpp
+    src/algorithm/uniform.cpp
 
     src/core/create_partitioned_array.cpp
     src/core/partitioned_array.cpp
@@ -164,12 +195,6 @@ target_compile_definitions(lue_py_framework
         NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
 )
 
-set_target_properties(lue_py_framework
-    PROPERTIES
-        VERSION ${LUE_VERSION}
-        SOVERSION ${LUE_VERSION_MAJOR}
-)
-
 target_include_directories(lue_py_framework
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
@@ -181,11 +206,11 @@ target_include_directories(lue_py_framework
 
 target_link_libraries(lue_py_framework
     PRIVATE
-        lue::framework_focal_operation
-        lue::framework_global_operation
-        lue::framework_local_operation
-        lue::framework_routing_operation
-        lue::framework_zonal_operation
+        lue::py_framework_focal_operation
+        lue::py_framework_global_operation
+        lue::py_framework_local_operation
+        lue::py_framework_routing_operation
+        lue::py_framework_zonal_operation
         lue::framework_io
         lue::framework_model
         pybind11::module
@@ -195,14 +220,37 @@ target_link_libraries(lue_py_framework
         Python::Python
 )
 
+set_target_properties(
+    lue_py_framework_focal_operation
+    lue_py_framework_global_operation
+    lue_py_framework_local_operation
+    lue_py_framework_routing_operation
+    lue_py_framework_zonal_operation
+    lue_py_framework
+    PROPERTIES
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+)
+
 # TODO pybind11_strip does not work on macOS, when building using Conda packages
 #      The resulting binary can't be imported. Results in "killed: 9".
 if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
     pybind11_strip(lue_py_framework)
+    pybind11_strip(lue_py_framework_focal_operation)
+    pybind11_strip(lue_py_framework_global_operation)
+    pybind11_strip(lue_py_framework_local_operation)
+    pybind11_strip(lue_py_framework_zonal_operation)
+    pybind11_strip(lue_py_framework_routing_operation)
 endif()
 
 lue_install_runtime_libraries(
-    TARGETS lue_py_framework
+    TARGETS
+        lue_py_framework
+        lue_py_framework_focal_operation
+        lue_py_framework_global_operation
+        lue_py_framework_local_operation
+        lue_py_framework_zonal_operation
+        lue_py_framework_routing_operation
 )
 
 if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
@@ -210,7 +258,13 @@ if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
     # to include the location of the Python libraries. But if we are building a Conda package,
     # we assume Conda takes care of RPATH handling.
     set_property(
-        TARGET lue_py_framework
+        TARGET
+            lue_py_framework
+            lue_py_framework_focal_operation
+            lue_py_framework_global_operation
+            lue_py_framework_local_operation
+            lue_py_framework_zonal_operation
+            lue_py_framework_routing_operation
         APPEND
         PROPERTY INSTALL_RPATH
             ${Python_LIBRARY_DIRS}
