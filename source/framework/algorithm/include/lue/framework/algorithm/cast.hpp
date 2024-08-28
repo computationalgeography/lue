@@ -12,6 +12,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"cast"};
+
                 using OutputElement = OutputElement_;
 
                 static_assert(std::is_arithmetic_v<InputElement>);

@@ -17,12 +17,14 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"aspect"};
+
                 using OutputElement = InputElement;
 
                 OutputElement operator()(
                     InputElement const gradient_x, InputElement const gradient_y) const noexcept
                 {
-                    OutputElement result;
+                    OutputElement result{};
 
                     if (gradient_x == 0)
                     {

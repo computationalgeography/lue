@@ -3,9 +3,9 @@
 #include "lue/framework/algorithm/value_policies/divide.hpp"
 // #include "lue/py/framework/algorithm/equal_to.hpp"
 // #include "lue/py/framework/algorithm/greater_than.hpp"
-// #include "lue/py/framework/algorithm/greater_than_equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/greater_than_equal_to.hpp"
 // #include "lue/py/framework/algorithm/less_than.hpp"
-// #include "lue/py/framework/algorithm/less_than_equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/less_than_equal_to.hpp"
 // #include "lue/py/framework/algorithm/logical_and.hpp"
 // #include "lue/py/framework/algorithm/logical_exclusive_or.hpp"
 // #include "lue/py/framework/algorithm/logical_inclusive_or.hpp"
@@ -140,6 +140,7 @@ namespace lue::framework {
     {
         using namespace lue::value_policies;
         using Scalar = lue::Scalar<Element>;
+        using BooleanElement = std::uint8_t;
         using Value = Element;
 
         auto class_ =
@@ -178,119 +179,107 @@ namespace lue::framework {
                         throw std::invalid_argument("The truth value of a scalar is ambiguous");
                     })
 
-            //                 // a < b
-            //                 .def(
-            //                     "__lt__",
-            //                     [](Scalar const& argument1, Scalar const& argument2)
-            //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__lt__",
-            //                     [](Scalar const& argument1, Element const argument2)
-            //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__lt__",
-            //                     [](Scalar const& argument1, Value const& argument2)
-            //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //
-            //                 // a <= b
-            //                 .def(
-            //                     "__le__",
-            //                     [](Scalar const& argument1, Scalar const& argument2) {
-            //                         return lfr::less_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
-            //                 .def(
-            //                     "__le__",
-            //                     [](Scalar const& argument1, Element const argument2) {
-            //                         return lfr::less_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
-            //                 .def(
-            //                     "__le__",
-            //                     [](Scalar const& argument1, Value const& argument2) {
-            //                         return lfr::less_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
-            //
-            //                 // a == b
-            //                 .def(
-            //                     "__eq__",
-            //                     [](Scalar const& argument1, Scalar const& argument2)
-            //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__eq__",
-            //                     [](Scalar const& argument1, Element const argument2)
-            //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__eq__",
-            //                     [](Scalar const& argument1, Value const& argument2)
-            //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //
-            //                 // a != b
-            //                 .def(
-            //                     "__ne__",
-            //                     [](Scalar const& argument1, Scalar const& argument2)
-            //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__ne__",
-            //                     [](Scalar const& argument1, Element const argument2)
-            //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__ne__",
-            //                     [](Scalar const& argument1, Value const& argument2)
-            //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //
-            //                 // a > b
-            //                 .def(
-            //                     "__gt__",
-            //                     [](Scalar const& argument1, Scalar const& argument2)
-            //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__gt__",
-            //                     [](Scalar const& argument1, Element const argument2)
-            //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //                 .def(
-            //                     "__gt__",
-            //                     [](Scalar const& argument1, Value const& argument2)
-            //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
-            //                     argument2); }, pybind11::is_operator())
-            //
-            //                 // a >= b
-            //                 .def(
-            //                     "__ge__",
-            //                     [](Scalar const& argument1, Scalar const& argument2) {
-            //                         return lfr::greater_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
-            //                 .def(
-            //                     "__ge__",
-            //                     [](Scalar const& argument1, Element const argument2) {
-            //                         return lfr::greater_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
-            //                 .def(
-            //                     "__ge__",
-            //                     [](Scalar const& argument1, Value const& argument2) {
-            //                         return lfr::greater_than_equal_to<ElementT<Scalar>, std::uint8_t>(
-            //                             argument1, argument2);
-            //                     },
-            //                     pybind11::is_operator())
+                //                 // a < b
+                //                 .def(
+                //                     "__lt__",
+                //                     [](Scalar const& argument1, Scalar const& argument2)
+                //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__lt__",
+                //                     [](Scalar const& argument1, Element const argument2)
+                //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__lt__",
+                //                     [](Scalar const& argument1, Value const& argument2)
+                //                     { return lfr::less_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+
+                // a <= b
+                .def(
+                    "__le__",
+                    [](Scalar const& argument1, Scalar const& argument2)
+                    { return less_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__le__",
+                    [](Scalar const& argument1, Element const argument2)
+                    { return less_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__le__",
+                    [](Scalar const& argument1, Value const& argument2)
+                    { return less_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
+
+                //                 // a == b
+                //                 .def(
+                //                     "__eq__",
+                //                     [](Scalar const& argument1, Scalar const& argument2)
+                //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__eq__",
+                //                     [](Scalar const& argument1, Element const argument2)
+                //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__eq__",
+                //                     [](Scalar const& argument1, Value const& argument2)
+                //                     { return lfr::equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //
+                //                 // a != b
+                //                 .def(
+                //                     "__ne__",
+                //                     [](Scalar const& argument1, Scalar const& argument2)
+                //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__ne__",
+                //                     [](Scalar const& argument1, Element const argument2)
+                //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__ne__",
+                //                     [](Scalar const& argument1, Value const& argument2)
+                //                     { return lfr::not_equal_to<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //
+                //                 // a > b
+                //                 .def(
+                //                     "__gt__",
+                //                     [](Scalar const& argument1, Scalar const& argument2)
+                //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__gt__",
+                //                     [](Scalar const& argument1, Element const argument2)
+                //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+                //                 .def(
+                //                     "__gt__",
+                //                     [](Scalar const& argument1, Value const& argument2)
+                //                     { return lfr::greater_than<ElementT<Scalar>, std::uint8_t>(argument1,
+                //                     argument2); }, pybind11::is_operator())
+
+                // a >= b
+                .def(
+                    "__ge__",
+                    [](Scalar const& argument1, Scalar const& argument2)
+                    { return greater_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__ge__",
+                    [](Scalar const& argument1, Element const argument2)
+                    { return greater_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__ge__",
+                    [](Scalar const& argument1, Value const& argument2)
+                    { return greater_than_equal_to<BooleanElement>(argument1, argument2); },
+                    pybind11::is_operator())
 
             ;
 

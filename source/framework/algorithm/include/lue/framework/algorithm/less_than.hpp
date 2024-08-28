@@ -13,6 +13,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"less_than"};
+
                 using OutputElement = OutputElement_;
 
 

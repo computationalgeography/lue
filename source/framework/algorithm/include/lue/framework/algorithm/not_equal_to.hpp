@@ -13,6 +13,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"not_equal_to"};
+
                 using OutputElement = OutputElement_;
 
 

@@ -17,6 +17,8 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"close_to"};
+
                 using OutputElement = OutputElement_;
 
 
