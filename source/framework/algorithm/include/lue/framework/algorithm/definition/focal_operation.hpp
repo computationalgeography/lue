@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/detail/when_all_get.hpp"
 #include "lue/framework/algorithm/export.hpp"
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/array.hpp"
@@ -851,7 +852,8 @@ namespace lue {
                         [policies, input_partitions = focal_input_partitions, kernel, functor](
                             meh::InputData<InputPartitions> const&... partition_data)
                         {
-                            AnnotateFunction annotation{"focal_operation_partition"};
+                            AnnotateFunction const annotation{
+                                fmt::format("{}: partition", functor_name<Functor>)};
 
                             HPX_UNUSED(input_partitions);
 
@@ -912,7 +914,8 @@ namespace lue {
                                 Array<meh::InputData<InputPartitions>, rank<Kernel>> const&... partition_data,
                             OutputData output_partition_data)
                         {
-                            AnnotateFunction annotation{"focal_operation_partition"};
+                            AnnotateFunction const annotation{
+                                fmt::format("{}: partition", functor_name<Functor>)};
 
                             HPX_UNUSED(input_partitions);
 
@@ -1550,13 +1553,13 @@ namespace lue {
             typename Kernel,
             typename Functor,
             typename... InputPartitions>
-        ArrayPartition<OutputElementT<Functor>, rank<Kernel>> spawn_focal_operation_partition(
+        auto spawn_focal_operation_partition(
             hpx::id_type const locality_id,
             Action const& action,
             Policies const& policies,
             Kernel const& kernel,
             Functor const& functor,
-            InputPartitions&&... input_partitions)
+            InputPartitions&&... input_partitions) -> ArrayPartition<OutputElementT<Functor>, rank<Kernel>>
         {
             static_assert(rank<Kernel> == 2);
 
@@ -1565,8 +1568,6 @@ namespace lue {
                     [locality_id, action, policies, kernel, functor](
                         hpx::tuple<hpx::future<InputPartitions>...>&& input_partitions)
                     {
-                        AnnotateFunction annotation{"focal_operation"};
-
                         auto call_action = [locality_id, action, policies, kernel, functor](
                                                InputPartitions&&... input_partitions) {
                             return action(
@@ -1972,25 +1973,28 @@ namespace lue {
 
 
     template<typename Policies, typename... InputElements, Rank rank, typename Kernel, typename Functor>
-    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
+    auto focal_operation(
         Policies const& policies,
         Kernel const& kernel,
         Functor functor,
         PartitionedArray<InputElements, rank> const&... arrays)
+        -> PartitionedArray<detail::OutputElementT<Functor>, rank>
     {
         static_assert(sizeof...(arrays) >= 1);
         static_assert(rank == 2);
+
+        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
 
         return detail::focal_operation_2d(policies, kernel, std::move(functor), arrays...);
     }
 
 
     template<typename Policies, typename InputElement, Rank rank, typename Kernel, typename Functor>
-    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
+    auto focal_operation(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& array,
         Kernel const& kernel,
-        Functor functor)
+        Functor functor) -> PartitionedArray<detail::OutputElementT<Functor>, rank>
     {
         return focal_operation(policies, kernel, std::move(functor), array);
     }
@@ -2003,12 +2007,12 @@ namespace lue {
         Rank rank,
         typename Kernel,
         typename Functor>
-    PartitionedArray<detail::OutputElementT<Functor>, rank> focal_operation(
+    auto focal_operation(
         Policies const& policies,
         PartitionedArray<InputElement1, rank> const& array1,
         PartitionedArray<InputElement2, rank> const& array2,
         Kernel const& kernel,
-        Functor functor)
+        Functor functor) -> PartitionedArray<detail::OutputElementT<Functor>, rank>
     {
         return focal_operation(policies, kernel, std::move(functor), array1, array2);
     }

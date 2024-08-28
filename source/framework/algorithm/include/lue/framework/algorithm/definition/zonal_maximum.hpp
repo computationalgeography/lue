@@ -18,6 +18,8 @@ namespace lue {
 
                 static_assert(std::is_integral_v<Zone>);
 
+                static constexpr char const* name{"zonal_maximum"};
+
                 using OutputElement = InputElement;
 
 

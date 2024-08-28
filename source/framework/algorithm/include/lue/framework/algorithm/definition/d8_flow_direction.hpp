@@ -16,6 +16,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"d8_flow_direction"};
+
                 using OutputElement = FlowDirectionElement;
 
 

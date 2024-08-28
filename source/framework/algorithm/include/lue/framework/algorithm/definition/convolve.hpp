@@ -17,6 +17,8 @@ namespace lue {
 
                 static_assert(std::is_convertible_v<InputElement, OutputElement>);
 
+                static constexpr char const* name{"convolve"};
+
 
                 Convolve() = default;
 
