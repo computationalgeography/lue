@@ -201,6 +201,7 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
+                  -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D lue_ROOT=${{ env.lue_development_install_directory }} \
