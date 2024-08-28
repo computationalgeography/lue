@@ -1,7 +1,7 @@
 cmake_minimum_required(
     VERSION 3.28)
 project(LUE
-    VERSION 0.3.8
+    VERSION 0.3.9
     LANGUAGES C CXX
     DESCRIPTION "A modelling framework for simulating large geographical systems of agents and fields"
     HOMEPAGE_URL "https://github.com/computationalgeography/lue"
