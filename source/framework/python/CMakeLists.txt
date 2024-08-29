@@ -211,6 +211,7 @@ target_link_libraries(lue_py_framework
         lue::py_framework_local_operation
         lue::py_framework_routing_operation
         lue::py_framework_zonal_operation
+        lue::framework_local_operation  # array and scalar use local operations in operators
         lue::framework_io
         lue::framework_model
         pybind11::module

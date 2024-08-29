@@ -32,6 +32,8 @@ set_property(
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
             PYTHONPATH=path_list_prepend:$<TARGET_PROPERTY:lue::py_framework,SOURCE_DIR>/test  # lue_unit_test.py
             PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
 )
 set_property(
     TEST
