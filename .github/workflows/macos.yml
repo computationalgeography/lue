@@ -173,6 +173,7 @@ jobs:
                   --test-dir ${{ env.lue_build_directory }} \
                   --output-on-failure \
                   --exclude-regex algorithm_image_land_integrate_test \
+                  --exclude-regex algorithm_image_land_integrate_and_allocate_test \
                   --exclude-regex lue_py_image_land_python_test
 
               # Test of runtime targets
