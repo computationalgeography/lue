@@ -2,7 +2,12 @@
 
 # Releases
 
-## 0.3.8 (WIP)
+## 0.3.9
+
+- [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.9+)
+
+
+## 0.3.8
 
 - [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.8+)
 

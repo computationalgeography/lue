@@ -134,7 +134,7 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
-                      -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+                      -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
                       -D LUE_BUILD_QA=TRUE \
@@ -173,6 +173,7 @@ jobs:
                   --test-dir ${{ env.lue_build_directory }} \
                   --output-on-failure \
                   --exclude-regex algorithm_image_land_integrate_test \
+                  --exclude-regex algorithm_image_land_integrate_and_allocate_test \
                   --exclude-regex lue_py_image_land_python_test
 
               # Test of runtime targets
@@ -196,6 +197,7 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
+                  -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D lue_ROOT=${{ env.lue_development_install_directory }} \

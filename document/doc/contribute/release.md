@@ -8,8 +8,17 @@ can be used in publications.
 
 Checklist:
 
-- Make sure the version number in the main CMakeLists.txt is correct
-- Draft a release on Github. Currently we do not use the letter v to prefix version numbers.
+- [ ] Before the release:
+
+    - [ ] Make sure the version number in the main CMakeLists.txt is correct
+    - [ ] Make sure the releases page in the documentation is correct
+    - [ ] Draft a release on Github. Currently we do not use the letter v to prefix version numbers.
+
+- [ ] After the release:
+
+    - [ ] Bump the version number in the main CMakeLists.txt
+    - [ ] Update the releases page in the documentation
+
 
 
 ## Conda package
