@@ -13,11 +13,10 @@ foreach(name ${names})
     add_executable(${test_name} ${module_name}.cpp)
 
     target_link_libraries(${test_name}
-        PUBLIC
-            lue::framework_api_c
         PRIVATE
+            lue::framework_api_c
             lue::framework_test
-            Boost::unit_test_framework
+            Boost::headers
     )
 
     add_test(NAME ${test_name}
@@ -46,6 +45,8 @@ foreach(name ${names})
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_routing_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
+                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
+                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
         )
     endif()
 endforeach()

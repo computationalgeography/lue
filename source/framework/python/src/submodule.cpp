@@ -57,6 +57,12 @@ namespace lue::framework {
     void bind_serial_route(pybind11::module& module);
     void bind_wait_serial_route(pybind11::module& module);
 
+    void bind_array_partition_id(pybind11::module& module);
+    void bind_locality_id(pybind11::module& module);
+    void bind_normal(pybind11::module& module);
+    void bind_timestamp(pybind11::module& module);
+    void bind_uniform(pybind11::module& module);
+
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
 
@@ -107,6 +113,12 @@ namespace lue::framework {
         bind_zonal_operations(submodule);
         bind_read_array(submodule);
         bind_write_array(submodule);
+
+        bind_array_partition_id(submodule);
+        bind_locality_id(submodule);
+        bind_normal(submodule);
+        bind_timestamp(submodule);
+        bind_uniform(submodule);
 
         bind_model(submodule);
         bind_progressor(submodule);

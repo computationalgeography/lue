@@ -15,7 +15,7 @@ namespace lue::framework {
     void bind_zonal_uniform(pybind11::module& module);
 
 
-    void bind_zonal_operations(pybind11::module& module)
+    PYBIND11_EXPORT void bind_zonal_operations(pybind11::module& module)
     {
         bind_clump(module);
         bind_zonal_area(module);
