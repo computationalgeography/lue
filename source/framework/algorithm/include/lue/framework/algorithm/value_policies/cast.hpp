@@ -21,10 +21,12 @@ namespace lue {
 
     }  // namespace detail
 
+
     template<typename From, typename To>
     struct is_narrowing_cast: detail::is_narrowing_cast_impl<From, To>
     {
     };
+
 
     template<typename From, typename To>
     constexpr bool is_narrowing_cast_v = is_narrowing_cast<From, To>::value;
@@ -135,13 +137,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename OutputElement, typename InputElement, Rank rank>
-        auto cast(PartitionedArray<InputElement, rank> const& array) -> PartitionedArray<OutputElement, rank>
-        {
-            using Policies = policy::cast::DefaultValuePolicies<OutputElement, InputElement>;
-
-            return lue::cast<OutputElement>(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+            cast, policy::cast::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

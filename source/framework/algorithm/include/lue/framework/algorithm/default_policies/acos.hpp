@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto acos(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::acos::DefaultPolicies<Element>;
-
-            return acos(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            acos, policy::acos::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

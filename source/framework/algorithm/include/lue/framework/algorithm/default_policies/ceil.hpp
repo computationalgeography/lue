@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto ceil(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::ceil::DefaultPolicies<Element>;
-
-            return ceil(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            ceil, policy::ceil::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

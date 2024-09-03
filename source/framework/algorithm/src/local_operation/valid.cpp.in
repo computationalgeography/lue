@@ -5,11 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_VALID(
+    LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
             ESC(policy::valid::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
-            {{ BooleanElement }},
-            {{ ExpressionElement }},
-            {{ rank }}
+            {{ rank }},
+            ESC(detail::Valid<{{ ExpressionElement }}, {{ BooleanElement }}>)
         );
 
 }  // namespace lue

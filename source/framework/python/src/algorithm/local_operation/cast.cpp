@@ -5,16 +5,8 @@
 namespace lue::framework {
     namespace {
 
-        template<typename OutputElement, typename InputElement, Rank rank>
-        auto cast(PartitionedArray<InputElement, rank> const& array) -> PartitionedArray<OutputElement, rank>
-        {
-            return value_policies::cast<OutputElement>(array);
-        }
-
-
-        template<typename InputElement, Rank rank>
-        auto cast(PartitionedArray<InputElement, rank> const& array, pybind11::object const& dtype_args)
-            -> pybind11::object
+        template<typename Argument>
+        auto cast(Argument const& argument, pybind11::object const& dtype_args) -> pybind11::object
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -33,12 +25,12 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(cast<std::int32_t, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<std::int32_t>(argument));
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(cast<std::int64_t, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<std::int64_t>(argument));
                             break;
                         }
                     }
@@ -52,17 +44,17 @@ namespace lue::framework {
                     {
                         case 1:
                         {
-                            result = pybind11::cast(cast<std::uint8_t, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<std::uint8_t>(argument));
                             break;
                         }
                         case 4:
                         {
-                            result = pybind11::cast(cast<std::uint32_t, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<std::uint32_t>(argument));
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(cast<std::uint64_t, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<std::uint64_t>(argument));
                             break;
                         }
                     }
@@ -76,12 +68,12 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(cast<float, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<float>(argument));
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(cast<double, InputElement>(array));
+                            result = pybind11::cast(value_policies::cast<double>(argument));
                             break;
                         }
                     }
@@ -98,18 +90,41 @@ namespace lue::framework {
             return result;
         }
 
+
+        template<typename Element>
+        void bind_cast_overloads(pybind11::module& module)
+        {
+            Rank const rank{2};
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+
+            module.def(
+                "cast",
+                [](Array const& array, pybind11::object const& dtype_args)
+                { return cast(array, dtype_args); });
+            module.def(
+                "cast",
+                [](Scalar const& scalar, pybind11::object const& dtype_args)
+                { return cast(scalar, dtype_args); });
+            module.def(
+                "cast",
+                [](Value const value, pybind11::object const& dtype_args)
+                { return cast(value, dtype_args); });
+        }
+
     }  // Anonymous namespace
 
 
     void bind_cast(pybind11::module& module)
     {
-        module.def("cast", cast<std::uint8_t, 2>);
-        module.def("cast", cast<std::uint32_t, 2>);
-        module.def("cast", cast<std::int32_t, 2>);
-        module.def("cast", cast<std::uint64_t, 2>);
-        module.def("cast", cast<std::int64_t, 2>);
-        module.def("cast", cast<float, 2>);
-        module.def("cast", cast<double, 2>);
+        bind_cast_overloads<std::uint8_t>(module);
+        bind_cast_overloads<std::uint32_t>(module);
+        bind_cast_overloads<std::int32_t>(module);
+        bind_cast_overloads<std::uint64_t>(module);
+        bind_cast_overloads<std::int64_t>(module);
+        bind_cast_overloads<float>(module);
+        bind_cast_overloads<double>(module);
     }
 
 }  // namespace lue::framework

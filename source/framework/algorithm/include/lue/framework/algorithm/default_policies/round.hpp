@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto round(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::round::DefaultPolicies<Element>;
-
-            return round(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            round, policy::round::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

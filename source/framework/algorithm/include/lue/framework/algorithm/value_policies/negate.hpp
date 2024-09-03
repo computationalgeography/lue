@@ -17,13 +17,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto negate(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::negate::DefaultValuePolicies<Element>;
-
-            return negate(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            negate, policy::negate::DefaultValuePolicies)
 
         LUE_UNARY_LOGICAL_OPERATOR(-, negate)
 

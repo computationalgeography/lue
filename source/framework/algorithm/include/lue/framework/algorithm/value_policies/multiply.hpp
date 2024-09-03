@@ -14,31 +14,31 @@ namespace lue {
 
                 static_assert(std::is_same_v<InputElement, OutputElement>);
 
-                constexpr static bool within_range(
+                constexpr static auto within_range(
                     InputElement const& argument1, InputElement const& argument2, OutputElement const& result)
+                    -> bool
                 {
                     return multiply_within_range(argument1, argument2, result);
                 }
         };
 
 
-        template<typename OutputElement, typename InputElement>
+        template<typename Element>
         using DefaultValuePolicies = policy::Policies<
-            AllValuesWithinDomain<InputElement, InputElement>,
-            OutputsPolicies<OutputPolicies<
-                DefaultOutputNoDataPolicy<OutputElement>,
-                RangePolicy<OutputElement, InputElement>>>,
+            AllValuesWithinDomain<Element, Element>,
+            OutputsPolicies<
+                OutputPolicies<DefaultOutputNoDataPolicy<Element>, RangePolicy<Element, Element>>>,
             InputsPolicies<
-                InputPolicies<DefaultInputNoDataPolicy<InputElement>>,
-                InputPolicies<DefaultInputNoDataPolicy<InputElement>>>>;
+                InputPolicies<DefaultInputNoDataPolicy<Element>>,
+                InputPolicies<DefaultInputNoDataPolicy<Element>>>>;
 
     }  // namespace policy::multiply
 
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
-            multiply, detail::Multiply, policy::multiply::DefaultValuePolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            multiply, policy::multiply::DefaultValuePolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(*, multiply)
 
     }  // namespace value_policies

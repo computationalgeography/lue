@@ -1,13 +1,30 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/algorithm/unary_local_operation.hpp"
 
 
 namespace lue {
+    namespace detail {
 
-    template<typename Policies, Rank rank>
-    auto negate(
-        Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array)
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>;
+        template<typename InputElement>
+        class Negate
+        {
+
+            public:
+
+                static_assert(std::is_signed_v<InputElement> || std::is_floating_point_v<InputElement>);
+
+                using OutputElement = InputElement;
+
+                auto operator()(InputElement const& input_element) const noexcept -> OutputElement
+                {
+                    return -input_element;
+                }
+        };
+
+    }  // namespace detail
+
+
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(negate, detail::Negate)
 
 }  // namespace lue

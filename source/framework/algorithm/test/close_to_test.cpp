@@ -26,24 +26,24 @@ namespace detail {
 
         // Compare two arrays with different values
         {
-            BOOST_CHECK(none(close_to(array1, array2)).future().get());
+            BOOST_CHECK(none(close_to<std::uint8_t>(array1, array2)).future().get());
         }
 
         // Compare two arrays with the same values
         {
-            BOOST_CHECK(all(close_to(array1, array1)).future().get());
+            BOOST_CHECK(all(close_to<std::uint8_t>(array1, array1)).future().get());
         }
 
         // Compare array with scalar
         // array == scalar
         {
-            BOOST_CHECK(all(close_to(array1, fill_value1)).future().get());
+            BOOST_CHECK(all(close_to<std::uint8_t>(array1, fill_value1)).future().get());
         }
 
         // Compare array with scalar
         // scalar == array
         {
-            BOOST_CHECK(all(close_to(fill_value1, array1)).future().get());
+            BOOST_CHECK(all(close_to<std::uint8_t>(fill_value1, array1)).future().get());
         }
 
         // TODO Add tests with close values

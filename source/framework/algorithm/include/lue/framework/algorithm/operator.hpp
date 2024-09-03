@@ -5,8 +5,9 @@
                                                                                                              \
     /* array + array */                                                                                      \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<Element, rank> operator symbol(                                                         \
+    auto operator symbol(                                                                                    \
         PartitionedArray<Element, rank> const& lhs, PartitionedArray<Element, rank> const& rhs)              \
+        ->PartitionedArray<Element, rank>                                                                    \
     {                                                                                                        \
         return name(lhs, rhs);                                                                               \
     }                                                                                                        \
@@ -14,8 +15,8 @@
                                                                                                              \
     /* array + scalar */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<Element, rank> operator symbol(                                                         \
-        PartitionedArray<Element, rank> const& lhs, Scalar<Element> const& rhs)                              \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, Scalar<Element> const& rhs)             \
+        ->PartitionedArray<Element, rank>                                                                    \
     {                                                                                                        \
         return name(lhs, rhs);                                                                               \
     }                                                                                                        \
@@ -23,8 +24,8 @@
                                                                                                              \
     /* array + value */                                                                                      \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<Element, rank> operator symbol(                                                         \
-        PartitionedArray<Element, rank> const& lhs, Element const& rhs)                                      \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, Element const& rhs)                     \
+        ->PartitionedArray<Element, rank>                                                                    \
     {                                                                                                        \
         return name(lhs, rhs);                                                                               \
     }                                                                                                        \
@@ -32,8 +33,8 @@
                                                                                                              \
     /* scalar + array */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<Element, rank> operator symbol(                                                         \
-        Scalar<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)                              \
+    auto operator symbol(Scalar<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)             \
+        ->PartitionedArray<Element, rank>                                                                    \
     {                                                                                                        \
         return name(lhs, rhs);                                                                               \
     }                                                                                                        \
@@ -41,8 +42,8 @@
                                                                                                              \
     /* value + array */                                                                                      \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<Element, rank> operator symbol(                                                         \
-        Element const& lhs, PartitionedArray<Element, rank> const& rhs)                                      \
+    auto operator symbol(Element const& lhs, PartitionedArray<Element, rank> const& rhs)                     \
+        ->PartitionedArray<Element, rank>                                                                    \
     {                                                                                                        \
         return name(lhs, rhs);                                                                               \
     }                                                                                                        \
@@ -76,103 +77,118 @@
                                                                                                              \
     /* array == array */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
+    auto operator symbol(                                                                                    \
         PartitionedArray<Element, rank> const& lhs, PartitionedArray<Element, rank> const& rhs)              \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* array == scalar */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        PartitionedArray<Element, rank> const& lhs, Scalar<Element> const& rhs)                              \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, Scalar<Element> const& rhs)             \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* scalar == array */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        Scalar<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)                              \
+    auto operator symbol(Scalar<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)             \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* array == value */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        PartitionedArray<Element, rank> const& lhs, Element const rhs)                                       \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, Element const rhs)                      \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* value == array */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        Element const lhs, PartitionedArray<Element, rank> const& rhs)                                       \
+    auto operator symbol(Element const lhs, PartitionedArray<Element, rank> const& rhs)                      \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
+    }                                                                                                        \
+                                                                                                             \
+    /* scalar == scalar */                                                                                   \
+    template<typename Element>                                                                               \
+    auto operator symbol(Scalar<Element> const& lhs, Scalar<Element> const& rhs)->Scalar<std::uint8_t>       \
+    {                                                                                                        \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* scalar == value */                                                                                    \
     template<typename Element>                                                                               \
     auto operator symbol(Scalar<Element> const& lhs, Element const rhs)->Scalar<std::uint8_t>                \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
     /* value == scalar */                                                                                    \
     template<typename Element>                                                                               \
     auto operator symbol(Element const lhs, Scalar<Element> const& rhs)->Scalar<std::uint8_t>                \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }
 
 
 #define LUE_UNARY_LOGICAL_OPERATOR(symbol, name)                                                             \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(PartitionedArray<Element, rank> const& array)       \
+    auto operator symbol(PartitionedArray<Element, rank> const& array)->PartitionedArray<std::uint8_t, rank> \
     {                                                                                                        \
-        return name(array);                                                                                  \
+        return name<std::uint8_t>(array);                                                                    \
+    }                                                                                                        \
+                                                                                                             \
+    template<typename Element>                                                                               \
+    auto operator symbol(Scalar<Element> const& scalar)->Scalar<std::uint8_t>                                \
+    {                                                                                                        \
+        return name<std::uint8_t>(scalar);                                                                   \
     }
 
 
 #define LUE_BINARY_LOGICAL_OPERATOR(symbol, name)                                                            \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
+    auto operator symbol(                                                                                    \
         PartitionedArray<Element, rank> const& lhs, PartitionedArray<Element, rank> const& rhs)              \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        PartitionedArray<Element, rank> const& lhs, hpx::shared_future<Element> const& rhs)                  \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, hpx::shared_future<Element> const& rhs) \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        hpx::shared_future<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)                  \
+    auto operator symbol(hpx::shared_future<Element> const& lhs, PartitionedArray<Element, rank> const& rhs) \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        PartitionedArray<Element, rank> const& lhs, Element const rhs)                                       \
+    auto operator symbol(PartitionedArray<Element, rank> const& lhs, Element const rhs)                      \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
-    PartitionedArray<std::uint8_t, rank> operator symbol(                                                    \
-        Element const lhs, PartitionedArray<Element, rank> const& rhs)                                       \
+    auto operator symbol(Element const lhs, PartitionedArray<Element, rank> const& rhs)                      \
+        ->PartitionedArray<std::uint8_t, rank>                                                               \
     {                                                                                                        \
-        return name(lhs, rhs);                                                                               \
+        return name<std::uint8_t>(lhs, rhs);                                                                 \
     }

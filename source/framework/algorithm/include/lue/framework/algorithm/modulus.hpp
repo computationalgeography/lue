@@ -16,8 +16,8 @@ namespace lue {
 
                 using OutputElement = OutputElement_;
 
-                constexpr OutputElement operator()(
-                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
+                constexpr auto operator()(
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept -> OutputElement
                 {
                     return input_element1 % input_element2;
                 }
@@ -34,8 +34,8 @@ namespace lue {
 
             public:
 
-                static constexpr bool within_domain(
-                    [[maybe_unused]] Element const numerator, Element const denominator) noexcept
+                static constexpr auto within_domain(
+                    [[maybe_unused]] Element const numerator, Element const denominator) noexcept -> bool
                 {
                     return denominator != Element{0};
                 }
@@ -44,6 +44,6 @@ namespace lue {
     }  // namespace policy::modulus
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS3(modulus, detail::Modulus)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(modulus, detail::Modulus)
 
 }  // namespace lue

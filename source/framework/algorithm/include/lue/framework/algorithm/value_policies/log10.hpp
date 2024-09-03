@@ -14,13 +14,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto log10(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::log10::DefaultValuePolicies<Element>;
-
-            return log10(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            log10, policy::log10::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

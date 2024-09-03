@@ -14,13 +14,8 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank>
-        auto cos(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::cos::DefaultPolicies<Element>;
-
-            return cos(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            cos, policy::cos::DefaultPolicies)
 
     }  // namespace default_policies
 }  // namespace lue

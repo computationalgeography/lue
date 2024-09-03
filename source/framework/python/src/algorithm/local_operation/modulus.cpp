@@ -1,20 +1,51 @@
-#include "lue/py/framework/algorithm/modulus.hpp"
+#include "lue/framework/algorithm/value_policies/modulus.hpp"
 #include <pybind11/pybind11.h>
 
-namespace lue::framework {
 
-#define LUE_MODULUS_OVERLOADS(type, rank)                                                                    \
-    module.def("modulus", modulus<type, rank, PartitionedArray<type, rank>, PartitionedArray<type, rank>>);  \
-    module.def("modulus", modulus<type, rank, PartitionedArray<type, rank>, type>);                          \
-    module.def("modulus", modulus<type, rank, PartitionedArray<type, rank>, hpx::shared_future<type>>);      \
-    module.def("modulus", modulus<type, rank, type, PartitionedArray<type, rank>>);                          \
-    module.def("modulus", modulus<type, rank, hpx::shared_future<type>, PartitionedArray<type, rank>>);
+namespace lue::framework {
+    namespace {
+
+        template<typename Element>
+        constexpr void define_modulus_overloads(pybind11::module& module)
+        {
+            using namespace lue::value_policies;
+            Rank const rank{2};
+            using Array = PartitionedArray<Element, rank>;
+            using Scalar = Scalar<Element>;
+            using Value = Element;
+
+            module.def(
+                "modulus",
+                [](Array const& array1, Array const& array2) { return modulus(array1, array2); });
+            module.def(
+                "modulus", [](Array const& array, Scalar const& scalar) { return modulus(array, scalar); });
+            module.def(
+                "modulus", [](Array const& array, Value const value) { return modulus(array, value); });
+
+            module.def(
+                "modulus", [](Scalar const& scalar, Array const& array) { return modulus(scalar, array); });
+            module.def(
+                "modulus",
+                [](Scalar const& scalar1, Scalar const& scalar2) { return modulus(scalar1, scalar2); });
+            module.def(
+                "modulus", [](Scalar const& scalar, Value const value) { return modulus(scalar, value); });
+
+            module.def(
+                "modulus", [](Value const value, Array const& array) { return modulus(value, array); });
+            module.def(
+                "modulus", [](Value const value, Scalar const& scalar) { return modulus(value, scalar); });
+
+            module.def(
+                "modulus", [](Value const value1, Value const value2) { return modulus(value1, value2); });
+        }
+
+    }  // Anonymous namespace
 
 
     void bind_modulus(pybind11::module& module)
     {
-        LUE_MODULUS_OVERLOADS(int32_t, 2)
-        LUE_MODULUS_OVERLOADS(int64_t, 2)
+        define_modulus_overloads<std::int32_t>(module);
+        define_modulus_overloads<std::int64_t>(module);
     }
 
 }  // namespace lue::framework

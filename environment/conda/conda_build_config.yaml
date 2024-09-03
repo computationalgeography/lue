@@ -16,9 +16,6 @@ cxx_compiler:
 hdf5:
   - 1.14.3
 libgdal:
-  - 3.8
+  - 3.9
 python:
   - 3.11
-
-MACOSX_DEPLOYMENT_TARGET:                        # [osx]
-  - 11.0                                         # [osx and arm64]

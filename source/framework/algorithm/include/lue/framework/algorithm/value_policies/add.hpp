@@ -22,23 +22,22 @@ namespace lue {
         };
 
 
-        template<typename OutputElement, typename InputElement>
+        template<typename Element>
         using DefaultValuePolicies = policy::Policies<
-            AllValuesWithinDomain<InputElement, InputElement>,
-            OutputsPolicies<OutputPolicies<
-                DefaultOutputNoDataPolicy<OutputElement>,
-                RangePolicy<OutputElement, InputElement>>>,
+            AllValuesWithinDomain<Element, Element>,
+            OutputsPolicies<
+                OutputPolicies<DefaultOutputNoDataPolicy<Element>, RangePolicy<Element, Element>>>,
             InputsPolicies<
-                InputPolicies<DefaultInputNoDataPolicy<InputElement>>,
-                InputPolicies<DefaultInputNoDataPolicy<InputElement>>>>;
+                InputPolicies<DefaultInputNoDataPolicy<Element>>,
+                InputPolicies<DefaultInputNoDataPolicy<Element>>>>;
 
     }  // namespace policy::add
 
 
     namespace value_policies {
 
-        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES(
-            add, detail::Add, policy::add::DefaultValuePolicies)
+        LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            add, policy::add::DefaultValuePolicies)
         LUE_BINARY_ARITHMETIC_OPERATOR(+, add)
 
     }  // namespace value_policies

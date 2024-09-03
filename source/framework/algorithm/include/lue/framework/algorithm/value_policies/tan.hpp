@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/tan.hpp"
-#include <cmath>  // std::isinf
 
 
 namespace lue {
@@ -28,13 +27,8 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank>
-        auto tan(PartitionedArray<Element, rank> const& array)
-        {
-            using Policies = policy::tan::DefaultValuePolicies<Element>;
-
-            return tan(Policies{}, array);
-        }
+        LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
+            tan, policy::tan::DefaultValuePolicies)
 
     }  // namespace value_policies
 }  // namespace lue

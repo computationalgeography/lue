@@ -1,150 +1,189 @@
-import numpy as np
-
-import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class CreatePartitionedArrayTest(lue_test.TestCase):
-    @classmethod
-    @lue_test.framework_test_case
-    def setUpClass(cls):
-        cls.value = 5.5
-        cls.array = lfr.create_array(
-            array_shape=(60, 40),
-            partition_shape=(10, 10),
-            dtype=np.float32,
-            fill_value=cls.value,
-        )
-        cls.value_f = lfr.maximum(cls.array)
-
+class CreatePartitionedArrayTest(OperationTest):
     @lue_test.framework_test_case
     def test_operator_add_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array + array
-        tmp = array + value
-        tmp = array + value_f
-        tmp = value + array
-        tmp = value_f + array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array + array
+            _ = array + scalar
+            _ = array + value
+            _ = scalar + array
+            _ = value + array
 
     @lue_test.framework_test_case
     def test_operator_sub_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array - array
-        tmp = array - value
-        tmp = array - value_f
-        tmp = value - array
-        tmp = value_f - array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array - array
+            _ = array - scalar
+            _ = array - value
+            _ = scalar - array
+            _ = value - array
 
     @lue_test.framework_test_case
     def test_operator_mul_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array * array
-        tmp = array * value
-        tmp = array * value_f
-        tmp = value * array
-        tmp = value_f * array
+        for type_ in self.floating_point_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array * array
+            _ = array * scalar
+            _ = array * value
+            _ = scalar * array
+            _ = value * array
 
     @lue_test.framework_test_case
     def test_operator_div_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array / array
-        tmp = array / value
-        tmp = array / value_f
-        tmp = value / array
-        tmp = value_f / array
+        for type_ in self.floating_point_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array / array
+            _ = array / scalar
+            _ = array / value
+            _ = scalar / array
+            _ = value / array
 
     @lue_test.framework_test_case
     def test_operator_gt_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array > array
-        tmp = array > value
-        tmp = array > value_f
-        tmp = value > array
-        tmp = value_f > array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array > array
+            _ = array > scalar
+            _ = array > value
+            _ = scalar > array
+            # _ = value > array
 
     @lue_test.framework_test_case
     def test_operator_ge_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array >= array
-        tmp = array >= value
-        tmp = array >= value_f
-        tmp = value >= array
-        tmp = value_f >= array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array >= array
+            _ = array >= scalar
+            _ = array >= value
+            _ = scalar >= array
+            # _ = value >= array
 
     @lue_test.framework_test_case
     def test_operator_eq_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array == array
-        tmp = array == value
-        tmp = array == value_f
-        tmp = value == array
-        tmp = value_f == array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array == array
+            _ = array == scalar
+            _ = array == value
+            _ = scalar == array
+            # _ = value == array
 
     @lue_test.framework_test_case
     def test_operator_ne_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array != array
-        tmp = array != value
-        tmp = array != value_f
-        tmp = value != array
-        tmp = value_f != array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array != array
+            _ = array != scalar
+            _ = array != value
+            _ = scalar != array
+            # _ = value != array
 
     @lue_test.framework_test_case
     def test_operator_lt_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array < array
-        tmp = array < value
-        tmp = array < value_f
-        tmp = value < array
-        tmp = value_f < array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array < array
+            _ = array < scalar
+            _ = array < value
+            _ = scalar < array
+            # _ = value < array
 
     @lue_test.framework_test_case
     def test_operator_le_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array <= array
-        tmp = array <= value
-        tmp = array <= value_f
-        tmp = value <= array
-        tmp = value_f <= array
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array <= array
+            _ = array <= scalar
+            _ = array <= value
+            _ = scalar <= array
+            # _ = value <= array
 
     @lue_test.framework_test_case
     def test_operator_abs_overloads(self):
-        array = self.array
-        tmp = abs(array)
+        for type_ in set(self.numeric_types) - set(self.unsigned_integral_types):
+            array = self.array[type_]
+
+            _ = abs(array)
 
     @lue_test.framework_test_case
     def test_operator_pow_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array**array
-        tmp = array**value
-        tmp = array**value_f
-        tmp = value**array
-        tmp = value_f**array
+        for type_ in self.floating_point_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array**array
+            _ = array**scalar
+            _ = array**value
+            _ = scalar**array
+            _ = value**array
 
     @lue_test.framework_test_case
-    def test_operator_bool(self):
-        array = self.array
-        with self.assertRaises(ValueError):
-            tmp = bool(array)
+    def test_operator_bool_overloads(self):
+        for type_ in self.numeric_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+
+            with self.assertRaises(ValueError):
+                _ = bool(array)
+                _ = bool(scalar)
 
     @lue_test.framework_test_case
-    def test_operator_negate(self):
-        array = self.array
-        tmp = -array
+    def test_operator_negate_overloads(self):
+        for type_ in self.signed_integral_types:
+            array = self.array[type_]
+            _ = -array
+
+    @lue_test.framework_test_case
+    def test_operator_logical_not_overloads(self):
+        for type_ in self.integral_types:
+            array = self.array[type_]
+            _ = ~array
 
     @lue_test.framework_test_case
     def test_operator_mod_overloads(self):
-        array, value, value_f = self.array, self.value, self.value_f
-        tmp = array % array
-        tmp = array % value
-        tmp = array % value_f
-        tmp = value % array
-        tmp = value_f % array
+        for type_ in self.integral_types:
+            array = self.array[type_]
+            scalar = self.scalar[type_]
+            value = self.value[type_]
+
+            _ = array % array
+            _ = array % scalar
+            _ = array % value
+            _ = scalar % array
+            _ = value % array
