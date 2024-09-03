@@ -120,9 +120,19 @@ endif()
 message(STATUS "LUE_BIN_TO_LIB_DIR            : ${LUE_BIN_TO_LIB_DIR}")
 # message(STATUS "")
 # message(STATUS "CMAKE_INSTALL_RPATH       : ${CMAKE_INSTALL_RPATH}")
-
 message(STATUS "--------------------------------------------------------------")
-
+message(STATUS "Templates will be instantiated for these policies, types and ranks:")
+message(STATUS "    LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS  : ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS}")
+message(STATUS "    LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}")
+message(STATUS "    LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS   : ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS}")
+message(STATUS "    LUE_FRAMEWORK_INDEX_ELEMENT             : ${LUE_FRAMEWORK_INDEX_ELEMENT}")
+message(STATUS "    LUE_FRAMEWORK_COUNT_ELEMENT             : ${LUE_FRAMEWORK_COUNT_ELEMENT}")
+message(STATUS "    LUE_FRAMEWORK_BOOLEAN_ELEMENT           : ${LUE_FRAMEWORK_BOOLEAN_ELEMENT}")
+message(STATUS "    LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT    : ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}")
+message(STATUS "    LUE_FRAMEWORK_MATERIAL_ELEMENTS         : ${LUE_FRAMEWORK_MATERIAL_ELEMENTS}")
+message(STATUS "    LUE_FRAMEWORK_ZONE_ELEMENTS             : ${LUE_FRAMEWORK_ZONE_ELEMENTS}")
+message(STATUS "    LUE_FRAMEWORK_RANKS                     : ${LUE_FRAMEWORK_RANKS}")
+message(STATUS "--------------------------------------------------------------")
 
 if(LUE_VALIDATE_IDXS)
     message(WARNING

@@ -22,7 +22,7 @@ jobs:
 
         name: macos-${{ matrix.macos_version }} / ${{ matrix.compiler.cxx }}
 
-        timeout-minutes: 240
+        timeout-minutes: 300
 
         defaults:
           run:

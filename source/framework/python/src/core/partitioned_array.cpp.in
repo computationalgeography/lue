@@ -1,0 +1,22 @@
+#include "lue/py/framework/core/partitioned_array.hpp"
+
+
+namespace lue::framework {
+
+    {% for Element in Elements %}
+        {% for rank in ranks %}
+            void bind_partitioned_array_{{ Element | replace("::", "_") }}_{{ rank }}(pybind11::module& module);
+        {% endfor %}
+    {% endfor %}
+
+
+    void bind_partitioned_array(pybind11::module& module)
+    {
+        {% for Element in Elements %}
+            {% for rank in ranks %}
+                bind_partitioned_array_{{ Element | replace("::", "_") }}_{{ rank }}(module);
+            {% endfor %}
+        {% endfor %}
+    }
+
+}  // namespace lue::framework

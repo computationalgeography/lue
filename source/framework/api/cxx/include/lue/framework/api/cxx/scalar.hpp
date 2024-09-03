@@ -11,6 +11,7 @@ namespace lue::api {
     */
     class Scalar:
         public VariantWrapper<
+            lue::Scalar<std::int8_t>,
             lue::Scalar<std::uint8_t>,
             lue::Scalar<std::int32_t>,
             lue::Scalar<std::uint32_t>,
@@ -18,6 +19,7 @@ namespace lue::api {
             lue::Scalar<std::uint64_t>,
             lue::Scalar<float>,
             lue::Scalar<double>,
+            std::int8_t,
             std::uint8_t,
             std::int32_t,
             std::uint32_t,

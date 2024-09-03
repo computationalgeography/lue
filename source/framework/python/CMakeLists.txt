@@ -145,6 +145,50 @@ foreach(name focal global local routing zonal)
     )
 endforeach()
 
+set(generated_source_files "")
+set(offset "src/core")
+
+block()
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array.cpp")
+
+    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_array.cpp.in"
+        OUTPUT_PATHNAME
+            "${output_pathname}"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":"${LUE_FRAMEWORK_RANKS}"}'
+    )
+
+    list(APPEND generated_source_files "${output_pathname}")
+
+    foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+        string(REPLACE "::" "_" element ${Element})
+
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array_${element}_${rank}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/bind_partitioned_array.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Element":"${Element}","rank":"${rank}"}'
+            )
+
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
 add_library(lue_py_framework SHARED
     src/algorithm/array_partition_id.cpp
     src/algorithm/locality_id.cpp
@@ -153,14 +197,7 @@ add_library(lue_py_framework SHARED
     src/algorithm/uniform.cpp
 
     src/core/create_partitioned_array.cpp
-    src/core/partitioned_array.cpp
-    src/core/partitioned_array_uint8.cpp
-    src/core/partitioned_array_uint32.cpp
-    src/core/partitioned_array_uint64.cpp
-    src/core/partitioned_array_int32.cpp
-    src/core/partitioned_array_int64.cpp
-    src/core/partitioned_array_float.cpp
-    src/core/partitioned_array_double.cpp
+    ${generated_source_files}
     src/core/scalar.cpp
     src/core/wait.cpp
 

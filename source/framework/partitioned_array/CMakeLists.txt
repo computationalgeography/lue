@@ -2,17 +2,17 @@ add_test_conditionally(test)
 
 
 # Instantiate array partition classes ------------------------------------------
-set(ranks 0 1 2)
 set(generated_source_files "")
 
 block()
     set(count "0")
 
+    # TODO Get rid of this here?
     # Only locally add bool to the list of element types
     list(APPEND LUE_FRAMEWORK_ELEMENTS bool)
 
     foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-        foreach(rank IN LISTS ranks)
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
             math(EXPR count "${count} + 1")
 
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/array_partition-${count}.cpp")

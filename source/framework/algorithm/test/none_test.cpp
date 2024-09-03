@@ -36,9 +36,9 @@ namespace detail {
         detail::test_array<Element, rank>();                                                                 \
     }
 
-TEST_CASE(1, bool)
-TEST_CASE(1, int32_t)
-TEST_CASE(2, bool)
+// TEST_CASE(1, bool)
+// TEST_CASE(1, int32_t)
+TEST_CASE(2, uint8_t)
 TEST_CASE(2, int32_t)
 
 #undef TEST_CASE

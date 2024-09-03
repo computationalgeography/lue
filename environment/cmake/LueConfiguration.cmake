@@ -122,23 +122,86 @@ if(LUE_BUILD_DATA_MODEL)
 endif()
 
 
-set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
+if(LUE_BUILD_FRAMEWORK)
+    set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
-# NOTE These can be made configurable later on
-set(LUE_FRAMEWORK_CONDITION_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_BOOLEAN_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_INDEX_ELEMENT uint64_t)
-set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS int8_t int32_t int64_t)
-set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS uint8_t uint32_t uint64_t)
-set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
-    ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
-    ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
-set(LUE_FRAMEWORK_ZONE_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
-set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS float double)
-set(LUE_FRAMEWORK_ELEMENTS
-    ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
-    ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+    # Types for which templates are instantiated
+    set(LUE_FRAMEWORK_BOOLEAN_ELEMENT
+        std::uint8_t CACHE STRING "Type to use for representing Boolean values")
+    set_property(CACHE LUE_FRAMEWORK_BOOLEAN_ELEMENT
+        PROPERTY
+            STRINGS
+                std::uint8_t
+                std::int8_t
+    )
+
+    # TODO Update code that assumes uint8_t is the boolean type
+
+    set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT std::uint8_t)
+    set(LUE_FRAMEWORK_INDEX_ELEMENT std::uint64_t)
+    set(LUE_FRAMEWORK_COUNT_ELEMENT std::uint64_t)
+
+    set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
+        int8_t int32_t int64_t CACHE STRING "Type(s) to use for representing signed integral values")
+    set_property(CACHE LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
+        PROPERTY
+            STRINGS
+                "std::int8_t;std::int32_t;std::int64_t"
+                "std::int32_t;std::int64_t"
+                "std::int32_t"
+                "std::int64_t"
+    )
+
+    set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
+        uint8_t uint32_t uint64_t CACHE STRING "Type(s) to use for representing signed integral values")
+    set_property(CACHE LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
+        PROPERTY
+            STRINGS
+                "std::uint8_t;std::uint32_t;std::uint64_t"
+                "std::uint32_t;std::uint64_t"
+                "std::uint32_t"
+                "std::uint64_t"
+    )
+
+    set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
+        ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
+
+    set(LUE_FRAMEWORK_ZONE_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
+
+    set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+        float double CACHE STRING
+        "Type(s) to use for representing floating point values"
+    )
+    set_property(CACHE LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+        PROPERTY
+            STRINGS
+                "float;double"
+                "float"
+                "double"
+    )
+
+    set(LUE_FRAMEWORK_MATERIAL_ELEMENTS uint8_t int64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+    set(LUE_FRAMEWORK_ELEMENTS
+        ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+    # Ranks for which templates are instantiated. Rank 2 has to be there for the spatial algorithms.
+    set(LUE_FRAMEWORK_RANKS
+        2 CACHE STRING
+        "Rank(s) of arrays")
+    set_property(CACHE LUE_FRAMEWORK_RANKS
+        PROPERTY
+            STRINGS
+                "1;2"
+                "2"
+    )
+
+    # Policies for which templates are instantiated
+
+    # TODO Validate settings
+endif()
 
 
 # Handle external dependencies -------------------------------------------------

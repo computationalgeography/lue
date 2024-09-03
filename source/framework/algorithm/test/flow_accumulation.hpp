@@ -1,12 +1,13 @@
 #pragma once
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
+#include "lue/framework/configure.hpp"
 #include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue::test {
 
-    using FlowDirectionElement = std::uint8_t;
+    using FlowDirectionElement = FlowDirectionElement;
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
 
     ShapeT<FlowDirectionArray> const array_shape{{9, 9}};
@@ -25,34 +26,34 @@ namespace lue::test {
     auto const nd{lue::no_data<FlowDirectionElement>};
 
 
-    FlowDirectionArray all_no_data();
+    auto all_no_data() -> FlowDirectionArray;
 
-    FlowDirectionArray spiral_in();
+    auto spiral_in() -> FlowDirectionArray;
 
-    FlowDirectionArray merging_streams();
+    auto merging_streams() -> FlowDirectionArray;
 
-    FlowDirectionArray pcraster_example_flow_direction();
+    auto pcraster_example_flow_direction() -> FlowDirectionArray;
 
     template<typename Element>
     PartitionedArray<Element, 2> filled(Element const fill_value);
 
 
     template<typename Element>
-    PartitionedArray<Element, 2> ones()
+    auto ones() -> PartitionedArray<Element, 2>
     {
         return filled(Element{1});
     }
 
 
     template<typename Element>
-    PartitionedArray<Element, 2> zeros()
+    auto zeros() -> PartitionedArray<Element, 2>
     {
         return filled(Element{0});
     }
 
 
     template<typename Element>
-    PartitionedArray<Element, 2> no_data()
+    auto no_data() -> PartitionedArray<Element, 2>
     {
         return filled(policy::no_data_value<Element>);
     }
