@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "shape.hpp"
+#include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
@@ -15,11 +16,11 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        pybind11::object uniform1(
+        auto uniform1(
             PartitionedArray<Element, rank> const& array,
             pybind11::object const& dtype_args,
             pybind11::object const& min_value,
-            pybind11::object const& max_value)
+            pybind11::object const& max_value) -> pybind11::object
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -115,11 +116,11 @@ namespace lue::framework {
 
         // Step 3: Call the algorithm
         template<typename Element, Rank rank>
-        pybind11::object uniform(
+        auto uniform(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::object const& min_value,
-            pybind11::object const& max_value)
+            pybind11::object const& max_value) -> pybind11::object
         {
             return pybind11::cast(value_policies::uniform(
                 array_shape,
@@ -131,12 +132,12 @@ namespace lue::framework {
 
         // Step 2: Determine the type of the element type of the result array
         template<Rank rank>
-        pybind11::object uniform(
+        auto uniform(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::dtype const& dtype,
             pybind11::object const& min_value,
-            pybind11::object const& max_value)
+            pybind11::object const& max_value) -> pybind11::object
         {
             // Switch on dtype and call a function that returns an array of the
             // right value type
@@ -246,45 +247,52 @@ namespace lue::framework {
 
             pybind11::object result;
 
-            if (rank == 1)
+            verify_rank_supported(rank);
+
+            if constexpr (rank_supported(1))
             {
-                StaticShape<1> const static_array_shape{
-                    dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
-                StaticShape<1> static_partition_shape{};
-
-                if (partition_shape)
+                if (rank == 1)
                 {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
+                    StaticShape<1> const static_array_shape{
+                        dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
+                    StaticShape<1> static_partition_shape{};
 
-                result = uniform<1>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result =
+                        uniform<1>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
+                }
             }
-            else if (rank == 2)
-            {
-                StaticShape<2> const static_array_shape{
-                    dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
-                StaticShape<2> static_partition_shape{};
 
-                if (partition_shape)
-                {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
-
-                result = uniform<2>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
-            }
-            else
+            if constexpr (rank_supported(2))
             {
-                throw std::runtime_error("Currently only arrays of rank 1 or 2 are supported");
+                if (rank == 2)
+                {
+                    StaticShape<2> const static_array_shape{
+                        dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                    StaticShape<2> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result =
+                        uniform<2>(static_array_shape, static_partition_shape, dtype, min_value, max_value);
+                }
             }
 
             lue_hpx_assert(result);

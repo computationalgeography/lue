@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "shape.hpp"
+#include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
@@ -11,10 +12,10 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> create_array(
+        auto create_array(
             ShapeT<PartitionedArray<Element, rank>> const& array_shape,
             ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-            pybind11::object const& fill_value)
+            pybind11::object const& fill_value) -> PartitionedArray<Element, rank>
         {
             using Policies = lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
             using Functor = lue::InstantiateFilled<Element, rank>;
@@ -32,11 +33,11 @@ namespace lue::framework {
 
 
         template<Rank rank>
-        pybind11::object create_array(
+        auto create_array(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::dtype const& dtype,
-            pybind11::object const& fill_value)
+            pybind11::object const& fill_value) -> pybind11::object
         {
             // Switch on dtype and call a function that returns an array of the
             // right value type
@@ -126,11 +127,11 @@ namespace lue::framework {
         }
 
 
-        pybind11::object create_array_py(
+        auto create_array_py(
             pybind11::tuple const& array_shape,
             pybind11::object const& dtype_args,
             pybind11::object const& fill_value,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             DynamicShape const dynamic_array_shape{tuple_to_shape(array_shape)};
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
@@ -151,45 +152,50 @@ namespace lue::framework {
 
             pybind11::object result;
 
-            if (rank == 1)
+            verify_rank_supported(rank);
+
+            if constexpr (rank_supported(1))
             {
-                StaticShape<1> const static_array_shape{
-                    dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
-                StaticShape<1> static_partition_shape{};
-
-                if (partition_shape)
+                if (rank == 1)
                 {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
+                    StaticShape<1> const static_array_shape{
+                        dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
+                    StaticShape<1> static_partition_shape{};
 
-                result = create_array<1>(static_array_shape, static_partition_shape, dtype, fill_value);
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = create_array<1>(static_array_shape, static_partition_shape, dtype, fill_value);
+                }
             }
-            else if (rank == 2)
-            {
-                StaticShape<2> const static_array_shape{
-                    dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
-                StaticShape<2> static_partition_shape{};
 
-                if (partition_shape)
-                {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
-
-                result = create_array<2>(static_array_shape, static_partition_shape, dtype, fill_value);
-            }
-            else
+            if constexpr (rank_supported(2))
             {
-                throw std::runtime_error("Currently only arrays of rank 1 or 2 are supported");
+                if (rank == 2)
+                {
+                    StaticShape<2> const static_array_shape{
+                        dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                    StaticShape<2> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = create_array<2>(static_array_shape, static_partition_shape, dtype, fill_value);
+                }
             }
 
             lue_hpx_assert(result);

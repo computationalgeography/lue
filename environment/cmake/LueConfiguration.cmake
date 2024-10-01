@@ -131,8 +131,8 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_BOOLEAN_ELEMENT
         PROPERTY
             STRINGS
-                std::uint8_t
-                std::int8_t
+                "std::uint8_t"
+                "std::int8_t"
     )
 
     # TODO Update code that assumes uint8_t is the boolean type
@@ -146,8 +146,8 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
-                "std::int8_t;std::int32_t;std::int64_t"
-                "std::int32_t;std::int64_t"
+                "std::int8_t\;std::int32_t\;std::int64_t"
+                "std::int32_t\;std::int64_t"
                 "std::int32_t"
                 "std::int64_t"
     )
@@ -157,8 +157,8 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
-                "std::uint8_t;std::uint32_t;std::uint64_t"
-                "std::uint32_t;std::uint64_t"
+                "std::uint8_t\;std::uint32_t\;std::uint64_t"
+                "std::uint32_t\;std::uint64_t"
                 "std::uint32_t"
                 "std::uint64_t"
     )
@@ -176,7 +176,7 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
         PROPERTY
             STRINGS
-                "float;double"
+                "float\;double"
                 "float"
                 "double"
     )
@@ -194,7 +194,7 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_RANKS
         PROPERTY
             STRINGS
-                "1;2"
+                "1\;2"
                 "2"
     )
 
@@ -366,11 +366,6 @@ endif()
 
 
 if(LUE_BOOST_REQUIRED)
-    if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
-        # HPX inspect tool requires Boost.Regex
-        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
-    endif()
-
     # Use Boost's own FindBoost module instead of the deprecated CMake version
     find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
 

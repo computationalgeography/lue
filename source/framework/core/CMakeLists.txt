@@ -1,13 +1,24 @@
 add_test_conditionally(test)
 
-configure_file(
-    include/lue/framework/configure.hpp.in
-    include/lue/framework/configure.hpp
-)
+block()
+    set(offset "include/lue/framework")
+    set(ranks ${LUE_FRAMEWORK_RANKS})
+    list(JOIN ranks ", " ranks)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/configure.hpp.in"
+        OUTPUT_PATHNAME
+            "${CMAKE_CURRENT_BINARY_DIR}/${offset}/configure.hpp"
+        DICTIONARY
+            '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","ranks":[${ranks}]}'
+    )
+endblock()
 
 add_library(lue_framework_core STATIC
     src/configuration_entry.cpp
     src/debug.cpp
+    src/framework.cpp
     src/numa_domain.cpp
     src/runtime.cpp
 )

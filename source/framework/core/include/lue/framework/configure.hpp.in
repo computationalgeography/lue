@@ -1,4 +1,6 @@
 #pragma once
+#include "lue/framework/core/define.hpp"
+#include <array>
 #include <cstdint>
 #include <hpx/config.hpp>
 
@@ -10,8 +12,10 @@
 
 namespace lue {
 
-    using BooleanElement = @LUE_FRAMEWORK_BOOLEAN_ELEMENT@;
+    using BooleanElement = {{ BooleanElement }};
 
-    using FlowDirectionElement = @LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT@;
+    using FlowDirectionElement = {{ FlowDirectionElement }};
+
+    constexpr static std::array<Rank, {{ ranks | length }}> ranks{ {{ ranks | join(', ') }} };
 
 }  // namespace lue

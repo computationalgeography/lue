@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/normal.hpp"
 #include "shape.hpp"
+#include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
@@ -123,12 +124,12 @@ namespace lue::framework {
 
 
         // Step 1: Convert from Python types to C++ types and validate contents
-        pybind11::object normal_py(
+        auto normal_py(
             pybind11::tuple const& array_shape,
             pybind11::object const& dtype_args,
             pybind11::object const& mean,
             pybind11::object const& stddev,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             DynamicShape const dynamic_array_shape{tuple_to_shape(array_shape)};
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
@@ -149,45 +150,50 @@ namespace lue::framework {
 
             pybind11::object result;
 
-            if (rank == 1)
+            verify_rank_supported(rank);
+
+            if constexpr (rank_supported(1))
             {
-                StaticShape<1> const static_array_shape{
-                    dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
-                StaticShape<1> static_partition_shape{};
-
-                if (partition_shape)
+                if (rank == 1)
                 {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
+                    StaticShape<1> const static_array_shape{
+                        dynamic_shape_to_static_shape<1>(dynamic_array_shape)};
+                    StaticShape<1> static_partition_shape{};
 
-                result = normal<1>(static_array_shape, static_partition_shape, dtype, mean, stddev);
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<1>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = normal<1>(static_array_shape, static_partition_shape, dtype, mean, stddev);
+                }
             }
-            else if (rank == 2)
-            {
-                StaticShape<2> const static_array_shape{
-                    dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
-                StaticShape<2> static_partition_shape{};
 
-                if (partition_shape)
-                {
-                    static_partition_shape =
-                        dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
-                }
-                else
-                {
-                    static_partition_shape = default_partition_shape(static_array_shape);
-                }
-
-                result = normal<2>(static_array_shape, static_partition_shape, dtype, mean, stddev);
-            }
-            else
+            if constexpr (rank_supported(2))
             {
-                throw std::runtime_error("Currently only arrays of rank 1 or 2 are supported");
+                if (rank == 2)
+                {
+                    StaticShape<2> const static_array_shape{
+                        dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                    StaticShape<2> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        static_partition_shape =
+                            dynamic_shape_to_static_shape<2>(tuple_to_shape(*partition_shape));
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = normal<2>(static_array_shape, static_partition_shape, dtype, mean, stddev);
+                }
             }
 
             lue_hpx_assert(result);

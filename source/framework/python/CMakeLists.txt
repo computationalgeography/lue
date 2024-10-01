@@ -109,7 +109,6 @@ add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation/inter_partition_stream.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
     src/algorithm/routing_operation/upstream.cpp
-
 )
 
 add_library(lue_py_framework_zonal_operation SHARED
@@ -162,7 +161,7 @@ block()
         OUTPUT_PATHNAME
             "${output_pathname}"
         DICTIONARY
-            '{"Elements":[${Elements}],"ranks":"${LUE_FRAMEWORK_RANKS}"}'
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
     )
 
     list(APPEND generated_source_files "${output_pathname}")
