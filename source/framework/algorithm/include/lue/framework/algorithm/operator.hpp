@@ -73,122 +73,123 @@
     }
 
 
-#define LUE_BINARY_COMPARISON_OPERATOR(symbol, name)                                                         \
+#define LUE_BINARY_COMPARISON_OPERATOR(symbol, name, BooleanElement)                                         \
                                                                                                              \
     /* array == array */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(                                                                                    \
         PartitionedArray<Element, rank> const& lhs, PartitionedArray<Element, rank> const& rhs)              \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* array == scalar */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(PartitionedArray<Element, rank> const& lhs, Scalar<Element> const& rhs)             \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* scalar == array */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(Scalar<Element> const& lhs, PartitionedArray<Element, rank> const& rhs)             \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* array == value */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(PartitionedArray<Element, rank> const& lhs, Element const rhs)                      \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* value == array */                                                                                     \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(Element const lhs, PartitionedArray<Element, rank> const& rhs)                      \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* scalar == scalar */                                                                                   \
     template<typename Element>                                                                               \
-    auto operator symbol(Scalar<Element> const& lhs, Scalar<Element> const& rhs)->Scalar<std::uint8_t>       \
+    auto operator symbol(Scalar<Element> const& lhs, Scalar<Element> const& rhs)->Scalar<BooleanElement>     \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* scalar == value */                                                                                    \
     template<typename Element>                                                                               \
-    auto operator symbol(Scalar<Element> const& lhs, Element const rhs)->Scalar<std::uint8_t>                \
+    auto operator symbol(Scalar<Element> const& lhs, Element const rhs)->Scalar<BooleanElement>              \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
     /* value == scalar */                                                                                    \
     template<typename Element>                                                                               \
-    auto operator symbol(Element const lhs, Scalar<Element> const& rhs)->Scalar<std::uint8_t>                \
+    auto operator symbol(Element const lhs, Scalar<Element> const& rhs)->Scalar<BooleanElement>              \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }
 
 
-#define LUE_UNARY_LOGICAL_OPERATOR(symbol, name)                                                             \
+#define LUE_UNARY_LOGICAL_OPERATOR(symbol, name, BooleanElement)                                             \
     template<typename Element, Rank rank>                                                                    \
-    auto operator symbol(PartitionedArray<Element, rank> const& array)->PartitionedArray<std::uint8_t, rank> \
+    auto operator symbol(PartitionedArray<Element, rank> const& array)                                       \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(array);                                                                    \
+        return name<BooleanElement>(array);                                                                  \
     }                                                                                                        \
                                                                                                              \
     template<typename Element>                                                                               \
-    auto operator symbol(Scalar<Element> const& scalar)->Scalar<std::uint8_t>                                \
+    auto operator symbol(Scalar<Element> const& scalar)->Scalar<BooleanElement>                              \
     {                                                                                                        \
-        return name<std::uint8_t>(scalar);                                                                   \
+        return name<BooleanElement>(scalar);                                                                 \
     }
 
 
-#define LUE_BINARY_LOGICAL_OPERATOR(symbol, name)                                                            \
+#define LUE_BINARY_LOGICAL_OPERATOR(symbol, name, BooleanElement)                                            \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(                                                                                    \
         PartitionedArray<Element, rank> const& lhs, PartitionedArray<Element, rank> const& rhs)              \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(PartitionedArray<Element, rank> const& lhs, hpx::shared_future<Element> const& rhs) \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(hpx::shared_future<Element> const& lhs, PartitionedArray<Element, rank> const& rhs) \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(PartitionedArray<Element, rank> const& lhs, Element const rhs)                      \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }                                                                                                        \
                                                                                                              \
                                                                                                              \
     template<typename Element, Rank rank>                                                                    \
     auto operator symbol(Element const lhs, PartitionedArray<Element, rank> const& rhs)                      \
-        ->PartitionedArray<std::uint8_t, rank>                                                               \
+        ->PartitionedArray<BooleanElement, rank>                                                             \
     {                                                                                                        \
-        return name<std::uint8_t>(lhs, rhs);                                                                 \
+        return name<BooleanElement>(lhs, rhs);                                                               \
     }

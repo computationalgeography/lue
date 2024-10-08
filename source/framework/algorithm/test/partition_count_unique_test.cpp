@@ -3,11 +3,12 @@
 #include "lue/framework/algorithm/partition_count_unique.hpp"
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using Element = std::int32_t;
+    using Element = lue::LargestSignedIntegralElement;
     constexpr lue::Rank rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
@@ -16,7 +17,7 @@ namespace {
     Shape const array_shape{{60, 40}};
     Shape const partition_shape{{10, 10}};
 
-    using Count = std::int64_t;
+    using Count = lue::CountElement;
     using OutputArray = lue::PartitionedArray<Count, rank>;
 
 }  // Anonymous namespace
@@ -27,11 +28,11 @@ BOOST_AUTO_TEST_CASE(same_values)
     // Create an array filled with the same value. In the result,
     // for each partition there must be a 1 stored.
 
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, 5)};
+    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{5})};
 
     OutputArray result_we_want{
         lue::create_partitioned_array(lue::shape_in_partitions(array), {{1, 1}}, Count{1})};
-    OutputArray result_we_got{lue::partition_count_unique(array)};
+    OutputArray result_we_got{lue::partition_count_unique<Element, Count>(array)};
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
@@ -47,8 +48,8 @@ BOOST_AUTO_TEST_CASE(different_values)
     lue::range(array, Element{0}).get();
 
     OutputArray result_we_want{lue::create_partitioned_array(
-        lue::shape_in_partitions(array), {{1, 1}}, Count{lue::nr_elements(partition_shape)})};
-    OutputArray result_we_got{lue::partition_count_unique(array)};
+        lue::shape_in_partitions(array), {{1, 1}}, static_cast<Count>(lue::nr_elements(partition_shape)))};
+    OutputArray result_we_got{lue::partition_count_unique<Element, Count>(array)};
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
@@ -66,7 +67,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
         lue::shape_in_partitions(array), {{1, 1}}, lue::policy::no_data_value<Count>)};
 
     using Policies = lue::policy::partition_count_unique::DefaultValuePolicies<Count, Element>;
-    OutputArray result_we_got{lue::partition_count_unique(Policies{}, array)};
+    OutputArray result_we_got{lue::partition_count_unique<Policies, Element, Count>(Policies{}, array)};
 
     lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }

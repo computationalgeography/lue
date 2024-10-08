@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/mesh_grid.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 // BOOST_AUTO_TEST_CASE(use_case_1)
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{5};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
     lue::Rank const rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;

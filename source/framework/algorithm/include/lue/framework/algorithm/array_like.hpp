@@ -10,10 +10,10 @@ namespace lue {
     namespace detail {
 
         template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
-        ArrayPartition<OutputElement, rank> array_like_partition(
+        auto array_like_partition(
             Policies const& policies,
             ArrayPartition<InputElement, rank> const& input_partition,
-            OutputElement const fill_value)
+            OutputElement const fill_value) -> ArrayPartition<OutputElement, rank>
         {
             using InputPartition = ArrayPartition<InputElement, rank>;
             using Offset = OffsetT<InputPartition>;
@@ -138,18 +138,18 @@ namespace lue {
 
 
     template<typename OutputElement, typename Policies, typename InputElement, Rank rank>
-    PartitionedArray<OutputElement, rank> array_like(
+    auto array_like(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
-        OutputElement const fill_value)
+        OutputElement const fill_value) -> PartitionedArray<OutputElement, rank>
     {
         return array_like(policies, input_array, hpx::make_ready_future<OutputElement>(fill_value).share());
     }
 
 
     template<typename OutputElement, typename InputElement, Rank rank>
-    PartitionedArray<OutputElement, rank> array_like(
-        PartitionedArray<InputElement, rank> const& input_array, OutputElement const fill_value)
+    auto array_like(PartitionedArray<InputElement, rank> const& input_array, OutputElement const fill_value)
+        -> PartitionedArray<OutputElement, rank>
     {
         using Policies = policy::array_like::DefaultPolicies<OutputElement, InputElement>;
 

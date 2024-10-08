@@ -4,9 +4,10 @@
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/algorithm/default_policies/sin.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -25,17 +26,12 @@ namespace detail {
         BOOST_CHECK(all(sin(array) == std::sin(fill_value)).future().get());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, double)
-TEST_CASE(2, double)
-
-#undef TEST_CASE
+    test_array<lue::FloatingPointElement<0>, rank>();
+}

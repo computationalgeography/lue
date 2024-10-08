@@ -5,17 +5,30 @@ add_test_conditionally(test)
 set(generated_source_files "")
 
 block()
-    set(count "0")
+    set(offset "include/lue/framework/partitioned_array/server")
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition.hpp")
 
-    # TODO Get rid of this here?
-    # Only locally add bool to the list of element types
-    list(APPEND LUE_FRAMEWORK_ELEMENTS bool)
+    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition.hpp.in"
+        OUTPUT_PATHNAME
+            "${output_pathname}"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+
+    list(APPEND generated_source_files "${output_pathname}")
 
     foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-            math(EXPR count "${count} + 1")
+        string(REPLACE "::" "_" element ${Element})
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/array_partition-${count}.cpp")
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/array_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -27,7 +40,7 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/array_partition-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/array_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME

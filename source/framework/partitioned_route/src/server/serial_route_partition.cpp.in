@@ -4,7 +4,7 @@
 LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(
     {{ RouteID }},
     {{ rank }},
-    {{ RouteID }}_{{ rank }})
+    {{ RouteID | replace("::", "_") }}_{{ rank }})
 
 
 namespace lue::server {

@@ -3,9 +3,10 @@
 #include "lue/framework/algorithm/default_policies/unique.hpp"
 #include "lue/framework/algorithm/default_policies/unique_id.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename IDElement, typename ConditionElement, std::size_t rank>
     void test_array()
@@ -25,19 +26,12 @@ namespace detail {
         }
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, IDElement, ConditionElement)                                                         \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement##_##ConditionElement)                                   \
-    {                                                                                                        \
-        detail::test_array<IDElement, ConditionElement, rank>();                                             \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, int32_t, uint8_t)
-TEST_CASE(2, int32_t, uint8_t)
-// TEST_CASE(1, int64_t, uint8_t)
-TEST_CASE(2, int64_t, uint8_t)
-
-#undef TEST_CASE
+    test_array<lue::SignedIntegralElement<0>, lue::BooleanElement, rank>();
+}

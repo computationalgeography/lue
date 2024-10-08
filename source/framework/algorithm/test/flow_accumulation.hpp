@@ -23,7 +23,7 @@ namespace lue::test {
     auto const nw{lue::north_west<FlowDirectionElement>};
     auto const p{lue::sink<FlowDirectionElement>};
 
-    auto const nd{lue::no_data<FlowDirectionElement>};
+    auto const nd{lue::policy::no_data_value<FlowDirectionElement>};
 
 
     auto all_no_data() -> FlowDirectionArray;
@@ -34,8 +34,9 @@ namespace lue::test {
 
     auto pcraster_example_flow_direction() -> FlowDirectionArray;
 
+
     template<typename Element>
-    PartitionedArray<Element, 2> filled(Element const fill_value);
+    auto filled(Element fill_value) -> PartitionedArray<Element, 2>;
 
 
     template<typename Element>

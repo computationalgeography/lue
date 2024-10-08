@@ -6,6 +6,7 @@
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace tt = boost::test_tools;
@@ -19,7 +20,7 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example)
     auto const array_shape{flow_direction.shape()};
     auto const partition_shape{array_shape};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const current_discharge = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
         array_shape,
@@ -69,7 +70,7 @@ BOOST_AUTO_TEST_CASE(zero_discharge_and_inflow)
     auto const array_shape{flow_direction.shape()};
     auto const partition_shape{array_shape};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
@@ -96,7 +97,7 @@ BOOST_AUTO_TEST_CASE(non_zero_discharge_and_zero_inflow)
     auto const array_shape{flow_direction.shape()};
     auto const partition_shape{array_shape};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
@@ -123,7 +124,7 @@ BOOST_AUTO_TEST_CASE(zero_discharge_and_non_zero_inflow)
     auto const array_shape{flow_direction.shape()};
     auto const partition_shape{array_shape};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
@@ -149,8 +150,10 @@ BOOST_AUTO_TEST_CASE(zero_discharge_and_non_zero_inflow)
 
 BOOST_AUTO_TEST_CASE(dry_cell)
 {
+    using FloatingPoint = lue::FloatingPointElement<0>;
+
     {
-        double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
             0,     // upstream_discharge
             0,     // current_discharge
             0,     // lateral_inflow
@@ -158,13 +161,13 @@ BOOST_AUTO_TEST_CASE(dry_cell)
             0.6,   // beta
             15,    // time_step_duration
             10)};  // channel_length
-        double const discharge_we_want{0};
+        FloatingPoint const discharge_we_want{0};
 
         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
     }
 
     {
-        double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
             1,     // upstream_discharge
             0,     // current_discharge
             -1,    // lateral_inflow
@@ -172,13 +175,13 @@ BOOST_AUTO_TEST_CASE(dry_cell)
             0.6,   // beta
             15,    // time_step_duration
             10)};  // channel_length
-        double const discharge_we_want{0};
+        FloatingPoint const discharge_we_want{0};
 
         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
     }
 
     {
-        double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
             1,     // upstream_discharge
             1,     // current_discharge
             -2,    // lateral_inflow
@@ -186,13 +189,13 @@ BOOST_AUTO_TEST_CASE(dry_cell)
             0.6,   // beta
             15,    // time_step_duration
             10)};  // channel_length
-        double const discharge_we_want{0};
+        FloatingPoint const discharge_we_want{0};
 
         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
     }
 
     {
-        double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
             0,     // upstream_discharge
             1,     // current_discharge
             -1,    // lateral_inflow
@@ -200,13 +203,13 @@ BOOST_AUTO_TEST_CASE(dry_cell)
             0.6,   // beta
             15,    // time_step_duration
             10)};  // channel_length
-        double const discharge_we_want{0};
+        FloatingPoint const discharge_we_want{0};
 
         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
     }
 
     {
-        double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
             0,     // upstream_discharge
             0,     // current_discharge
             -1,    // lateral_inflow
@@ -214,7 +217,7 @@ BOOST_AUTO_TEST_CASE(dry_cell)
             0.6,   // beta
             15,    // time_step_duration
             10)};  // channel_length
-        double const discharge_we_want{0};
+        FloatingPoint const discharge_we_want{0};
 
         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
     }
@@ -240,47 +243,54 @@ BOOST_AUTO_TEST_CASE(dry_cell)
 
 BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
 {
-    double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
-        0,             // upstream_discharge
-        1.11659e-07,   // current_discharge
-        -1.32678e-05,  // lateral_inflow
-        1.6808,        // alpha
-        0.6,           // beta
-        15,            // time_step_duration
-        10)};          // channel_length
+    if constexpr (lue::element_supported<double>)
+    {
+        // TODO Port to all float types
+        using FloatingPoint = double;
 
-    double const discharge_we_want{std::numeric_limits<double>::min()};
+        FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+            0,             // upstream_discharge
+            1.11659e-07,   // current_discharge
+            -1.32678e-05,  // lateral_inflow
+            1.6808,        // alpha
+            0.6,           // beta
+            15,            // time_step_duration
+            10)};          // channel_length
 
-    BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+        FloatingPoint const discharge_we_want{std::numeric_limits<FloatingPoint>::min()};
+
+        BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+    }
 }
 
 
 BOOST_AUTO_TEST_CASE(random_input)
 {
-    using FloatElement = double;
+    using FloatingPoint = lue::FloatingPointElement<0>;
 
     std::random_device random_device{};
     std::default_random_engine random_number_engine(random_device());
 
-    std::uniform_real_distribution<FloatElement> discharge_distribution{0, 1000};
-    std::uniform_real_distribution<FloatElement> lateral_inflow_distribution{-1000, 1000};
-    std::uniform_real_distribution<FloatElement> alpha_distribution{0.5, 6.0};
-    std::uniform_real_distribution<FloatElement> beta_distribution{0.5, 2.0};
-    std::uniform_real_distribution<FloatElement> time_step_duration_distribution{1, 100};
-    std::uniform_real_distribution<FloatElement> channel_length_distribution{1, 100};
+    std::uniform_real_distribution<FloatingPoint> discharge_distribution{0, 1000};
+    std::uniform_real_distribution<FloatingPoint> lateral_inflow_distribution{-1000, 1000};
+    std::uniform_real_distribution<FloatingPoint> alpha_distribution{0.5, 6.0};
+    std::uniform_real_distribution<FloatingPoint> beta_distribution{0.5, 2.0};
+    std::uniform_real_distribution<FloatingPoint> time_step_duration_distribution{1, 100};
+    std::uniform_real_distribution<FloatingPoint> channel_length_distribution{1, 100};
 
     for (std::size_t i = 0; i < 10000; ++i)
     {
-        FloatElement const upstream_discharge{discharge_distribution(random_number_engine)};
-        FloatElement const current_discharge{discharge_distribution(random_number_engine)};
-        FloatElement const alpha{alpha_distribution(random_number_engine)};
-        FloatElement const beta{beta_distribution(random_number_engine)};
-        FloatElement const time_step_duration{time_step_duration_distribution(random_number_engine)};
-        FloatElement const channel_length{channel_length_distribution(random_number_engine)};
+        FloatingPoint const upstream_discharge{discharge_distribution(random_number_engine)};
+        FloatingPoint const current_discharge{discharge_distribution(random_number_engine)};
+        FloatingPoint const alpha{alpha_distribution(random_number_engine)};
+        FloatingPoint const beta{beta_distribution(random_number_engine)};
+        FloatingPoint const time_step_duration{time_step_duration_distribution(random_number_engine)};
+        FloatingPoint const channel_length{channel_length_distribution(random_number_engine)};
 
-        FloatElement const lateral_inflow{lateral_inflow_distribution(random_number_engine) / channel_length};
+        FloatingPoint const lateral_inflow{
+            lateral_inflow_distribution(random_number_engine) / channel_length};
 
-        FloatElement new_discharge{-1};
+        FloatingPoint new_discharge{-1};
 
         BOOST_TEST_INFO(fmt::format(
             "upstream_discharge: {}\n"
@@ -299,7 +309,7 @@ BOOST_AUTO_TEST_CASE(random_input)
             channel_length));
 
         // This call should not throw an exception
-        new_discharge = lue::detail::iterate_to_new_discharge<FloatElement>(
+        new_discharge = lue::detail::iterate_to_new_discharge<FloatingPoint>(
             upstream_discharge,
             current_discharge,
             lateral_inflow,

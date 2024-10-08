@@ -3,12 +3,13 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_maximum.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using Value = std::uint64_t;
-    using Class = std::uint64_t;
+    using Value = lue::UnsignedIntegralElement<0>;
+    using Class = lue::UnsignedIntegralElement<0>;
     std::size_t const rank = 2;
 
     using ValueArray = lue::PartitionedArray<Value, rank>;
@@ -19,10 +20,10 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Shape const partition_shape{{3, 3}};
 
     ValueArray value_array{
-        lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
+        lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
     ClassArray class_array{
-        lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
+        lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
     auto zonal_maximum = lue::value_policies::zonal_maximum<Value>(value_array, class_array);
 
@@ -47,8 +48,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
 BOOST_AUTO_TEST_CASE(use_case_02)
 {
-    using Value = std::int32_t;
-    using Class = std::uint64_t;
+    using Value = lue::SignedIntegralElement<0>;
+    using Class = lue::UnsignedIntegralElement<0>;
     std::size_t const rank = 2;
 
     using ValueArray = lue::PartitionedArray<Value, rank>;
@@ -88,7 +89,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
             {61, 62, 63, 70, 71, 72, 79, 80, 81},
         });
 
-    ClassArray class_array = lue::array_partition_id(value_array);
+    ClassArray class_array = lue::array_partition_id<Class>(value_array);
 
     auto zonal_maximum = lue::value_policies::zonal_maximum(value_array, class_array);
 

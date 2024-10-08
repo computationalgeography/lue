@@ -8,10 +8,11 @@ namespace lue {
     namespace detail {
 
         template<typename InputElement, Rank rank>
-        ArrayPartition<std::uint32_t, rank> locality_id_partition(
+        auto locality_id_partition(
             ArrayPartition<InputElement, rank> input_partition,
             Index const partition_idx,
             ShapeT<ArrayPartition<InputElement, rank>> const& shape_in_partitions)
+            -> ArrayPartition<std::uint32_t, rank>
         {
             using Shape = ShapeT<ArrayPartition<InputElement, rank>>;
             auto partition_offset{linear_idx_to_idxs(partition_idx, shape_in_partitions)};
@@ -44,7 +45,8 @@ namespace lue {
 
 
     template<typename InputElement, Rank rank>
-    PartitionedArray<std::uint32_t, rank> locality_id(PartitionedArray<InputElement, rank> const& input_array)
+    auto locality_id(PartitionedArray<InputElement, rank> const& input_array)
+        -> PartitionedArray<std::uint32_t, rank>
     {
         using InputArray = PartitionedArray<InputElement, rank>;
         using InputPartitions = PartitionsT<InputArray>;

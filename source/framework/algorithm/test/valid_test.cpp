@@ -11,12 +11,13 @@
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using Element = std::int32_t;
-    using BooleanElement = std::uint8_t;
+    using Element = lue::LargestSignedIntegralElement;
+    using BooleanElement = lue::BooleanElement;
     constexpr lue::Rank rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;

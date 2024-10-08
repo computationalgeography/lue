@@ -4,15 +4,17 @@
 #include "lue/framework/algorithm/default_policies/logical_exclusive_or.hpp"
 #include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
 
+        using BooleanElement = lue::BooleanElement;
         using Array = lue::PartitionedArray<Element, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -27,37 +29,32 @@ namespace detail {
         // array || array
         {
             BOOST_CHECK(
-                all(logical_exclusive_or<std::uint8_t>(array1, array2)).future().get());  // true || false
+                all(logical_exclusive_or<BooleanElement>(array1, array2)).future().get());  // true || false
             BOOST_CHECK(
-                none(logical_exclusive_or<std::uint8_t>(array1, array1)).future().get());  // true || true
+                none(logical_exclusive_or<BooleanElement>(array1, array1)).future().get());  // true || true
             BOOST_CHECK(
-                none(logical_exclusive_or<std::uint8_t>(array2, array2)).future().get());  // false || false
+                none(logical_exclusive_or<BooleanElement>(array2, array2)).future().get());  // false || false
         }
 
         // array || scalar
         {
-            BOOST_CHECK(none(logical_exclusive_or<std::uint8_t>(array1, fill_value1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or<std::uint8_t>(array1, fill_value2)).future().get());
+            BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(array1, fill_value1)).future().get());
+            BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(array1, fill_value2)).future().get());
         }
 
         // scalar || array
         {
-            BOOST_CHECK(none(logical_exclusive_or<std::uint8_t>(fill_value1, array1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or<std::uint8_t>(fill_value2, array1)).future().get());
+            BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(fill_value1, array1)).future().get());
+            BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(fill_value2, array1)).future().get());
         }
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, uint8_t)
-TEST_CASE(2, uint8_t)
-
-#undef TEST_CASE
+    test_array<lue::BooleanElement, rank>();
+}

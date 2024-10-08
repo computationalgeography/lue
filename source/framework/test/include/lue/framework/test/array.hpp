@@ -20,12 +20,12 @@ namespace lue {
             using Shape = ShapeT<Array>;
             using Index = typename Shape::value_type;
 
-            static constexpr Shape const& shape()
+            static constexpr auto shape() -> Shape const&
             {
                 return _array_shape;
             }
 
-            static constexpr Shape const& partition_shape()
+            static constexpr auto partition_shape() -> Shape const&
             {
                 return _partition_shape;
             }
@@ -48,31 +48,36 @@ namespace lue {
             using Shape = ShapeT<Array>;
             using Index = typename Shape::value_type;
 
-            static constexpr Shape const& shape()
+            static constexpr auto shape() -> Shape const&
             {
                 return _array_shape;
             }
 
-            static constexpr Shape const& partition_shape()
+            static constexpr auto partition_shape() -> Shape const&
             {
                 return _partition_shape;
             }
 
         private:
 
-            static constexpr Shape _array_shape{{60, 40}};
+            // The number of cells must be ≤ 127, otherwise tests that depend on the number of
+            // cells might fail in case count is represented by an int8
 
-            static constexpr Shape _partition_shape{{10, 10}};
+            // Shape in partitions is {3, 2} here
+
+            static constexpr Shape _array_shape{{9, 10}};
+
+            static constexpr Shape _partition_shape{{3, 5}};
     };
 
 
     namespace test {
 
         template<typename Array, typename Shape>
-        Array create_partitioned_array(
+        auto create_partitioned_array(
             Shape const& array_shape,
             Shape const& partition_shape,
-            std::initializer_list<std::initializer_list<ElementT<Array>>> elements)
+            std::initializer_list<std::initializer_list<ElementT<Array>>> elements) -> Array
         {
             using Partition = PartitionT<Array>;
             using Data = DataT<Partition>;
@@ -97,9 +102,9 @@ namespace lue {
 
 
         template<typename Array>
-        Array create_component_array(
+        auto create_component_array(
             Localities<rank<Array>> const& localities,
-            std::initializer_list<DataT<ComponentT<Array>>> elements)
+            std::initializer_list<DataT<ComponentT<Array>>> elements) -> Array
         {
             using Component = ComponentT<Array>;    // HPX component in the array. The elements.
             using Data = DataT<Component>;          // The type of the objects in the initializer list.

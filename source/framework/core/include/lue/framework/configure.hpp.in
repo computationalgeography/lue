@@ -2,6 +2,7 @@
 #include "lue/framework/core/define.hpp"
 #include <array>
 #include <cstdint>
+#include <tuple>
 #include <hpx/config.hpp>
 
 
@@ -12,10 +13,60 @@
 
 namespace lue {
 
+    /*!
+        @brief      All unsigned integral element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+    */
+    using UnsignedIntegralElements = std::tuple< {{ UnsignedIntegralElements | join(", ") }} >;
+
+    /*!
+        @brief      All signed integral element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+    */
+    using SignedIntegralElements = std::tuple< {{ SignedIntegralElements | join(", ") }} >;
+
+    /*!
+        @brief      All floating point element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+    */
+    using FloatingPointElements = std::tuple< {{ FloatingPointElements | join(", ") }} >;
+
+    /*!
+        @brief      The Boolean element type type for which relevant class and function templates are
+                    instantiated
+
+        A Boolean is typically represented by a small integral element type, like uint8 or int8.
+    */
     using BooleanElement = {{ BooleanElement }};
 
+    /*!
+        @brief      The count element type type for which relevant class and function templates are
+                    instantiated
+
+        A count is typically represented by a large integral element type.
+    */
+    using CountElement = {{ CountElement }};
+
+    /*!
+        @brief      The index element type type for which relevant class and function templates are
+                    instantiated
+
+        An index is typically represented by a large integral element type.
+    */
+    using IndexElement = {{ IndexElement }};
+
+    /*!
+        @brief      The flow direction element type type for which relevant class and function templates are
+                    instantiated
+
+        A flow direction is typically represented by a small integral element type, like uint8 or int8.
+    */
     using FlowDirectionElement = {{ FlowDirectionElement }};
 
-    constexpr static std::array<Rank, {{ ranks | length }}> ranks{ {{ ranks | join(', ') }} };
+    /*!
+        @brief      The ranks for which relevant class and function templates are instantiated, in some
+                    undefined order
+    */
+    constexpr static std::array<Rank, {{ ranks | length }}> ranks{ {{ ranks | join(", ") }} };
 
 }  // namespace lue

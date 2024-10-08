@@ -4,12 +4,13 @@
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using FlowDirectionElement = std::uint32_t;
-    using CountElement = std::int32_t;
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using CountElement = std::uint8_t;  // TODO This should be configurable (SMALL_COUNT, ...)
     std::size_t const rank = 2;
 
     using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
@@ -28,7 +29,7 @@ namespace {
     auto const w{lue::west<FlowDirectionElement>};
     auto const nw{lue::north_west<FlowDirectionElement>};
     auto const p{lue::sink<FlowDirectionElement>};
-    auto const nd{lue::no_data<FlowDirectionElement>};
+    auto const nd{lue::policy::no_data_value<FlowDirectionElement>};
 
 
     template<typename Policies, typename FlowDirectionArray, typename InflowCountArray>

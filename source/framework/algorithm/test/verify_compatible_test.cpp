@@ -1,11 +1,12 @@
 #define BOOST_TEST_MODULE lue framework algorithm verify_compatible
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(compatible)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
     constexpr lue::Rank rank = 2;
     using Shape = lue::Shape<lue::Count, rank>;
 
@@ -27,7 +28,7 @@ BOOST_AUTO_TEST_CASE(compatible)
 
 BOOST_AUTO_TEST_CASE(not_compatible_shape_in_elements)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
     constexpr lue::Rank rank = 2;
     using Shape = lue::Shape<lue::Count, rank>;
 
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE(not_compatible_shape_in_elements)
 
 BOOST_AUTO_TEST_CASE(not_compatible_shape_in_partitions)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
     constexpr lue::Rank rank = 2;
     using Shape = lue::Shape<lue::Count, rank>;
 

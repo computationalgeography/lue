@@ -2,6 +2,7 @@
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/upstream.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -11,7 +12,7 @@ namespace {
 
     std::size_t const rank = 2;
 
-    using MaterialElement = std::uint64_t;
+    using MaterialElement = lue::LargestUnsignedIntegralElement;
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>

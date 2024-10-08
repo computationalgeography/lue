@@ -5,9 +5,10 @@
 #include "lue/framework/algorithm/default_policies/logical_and.hpp"
 #include "lue/framework/algorithm/default_policies/normal.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -36,24 +37,20 @@ namespace detail {
         BOOST_CHECK(all(array < mean + (10 * stddev)).future().get());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-TEST_CASE(2, double)
-
-#undef TEST_CASE
+    test_array<lue::FloatingPointElement<0>, rank>();
+}
 
 
 namespace {
 
-    using Element = float;
+    using Element = lue::FloatingPointElement<0>;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;

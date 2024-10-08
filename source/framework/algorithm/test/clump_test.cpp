@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/value_policies/unique.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include <random>
 
 
@@ -56,7 +57,9 @@ void test_clump(
 
 BOOST_AUTO_TEST_CASE(constant_1x1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -81,7 +84,9 @@ BOOST_AUTO_TEST_CASE(constant_1x1)
 
 BOOST_AUTO_TEST_CASE(constant_2x2)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -109,9 +114,11 @@ BOOST_AUTO_TEST_CASE(constant_2x2)
 
 BOOST_AUTO_TEST_CASE(all_no_data)
 {
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -136,7 +143,9 @@ BOOST_AUTO_TEST_CASE(all_no_data)
 
 BOOST_AUTO_TEST_CASE(increasing_range_1x1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -161,7 +170,9 @@ BOOST_AUTO_TEST_CASE(increasing_range_1x1)
 
 BOOST_AUTO_TEST_CASE(increasing_range_1x2)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 6},
         {3, 3},
         // clang-format off
@@ -207,7 +218,9 @@ BOOST_AUTO_TEST_CASE(increasing_range_1x2)
 
 BOOST_AUTO_TEST_CASE(increasing_range_2x1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {6, 3},
         {3, 3},
         // clang-format off
@@ -253,7 +266,9 @@ BOOST_AUTO_TEST_CASE(increasing_range_2x1)
 
 BOOST_AUTO_TEST_CASE(decreasing_range)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -278,9 +293,11 @@ BOOST_AUTO_TEST_CASE(decreasing_range)
 
 BOOST_AUTO_TEST_CASE(seed_to_south_west)
 {
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -305,9 +322,11 @@ BOOST_AUTO_TEST_CASE(seed_to_south_west)
 
 BOOST_AUTO_TEST_CASE(seed_to_south_east)
 {
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -332,7 +351,9 @@ BOOST_AUTO_TEST_CASE(seed_to_south_east)
 
 BOOST_AUTO_TEST_CASE(checker_board_1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -357,9 +378,11 @@ BOOST_AUTO_TEST_CASE(checker_board_1)
 
 BOOST_AUTO_TEST_CASE(checker_board_2)
 {
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -384,9 +407,11 @@ BOOST_AUTO_TEST_CASE(checker_board_2)
 
 BOOST_AUTO_TEST_CASE(checker_board_3)
 {
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -411,7 +436,9 @@ BOOST_AUTO_TEST_CASE(checker_board_3)
 
 BOOST_AUTO_TEST_CASE(rows)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -436,7 +463,9 @@ BOOST_AUTO_TEST_CASE(rows)
 
 BOOST_AUTO_TEST_CASE(cols)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -461,7 +490,9 @@ BOOST_AUTO_TEST_CASE(cols)
 
 BOOST_AUTO_TEST_CASE(diagonal_1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -486,7 +517,9 @@ BOOST_AUTO_TEST_CASE(diagonal_1)
 
 BOOST_AUTO_TEST_CASE(diagonal_2)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 3},
         {3, 3},
         // clang-format off
@@ -511,7 +544,9 @@ BOOST_AUTO_TEST_CASE(diagonal_2)
 
 BOOST_AUTO_TEST_CASE(diagonal_2x2)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -563,7 +598,9 @@ BOOST_AUTO_TEST_CASE(diagonal_2x2)
 
 BOOST_AUTO_TEST_CASE(diagonal_3x3)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {9, 9},
         {3, 3},
         // clang-format off
@@ -660,7 +697,9 @@ BOOST_AUTO_TEST_CASE(diagonal_3x3)
 
 BOOST_AUTO_TEST_CASE(reclass)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {6, 6},
         {3, 3},
         // clang-format off
@@ -736,7 +775,9 @@ BOOST_AUTO_TEST_CASE(reclass)
 
 BOOST_AUTO_TEST_CASE(u_turn_1)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 10},
         {3, 10},
         // clang-format off
@@ -761,7 +802,9 @@ BOOST_AUTO_TEST_CASE(u_turn_1)
 
 BOOST_AUTO_TEST_CASE(u_turn_2)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 10},
         {3, 10},
         // clang-format off
@@ -786,7 +829,9 @@ BOOST_AUTO_TEST_CASE(u_turn_2)
 
 BOOST_AUTO_TEST_CASE(u_turn_3)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {3, 12},
         {3, 12},
         // clang-format off
@@ -811,7 +856,9 @@ BOOST_AUTO_TEST_CASE(u_turn_3)
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {5, 5},
         {5, 5},
         // clang-format off
@@ -842,7 +889,9 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
 BOOST_AUTO_TEST_CASE(use_case_02)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {5, 5},
         {5, 5},
         // clang-format off
@@ -873,7 +922,9 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
 BOOST_AUTO_TEST_CASE(use_case_03)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {5, 5},
         {5, 5},
         // clang-format off
@@ -906,7 +957,9 @@ BOOST_AUTO_TEST_CASE(use_case_04)
 {
     // U-turn back up
     // diagonal: cell (1, 1) must be 1, not 2
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {4, 5},
         {4, 5},
         // clang-format off
@@ -934,7 +987,9 @@ BOOST_AUTO_TEST_CASE(use_case_04)
 
 BOOST_AUTO_TEST_CASE(use_case_05)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {4, 10},
         {2, 10},
         // clang-format off
@@ -974,7 +1029,9 @@ BOOST_AUTO_TEST_CASE(use_case_05)
 
 BOOST_AUTO_TEST_CASE(use_case_06)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {5, 10},
         {5, 10},
         // clang-format off
@@ -1005,7 +1062,9 @@ BOOST_AUTO_TEST_CASE(use_case_06)
 
 BOOST_AUTO_TEST_CASE(use_case_07)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {5, 10},
         {5, 10},
         // clang-format off
@@ -1036,7 +1095,9 @@ BOOST_AUTO_TEST_CASE(use_case_07)
 
 BOOST_AUTO_TEST_CASE(use_case_08)
 {
-    test_clump<std::int32_t>(
+    using Element = lue::SignedIntegralElement<0>;
+
+    test_clump<Element>(
         {20, 10},
         {5, 10},
         // clang-format off
@@ -1136,10 +1197,12 @@ BOOST_AUTO_TEST_CASE(use_case_08)
 
 BOOST_AUTO_TEST_CASE(use_case_09)
 {
-    // Single clump
-    auto const x{lue::policy::no_data_value<std::int32_t>};
+    using Element = lue::SignedIntegralElement<0>;
 
-    test_clump<std::int32_t>(
+    // Single clump
+    auto const x{lue::policy::no_data_value<Element>};
+
+    test_clump<Element>(
         {10, 10},
         {5, 5},
         // clang-format off
@@ -1258,95 +1321,101 @@ BOOST_AUTO_TEST_CASE(random_input)
     // only a single partition.
     lue::Rank const rank{2};
 
-    using ZoneElement = std::int32_t;
-    using Shape = lue::Shape<lue::Count, rank>;
-    using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
+    using ZoneElement = lue::LargestIntegralElement;
 
-    std::random_device random_device{};
-    std::default_random_engine random_number_engine(random_device());
-
-    Shape const array_shape = [&]()
+    if constexpr (!std::is_same_v<ZoneElement, void> && sizeof(ZoneElement) > 1)
     {
-        lue::Count const min{100};
-        lue::Count const max{500};
-        std::uniform_int_distribution<lue::Count> distribution(min, max);
+        using Shape = lue::Shape<lue::Count, rank>;
+        using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
 
-        return Shape{
-            distribution(random_number_engine),
-            distribution(random_number_engine),
-        };
-    }();
-    Shape const partition_shape = [&]()
-    {
-        lue::Count const min{40};
-        lue::Count const max{50};
-        std::uniform_int_distribution<lue::Count> distribution(min, max);
+        std::random_device random_device{};
+        std::default_random_engine random_number_engine(random_device());
 
-        return Shape{
-            distribution(random_number_engine),
-            distribution(random_number_engine),
-        };
-    }();
-    lue::Count const nr_zones = [&]()
-    {
-        lue::Count const min{1};
-        lue::Count const max{5};
-        std::uniform_int_distribution<lue::Count> distribution(min, max);
+        Shape const array_shape = [&]()
+        {
+            lue::Count const min{100};
+            lue::Count const max{500};
+            std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-        return distribution(random_number_engine);
-    }();
+            return Shape{
+                distribution(random_number_engine),
+                distribution(random_number_engine),
+            };
+        }();
+        Shape const partition_shape = [&]()
+        {
+            lue::Count const min{40};
+            lue::Count const max{50};
+            std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-    using Buffer = std::vector<ZoneElement>;
-    using BufferHandle = std::shared_ptr<Buffer>;
+            return Shape{
+                distribution(random_number_engine),
+                distribution(random_number_engine),
+            };
+        }();
+        lue::Count const nr_zones = [&]()
+        {
+            lue::Count const min{1};
+            lue::Count const max{5};
+            std::uniform_int_distribution<lue::Count> distribution(min, max);
 
-    BufferHandle buffer_handle = std::make_shared<Buffer>(lue::nr_elements(array_shape));
-    {
-        std::uniform_int_distribution<ZoneElement> distribution(1, static_cast<ZoneElement>(nr_zones));
-        auto const no_data{lue::policy::no_data_value<ZoneElement>};
+            return distribution(random_number_engine);
+        }();
 
-        std::for_each(
-            buffer_handle->begin(),
-            buffer_handle->end(),
-            [&random_number_engine, &distribution, no_data](ZoneElement& zone_id)
-            {
-                zone_id = distribution(random_number_engine);
+        using Buffer = std::vector<ZoneElement>;
+        using BufferHandle = std::shared_ptr<Buffer>;
 
-                if (zone_id == 1)
+        BufferHandle buffer_handle = std::make_shared<Buffer>(lue::nr_elements(array_shape));
+        {
+            std::uniform_int_distribution<ZoneElement> distribution(1, static_cast<ZoneElement>(nr_zones));
+            auto const no_data{lue::policy::no_data_value<ZoneElement>};
+
+            std::for_each(
+                buffer_handle->begin(),
+                buffer_handle->end(),
+                [&random_number_engine, &distribution, no_data](ZoneElement& zone_id)
                 {
-                    zone_id = no_data;
-                }
-            });
-    }
+                    zone_id = distribution(random_number_engine);
 
-    // Create a partitioned array, passing in the buffer
-    using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
+                    if (zone_id == 1)
+                    {
+                        zone_id = no_data;
+                    }
+                });
+        }
 
-    Functor functor{buffer_handle, [](BufferHandle const& handle) -> ZoneElement* { return handle->data(); }};
+        // Create a partitioned array, passing in the buffer
+        using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
 
-    // Create two arrays with the same values but different partitioning
-    ZoneArray zone_array_single_partition = lue::create_partitioned_array(array_shape, array_shape, functor);
-    ZoneArray zone_array_multiple_partitions =
-        lue::create_partitioned_array(array_shape, partition_shape, functor);
+        Functor functor{
+            buffer_handle, [](BufferHandle const& handle) -> ZoneElement* { return handle->data(); }};
 
-    using namespace lue::value_policies;
+        // Create two arrays with the same values but different partitioning
+        ZoneArray zone_array_single_partition =
+            lue::create_partitioned_array(array_shape, array_shape, functor);
+        ZoneArray zone_array_multiple_partitions =
+            lue::create_partitioned_array(array_shape, partition_shape, functor);
 
-    // Test whether clumping the different partitioned arrays result in the same number of clumps. If so,
-    // merging clumps seems to have worked.
-    BOOST_TEST_CONTEXT("nondiagonal")
-    {
-        auto const nr_clumps1 =
-            unique(clump(zone_array_single_partition, lue::Connectivity::nondiagonal)).get().size();
-        auto const nr_clumps2 =
-            unique(clump(zone_array_multiple_partitions, lue::Connectivity::nondiagonal)).get().size();
-        BOOST_CHECK_EQUAL(nr_clumps1, nr_clumps2);
-    }
+        using namespace lue::value_policies;
 
-    BOOST_TEST_CONTEXT("diagonal")
-    {
-        auto const nr_clumps1 =
-            unique(clump(zone_array_single_partition, lue::Connectivity::diagonal)).get().size();
-        auto const nr_clumps2 =
-            unique(clump(zone_array_multiple_partitions, lue::Connectivity::diagonal)).get().size();
-        BOOST_CHECK_EQUAL(nr_clumps1, nr_clumps2);
+        // Test whether clumping the different partitioned arrays result in the same number of clumps. If so,
+        // merging clumps seems to have worked.
+        BOOST_TEST_CONTEXT("nondiagonal")
+        {
+            auto const nr_clumps1 =
+                unique(clump(zone_array_single_partition, lue::Connectivity::nondiagonal)).get().size();
+            auto const nr_clumps2 =
+                unique(clump(zone_array_multiple_partitions, lue::Connectivity::nondiagonal)).get().size();
+            BOOST_CHECK_EQUAL(nr_clumps1, nr_clumps2);
+        }
+
+        BOOST_TEST_CONTEXT("diagonal")
+        {
+            auto const nr_clumps1 =
+                unique(clump(zone_array_single_partition, lue::Connectivity::diagonal)).get().size();
+            auto const nr_clumps2 =
+                unique(clump(zone_array_multiple_partitions, lue::Connectivity::diagonal)).get().size();
+            BOOST_CHECK_EQUAL(nr_clumps1, nr_clumps2);
+        }
     }
 }

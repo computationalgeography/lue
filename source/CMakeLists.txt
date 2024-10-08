@@ -62,6 +62,7 @@ if(LUE_BUILD_DOCUMENTATION)
         doc
         shared
         ${doxygen_input}
+        ${CMAKE_CURRENT_BINARY_DIR}
     )
     ### add_dependencies(cpp_doc
     ###     copy_svg_files

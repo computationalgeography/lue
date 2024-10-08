@@ -2,12 +2,13 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_majority.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using Value = std::int32_t;
-    using Class = std::uint8_t;
+    using Value = lue::SignedIntegralElement<0>;
+    using Class = lue::UnsignedIntegralElement<0>;
     std::size_t const rank = 2;
 
     using ValueArray = lue::PartitionedArray<Value, rank>;

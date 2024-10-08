@@ -2,9 +2,10 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/sum.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, typename ResultElement, std::size_t rank>
     void test_array()
@@ -43,21 +44,10 @@ namespace detail {
         test_array<Element, ResultElement, 2>();
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element, ResultElement)                                                              \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element##_##ResultElement)                                        \
-    {                                                                                                        \
-        detail::test_array_##rank##d<Element, ResultElement>();                                              \
-    }
-
-// TEST_CASE(1, int32_t, int32_t)
-TEST_CASE(2, int32_t, int32_t)
-// TEST_CASE(1, int64_t, int64_t)
-// TEST_CASE(2, int64_t, int64_t)
-// TEST_CASE(1, int32_t, int64_t)
-// TEST_CASE(2, int32_t, int64_t)
-
-#undef TEST_CASE
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    test_array_2d<lue::SignedIntegralElement<0>, lue::SignedIntegralElement<0>>();
+}

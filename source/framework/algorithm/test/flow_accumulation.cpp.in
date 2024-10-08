@@ -4,6 +4,7 @@
 
 namespace lue::test {
 
+    {% raw %}
     FlowDirectionArray merging_streams()
     {
         return create_partitioned_array<FlowDirectionArray>(
@@ -144,7 +145,7 @@ namespace lue::test {
     }
 
 
-    FlowDirectionArray all_no_data()
+    auto all_no_data() -> FlowDirectionArray
     {
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
@@ -262,7 +263,7 @@ namespace lue::test {
     }
 
 
-    FlowDirectionArray spiral_in()
+    auto spiral_in() -> FlowDirectionArray
     {
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
@@ -372,7 +373,7 @@ namespace lue::test {
 
 
     template<typename MaterialElement>
-    PartitionedArray<MaterialElement, 2> filled(MaterialElement const v)
+    auto filled(MaterialElement const v) -> PartitionedArray<MaterialElement, 2>
     {
         return create_partitioned_array<PartitionedArray<MaterialElement, 2>>(
             array_shape,
@@ -488,11 +489,10 @@ namespace lue::test {
                 },
             });
     }
+    {% endraw %}
 
-
-    template PartitionedArray<std::uint8_t, 2> filled(std::uint8_t);
-    template PartitionedArray<std::uint32_t, 2> filled(std::uint32_t);
-    template PartitionedArray<std::uint64_t, 2> filled(std::uint64_t);
-    template PartitionedArray<float, 2> filled(float);
+    {% for Element in UnsignedIntegralElements + FloatingPointElements %}
+        template PartitionedArray<{{ Element }}, 2> filled({{ Element }});
+    {% endfor %}
 
 }  // namespace lue::test

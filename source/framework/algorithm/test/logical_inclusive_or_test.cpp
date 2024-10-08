@@ -4,9 +4,10 @@
 #include "lue/framework/algorithm/default_policies/logical_inclusive_or.hpp"
 #include "lue/framework/algorithm/default_policies/none.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -44,17 +45,12 @@ namespace detail {
         }
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, uint8_t)
-TEST_CASE(2, uint8_t)
-
-#undef TEST_CASE
+    test_array<lue::BooleanElement, rank>();
+}

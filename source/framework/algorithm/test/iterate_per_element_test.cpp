@@ -5,9 +5,10 @@
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/iterate_per_element.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -32,17 +33,15 @@ namespace detail {
         BOOST_CHECK(all(copy == array).future().get());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
+
+    if constexpr (sizeof(lue::LargestIntegralElement) > 1)
+    {
+        test_array<lue::LargestIntegralElement, rank>();
     }
-
-// TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-
-#undef TEST_CASE
+}

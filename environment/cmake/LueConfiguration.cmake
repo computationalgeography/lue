@@ -127,7 +127,7 @@ if(LUE_BUILD_FRAMEWORK)
 
     # Types for which templates are instantiated
     set(LUE_FRAMEWORK_BOOLEAN_ELEMENT
-        std::uint8_t CACHE STRING "Type to use for representing Boolean values")
+        "std::uint8_t" CACHE STRING "Type to use for representing Boolean values")
     set_property(CACHE LUE_FRAMEWORK_BOOLEAN_ELEMENT
         PROPERTY
             STRINGS
@@ -135,32 +135,55 @@ if(LUE_BUILD_FRAMEWORK)
                 "std::int8_t"
     )
 
-    # TODO Update code that assumes uint8_t is the boolean type
+    set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT
+        "std::uint8_t" CACHE STRING "Type to use for representing flow directions")
+    set_property(CACHE LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint8_t"
+                "std::int8_t"
+    )
 
-    set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT std::uint8_t)
-    set(LUE_FRAMEWORK_INDEX_ELEMENT std::uint64_t)
-    set(LUE_FRAMEWORK_COUNT_ELEMENT std::uint64_t)
+    set(LUE_FRAMEWORK_COUNT_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing counts")
+    set_property(CACHE LUE_FRAMEWORK_COUNT_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
+
+    set(LUE_FRAMEWORK_INDEX_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing indices")
+    set_property(CACHE LUE_FRAMEWORK_INDEX_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
 
     set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
-        int8_t int32_t int64_t CACHE STRING "Type(s) to use for representing signed integral values")
+        std::int8_t std::int32_t std::int64_t CACHE STRING "Type(s) to use for representing signed integral values")
     set_property(CACHE LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
                 "std::int8_t\;std::int32_t\;std::int64_t"
-                "std::int32_t\;std::int64_t"
-                "std::int32_t"
-                "std::int64_t"
+                "std::int8_t\;std::int32_t"
+                "std::int8_t"
     )
 
     set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
-        uint8_t uint32_t uint64_t CACHE STRING "Type(s) to use for representing signed integral values")
+        std::uint8_t std::uint32_t std::uint64_t CACHE STRING "Type(s) to use for representing signed integral values")
     set_property(CACHE LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
                 "std::uint8_t\;std::uint32_t\;std::uint64_t"
-                "std::uint32_t\;std::uint64_t"
-                "std::uint32_t"
-                "std::uint64_t"
+                "std::uint8_t\;std::uint32_t"
+                "std::uint8_t"
     )
 
     set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
@@ -181,11 +204,11 @@ if(LUE_BUILD_FRAMEWORK)
                 "double"
     )
 
-    set(LUE_FRAMEWORK_MATERIAL_ELEMENTS uint8_t int64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
-
     set(LUE_FRAMEWORK_ELEMENTS
         ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
         ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+    set(LUE_FRAMEWORK_MATERIAL_ELEMENTS ${LUE_FRAMEWORK_ELEMENTS})
 
     # Ranks for which templates are instantiated. Rank 2 has to be there for the spatial algorithms.
     set(LUE_FRAMEWORK_RANKS
@@ -194,13 +217,31 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_RANKS
         PROPERTY
             STRINGS
-                "1\;2"
                 "2"
     )
 
     # Policies for which templates are instantiated
 
-    # TODO Validate settings
+    # Validate settings
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_BOOLEAN_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_BOOLEAN_ELEMENT (${LUE_FRAMEWORK_BOOLEAN_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_COUNT_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_COUNT_ELEMENT (${LUE_FRAMEWORK_COUNT_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT (${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_INDEX_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_INDEX_ELEMENT (${LUE_FRAMEWORK_INDEX_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
 endif()
 
 

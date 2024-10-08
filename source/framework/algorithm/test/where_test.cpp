@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/default_policies/where.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -207,16 +208,17 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
     lue::Rank const rank{2};
 
     using Shape = lue::ShapeT<Array<Element, rank>>;
 
     Shape shape{nr_rows, nr_cols};
 
-    PartitionData<std::uint8_t, rank> condition_data{
+    PartitionData<ConditionElement, rank> condition_data{
         shape,
-        std::initializer_list<std::uint8_t>{
+        std::initializer_list<ConditionElement>{
             1,
             0,
             0,
@@ -224,7 +226,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             1,
             0,
         }};
-    Array<std::uint8_t, rank> condition{lue::create_partitioned_array<std::uint8_t>(shape, shape)};
+    Array<ConditionElement, rank> condition{lue::create_partitioned_array<ConditionElement>(shape, shape)};
     condition.partitions()(0, 0).wait();
     condition.partitions()(0, 0).set_data(condition_data).wait();
 
@@ -279,9 +281,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
     lue::Rank const rank{2};
 
     ConditionElement ind1{};
@@ -357,8 +358,8 @@ BOOST_AUTO_TEST_CASE(where_array_array)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};
@@ -403,8 +404,8 @@ BOOST_AUTO_TEST_CASE(where_array_value)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};
@@ -462,8 +463,8 @@ BOOST_AUTO_TEST_CASE(where_array_array_array)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};
@@ -520,8 +521,8 @@ BOOST_AUTO_TEST_CASE(where_array_array_value)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};
@@ -599,8 +600,8 @@ BOOST_AUTO_TEST_CASE(where_array_value_array)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};
@@ -678,8 +679,8 @@ BOOST_AUTO_TEST_CASE(where_array_value_value)
     lue::Count const nr_rows{3};
     lue::Count const nr_cols{2};
 
-    using ConditionElement = std::uint8_t;
-    using Element = std::int32_t;
+    using ConditionElement = lue::BooleanElement;
+    using Element = lue::SignedIntegralElement<0>;
 
     ConditionElement const xc{lue::policy::no_data_value<ConditionElement>};
     Element const xe{lue::policy::no_data_value<Element>};

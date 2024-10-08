@@ -7,9 +7,10 @@
 #include "lue/framework/algorithm/value_policies/none.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -29,36 +30,27 @@ namespace detail {
 
         Array add = array1 + array2;
 
-        BOOST_CHECK(all(add == fill_value1 + fill_value2).future().get());
+        BOOST_CHECK(all(add == Element{fill_value1 + fill_value2}).future().get());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-// TEST_CASE(1, float)
-// TEST_CASE(2, float)
-// TEST_CASE(1, double)
-TEST_CASE(2, double)
-
-#undef TEST_CASE
+    test_array<lue::SignedIntegralElement<0>, rank>();
+    test_array<lue::FloatingPointElement<0>, rank>();
+}
 
 
 BOOST_AUTO_TEST_CASE(out_of_range)
 {
     using namespace lue::value_policies;
 
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
+    using BooleanElement = lue::BooleanElement;
     lue::Rank const rank{2};
     using Scalar = lue::Scalar<Element>;
     using Array = lue::PartitionedArray<Element, rank>;
@@ -74,10 +66,10 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     // Careful. The default no-data value for int32_t is the lowest value. Although max +
     // 1 is undefined for signed integers, this may wrap around to this minimum value. Therefore,
     // we add 2 here, instead of 1. Adding 1 confuses things.
-    BOOST_CHECK(none(valid<std::uint8_t>(2 + array)).future().get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array + 2)).future().get());
-    BOOST_CHECK(none(valid<std::uint8_t>(array + array)).future().get());
-    BOOST_CHECK_EQUAL((valid<std::uint8_t>(Scalar{max} + 2)).future().get(), 0);
+    BOOST_CHECK(none(valid<BooleanElement>(Element{2} + array)).future().get());
+    BOOST_CHECK(none(valid<BooleanElement>(array + Element{2})).future().get());
+    BOOST_CHECK(none(valid<BooleanElement>(array + array)).future().get());
+    BOOST_CHECK_EQUAL((valid<BooleanElement>(Scalar{max} + Element{2})).future().get(), 0);
 }
 
 
@@ -85,7 +77,8 @@ BOOST_AUTO_TEST_CASE(value_icw_scalar)
 {
     using namespace lue::value_policies;
 
-    using Value = std::int32_t;
+    using Value = lue::SignedIntegralElement<0>;
+    using BooleanElement = lue::BooleanElement;
     using Scalar = lue::Scalar<Value>;
 
     Value const max{std::numeric_limits<Value>::max()};
@@ -95,5 +88,5 @@ BOOST_AUTO_TEST_CASE(value_icw_scalar)
 
     BOOST_CHECK_EQUAL((value + scalar).future().get(), 11);
     BOOST_CHECK_EQUAL((scalar + value).future().get(), 11);
-    BOOST_CHECK(!valid<std::uint8_t>(scalar + max).future().get());
+    BOOST_CHECK(!valid<BooleanElement>(scalar + max).future().get());
 }

@@ -2,11 +2,13 @@
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
 #include "lue/framework/algorithm/timestamp.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
+
     constexpr lue::Rank rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
@@ -24,8 +26,11 @@ namespace {
 BOOST_AUTO_TEST_CASE(overloads)
 {
     {
-        auto array{lue::default_policies::uniform<std::int32_t>(array_shape, partition_shape, 0, 100)};
+        auto array{lue::default_policies::uniform<Element>(array_shape, partition_shape, 0, 100)};
 
-        auto result = lue::timestamp(array);
+        if constexpr (lue::element_supported<lue::ClockTick>)
+        {
+            auto result = lue::timestamp(array);
+        }
     }
 }

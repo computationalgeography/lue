@@ -5,11 +5,12 @@
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/algorithm/value_policies/focal_mean.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-BOOST_AUTO_TEST_CASE(focal_mean_2d_float64)
+BOOST_AUTO_TEST_CASE(focal_mean_2d_float)
 {
-    using Element = double;
+    using Element = lue::LargestFloatingPointElement;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
@@ -33,7 +34,7 @@ BOOST_AUTO_TEST_CASE(focal_mean_2d_float64)
     // [true true true]
     // [true true true]
     // [true true true]
-    auto const kernel = lue::box_kernel<std::uint8_t, rank>(1, 1);
+    auto const kernel = lue::box_kernel<lue::BooleanElement, rank>(1, 1);
     auto focal_mean = lue::value_policies::focal_mean(array, kernel);
 
     Element const nd{lue::policy::no_data_value<Element>};

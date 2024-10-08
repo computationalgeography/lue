@@ -43,7 +43,7 @@ namespace lue {
                     hpx::serialization::input_archive& archive, [[maybe_unused]] unsigned int const version)
                 {
                     lue_hpx_assert(_values.empty());
-                    archive& _values;
+                    archive & _values;
                 }
 
                 void serialize(
@@ -51,7 +51,7 @@ namespace lue {
                     [[maybe_unused]] unsigned int const version) const
                 {
                     lue_hpx_assert(_values.empty());
-                    archive& _values;
+                    archive & _values;
                 }
 
                 std::set<InputElement> _values;
@@ -78,9 +78,9 @@ namespace lue {
     }  // namespace policy::partition_count_unique
 
 
-    template<typename Policies, typename InputElement, typename OutputElement = std::int64_t, Rank rank>
-    PartitionedArray<OutputElement, rank> partition_count_unique(
-        Policies const& policies, PartitionedArray<InputElement, rank> const& array)
+    template<typename Policies, typename InputElement, typename OutputElement, Rank rank>
+    auto partition_count_unique(Policies const& policies, PartitionedArray<InputElement, rank> const& array)
+        -> PartitionedArray<OutputElement, rank>
     {
         using Functor = detail::CountUnique<InputElement, OutputElement>;
 
@@ -88,13 +88,13 @@ namespace lue {
     }
 
 
-    template<typename InputElement, typename OutputElement = std::int64_t, Rank rank>
-    PartitionedArray<OutputElement, rank> partition_count_unique(
-        PartitionedArray<InputElement, rank> const& array)
+    template<typename InputElement, typename OutputElement, Rank rank>
+    auto partition_count_unique(PartitionedArray<InputElement, rank> const& array)
+        -> PartitionedArray<OutputElement, rank>
     {
         using Policies = policy::partition_count_unique::DefaultPolicies<OutputElement, InputElement>;
 
-        return partition_count_unique(Policies{}, array);
+        return partition_count_unique<Policies, InputElement, OutputElement>(Policies{}, array);
     }
 
 }  // namespace lue

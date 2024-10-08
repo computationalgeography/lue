@@ -4,9 +4,9 @@
 
 namespace lue {
 
-    template<typename InputElement, Rank rank>
-    PartitionedArray<std::uint64_t, rank> array_partition_id(
-        PartitionedArray<InputElement, rank> const& input_array)
+    template<typename IDElement, typename InputElement, Rank rank>
+    auto array_partition_id(PartitionedArray<InputElement, rank> const& input_array)
+        -> PartitionedArray<IDElement, rank>
     {
         // Iterate over all partitions and spawn a task per partition. Each
         // of these tasks runs on the component the partition is located on and
@@ -19,7 +19,7 @@ namespace lue {
         using InputPartitions = PartitionsT<InputArray>;
         using InputPartition = PartitionT<InputArray>;
 
-        using OutputElement = std::uint64_t;
+        using OutputElement = IDElement;
         using OutputArray = PartitionedArray<OutputElement, rank>;
         using OutputPartitions = PartitionsT<OutputArray>;
 
@@ -33,7 +33,7 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (IDElement p = 0; p < nr_partitions(input_array); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,

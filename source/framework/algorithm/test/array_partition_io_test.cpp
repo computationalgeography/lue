@@ -1,11 +1,13 @@
 #define BOOST_TEST_MODULE lue framework algorithm array_partition_io
 #include "lue/framework/algorithm/detail/array_partition_io.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(default_construct)
 {
-    using ArrayPartitionIO = lue::detail::ArrayPartitionIO<lue::Index, 2, float>;
+    using Value = lue::FloatingPointElement<0>;
+    using ArrayPartitionIO = lue::detail::ArrayPartitionIO<lue::Index, 2, Value>;
 
     ArrayPartitionIO partition_io{};
 
@@ -16,7 +18,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using Value = float;
+    using Value = lue::FloatingPointElement<0>;
     using ArrayPartitionIO = lue::detail::ArrayPartitionIO<lue::Index, 2, Value>;
     using Shape = typename ArrayPartitionIO::Shape;
     using Indices = ArrayPartitionIO::Indices;
@@ -75,7 +77,7 @@ BOOST_AUTO_TEST_CASE(drain_full_coverage)
     // Given an 5x5 partition, put output cells at various locations
     // along the border
 
-    using Value = std::int32_t;
+    using Value = lue::SignedIntegralElement<0>;
     using ArrayPartitionIO = lue::detail::ArrayPartitionIO<lue::Index, 2, Value>;
     using Shape = typename ArrayPartitionIO::Shape;
     using Indices = ArrayPartitionIO::Indices;
@@ -848,7 +850,7 @@ BOOST_AUTO_TEST_CASE(partition_offsets)
     // Given an 5x5 partition, put an output cell at various locations
     // along the border
 
-    using Value = std::int32_t;
+    using Value = lue::SignedIntegralElement<0>;
     using ArrayPartitionIO = lue::detail::ArrayPartitionIO<lue::Index, 2, Value>;
     using Shape = typename ArrayPartitionIO::Shape;
     using PartitionOffsets = ArrayPartitionIO::PartitionOffsets;

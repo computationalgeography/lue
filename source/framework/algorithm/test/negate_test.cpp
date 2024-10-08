@@ -8,10 +8,11 @@
 #include "lue/framework/algorithm/value_policies/none.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include <limits>
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -29,18 +30,13 @@ namespace detail {
         BOOST_CHECK(all(negate(negate(array)) == Element{-5}).future().get());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, double)
-TEST_CASE(2, int32_t)
-TEST_CASE(2, double)
-
-#undef TEST_CASE
+    test_array<lue::SignedIntegralElement<0>, rank>();
+    test_array<lue::FloatingPointElement<0>, rank>();
+}

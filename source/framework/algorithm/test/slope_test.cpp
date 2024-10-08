@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/value_policies/slope.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/define.hpp"  // LUE_UNUSED
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -22,7 +23,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     lue::Count const nr_rows{5};
     lue::Count const nr_cols{5};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
     lue::Rank const rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;

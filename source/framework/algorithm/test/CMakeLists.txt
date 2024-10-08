@@ -1,5 +1,31 @@
+
+set(FloatingPointElements ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+list(TRANSFORM FloatingPointElements PREPEND "\"")
+list(TRANSFORM FloatingPointElements APPEND "\"")
+list(JOIN FloatingPointElements ", " FloatingPointElements)
+
+set(UnsignedIntegralElements ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS})
+list(TRANSFORM UnsignedIntegralElements PREPEND "\"")
+list(TRANSFORM UnsignedIntegralElements APPEND "\"")
+list(JOIN UnsignedIntegralElements ", " UnsignedIntegralElements)
+
+generate_template_instantiation(
+    INPUT_PATHNAME
+        "${CMAKE_CURRENT_SOURCE_DIR}/flow_accumulation.cpp.in"
+    OUTPUT_PATHNAME
+        "${CMAKE_CURRENT_BINARY_DIR}/flow_accumulation.cpp"
+    DICTIONARY
+    '{"FloatingPointElements":[${FloatingPointElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}]}'
+)
+
 add_library(lue_framework_algorithm_test
-    flow_accumulation.cpp
+    "${CMAKE_CURRENT_BINARY_DIR}/flow_accumulation.cpp"
+)
+
+target_include_directories(lue_framework_algorithm_test
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
 target_link_libraries(lue_framework_algorithm_test

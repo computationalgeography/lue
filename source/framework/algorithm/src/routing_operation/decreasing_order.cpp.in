@@ -6,20 +6,20 @@
     LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_ZONAL(
             ESC(lue::policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
             {{ rank }},
-            {{ ZoneElement }}_{{ InputElement }}_{{ rank }})
+            {{ ZoneElement | replace("::", "_") }}_{{ InputElement | replace("::", "_") }}_{{ rank }})
     LUE_REGISTER_DECREASING_ORDER_ACTIONS_ZONAL(
             ESC(lue::policy::decreasing_order::{{ Policies }}<{{ ZoneElement }}, {{ InputElement }}>),
             {{ rank }},
-            {{ ZoneElement }}_{{ InputElement }}_{{ rank }})
+            {{ ZoneElement | replace("::", "_") }}_{{ InputElement | replace("::", "_") }}_{{ rank }})
 {% else %}
     LUE_REGISTER_DECREASING_ORDER_ACTION_DECLARATIONS_GLOBAL(
             ESC(lue::policy::decreasing_order::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
             {{ rank }},
-            {{ OutputElement }}_{{ InputElement }}_{{ rank }})
+            {{ OutputElement | replace("::", "_") }}_{{ InputElement | replace("::", "_") }}_{{ rank }})
     LUE_REGISTER_DECREASING_ORDER_ACTIONS_GLOBAL(
             ESC(lue::policy::decreasing_order::{{ Policies }}<{{ OutputElement }}, {{ InputElement }}>),
             {{ rank }},
-            {{ OutputElement }}_{{ InputElement }}_{{ rank }})
+            {{ OutputElement | replace("::", "_") }}_{{ InputElement | replace("::", "_") }}_{{ rank }})
 {% endif %}
 
 

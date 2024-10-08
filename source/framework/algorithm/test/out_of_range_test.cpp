@@ -1,12 +1,13 @@
 #define BOOST_TEST_MODULE lue framework algorithm out_of_range
 #include "lue/framework/algorithm/out_of_range.hpp"
+#include "lue/framework.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
 namespace {
 
     template<typename T>
-    bool safe_add(T const& argument1, T const& argument2)
+    auto safe_add(T const& argument1, T const& argument2) -> bool
     {
         T result;
         return lue::safe_add<T>(argument1, argument2, result);
@@ -14,7 +15,7 @@ namespace {
 
 
     template<typename T>
-    bool safe_multiply(T const& argument1, T const& argument2)
+    auto safe_multiply(T const& argument1, T const& argument2) -> bool
     {
         T result;
         return lue::safe_multiply<T>(argument1, argument2, result);
@@ -25,7 +26,7 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(safe_add_unsigned_integer)
 {
-    using Element = std::uint32_t;
+    using Element = lue::UnsignedIntegralElement<0>;
 
     auto const max{std::numeric_limits<Element>::max()};
 
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE(safe_add_unsigned_integer)
 
 BOOST_AUTO_TEST_CASE(safe_add_signed_integer)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
 
     auto const min{std::numeric_limits<Element>::min()};
     auto const max{std::numeric_limits<Element>::max()};
@@ -63,7 +64,7 @@ BOOST_AUTO_TEST_CASE(safe_add_signed_integer)
 
 BOOST_AUTO_TEST_CASE(safe_add_floating_point)
 {
-    using Element = float;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const smallest{std::numeric_limits<Element>::min()};
     auto const lowest{std::numeric_limits<Element>::lowest()};
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE(safe_add_floating_point)
 
 BOOST_AUTO_TEST_CASE(safe_multiply_unsigned_integer)
 {
-    using Element = std::uint32_t;
+    using Element = lue::UnsignedIntegralElement<0>;
 
     auto const max{std::numeric_limits<Element>::max()};
 
@@ -102,7 +103,7 @@ BOOST_AUTO_TEST_CASE(safe_multiply_unsigned_integer)
 
 BOOST_AUTO_TEST_CASE(safe_multiply_signed_integer)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
 
     auto const min{std::numeric_limits<Element>::min()};
     auto const max{std::numeric_limits<Element>::max()};
@@ -128,7 +129,7 @@ BOOST_AUTO_TEST_CASE(safe_multiply_signed_integer)
 
 BOOST_AUTO_TEST_CASE(safe_multiply_floating_point)
 {
-    using Element = float;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const smallest{std::numeric_limits<Element>::min()};
     auto const lowest{std::numeric_limits<Element>::lowest()};
@@ -151,28 +152,28 @@ BOOST_AUTO_TEST_CASE(safe_multiply_floating_point)
 namespace {
 
     template<typename T>
-    bool add_within_range(T const& argument1, T const& argument2)
+    auto add_within_range(T const& argument1, T const& argument2) -> bool
     {
         return lue::add_within_range<T>(argument1, argument2, argument1 + argument2);
     }
 
 
     template<typename T>
-    bool add_out_of_range(T const& argument1, T const& argument2)
+    auto add_out_of_range(T const& argument1, T const& argument2) -> bool
     {
         return lue::add_out_of_range<T>(argument1, argument2, argument1 + argument2);
     }
 
 
     template<typename T>
-    bool multiply_within_range(T const& argument1, T const& argument2)
+    auto multiply_within_range(T const& argument1, T const& argument2) -> bool
     {
         return lue::multiply_within_range<T>(argument1, argument2, argument1 * argument2);
     }
 
 
     template<typename T>
-    bool multiply_out_of_range(T const& argument1, T const& argument2)
+    auto multiply_out_of_range(T const& argument1, T const& argument2) -> bool
     {
         return lue::multiply_out_of_range<T>(argument1, argument2, argument1 * argument2);
     }
@@ -182,7 +183,7 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(add_unsigned_integer)
 {
-    using Element = std::uint32_t;
+    using Element = lue::UnsignedIntegralElement<0>;
 
     auto const max{std::numeric_limits<Element>::max()};
 
@@ -199,7 +200,7 @@ BOOST_AUTO_TEST_CASE(add_unsigned_integer)
 
 BOOST_AUTO_TEST_CASE(add_signed_integer)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
 
     auto const min{std::numeric_limits<Element>::min()};
     auto const max{std::numeric_limits<Element>::max()};
@@ -220,7 +221,7 @@ BOOST_AUTO_TEST_CASE(add_signed_integer)
 
 BOOST_AUTO_TEST_CASE(add_floating_point)
 {
-    using Element = float;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const smallest{std::numeric_limits<Element>::min()};
     auto const lowest{std::numeric_limits<Element>::lowest()};
@@ -242,7 +243,7 @@ BOOST_AUTO_TEST_CASE(add_floating_point)
 
 BOOST_AUTO_TEST_CASE(multiply_unsigned_integer)
 {
-    using Element = std::uint32_t;
+    using Element = lue::UnsignedIntegralElement<0>;
 
     auto const max{std::numeric_limits<Element>::max()};
 
@@ -259,7 +260,7 @@ BOOST_AUTO_TEST_CASE(multiply_unsigned_integer)
 
 BOOST_AUTO_TEST_CASE(multiply_signed_integer)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
 
     auto const min{std::numeric_limits<Element>::min()};
     auto const max{std::numeric_limits<Element>::max()};
@@ -285,7 +286,7 @@ BOOST_AUTO_TEST_CASE(multiply_signed_integer)
 
 BOOST_AUTO_TEST_CASE(multiply_floating_point)
 {
-    using Element = float;
+    using Element = lue::FloatingPointElement<0>;
 
     auto const smallest{std::numeric_limits<Element>::min()};
     auto const lowest{std::numeric_limits<Element>::lowest()};

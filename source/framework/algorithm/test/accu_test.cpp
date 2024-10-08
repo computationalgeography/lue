@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/definition/accu.hpp"
 #include "lue/framework/algorithm/value_policies/accu3.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -13,7 +14,7 @@ namespace {
 
     std::size_t const rank = 2;
 
-    using MaterialElement = float;
+    using MaterialElement = lue::FloatingPointElement<0>;
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>

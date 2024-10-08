@@ -4,7 +4,6 @@
 #include "lue/framework/partitioned_route/export.hpp"
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
-#include "lue/framework/route/define.hpp"
 #include <hpx/include/components.hpp>
 #include <set>
 #include <unordered_map>
@@ -173,20 +172,11 @@ namespace lue::server {
         SerialRoutePartitionServerRemoteRouteFragmentLocationsAction_##unique)
 
 
-#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(Element)                                \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(Element, 1, Element##_1)                         \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS(Element, 2, Element##_2)
+{% for Element in Elements %}
+    {% for rank in ranks %}
+        LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS({{ Element }}, {{ rank }}, {{ Element | replace("::", "_") }}_{{ rank }})
+    {% endfor %}
+{% endfor %}
 
-#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_ELEMENT()                                    \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(int8_t)                                     \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(uint8_t)                                    \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(int32_t)                                    \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(uint32_t)                                   \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(int64_t)                                    \
-    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK(uint64_t)
-
-LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_ELEMENT()
 
 #undef LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS
-#undef LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_ELEMENT
-#undef LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTION_DECLARATIONS_RANK

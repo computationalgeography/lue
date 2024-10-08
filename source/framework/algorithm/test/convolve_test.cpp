@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 // TODO Currently only 2D convolution is supported
@@ -86,11 +87,13 @@
 
 BOOST_AUTO_TEST_CASE(window_total_2d)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
+    using OutputElement = lue::FloatingPointElement<0>;
+
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<double, rank>;
+    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{9, 9}};
@@ -125,7 +128,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d)
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve<double>(array, kernel);
+    auto convolve = lue::convolve<OutputElement>(array, kernel);
 
     OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
         array_shape,
@@ -148,11 +151,13 @@ BOOST_AUTO_TEST_CASE(window_total_2d)
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
+    using OutputElement = lue::FloatingPointElement<0>;
+
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<double, rank>;
+    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{3, 3}};
@@ -171,7 +176,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
     // [4. 6. 4.]
     // [6. 9. 6.]
     // [4. 6. 4.]
-    auto convolve = lue::convolve<double>(array, kernel);
+    auto convolve = lue::convolve<OutputElement>(array, kernel);
 
     OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
         array_shape,
@@ -186,11 +191,13 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
+    using OutputElement = lue::FloatingPointElement<0>;
+
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<double, rank>;
+    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{3, 9}};
@@ -209,7 +216,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
     // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
     // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve<double>(array, kernel);
+    auto convolve = lue::convolve<OutputElement>(array, kernel);
 
     OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
         array_shape,
@@ -226,11 +233,13 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
 {
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
+    using OutputElement = lue::FloatingPointElement<0>;
+
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<double, rank>;
+    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{9, 3}};
@@ -265,7 +274,7 @@ BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
     // [6. 9. 6.]
     // [6. 9. 6.]
     // [4. 6. 4.]
-    auto convolve = lue::convolve<double>(array, kernel);
+    auto convolve = lue::convolve<OutputElement>(array, kernel);
 
     OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
         array_shape,
