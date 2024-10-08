@@ -49,7 +49,7 @@ jobs:
                   cmake \
                   hwloc \
                   libasio-dev \
-                  libboost-all-dev \
+                  libboost-dev \
                   libdocopt-dev \
                   libfmt-dev \
                   libgdal-dev \

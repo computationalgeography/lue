@@ -75,7 +75,7 @@ jobs:
                   hwloc \
                   lftp \
                   libasio-dev \
-                  libboost-all-dev \
+                  libboost-dev \
                   libdocopt-dev \
                   libfmt-dev \
                   libglfw3-dev \

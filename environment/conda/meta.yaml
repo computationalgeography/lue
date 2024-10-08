@@ -26,7 +26,7 @@ requirements:
   host:
     - python
     - numpy
-    - libboost-devel
+    - libboost-headers
     - hdf5
     - hpx
     - libgdal
