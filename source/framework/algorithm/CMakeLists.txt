@@ -232,6 +232,37 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
+
+block()
+    set(count "0")
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            foreach(rank IN LISTS ranks)
+
+			    math(EXPR count "${count} + 1")
+
+                # Instantiate modulus
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${count}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/modulus.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+            endforeach()
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
+
 block()
     set(count "0")
 

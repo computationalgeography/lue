@@ -55,7 +55,7 @@ target_link_libraries(lue_py_framework_x
         pybind11::windows_extras
 
         # lue::framework_local_operation
-        # Python::Python
+         Python::Python
 
         # lue::shared
         # pybind11::module
