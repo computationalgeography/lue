@@ -15,6 +15,8 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"sqrt"};
+
                 using OutputElement = InputElement;
 
                 auto operator()(InputElement const& input_element) const noexcept -> OutputElement

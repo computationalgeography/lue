@@ -99,3 +99,81 @@ class ScalarTest(lue_test.TestCase):
             _ = value - scalar
             scalar -= value
             value -= scalar
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_gt_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array > array
+    # TODO         _ = array > scalar
+    # TODO         _ = array > value
+    # TODO         _ = scalar > array
+    # TODO         # _ = value > array
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_ge_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array >= array
+    # TODO         _ = array >= scalar
+    # TODO         _ = array >= value
+    # TODO         _ = scalar >= array
+    # TODO         # _ = value >= array
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_eq_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array == array
+    # TODO         _ = array == scalar
+    # TODO         _ = array == value
+    # TODO         _ = scalar == array
+    # TODO         # _ = value == array
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_ne_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array != array
+    # TODO         _ = array != scalar
+    # TODO         _ = array != value
+    # TODO         _ = scalar != array
+    # TODO         # _ = value != array
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_lt_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array < array
+    # TODO         _ = array < scalar
+    # TODO         _ = array < value
+    # TODO         _ = scalar < array
+    # TODO         # _ = value < array
+
+    # TODO @lue_test.framework_test_case
+    # TODO def test_operator_le_overloads(self):
+    # TODO     for type_ in self.numeric_types:
+    # TODO         array = self.array[type_]
+    # TODO         scalar = self.scalar[type_]
+    # TODO         value = self.value[type_]
+
+    # TODO         _ = array <= array
+    # TODO         _ = array <= scalar
+    # TODO         _ = array <= value
+    # TODO         _ = scalar <= array
+    # TODO         # _ = value <= array

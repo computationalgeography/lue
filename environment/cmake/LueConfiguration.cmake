@@ -542,7 +542,8 @@ if(LUE_DOCOPT_REQUIRED)
         GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
         GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
         SYSTEM
-        FIND_PACKAGE_ARGS
+        # Using the system version is inconvenient since headers are then in a docopt/ subdirectory...
+        # FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(docopt)
 

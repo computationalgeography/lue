@@ -825,7 +825,7 @@ namespace lue {
                     [policies, zone_partition, connectivity](
                         auto const& offset, auto const& zone_data) -> LocalResult
                     {
-                        AnnotateFunction const annotate{"clump_partition"};
+                        AnnotateFunction const annotate{"clump: partition"};
 
                         HPX_UNUSED(zone_partition);
 
@@ -1220,7 +1220,7 @@ namespace lue {
                     [policies, shape_in_partitions = local_result_fs.shape(), connectivity](
                         auto&& local_result_fs) -> LocalResults<Partition>
                     {
-                        AnnotateFunction const annotate{"determine_reclass_tables"};
+                        AnnotateFunction const annotation{"clump: array: determine_reclass_tables"};
                         auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                         auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
@@ -1835,7 +1835,7 @@ namespace lue {
         auto reclass_partition(NoDataPolicy const& ndp, Partition const& clump_partition, LUT const& lut)
             -> Partition
         {
-            AnnotateFunction const annotate{"reclass_partition"};
+            AnnotateFunction const annotation{"clump: partition: reclass"};
 
             lue_hpx_assert(clump_partition.is_ready());
 
@@ -1934,7 +1934,7 @@ namespace lue {
             std::is_same_v<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>);
         static_assert(rank == 2);
 
-        AnnotateFunction const annotate{"clump"};
+        AnnotateFunction const annotation{"clump: array"};
 
         using ClumpArray = PartitionedArray<policy::OutputElementT<Policies, 0>, rank>;
         using ClumpPartitions = PartitionsT<ClumpArray>;

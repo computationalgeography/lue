@@ -17,6 +17,8 @@ namespace lue {
                 static_assert(std::is_integral_v<InputElement>);
                 static_assert(std::is_integral_v<Zone>);
 
+                static constexpr char const* name{"zonal_majority"};
+
                 using OutputElement = InputElement;
 
 

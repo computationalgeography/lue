@@ -13,6 +13,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"greater_than_equal_to"};
+
                 using OutputElement = OutputElement_;
 
                 constexpr auto operator()(

@@ -16,6 +16,8 @@ namespace lue {
 
                 static_assert(std::is_integral_v<InputElement>);
 
+                static constexpr char const* name{"focal_majority"};
+
                 using OutputElement = InputElement;
 
 

@@ -239,7 +239,8 @@ namespace lue {
                             hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>>&&
                                 output_cells_idxs_f) mutable
                         {
-                            AnnotateFunction annotation{"intra_partition_stream"};
+                            AnnotateFunction const annotation{
+                                "accu_threshold: partition: intra_partition_stream"};
                             auto const flow_direction_partition_ptr{
                                 ready_component_ptr(flow_direction_partition)};
                             FlowDirectionData const& flow_direction_data{
@@ -343,7 +344,8 @@ namespace lue {
                         hpx::future<MaterialData>&& outflow_data_f,
                         hpx::future<MaterialData>&& remainder_data_f) mutable
                     {
-                        AnnotateFunction annotation{"inter_partition_stream"};
+                        AnnotateFunction const annotation{
+                            "accu_threshold: partition: inter_partition_stream"};
 
                         std::vector<accu::Direction> const directions{
                             accu::Direction::north,
@@ -626,7 +628,7 @@ namespace lue {
                    hpx::future<MaterialData>&& outflow_data_f,
                    hpx::future<MaterialData>&& remainder_data_f)
                 {
-                    AnnotateFunction annotation{"create_result_partitions"};
+                    AnnotateFunction const annotation{"accu_threshold: partition: create_result_partitions"};
                     using Server = typename MaterialPartition::Server;
 
                     Offset const partition_offset{ready_component_ptr(flow_direction_partition)->offset()};
@@ -668,7 +670,7 @@ namespace lue {
         PartitionedArray<MaterialElement, rank> const& external_inflow,
         PartitionedArray<MaterialElement, rank> const& threshold)
     {
-        AnnotateFunction annotation{"accu_threshold_meh"};
+        AnnotateFunction const annotation{"accu_threshold: array"};
 
         detail::verify_compatible(flow_direction, external_inflow, threshold);
 
@@ -707,7 +709,8 @@ namespace lue {
         for (Index p = 0; p < nr_partitions; ++p)
         {
             hpx::tie(outflow_partitions[p], remainder_partitions[p]) = hpx::split_future(hpx::async(
-                hpx::annotated_function(action, "accu_threshold"),
+                // hpx::annotated_function(action, "accu_threshold"),
+                action,
                 localities[p],
                 policies,
                 flow_direction.partitions()[p],

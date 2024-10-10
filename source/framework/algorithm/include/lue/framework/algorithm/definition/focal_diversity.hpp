@@ -21,6 +21,8 @@ namespace lue {
                 static_assert(std::is_integral_v<InputElement>);
                 static_assert(std::is_integral_v<OutputElement>);
 
+                static constexpr char const* name{"focal_diversity"};
+
 
                 template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
                 Count operator()(

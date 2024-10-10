@@ -42,7 +42,7 @@ requirements:
     - docopt.cpp
     - hdf5
     - hpx
-    - libgdal
+    - gdal
     - matplotlib-base  # lue.qa
     - {{ pin_compatible('numpy') }}
     - python

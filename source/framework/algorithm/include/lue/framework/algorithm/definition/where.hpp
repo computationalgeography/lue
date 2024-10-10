@@ -15,6 +15,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"where"};
+
                 using OutputElement = InputElement;
 
                 constexpr auto operator()(
@@ -77,7 +79,7 @@ namespace lue {
                                 Data const& true_data,
                                 Data const& false_data)
                             {
-                                AnnotateFunction annotation{"where"};
+                                AnnotateFunction const annotation{"where: partition"};
 
                                 HPX_UNUSED(condition_partition);
                                 HPX_UNUSED(true_partition);
@@ -194,7 +196,7 @@ namespace lue {
                                 ConditionData const& condition_data,
                                 Data const& true_data)
                             {
-                                AnnotateFunction annotation{"where_partition"};
+                                AnnotateFunction const annotation{"where: partition"};
 
                                 HPX_UNUSED(condition_partition);
                                 HPX_UNUSED(true_partition);
@@ -307,7 +309,7 @@ namespace lue {
                                 ConditionData const& condition_data,
                                 Data const& false_data)
                             {
-                                AnnotateFunction annotation{"where_partition"};
+                                AnnotateFunction const annotation{"where: partition"};
 
                                 HPX_UNUSED(condition_partition);
                                 HPX_UNUSED(false_partition);
@@ -413,7 +415,7 @@ namespace lue {
                             [policies, condition_partition, true_scalar, false_scalar](
                                 Offset const& offset, ConditionData const& condition_data)
                             {
-                                AnnotateFunction annotation{"where_partition"};
+                                AnnotateFunction const annotation{"where: partition"};
 
                                 HPX_UNUSED(condition_partition);
 
@@ -515,6 +517,8 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
+        AnnotateFunction const annotation{"where: array"};
+
         detail::verify_compatible(condition, true_array, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Partition> action;
@@ -533,10 +537,7 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
-                    Partition const& false_partition)
-                {
-                    AnnotateFunction annotation{"where"};
-
+                    Partition const& false_partition) {
                     return action(
                         locality_id, policies, condition_partition, true_partition, false_partition);
                 },
@@ -566,6 +567,8 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
+        AnnotateFunction const annotation{"where: array"};
+
         detail::verify_compatible(condition, true_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Element> action;
@@ -583,10 +586,7 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
-                    hpx::shared_future<Element> const& false_value_f)
-                {
-                    AnnotateFunction annotation{"where"};
-
+                    hpx::shared_future<Element> const& false_value_f) {
                     return action(
                         locality_id, policies, condition_partition, true_partition, false_value_f.get());
                 },
@@ -616,6 +616,8 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
+        AnnotateFunction const annotation{"where: array"};
+
         detail::verify_compatible(condition, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Partition> action;
@@ -633,10 +635,7 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value_f,
-                    Partition const& false_partition)
-                {
-                    AnnotateFunction annotation{"where"};
-
+                    Partition const& false_partition) {
                     return action(
                         locality_id, policies, condition_partition, true_value_f.get(), false_partition);
                 },
@@ -665,6 +664,8 @@ namespace lue {
         using Array = PartitionedArray<Element, rank>;
         using Partitions = PartitionsT<Array>;
 
+        AnnotateFunction const annotation{"where: array"};
+
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Element> action;
 
         Localities<rank> const& localities{condition.localities()};
@@ -679,10 +680,7 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value_f,
-                    hpx::shared_future<Element> const& false_value_f)
-                {
-                    AnnotateFunction annotation{"where"};
-
+                    hpx::shared_future<Element> const& false_value_f) {
                     return action(
                         locality_id, policies, condition_partition, true_value_f.get(), false_value_f.get());
                 },

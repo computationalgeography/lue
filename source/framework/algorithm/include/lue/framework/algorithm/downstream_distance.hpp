@@ -22,15 +22,16 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename DistanceElement, Rank rank>
-    PartitionedArray<DistanceElement, rank> downstream_distance(
+    auto downstream_distance(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        DistanceElement const cell_size);
+        DistanceElement cell_size) -> PartitionedArray<DistanceElement, rank>;
 
 
     template<typename FlowDirectionElement, typename DistanceElement, Rank rank>
-    PartitionedArray<DistanceElement, rank> downstream_distance(
+    auto downstream_distance(
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction, DistanceElement const cell_size)
+        -> PartitionedArray<DistanceElement, rank>
     {
         using Policies = policy::downstream_distance::DefaultPolicies<FlowDirectionElement, DistanceElement>;
 

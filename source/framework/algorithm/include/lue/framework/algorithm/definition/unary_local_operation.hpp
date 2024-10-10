@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/unary_local_operation.hpp"
 #include "lue/framework/core/annotate.hpp"
@@ -27,7 +28,8 @@ namespace lue {
                     [input_partition, policies, functor](
                         Offset const& offset, InputData const& input_partition_data)
                     {
-                        AnnotateFunction annotation{"unary_local_operation_partition"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: partition", functor_name<Functor>)};
 
                         HPX_UNUSED(input_partition);
 
@@ -107,6 +109,8 @@ namespace lue {
         using OutputPartitions = PartitionsT<OutputArray>;
         using OutputPartition = PartitionT<OutputArray>;
 
+        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+
         lue_hpx_assert(all_are_valid(input_array.partitions()));
 
         detail::UnaryLocalOperationPartitionAction<Policies, InputPartition, OutputPartition, Functor> action;
@@ -122,11 +126,7 @@ namespace lue {
 
                 [locality_id = localities[partition_idx], action, policies, functor](
                     InputPartition const& input_partition)
-                {
-                    AnnotateFunction annotation{"unary_local_operation"};
-
-                    return action(locality_id, policies, input_partition, functor);
-                },
+                { return action(locality_id, policies, input_partition, functor); },
 
                 input_partitions[partition_idx]);
         }

@@ -15,6 +15,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"downstream"};
+
                 using OutputElement = MaterialElement;
 
 

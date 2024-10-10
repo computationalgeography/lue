@@ -15,6 +15,8 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"round"};
+
                 using OutputElement = InputElement;
 
 

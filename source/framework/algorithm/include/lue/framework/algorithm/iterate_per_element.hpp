@@ -15,6 +15,8 @@ namespace lue {
 
                 static_assert(std::is_arithmetic_v<InputElement>);
 
+                static constexpr char const* name{"iterate_per_element"};
+
                 using OutputElement = InputElement;
 
 

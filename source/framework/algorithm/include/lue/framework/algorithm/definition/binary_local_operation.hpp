@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
+#include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
@@ -67,7 +68,8 @@ namespace lue {
                                     InputData1 const& input_partition_data1,
                                     InputData2 const& input_partition_data2)
                                 {
-                                    AnnotateFunction annotation{"binary_local_operation_partition"};
+                                    AnnotateFunction const annotation{
+                                        fmt::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition1);
                                     HPX_UNUSED(input_partition2);
@@ -193,7 +195,8 @@ namespace lue {
                                 [policies, input_partition, functor, input_scalar](
                                     Offset const& offset, InputData const& input_partition_data)
                                 {
-                                    AnnotateFunction annotation{"binary_local_operation_partition"};
+                                    AnnotateFunction const annotation{
+                                        fmt::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
 
@@ -324,7 +327,8 @@ namespace lue {
                                 [policies, input_partition, functor, input_scalar](
                                     Offset const& offset, InputData const& input_partition_data)
                                 {
-                                    AnnotateFunction annotation{"binary_local_operation_partition"};
+                                    AnnotateFunction const annotation{
+                                        fmt::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
 
@@ -438,6 +442,8 @@ namespace lue {
         using InputPartition = ArrayPartition<policy::InputElementT<Policies, 0>, rank>;
         using OutputPartition = ArrayPartition<policy::OutputElementT<Policies, 0>, rank>;
 
+        AnnotateFunction const annotation{fmt::format("{}: partition", functor_name<Functor>)};
+
         lue_hpx_assert(input_partition.valid());
         lue_hpx_assert(input_scalar.valid());
 
@@ -449,13 +455,7 @@ namespace lue {
             Functor>
             action;
 
-        return hpx::async(
-            hpx::annotated_function(action, "binary_local_operation"),
-            locality_id,
-            policies,
-            input_partition,
-            input_scalar,
-            functor);
+        return hpx::async(action, locality_id, policies, input_partition, input_scalar, functor);
     }
 
 
@@ -482,6 +482,8 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
+        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+
         detail::verify_compatible(input_array1, input_array2);
 
         lue_hpx_assert(all_are_valid(input_array1.partitions()));
@@ -507,12 +509,7 @@ namespace lue {
         for (Index p = 0; p < nr_partitions; ++p)
         {
             output_partitions[p] = hpx::async(
-                hpx::annotated_function(action, "binary_local_operation"),
-                localities[p],
-                policies,
-                input_partitions1[p],
-                input_partitions2[p],
-                functor);
+                action, localities[p], policies, input_partitions1[p], input_partitions2[p], functor);
         }
 
         return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
@@ -537,6 +534,8 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
+        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+
         lue_hpx_assert(all_are_valid(input_array.partitions()));
         lue_hpx_assert(input_scalar.valid());
 
@@ -558,13 +557,8 @@ namespace lue {
 
         for (Index p = 0; p < nr_partitions; ++p)
         {
-            output_partitions[p] = hpx::async(
-                hpx::annotated_function(action, "binary_local_operation"),
-                localities[p],
-                policies,
-                input_partitions[p],
-                input_scalar,
-                functor);
+            output_partitions[p] =
+                hpx::async(action, localities[p], policies, input_partitions[p], input_scalar, functor);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
@@ -589,6 +583,8 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
+        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+
         lue_hpx_assert(input_scalar.valid());
         lue_hpx_assert(all_are_valid(input_array.partitions()));
 
@@ -610,13 +606,8 @@ namespace lue {
 
         for (Index p = 0; p < nr_partitions; ++p)
         {
-            output_partitions[p] = hpx::async(
-                hpx::annotated_function(action, "binary_local_operation"),
-                localities[p],
-                policies,
-                input_scalar,
-                input_partitions[p],
-                functor);
+            output_partitions[p] =
+                hpx::async(action, localities[p], policies, input_scalar, input_partitions[p], functor);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};
@@ -632,6 +623,8 @@ namespace lue {
         Functor const& functor) -> hpx::future<policy::OutputElementT<Policies, 0>>
     {
         using OutputElement = policy::OutputElementT<Policies, 0>;
+
+        AnnotateFunction const annotation{fmt::format("{}: scalar", functor_name<Functor>)};
 
         return hpx::dataflow(
             hpx::launch::async,
