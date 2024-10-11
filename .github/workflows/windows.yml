@@ -77,7 +77,6 @@ jobs:
                   conda-build \
                   docopt \
                   libgdal \
-                  gdal \
                   hdf5 \
                   jinja2 \
                   libhwloc \

@@ -30,9 +30,9 @@ class OperationTest(lue_test.TestCase):
         cls.non_spatial = {
             np.uint8: np.uint8(1),
             np.uint32: np.uint32(32),
-            np.uint64: np.uint32(64),
+            np.uint64: np.uint64(64),
             np.int32: np.int32(-32),
-            np.int64: np.int32(-64),
+            np.int64: np.int64(-64),
             np.float32: np.float32(3.2),
             np.float64: np.float64(6.4),
         }

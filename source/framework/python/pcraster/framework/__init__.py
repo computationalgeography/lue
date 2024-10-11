@@ -99,6 +99,7 @@ class DynamicFramework(lfr.DynamicModelRunner):
 
     def __init__(self, model, last_time_step=0, first_time_step=1):
         super().__init__(model, last_time_step, first_time_step)
+        self.quiet = False
 
     def setQuiet(self, quiet=True):
         self.quiet = quiet

@@ -32,7 +32,6 @@ import os
 from dataclasses import dataclass
 
 import numpy as np
-from osgeo import gdal
 
 import lue.framework as lfr
 
@@ -79,16 +78,11 @@ configuration = Configuration()
 
 
 def setclone(pathname):
-    raster_dataset = gdal.Open(pathname)
-    assert raster_dataset, f"Could not open {pathname}"
 
-    array_shape = raster_dataset.RasterYSize, raster_dataset.RasterXSize
-    partition_shape = os.getenv("LUE_PARTITION_SHAPE", default=None)
+    raster_properties = lfr.probe_gdal(pathname)
+    array_shape = raster_properties["shape"]
 
-    if partition_shape is not None:
-        partition_shape = tuple(int(extent) for extent in partition_shape.split(","))
-
-    geo_transform = raster_dataset.GetGeoTransform()
+    geo_transform = raster_properties["geo_transform"]
     cell_shape = geo_transform[1], -geo_transform[5]
     assert cell_shape[0] == cell_shape[1]
     cell_size = cell_shape[0]
@@ -104,6 +98,12 @@ def setclone(pathname):
     configuration.bounding_box = bounding_box
     configuration.cell_size = cell_size
     configuration.array_shape = array_shape
+
+    partition_shape = os.getenv("LUE_PARTITION_SHAPE", default=None)
+
+    if partition_shape is not None:
+        partition_shape = tuple(int(extent) for extent in partition_shape.split(","))
+
     configuration.partition_shape = partition_shape
 
 
@@ -344,6 +344,40 @@ def non_spatial_to_spatial(fill_value, template=None):
     return lfr.create_array(array_shape, fill_value, partition_shape=partition_shape)
 
 
+def harmonize_types(expression1, expression2):
+
+    # If both arguments are values, fix the element type of the first one
+    # TODO Could determine the largest one and use that
+    if lue_is_value(expression1) and lue_is_value(expression2):
+        expression1 = lfr.create_scalar(numpy_scalar_type(expression1), expression1)
+
+    # If one of the arguments is a value, fix its element type to the element type of the other argument
+    to_scalar_1 = (
+        is_spatial(expression2) or is_non_spatial(expression2)
+    ) and lue_is_value(expression1)
+    to_scalar_2 = (
+        is_spatial(expression1) or is_non_spatial(expression1)
+    ) and lue_is_value(expression2)
+
+    if to_scalar_2:
+        expression2 = lfr.create_scalar(
+            np.dtype(numpy_scalar_type(expression1)), expression2
+        )
+
+    if to_scalar_1:
+        expression1 = lfr.create_scalar(
+            np.dtype(numpy_scalar_type(expression2)), expression1
+        )
+
+    assert not lue_is_value(expression1), expression1
+    assert not lue_is_value(expression2), expression2
+    assert (
+        expression1.dtype == expression2.dtype
+    ), f"{expression1.dtype} != {expression2.dtype}"
+
+    return expression1, expression2
+
+
 def read_if_necessary(*args) -> tuple:
     return tuple(map(lambda arg: readmap(arg) if isinstance(arg, str) else arg, args))
 
@@ -416,11 +450,11 @@ def accufraction(ldd, material, transportcapacity):
 
     assert is_spatial(ldd), type(ldd)
 
-    if is_non_spatial(material):
+    if is_non_spatial(material) or lue_is_value(material):
         # TODO Support non-spatial material
         material = non_spatial_to_spatial(fill_value=np.float32(material), template=ldd)
 
-    if is_non_spatial(transportcapacity):
+    if is_non_spatial(transportcapacity) or lue_is_value(transportcapacity):
         # TODO Support non-spatial transport capacity
         transportcapacity = non_spatial_to_spatial(
             fill_value=np.float32(transportcapacity), template=ldd
@@ -447,14 +481,14 @@ def accuthreshold(ldd, material, threshold):
     if lue_is_value(material):
         material = lfr.create_scalar(np.float32, material)
 
-    if is_non_spatial(material):
+    if is_non_spatial(material) or lue_is_value(material):
         material = non_spatial_to_spatial(fill_value=material, template=ldd)
 
     # TODO Support non-spatial threshold
     if lue_is_value(threshold):
         threshold = lfr.create_scalar(np.float32, threshold)
 
-    if is_non_spatial(threshold):
+    if is_non_spatial(threshold) or lue_is_value(threshold):
         threshold = non_spatial_to_spatial(fill_value=threshold, template=ldd)
 
     return lfr.accu_threshold3(ldd, material, threshold)
@@ -625,23 +659,14 @@ def cos(expression):
 
 
 def cover(expression1, expression2, *expressions):
-    if (is_spatial(expression1) or is_non_spatial(expression1)) and lue_is_value(
-        expression2
-    ):
-        expression2 = lfr.create_scalar(
-            np.dtype(numpy_scalar_type(expression1)), expression2
-        )
 
-    if (is_spatial(expression2) or is_non_spatial(expression2)) and lue_is_value(
-        expression1
-    ):
-        expression1 = lfr.create_scalar(
-            np.dtype(numpy_scalar_type(expression2)), expression1
-        )
+    expression1, expression2 = harmonize_types(expression1, expression2)
 
     # TODO Should where support scalar condition?
     if is_non_spatial(expression1):
         expression1 = non_spatial_to_spatial(expression1)
+
+    assert is_spatial(expression1), expression1
 
     result = lfr.where(lfr.valid(expression1), expression1, expression2)
 
@@ -735,6 +760,12 @@ def idiv(*args):
 
 
 def ifthen(condition, expression):
+    # TODO Should where support scalar condition?
+    if not is_spatial(condition):
+        if lue_is_value(condition):
+            condition = lfr.create_scalar(np.uint8, condition)
+        condition = non_spatial_to_spatial(condition)
+
     if lue_is_value(expression):
         expression = lfr.create_scalar(
             np.dtype(numpy_scalar_type(expression)), expression
@@ -744,6 +775,12 @@ def ifthen(condition, expression):
 
 
 def ifthenelse(condition, expression1, expression2):
+    # TODO Should where support scalar condition?
+    if not is_spatial(condition):
+        if lue_is_value(condition):
+            condition = lfr.create_scalar(np.uint8, condition)
+        condition = non_spatial_to_spatial(condition)
+
     if lue_is_value(expression1):
         expression1 = lfr.create_scalar(
             np.dtype(numpy_scalar_type(expression1)), expression1
@@ -851,7 +888,7 @@ def mapminimum(expression):
 
 
 def mapnormal():
-    return normal(1)
+    raise NotImplementedError("mapnormal")
 
 
 def maptotal(expression):
@@ -859,7 +896,7 @@ def maptotal(expression):
 
 
 def mapuniform():
-    return uniform(1)
+    raise NotImplementedError("mapuniform")
 
 
 def markwhilesumle(*args):
@@ -876,26 +913,12 @@ def max(*args):
     elif len(args) > 2:
         return max(args[0], max(*args[1:]))
     else:
-        expression1, expression2 = args
-
-        if (is_spatial(expression1) or is_non_spatial(expression1)) and lue_is_value(
-            expression2
-        ):
-            expression2 = lfr.create_scalar(
-                np.dtype(numpy_scalar_type(expression1)), expression2
-            )
-
-        if (is_spatial(expression2) or is_non_spatial(expression2)) and lue_is_value(
-            expression1
-        ):
-            expression1 = lfr.create_scalar(
-                np.dtype(numpy_scalar_type(expression2)), expression1
-            )
+        expression1, expression2 = harmonize_types(*args)
 
         # TODO Support non-spatial condition(?)
         condition = expression1 >= expression2
 
-        if is_non_spatial(condition) or lue_is_value(condition):
+        if is_non_spatial(condition):
             condition = non_spatial_to_spatial(condition)
 
         return lfr.where(condition, expression1, expression2)
@@ -907,21 +930,7 @@ def min(*args):
     elif len(args) > 2:
         return min(args[0], min(*args[1:]))
     else:
-        expression1, expression2 = args
-
-        if (is_spatial(expression1) or is_non_spatial(expression1)) and lue_is_value(
-            expression2
-        ):
-            expression2 = lfr.create_scalar(
-                np.dtype(numpy_scalar_type(expression1)), expression2
-            )
-
-        if (is_spatial(expression2) or is_non_spatial(expression2)) and lue_is_value(
-            expression1
-        ):
-            expression1 = lfr.create_scalar(
-                np.dtype(numpy_scalar_type(expression2)), expression1
-            )
+        expression1, expression2 = harmonize_types(*args)
 
         # TODO Support non-spatial condition(?)
         condition = expression1 <= expression2
@@ -959,7 +968,7 @@ def nominal(expression):
 
 def normal(expression):
     # TODO Support scalar input(?)
-    if is_non_spatial(expression):
+    if is_non_spatial(expression) or lue_is_value(expression):
         if lue_is_value(expression):
             expression = lfr.create_scalar(np.uint8, expression)
 
@@ -1177,7 +1186,7 @@ def transient(*args):
 
 def uniform(expression):
     # TODO Support scalar input(?)
-    if is_non_spatial(expression):
+    if is_non_spatial(expression) or lue_is_value(expression):
         if lue_is_value(expression):
             expression = lfr.create_scalar(np.uint8, expression)
 
@@ -1188,7 +1197,7 @@ def uniform(expression):
 
 def uniqueid(expression):
     # TODO Support scalar input(?)
-    if is_non_spatial(expression):
+    if is_non_spatial(expression) or lue_is_value(expression):
         if lue_is_value(expression):
             expression = lfr.create_scalar(np.uint8, expression)
 
@@ -1200,7 +1209,7 @@ def uniqueid(expression):
 def upstream(ldd, material):
     ldd, material = read_if_necessary(ldd, material)
 
-    if is_non_spatial(material):
+    if is_non_spatial(material) or lue_is_value(material):
         # TODO Support non-spatial material
         material = non_spatial_to_spatial(fill_value=np.float32(material))
 
@@ -1276,7 +1285,7 @@ def windowtotal(expression, window_length):
 
 def xcoordinate(expression):
     # TODO Support non-spatial input?
-    if is_non_spatial(expression):
+    if is_non_spatial(expression) or lue_is_value(expression):
         expression = non_spatial_to_spatial(expression)
 
     return (
@@ -1295,7 +1304,7 @@ def pcrxor(expression1, expression2):
 
 def ycoordinate(expression):
     # TODO Support non-spatial input?
-    if is_non_spatial(expression):
+    if is_non_spatial(expression) or lue_is_value(expression):
         expression = non_spatial_to_spatial(expression)
 
     return (

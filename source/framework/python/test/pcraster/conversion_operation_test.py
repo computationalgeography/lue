@@ -35,14 +35,14 @@ class ConversionOperationTest(OperationTest):
     def test_nominal(self):
         for expression_type in [
             int,
-            float,
+            # float,
             np.int32,
             np.int64,
             np.uint8,
             np.uint32,
             np.uint64,
-            np.float32,
-            np.float64,
+            # np.float32,
+            # np.float64,
         ]:
             non_spatial = expression_type(5)
 

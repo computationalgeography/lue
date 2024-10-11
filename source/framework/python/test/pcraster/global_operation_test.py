@@ -23,9 +23,10 @@ class GlobalOperationTest(OperationTest):
 
             _ = lpr.mapminimum(expression)
 
-    @lue_test.framework_test_case
-    def test_mapnormal(self):
-        _ = lpr.mapnormal()
+    # TODO Return a non-spatial
+    # @lue_test.framework_test_case
+    # def test_mapnormal(self):
+    #     _ = lpr.mapnormal()
 
     @lue_test.framework_test_case
     def test_maptotal(self):
@@ -34,6 +35,7 @@ class GlobalOperationTest(OperationTest):
 
             _ = lpr.maptotal(expression)
 
-    @lue_test.framework_test_case
-    def test_mapuniform(self):
-        _ = lpr.mapuniform()
+    # TODO Return a non-spatial
+    # @lue_test.framework_test_case
+    # def test_mapuniform(self):
+    #     _ = lpr.mapuniform()

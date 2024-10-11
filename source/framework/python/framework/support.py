@@ -52,7 +52,7 @@ class StaticModelRunner(object):
 
     def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
         assert rate_limit >= 0, rate_limit
-        lfr.run_deterministic(self.model, progressor(), 0, rate_limit)
+        lfr.run_deterministic(self.model, progressor, 0, rate_limit)
 
 
 class DynamicModel(lfr.Model):
