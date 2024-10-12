@@ -23,7 +23,11 @@ namespace lue::framework {
                 Policies{},
                 array_shape,
                 partition_shape,
-                Functor{hpx::make_ready_future<Element>(pybind11::cast<Element>(fill_value))});
+                Functor{
+                    pybind11::isinstance<Scalar<Element>>(fill_value) ?
+                    pybind11::cast<Scalar<Element>>(fill_value).future() :
+                    hpx::make_ready_future<Element>(pybind11::cast<Element>(fill_value))
+                });
         }
 
 

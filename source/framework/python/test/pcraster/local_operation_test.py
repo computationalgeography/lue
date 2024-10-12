@@ -6,6 +6,9 @@ import lue_test
 from .operation_test import OperationTest, setUpModule, tearDownModule
 
 
+# TODO Add tests for overload accepting value instead of non_spatial
+
+
 class LocalOperationTest(OperationTest):
     @lue_test.framework_test_case
     def test_add(self):
@@ -57,7 +60,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial - spatial
             _ = spatial - non_spatial
             _ = non_spatial - spatial
-            # _ = non_spatial - non_spatial
+            _ = non_spatial - non_spatial
 
     @lue_test.framework_test_case
     def test_divide(self):
@@ -70,7 +73,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial / spatial
             _ = spatial / non_spatial
             _ = non_spatial / spatial
-            # _ = non_spatial / non_spatial
+            _ = non_spatial / non_spatial
 
             _ = lpr.div(spatial, spatial)
             _ = lpr.div(spatial, non_spatial)
@@ -88,7 +91,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial * spatial
             _ = spatial * non_spatial
             _ = non_spatial * spatial
-            # _ = non_spatial * non_spatial
+            _ = non_spatial * non_spatial
 
     @lue_test.framework_test_case
     def test_power(self):
@@ -101,7 +104,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial**spatial
             _ = spatial**non_spatial
             _ = non_spatial**spatial
-            # _ = non_spatial**non_spatial
+            _ = non_spatial**non_spatial
 
     @lue_test.framework_test_case
     def test_abs(self):
@@ -134,14 +137,14 @@ class LocalOperationTest(OperationTest):
             )
 
             _ = lpr.pcrand(spatial, spatial)
-            _ = lpr.pcrand(spatial, spatial)
-            _ = lpr.pcrand(non_spatial, non_spatial)
+            _ = lpr.pcrand(spatial, non_spatial)
+            _ = lpr.pcrand(non_spatial, spatial)
             _ = lpr.pcrand(non_spatial, non_spatial)
 
             _ = spatial & spatial
-            _ = spatial & spatial
+            _ = spatial & non_spatial
+            _ = non_spatial & spatial
             _ = non_spatial & non_spatial
-            # _ = non_spatial & non_spatial
 
     @lue_test.framework_test_case
     def test_asin(self):
@@ -184,8 +187,8 @@ class LocalOperationTest(OperationTest):
 
             _ = lpr.cover(spatial, spatial)
             _ = lpr.cover(spatial, non_spatial)
-            _ = lpr.cover(non_spatial, non_spatial)
             _ = lpr.cover(non_spatial, spatial)
+            _ = lpr.cover(non_spatial, non_spatial)
 
     @lue_test.framework_test_case
     def test_defined(self):
@@ -209,7 +212,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial == spatial
             _ = spatial == non_spatial
             _ = non_spatial == spatial
-            # _ = non_spatial == non_spatial
+            _ = non_spatial == non_spatial
 
             _ = lpr.eq(spatial, spatial)
             _ = lpr.eq(spatial, non_spatial)
@@ -238,7 +241,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial >= spatial
             _ = spatial >= non_spatial
             _ = non_spatial >= spatial
-            # _ = non_spatial >= non_spatial
+            _ = non_spatial >= non_spatial
 
             _ = lpr.ge(spatial, spatial)
             _ = lpr.ge(spatial, non_spatial)
@@ -256,7 +259,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial > spatial
             _ = spatial > non_spatial
             _ = non_spatial > spatial
-            # _ = non_spatial > non_spatial
+            _ = non_spatial > non_spatial
 
             _ = lpr.gt(spatial, spatial)
             _ = lpr.gt(spatial, non_spatial)
@@ -330,7 +333,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial <= spatial
             _ = spatial <= non_spatial
             _ = non_spatial <= spatial
-            # _ = non_spatial <= non_spatial
+            _ = non_spatial <= non_spatial
 
             _ = lpr.le(spatial, spatial)
             _ = lpr.le(spatial, non_spatial)
@@ -359,7 +362,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial < spatial
             _ = spatial < non_spatial
             _ = non_spatial < spatial
-            # _ = non_spatial < non_spatial
+            _ = non_spatial < non_spatial
 
             _ = lpr.lt(spatial, spatial)
             _ = lpr.lt(spatial, non_spatial)
@@ -377,7 +380,7 @@ class LocalOperationTest(OperationTest):
             _ = spatial != spatial
             _ = spatial != non_spatial
             _ = non_spatial != spatial
-            # _ = non_spatial != non_spatial
+            _ = non_spatial != non_spatial
 
             _ = lpr.ne(spatial, spatial)
             _ = lpr.ne(spatial, non_spatial)
@@ -407,7 +410,7 @@ class LocalOperationTest(OperationTest):
             _ = lpr.pcrnot(non_spatial)
 
             _ = ~spatial
-            # _ = ~non_spatial
+            _ = ~non_spatial
 
     @lue_test.framework_test_case
     def test_or(self):
@@ -418,14 +421,14 @@ class LocalOperationTest(OperationTest):
             )
 
             _ = lpr.pcror(spatial, spatial)
-            _ = lpr.pcror(spatial, spatial)
-            _ = lpr.pcror(non_spatial, non_spatial)
+            _ = lpr.pcror(spatial, non_spatial)
+            _ = lpr.pcror(non_spatial, spatial)
             _ = lpr.pcror(non_spatial, non_spatial)
 
             _ = spatial | spatial
-            _ = spatial | spatial
-            # _ = non_spatial | non_spatial
-            # _ = non_spatial | non_spatial
+            _ = spatial | non_spatial
+            _ = non_spatial | spatial
+            _ = non_spatial | non_spatial
 
     @lue_test.framework_test_case
     def test_rounddown(self):
@@ -546,11 +549,11 @@ class LocalOperationTest(OperationTest):
             )
 
             _ = lpr.pcrxor(spatial, spatial)
-            _ = lpr.pcrxor(spatial, spatial)
-            _ = lpr.pcrxor(non_spatial, non_spatial)
+            _ = lpr.pcrxor(spatial, non_spatial)
+            _ = lpr.pcrxor(non_spatial, spatial)
             _ = lpr.pcrxor(non_spatial, non_spatial)
 
             _ = spatial | spatial
-            _ = spatial | spatial
-            # _ = non_spatial | non_spatial
-            # _ = non_spatial | non_spatial
+            _ = spatial | non_spatial
+            _ = non_spatial | spatial
+            _ = non_spatial | non_spatial

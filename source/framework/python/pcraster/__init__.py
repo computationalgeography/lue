@@ -431,98 +431,91 @@ def abs(expression):
     return lfr.abs(expression)
 
 
-def accucapacityflux(ldd, material, transportcapacity):
+def accucapacityflux(flow_direction, material, transportcapacity):
     raise NotImplementedError("accucapacityflux")
 
 
-def accucapacitystate(ldd, material, transportcapacity):
+def accucapacitystate(flow_direction, material, transportcapacity):
     raise NotImplementedError("accucapacitystate")
 
 
-def accuflux(ldd, material):
-    return accuthreshold(ldd, material, 0)[1]
+def accuflux(flow_direction, material):
+    return accuthreshold(flow_direction, material, 0)[1]
 
 
-def accufraction(ldd, material, transportcapacity):
-    ldd, material, transportcapacity = read_if_necessary(
-        ldd, material, transportcapacity
-    )
+def accufraction(flow_direction, material, transportcapacity):
+    flow_direction = ldd(flow_direction)
+    material = scalar(material)
+    transportcapacity = scalar(transportcapacity)
 
-    assert is_spatial(ldd), type(ldd)
+    assert is_spatial(flow_direction), type(flow_direction)
 
-    if is_non_spatial(material) or lue_is_value(material):
+    if is_non_spatial(material):
         # TODO Support non-spatial material
-        material = non_spatial_to_spatial(fill_value=np.float32(material), template=ldd)
+        material = non_spatial_to_spatial(fill_value=material, template=flow_direction)
 
-    if is_non_spatial(transportcapacity) or lue_is_value(transportcapacity):
-        # TODO Support non-spatial transport capacity
-        transportcapacity = non_spatial_to_spatial(
-            fill_value=np.float32(transportcapacity), template=ldd
-        )
+    if is_non_spatial(transportcapacity):
+        # TODO Support non-spatial transportcapacity
+        transportcapacity = non_spatial_to_spatial(fill_value=transportcapacity, template=flow_direction)
 
-    return lfr.accu_fraction(ldd, material, transportcapacity)
+    return lfr.accu_fraction(flow_direction, material, transportcapacity)
 
 
-def accufractionflux(ldd, material, transportcapacity):
-    return accufraction(ldd, material, transportcapacity)[0]
+def accufractionflux(flow_direction, material, transportcapacity):
+    return accufraction(flow_direction, material, transportcapacity)[0]
 
 
-def accufractionstate(ldd, material, transportcapacity):
-    return accufraction(ldd, material, transportcapacity)[1]
+def accufractionstate(flow_direction, material, transportcapacity):
+    return accufraction(flow_direction, material, transportcapacity)[1]
 
 
-def accuthreshold(ldd, material, threshold):
-    if isinstance(ldd, str):
-        ldd = readmap(ldd)
+def accuthreshold(flow_direction, material, threshold):
+    flow_direction = ldd(flow_direction)
+    material = scalar(material)
+    threshold = scalar(threshold)
 
-    assert is_spatial(ldd), type(ldd)
+    assert is_spatial(flow_direction), type(flow_direction)
 
-    # TODO Support non-spatial material
-    if lue_is_value(material):
-        material = lfr.create_scalar(np.float32, material)
+    if is_non_spatial(material):
+        # TODO Support non-spatial material
+        material = non_spatial_to_spatial(fill_value=material, template=flow_direction)
 
-    if is_non_spatial(material) or lue_is_value(material):
-        material = non_spatial_to_spatial(fill_value=material, template=ldd)
+    if is_non_spatial(threshold):
+        # TODO Support non-spatial threshold
+        threshold = non_spatial_to_spatial(fill_value=threshold, template=flow_direction)
 
-    # TODO Support non-spatial threshold
-    if lue_is_value(threshold):
-        threshold = lfr.create_scalar(np.float32, threshold)
-
-    if is_non_spatial(threshold) or lue_is_value(threshold):
-        threshold = non_spatial_to_spatial(fill_value=threshold, template=ldd)
-
-    return lfr.accu_threshold3(ldd, material, threshold)
+    return lfr.accu_threshold3(flow_direction, material, threshold)
 
 
-def accuthresholdflux(ldd, material, threshold):
-    return accuthreshold(ldd, material, threshold)[0]
+def accuthresholdflux(flow_direction, material, threshold):
+    return accuthreshold(flow_direction, material, threshold)[0]
 
 
-def accuthresholdstate(ldd, material, threshold):
-    return accuthreshold(ldd, material, threshold)[1]
+def accuthresholdstate(flow_direction, material, threshold):
+    return accuthreshold(flow_direction, material, threshold)[1]
 
 
-def accutriggerflux(ldd, material, transporttrigger):
+def accutriggerflux(flow_direction, material, transporttrigger):
     raise NotImplementedError("accutriggerflux")
 
 
-def accutriggerstate(ldd, material, transporttrigger):
+def accutriggerstate(flow_direction, material, transporttrigger):
     raise NotImplementedError("accutriggerstate")
 
 
-def accutraveltimeflux(ldd, material, transporttraveltime):
+def accutraveltimeflux(flow_direction, material, transporttraveltime):
     raise NotImplementedError("accutraveltimeflux")
 
 
-def accutraveltimestate(ldd, material, transporttraveltime):
+def accutraveltimestate(flow_direction, material, transporttraveltime):
     raise NotImplementedError("accutraveltimestate")
 
 
-def accutraveltimefractionflux(ldd, material, transporttraveltime):
+def accutraveltimefractionflux(flow_direction, material, transporttraveltime):
     raise NotImplementedError("accutraveltimefractionflux")
 
 
-def accutraveltimefractionstate(ldd, material, transporttraveltime):
+def accutraveltimefractionstate(flow_direction, material, transporttraveltime):
     raise NotImplementedError("accutraveltimefractionstate")
 
 
@@ -632,10 +625,10 @@ def catchment(*args):
     raise NotImplementedError("catchment")
 
 
-def catchmenttotal(amount, ldd):
+def catchmenttotal(amount, flow_direction):
     # TODO This assumes accuthreshold can handle negative values
     # https://github.com/computationalgeography/lue/issues/673
-    return accuthreshold(ldd, amount, 0)[1]
+    return accuthreshold(flow_direction, amount, 0)[1]
 
 
 def cellarea(*args):
@@ -695,16 +688,16 @@ def directional(expression):
     raise RuntimeError("Unsupported argument: {}".format(expression))
 
 
-def downstream(ldd, expression):
-    ldd = read_if_necessary(ldd)[0]
+def downstream(flow_direction, expression):
+    flow_direction = read_if_necessary(flow_direction)[0]
 
-    return lfr.downstream(ldd, expression)
+    return lfr.downstream(flow_direction, expression)
 
 
-def downstreamdist(ldd):
-    ldd = read_if_necessary(ldd)[0]
+def downstreamdist(flow_direction):
+    flow_direction = read_if_necessary(flow_direction)[0]
 
-    return lfr.downstream_distance(ldd, configuration.cell_size, np.float32)
+    return lfr.downstream_distance(flow_direction, configuration.cell_size, np.float32)
 
 
 def dynwavestate(*args):
@@ -802,8 +795,19 @@ def inversedistance(*args):
     raise NotImplementedError("inversedistance")
 
 
-def kinematic(ldd, Qold, q, alpha, beta, nrTimeSlices, dT, dX):
-    return lfr.kinematic_wave(ldd, Qold, q, alpha, beta, dT, dX)
+def kinematic(flow_direction, Qold, q, alpha, beta, nrTimeSlices, dT, dX):
+    # TODO kinematic wave should also support Scalar values
+
+    # flow_direction = ldd(flow_direction)
+    # Qold = scalar(Qold)
+    # q = scalar(q)
+    # alpha = scalar(alpha)
+    # beta = scalar(beta)
+    # nrTimeSlices = scalar(nrTimeSlices)
+    # dT = scalar(dT)
+    # dX = scalar(dX)
+
+    return lfr.kinematic_wave(flow_direction, Qold, q, alpha, beta, dT, dX)
 
 
 def kinwavestate(*args):
@@ -1206,14 +1210,14 @@ def uniqueid(expression):
     return lfr.where(expression, lfr.unique_id(expression, dtype=np.int32), 0)
 
 
-def upstream(ldd, material):
-    ldd, material = read_if_necessary(ldd, material)
+def upstream(flow_direction, material):
+    flow_direction, material = read_if_necessary(flow_direction, material)
 
     if is_non_spatial(material) or lue_is_value(material):
         # TODO Support non-spatial material
         material = non_spatial_to_spatial(fill_value=np.float32(material))
 
-    return lfr.upstream(ldd, material)
+    return lfr.upstream(flow_direction, material)
 
 
 def view(*args):

@@ -79,7 +79,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.non_spatial[type_],
+                self.value[type_],  # TODO non_spatial (Scalar) is not supported yet
             )
 
             _ = lpr.kinematic(
@@ -116,7 +116,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.non_spatial[type_],
+                self.value[type_],  # TODO non_spatial (Scalar) is not supported yet
             )
 
             _ = lpr.upstream(ldd, non_spatial)
