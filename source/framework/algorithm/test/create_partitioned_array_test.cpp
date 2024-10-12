@@ -55,9 +55,8 @@ namespace {
 
                 return hpx::async(
 
-                    [locality_id, offset, partition_shape, fill_value]() {
-                        return Partition{locality_id, offset, partition_shape, fill_value};
-                    }
+                    [locality_id, offset, partition_shape, fill_value]()
+                    { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
                 );
             }
@@ -87,9 +86,8 @@ namespace {
 
         partitions[0] = hpx::async(
 
-            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]() {
-                return Partition{locality_id, offset, partition_shape, fill_value};
-            }
+            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]()
+            { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
         );
 
@@ -98,9 +96,8 @@ namespace {
             partitions[idx] = partitions[idx - 1].then(
 
                 [locality_id, offset = offsets[idx], partition_shape = partition_shapes[idx], fill_value](
-                    auto const& /* previous_partition */) {
-                    return Partition{locality_id, offset, partition_shape, fill_value};
-                }
+                    auto const& /* previous_partition */)
+                { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
             );
         }
@@ -165,34 +162,6 @@ namespace {
     };
 
 }  // Anonymous namespace
-
-
-namespace lue {
-
-    template<typename Element, Rank rank>
-    class FunctorTraits<NumberPartitionsIndividually<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool const is_functor{true};
-    };
-
-}  // namespace lue
-
-
-namespace lue {
-
-    template<typename Element, Rank rank>
-    class FunctorTraits<NumberPartitionsPerLocality<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool const is_functor{true};
-    };
-
-}  // namespace lue
 
 
 BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)

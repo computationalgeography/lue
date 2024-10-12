@@ -395,15 +395,6 @@ namespace lue {
 
 
     template<typename Element>
-    class FunctorTraits<ReadPartitionsPerLocality<Element>>
-    {
-        public:
-
-            static constexpr bool is_functor{true};
-    };
-
-
-    template<typename Element>
     auto read(std::string const& name, Shape<Count, 2> const& partition_shape) -> PartitionedArray<Element, 2>
     {
         if constexpr (!gdal::supports<Element>())
@@ -478,8 +469,9 @@ namespace lue {
 
     template<typename Element>
     auto write(
-        PartitionedArray<Element, 2> const& array, std::string const& name, std::string const& clone_name)
-        -> hpx::future<void>
+        PartitionedArray<Element, 2> const& array,
+        std::string const& name,
+        std::string const& clone_name) -> hpx::future<void>
     {
         if constexpr (!gdal::supports<Element>())
         {

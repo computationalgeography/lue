@@ -822,36 +822,6 @@ namespace lue {
     };
 
 
-    template<typename Element, lue::Rank rank>
-    class FunctorTraits<InstantiateFilled<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool is_functor{true};
-    };
-
-
-    template<typename Element, lue::Rank rank>
-    class FunctorTraits<InstantiateDefaultInitialized<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool is_functor{true};
-    };
-
-
-    template<typename BufferHandle, Rank rank>
-    class FunctorTraits<InstantiateFromBuffer<BufferHandle, rank>>
-    {
-
-        public:
-
-            static constexpr bool is_functor{true};
-    };
-
-
     // TODO, as part of range algorithm
     // template<
     //     typename Element,
