@@ -15,7 +15,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
-                self.non_spatial[type_].item(),
+                self.non_spatial[type_],
             )
 
             # Fraction must be with [0, 1]
@@ -41,7 +41,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial_material, non_spatial_material = (
                 self.spatial[type_],
-                self.non_spatial[type_].item(),
+                self.non_spatial[type_],
             )
 
             non_spatial_threshold = type_(0.5) * non_spatial_material
@@ -79,7 +79,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.non_spatial[type_].item(),
+                self.value[type_],  # TODO non_spatial (Scalar) is not supported yet
             )
 
             _ = lpr.kinematic(
@@ -98,7 +98,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.non_spatial[type_].item(),
+                self.non_spatial[type_],
             )
 
             _ = lpr.lddcreate(
@@ -116,7 +116,7 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.non_spatial[type_].item(),
+                self.value[type_],  # TODO non_spatial (Scalar) is not supported yet
             )
 
             _ = lpr.upstream(ldd, non_spatial)

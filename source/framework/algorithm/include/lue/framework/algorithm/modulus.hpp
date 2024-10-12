@@ -14,10 +14,13 @@ namespace lue {
                 static_assert(std::is_integral_v<InputElement>);
                 static_assert(std::is_same_v<InputElement, OutputElement_>);
 
+                static constexpr char const* name{"modulus"};
+
                 using OutputElement = OutputElement_;
 
                 constexpr auto operator()(
-                    InputElement const& input_element1, InputElement const& input_element2) const noexcept -> OutputElement
+                    InputElement const& input_element1,
+                    InputElement const& input_element2) const noexcept -> OutputElement
                 {
                     return input_element1 % input_element2;
                 }

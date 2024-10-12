@@ -13,6 +13,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"equal_to"};
+
                 using OutputElement = OutputElement_;
 
                 constexpr auto operator()(

@@ -12,6 +12,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"valid"};
+
                 using OutputElement = OutputElement_;
 
 

@@ -14,6 +14,8 @@ namespace lue {
 
                 static_assert(std::is_integral_v<InputElement>);
 
+                static constexpr char const* name{"logical_exclusive_or"};
+
                 using OutputElement = OutputElement_;
 
 

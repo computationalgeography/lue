@@ -16,6 +16,8 @@ namespace lue {
                 // If not, an OutputElement type must be passed in
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"focal_mean"};
+
                 using OutputElement = InputElement;
 
 

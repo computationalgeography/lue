@@ -16,6 +16,8 @@ namespace lue {
                 // If not, an OutputElement type must be passed in
                 static_assert(std::is_floating_point_v<InputElement>);
 
+                static constexpr char const* name{"focal_high_pass"};
+
                 using OutputElement = InputElement;
 
 
@@ -40,7 +42,7 @@ namespace lue {
                     auto const& indp = input_policies.input_no_data_policy();
                     auto const& ondp = output_policies.output_no_data_policy();
 
-                    OutputElement focal_value;
+                    OutputElement focal_value{};
                     OutputElement sum_of_neighbours{0};
                     Count nr_neighbours{0};
 
@@ -79,7 +81,7 @@ namespace lue {
                         }
                     }
 
-                    OutputElement high_pass;
+                    OutputElement high_pass{};
 
                     {
                         if (nr_neighbours == 0)

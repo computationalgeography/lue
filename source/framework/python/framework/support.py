@@ -5,7 +5,7 @@ import sys
 import lue.framework as lfr
 
 
-class Progressor(lfr.Progressor):
+class DefaultProgressor(lfr.Progressor):
     def __init__(self):
         lfr.Progressor.__init__(self)
 
@@ -30,6 +30,11 @@ class Progressor(lfr.Progressor):
         sys.stdout.flush()
 
 
+class SilentProgressor(lfr.Progressor):
+    def __init__(self):
+        lfr.Progressor.__init__(self)
+
+
 class StaticModel(lfr.Model):
     def __init__(self):
         lfr.Model.__init__(self)
@@ -45,9 +50,9 @@ class StaticModelRunner(object):
     def __init__(self, model):
         self.model = model
 
-    def run(self):
-        # self.model.run_initial()
-        lfr.run_deterministic(self.model, Progressor(), 0)
+    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
+        assert rate_limit >= 0, rate_limit
+        lfr.run_deterministic(self.model, progressor, 0, rate_limit)
 
 
 class DynamicModel(lfr.Model):
@@ -97,15 +102,11 @@ class DynamicModelRunner(object):
             1 <= first_time_step <= last_time_step
         ), f"{first_time_step}, {last_time_step}"
 
-    def run(self):
+    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
+        assert rate_limit >= 0, rate_limit
         assert self.first_time_step == 1, self.first_time_step
-        lfr.run_deterministic(self.model, Progressor(), self.last_time_step)
 
-        # self.model.run_initial()
-
-        # for time_step in range(self.first_time_step, self.last_time_step + 1):
-        #     self.model.current_time_step = time_step
-        #     self.model.run_dynamic()
+        lfr.run_deterministic(self.model, progressor, self.last_time_step, rate_limit)
 
 
 class MonteCarloModel(object):  # (lfr.Model):
@@ -237,7 +238,7 @@ class MonteCarloModelRunner(object):
             self.framework_model.model, remove_existing_directories
         )
 
-    def run(self, rate_limit=0):
+    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
         assert rate_limit >= 0, rate_limit
         assert (
             self.framework_model.first_time_step == 1
@@ -245,7 +246,7 @@ class MonteCarloModelRunner(object):
 
         lfr.run_stochastic(
             self.framework_model.model,
-            Progressor(),
+            progressor,
             self.nr_samples,
             self.framework_model.last_time_step,
             rate_limit,

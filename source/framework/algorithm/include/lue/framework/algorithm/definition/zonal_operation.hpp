@@ -43,7 +43,8 @@ namespace lue {
                                 [policies, input_element, zones_partition](
                                     ZonesData const& zones_partition_data)
                                 {
-                                    AnnotateFunction annotation{"zonal_operation_partition"};
+                                    AnnotateFunction const annotation{
+                                        fmt::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(zones_partition);
 
@@ -129,7 +130,8 @@ namespace lue {
                                     InputData const& input_partition_data,
                                     ZonesData const& zones_partition_data)
                                 {
-                                    AnnotateFunction annotation{"zonal_operation_partition"};
+                                    AnnotateFunction const annotation{
+                                        fmt::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
                                     HPX_UNUSED(zones_partition);
@@ -188,10 +190,10 @@ namespace lue {
             @return     Partition with per zone the corresponding statistic
         */
         template<typename Policies, typename ZonesPartition, typename OutputPartition, typename Functor>
-        OutputPartition zonal_operation_partition2(
+        auto zonal_operation_partition2(
             Policies const& policies,
             ZonesPartition const& zones_partition,
-            AggregatorT<Functor> const& aggregator)
+            AggregatorT<Functor> const& aggregator) -> OutputPartition
         {
             using Offset = OffsetT<ZonesPartition>;
             using ZonesData = DataT<ZonesPartition>;
@@ -206,7 +208,8 @@ namespace lue {
                     [policies, zones_partition, aggregator](
                         Offset const& offset, ZonesData const& zones_partition_data)
                     {
-                        AnnotateFunction annotation{"zonal_operation_partition"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: partition: reclass", functor_name<Functor>)};
 
                         HPX_UNUSED(zones_partition);
 
@@ -294,11 +297,7 @@ namespace lue {
                     [locality_id = localities[p], action, policies, functor](
                         hpx::shared_future<InputElement> const& input_element,
                         ZonesPartition const& zones_partition)
-                    {
-                        AnnotateFunction annotation{"zonal_operation"};
-
-                        return action(locality_id, policies, input_element.get(), zones_partition, functor);
-                    },
+                    { return action(locality_id, policies, input_element.get(), zones_partition, functor); },
 
                     input_element,
                     zones_partitions[p]);
@@ -315,7 +314,8 @@ namespace lue {
                 .then(
                     [](hpx::future<Aggregators>&& aggregators)
                     {
-                        AnnotateFunction annotation{"zonal_operation"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: aggregate", functor_name<Functor>)};
 
                         Aggregator result{};
 
@@ -342,11 +342,7 @@ namespace lue {
 
                     [locality_id = localities[p], action, policies, zones_partition = zones_partitions[p]](
                         hpx::shared_future<Aggregator> const& aggregator)
-                    {
-                        AnnotateFunction annotation{"zonal_operation"};
-
-                        return action(locality_id, policies, zones_partition, aggregator.get());
-                    },
+                    { return action(locality_id, policies, zones_partition, aggregator.get()); },
 
                     aggregator);
             }
@@ -416,7 +412,8 @@ namespace lue {
                     [locality_id = localities[p], action, policies, functor](
                         InputPartition const& input_partition, ZonesPartition const& zones_partition)
                     {
-                        AnnotateFunction annotation{"zonal_operation"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: partition: call statistic action", functor_name<Functor>)};
 
                         return action(locality_id, policies, input_partition, zones_partition, functor);
                     },
@@ -436,7 +433,8 @@ namespace lue {
                 .then(
                     [](hpx::future<Aggregators>&& aggregators)
                     {
-                        AnnotateFunction annotation{"zonal_operation"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: array: merge", functor_name<Functor>)};
 
                         Aggregator result{};
 
@@ -464,7 +462,8 @@ namespace lue {
                     [locality_id = localities[p], action, policies, zones_partition = zones_partitions[p]](
                         hpx::shared_future<Aggregator> const& aggregator)
                     {
-                        AnnotateFunction annotation{"zonal_operation"};
+                        AnnotateFunction const annotation{
+                            fmt::format("{}: partition: call reclass action", functor_name<Functor>)};
 
                         return action(locality_id, policies, zones_partition, aggregator.get());
                     },

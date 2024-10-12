@@ -27,60 +27,81 @@ class OperationTest(lue_test.TestCase):
         lpr.configuration.partition_shape = cls.partition_shape
         lpr.configuration.cell_size = 10
 
+        cls.numeric_types = lue_test.numeric_types
+        cls.dtype_by_type = lue_test.dtype_by_type
+        cls.value = lue_test.value_by_type
         cls.non_spatial = {
-            np.uint8: np.uint8(1),
-            np.uint32: np.uint32(32),
-            np.uint64: np.uint32(64),
-            np.int32: np.int32(-32),
-            np.int64: np.int32(-64),
-            np.float32: np.float32(3.2),
-            np.float64: np.float64(6.4),
+            type_: lfr.create_scalar(cls.dtype_by_type[type_], cls.value[type_])
+            for type_ in cls.numeric_types
         }
         cls.spatial = {
-            np.uint8: lfr.create_array(
+            type_: lfr.create_array(
                 cls.array_shape,
-                np.uint8,
-                fill_value=cls.non_spatial[np.uint8],
+                type_,
+                fill_value=value,
                 partition_shape=cls.partition_shape,
-            ),
-            np.uint32: lfr.create_array(
-                cls.array_shape,
-                np.uint32,
-                fill_value=cls.non_spatial[np.uint32],
-                partition_shape=cls.partition_shape,
-            ),
-            np.uint64: lfr.create_array(
-                cls.array_shape,
-                np.uint64,
-                fill_value=cls.non_spatial[np.uint64],
-                partition_shape=cls.partition_shape,
-            ),
-            np.int32: lfr.create_array(
-                cls.array_shape,
-                np.int32,
-                fill_value=cls.non_spatial[np.int32],
-                partition_shape=cls.partition_shape,
-            ),
-            np.int64: lfr.create_array(
-                cls.array_shape,
-                np.int64,
-                fill_value=cls.non_spatial[np.int64],
-                partition_shape=cls.partition_shape,
-            ),
-            np.float32: lfr.create_array(
-                cls.array_shape,
-                np.float32,
-                fill_value=cls.non_spatial[np.float32],
-                partition_shape=cls.partition_shape,
-            ),
-            np.float64: lfr.create_array(
-                cls.array_shape,
-                np.float64,
-                fill_value=cls.non_spatial[np.float64],
-                partition_shape=cls.partition_shape,
-            ),
+            )
+            for type_, value in cls.value.items()
         }
+
+
+
+        # cls.non_spatial = {
+        #     np.uint8: np.uint8(1),
+        #     np.uint32: np.uint32(32),
+        #     np.uint64: np.uint64(64),
+        #     np.int32: np.int32(-32),
+        #     np.int64: np.int64(-64),
+        #     np.float32: np.float32(3.2),
+        #     np.float64: np.float64(6.4),
+        # }
+        # cls.spatial = {
+        #     np.uint8: lfr.create_array(
+        #         cls.array_shape,
+        #         np.uint8,
+        #         fill_value=cls.non_spatial[np.uint8],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.uint32: lfr.create_array(
+        #         cls.array_shape,
+        #         np.uint32,
+        #         fill_value=cls.non_spatial[np.uint32],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.uint64: lfr.create_array(
+        #         cls.array_shape,
+        #         np.uint64,
+        #         fill_value=cls.non_spatial[np.uint64],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.int32: lfr.create_array(
+        #         cls.array_shape,
+        #         np.int32,
+        #         fill_value=cls.non_spatial[np.int32],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.int64: lfr.create_array(
+        #         cls.array_shape,
+        #         np.int64,
+        #         fill_value=cls.non_spatial[np.int64],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.float32: lfr.create_array(
+        #         cls.array_shape,
+        #         np.float32,
+        #         fill_value=cls.non_spatial[np.float32],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        #     np.float64: lfr.create_array(
+        #         cls.array_shape,
+        #         np.float64,
+        #         fill_value=cls.non_spatial[np.float64],
+        #         partition_shape=cls.partition_shape,
+        #     ),
+        # }
+
         direction = 3
+
         cls.ldd = lfr.create_array(
             cls.array_shape, np.uint8, direction, partition_shape=cls.partition_shape
         )

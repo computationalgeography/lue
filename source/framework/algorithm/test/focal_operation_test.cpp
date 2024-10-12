@@ -15,6 +15,8 @@ class Functor
 
         using OutputElement = OutputElement_;
 
+        static constexpr char const* name{"functor"};
+
         Functor() = default;
 
         template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan1>

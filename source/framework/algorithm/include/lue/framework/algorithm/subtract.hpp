@@ -13,6 +13,8 @@ namespace lue {
 
             public:
 
+                static constexpr char const* name{"subtract"};
+
                 using OutputElement = OutputElement_;
 
 

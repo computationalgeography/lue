@@ -17,11 +17,11 @@ namespace lue {
 
         public:
 
-            static constexpr bool const is_functor{false};
+            static constexpr char const* name{SomeType::name};
     };
 
 
     template<typename Functor>
-    constexpr bool is_functor_v = FunctorTraits<Functor>::is_functor;
+    constexpr char const* functor_name = FunctorTraits<Functor>::name;
 
 }  // namespace lue

@@ -250,12 +250,12 @@ endif()
 
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
-    # This is the first numpy version supporting Python 3.9
-    set(LUE_MIN_NUMPY_VERSION 1.19)
+    # This is the first numpy version supporting Python 3.10
+    set(LUE_MIN_NUMPY_VERSION 1.21)
     string(REPLACE "." "_" LUE_NPY_NO_DEPRECATED_API "NPY_${LUE_MIN_NUMPY_VERSION}_API_VERSION")
 
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python 3.9 REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development NumPy)
 
     if((Python_INTERPRETER_ID STREQUAL "Anaconda") OR (Python_EXECUTABLE MATCHES "^.*conda.*$"))
         set(LUE_PYTHON_FROM_CONDA TRUE)
@@ -542,7 +542,8 @@ if(LUE_DOCOPT_REQUIRED)
         GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
         GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
         SYSTEM
-        FIND_PACKAGE_ARGS
+        # Using the system version is inconvenient since headers are then in a docopt/ subdirectory...
+        # FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(docopt)
 

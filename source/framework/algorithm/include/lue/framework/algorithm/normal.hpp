@@ -65,9 +65,8 @@ namespace lue {
                             // Standard mersenne_twister_engine seeded with the random_device
                             std::mt19937 random_number_engine(random_device());
 
-                            auto distribution = [mean, stddev]() {
-                                return std::normal_distribution<OutputElement>{mean, stddev};
-                            }();
+                            auto distribution = [mean, stddev]()
+                            { return std::normal_distribution<OutputElement>{mean, stddev}; }();
 
                             std::generate(
                                 output_partition_data.begin(),
@@ -263,16 +262,6 @@ namespace lue {
             Element const _mean;
 
             Element const _stddev;
-    };
-
-
-    template<typename Element, Rank rank>
-    class FunctorTraits<InstantiateNormal<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool const is_functor{true};
     };
 
 

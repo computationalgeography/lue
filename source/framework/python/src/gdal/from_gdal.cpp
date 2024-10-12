@@ -13,14 +13,14 @@ namespace lue::framework {
     namespace {
 
         template<typename Element>
-        pybind11::object from_gdal(std::string const& name, StaticShape<2> const& partition_shape)
+        auto from_gdal(std::string const& name, StaticShape<2> const& partition_shape) -> pybind11::object
         {
             return pybind11::cast(read<Element>(name, partition_shape));
         }
 
 
-        pybind11::object from_gdal_py(
-            std::string const& name, std::optional<pybind11::tuple> const& partition_shape)
+        auto from_gdal_py(std::string const& name, std::optional<pybind11::tuple> const& partition_shape)
+            -> pybind11::object
         {
             gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
             auto const raster_shape{gdal::shape(*dataset)};
@@ -95,6 +95,21 @@ namespace lue::framework {
             return result;
         }
 
+
+        auto probe_gdal(std::string const& name) -> pybind11::dict
+        {
+            // Open GDAL dataset and return its properties
+            gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
+            auto const raster_shape{gdal::shape(*dataset)};
+            auto const geo_transform{gdal::geo_transform(*dataset)};
+
+            pybind11::dict properties{};
+            properties("shape"_a = raster_shape);
+            properties("geo_transform"_a = geo_transform);
+
+            return properties;
+        }
+
     }  // Anonymous namespace
 
 
@@ -116,6 +131,17 @@ namespace lue::framework {
             pybind11::kw_only(),
             "partition_shape"_a = std::optional<pybind11::tuple>{},
             pybind11::return_value_policy::move);
+
+        module.def(
+            "probe_gdal",
+            probe_gdal,
+            R"(
+    Open raster using GDAL and return its properties
+
+    :param str name: Name of dataset to probe
+    :rtype: Dictionary with information found
+)",
+            "name"_a);
     }
 
 }  // namespace lue::framework

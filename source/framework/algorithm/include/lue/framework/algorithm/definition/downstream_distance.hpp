@@ -19,6 +19,8 @@ namespace lue {
 
                 static_assert(std::is_floating_point_v<DistanceElement>);
 
+                static constexpr char const* name{"downstream_distance"};
+
                 using OutputElement = DistanceElement;
 
 

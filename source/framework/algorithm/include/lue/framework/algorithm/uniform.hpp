@@ -314,16 +314,6 @@ namespace lue {
     };
 
 
-    template<typename Element, Rank rank>
-    class FunctorTraits<InstantiateUniform<Element, rank>>
-    {
-
-        public:
-
-            static constexpr bool const is_functor{true};
-    };
-
-
     template<typename Policies, typename Shape>
     requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
         Policies const& policies,
