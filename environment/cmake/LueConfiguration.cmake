@@ -250,12 +250,12 @@ endif()
 
 # ------------------------------------------------------------------------------
 if(LUE_PYTHON_REQUIRED)
-    # This is the first numpy version supporting Python 3.9
-    set(LUE_MIN_NUMPY_VERSION 1.19)
+    # This is the first numpy version supporting Python 3.10
+    set(LUE_MIN_NUMPY_VERSION 1.21)
     string(REPLACE "." "_" LUE_NPY_NO_DEPRECATED_API "NPY_${LUE_MIN_NUMPY_VERSION}_API_VERSION")
 
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python 3.9 REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development NumPy)
 
     if((Python_INTERPRETER_ID STREQUAL "Anaconda") OR (Python_EXECUTABLE MATCHES "^.*conda.*$"))
         set(LUE_PYTHON_FROM_CONDA TRUE)
