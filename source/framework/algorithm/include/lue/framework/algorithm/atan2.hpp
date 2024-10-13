@@ -6,9 +6,9 @@
 namespace lue {
 
     template<typename Policies, typename Element, Rank rank>
-    PartitionedArray<Element, rank> atan2(
+    auto atan2(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array1,
-        PartitionedArray<Element, rank> const& array2);
+        PartitionedArray<Element, rank> const& array2) -> PartitionedArray<Element, rank>;
 
 }  // namespace lue

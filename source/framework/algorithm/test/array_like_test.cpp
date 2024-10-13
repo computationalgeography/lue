@@ -28,7 +28,7 @@ namespace {
 
         BOOST_CHECK(all(output_array == fill_value).future().get());
 
-        if constexpr (lue::element_supported<std::uint32_t>)
+        if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
         {
             BOOST_CHECK(all(lue::locality_id(output_array) == lue::locality_id(input_array)).future().get());
         }

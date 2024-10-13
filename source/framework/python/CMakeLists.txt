@@ -28,101 +28,101 @@ file(GENERATE
 
 add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
-    src/algorithm/focal_operation/aspect.cpp
-    src/algorithm/focal_operation/focal_diversity.cpp
-    src/algorithm/focal_operation/focal_high_pass.cpp
-    src/algorithm/focal_operation/focal_majority.cpp
-    src/algorithm/focal_operation/focal_maximum.cpp
-    src/algorithm/focal_operation/focal_mean.cpp
-    src/algorithm/focal_operation/focal_minimum.cpp
-    src/algorithm/focal_operation/slope.cpp
-    src/algorithm/focal_operation/focal_sum.cpp
+    # src/algorithm/focal_operation/aspect.cpp
+    # src/algorithm/focal_operation/focal_diversity.cpp
+    # src/algorithm/focal_operation/focal_high_pass.cpp
+    # src/algorithm/focal_operation/focal_majority.cpp
+    # src/algorithm/focal_operation/focal_maximum.cpp
+    # src/algorithm/focal_operation/focal_mean.cpp
+    # src/algorithm/focal_operation/focal_minimum.cpp
+    # src/algorithm/focal_operation/slope.cpp
+    # src/algorithm/focal_operation/focal_sum.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED
     src/algorithm/global_operation.cpp
-    src/algorithm/global_operation/reclassify.cpp
-    src/algorithm/global_operation/maximum.cpp
-    src/algorithm/global_operation/minimum.cpp
-    src/algorithm/global_operation/sum.cpp
+    # src/algorithm/global_operation/reclassify.cpp
+    # src/algorithm/global_operation/maximum.cpp
+    # src/algorithm/global_operation/minimum.cpp
+    # src/algorithm/global_operation/sum.cpp
 )
 
 add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation.cpp
-    src/algorithm/local_operation/abs.cpp
-    src/algorithm/local_operation/acos.cpp
-    src/algorithm/local_operation/add.cpp
-    src/algorithm/local_operation/all.cpp
-    src/algorithm/local_operation/asin.cpp
-    src/algorithm/local_operation/atan.cpp
-    src/algorithm/local_operation/atan2.cpp
-    src/algorithm/local_operation/cast.cpp
-    src/algorithm/local_operation/cell_index.cpp
-    src/algorithm/local_operation/cos.cpp
-    src/algorithm/local_operation/divide.cpp
-    src/algorithm/local_operation/equal_to.cpp
-    src/algorithm/local_operation/ceil.cpp
-    src/algorithm/local_operation/exp.cpp
-    src/algorithm/local_operation/floor.cpp
-    src/algorithm/local_operation/greater_than.cpp
-    src/algorithm/local_operation/greater_than_equal_to.cpp
-    src/algorithm/local_operation/iterate_per_element.cpp
-    src/algorithm/local_operation/less_than.cpp
-    src/algorithm/local_operation/less_than_equal_to.cpp
-    src/algorithm/local_operation/log.cpp
-    src/algorithm/local_operation/log10.cpp
-    src/algorithm/local_operation/logical_and.cpp
-    src/algorithm/local_operation/logical_exclusive_or.cpp
-    src/algorithm/local_operation/logical_inclusive_or.cpp
-    src/algorithm/local_operation/logical_not.cpp
-    src/algorithm/local_operation/modulus.cpp
-    src/algorithm/local_operation/multiply.cpp
-    src/algorithm/local_operation/negate.cpp
-    src/algorithm/local_operation/not_equal_to.cpp
-    src/algorithm/local_operation/pow.cpp
-    src/algorithm/local_operation/round.cpp
-    src/algorithm/local_operation/sin.cpp
-    src/algorithm/local_operation/sqrt.cpp
-    src/algorithm/local_operation/subtract.cpp
-    src/algorithm/local_operation/tan.cpp
-    src/algorithm/local_operation/unique_id.cpp
-    src/algorithm/local_operation/valid.cpp
-    src/algorithm/local_operation/where.cpp
+    # src/algorithm/local_operation/abs.cpp
+    # src/algorithm/local_operation/acos.cpp
+    # src/algorithm/local_operation/add.cpp
+    # src/algorithm/local_operation/all.cpp
+    # src/algorithm/local_operation/asin.cpp
+    # src/algorithm/local_operation/atan.cpp
+    # src/algorithm/local_operation/atan2.cpp
+    # src/algorithm/local_operation/cast.cpp
+    # src/algorithm/local_operation/cell_index.cpp
+    # src/algorithm/local_operation/cos.cpp
+    # src/algorithm/local_operation/divide.cpp
+    # src/algorithm/local_operation/equal_to.cpp
+    # src/algorithm/local_operation/ceil.cpp
+    # src/algorithm/local_operation/exp.cpp
+    # src/algorithm/local_operation/floor.cpp
+    # src/algorithm/local_operation/greater_than.cpp
+    # src/algorithm/local_operation/greater_than_equal_to.cpp
+    # src/algorithm/local_operation/iterate_per_element.cpp
+    # src/algorithm/local_operation/less_than.cpp
+    # src/algorithm/local_operation/less_than_equal_to.cpp
+    # src/algorithm/local_operation/log.cpp
+    # src/algorithm/local_operation/log10.cpp
+    # src/algorithm/local_operation/logical_and.cpp
+    # src/algorithm/local_operation/logical_exclusive_or.cpp
+    # src/algorithm/local_operation/logical_inclusive_or.cpp
+    # src/algorithm/local_operation/logical_not.cpp
+    # src/algorithm/local_operation/modulus.cpp
+    # src/algorithm/local_operation/multiply.cpp
+    # src/algorithm/local_operation/negate.cpp
+    # src/algorithm/local_operation/not_equal_to.cpp
+    # src/algorithm/local_operation/pow.cpp
+    # src/algorithm/local_operation/round.cpp
+    # src/algorithm/local_operation/sin.cpp
+    # src/algorithm/local_operation/sqrt.cpp
+    # src/algorithm/local_operation/subtract.cpp
+    # src/algorithm/local_operation/tan.cpp
+    # src/algorithm/local_operation/unique_id.cpp
+    # src/algorithm/local_operation/valid.cpp
+    # src/algorithm/local_operation/where.cpp
 )
 
 add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation.cpp
     src/algorithm/routing_operation/accu.cpp
-    src/algorithm/routing_operation/accu3.cpp
-    src/algorithm/routing_operation/accu_fraction.cpp
-    src/algorithm/routing_operation/accu_info.cpp
-    src/algorithm/routing_operation/accu_info3.cpp
-    src/algorithm/routing_operation/accu_threshold.cpp
-    src/algorithm/routing_operation/accu_threshold3.cpp
-    src/algorithm/routing_operation/d8_flow_direction.cpp
-    src/algorithm/routing_operation/decreasing_order.cpp
-    src/algorithm/routing_operation/downstream.cpp
-    src/algorithm/routing_operation/downstream_distance.cpp
-    src/algorithm/routing_operation/first_n.cpp
-    src/algorithm/routing_operation/inflow_count.cpp
-    src/algorithm/routing_operation/inflow_count3.cpp
-    src/algorithm/routing_operation/inter_partition_stream.cpp
-    src/algorithm/routing_operation/kinematic_wave.cpp
-    src/algorithm/routing_operation/upstream.cpp
+    # src/algorithm/routing_operation/accu3.cpp
+    # src/algorithm/routing_operation/accu_fraction.cpp
+    # src/algorithm/routing_operation/accu_info.cpp
+    # src/algorithm/routing_operation/accu_info3.cpp
+    # src/algorithm/routing_operation/accu_threshold.cpp
+    # src/algorithm/routing_operation/accu_threshold3.cpp
+    # src/algorithm/routing_operation/d8_flow_direction.cpp
+    # src/algorithm/routing_operation/decreasing_order.cpp
+    # src/algorithm/routing_operation/downstream.cpp
+    # src/algorithm/routing_operation/downstream_distance.cpp
+    # src/algorithm/routing_operation/first_n.cpp
+    # src/algorithm/routing_operation/inflow_count.cpp
+    # src/algorithm/routing_operation/inflow_count3.cpp
+    # src/algorithm/routing_operation/inter_partition_stream.cpp
+    # src/algorithm/routing_operation/kinematic_wave.cpp
+    # src/algorithm/routing_operation/upstream.cpp
 )
 
 add_library(lue_py_framework_zonal_operation SHARED
     src/algorithm/zonal_operation.cpp
-    src/algorithm/zonal_operation/clump.cpp
-    src/algorithm/zonal_operation/zonal_area.cpp
-    src/algorithm/zonal_operation/zonal_diversity.cpp
-    src/algorithm/zonal_operation/zonal_majority.cpp
-    src/algorithm/zonal_operation/zonal_maximum.cpp
-    src/algorithm/zonal_operation/zonal_mean.cpp
-    src/algorithm/zonal_operation/zonal_minimum.cpp
-    src/algorithm/zonal_operation/zonal_normal.cpp
-    src/algorithm/zonal_operation/zonal_sum.cpp
-    src/algorithm/zonal_operation/zonal_uniform.cpp
+    # src/algorithm/zonal_operation/clump.cpp
+    # src/algorithm/zonal_operation/zonal_area.cpp
+    # src/algorithm/zonal_operation/zonal_diversity.cpp
+    # src/algorithm/zonal_operation/zonal_majority.cpp
+    # src/algorithm/zonal_operation/zonal_maximum.cpp
+    # src/algorithm/zonal_operation/zonal_mean.cpp
+    # src/algorithm/zonal_operation/zonal_minimum.cpp
+    # src/algorithm/zonal_operation/zonal_normal.cpp
+    # src/algorithm/zonal_operation/zonal_sum.cpp
+    # src/algorithm/zonal_operation/zonal_uniform.cpp
 )
 
 foreach(name focal global local routing zonal)
@@ -189,37 +189,37 @@ block()
 endblock()
 
 add_library(lue_py_framework SHARED
-    src/algorithm/array_partition_id.cpp
-    src/algorithm/locality_id.cpp
-    src/algorithm/timestamp.cpp
-    src/algorithm/normal.cpp
-    src/algorithm/uniform.cpp
+    # src/algorithm/array_partition_id.cpp
+    # src/algorithm/locality_id.cpp
+    # src/algorithm/timestamp.cpp
+    # src/algorithm/normal.cpp
+    # src/algorithm/uniform.cpp
 
     src/core/create_partitioned_array.cpp
     ${generated_source_files}
     src/core/scalar.cpp
     src/core/wait.cpp
 
-    src/io/read_array.cpp
-    src/io/write_array.cpp
+    # src/io/read_array.cpp
+    # src/io/write_array.cpp
 
     src/command_line.cpp
 
-    src/gdal/from_gdal.cpp
-    src/gdal/to_gdal.cpp
+    # src/gdal/from_gdal.cpp
+    # src/gdal/to_gdal.cpp
 
-    src/hpx.cpp
+    # src/hpx.cpp
     src/hpx_runtime.cpp
 
     src/model/model.cpp
     src/model/progressor.cpp
     src/model/simulate.cpp
 
-    src/numpy/from_numpy.cpp
-    src/numpy/to_numpy.cpp
+    # src/numpy/from_numpy.cpp
+    # src/numpy/to_numpy.cpp
 
-    src/partitioned_route/serial_route.cpp
-    src/partitioned_route/wait.cpp
+    # src/partitioned_route/serial_route.cpp
+    # src/partitioned_route/wait.cpp
 
     src/python_extension.cpp
     src/submodule.cpp

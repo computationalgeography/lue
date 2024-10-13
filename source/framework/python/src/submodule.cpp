@@ -1,6 +1,6 @@
 #include "lue/py/framework/submodule.hpp"
 #include "hpx_runtime.hpp"
-#include "lue/gdal.hpp"
+// #include "lue/gdal.hpp"
 #include <pybind11/stl.h>
 
 
@@ -36,7 +36,7 @@ namespace lue::framework {
         }
 
 
-        bool on_root_locality()
+        auto on_root_locality() -> bool
         {
             return hpx::find_here() == hpx::find_root_locality();
         }
@@ -87,7 +87,7 @@ namespace lue::framework {
     The :mod:`lue.framework` package ...
 )");
 
-        gdal::register_gdal_drivers();
+        // gdal::register_gdal_drivers();
 
         submodule.def("start_hpx_runtime", &start_hpx_runtime);
 
@@ -95,39 +95,39 @@ namespace lue::framework {
 
         submodule.def("on_root_locality", &on_root_locality);
 
-        bind_hpx(submodule);
+        // bind_hpx(submodule);
 
         // Wrap high-level data structures
         bind_scalar(submodule);
         bind_partitioned_array(submodule);
-        bind_serial_route(submodule);
-        bind_wait_serial_route(submodule);
+        // bind_serial_route(submodule);
+        // bind_wait_serial_route(submodule);
 
         // Wrap high-level algorithms
         bind_create_array(submodule);
         bind_wait_partitioned_array(submodule);
-        bind_focal_operations(submodule);
-        bind_global_operations(submodule);
-        bind_local_operations(submodule);
-        bind_routing_operations(submodule);
-        bind_zonal_operations(submodule);
-        bind_read_array(submodule);
-        bind_write_array(submodule);
+        // bind_focal_operations(submodule);
+        // bind_global_operations(submodule);
+        // bind_local_operations(submodule);
+        // bind_routing_operations(submodule);
+        // bind_zonal_operations(submodule);
+        // bind_read_array(submodule);
+        // bind_write_array(submodule);
 
-        bind_array_partition_id(submodule);
-        bind_locality_id(submodule);
-        bind_normal(submodule);
-        bind_timestamp(submodule);
-        bind_uniform(submodule);
+        // bind_array_partition_id(submodule);
+        // bind_locality_id(submodule);
+        // bind_normal(submodule);
+        // bind_timestamp(submodule);
+        // bind_uniform(submodule);
 
         bind_model(submodule);
         bind_progressor(submodule);
         bind_simulate(submodule);
 
-        bind_from_numpy(submodule);
-        bind_to_numpy(submodule);
-        bind_from_gdal(submodule);
-        bind_to_gdal(submodule);
+        // bind_from_numpy(submodule);
+        // bind_to_numpy(submodule);
+        // bind_from_gdal(submodule);
+        // bind_to_gdal(submodule);
 
         // Unless the user calls stop_hpx_runtime explicitly, we will do it
         // automatically upon module unload

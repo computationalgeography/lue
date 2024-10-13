@@ -25,22 +25,22 @@ namespace lue::framework {
     PYBIND11_EXPORT void bind_routing_operations(pybind11::module& module)
     {
         bind_accu(module);
-        bind_accu3(module);
-        bind_accu_fraction(module);
-        bind_accu_info(module);
-        bind_accu_info3(module);
-        bind_accu_threshold(module);
-        bind_accu_threshold3(module);
-        bind_d8_flow_direction(module);
-        bind_decreasing_order(module);
-        bind_downstream(module);
-        bind_downstream_distance(module);
-        bind_first_n(module);
-        bind_inflow_count(module);
-        bind_inflow_count3(module);
-        bind_inter_partition_stream(module);
-        bind_kinematic_wave(module);
-        bind_upstream(module);
+        // bind_accu3(module);
+        // bind_accu_fraction(module);
+        // bind_accu_info(module);
+        // bind_accu_info3(module);
+        // bind_accu_threshold(module);
+        // bind_accu_threshold3(module);
+        // bind_d8_flow_direction(module);
+        // bind_decreasing_order(module);
+        // bind_downstream(module);
+        // bind_downstream_distance(module);
+        // bind_first_n(module);
+        // bind_inflow_count(module);
+        // bind_inflow_count3(module);
+        // bind_inter_partition_stream(module);
+        // bind_kinematic_wave(module);
+        // bind_upstream(module);
     }
 
 }  // namespace lue::framework

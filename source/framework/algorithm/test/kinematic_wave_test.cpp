@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(dry_cell)
 
 BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
 {
-    if constexpr (lue::element_supported<double>)
+    if constexpr (lue::arithmetic_element_supported<double>)
     {
         // TODO Port to all float types
         using FloatingPoint = double;

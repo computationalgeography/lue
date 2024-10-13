@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     // instantiated within the same locality contain the same numbers. The
     // elements within each partition have the same number.
 
-    if constexpr (lue::element_supported<std::uint32_t>)
+    if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
     {
         using namespace lue::default_policies;
 

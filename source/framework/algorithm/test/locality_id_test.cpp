@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 {
     lue::Rank const rank{2};
 
-    if constexpr (lue::element_supported<std::uint32_t>)
+    if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
     {
         test_array<lue::SignedIntegralElement<0>, rank>();
     }

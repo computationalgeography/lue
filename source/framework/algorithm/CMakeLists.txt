@@ -237,9 +237,9 @@ block()
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(rank IN LISTS ranks)
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
-			    math(EXPR count "${count} + 1")
+                math(EXPR count "${count} + 1")
 
                 # Instantiate modulus
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${count}.cpp")
@@ -253,7 +253,6 @@ block()
                         '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-
             endforeach()
         endforeach()
     endforeach()
@@ -679,6 +678,7 @@ block()
 endblock()
 # / Instantiate local operations -----------------------------------------------
 
+message("YEAH: ${generated_source_files}")
 add_library(lue_framework_local_operation SHARED
     ${generated_source_files}
 )

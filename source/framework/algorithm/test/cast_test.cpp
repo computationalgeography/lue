@@ -466,7 +466,9 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
         using InputElement = std::int32_t;
         using OutputElement = std::uint32_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min() + 1};
             InputElement const max{std::numeric_limits<InputElement>::max()};
@@ -512,7 +514,9 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
         using InputElement = std::int32_t;
         using OutputElement = std::uint64_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min() + 1};
             InputElement const max{std::numeric_limits<InputElement>::max()};
@@ -558,7 +562,9 @@ BOOST_AUTO_TEST_CASE(signed_integer_to_unsigned_integer)
         using InputElement = std::int64_t;
         using OutputElement = std::uint32_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min() + 1};
             InputElement const input_max{std::numeric_limits<InputElement>::max()};
@@ -615,7 +621,9 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
         using InputElement = std::uint32_t;
         using OutputElement = std::int32_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min()};
             InputElement const max{std::numeric_limits<InputElement>::max() - 1};
@@ -661,7 +669,9 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
         using InputElement = std::uint32_t;
         using OutputElement = std::int64_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min()};
             InputElement const max{std::numeric_limits<InputElement>::max() - 1};
@@ -707,7 +717,9 @@ BOOST_AUTO_TEST_CASE(unsigned_integer_to_signed_integer)
         using InputElement = std::uint64_t;
         using OutputElement = std::int32_t;
 
-        if constexpr (lue::element_supported<InputElement> && lue::element_supported<OutputElement>)
+        if constexpr (
+            lue::arithmetic_element_supported<InputElement> &&
+            lue::arithmetic_element_supported<OutputElement>)
         {
             InputElement const min{std::numeric_limits<InputElement>::min()};
             InputElement const max{std::numeric_limits<InputElement>::max() - 1};

@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(overloads)
     {
         auto array{lue::default_policies::uniform<Element>(array_shape, partition_shape, 0, 100)};
 
-        if constexpr (lue::element_supported<lue::ClockTick>)
+        if constexpr (lue::arithmetic_element_supported<lue::ClockTick>)
         {
             auto result = lue::timestamp(array);
         }
