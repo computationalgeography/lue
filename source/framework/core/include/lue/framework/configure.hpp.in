@@ -32,6 +32,28 @@ namespace lue {
     using FloatingPointElements = std::tuple< {{ FloatingPointElements | join(", ") }} >;
 
     /*!
+        @brief      All integral element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+
+        This collection of types contains all signed and unsigned integral element types.
+    */
+    using IntegralElements = std::tuple< {{ (UnsignedIntegralElements + SignedIntegralElements) | join(", ") }} >;
+
+    /*!
+        @brief      All arithmetic element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+
+        This collection of types contains all integral and floating point element types.
+    */
+    using ArithmeticElements = std::tuple< {{ (UnsignedIntegralElements + SignedIntegralElements + FloatingPointElements) | join(", ") }} >;
+
+    /*!
+        @brief      All material element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+    */
+    using MaterialElements = std::tuple< {{ MaterialElements | join(", ") }} >;
+
+    /*!
         @brief      The Boolean element type type for which relevant class and function templates are
                     instantiated
 

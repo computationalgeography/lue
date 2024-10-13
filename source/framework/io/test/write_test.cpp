@@ -5,6 +5,7 @@
 #include "lue/framework/io/write_into.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
+#include "lue/framework.hpp"
 #include <hpx/config.hpp>
 
 
@@ -27,7 +28,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     ldm::ID object_id{};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     {
         // Prepare a dataset for storing the rasters in
@@ -103,7 +104,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     ldm::Count const nr_rows{62};
     ldm::Count const nr_cols{42};
 
-    using Element = std::int32_t;
+    using Element = lue::SignedIntegralElement<0>;
 
     ldm::ID object_id{};
 

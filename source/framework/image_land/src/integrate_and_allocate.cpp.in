@@ -5,11 +5,11 @@
 LUE_REGISTER_INTEGRATE_AND_ALLOCATE_ACTION_DECLARATIONS(
     ESC(lue::policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
     {{ rank }},
-    {{ ZoneElement }}_{{ FloatingPointElement }}_{{ rank }});
+    {{ ZoneElement | replace("::", "_") }}_{{ FloatingPointElement }}_{{ rank }});
 LUE_REGISTER_INTEGRATE_AND_ALLOCATE_ACTIONS(
     ESC(lue::policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
     {{ rank }},
-    {{ ZoneElement }}_{{ FloatingPointElement }}_{{ rank }});
+    {{ ZoneElement | replace("::", "_") }}_{{ FloatingPointElement }}_{{ rank }});
 
 
 namespace lue {

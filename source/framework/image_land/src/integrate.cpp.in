@@ -5,11 +5,11 @@
 LUE_REGISTER_INTEGRATE_ACTION_DECLARATIONS(
     ESC(lue::policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
     {{ rank }},
-    {{ RouteID }}_{{ rank }});
+    {{ RouteID | replace("::", "_") }}_{{ rank }});
 LUE_REGISTER_INTEGRATE_ACTIONS(
     ESC(lue::policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
     {{ rank }},
-    {{ RouteID }}_{{ rank }});
+    {{ RouteID | replace("::", "_") }}_{{ rank }});
 
 
 namespace lue {

@@ -1459,13 +1459,11 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-set(material_elements uint64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
-
 block()
     set(count "0")
 
     foreach(Policies IN LISTS all_policies)
-        foreach(Element IN LISTS material_elements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
             math(EXPR count "${count} + 1")
 
             # Instantiate accu
@@ -1490,7 +1488,7 @@ block()
     set(count "0")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS material_elements)
+        foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
             math(EXPR count "${count} + 1")
 
             # Instantiate upstream

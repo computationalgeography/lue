@@ -5,8 +5,8 @@
 namespace lue {
 
     template<typename Array, typename DatasetPtr>
-    hpx::future<void> write(
-        Array const& array, typename data_model::constant::RasterView<DatasetPtr>::Layer& layer)
+    auto write(
+        Array const& array, typename data_model::constant::RasterView<DatasetPtr>::Layer& layer) -> hpx::future<void>
     {
         // TODO Make this asynchronous
 
@@ -62,10 +62,10 @@ namespace lue {
 
 
     template<typename Array, typename DatasetPtr>
-    hpx::future<void> write(
+    auto write(
         Array const& array,
         typename data_model::variable::RasterView<DatasetPtr>::Layer& layer,
-        data_model::Index const idx)
+        data_model::Index const idx) -> hpx::future<void>
     {
         // TODO Make this asynchronous
 
@@ -148,7 +148,7 @@ namespace lue {
 
 
     template<typename Array>
-    hpx::future<void> write(Array const& /* array */, std::string const& /* pathname */)
+    auto write(Array const& /* array */, std::string const& /* pathname */) -> hpx::future<void>
     {
         // TODO Create and use constant::RasterView
 
@@ -158,37 +158,31 @@ namespace lue {
     }
 
 
-#define INSTANTIATE_WRITE_1(Element, DatasetPtr)                                                             \
-    template hpx::future<void> write<PartitionedArray<Element, 2>, DatasetPtr>(                              \
-        PartitionedArray<Element, 2> const& array,                                                           \
-        data_model::constant::RasterView<DatasetPtr>::Layer& layer);                                         \
-                                                                                                             \
-    template hpx::future<void> write<PartitionedArray<Element, 2>, DatasetPtr>(                              \
-        PartitionedArray<Element, 2> const& array,                                                           \
-        data_model::variable::RasterView<DatasetPtr>::Layer& layer,                                          \
-        data_model::Index idx);
+    {% for Element in Elements %}
+        {% for rank in ranks %}
 
-#define INSTANTIATE_WRITE_2(Element)                                                                         \
-    template hpx::future<void> write<PartitionedArray<Element, 2>>(                                          \
-        PartitionedArray<Element, 2> const& array, std::string const& pathname);
+            template hpx::future<void> write<PartitionedArray<{{ Element }}, {{ rank }}>, data_model::Dataset*>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::constant::RasterView<data_model::Dataset*>::Layer&);
 
-#define INSTANTIATE_WRITE(Element)                                                                           \
-    INSTANTIATE_WRITE_1(Element, data_model::Dataset*)                                                       \
-    INSTANTIATE_WRITE_1(Element, std::shared_ptr<data_model::Dataset>)                                       \
-    INSTANTIATE_WRITE_2(Element)
+            template hpx::future<void> write<PartitionedArray<{{ Element }}, {{ rank }}>, data_model::Dataset*>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::variable::RasterView<data_model::Dataset*>::Layer&,
+                data_model::Index);
 
-    INSTANTIATE_WRITE(bool)
-    INSTANTIATE_WRITE(uint8_t)
-    INSTANTIATE_WRITE(uint32_t)
-    INSTANTIATE_WRITE(uint64_t)
-    INSTANTIATE_WRITE(int8_t)
-    INSTANTIATE_WRITE(int32_t)
-    INSTANTIATE_WRITE(int64_t)
-    INSTANTIATE_WRITE(float)
-    INSTANTIATE_WRITE(double)
+            template hpx::future<void> write<PartitionedArray<{{ Element }}, {{ rank }}>, std::shared_ptr<data_model::Dataset>>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::constant::RasterView<std::shared_ptr<data_model::Dataset>>::Layer&);
 
-#undef INSTANTIATE_WRITE
-#undef INSTANTIATE_WRITE_2
-#undef INSTANTIATE_WRITE_1
+            template hpx::future<void> write<PartitionedArray<{{ Element }}, {{ rank }}>, std::shared_ptr<data_model::Dataset>>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::variable::RasterView<std::shared_ptr<data_model::Dataset>>::Layer&,
+                data_model::Index);
+
+            template hpx::future<void> write<PartitionedArray<{{ Element }}, {{ rank }}>>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&);
+
+        {% endfor %}
+    {% endfor %}
 
 }  // namespace lue

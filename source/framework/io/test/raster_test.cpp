@@ -2,14 +2,15 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/io/raster.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <hpx/config.hpp>
 
 
 BOOST_AUTO_TEST_CASE(round_trip_1)
 {
-    // int32_t, all valid
-    using Element = std::int32_t;
+    // Signed int, all valid
+    using Element = lue::SignedIntegralElement<0>;
     using Array = lue::PartitionedArray<Element, 2>;
     lue::ShapeT<Array> array_shape{60, 40};
     lue::ShapeT<Array> partition_shape{10, 10};
@@ -30,8 +31,8 @@ BOOST_AUTO_TEST_CASE(round_trip_1)
 
 BOOST_AUTO_TEST_CASE(round_trip_2)
 {
-    // int32_t, none valid
-    using Element = std::int32_t;
+    // Signed int, none valid
+    using Element = lue::SignedIntegralElement<0>;
     using Array = lue::PartitionedArray<Element, 2>;
     lue::ShapeT<Array> array_shape{60, 40};
     lue::ShapeT<Array> partition_shape{10, 10};
@@ -52,8 +53,8 @@ BOOST_AUTO_TEST_CASE(round_trip_2)
 
 BOOST_AUTO_TEST_CASE(round_trip_3)
 {
-    // float, all valid
-    using Element = float;
+    // Float, all valid
+    using Element = lue::FloatingPointElement<0>;
     using Array = lue::PartitionedArray<Element, 2>;
     lue::ShapeT<Array> array_shape{60, 40};
     lue::ShapeT<Array> partition_shape{10, 10};
@@ -74,8 +75,8 @@ BOOST_AUTO_TEST_CASE(round_trip_3)
 
 BOOST_AUTO_TEST_CASE(round_trip_4)
 {
-    // float, none valid
-    using Element = float;
+    // Float, none valid
+    using Element = lue::FloatingPointElement<0>;
     using Array = lue::PartitionedArray<Element, 2>;
     lue::ShapeT<Array> array_shape{60, 40};
     lue::ShapeT<Array> partition_shape{10, 10};

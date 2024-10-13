@@ -649,11 +649,11 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> write(
+    [[nodiscard]] auto write(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> hpx::future<void>
     {
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
@@ -723,10 +723,10 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> write(
+    [[nodiscard]] auto write(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> hpx::future<void>
     {
         using Policies = policy::write_into::DefaultPolicies<Element>;
 
@@ -735,12 +735,12 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> write(
+    [[nodiscard]] auto write(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> hpx::future<void>
     {
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
@@ -815,11 +815,11 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> write(
+    [[nodiscard]] auto write(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> hpx::future<void>
     {
         using Policies = policy::write_into::DefaultPolicies<Element>;
 

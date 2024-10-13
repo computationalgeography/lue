@@ -64,14 +64,17 @@ namespace lue {
 
 
     template<typename Element>
+    constexpr bool integral_element_supported = detail::element_type_supported_v<Element, IntegralElements>;
+
+
+    template<typename Element>
     constexpr bool floating_point_element_supported =
         detail::element_type_supported_v<Element, FloatingPointElements>;
 
 
     template<typename Element>
-    constexpr bool element_supported =
-        unsigned_integral_element_supported<Element> || signed_integral_element_supported<Element> ||
-        floating_point_element_supported<Element>;
+    constexpr bool arithmetic_element_supported =
+        detail::element_type_supported_v<Element, ArithmeticElements>;
 
 
     using LargestIntegralElement = std::conditional_t<
@@ -137,17 +140,24 @@ namespace lue {
         std::conditional_t<floating_point_element_supported<double>, double, void>>;
 
     static_assert(
-        element_supported<BooleanElement>,
+        integral_element_supported<BooleanElement>,
         "Reconfigure: BooleanElement must be one of the integral elements");
 
     static_assert(
-        element_supported<CountElement>, "Reconfigure: CountElement must be one of the integral elements");
+        integral_element_supported<CountElement>,
+        "Reconfigure: CountElement must be one of the integral elements");
 
     static_assert(
-        element_supported<IndexElement>, "Reconfigure: IndexElement must be one of the integral elements");
+        integral_element_supported<IndexElement>,
+        "Reconfigure: IndexElement must be one of the integral elements");
 
     static_assert(
-        element_supported<FlowDirectionElement>,
+        integral_element_supported<FlowDirectionElement>,
         "Reconfigure: FlowDirectionElement must be one of the integral elements");
+
+
+    template<typename T>
+    concept ArithmeticElement = arithmetic_element_supported<T>;
+
 
 }  // namespace lue

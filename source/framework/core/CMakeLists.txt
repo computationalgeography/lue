@@ -20,13 +20,18 @@ block()
     list(TRANSFORM FloatingPointElements APPEND "\"")
     list(JOIN FloatingPointElements ", " FloatingPointElements)
 
+    set(MaterialElements ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})
+    list(TRANSFORM MaterialElements PREPEND "\"")
+    list(TRANSFORM MaterialElements APPEND "\"")
+    list(JOIN MaterialElements ", " MaterialElements)
+
     generate_template_instantiation(
         INPUT_PATHNAME
             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/configure.hpp.in"
         OUTPUT_PATHNAME
             "${CMAKE_CURRENT_BINARY_DIR}/${offset}/configure.hpp"
         DICTIONARY
-        '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
+        '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","MaterialElements":[${MaterialElements}],"SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
     )
 endblock()
 

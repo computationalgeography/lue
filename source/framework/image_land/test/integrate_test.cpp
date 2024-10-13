@@ -2,14 +2,15 @@
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using ZoneElement = std::int32_t;
+    using ZoneElement = lue::SignedIntegralElement<0>;
     using RouteID = ZoneElement;
-    using SuitabilityElement = float;
-    using IntegrandElement = float;
+    using SuitabilityElement = lue::FloatingPointElement<0>;
+    using IntegrandElement = lue::FloatingPointElement<0>;
 
     lue::Rank const rank{2};
 
