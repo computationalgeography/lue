@@ -11,7 +11,7 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<typename Element, Rank rank>
+        template<ArithmeticElement Element, Rank rank>
         auto create_array(
             ShapeT<PartitionedArray<Element, rank>> const& array_shape,
             ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
@@ -54,14 +54,26 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(
-                                create_array<std::int32_t, rank>(array_shape, partition_shape, fill_value));
+                            using Element = std::int32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(
-                                create_array<std::int64_t, rank>(array_shape, partition_shape, fill_value));
+                            using Element = std::int64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                     }
@@ -75,20 +87,38 @@ namespace lue::framework {
                     {
                         case 1:
                         {
-                            result = pybind11::cast(
-                                create_array<std::uint8_t, rank>(array_shape, partition_shape, fill_value));
+                            using Element = std::uint8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                         case 4:
                         {
-                            result = pybind11::cast(
-                                create_array<std::uint32_t, rank>(array_shape, partition_shape, fill_value));
+                            using Element = std::uint32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(
-                                create_array<std::uint64_t, rank>(array_shape, partition_shape, fill_value));
+                            using Element = std::uint64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                     }
@@ -102,14 +132,26 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(
-                                create_array<float, rank>(array_shape, partition_shape, fill_value));
+                            using Element = float;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(
-                                create_array<double, rank>(array_shape, partition_shape, fill_value));
+                            using Element = double;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
                             break;
                         }
                     }

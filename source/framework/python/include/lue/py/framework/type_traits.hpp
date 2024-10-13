@@ -31,7 +31,7 @@ namespace lue::framework {
                                                                                                              \
             inline static std::string const name{name_};                                                     \
                                                                                                              \
-            inline static pybind11::dtype dtype()                                                            \
+            inline static auto dtype() -> pybind11::dtype                                                    \
             {                                                                                                \
                 return pybind11::dtype::of<Element>();                                                       \
             }                                                                                                \

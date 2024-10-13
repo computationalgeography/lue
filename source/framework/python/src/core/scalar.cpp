@@ -1,4 +1,6 @@
 #include "lue/py/framework/core/scalar.hpp"
+#include "lue/framework/configure.hpp"
+#include "lue/concept.hpp"
 
 
 using namespace pybind11::literals;
@@ -101,6 +103,39 @@ namespace lue::framework {
 
     }  // Anonymous namespace
 
+    namespace {
+
+        template<Arithmetic Element>
+        void bind(pybind11::module& module)
+        {
+            bind_scalar<Element>(module);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx == 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx > 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+            bind<Elements, idx - 1>(module);
+        }
+
+
+        template<TupleLike Elements>
+        void bind(pybind11::module& module)
+        {
+            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
+        }
+
+    }  // Anonymous namespace
+
+
     void bind_scalar(pybind11::module& module)
     {
         module.def(
@@ -115,13 +150,7 @@ namespace lue::framework {
             "dtype"_a,
             "value"_a);
 
-        bind_scalar<std::uint8_t>(module);
-        bind_scalar<std::uint32_t>(module);
-        bind_scalar<std::uint64_t>(module);
-        bind_scalar<std::int32_t>(module);
-        bind_scalar<std::int64_t>(module);
-        bind_scalar<float>(module);
-        bind_scalar<double>(module);
+        bind<ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework
