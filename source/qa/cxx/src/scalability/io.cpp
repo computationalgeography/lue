@@ -4,7 +4,6 @@
 
 
 namespace lue::qa {
-
     namespace {
 
         /*!
@@ -87,7 +86,8 @@ namespace lue::qa {
 
 
     /*!
-        @brief      Save the experiment results to a file
+        @brief      Save the @a experiment results to a file called @a pathname
+        @exception  std::runtime_error In case the file cannot be opened or is not writable
     */
     void save_results(ArrayExperiment const& experiment, std::string const& pathname)
     {

@@ -124,6 +124,10 @@ foreach(name IN ITEMS
     framework/partitioned_route/doc/index.md
 
     framework/doc/index.md
+
+    qa/doc/index.md
+    qa/cxx/doc/index.md
+    qa/python/doc/index.md
 )
     configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)
 endforeach()

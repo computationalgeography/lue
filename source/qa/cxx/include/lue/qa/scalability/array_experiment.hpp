@@ -24,7 +24,7 @@ namespace lue::qa {
 
             ArrayExperiment(ArrayExperiment&&) = default;
 
-            ~ArrayExperiment() = default;
+            ~ArrayExperiment() override = default;
 
             auto operator=(ArrayExperiment const&) -> ArrayExperiment& = default;
 

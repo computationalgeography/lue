@@ -15,13 +15,15 @@ namespace lue::qa {
     /*!
         @brief      The Experiment class represents the results of performing one or more experimental runs
 
-        During a scalability experiment, software is being executed one or multiple
-        times. Executing it multiple times allows for the calculation of statistics, like the
-        mean duration a run took.
+        During a scalability experiment, software is being executed once or multiple times. Executing it
+        multiple times allows for the calculation of statistics, like the mean duration a run took.
+
+        This class inherits from Run, so it is an experimental run itself. This allows the duration of the
+        whole "experiment run" to be measured.
 
         Typical pattern:
 
-        \code
+        @code{.cpp}
         Experiment experiment(nr_workers);
         experiment.start();
 
@@ -31,19 +33,25 @@ namespace lue::qa {
 
             // Do any preprocessing before this point. Also, be sure to wait
             // for any asynchronous work started to finish.
+            // ...
+
+            // Now start the run, measuring its duration
             run.start();
 
             // The actual work to measure the runtime of
             do_something();
 
             // Be sure to first wait for any asynchronous work started to finish
+            // ...
+
+            // Now stop this run and store the results. Do any post processing after this point.
             run.stop();
             experiment.add(run);
         }
 
         experiment.stop();
         save_results(experiment, result_pathname);
-        \endcode
+        @endcode
     */
     class Experiment: public Run
     {
@@ -56,7 +64,7 @@ namespace lue::qa {
 
             Experiment(Experiment&&) = default;
 
-            ~Experiment() = default;
+            ~Experiment() override = default;
 
             auto operator=(Experiment const&) -> Experiment& = default;
 

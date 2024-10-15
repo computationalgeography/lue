@@ -17,7 +17,7 @@ namespace lue::qa {
             submodule,
             "Experiment",
             R"(
-    Class for instances containing information about a scalability experiment.
+    Class for instances containing information about scalability experiments
 )")
             .def("add", &Experiment::add, "run"_a)
 
@@ -27,8 +27,12 @@ namespace lue::qa {
             submodule,
             "ArrayExperiment",
             R"(
-    Class for instances containing information about an array scalability
-    experiment.
+    Class for instances containing information about a scalability experiments involving (2D) partitioned
+    arrays
+
+    :param int nr_workers:
+    :param tuple array_shape: Shape of the array
+    :param tuple partition_shape: Shape of the array partitions
 )")
             .def(
                 pybind11::init<Count, Shape const&, Shape const&>(),

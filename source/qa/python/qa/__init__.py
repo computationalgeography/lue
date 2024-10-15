@@ -1,3 +1,8 @@
+"""
+:mod:`lue.qa` --- LUE Quality Assurance
+=======================================
+"""
+
 try:
     from ..lue_py.qa import *
 except ModuleNotFoundError:
