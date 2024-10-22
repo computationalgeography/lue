@@ -11,6 +11,11 @@ namespace lue::qa {
             R"(
     :mod:`lue_py_qa` --- LUE Quality Assurance
     ==========================================
+
+    .. note
+
+       Most classes and functions are thin wrappers around their C++ counterparts. See for more details the
+       C++ API documentation.
 )";
         module.attr("__version__") = pybind11::str(version());
         module.attr("lue_version") = pybind11::str(version());

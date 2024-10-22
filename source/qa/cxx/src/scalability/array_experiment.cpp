@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/array_experiment.hpp"
+#include "lue/qa/scalability/instrument/array_experiment.hpp"
 
 
 namespace lue::qa {

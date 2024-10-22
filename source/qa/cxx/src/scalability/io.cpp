@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/io.hpp"
+#include "lue/qa/scalability/instrument/io.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 

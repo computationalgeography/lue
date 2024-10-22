@@ -2,7 +2,6 @@
 
 # C++
 
-
 ```{eval-rst}
 .. doxygenclass:: lue::qa::Experiment
 .. doxygenclass:: lue::qa::ArrayExperiment

@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/time_interval.hpp"
+#include "lue/qa/scalability/instrument/time_interval.hpp"
 #include <cassert>
 
 

@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/experiment.hpp"
+#include "lue/qa/scalability/instrument/experiment.hpp"
 
 
 namespace lue::qa {

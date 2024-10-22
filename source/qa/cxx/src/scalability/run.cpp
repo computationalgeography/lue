@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/run.hpp"
+#include "lue/qa/scalability/instrument/run.hpp"
 
 
 namespace lue::qa {

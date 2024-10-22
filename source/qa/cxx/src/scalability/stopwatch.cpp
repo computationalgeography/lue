@@ -1,4 +1,4 @@
-#include "lue/qa/scalability/stopwatch.hpp"
+#include "lue/qa/scalability/instrument/stopwatch.hpp"
 
 
 namespace lue::qa {

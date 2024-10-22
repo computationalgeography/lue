@@ -2,18 +2,13 @@
 
 # Python
 
-<!--
-TODO For some reason, automodule does not pick up documentation from the Python package
---->
-
 ```{eval-rst}
 .. automodule:: lue.qa
-
-.. autoclass:: lue.qa.Experiment
-
-.. autoclass:: lue.qa.ArrayExperiment
-
-.. autoclass:: lue.qa.Run
-
-.. autofunction:: save_results
+.. automodule:: lue.qa.correctness
+.. automodule:: lue.qa.scalability
+.. automodule:: lue.qa.scalability.instrument
+.. autoclass:: lue.qa.scalability.instrument.Experiment
+.. autoclass:: lue.qa.scalability.instrument.ArrayExperiment
+.. autoclass:: lue.qa.scalability.instrument.Run
+.. autofunction:: lue.qa.scalability.instrument.save_results
 ```
