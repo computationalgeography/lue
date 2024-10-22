@@ -5,7 +5,6 @@ exclude: |
     environment/cmake/.*\.patch|
     environment/cmake/UseLATEX\.cmake|
     environment/cmake/conan-.*\.cmake|
-    # environment/conda/meta\.yaml|
     source/view/imgui/include/lue/imgui/font/.*
   )$
 repos:
@@ -76,7 +75,5 @@ repos:
         source/data_model/utility/.*|
         source/data_model/validate/.*|
         source/framework/.*|
-        source/python/.*|
-        source/qa/.*|
         source/view/.*|
       )$
