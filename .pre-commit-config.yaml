@@ -32,8 +32,6 @@ repos:
         document/luepy/ext/.*|
         source/framework/case_study/.*|
         source/framework/python/test/.*|
-        source/qa/python/qa/.*|
-        source/qa/script/.*|
       )$
 - repo: https://github.com/pycqa/isort
   rev: 5.13.2

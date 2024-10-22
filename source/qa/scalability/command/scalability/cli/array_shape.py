@@ -1,15 +1,20 @@
-#!/usr/bin/env python
+"""
+Implementation of the array_shape command-line utility
+"""
+
 import functools
 import os.path
 import sys
 
 import docopt
 
+from lue import __version__ as lue_version
 from lue.command.scalability.experiment.shape import array_shape
 
 
-usage = """\
-Calculate array shape to use for scaling experiments
+def main():
+    usage = """\
+Calculate array shape to use for scalability experiments
 
 Usage:
     {command} <memory> <rank> <nr_arrays> <size_of_element> <nr_nodes>
@@ -26,12 +31,10 @@ Wikipedia:
     In the context of computer memory, gigabyte and GB are customarily
     used to mean 1024³ (2³⁰) bytes.
 """.format(
-    command=os.path.basename(sys.argv[0])
-)
+        command=os.path.basename(sys.argv[0])
+    )
 
-
-if __name__ == "__main__":
-    arguments = docopt.docopt(usage)
+    arguments = docopt.docopt(usage, version=lue_version)
 
     memory_available = int(arguments["<memory>"])
     memory_available *= 2**30
