@@ -95,7 +95,7 @@ namespace lue::framework {
 
         submodule.def("on_root_locality", &on_root_locality);
 
-        // bind_hpx(submodule);
+        bind_hpx(submodule);
 
         // Wrap high-level data structures
         bind_scalar(submodule);

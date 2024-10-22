@@ -92,7 +92,7 @@ add_library(lue_py_framework_local_operation SHARED
 
 add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation.cpp
-    src/algorithm/routing_operation/accu.cpp
+    # src/algorithm/routing_operation/accu.cpp
     # src/algorithm/routing_operation/accu3.cpp
     # src/algorithm/routing_operation/accu_fraction.cpp
     # src/algorithm/routing_operation/accu_info.cpp
@@ -208,7 +208,7 @@ add_library(lue_py_framework SHARED
     # src/gdal/from_gdal.cpp
     # src/gdal/to_gdal.cpp
 
-    # src/hpx.cpp
+    src/hpx.cpp
     src/hpx_runtime.cpp
 
     src/model/model.cpp

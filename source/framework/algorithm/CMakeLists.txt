@@ -678,7 +678,6 @@ block()
 endblock()
 # / Instantiate local operations -----------------------------------------------
 
-message("YEAH: ${generated_source_files}")
 add_library(lue_framework_local_operation SHARED
     ${generated_source_files}
 )

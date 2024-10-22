@@ -159,5 +159,4 @@ namespace lue {
     template<typename T>
     concept ArithmeticElement = arithmetic_element_supported<T>;
 
-
 }  // namespace lue
