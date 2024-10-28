@@ -50,6 +50,13 @@ def benchmark_meta_to_lue_json(
                                     "value": [experiment.command_pathname],
                                 },
                                 {
+                                    "name": "arguments",
+                                    "shape_per_object": "same_shape",
+                                    "value_variability": "constant",
+                                    "datatype": "string",
+                                    "value": [experiment.command_arguments],
+                                },
+                                {
                                     "name": "kind",
                                     "shape_per_object": "same_shape",
                                     "value_variability": "constant",

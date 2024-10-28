@@ -4,6 +4,10 @@
 namespace lue::gdal {
 
 
+    /*!
+        @brief      Class which installs (pushes) a quiet error handler upon construction and de-installs
+                    (pops) it again upon destruction
+    */
     class QuietErrorHandler
     {
 

@@ -2,10 +2,10 @@
 #include "different_shape/submodule.hpp"
 #include "python_extension.hpp"
 #include "same_shape/submodule.hpp"
-#include "lue/configure.hpp"  // LUE_BUILD_QA and LUE_QA_WITH_TESTS
+#include "lue/configure.hpp"  // LUE_BUILD_QUALITY_ASSURANCE and LUE_QUALITY_ASSURANCE_WITH_TESTS
 #include "lue/py/data_model/submodule.hpp"
 
-#if defined(LUE_BUILD_QA) && defined(LUE_QA_WITH_TESTS)
+#if defined(LUE_BUILD_QUALITY_ASSURANCE) && defined(LUE_QUALITY_ASSURANCE_WITH_TESTS)
 #include "test/submodule.hpp"
 #endif
 
@@ -95,7 +95,7 @@ namespace lue::data_model {
 
         /// constant_collection::init_submodule(submodule);
 
-#if defined(LUE_BUILD_QA) && defined(LUE_QA_WITH_TESTS)
+#if defined(LUE_BUILD_QUALITY_ASSURANCE) && defined(LUE_QUALITY_ASSURANCE_WITH_TESTS)
         test::init_submodule(submodule);
 #endif
 

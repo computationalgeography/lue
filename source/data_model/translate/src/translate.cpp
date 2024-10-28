@@ -70,35 +70,33 @@ See '{0} <command> --help' for more information on a command.
 }  // Anonymous namespace
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        Translate::Translate(std::vector<std::string> const& arguments):
-            Application(
-                usage,
-                arguments,
-                {
-                    {Import::name, Import::command},
-                    {Export::name, Export::command},
-                })
+    Translate::Translate(std::vector<std::string> const& arguments):
+        Application(
+            usage,
+            arguments,
+            {
+                {Import::name, Import::command},
+                {Export::name, Export::command},
+            })
 
-        {
-            // Turn off error stack traversal. The default functions prints
-            // lots of messages we usually don't care about.
-            H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
+    {
+        // Turn off error stack traversal. The default functions prints
+        // lots of messages we usually don't care about.
+        H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 
-            gdal::register_gdal_drivers();
-        }
+        gdal::register_gdal_drivers();
+    }
 
 
-        // void Translate::print_format(
-        //     std::string const& dataset_name,
-        //     std::string const& format)
-        // {
-        //     print_verbose_message((boost::format("%1% format: %2%")
-        //         % dataset_name
-        //         % format).str());
-        // }
+    // void Translate::print_format(
+    //     std::string const& dataset_name,
+    //     std::string const& format)
+    // {
+    //     print_verbose_message((boost::format("%1% format: %2%")
+    //         % dataset_name
+    //         % format).str());
+    // }
 
-    }  // namespace utility
-}  // namespace lue
+}  // namespace lue::utility

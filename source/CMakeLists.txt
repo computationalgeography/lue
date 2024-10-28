@@ -13,7 +13,7 @@ if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
     add_subdirectory(python)
 endif()
 
-if(LUE_BUILD_QA)
+if(LUE_BUILD_QUALITY_ASSURANCE)
     add_subdirectory(qa)
 endif()
 

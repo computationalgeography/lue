@@ -30,6 +30,7 @@ class Experiment(object):
 
         self.description = description
         self.command_pathname = data["command_pathname"]
+        self.command_arguments = data["command_arguments"]
         self.arguments = (
             Arguments(data["arguments"]) if "arguments" in data else Arguments({})
         )
@@ -45,6 +46,7 @@ class Experiment(object):
     def to_json(self):
         result = {
             "command_pathname": self.command_pathname,
+            "command_arguments": self.command_arguments,
             # "nr_time_steps": self.nr_time_steps,
         }
 
@@ -68,8 +70,8 @@ class Experiment(object):
         return os.path.join(
             os.path.abspath(result_prefix),
             cluster_name,
-            self.program_name,
             scenario_name,
+            self.program_name,
             self.name,
         )
 

@@ -1,4 +1,5 @@
 add_subdirectory(qa)
+
 add_test_conditionally(test)
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are

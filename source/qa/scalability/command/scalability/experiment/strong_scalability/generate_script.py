@@ -29,8 +29,7 @@ def generate_script_slurm_threads(
 
         job_steps += [
             # Run the benchmark, resulting in a json file
-            # "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
-            "mpirun --n {nr_tasks} {mpirun_configuration} {command_pathname} "
+            f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
             # '--hpx:ini="hpx.parcel.mpi.enable=1" '
             # '--hpx:ini="hpx.os_threads={nr_threads}" '
             '--hpx:threads="{nr_threads}" '
@@ -39,7 +38,6 @@ def generate_script_slurm_threads(
                 nr_tasks=1,  # Single NUMA node or cluster node
                 mpirun_configuration=job.mpirun_configuration(cluster),
                 # srun_configuration=job.srun_configuration(cluster),
-                command_pathname=experiment.command_pathname,
                 nr_threads=nr_threads,
                 # thread_binding=hpx.thread_binding(nr_threads),
                 program_configuration=job.program_configuration(
@@ -95,7 +93,7 @@ def generate_script_slurm_threads(
     ]
 
     job.write_script(commands, script_pathname)
-    print("bash ./{}".format(script_pathname))
+    print("bash {}".format(script_pathname))
 
 
 def generate_script_slurm_numa_nodes(
@@ -123,8 +121,7 @@ def generate_script_slurm_numa_nodes(
 
         job_steps += [
             # Run the benchmark, resulting in a json file
-            # "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
-            "mpirun --n {nr_tasks} {mpirun_configuration} {command_pathname} "
+            f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
             # '--hpx:ini="hpx.parcel.mpi.enable=1" '
             # '--hpx:ini="hpx.os_threads={nr_threads}" '
             '--hpx:threads="{nr_threads}" '
@@ -133,7 +130,6 @@ def generate_script_slurm_numa_nodes(
                 nr_tasks=nr_localities,
                 mpirun_configuration=job.mpirun_configuration(cluster),
                 # srun_configuration=job.srun_configuration(cluster),
-                command_pathname=experiment.command_pathname,
                 nr_threads=nr_threads,
                 # thread_binding=util.thread_binding(nr_threads),
                 program_configuration=job.program_configuration(
@@ -193,7 +189,7 @@ def generate_script_slurm_numa_nodes(
     ]
 
     job.write_script(commands, script_pathname)
-    print("bash ./{}".format(script_pathname))
+    print("bash {}".format(script_pathname))
 
 
 def generate_script_slurm_cluster_nodes(
@@ -231,8 +227,7 @@ def generate_script_slurm_cluster_nodes(
 
         job_steps = [
             # Run the benchmark, resulting in a json file
-            # "srun --ntasks {nr_tasks} {srun_configuration} {command_pathname} "
-            "mpirun --n {nr_tasks} {mpirun_configuration} {command_pathname} "
+            f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
             # '--hpx:ini="hpx.parcel.mpi.enable=1" '
             # '--hpx:ini="hpx.os_threads={nr_threads}" '
             '--hpx:threads="{nr_threads}" '
@@ -241,7 +236,6 @@ def generate_script_slurm_cluster_nodes(
                 nr_tasks=nr_localities,
                 mpirun_configuration=job.mpirun_configuration(cluster),
                 # srun_configuration=job.srun_configuration(cluster),
-                command_pathname=experiment.command_pathname,
                 nr_threads=nr_threads,
                 # thread_binding=util.thread_binding(nr_threads),
                 program_configuration=job.program_configuration(
@@ -302,7 +296,7 @@ def generate_script_slurm_cluster_nodes(
         ]
 
     job.write_script(commands, script_pathname)
-    print("bash ./{}".format(script_pathname))
+    print("bash {}".format(script_pathname))
 
 
 def generate_script_slurm(
@@ -350,12 +344,11 @@ def generate_script_shell(
             # Create directory for the resulting json file
             "mkdir -p {}".format(os.path.dirname(result_pathname)),
             # Run the benchmark, resulting in a json file
-            "{command_pathname} "
+            f"{experiment.command_pathname} {experiment.command_arguments} "
             # '--hpx:ini="hpx.os_threads={nr_threads}" '
             '--hpx:threads="{nr_threads}" '
             # '--hpx:bind="{thread_binding}" '
             "{program_configuration}".format(
-                command_pathname=experiment.command_pathname,
                 nr_threads=nr_threads,
                 # thread_binding=hpx.thread_binding(nr_threads),
                 program_configuration=job.program_configuration(
@@ -371,7 +364,7 @@ def generate_script_shell(
         ]
 
     job.write_script(commands, script_pathname)
-    print("bash ./{}".format(script_pathname))
+    print("bash {}".format(script_pathname))
 
 
 def generate_script(configuration_data):

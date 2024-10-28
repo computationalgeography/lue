@@ -67,7 +67,7 @@ if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
     endif()
 endif()
 
-if(LUE_BUILD_QA AND LUE_QA_WITH_PYTHON_API)
+if(LUE_BUILD_QUALITY_ASSURANCE AND LUE_QUALITY_ASSURANCE_WITH_PYTHON_API)
     target_link_libraries(lue_py
         PRIVATE
             lue::py_qa)

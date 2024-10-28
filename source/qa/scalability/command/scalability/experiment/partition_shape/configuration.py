@@ -11,4 +11,5 @@ class Configuration(configuration.Configuration):
     def from_json(self, data):
         experiment_data = json_to_data(data["experiment"])
         experiment_data["command_pathname"] = self.command_pathname
+        experiment_data["command_arguments"] = self.command_arguments
         self.experiment = experiment.Experiment(experiment_data)
