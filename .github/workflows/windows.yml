@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "master"
+  workflow_dispatch:
 
 jobs:
     build:
@@ -151,11 +152,11 @@ jobs:
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
                       -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
-                      -D LUE_BUILD_QA=TRUE \
-                      -D LUE_QA_WITH_PYTHON_API=TRUE \
-                      -D LUE_QA_WITH_TESTS=TRUE \
-                      -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
-                      -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
+                      -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+                      -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
