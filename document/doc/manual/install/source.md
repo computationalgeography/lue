@@ -10,13 +10,13 @@ for building LUE.
 
 The following CMake variables are used to determine which targets to build:
 
-| Variable                  | Default | Effect |
-| ---                       | ---     | --- |
-| `LUE_BUILD_DATA_MODEL`    | `TRUE`  | Build data model C++ API |
-| `LUE_BUILD_FRAMEWORK`     | `TRUE`  | Build modelling framework |
-| `LUE_BUILD_VIEW`          | `TRUE`  | Build data model viewer |
-| `LUE_BUILD_DOCUMENTATION` | `FALSE` | Build API documentation |
-| `LUE_BUILD_QA`            | `FALSE` | Build QA targets |
+| Variable                      | Default | Effect                          |
+| ---                           | ---     | ---                             |
+| `LUE_BUILD_DATA_MODEL`        | `TRUE`  | Build data model C++ API        |
+| `LUE_BUILD_FRAMEWORK`         | `TRUE`  | Build modelling framework       |
+| `LUE_BUILD_VIEW`              | `TRUE`  | Build data model viewer         |
+| `LUE_BUILD_DOCUMENTATION`     | `FALSE` | Build API documentation         |
+| `LUE_BUILD_QUALITY_ASSURANCE` | `FALSE` | Build quality assurance targets |
 
 Here is an example session of building the default LUE targets and installing them in `$HOME/lue_install`:
 
@@ -84,30 +84,31 @@ Optional features:
 - Breathe, Doxygen, Graphviz, Jupyter-Book, Sphinx
 
 
-### QA
+### Quality assurance
 
 Optional features:
 
-| Variable                              | Default | Effect |
-| ---                                   | ---     | --- |
-| `LUE_QA_WITH_PYTHON_API`              | `FALSE` | Build QA Python API |
-| `LUE_QA_WITH_TESTS`                   | `FALSE` | Build test targets |
-| `LUE_QA_TEST_NR_LOCALITIES_PER_TEST`  | `1`     | Localities used when testing the framework |
-| `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` | `1`     | Threads per locality used when testing the framework |
-| `LUE_QA_TEST_HPX_RUNWRAPPER`          | `none`  | Runwrapper to use (see `hpxrun.py`) |
-| `LUE_QA_TEST_HPX_PARCELPORT`          | `tcp`   | Parcelport to use (see `hpxrun.py`) |
+| Variable                                             | Default | Effect                              |
+| ---                                                  | ---     | ---                                 |
+| `LUE_QUALITY_ASSURANCE_WITH_PYTHON_API`              | `FALSE` | Build quality assurance Python API  |
+| `LUE_QUALITY_ASSURANCE_WITH_TESTS`                   | `FALSE` | Build test targets                  |
+| `LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST`  | `1`     | Number of localities to use         |
+| `LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY` | `1`     | Number of threads per locality      |
+| `LUE_QUALITY_ASSURANCE_TEST_HPX_RUNWRAPPER`          | `none`  | Runwrapper to use (see `hpxrun.py`) |
+| `LUE_QUALITY_ASSURANCE_TEST_HPX_PARCELPORT`          | `tcp`   | Parcelport to use (see `hpxrun.py`) |
 
 :::{note}
-Changing `LUE_QA_TEST_NR_LOCALITIES_PER_TEST` and `LUE_QA_TEST_NR_THREADS_PER_LOCALITY` is only relevant for
-tests that depend on the HPX library. Using multiple localities (`LUE_QA_TEST_NR_LOCALITIES_PER_TEST` > 1),
-requires that HPX is built with support for networking.
+Changing `LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST` and
+`LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY` is only relevant for tests that depend on the HPX
+library. Using multiple localities (`LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST` > 1), requires that
+HPX is built with support for networking.
 :::
 
 #### Dependencies
 
 - Nlohmann JSON
-- `LUE_QA_WITH_TESTS`: Boost filesystem, system, unit-test framework libraries
-- `LUE_QA_WITH_PYTHON_API`: pybind11, Python
+- `LUE_QUALITY_ASSURANCE_WITH_TESTS`: Boost filesystem, system, unit-test framework libraries
+- `LUE_QUALITY_ASSURANCE_WITH_PYTHON_API`: pybind11, Python
 
 
 ## Dependencies

@@ -45,12 +45,15 @@ foreach(name IN ITEMS
     manual/framework/execute.md
     manual/framework/index.md
     manual/framework/python/index.md
-    manual/framework/scalability.md
     manual/glossary.md
     manual/index.md
     manual/install/conda.md
     manual/install/index.md
     manual/install/source.md
+    manual/quality_assurance/index.md
+    manual/quality_assurance/scalability/index.md
+    manual/quality_assurance/scalability/quick_start.md
+    manual/quality_assurance/scalability/experiment.md
     manual/view/index.md
     pcraster/index.md
     pcraster/port.md

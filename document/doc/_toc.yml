@@ -26,8 +26,12 @@ parts:
         - file: manual/framework/python/index.md
         - file: manual/framework/cpp/index.md
         - file: manual/framework/execute.md
-        - file: manual/framework/scalability.md
       - file: manual/view/index.md
+      - file: manual/quality_assurance/index.md
+        sections:
+        - file: manual/quality_assurance/scalability/index.md
+        - file: manual/quality_assurance/scalability/quick_start.md
+        - file: manual/quality_assurance/scalability/experiment.md
       - file: manual/glossary.md
 
     - file: reference/index.md

@@ -1,6 +1,6 @@
 (scalability-experiments)=
 
-# Scalability experiments
+# Experiments
 
 The goal of a scalability experiment is to determine how well software is able to make good use of additional
 hardware. In the case of a LUE model, the goal is to determine how well the model is capable of using
@@ -12,8 +12,8 @@ than weak scalability. They are just different kinds of scalability. Depending o
 more interested in strong scalability or in weak scalability.
 
 There are limits to scalability. Any piece of software will scale up to a certain number of workers. Serial
-software scales up to 1 worker, parallel software may scale up to many more. Scalability measures must always
-be associated with the number of workers used to calculate them.
+software "scales" up to 1 worker, parallel software may scale up to many more. Scalability measures must
+always be associated with the number of workers used to calculate them.
 
 
 ## Strong scalability
