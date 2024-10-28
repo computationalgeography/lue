@@ -61,10 +61,10 @@ parts:
       - file: reference/algorithm/index.md
         sections:
         - file: reference/algorithm/clump.md
-      - file: source/qa/doc/index.md
+      - file: source/quality_assurance/doc/index.md
         sections:
-        - file: source/qa/cxx/doc/index.md
-        - file: source/qa/python/doc/index.md
+        - file: source/quality_assurance/cxx/doc/index.md
+        - file: source/quality_assurance/python/doc/index.md
 
     - file: pcraster/index.md
       sections:

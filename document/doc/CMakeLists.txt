@@ -128,9 +128,9 @@ foreach(name IN ITEMS
 
     framework/doc/index.md
 
-    qa/doc/index.md
-    qa/cxx/doc/index.md
-    qa/python/doc/index.md
+    quality_assurance/doc/index.md
+    quality_assurance/cxx/doc/index.md
+    quality_assurance/python/doc/index.md
 )
     configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)
 endforeach()

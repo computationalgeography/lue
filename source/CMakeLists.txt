@@ -14,7 +14,7 @@ if((LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API) OR
 endif()
 
 if(LUE_BUILD_QUALITY_ASSURANCE)
-    add_subdirectory(qa)
+    add_subdirectory(quality_assurance)
 endif()
 
 if(LUE_BUILD_VIEW)
