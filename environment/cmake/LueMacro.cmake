@@ -1,10 +1,10 @@
-# Tests can be added conditionally. When the build is configured, the
-# LUE_BUILD_QA and LUE_QA_WITH_TESTS options can be set to TRUE or FALSE. Depending on
-# these settings tests are build or not.
+# Tests can be added conditionally. When the build is configured, the LUE_BUILD_QUALITY_ASSURANCE and
+# LUE_QUALITY_ASSURANCE_WITH_TESTS options can be set to TRUE or FALSE. Depending on these settings tests are
+# build or not.
 # DIRECTORY_NAME: Name of subdirectory containing the target.
 function(add_test_conditionally
         DIRECTORY_NAME)
-    if(LUE_BUILD_QA AND LUE_QA_WITH_TESTS)
+    if(LUE_BUILD_QUALITY_ASSURANCE AND LUE_QUALITY_ASSURANCE_WITH_TESTS)
         add_subdirectory(${DIRECTORY_NAME})
     endif()
 endfunction()

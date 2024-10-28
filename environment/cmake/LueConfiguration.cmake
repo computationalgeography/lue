@@ -37,22 +37,22 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
-option(LUE_BUILD_QA
-    "Include support for QA"
+option(LUE_BUILD_QUALITY_ASSURANCE
+    "Include support for quality assurance"
     FALSE)
-option(LUE_QA_WITH_PYTHON_API
-    "Include Python API for QA"
+option(LUE_QUALITY_ASSURANCE_WITH_PYTHON_API
+    "Include Python API for quality assurance"
     FALSE)
-option(LUE_QA_WITH_TESTS
+option(LUE_QUALITY_ASSURANCE_WITH_TESTS
     "Include tests"
     FALSE)
-set(LUE_QA_TEST_NR_LOCALITIES_PER_TEST
+set(LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST
     1 CACHE STRING "Number of localities to use")
-set(LUE_QA_TEST_NR_THREADS_PER_LOCALITY
+set(LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY
     1 CACHE STRING "Number of threads to use")
-set(LUE_QA_TEST_HPX_RUNWRAPPER
+set(LUE_QUALITY_ASSURANCE_TEST_HPX_RUNWRAPPER
     none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
-set(LUE_QA_TEST_HPX_PARCELPORT
+set(LUE_QUALITY_ASSURANCE_TEST_HPX_PARCELPORT
     tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
 
 # Options related to external software used by the project
@@ -187,10 +187,10 @@ if(LUE_BUILD_FRAMEWORK)
 endif()
 
 
-if(LUE_BUILD_QA)
+if(LUE_BUILD_QUALITY_ASSURANCE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
 
-    if(LUE_QA_WITH_TESTS)
+    if(LUE_QUALITY_ASSURANCE_WITH_TESTS)
         set(LUE_BOOST_REQUIRED TRUE)
         list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
             filesystem system unit_test_framework)
@@ -203,7 +203,7 @@ if(LUE_BUILD_QA)
         endif()
     endif()
 
-    if(LUE_QA_WITH_PYTHON_API)
+    if(LUE_QUALITY_ASSURANCE_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
         set(LUE_PYTHON_REQUIRED TRUE)
     endif()
