@@ -5,10 +5,10 @@
 ```{include} short_description.md
 ```
 
-:::{margin}
+```{margin}
 LUE is an acronym for "Life, the Universe and Everything". It is pronounced as the French pronounce the name
 Louis (`LU-EE`).
-:::
+```
 
 The LUE data model is described in more detail in {cite}`DeBakker:2017` and {cite}`DeJong:2019`. Details
 about the LUE framework can be found in {cite}`DeJong:2021` and {cite}`DeJong:2022`.

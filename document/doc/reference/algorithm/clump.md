@@ -77,10 +77,10 @@ partitions. Before we can continue we must update `global_clump_ids` and
 in `global_clump_ids` with each other and merge the ones that intersect with each other. Global clump ID
 collections that intersect are part of the same global clump.
 
-:::{note}
+```{note}
 This is actually the most expensive step of the whole algorithm and it executes on the root locality. Can we
 get rid of it?
-:::
+```
 
 Once done `global_clump_ids` and `global_clump_ids_by_local_clump_id` contain all information needed to update
 global clump IDs for local clumps that extend over partition borders.

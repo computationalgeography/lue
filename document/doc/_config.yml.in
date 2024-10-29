@@ -2,7 +2,7 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: @LUE_TITLE@
-copyright: 2016 -- This work is licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0)
+copyright: 2016-now -- This work is licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0)
 author: @LUE_AUTHOR@
 # TODO logo: logo.png
 
@@ -88,8 +88,9 @@ sphinx:
     - "sphinxcontrib.mermaid"
     - "sphinxcontrib.bibtex"
 
-# parse:
-#   myst_enable_extensions:
-#     - aside
-#     - deflist
-#     - colon_fence
+parse:
+  myst_enable_extensions:
+    - "attrs_inline"
+    # - aside
+    # - deflist
+    # - colon_fence

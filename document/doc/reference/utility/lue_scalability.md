@@ -7,18 +7,20 @@ experiments for LUE computations. Performing scalability experiments involves a 
 set of built-in conventions, performing these experiments become easy to do, on different platforms, like
 laptops and computer clusters, and for different computations.
 
-There are three kinds of experiments supported by the command: `partition_shape`, `strong_scalability`, and
-`weak_scalability`. Each of these will be described in more detail below.
+For information about the command's usage, type `lue_scalability.py --help` on the command-line.
 
-Each kind of experiment is split into three stages: `script`, `import`, and `post_process`. Each of these
+There are three kinds of experiments supported by the command, named *partition_shape*, *strong_scalability*, and
+*weak_scalability*. Each of these will be described in more detail below.
+
+Each kind of experiment is split into three stages, named *script*, *import*, and *postprocess*. Each of these
 stages will be described in more detail below.
 
 Here is an example for performing a strong scalability experiment over all CPU cores on a desktop computer
-called "orkney":
+called orkney:
 
 ```bash
 # Variables used in the commands below
-command_name="my_model"
+command_name="my_model.py"
 command_arguments="--my_parameter=5"
 cluster_name="orkney"
 experiment_name="strong_scalability"
@@ -30,7 +32,7 @@ result_prefix="./result/"
 # Create a Bash script that will start all commands needed for the experiment
 lue_scalability.py \
     $experiment_name script $command_name "$command_arguments" \
-    $cluster_name $worker_name $experiment_name \
+    $cluster_name $worker_name \
     $cluster_config_prefix $experiment_config_prefix $result_prefix
 
 # Run the Bash script just created, writing results to a set of JSON files
@@ -40,15 +42,18 @@ bash $script
 # Import all experiment results into a single LUE dataset
 lue_scalability.py \
     $experiment_name import $command_name "$command_arguments" \
-    $cluster_name $worker_name $experiment_name \
+    $cluster_name $worker_name \
     $cluster_config_prefix $experiment_config_prefix $result_prefix
 
 # Add statistics to the dataset, generate scalability plots
 lue_scalability.py \
     $experiment_name postprocess $command_name "$command_arguments" \
-    $cluster_name $worker_name $experiment_name \
+    $cluster_name $worker_name \
     $cluster_config_prefix $experiment_config_prefix $result_prefix
 ```
+
+Note that, except for the stage (script, import, postprocess), the arguments passed to the lue_scalability.py
+command are the same.
 
 The conventions used by the lue_scalability.py command are related to:
 
@@ -72,37 +77,34 @@ for example, is the same as that used to describe a real computer cluster.
 Properties of a cluster are described in a file called `cluster.json`. Examples of cluster configurations for
 several platforms used by the LUE R&D team can be found in the [lue_qa
 repository](https://github.com/computationalgeography/lue_qa). In case you are using one of those clusters,
-you can clone the project and pass the location as an argument to the lue_scalability.py command. Otherwise,
-they can be used as inspiration for describing other clusters. Cluster configuration files must be named after
-the cluster: `<cluster_config_prefix>/<cluster_name.json`.
+you can clone the project and pass the pathname of the configuration directory as an argument to the
+lue_scalability.py command. Otherwise, these configuration can be used as inspiration for describing other
+clusters. Cluster configuration files must be named after the cluster:
+`<cluster_config_prefix>/<cluster_name>.json`.
 
-Once setup, cluster configuration files likely won't change anymore when performing scalability experiments.
+Once setup correctly, cluster configuration files likely won't have to be changed anymore.
 
 
 ### Workers
 
-A worker is an amount of hardware which will be increased linearly during a scalability experiment. Supported
+A worker is an amount of hardware which will be increased during a scalability experiment. Supported
 kinds of hardware are CPU cores, NUMA nodes, and cluster nodes. The output of the strong and weak scalability
 experiments are *relative* scalability measures, which means that they are relative to the latency of the
 software when using a single worker (CPU core, NUMA node, or cluster node).
 
-Like clusters, workers have to be described as well, to enable the lue_scalability.py command to understand
-how many workers to create commands for and how to increase the number of workers for different experimental
-runs. For example, it is possible to increase the number of workers by one, or some other amount, and to limit
-the maximum number of workers to use.
+Like clusters, workers have to be described as well. Examples of configuration files can be found in the above
+mentioned lue_qa repository. The worker configuration files are named after the worker and the experiment, and
+must be nested in the cluster configuration file directories:
+`<cluster_config_prefix>/<cluster_name>/<worker_name>/<experiment_name>.json`.
 
-Examples of configuration files can be found in the above mentioned lue_qa repository. The worker
-configuration files are named after the worker and experiment, and nested in the cluster configuration file
-directories: `<cluster_config_prefix>/<cluster_name>/<worker_name>/<experiment_name>.json`.
-
-Once setup, worker configuration files likely won't change anymore when performing scalability experiments.
+Once setup correctly, worker configuration files likely won't have to be changed anymore.
 
 
 ### Experiments
 
-Each experiment needs to be described in a configuration file as well. In this file, properties are described
-which are unique to the experiment. For example, depending on the computation larger or smaller arrays or
-partition sizes need to be used.
+Each experiment (partition_shape, strong_scalability, or weak_scalability) needs to be described in a
+configuration file as well. In this file, properties are described which are unique to the command tested. For
+example, depending on the computation, larger or smaller arrays or partition sizes need to be used.
 
 Examples of configuration files can be found in the above mentioned lue_qa repository, in the `experiment`
 directory. The experiment configuration files need to be put in a directory named after the cluster name and
@@ -119,8 +121,8 @@ The lue_scalability.py command requires each command to be tested to support cer
 These are used to vary those aspects of the experimental run that are required to be able to compute
 scalability measures afterwards. Two sets of command line options are used for this. The first ones, prefixed
 by `hpx:` are targeted at the HPX runtime used by LUE. Each LUE computation automatically supports these
-options so there is no need to make any changes for this. The second set of options is prefixed by `lue:` and
-is specific for scalability experiments. The next table lists all options:
+options so there is no need to make any code changes for this. The second set of options is prefixed by `lue:`
+and is specific for scalability experiments. The next table lists all options:
 
 | Option                                    | Effect                                                |
 | ---                                       | ---                                                   |
@@ -131,7 +133,7 @@ is specific for scalability experiments. The next table lists all options:
 | `--lue:result=<result>`                   | Pathname of JSON file to store results in             |
 
 The author of the command used in scalability experiments is responsible for make sure the command behaves
-accordingly to the arguments to these options passed in.
+correctly to the arguments to these options passed in.
 
 The count is used for statistical purposes. Performing computations multiple times and recording latencies for
 each of those runs allows for the analysis of spread in the results.
@@ -142,7 +144,8 @@ the computation itself.
 The result pathname is the name of the file in which the results of the experimental runs need to be stored.
 
 LUE contains support code which can be used to instrument code for measuring and storing results of
-experimental runs. This is an example of how this works for a Python script that used LUE.
+experimental runs. This makes it easy to safe the necessary information to files without having to know about
+file formats that have to be used. Here is an example of how this works for a Python script that uses LUE.
 
 
 ```python
@@ -162,10 +165,10 @@ def my_model(
     partition_shape: tuple[int, int],
     result_pathname: str,
 ) -> None:
-    # Before calling start(), wait for any unrelevant code (I/O?) to finish. Otherwise the time this code
+    # Before calling start(), wait for any irrelevant code (I/O?) to finish. Otherwise the time this code
     # takes to execute will be part of the measurement.
-    # Before calling stop(), wait for any relevant code (model?) to finish. Otherwise the time this code
-    # takes will not be part of the measurement.
+    # Before calling stop(), wait for any relevant code (model!) to finish. Otherwise the time this code
+    # takes will not be completely part of the measurement.
 
     experiment = lqi.ArrayExperiment(nr_workers, array_shape, partition_shape)
     experiment.start()
@@ -189,23 +192,168 @@ pages about LUE quality assurance](#source-lue-qa).
 
 ## Experiments
 
-### `partition_shape`
+See the [scalability quick start](#scalability-quick-start) for outputs of the experiment for an example
+model.
 
 
-### `strong_scalability`
+### partition_shape
+
+Before doing strong and weak scalability experiments, a good partition shape must be determined. Using the
+wrong partition shape results in bad results. In short:
+
+- Small partitions → many tasks → much overhead → slow computations
+- Large partitions → few tasks → not enough work to keep all workers busy → slow computations
+
+What entails a good partition shape depends on various factors, like the specific operations used in the
+computation and the properties of the hardware. LUE has built-in support for determining default partition
+sizes, which is convenient, but these may not (yet) result in the best performance and scalability.
+
+The goal of the partition_shape experiment is to find out the range of good partition shapes to use. The
+experiment involves trying out different partition shapes, and recording the associated latencies of the
+computations. In the experiment configuration file, the user can configure the smallest and largest partition
+shapes to test, and the shapes to test in between those extremes. When the range of partition shapes to test
+is configured correctly (this may involve some trial and error), the resulting plot showing the latency by
+partition shape will show a range of good partition shapes to use.
 
 
-### `weak_scalability`
+### strong_scalability
+
+The goal of a strong scalability experiment is to determine how well software is capable to use additional
+workers to decrease the latency of the computations. For this, a certain total problem size needs to be
+configured, as well a range of workers to try. After the latencies have been recorded, [strong scalability
+efficiencies](#strong-scalability-experiment) can be calculated and plotted.
 
 
+### weak_scalability
+
+The goal of a weak scalability experiment is to determine how well software is capable to use additional
+workers to process a larger number of computations. For this, a certain problem size per worker needs to be
+configured, as well a range of workers to try. After the latencies have been recorded, [weak scalability
+efficiencies](#weak-scalability-experiment) can be calculated and plotted.
 
 
 ## Stages
 
-### `script`
+All scalability experiments supported by the command are divided into three stages -- script, import, and
+postprocess -- which must be run in that order.
 
 
-### `import`
+### script
+
+In the script stage the command outputs a Bash script that contains all commands needed to end up with all the
+information required for the subsequent stages. Depending on the scheduler, this script will synchronously
+execute the commands in order, or it will pass the command to the job-scheduler, to be asynchronously
+scheduled once the required hardware resources have become available.
+
+In case the commands in the script are passed on to a scheduler for asynchronous execution, continuing with
+the subsequent must be detained until all commands have finished writing their result files.
+
+As a side-effect of this stage, a LUE dataset called `raw.lue` is written containing all information about the
+experiment performed, including the Bash script itself.
+
+This is example output of running this stage for a partition_shape experiment:
+
+```bash
+orkney/
+└── thread_numa_node
+    └── game_of_life.py
+        ├── partition_shape
+        │   └── raw.lue
+        └── partition_shape.sh
+```
+
+When running this stage multiple times for the same configuration, the command will rename the `<experiment>`
+directory (partition_shape, strong_scalability, or weak_scalability) by appending the last modification date
+to the directory name. This way existing results will not be overwritten.
+
+After running the Bash script created by this stage for a partition shape experiment, the directory and file
+layout looks like this:
+
+```bash
+orkney/
+└── thread_numa_node
+    └── game_of_life.py
+        ├── partition_shape
+        │   ├── 10000x10000
+        │   │   ├── 1000x1000.json
+        │   │   ├── 1060x1060.json
+        │   │   ├── 1118x1118.json
+        │   │   ├── 500x500.json
+        │   │   ├── 612x612.json
+        │   │   ├── 707x707.json
+        │   │   ├── 790x790.json
+        │   │   ├── 866x866.json
+        │   │   └── 935x935.json
+        │   └── raw.lue
+        └── partition_shape.sh
+```
 
 
-### `post_process`
+### import
+
+Once all commands from the script stage have finished executing, the import stage will aggregate the
+information from `raw.lue` and all individual output files written by the commands in the Bash script into a
+single LUE data set called `scalability.lue`. This file contains all information related to the scalability
+experiment, in an open data format. It can be used as a backup of the results for the long term.
+
+After running this stage for a partition shape experiment, the above directory and file layout now looks like
+this:
+
+```bash
+orkney/
+└── thread_numa_node
+    └── game_of_life.py
+        ├── partition_shape
+        │   ├── 10000x10000
+        │   │   ├── 1000x1000.json
+        │   │   ├── 1060x1060.json
+        │   │   ├── 1118x1118.json
+        │   │   ├── 500x500.json
+        │   │   ├── 612x612.json
+        │   │   ├── 707x707.json
+        │   │   ├── 790x790.json
+        │   │   ├── 866x866.json
+        │   │   └── 935x935.json
+        │   ├── raw.lue
+        │   └── scalability.lue
+        └── partition_shape.sh
+```
+
+
+### postprocess
+
+After the import stage has finished successfully, the postprocess stage computes statistics and creates a plot
+(`plot.pdf`) containing one or more graphs illustrating the results of the scalability experiments.
+
+After running this stage for a partition shape experiment, the above directory and file layout now looks like
+this:
+
+```bash
+orkney/
+└── thread_numa_node
+    └── game_of_life.py
+        ├── partition_shape
+        │   ├── 10000x10000
+        │   │   ├── 1000x1000.json
+        │   │   ├── 1060x1060.json
+        │   │   ├── 1118x1118.json
+        │   │   ├── 500x500.json
+        │   │   ├── 612x612.json
+        │   │   ├── 707x707.json
+        │   │   ├── 790x790.json
+        │   │   ├── 866x866.json
+        │   │   ├── 935x935.json
+        │   │   └── plot.pdf
+        │   ├── graph.pdf
+        │   ├── plot.pdf
+        │   ├── raw.lue
+        │   └── scalability.lue
+        └── partition_shape.sh
+```
+
+In case custom postprocessing needs to happen, for example for creating tables or plots for a publication,
+additional scripts can be created that read the relevant information directory from the LUE dataset created in
+the import stage. Each LUE dataset is an HDF5 file so besides using the LUE data model Python package, any
+software that is capable of reading HDF5 files can be used for this. A graph of the layout of the LUE data set
+is written in the postprocess stage as well; see `graph.pdf`. The HDFView application released by the [HDF
+Group](https://www.hdfgroup.org/) can also be used to browse LUE datasets.

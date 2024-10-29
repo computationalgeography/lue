@@ -21,12 +21,12 @@ If an operation used in a PCRaster model is not available in LUE yet, it is a go
 project team. Various factors determine the order in which operations are added to the LUE framework. The
 number of model developers requesting one is one of them.
 
-:::{note}
+```{note}
 A LUE operation that implements an operation that is also in PCRaster may be different from the PCRaster
 operation. It may be named different, it may accept different arguments, or accept them in a different order.
 We provide a [special module](lue-pcraster-module) that can be used to quickly port PCRaster model by hiding
 these differences as much as possible.
-:::
+```
 
 :::{list-table} Legend
 :widths: auto

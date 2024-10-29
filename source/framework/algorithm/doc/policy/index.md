@@ -35,9 +35,9 @@ algorithm can support multiple conventions, like for representing no-data values
 In general, the various policies are aggregated into a single {cpp:class}`lue::policy::Policies` instance,
 which is passed as an argument to an algorithm.
 
-:::{margin}
+```{margin}
 Please suggest a better name for the "default" and "value" policies...
-:::
+```
 
 LUE provides two sets of algorithm policies: "default" policies and "value" policies. They may not be correct
 for all use-cases. Different policies can be created and used by 3rd-party users of the LUE C++ API.

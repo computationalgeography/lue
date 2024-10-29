@@ -97,12 +97,12 @@ Optional features:
 | `LUE_QUALITY_ASSURANCE_TEST_HPX_RUNWRAPPER`          | `none`  | Runwrapper to use (see `hpxrun.py`) |
 | `LUE_QUALITY_ASSURANCE_TEST_HPX_PARCELPORT`          | `tcp`   | Parcelport to use (see `hpxrun.py`) |
 
-:::{note}
+```{note}
 Changing `LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST` and
 `LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY` is only relevant for tests that depend on the HPX
 library. Using multiple localities (`LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST` > 1), requires that
 HPX is built with support for networking.
-:::
+```
 
 #### Dependencies
 

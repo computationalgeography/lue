@@ -4,8 +4,8 @@
 
 The goal of a scalability experiment is to determine how well software is able to make good use of additional
 hardware. In the case of a LUE model, the goal is to determine how well the model is capable of using
-additional CPU cores, NUMA nodes (grouping CPU cores), or cluster nodes (grouping NUMA nodes). These are the
-kinds of workers we will focus on here.
+additional CPU cores, NUMA nodes (grouping CPU cores and memory), or cluster nodes (grouping NUMA nodes).
+These are the kinds of workers we will focus on here.
 
 There are two kinds of scalability: strong scalability and weak scalability. Strong scalability is not better
 than weak scalability. They are just different kinds of scalability. Depending on your use-case, you may be
@@ -15,6 +15,8 @@ There are limits to scalability. Any piece of software will scale up to a certai
 software "scales" up to 1 worker, parallel software may scale up to many more. Scalability measures must
 always be associated with the number of workers used to calculate them.
 
+
+(strong-scalability-experiment)=
 
 ## Strong scalability
 
@@ -26,10 +28,10 @@ when more workers are allocated to the process. The problem size (model + data) 
 model is run on a larger amount of hardware.
 
 Strong scalability is harder to achieve than weak scalability. Software contains serial and parallel
-fractions. Serial fractions can't make use of additional workers - they have to run in serial. Parallel
-fractions may make good using of additional workers. Even in case of a small serial fraction and a perfectly
-scalable parallel fraction, overall strong scalability will be limited. See the [Wikipedia page on Amdahl's
-law](https://en.wikipedia.org/wiki/Amdahl%27s_law) for a sobering explanation of this fact.
+fractions. Serial fractions can't make use of additional workers - they have to run in serial, on a single
+worker. Parallel fractions may make good using of additional workers. Even in case of a small serial fraction
+and a perfectly scalable parallel fraction, overall strong scalability will be limited. See the [Wikipedia
+page on Amdahl's law](https://en.wikipedia.org/wiki/Amdahl%27s_law) for a sobering explanation of this fact.
 
 A good way to express strong scalability is the relative strong scalability efficiency ($RSE_{strong}$):
 
@@ -47,11 +49,13 @@ For a strong scalability experiment you have to run the model multiple times, at
 workers, and measure the amount of time it takes to finish executing.
 
 
+(weak-scalability-experiment)=
+
 ## Weak scalability
 
 Weak scalability is relevant if you are interested in increasing the amount of data used by your model. A
-model that has high weak scalability can make good use of the additional hardware to make the time used to
-execute it not increase much.
+model that has high weak scalability can make good use of the additional hardware so the time it takes to
+execute a larger problem does not increase much.
 
 In the case of a weak scalability experiment, the goal is to determine whether or not the time it takes to
 execute a model stays the same when the amount of data and the amount of workers is increased. The amount of
@@ -74,7 +78,7 @@ $$
 | $T_{W,1}$ | Latency when using one worker |
 | $T_{W,P}$ | Latency when working $P$ workers |
 
-For a strong scalability experiment you have to run the model multiple times, at least once for each number of
+For a weak scalability experiment you have to run the model multiple times, at least once for each number of
 workers, and measure the amount of time it takes to finish executing. The size of the datasets must be scaled
 linearly with the number of workers used.
 
@@ -93,11 +97,10 @@ linearly with the number of workers used.
 - Make sure the number of partitions is larger than the number of CPU cores used in the experiment. Otherwise
   the CPUs will be drained of useful work to do. This may indicate that you are using too much hardware for
   the problem size.
-- A good way to present the results is to graph $RSE_{strong}$ or $RSE_{weak}$
-  against $P$. Also plot the lines for linear (perfect) and serial (no) scalability. This
-  helps putting the actual scalabilities into perspective visually.
-- It may be useful to run the model multiple times for each number of workers, to learn about
-  the spread in the results.
-- Some more information and scripts for automating scalability experiments can be found in the [LUE Quality
-  Assurance](https://github.com/computationalgeography/lue_qa) repository. Use it for inspiration, but note
-  that this is still very much work in progress.
+- A good way to present the results is to graph $RSE_{strong}$ or $RSE_{weak}$ against $P$. Also plot the
+  lines for linear (perfect) and serial (no) scalability. This helps putting the actual scalabilities into
+  perspective visually.
+- It may be useful to run the model multiple times for each number of workers, to learn about the spread in
+  the results.
+- Be sure to check the [lue_scalability.py](#lue-scalability) script, which automates much of the book keeping
+  required when performing scalability experiments.

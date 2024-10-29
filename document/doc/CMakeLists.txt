@@ -51,9 +51,10 @@ foreach(name IN ITEMS
     manual/install/index.md
     manual/install/source.md
     manual/quality_assurance/index.md
+    manual/quality_assurance/scalability/experiment.md
+    manual/quality_assurance/scalability/game_of_life.py
     manual/quality_assurance/scalability/index.md
     manual/quality_assurance/scalability/quick_start.md
-    manual/quality_assurance/scalability/experiment.md
     manual/view/index.md
     pcraster/index.md
     pcraster/port.md
