@@ -8,19 +8,6 @@ from lue import __version__ as lue_version
 from lue.command.scalability import perform_experiment_task
 
 
-# from lue.command.scalability.core import json_to_data
-
-
-#     {command}
-#         (partition_shape | weak_scalability | strong_scalability)
-#         (script | import | postprocess) <configuration>
-#     {command}
-#         (partition_shape | weak_scalability | strong_scalability)
-#         (script | import | postprocess)
-#         <command> <arguments> <result_prefix>
-#         <cluster> <worker> <experiment> <script>
-
-
 def main():
     usage = """\
 Perform scalability experiment
@@ -90,7 +77,9 @@ Options:
         cluster_name, worker_name, command_name, f"{experiment_name}.json"
     )
 
-    result_path = Path(result_prefix).joinpath(cluster_name, worker_name, command_name)
+    result_path = Path(result_prefix).joinpath(
+        cluster_name, worker_name, command_name, experiment_name
+    )
 
     if task == "script" and result_path.exists():
         modification_time_point = datetime.datetime.fromtimestamp(
@@ -110,9 +99,5 @@ Options:
         "benchmark": f"{worker_config_pathname}",  # TODO worker?
         "experiment": f"{experiment_config_pathname}",
     }
-
-    # import pprint
-
-    # pprint.pprint(configuration_data)
 
     perform_experiment_task(experiment_name, task, configuration_data)
