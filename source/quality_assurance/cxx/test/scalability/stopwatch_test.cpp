@@ -11,6 +11,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     using namespace std::chrono_literals;
 
-    BOOST_TEST(stopwatch.duration<std::chrono::nanoseconds>() > std::chrono::nanoseconds(0ns));
-    BOOST_TEST(stopwatch.duration<std::chrono::seconds>() == std::chrono::seconds(0s));
+    // Casting to bool because some compilers still don't support streaming chrono durations...
+    BOOST_TEST(
+        static_cast<bool>(stopwatch.duration<std::chrono::nanoseconds>() > std::chrono::nanoseconds(0ns)));
+    BOOST_TEST(static_cast<bool>(stopwatch.duration<std::chrono::seconds>() == std::chrono::seconds(0s)));
 }
