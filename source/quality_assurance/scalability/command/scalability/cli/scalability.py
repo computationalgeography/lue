@@ -17,8 +17,8 @@ Usage:
         (partition_shape | weak_scalability | strong_scalability)
         (script | import | postprocess)
         <command> <arguments>
-        <cluster> <worker>
-        <cluster_config_prefix> <experiment_config_prefix> <result_prefix>
+        <platform> (core_numa_node | core_cluster_node | numa_node | cluster_node)
+        <platform_config_prefix> <experiment_config_prefix> <result_prefix>
     {command} -h | --help
     {command} --version
 
@@ -29,8 +29,7 @@ Options:
     arguments       Additional arguments to pass on to the command. Pass an
                     empty string if this is not needed.
     result_prefix   Directory to store results in
-    cluster         Path to json file containing info about the cluster
-                    (or node)
+    platform        Name of platform
 """.format(
         command=Path(sys.argv[0]).name
     )
@@ -44,44 +43,54 @@ Options:
     elif arguments["strong_scalability"]:
         experiment_name = "strong_scalability"
     else:
-        experiment_name = None
+        experiment_name = "unknown"
 
     if arguments["script"]:
-        task = "script"
+        task_name = "script"
     elif arguments["import"]:
-        task = "import"
+        task_name = "import"
     elif arguments["postprocess"]:
-        task = "postprocess"
+        task_name = "postprocess"
     else:
-        task = None
+        task_name = "unknown"
+
+    if arguments["core_numa_node"]:
+        worker_name = "core_numa_node"
+    elif arguments["core_cluster_node"]:
+        worker_name = "core_cluster_node"
+    elif arguments["numa_node"]:
+        worker_name = "numa_node"
+    elif arguments["cluster_node"]:
+        worker_name = "cluster_node"
+    else:
+        worker_name = "unknown"
 
     command_name = arguments["<command>"]
     command_arguments = arguments["<arguments>"]
-    cluster_name = arguments["<cluster>"]
-    worker_name = arguments["<worker>"]
+    platform_name = arguments["<platform>"]
 
-    cluster_config_prefix = arguments["<cluster_config_prefix>"]
+    platform_config_prefix = arguments["<platform_config_prefix>"]
     experiment_config_prefix = arguments["<experiment_config_prefix>"]
     result_prefix = arguments["<result_prefix>"]
 
     script_pathname = Path(result_prefix).joinpath(
-        cluster_name, worker_name, command_name, f"{experiment_name}.sh"
+        platform_name, command_name, worker_name, f"{experiment_name}.sh"
     )
-    cluster_config_pathname = Path(cluster_config_prefix).joinpath(
-        cluster_name, "cluster.json"
+    platform_config_pathname = Path(platform_config_prefix).joinpath(
+        platform_name, "platform.json"
     )
-    worker_config_pathname = Path(cluster_config_prefix).joinpath(
-        cluster_name, worker_name, f"{experiment_name}.json"
+    worker_config_pathname = Path(platform_config_prefix).joinpath(
+        platform_name, worker_name, f"{experiment_name}.json"
     )
     experiment_config_pathname = Path(experiment_config_prefix).joinpath(
-        cluster_name, worker_name, command_name, f"{experiment_name}.json"
+        platform_name, command_name, worker_name, f"{experiment_name}.json"
     )
 
     result_path = Path(result_prefix).joinpath(
-        cluster_name, worker_name, command_name, experiment_name
+        platform_name, command_name, worker_name, experiment_name
     )
 
-    if task == "script" and result_path.exists():
+    if task_name == "script" and result_path.exists():
         modification_time_point = datetime.datetime.fromtimestamp(
             result_path.stat().st_mtime
         )
@@ -95,9 +104,13 @@ Options:
         "command_arguments": f"{command_arguments}",
         "script_pathname": f"{script_pathname}",
         "result_prefix": f"{result_prefix}",
-        "cluster": f"{cluster_config_pathname}",
+        "platform": f"{platform_config_pathname}",
         "benchmark": f"{worker_config_pathname}",  # TODO worker?
         "experiment": f"{experiment_config_pathname}",
     }
 
-    perform_experiment_task(experiment_name, task, configuration_data)
+    # import pprint
+    # pprint.pprint(configuration_data)
+    # meh
+
+    perform_experiment_task(experiment_name, task_name, configuration_data)

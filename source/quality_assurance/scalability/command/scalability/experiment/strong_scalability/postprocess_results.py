@@ -17,7 +17,7 @@ from .experiment import Experiment
 # import re
 
 
-def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
+def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, filetypes):
     """
     Create plots and tables from raw benchmark results
     """
@@ -151,7 +151,7 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
 
         plot_actual(relative_speed_up)
 
-        y_label = "relative speed_up (-)"
+        y_label = "relative speed-up (-)"
 
         annotate_plot(axis, y_label)
 
@@ -253,7 +253,7 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
     # plot_lups(axes[1][1])
     axes[1, 1].axis("off")
 
-    figure.legend(labels=["serial", "linear", "actual"])
+    figure.legend(labels=["serial", "linear", "actual"], framealpha=0.0)
 
     name = lue_meta_information.name.value[:][0]
     system_name = lue_meta_information.system_name.value[:][0]
@@ -273,7 +273,10 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
         )
     )
 
-    plt.savefig(plot_pathname, bbox_inches="tight")
+    for filetype in filetypes:
+        plt.savefig(
+            f"{plot_pathname}.{filetype}", bbox_inches="tight", transparent=True
+        )
 
 
 # class PerformanceCounter(object):
@@ -647,7 +650,7 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname):
 #                     labels=[
 #                         counter.label for counter in counter_group.counters])
 #
-#             plt.savefig(plot_pathname, bbox_inches="tight")
+#             plt.savefig(plot_pathname, bbox_inches="tight", transparent=True)
 #             plt.close(figure)
 
 
@@ -684,6 +687,8 @@ def postprocess_results(configuration_data):
         "performance_counter_1" in lue_dataset.benchmark.property_sets.names
     )
 
+    filetypes = ["pdf", "png", "svg"]
+
     if not performance_counters_available:
         process.create_dot_graph(
             lue_dataset.pathname,
@@ -693,9 +698,9 @@ def postprocess_results(configuration_data):
         )
 
     plot_pathname = experiment.result_pathname(
-        result_prefix, cluster.name, benchmark.scenario_name, "plot", "pdf"
+        result_prefix, cluster.name, benchmark.scenario_name, "plot"
     )
-    post_process_raw_results(lue_dataset, result_prefix, plot_pathname)
+    post_process_raw_results(lue_dataset, result_prefix, plot_pathname, filetypes)
 
     # TODO revamp
     # if performance_counters_available:

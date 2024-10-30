@@ -70,15 +70,15 @@ class Experiment(object):
         return os.path.join(
             os.path.abspath(result_prefix),
             cluster_name,
-            scenario_name,
             self.program_name,
+            scenario_name,
             self.name,
         )
 
     def result_pathname(
-        self, result_prefix, cluster_name, scenario_name, basename, extension
+        self, result_prefix, cluster_name, scenario_name, basename, extension=""
     ):
         return os.path.join(
             self.workspace_pathname(result_prefix, cluster_name, scenario_name),
-            "{}.{}".format(basename, extension),
+            f"{basename}.{extension}" if extension else basename,
         )

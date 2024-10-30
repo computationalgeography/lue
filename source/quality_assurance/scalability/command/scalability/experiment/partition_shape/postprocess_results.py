@@ -10,7 +10,9 @@ from .configuration import Configuration
 from .experiment import Experiment
 
 
-def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experiment):
+def post_process_raw_results(
+    lue_dataset, result_prefix, plot_pathname, experiment, filetypes
+):
     """
     Create plots and tables from raw benchmark results
     """
@@ -122,10 +124,11 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experime
             )
         )
 
-        a_plot_pathname = experiment.benchmark_result_pathname(
-            result_prefix, system_name, scenario_name, array_shape, "plot", "pdf"
-        )
-        plt.savefig(a_plot_pathname, bbox_inches="tight")
+        for filetype in filetypes:
+            a_plot_pathname = experiment.benchmark_result_pathname(
+                result_prefix, system_name, scenario_name, array_shape, "plot", filetype
+            )
+            plt.savefig(a_plot_pathname, bbox_inches="tight", transparent=True)
 
     # --------------------------------------------------------------------------
     array_shapes = lue_dataset.array.array.shape.value[:]
@@ -160,7 +163,10 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experime
         )
     )
 
-    plt.savefig(plot_pathname, bbox_inches="tight")
+    for filetype in filetypes:
+        plt.savefig(
+            f"{plot_pathname}.{filetype}", bbox_inches="tight", transparent=True
+        )
 
 
 def postprocess_results(configuration_data):
@@ -177,6 +183,8 @@ def postprocess_results(configuration_data):
         lue_dataset, Experiment
     )
 
+    filetypes = ["pdf", "png", "svg"]
+
     process.create_dot_graph(
         lue_dataset.pathname,
         experiment.result_pathname(
@@ -184,6 +192,8 @@ def postprocess_results(configuration_data):
         ),
     )
     plot_pathname = experiment.result_pathname(
-        result_prefix, cluster.name, benchmark.scenario_name, "plot", "pdf"
+        result_prefix, cluster.name, benchmark.scenario_name, "plot"
     )
-    post_process_raw_results(lue_dataset, result_prefix, plot_pathname, experiment)
+    post_process_raw_results(
+        lue_dataset, result_prefix, plot_pathname, experiment, filetypes
+    )

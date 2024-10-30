@@ -14,5 +14,5 @@ class Configuration(object):
         self.command_arguments = data["command_arguments"]
         self.script_pathname = os.path.expandvars(data["script_pathname"])
         self.result_prefix = os.path.expandvars(data["result_prefix"])
-        self.cluster = Cluster(json_to_data(data["cluster"]))
+        self.cluster = Cluster(json_to_data(data["platform"]))
         self.benchmark = Benchmark(json_to_data(data["benchmark"]), self.cluster)
