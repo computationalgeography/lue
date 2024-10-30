@@ -6,7 +6,7 @@ Let us assume we want to perform [scalability experiments](#scalability-experime
 This allows us to focus on the experiment itself rather than the model. We will skip over details for now, but
 provide links to reference pages with more information.
 
-Performing scalability experiments for a LUE computation involving rasters involves the following steps:
+Performing scalability experiments for a LUE computation translating rasters involves the following steps:
 
 1. Determine a good array partition shape
 1. Determine the strong or weak scalability efficiencies
@@ -21,11 +21,11 @@ help with this administration we will use the [lue_scalability.py](#lue-scalabil
 
 ```{note}
 This quick start illustrates performing scalability experiments using a LUE model implemented using the Python
-language bindings, but everything works very similar when using a model implemented using the C++ API.
+language bindings, but everything works similar when using a model implemented using the C++ API.
 
 For simplicity we will be performing scalability experiments over the CPU cores within a single desktop
-computer here, but everything works very similar when performing experiments over cluster nodes in a
-multi-node computer cluster.
+computer here, but everything works similar when performing experiments over cluster nodes in a multi-node
+computer cluster.
 ```
 
 
@@ -59,12 +59,14 @@ in the result file. More information about the `scalability.instrument` sub-pack
 [associated reference](#source-lue-qa-python) pages.
 
 
-## Cluster configuration
+## Configuration
 
-The lue_scalability.py command requires information about the cluster used to perform the experiments on. In
-this example we will be using a cluster called orkney, which is actually a desktop computer. Its configuration
-can be found in the [lue_qa repository](https://github.com/computationalgeography/lue_qa), in
-`configuration/orkney/cluster.json`.
+### Platform
+
+The lue_scalability.py command requires information about the platform used to perform the experiments on. In
+this example we will be using a platform called orkney, which is a desktop computer. Its configuration can be
+found in the [lue_qa repository](https://github.com/computationalgeography/lue_qa), in
+`configuration/orkney/platform.json`.
 
 ```json
 {
@@ -89,28 +91,28 @@ can be found in the [lue_qa repository](https://github.com/computationalgeograph
 }
 ```
 
-The terminology used in describing a cluster is inspired by the [Portable Hardware Locality
+The terminology used in describing a cluster node is inspired by the [Portable Hardware Locality
 (hwloc)](https://www.open-mpi.org/projects/hwloc/) software package.
 
-In case of real multi-node computer clusters, scheduler can be "slurm" and several settings can be added as
-well, like the name of the partition to use. The lue_qa repository contains examples for those as well.
+In case of multi-node computer clusters, scheduler can be "slurm" and several settings can be added as well,
+like the name of the partition to use. The lue_qa repository contains examples for those as well.
 
 
-## Worker configuration
+### Worker
 
-Since we are using the orkney desktop computer as our cluster here, the worker we are interested in here is
+Since we are using the orkney desktop computer as our platform here, the worker we are interested in here is
 the CPU core. The worker configuration file can be found in the lue_qa repository, in
-`configuration/orkney/thread_numa_node/{partition_shape,strong_scalability,weak_scalability}.json`. For each
-kind of experiment (partition_shape, strong_scalability, weak_scalability), a worker configuration can be
+`configuration/orkney/core_numa_node/{partition_shape,strong_scalability,weak_scalability}.json`. For each
+kind of experiment (partition shape, strong scalability, weak scalability), a worker configuration can be
 provided. In the case of the strong and weak scalability experiments it is not unusual for the configurations
 to be the same, and a symbolic link can be used to refer to a single file containing this information.
 
-Example configuration for the partition_shape experiment:
+Example configuration for the partition shape experiment:
 
 ```json
 {
-    "scenario": "thread_numa_node",
-    "count": 1,
+    "scenario": "core_numa_node",
+    "count": 3,
     "locality_per": "numa_node",
     "worker": {
         "type": "thread",
@@ -125,8 +127,8 @@ Example configuration for the strong and weak scalability experiments:
 
 ```json
 {
-    "scenario": "thread_numa_node",
-    "count": 1,
+    "scenario": "core_numa_node",
+    "count": 3,
     "locality_per": "numa_node",
     "worker": {
         "type": "thread",
@@ -143,22 +145,54 @@ The count is the number of times an experimental run should be repeated. Doing i
 the inspection of the spread in the resulting scalability metrics.
 
 
-## Experiment configuration
+### Experiment
+
+For each kind of experiment we must create a configuration file containing the settings lue_scalability.py
+must use. For the command to be able to find the correct configuration file, these files must be stored in a
+directory named after the the platform, kind of worker, command and kind of experiment. For the Game of Life
+model, example configuration files can be found in the lue_qa repository, in
+`experiment/configuration/orkney/game_of_life.py/core_numa_node`.
+
+Example configuration for the partition shape experiment:
+
+```json
+{
+    "array": {
+        "shape": [10000, 10000]
+    },
+    "partition": {
+        "shape": [500, 500],
+        "range": {
+            "max_nr_elements": 1250000,
+            "multiplier": 1.5,
+            "method": "linear"
+        }
+    },
+    "arguments": {
+        "positionals": [
+        ],
+        "options": {
+        }
+    }
+}
+```
 
 
-## Partition shape experiment
+## Experiment
+
+### Partition shape
 
 Given the above configuration files we can start the scalability experiments. The first thing to do is to
 determine a good partition shape to use for the strong and weak scalability experiments. For this we can call
 lue_scalability.py with the prefixes of the paths containing the cluster, worker, and experiment configuration
-files. Additionally, we need to tell it that we want to perform a partition_shape experiment. This results in
+files. Additionally, we need to tell it that we want to perform a partition shape experiment. This results in
 a command like this:
 
 ```bash
-# 100 Is a model-specific argument. In this case the number of generations
+# 50 Is a model-specific argument. In this case the number of generations
 # that we want the model to simulate
 lue_scalability.py \
-    partition_shape script game_of_life.py "100" orkney cpu_core \
+    partition_shape script game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -173,7 +207,7 @@ instead of script:
 
 ```bash
 lue_scalability.py \
-    partition_shape import game_of_life.py "100" orkney cpu_core \
+    partition_shape import game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -184,7 +218,7 @@ again use the same command as before, but using the postprocess stage name inste
 
 ```bash
 lue_scalability.py \
-    partition_shape postprocess game_of_life.py "100" orkney cpu_core \
+    partition_shape postprocess game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -192,44 +226,69 @@ The experiment is now finished and we can inspect the plot in `plot.pdf` to visu
 are interested in a partition shape for which the latency is the lowest. In general we will have multiple
 options that have good (low) latencies.
 
-TODO Show plot
+```{figure} partition_shape.svg
+---
+width: 75%
+---
+Latencies by partition shape. Note the range in good partition shapes resulting in low latencies. Partition
+shape 850x850 appears to be a good candidate.
+```
 
 
-## Strong scalability experiment
+### Strong scalability
 
 Performing a strong scalability experiment involves calling the same commands as in the partition shape
 experiment, but now using the strong_scalability experiment name instead of partition_shape:
 
 ```bash
 lue_scalability.py \
-    strong_scalability script game_of_life.py "100" orkney cpu_core \
+    strong_scalability script game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 lue_scalability.py \
-    strong_scalability import game_of_life.py "100" orkney cpu_core \
+    strong_scalability import game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 lue_scalability.py \
-    strong_scalability postprocess game_of_life.py "100" orkney cpu_core \
+    strong_scalability postprocess game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
-TODO Show plot
+```{figure} strong_scalability.svg
+---
+width: 75%
+---
+Strong scalability efficiencies. The model executes almost 10 times faster when using all 12 CPU cores. The
+loss in efficiency compared to a linear scaling model is about 20%.
+```
+
+Both model users and LUE developers can be quite happy with these results. The model can actually use
+additional hardware to speed up the model, but there is still a challenge left for the developers to look
+into.
 
 
-## Weak scalability experiment
+### Weak scalability
 
 Performing a weak scalability experiment involves calling the same commands as in the partition shape and
 strong scalability experiment, but now using the weak_scalability experiment name:
 
 ```bash
 lue_scalability.py \
-    weak_scalability script game_of_life.py "100" orkney cpu_core \
+    weak_scalability script game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 lue_scalability.py \
-    weak_scalability import game_of_life.py "100" orkney cpu_core \
+    weak_scalability import game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 lue_scalability.py \
-    weak_scalability postprocess game_of_life.py "100" orkney cpu_core \
+    weak_scalability postprocess game_of_life.py "50" orkney cpu_core \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
-TODO Show plot
+```{figure} weak_scalability.svg
+---
+width: 75%
+---
+Weak scalability efficiencies. The model takes a little bit more time when executing a 12 times larger problem
+using 12 CPU cores. The loss in efficiency compared to a linear scaling model is about 20%.
+```
+
+Given these results, model users can make good use of additional hardware to process larger datasets. As we
+learned already, there is still some room left for improvement.

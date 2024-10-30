@@ -89,8 +89,12 @@ sphinx:
     - "sphinxcontrib.bibtex"
 
 parse:
+  # https://jupyterbook.org/en/stable/content/content-blocks.html#myst-syntax-extensions
+  # https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
   myst_enable_extensions:
     - "attrs_inline"
+    - "dollarmath"
+    - "linkify"
     # - aside
     # - deflist
-    # - colon_fence
+    # - colon_fence  # Don't use this. Syntax is already confusing enough.
