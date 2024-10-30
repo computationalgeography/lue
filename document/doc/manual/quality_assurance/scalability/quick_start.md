@@ -292,3 +292,16 @@ using 12 CPU cores. The loss in efficiency compared to a linear scaling model is
 
 Given these results, model users can make good use of additional hardware to process larger datasets. As we
 learned already, there is still some room left for improvement.
+
+
+## Bash script
+
+To make it easy to start a scalability experiment for other models and on different platforms, below is the
+Bash script used to obtain the results presented above. To be able to run it the pathname of the directory of
+the command used in the experiment (`game_of_life.py` in this case) has to be added to `$PATH` (and LUE has to
+be installed, obviously).
+
+```{literalinclude} scalability.sh
+   :language: bash
+   :caption: scalability.sh
+```

@@ -54,8 +54,9 @@ foreach(name IN ITEMS
     manual/quality_assurance/scalability/experiment.md
     manual/quality_assurance/scalability/game_of_life.py
     manual/quality_assurance/scalability/index.md
-    manual/quality_assurance/scalability/quick_start.md
     manual/quality_assurance/scalability/partition_shape.svg
+    manual/quality_assurance/scalability/quick_start.md
+    manual/quality_assurance/scalability/scalability.sh
     manual/quality_assurance/scalability/strong_scalability.svg
     manual/quality_assurance/scalability/weak_scalability.svg
     manual/view/index.md
