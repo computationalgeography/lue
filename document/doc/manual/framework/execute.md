@@ -31,8 +31,7 @@ Each cluster node contains 2 CPUs, each of which contains 4 NUMA nodes, each of 
 easy way to make use of the fact that latencies to memory within a NUMA node are smaller than between them is
 to assign a LUE framework program to each NUMA node (8 / cluster node).
 
-:::{note}
-
+````{note}
 In case you experience crashes when running LUE framework programs, these may be related to the custom memory
 allocator being loaded later than the program starts allocating memory. Memory allocations and deallocations
 must be handled by the same allocation library. Depending on how the HPX library LUE depends upon is built, a
@@ -44,8 +43,7 @@ starting LUE Python scripts like this solved the crashes:
 ```bash
 LD_PRELOAD=<prefix>/lib/libtcmalloc_minimal.so.4 python ./my_lue_script.py
 ```
-
-:::
+````
 
 
 ## Single-node execution
@@ -102,14 +100,14 @@ salloc \
             --hpx:print-bind
 ```
 
-:::{note}
+```{note}
 In case you see this warning::
 
     hpx::init: command line warning: --hpx:localities used when running with SLURM, requesting a different
     number of localities (8) than have been assigned by SLURM (1), the application might not run properly.
 
 but the printed CPU bindings seem fine, then you can safely ignore it.
-:::
+```
 
 #### Asynchronous
 

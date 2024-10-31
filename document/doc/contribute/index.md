@@ -4,10 +4,10 @@
 
 Thank you for investing your time in contributing to this project!
 
-:::{note}
+```{note}
 If you are a model or software developer interested in *using* LUE, then you can safely skip everything in
 this part of the manual. You will likely not need to know about the contents.
-:::
+```
 
 
 ## Issues

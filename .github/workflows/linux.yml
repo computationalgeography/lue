@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "master"
+  workflow_dispatch:
 
 jobs:
     build:
@@ -137,11 +138,11 @@ jobs:
                       -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                       -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                       -D LUE_BUILD_DOCUMENTATION=TRUE \
-                      -D LUE_BUILD_QA=TRUE \
-                      -D LUE_QA_WITH_PYTHON_API=TRUE \
-                      -D LUE_QA_WITH_TESTS=TRUE \
-                      -D LUE_QA_TEST_NR_LOCALITIES_PER_TEST=1 \
-                      -D LUE_QA_TEST_NR_THREADS_PER_LOCALITY=2 \
+                      -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+                      -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+                      -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
                       -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
@@ -172,10 +173,7 @@ jobs:
               ctest \
                   --test-dir ${{ env.lue_build_directory }} \
                   --output-on-failure \
-                  --exclude-regex algorithm_decreasing_order_test \
-                  --exclude-regex algorithm_image_land_integrate_test \
-                  --exclude-regex algorithm_image_land_integrate_and_allocate_test \
-                  --exclude-regex lue_py_image_land_python_test
+                  --exclude-regex "(algorithm_decreasing_order_test|algorithm_image_land_integrate_test|algorithm_image_land_integrate_and_allocate_test|lue_py_image_land_python_test)"
 
               # Test of runtime targets
               ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version

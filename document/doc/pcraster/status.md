@@ -21,14 +21,14 @@ If an operation used in a PCRaster model is not available in LUE yet, it is a go
 project team. Various factors determine the order in which operations are added to the LUE framework. The
 number of model developers requesting one is one of them.
 
-:::{note}
+```{note}
 A LUE operation that implements an operation that is also in PCRaster may be different from the PCRaster
 operation. It may be named different, it may accept different arguments, or accept them in a different order.
 We provide a [special module](lue-pcraster-module) that can be used to quickly port PCRaster model by hiding
 these differences as much as possible.
-:::
+```
 
-:::{list-table} Legend
+```{list-table} Legend
 :widths: auto
 
 *   - ✅
@@ -42,9 +42,9 @@ these differences as much as possible.
     - Guesstimate of the amount of effort required to add it: \
       1 little, 2 somewhat, 3 serious. \
       This is only relevant for operations that have not been added yet.
-:::
+```
 
-:::{list-table} Status of LUE operations vs PCRaster operations
+```{list-table} Status of LUE operations vs PCRaster operations
 :header-rows: 1
 :widths: auto
 
@@ -502,8 +502,7 @@ these differences as much as possible.
 *   - ycoordinate
     - 🗑
     - Not sure why this is useful...
-
-:::
+```
 
 %    In LUE, not in PCRaster:
 %    - atan2.hpp
@@ -554,7 +553,7 @@ PCRaster Python Framework classes, but are implemented in terms of the LUE class
 have been ported to LUE yet. The next table lists the current status.
 
 
-:::{list-table} Legend
+```{list-table} Legend
 :widths: auto
 
 *   - ✅
@@ -569,9 +568,9 @@ have been ported to LUE yet. The next table lists the current status.
     - Guesstimate of the amount of effort required to add it: \
       1 little, 2 somewhat, 3 serious. \
       This is only relevant for classes that have not been added yet.
-:::
+```
 
-:::{list-table} Status of LUE model development support classes vs PCRaster Python Framework classes
+```{list-table} Status of LUE model development support classes vs PCRaster Python Framework classes
 :header-rows: 1
 :widths: auto
 
@@ -614,4 +613,4 @@ have been ported to LUE yet. The next table lists the current status.
 *   - `EnsKalmanFilterFramework`
     - ❌
     -
-:::
+```

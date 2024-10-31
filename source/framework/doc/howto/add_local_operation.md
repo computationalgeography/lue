@@ -9,9 +9,9 @@ Here you will find information about how to add a new local operation to the LUE
 - When implementing an algorithm that has an equivalent in C++, try to name and mimic the behaviour of that
   algorithm.
 
-:::{note}
+```{note}
 All relative paths are relative to `source/framework/algorithm/`
-:::
+```
 
 
 ## Algorithm

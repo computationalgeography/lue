@@ -60,13 +60,13 @@ git checkout 0.3.4_h813c5f  # Update for actual branch mentioned in PR
 git push
 ```
 
-:::{important}
+```{important}
 Before merging the changes in the pull request's branch the build number in `meta.yaml` must be correct:
 
 - In case LUE's version was bumped, the build number must be 0. This is done by the bot that created the pull
   request in the first place.
 - In case LUE's version was not bumped, the build number must be bumped by 1. In this case there was some
   other reason for rebuilding a Conda package.
-:::
+```
 
 Once the PR is fine, merge it into the main branch.

@@ -45,12 +45,20 @@ foreach(name IN ITEMS
     manual/framework/execute.md
     manual/framework/index.md
     manual/framework/python/index.md
-    manual/framework/scalability.md
     manual/glossary.md
     manual/index.md
     manual/install/conda.md
     manual/install/index.md
     manual/install/source.md
+    manual/quality_assurance/index.md
+    manual/quality_assurance/scalability/experiment.md
+    manual/quality_assurance/scalability/game_of_life.py
+    manual/quality_assurance/scalability/index.md
+    manual/quality_assurance/scalability/partition_shape.svg
+    manual/quality_assurance/scalability/quick_start.md
+    manual/quality_assurance/scalability/scalability.sh
+    manual/quality_assurance/scalability/strong_scalability.svg
+    manual/quality_assurance/scalability/weak_scalability.svg
     manual/view/index.md
     pcraster/index.md
     pcraster/port.md
@@ -124,6 +132,10 @@ foreach(name IN ITEMS
     framework/partitioned_route/doc/index.md
 
     framework/doc/index.md
+
+    quality_assurance/doc/index.md
+    quality_assurance/cxx/doc/index.md
+    quality_assurance/python/doc/index.md
 )
     configure_file(${PROJECT_SOURCE_DIR}/source/${name} source/${name} COPYONLY)
 endforeach()

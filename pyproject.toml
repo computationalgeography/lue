@@ -3,10 +3,17 @@ known_lue = "lue, lue_test"
 lines_after_imports = 2
 sections = "FUTURE,STDLIB,THIRDPARTY,LUE,FIRSTPARTY,LOCALFOLDER"
 profile = "black"
+# line_length = 110
+
+# [tool.black]
+# line-length = 110
 
 [tool.codespell]
 skip = "*.cpp,*.hpp,*.tex,*_test.py,pyproject.toml"
 ignore-words-list = "nD"
+
+# [tool.pyright]
+# max-line-length = 110
 
 [tool.typos]
 default.extend-ignore-identifiers-re = [

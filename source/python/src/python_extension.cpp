@@ -15,8 +15,8 @@
 #endif
 #endif
 #endif
-#ifdef LUE_BUILD_QA
-#ifdef LUE_QA_WITH_PYTHON_API
+#ifdef LUE_BUILD_QUALITY_ASSURANCE
+#ifdef LUE_QUALITY_ASSURANCE_WITH_PYTHON_API
 #include "lue/py/qa/submodule.hpp"
 #endif
 #endif
@@ -46,7 +46,7 @@ namespace lue {
 #endif
 #endif
 
-#ifdef LUE_QA_WITH_PYTHON_API
+#ifdef LUE_QUALITY_ASSURANCE_WITH_PYTHON_API
         automodules.push_back("qa");
 #endif
 
@@ -86,8 +86,8 @@ namespace lue {
 #endif
 #endif
 
-#ifdef LUE_BUILD_QA
-#ifdef LUE_QA_WITH_PYTHON_API
+#ifdef LUE_BUILD_QUALITY_ASSURANCE
+#ifdef LUE_QUALITY_ASSURANCE_WITH_PYTHON_API
         qa::init_submodule(module);
 #endif
 #endif
