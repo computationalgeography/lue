@@ -50,15 +50,10 @@ add_library(lue_py_framework_global_operation SHARED
 add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/abs.cpp
-    # src/algorithm/local_operation/acos.cpp
     # src/algorithm/local_operation/add.cpp
     # src/algorithm/local_operation/all.cpp
-    # src/algorithm/local_operation/asin.cpp
-    # src/algorithm/local_operation/atan.cpp
-    # src/algorithm/local_operation/atan2.cpp
     # src/algorithm/local_operation/cast.cpp
     # src/algorithm/local_operation/cell_index.cpp
-    # src/algorithm/local_operation/cos.cpp
     # src/algorithm/local_operation/divide.cpp
     # src/algorithm/local_operation/equal_to.cpp
     # src/algorithm/local_operation/ceil.cpp
@@ -71,20 +66,16 @@ add_library(lue_py_framework_local_operation SHARED
     # src/algorithm/local_operation/less_than_equal_to.cpp
     # src/algorithm/local_operation/log.cpp
     # src/algorithm/local_operation/log10.cpp
-    # src/algorithm/local_operation/logical_and.cpp
-    # src/algorithm/local_operation/logical_exclusive_or.cpp
-    # src/algorithm/local_operation/logical_inclusive_or.cpp
-    # src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/logical.cpp
     # src/algorithm/local_operation/modulus.cpp
     # src/algorithm/local_operation/multiply.cpp
     # src/algorithm/local_operation/negate.cpp
     # src/algorithm/local_operation/not_equal_to.cpp
     # src/algorithm/local_operation/pow.cpp
     # src/algorithm/local_operation/round.cpp
-    # src/algorithm/local_operation/sin.cpp
     # src/algorithm/local_operation/sqrt.cpp
     # src/algorithm/local_operation/subtract.cpp
-    # src/algorithm/local_operation/tan.cpp
+    src/algorithm/local_operation/trigonometry.cpp
     # src/algorithm/local_operation/unique_id.cpp
     # src/algorithm/local_operation/valid.cpp
     # src/algorithm/local_operation/where.cpp
