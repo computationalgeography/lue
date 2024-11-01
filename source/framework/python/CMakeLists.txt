@@ -49,7 +49,7 @@ add_library(lue_py_framework_global_operation SHARED
 
 add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation.cpp
-    # src/algorithm/local_operation/abs.cpp
+    src/algorithm/local_operation/abs.cpp
     # src/algorithm/local_operation/acos.cpp
     # src/algorithm/local_operation/add.cpp
     # src/algorithm/local_operation/all.cpp

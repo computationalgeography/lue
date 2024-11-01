@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/accu.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/pybind11.h>
 
@@ -6,37 +7,40 @@
 namespace lue::framework {
     namespace {
 
-        Rank const rank{2};
-
-        template<typename MaterialElement>
-        auto accu(
-            PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-            PartitionedArray<MaterialElement, rank> const& material)
-            -> PartitionedArray<MaterialElement, rank>
+        template<Arithmetic MaterialElement>
+        void bind(pybind11::module& module)
         {
-            using Policies = policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+            Rank const rank{2};
 
-            return accu(Policies{}, flow_direction, material);
+            module.def(
+                "accu",
+                [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+                   PartitionedArray<MaterialElement, rank> const& material)
+                {
+                    using Policies =
+                        policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+
+                    return accu(Policies{}, flow_direction, material);
+                });
         }
 
 
-        template<typename Elements, std::size_t idx>
+        template<TupleLike Elements, std::size_t idx>
         void bind(pybind11::module& module) requires(idx == 0)
         {
-            module.def("accu", accu<std::tuple_element_t<idx, Elements>>);
+            bind<std::tuple_element_t<idx, Elements>>(module);
         }
 
 
-        template<typename Elements, std::size_t idx>
+        template<TupleLike Elements, std::size_t idx>
         void bind(pybind11::module& module) requires(idx > 0)
         {
-            module.def("accu", accu<std::tuple_element_t<idx, Elements>>);
-
+            bind<std::tuple_element_t<idx, Elements>>(module);
             bind<Elements, idx - 1>(module);
         }
 
 
-        template<typename Elements>
+        template<TupleLike Elements>
         void bind(pybind11::module& module)
         {
             bind<Elements, std::tuple_size_v<Elements> - 1>(module);

@@ -45,7 +45,7 @@ namespace lue::framework {
 
     PYBIND11_EXPORT void bind_local_operations(pybind11::module& module)
     {
-        // bind_abs(module);
+        bind_abs(module);
         // bind_acos(module);
         // bind_add(module);
         // bind_all(module);

@@ -116,10 +116,10 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> accu(
+    auto accu(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        PartitionedArray<MaterialElement, rank> const& material)
+        PartitionedArray<MaterialElement, rank> const& material) -> PartitionedArray<MaterialElement, rank>
     {
         using Accumulator = detail::accu::Accumulator<MaterialElement>;
 

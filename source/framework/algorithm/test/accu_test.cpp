@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "flow_accumulation.hpp"
+#include "lue/framework/algorithm/accu.hpp"
 #include "lue/framework/algorithm/default_policies/accu3.hpp"
-#include "lue/framework/algorithm/definition/accu.hpp"
 #include "lue/framework/algorithm/value_policies/accu3.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"

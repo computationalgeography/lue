@@ -65,9 +65,9 @@ namespace lue {
 
             ~ArrayPartitionIO() = default;
 
-            ArrayPartitionIO& operator=(ArrayPartitionIO const&) = default;
+            auto operator=(ArrayPartitionIO const&) -> ArrayPartitionIO& = default;
 
-            ArrayPartitionIO& operator=(ArrayPartitionIO&&) = default;
+            auto operator=(ArrayPartitionIO&&) -> ArrayPartitionIO& = default;
 
 
             hpx::future<bool> is_drained() const
@@ -103,7 +103,7 @@ namespace lue {
             }
 
 
-            hpx::future<PartitionOffsets> partition_offsets() const
+            auto partition_offsets() const -> hpx::future<PartitionOffsets>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -114,7 +114,7 @@ namespace lue {
             }
 
 
-            hpx::future<PartitionOffsetCounts> partition_offset_counts() const
+            auto partition_offset_counts() const -> hpx::future<PartitionOffsetCounts>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -125,8 +125,8 @@ namespace lue {
             }
 
 
-            hpx::future<std::vector<std::tuple<Indices, Value>>> drain(
-                Offset const& partition_offset, Shape const& partition_shape)
+            auto drain(Offset const& partition_offset, Shape const& partition_shape)
+                -> hpx::future<std::vector<std::tuple<Indices, Value>>>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
