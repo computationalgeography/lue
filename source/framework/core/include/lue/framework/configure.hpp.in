@@ -54,6 +54,12 @@ namespace lue {
     using MaterialElements = std::tuple< {{ MaterialElements | join(", ") }} >;
 
     /*!
+        @brief      All zone element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+    */
+    using ZoneElements = std::tuple< {{ ZoneElements | join(", ") }} >;
+
+    /*!
         @brief      The Boolean element type type for which relevant class and function templates are
                     instantiated
 
@@ -68,6 +74,13 @@ namespace lue {
         A count is typically represented by a large integral element type.
     */
     using CountElement = {{ CountElement }};
+
+    /*!
+        @brief      The ID element type type for which relevant class and function templates are instantiated
+
+        An ID is typically represented by a large integral element type.
+    */
+    using IDElement = {{ IDElement }};
 
     /*!
         @brief      The index element type type for which relevant class and function templates are

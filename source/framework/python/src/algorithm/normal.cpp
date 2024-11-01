@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/normal.hpp"
 #include "shape.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -12,11 +13,11 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        pybind11::object normal1(
+        auto normal1(
             PartitionedArray<Element, rank> const& array,
             pybind11::object const& dtype_args,
             pybind11::object const& mean,
-            pybind11::object const& stddev)
+            pybind11::object const& stddev) -> pybind11::object
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 
@@ -35,14 +36,30 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::normal(
-                                array, pybind11::cast<float>(mean), pybind11::cast<float>(stddev)));
+                            using OutputElement = float;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::normal(
+                                    array,
+                                    pybind11::cast<OutputElement>(mean),
+                                    pybind11::cast<OutputElement>(stddev)));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::normal(
-                                array, pybind11::cast<double>(mean), pybind11::cast<double>(stddev)));
+                            using OutputElement = double;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::normal(
+                                    array,
+                                    pybind11::cast<OutputElement>(mean),
+                                    pybind11::cast<OutputElement>(stddev)));
+                            }
+
                             break;
                         }
                     }
@@ -57,6 +74,37 @@ namespace lue::framework {
             }
 
             return result;
+        }
+
+
+        template<Arithmetic Element>
+        void bind(pybind11::module& module)
+        {
+            Rank const rank{2};
+
+            module.def("normal", normal1<Element, rank>);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx == 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx > 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+            bind<Elements, idx - 1>(module);
+        }
+
+
+        template<TupleLike Elements>
+        void bind(pybind11::module& module)
+        {
+            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
         }
 
 
@@ -100,12 +148,24 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = normal<float, rank>(array_shape, partition_shape, mean, stddev);
+                            using Element = float;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = normal<Element, rank>(array_shape, partition_shape, mean, stddev);
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = normal<double, rank>(array_shape, partition_shape, mean, stddev);
+                            using Element = double;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = normal<Element, rank>(array_shape, partition_shape, mean, stddev);
+                            }
+
                             break;
                         }
                     }
@@ -206,13 +266,7 @@ namespace lue::framework {
 
     void bind_normal(pybind11::module& module)
     {
-        module.def("normal", normal1<std::uint8_t, 2>);
-        module.def("normal", normal1<std::uint32_t, 2>);
-        module.def("normal", normal1<std::uint64_t, 2>);
-        module.def("normal", normal1<std::int32_t, 2>);
-        module.def("normal", normal1<std::int64_t, 2>);
-        module.def("normal", normal1<float, 2>);
-        module.def("normal", normal1<double, 2>);
+        bind<ArithmeticElements>(module);
 
         module.def(
             "normal",

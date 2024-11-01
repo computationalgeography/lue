@@ -189,24 +189,24 @@ block()
 endblock()
 
 add_library(lue_py_framework SHARED
-    # src/algorithm/array_partition_id.cpp
-    # src/algorithm/locality_id.cpp
-    # src/algorithm/timestamp.cpp
-    # src/algorithm/normal.cpp
-    # src/algorithm/uniform.cpp
+    src/algorithm/array_partition_id.cpp
+    $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:src/algorithm/locality_id.cpp>
+    $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:src/algorithm/timestamp.cpp>
+    src/algorithm/normal.cpp
+    src/algorithm/uniform.cpp
 
     src/core/create_partitioned_array.cpp
     ${generated_source_files}
     src/core/scalar.cpp
     src/core/wait.cpp
 
-    # src/io/read_array.cpp
-    # src/io/write_array.cpp
+    src/io/read_array.cpp
+    src/io/write_array.cpp
 
     src/command_line.cpp
 
-    # src/gdal/from_gdal.cpp
-    # src/gdal/to_gdal.cpp
+    src/gdal/from_gdal.cpp
+    src/gdal/to_gdal.cpp
 
     src/hpx.cpp
     src/hpx_runtime.cpp
@@ -215,11 +215,11 @@ add_library(lue_py_framework SHARED
     src/model/progressor.cpp
     src/model/simulate.cpp
 
-    # src/numpy/from_numpy.cpp
-    # src/numpy/to_numpy.cpp
+    src/numpy/from_numpy.cpp
+    src/numpy/to_numpy.cpp
 
-    # src/partitioned_route/serial_route.cpp
-    # src/partitioned_route/wait.cpp
+    src/partitioned_route/serial_route.cpp
+    src/partitioned_route/wait.cpp
 
     src/python_extension.cpp
     src/submodule.cpp

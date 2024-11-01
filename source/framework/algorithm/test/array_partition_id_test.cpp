@@ -9,7 +9,7 @@
 
 namespace {
 
-    template<typename IDElement, typename Element, std::size_t rank>
+    template<typename Element, std::size_t rank>
     void test_array()
     {
         using namespace lue::default_policies;
@@ -22,14 +22,14 @@ namespace {
         Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
 
         // Request the IDs of each partition
-        auto array_partition_id = lue::array_partition_id<IDElement>(array);
+        auto array_partition_id = lue::array_partition_id<lue::IDElement>(array);
 
         BOOST_CHECK_EQUAL(array_partition_id.shape(), array.shape());
 
         auto const& localities{array_partition_id.localities()};
         auto const& partitions{array_partition_id.partitions()};
 
-        for (IDElement p = 0; p < lue::nr_partitions(array_partition_id); ++p)
+        for (lue::IDElement p = 0; p < lue::nr_partitions(array_partition_id); ++p)
         {
             BOOST_CHECK(all(localities[p], equal_to<lue::BooleanElement>(localities[p], partitions[p], p))
                             .future()
@@ -44,5 +44,5 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 {
     lue::Rank const rank{2};
 
-    test_array<lue::UnsignedIntegralElement<0>, lue::SignedIntegralElement<0>, rank>();
+    test_array<lue::SignedIntegralElement<0>, rank>();
 }

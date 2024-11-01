@@ -16,15 +16,15 @@ namespace lue::framework {
 
     PYBIND11_EXPORT void bind_focal_operations(pybind11::module& module)
     {
-        bind_aspect(module);
-        bind_focal_diversity(module);
-        bind_focal_high_pass(module);
-        bind_focal_majority(module);
-        bind_focal_maximum(module);
-        bind_focal_mean(module);
-        bind_focal_minimum(module);
-        bind_slope(module);
-        bind_focal_sum(module);
+        // bind_aspect(module);
+        // bind_focal_diversity(module);
+        // bind_focal_high_pass(module);
+        // bind_focal_majority(module);
+        // bind_focal_maximum(module);
+        // bind_focal_mean(module);
+        // bind_focal_minimum(module);
+        // bind_slope(module);
+        // bind_focal_sum(module);
     }
 
 }  // namespace lue::framework

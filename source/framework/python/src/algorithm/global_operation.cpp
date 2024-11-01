@@ -11,10 +11,10 @@ namespace lue::framework {
 
     PYBIND11_EXPORT void bind_global_operations(pybind11::module& module)
     {
-        bind_reclassify(module);
-        bind_maximum(module);
-        bind_minimum(module);
-        bind_sum(module);
+        // bind_reclassify(module);
+        // bind_maximum(module);
+        // bind_minimum(module);
+        // bind_sum(module);
     }
 
 }  // namespace lue::framework

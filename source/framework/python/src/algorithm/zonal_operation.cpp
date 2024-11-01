@@ -17,16 +17,16 @@ namespace lue::framework {
 
     PYBIND11_EXPORT void bind_zonal_operations(pybind11::module& module)
     {
-        bind_clump(module);
-        bind_zonal_area(module);
-        bind_zonal_diversity(module);
-        bind_zonal_majority(module);
-        bind_zonal_maximum(module);
-        bind_zonal_mean(module);
-        bind_zonal_minimum(module);
-        bind_zonal_normal(module);
-        bind_zonal_sum(module);
-        bind_zonal_uniform(module);
+        // bind_clump(module);
+        // bind_zonal_area(module);
+        // bind_zonal_diversity(module);
+        // bind_zonal_majority(module);
+        // bind_zonal_maximum(module);
+        // bind_zonal_mean(module);
+        // bind_zonal_minimum(module);
+        // bind_zonal_normal(module);
+        // bind_zonal_sum(module);
+        // bind_zonal_uniform(module);
     }
 
 }  // namespace lue::framework

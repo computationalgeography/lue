@@ -1,4 +1,6 @@
 #include "lue/framework/io/raster.hpp"
+#include "lue/concept.hpp"
+#include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <pybind11/pybind11.h>
 
@@ -7,19 +9,50 @@ using namespace pybind11::literals;
 
 
 namespace lue::framework {
+    namespace {
+
+
+        template<Arithmetic Element>
+        void bind(pybind11::module& module)
+        {
+            if constexpr (
+                (!std::is_same_v<Element, std::int8_t> || gdal::supports_8bit_signed_integers) &&
+                (!(std::is_same_v<Element, std::uint64_t> || std::is_same_v<Element, std::int64_t>) ||
+                 gdal::supports_64bit_integers))
+            {
+                // If not one of the types not supported by older versions of GDAL OR using a GDAL version
+                // that supports them ...
+                module.def("to_gdal", write<Element>, "array"_a, "name"_a, "clone_name"_a = "");
+            }
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx == 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx > 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+            bind<Elements, idx - 1>(module);
+        }
+
+
+        template<TupleLike Elements>
+        void bind(pybind11::module& module)
+        {
+            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
+        }
+
+    }  // Anonymous namespace
 
     void bind_to_gdal(pybind11::module& module)
     {
-        module.def("to_gdal", write<std::uint8_t>, "array"_a, "name"_a, "clone_name"_a = "");
-        module.def("to_gdal", write<std::uint32_t>, "array"_a, "name"_a, "clone_name"_a = "");
-        module.def("to_gdal", write<std::int32_t>, "array"_a, "name"_a, "clone_name"_a = "");
-        if constexpr (gdal::supports_64bit_integers)
-        {
-            module.def("to_gdal", write<std::uint64_t>, "array"_a, "name"_a, "clone_name"_a = "");
-            module.def("to_gdal", write<std::int64_t>, "array"_a, "name"_a, "clone_name"_a = "");
-        }
-        module.def("to_gdal", write<float>, "array"_a, "name"_a, "clone_name"_a = "");
-        module.def("to_gdal", write<double>, "array"_a, "name"_a, "clone_name"_a = "");
+        bind<ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

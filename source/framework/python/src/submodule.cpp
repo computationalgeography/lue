@@ -1,6 +1,8 @@
 #include "lue/py/framework/submodule.hpp"
 #include "hpx_runtime.hpp"
 // #include "lue/gdal.hpp"
+#include "lue/framework/algorithm/timestamp.hpp"
+#include "lue/framework.hpp"
 #include <pybind11/stl.h>
 
 
@@ -100,34 +102,43 @@ namespace lue::framework {
         // Wrap high-level data structures
         bind_scalar(submodule);
         bind_partitioned_array(submodule);
-        // bind_serial_route(submodule);
-        // bind_wait_serial_route(submodule);
+        bind_serial_route(submodule);
+        bind_wait_serial_route(submodule);
 
         // Wrap high-level algorithms
         bind_create_array(submodule);
         bind_wait_partitioned_array(submodule);
-        // bind_focal_operations(submodule);
-        // bind_global_operations(submodule);
-        // bind_local_operations(submodule);
-        // bind_routing_operations(submodule);
-        // bind_zonal_operations(submodule);
-        // bind_read_array(submodule);
-        // bind_write_array(submodule);
+        bind_focal_operations(submodule);
+        bind_global_operations(submodule);
+        bind_local_operations(submodule);
+        bind_routing_operations(submodule);
+        bind_zonal_operations(submodule);
+        bind_read_array(submodule);
+        bind_write_array(submodule);
 
-        // bind_array_partition_id(submodule);
-        // bind_locality_id(submodule);
-        // bind_normal(submodule);
-        // bind_timestamp(submodule);
-        // bind_uniform(submodule);
+        bind_array_partition_id(submodule);
+
+        if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+        {
+            bind_locality_id(submodule);
+        }
+
+        if constexpr (lue::arithmetic_element_supported<ClockTick>)
+        {
+            bind_timestamp(submodule);
+        }
+
+        bind_normal(submodule);
+        bind_uniform(submodule);
 
         bind_model(submodule);
         bind_progressor(submodule);
         bind_simulate(submodule);
 
-        // bind_from_numpy(submodule);
-        // bind_to_numpy(submodule);
-        // bind_from_gdal(submodule);
-        // bind_to_gdal(submodule);
+        bind_from_numpy(submodule);
+        bind_to_numpy(submodule);
+        bind_from_gdal(submodule);
+        bind_to_gdal(submodule);
 
         // Unless the user calls stop_hpx_runtime explicitly, we will do it
         // automatically upon module unload

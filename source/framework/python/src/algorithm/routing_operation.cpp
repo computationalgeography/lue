@@ -24,7 +24,7 @@ namespace lue::framework {
 
     PYBIND11_EXPORT void bind_routing_operations(pybind11::module& module)
     {
-        bind_accu(module);
+        // bind_accu(module);
         // bind_accu3(module);
         // bind_accu_fraction(module);
         // bind_accu_info(module);

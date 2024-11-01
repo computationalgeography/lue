@@ -155,6 +155,17 @@ if(LUE_BUILD_FRAMEWORK)
                 "std::int32_t"
     )
 
+    set(LUE_FRAMEWORK_ID_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing IDs")
+    set_property(CACHE LUE_FRAMEWORK_ID_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
+
     set(LUE_FRAMEWORK_INDEX_ELEMENT
         "std::uint64_t" CACHE STRING "Type to use for representing indices")
     set_property(CACHE LUE_FRAMEWORK_INDEX_ELEMENT
@@ -194,8 +205,6 @@ if(LUE_BUILD_FRAMEWORK)
         ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
         ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
 
-    set(LUE_FRAMEWORK_ZONE_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
-
     set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
         float double CACHE STRING
         "Type(s) to use for representing floating point values"
@@ -216,6 +225,9 @@ if(LUE_BUILD_FRAMEWORK)
         ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
         ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 
+    set(LUE_FRAMEWORK_ZONE_ELEMENTS
+        ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
+
     # Ranks for which templates are instantiated. Rank 2 has to be there for the spatial algorithms.
     set(LUE_FRAMEWORK_RANKS
         2 CACHE STRING
@@ -225,6 +237,21 @@ if(LUE_BUILD_FRAMEWORK)
             STRINGS
                 "2"
     )
+
+    include(CheckTypeSize)
+    set(CMAKE_EXTRA_INCLUDE_FILES "chrono")
+    check_type_size(
+        "std::chrono::high_resolution_clock::duration::rep"
+        LUE_FRAMEWORK_CLOCK_TICK_SIZE
+        LANGUAGE "CXX"
+    )
+    unset(CMAKE_EXTRA_INCLUDE_FILES)
+
+    if(${LUE_FRAMEWORK_CLOCK_TICK_SIZE} EQUAL "8")
+        set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT "std::uint64_t")
+    else()
+        message(FATAL_ERROR "Clock tick size is ${LUE_FRAMEWORK_CLOCK_TICK_SIZE}, which we haven't seen yet. Update CMake logic.")
+    endif()
 
     # Policies for which templates are instantiated
 
@@ -244,9 +271,26 @@ if(LUE_BUILD_FRAMEWORK)
         message(FATAL_ERROR "The type used for LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT (${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
     endif()
 
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_ID_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_ID_ELEMENT (${LUE_FRAMEWORK_ID_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
     LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_INDEX_ELEMENT} TYPE_PRESENT)
     if(TYPE_PRESENT EQUAL -1)
         message(FATAL_ERROR "The type used for LUE_FRAMEWORK_INDEX_ELEMENT (${LUE_FRAMEWORK_INDEX_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    set(LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE FALSE)
+    LIST(FIND LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS "std::uint32_t" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE TRUE)
+    endif()
+
+    set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE FALSE)
+    LIST(FIND LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE TRUE)
     endif()
 endif()
 

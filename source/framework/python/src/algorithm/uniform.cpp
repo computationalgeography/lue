@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "shape.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -39,18 +40,30 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<std::int32_t>(min_value),
-                                pybind11::cast<std::int32_t>(max_value)));
+                            using OutputElement = std::int32_t;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<std::int64_t>(min_value),
-                                pybind11::cast<std::int64_t>(max_value)));
+                            using OutputElement = std::int64_t;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                     }
@@ -64,18 +77,30 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<std::uint32_t>(min_value),
-                                pybind11::cast<std::uint32_t>(max_value)));
+                            using OutputElement = std::uint32_t;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array,
-                                pybind11::cast<std::uint64_t>(min_value),
-                                pybind11::cast<std::uint64_t>(max_value)));
+                            using OutputElement = std::uint64_t;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                     }
@@ -89,14 +114,30 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array, pybind11::cast<float>(min_value), pybind11::cast<float>(max_value)));
+                            using OutputElement = float;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::uniform(
-                                array, pybind11::cast<double>(min_value), pybind11::cast<double>(max_value)));
+                            using OutputElement = double;
+
+                            if constexpr (arithmetic_element_supported<OutputElement>)
+                            {
+                                result = pybind11::cast(value_policies::uniform(
+                                    array,
+                                    pybind11::cast<OutputElement>(min_value),
+                                    pybind11::cast<OutputElement>(max_value)));
+                            }
+
                             break;
                         }
                     }
@@ -111,6 +152,37 @@ namespace lue::framework {
             }
 
             return result;
+        }
+
+
+        template<Arithmetic Element>
+        void bind(pybind11::module& module)
+        {
+            Rank const rank{2};
+
+            module.def("uniform", uniform1<Element, rank>);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx == 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+        }
+
+
+        template<TupleLike Elements, std::size_t idx>
+        void bind(pybind11::module& module) requires(idx > 0)
+        {
+            bind<std::tuple_element_t<idx, Elements>>(module);
+            bind<Elements, idx - 1>(module);
+        }
+
+
+        template<TupleLike Elements>
+        void bind(pybind11::module& module)
+        {
+            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
         }
 
 
@@ -154,14 +226,26 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = uniform<std::int32_t, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                            using Element = std::int32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = uniform<std::int64_t, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                            using Element = std::int64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                     }
@@ -175,14 +259,26 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = uniform<std::uint32_t, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                            using Element = std::uint32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = uniform<std::uint64_t, rank>(
-                                array_shape, partition_shape, min_value, max_value);
+                            using Element = std::uint64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                     }
@@ -196,13 +292,26 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = uniform<float, rank>(array_shape, partition_shape, min_value, max_value);
+                            using Element = float;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result =
-                                uniform<double, rank>(array_shape, partition_shape, min_value, max_value);
+                            using Element = double;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = uniform<Element, rank>(
+                                    array_shape, partition_shape, min_value, max_value);
+                            }
+
                             break;
                         }
                     }
@@ -305,13 +414,7 @@ namespace lue::framework {
 
     void bind_uniform(pybind11::module& module)
     {
-        module.def("uniform", uniform1<std::uint8_t, 2>);
-        module.def("uniform", uniform1<std::uint32_t, 2>);
-        module.def("uniform", uniform1<std::uint64_t, 2>);
-        module.def("uniform", uniform1<std::int32_t, 2>);
-        module.def("uniform", uniform1<std::int64_t, 2>);
-        module.def("uniform", uniform1<float, 2>);
-        module.def("uniform", uniform1<double, 2>);
+        bind<ArithmeticElements>(module);
 
         module.def(
             "uniform",
