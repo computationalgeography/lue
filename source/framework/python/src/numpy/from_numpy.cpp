@@ -1,6 +1,6 @@
+#include "bind.hpp"
 #include "shape.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
@@ -138,48 +138,32 @@ namespace lue::framework {
         }
 
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            // TODO Create a single wrapper function, accepting a py::array and work from
-            //      there. Document this one wrapper function, etc.
-            module.def(
-                "from_numpy",
-                from_numpy_py<Element>,
-                "array"_a.noconvert(),
-                pybind11::kw_only(),
-                "partition_shape"_a = std::optional<pybind11::tuple>{},
-                "no_data_value"_a = std::optional<Element>{});
-        }
 
+            public:
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    // TODO Create a single wrapper function, accepting a py::array and work from
+                    //      there. Document this one wrapper function, etc.
+                    module.def(
+                        "from_numpy",
+                        from_numpy_py<Element>,
+                        "array"_a.noconvert(),
+                        pybind11::kw_only(),
+                        "partition_shape"_a = std::optional<pybind11::tuple>{},
+                        "no_data_value"_a = std::optional<Element>{});
+                }
+        };
 
     }  // Anonymous namespace
 
 
     void bind_from_numpy(pybind11::module& module)
     {
-        bind<ArithmeticElements>(module);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

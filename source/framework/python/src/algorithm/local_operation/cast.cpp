@@ -140,7 +140,7 @@ namespace lue::framework {
 
             public:
 
-                template<typename Element>
+                template<Arithmetic Element>
                 static void bind(pybind11::module& module)
                 {
                     Rank const rank{2};

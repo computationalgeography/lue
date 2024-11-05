@@ -1,5 +1,5 @@
 #include "lue/framework/serial_route.hpp"
-#include "lue/concept.hpp"
+#include "bind.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/configure.hpp"
 #include "lue/py/framework/stream.hpp"
@@ -79,42 +79,26 @@ namespace lue::framework {
         }
 
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            Rank const rank{2};
 
-            bind_serial_route<Element, rank>(module);
-        }
+            public:
 
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                    bind_serial_route<Element, rank>(module);
+                }
+        };
 
     }  // Anonymous namespace
 
 
     void bind_serial_route(pybind11::module& module)
     {
-        bind<ZoneElements>(module);
+        bind<Binder, ZoneElements>(module);
     }
 
 }  // namespace lue::framework

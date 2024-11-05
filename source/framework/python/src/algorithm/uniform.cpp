@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
+#include "bind.hpp"
 #include "shape.hpp"
-#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -155,35 +155,19 @@ namespace lue::framework {
         }
 
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            Rank const rank{2};
 
-            module.def("uniform", uniform1<Element, rank>);
-        }
+            public:
 
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                    module.def("uniform", uniform1<Element, rank>);
+                }
+        };
 
 
         // Step 3: Call the algorithm
@@ -414,7 +398,7 @@ namespace lue::framework {
 
     void bind_uniform(pybind11::module& module)
     {
-        bind<ArithmeticElements>(module);
+        bind<Binder, ArithmeticElements>(module);
 
         module.def(
             "uniform",

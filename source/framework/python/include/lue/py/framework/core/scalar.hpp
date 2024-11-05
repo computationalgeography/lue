@@ -45,7 +45,6 @@ namespace lue::framework {
         // https://docs.python.org/3/reference/datamodel.html
         using namespace lue::value_policies;
 
-        Rank const rank{2};
         using Scalar = lue::Scalar<Element>;
         using BooleanElement = std::uint8_t;
 
@@ -72,9 +71,13 @@ namespace lue::framework {
                     [](Scalar const& self) -> hpx::shared_future<Element> { return self.future(); },
                     "future docstring...")
 
-                .def("__repr__", [](Scalar const& scalar) { return detail::formal_string_representation(scalar); })
+                .def(
+                    "__repr__",
+                    [](Scalar const& scalar) { return detail::formal_string_representation(scalar); })
 
-                .def("__str__", [](Scalar const& scalar) { return detail::informal_string_representation(scalar); })
+                .def(
+                    "__str__",
+                    [](Scalar const& scalar) { return detail::informal_string_representation(scalar); })
 
                 // bool(a), not a, if a, while a, ...
                 .def(
@@ -83,8 +86,7 @@ namespace lue::framework {
                     {
                         // ValueError
                         throw std::invalid_argument("The truth value of a scalar is ambiguous");
-                    })
-                ;
+                    });
 
         class_
             // a < b
@@ -197,16 +199,13 @@ namespace lue::framework {
             class_
                 // abs(a)
                 .def(
-                    "__abs__",
-                    [](Scalar const& argument) { return abs(argument); },
-                    pybind11::is_operator())
+                    "__abs__", [](Scalar const& argument) { return abs(argument); }, pybind11::is_operator())
 
                 // -a
                 .def(
                     "__neg__",
                     [](Scalar const& argument) { return negate(argument); },
-                    pybind11::is_operator())
-                ;
+                    pybind11::is_operator());
         }
 
         if constexpr (std::is_integral_v<Element>)
@@ -251,8 +250,7 @@ namespace lue::framework {
                 // ~a
                 .def(
                     "__invert__",
-                    [](Scalar const& argument)
-                    { return logical_not<BooleanElement>(argument); },
+                    [](Scalar const& argument) { return logical_not<BooleanElement>(argument); },
                     pybind11::is_operator())
 
                 // a % b
@@ -276,8 +274,7 @@ namespace lue::framework {
                     "__rmod__",
                     [](Scalar const& argument1, Element const& argument2)
                     { return modulus(argument1, argument2); },
-                    pybind11::is_operator())
-                ;
+                    pybind11::is_operator());
         }
 
         if constexpr (std::is_floating_point_v<Element>)
@@ -327,14 +324,15 @@ namespace lue::framework {
                     pybind11::is_operator())
                 .def(
                     "__pow__",
-                    [](Scalar const& argument1, Element const& argument2) { return pow(argument1, argument2); },
+                    [](Scalar const& argument1, Element const& argument2)
+                    { return pow(argument1, argument2); },
                     pybind11::is_operator())
 
                 .def(
                     "__rpow__",
-                    [](Scalar const& argument2, Element const& argument1) { return pow(argument1, argument2); },
-                    pybind11::is_operator())
-                ;
+                    [](Scalar const& argument2, Element const& argument1)
+                    { return pow(argument1, argument2); },
+                    pybind11::is_operator());
         }
     }
 

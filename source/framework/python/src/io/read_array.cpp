@@ -14,7 +14,7 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        lh5::Offset shape_to_offset(DynamicShape const& shape)
+        auto shape_to_offset(DynamicShape const& shape) -> lh5::Offset
         {
             lh5::Offset result(shape.size());
 
@@ -27,7 +27,7 @@ namespace lue::framework {
         }
 
 
-        lh5::Shape shape_to_shape(DynamicShape const& shape)
+        auto shape_to_shape(DynamicShape const& shape) -> lh5::Shape
         {
             lh5::Shape result(shape.size());
 
@@ -41,12 +41,12 @@ namespace lue::framework {
 
 
         template<typename ArrayIO, Rank rank>
-        pybind11::object read(
+        auto read(
             ArrayIO const& io,
             lh5::Datatype const& datatype,
             std::string const& array_pathname,
             StaticShape<rank> const& partition_shape,
-            ldm::ID const object_id)
+            ldm::ID const object_id) -> pybind11::object
         {
             pybind11::object result;
 
@@ -118,11 +118,11 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> read_array(
+        auto read_array(
             std::string const& array_pathname,
             lh5::Hyperslab const& hyperslab,
             StaticShape<rank> const& partition_shape,
-            data_model::ID const object_id)
+            data_model::ID const object_id) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
@@ -134,11 +134,11 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> read_array(
+        auto read_array(
             std::string const& array_pathname,
             StaticShape<rank> const& partition_shape,
             data_model::ID const object_id,
-            Index const time_step_idx)
+            Index const time_step_idx) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
@@ -221,8 +221,9 @@ namespace lue::framework {
         }  // namespace variable
 
 
-        pybind11::object read_array_py1(
-            std::string const& array_pathname, std::optional<pybind11::tuple> const& partition_shape)
+        auto read_array_py1(
+            std::string const& array_pathname,
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
@@ -273,11 +274,11 @@ namespace lue::framework {
         }
 
 
-        pybind11::object read_array_py2(
+        auto read_array_py2(
             std::string const& array_pathname,
             pybind11::tuple const& center_cell,
             pybind11::tuple const& subset_shape,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             DynamicShape const center_cell_{tuple_to_shape(center_cell)};
             DynamicShape const subset_shape_{tuple_to_shape(subset_shape)};
@@ -355,10 +356,10 @@ namespace lue::framework {
         }
 
 
-        pybind11::object read_array_py3(
+        auto read_array_py3(
             std::string const& array_pathname,
             Index const time_step_idx,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);

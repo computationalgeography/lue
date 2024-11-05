@@ -422,6 +422,8 @@ namespace lue::framework {
 
             ;
 
+        // TODO Use bind<> from bind.hpp, and a Binder
+
         bind<ArithmeticElements>(module);
         bind<IntegralElements, FloatingPointElements>(module);
 

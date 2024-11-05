@@ -1,6 +1,6 @@
+#include "bind.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/partitioned_array.hpp"
-#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
@@ -15,8 +15,9 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        pybind11::array_t<Element> to_numpy(
-            PartitionedArray<Element, rank> const& array, std::optional<Element> const& no_data_value)
+        auto to_numpy(
+            PartitionedArray<Element, rank> const& array,
+            std::optional<Element> const& no_data_value) -> pybind11::array_t<Element>
         {
             // NOTE: For now we assume
             // - All arrays have rank 2
@@ -94,43 +95,30 @@ namespace lue::framework {
         }
 
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            Rank const rank{2};
 
-            module.def(
-                "to_numpy", to_numpy<Element, rank>, "array"_a, "no_data_value"_a = std::optional<Element>{});
-        }
+            public:
 
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                    module.def(
+                        "to_numpy",
+                        to_numpy<Element, rank>,
+                        "array"_a,
+                        "no_data_value"_a = std::optional<Element>{});
+                }
+        };
 
     }  // Anonymous namespace
 
 
     void bind_to_numpy(pybind11::module& module)
     {
-        bind<ArithmeticElements>(module);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

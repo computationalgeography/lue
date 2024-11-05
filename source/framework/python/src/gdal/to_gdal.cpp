@@ -1,8 +1,7 @@
+#include "bind.hpp"
 #include "lue/framework/io/raster.hpp"
-#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
-#include <pybind11/pybind11.h>
 
 
 using namespace pybind11::literals;
@@ -11,48 +10,31 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            if constexpr (
-                (!std::is_same_v<Element, std::int8_t> || gdal::supports_8bit_signed_integers) &&
-                (!(std::is_same_v<Element, std::uint64_t> || std::is_same_v<Element, std::int64_t>) ||
-                 gdal::supports_64bit_integers))
-            {
-                // If not one of the types not supported by older versions of GDAL OR using a GDAL version
-                // that supports them ...
-                module.def("to_gdal", write<Element>, "array"_a, "name"_a, "clone_name"_a = "");
-            }
-        }
 
+            public:
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    if constexpr (
+                        (!std::is_same_v<Element, std::int8_t> || gdal::supports_8bit_signed_integers) &&
+                        (!(std::is_same_v<Element, std::uint64_t> || std::is_same_v<Element, std::int64_t>) ||
+                         gdal::supports_64bit_integers))
+                    {
+                        // If not one of the types not supported by older versions of GDAL OR using a GDAL
+                        // version that supports them ...
+                        module.def("to_gdal", write<Element>, "array"_a, "name"_a, "clone_name"_a = "");
+                    }
+                }
+        };
 
     }  // Anonymous namespace
 
     void bind_to_gdal(pybind11::module& module)
     {
-        bind<ArithmeticElements>(module);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

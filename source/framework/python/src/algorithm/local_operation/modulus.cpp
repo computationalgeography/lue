@@ -11,7 +11,7 @@ namespace lue::framework {
 
             public:
 
-                template<typename Element>
+                template<std::signed_integral Element>
                 static void bind(pybind11::module& module)
                 {
                     using namespace lue::value_policies;

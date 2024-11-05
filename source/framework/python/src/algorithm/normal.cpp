@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/normal.hpp"
+#include "bind.hpp"
 #include "shape.hpp"
-#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -77,44 +77,28 @@ namespace lue::framework {
         }
 
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
+        class Binder
         {
-            Rank const rank{2};
 
-            module.def("normal", normal1<Element, rank>);
-        }
+            public:
 
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
 
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module) requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
+                    module.def("normal", normal1<Element, rank>);
+                }
+        };
 
 
         // Step 3: Call the algorithm
         template<typename Element, Rank rank>
-        pybind11::object normal(
+        auto normal(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::object const& mean,
-            pybind11::object const& stddev)
+            pybind11::object const& stddev) -> pybind11::object
         {
             return pybind11::cast(value_policies::normal(
                 array_shape,
@@ -126,12 +110,12 @@ namespace lue::framework {
 
         // Step 2: Determine the type of the element type of the result array
         template<Rank rank>
-        pybind11::object normal(
+        auto normal(
             StaticShape<rank> const& array_shape,
             StaticShape<rank> const& partition_shape,
             pybind11::dtype const& dtype,
             pybind11::object const& mean,
-            pybind11::object const& stddev)
+            pybind11::object const& stddev) -> pybind11::object
         {
             // Switch on dtype and call a function that returns an array of the
             // right value type
@@ -266,7 +250,7 @@ namespace lue::framework {
 
     void bind_normal(pybind11::module& module)
     {
-        bind<ArithmeticElements>(module);
+        bind<Binder, ArithmeticElements>(module);
 
         module.def(
             "normal",
