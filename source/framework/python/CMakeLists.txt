@@ -28,15 +28,7 @@ file(GENERATE
 
 add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
-    # src/algorithm/focal_operation/aspect.cpp
-    # src/algorithm/focal_operation/focal_diversity.cpp
-    # src/algorithm/focal_operation/focal_high_pass.cpp
-    # src/algorithm/focal_operation/focal_majority.cpp
-    # src/algorithm/focal_operation/focal_maximum.cpp
-    # src/algorithm/focal_operation/focal_mean.cpp
-    # src/algorithm/focal_operation/focal_minimum.cpp
-    # src/algorithm/focal_operation/slope.cpp
-    # src/algorithm/focal_operation/focal_sum.cpp
+    src/algorithm/focal_operation/focal_operation.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED

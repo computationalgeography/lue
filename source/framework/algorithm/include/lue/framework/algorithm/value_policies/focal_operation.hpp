@@ -1,0 +1,10 @@
+#pragma once
+#include "lue/framework/algorithm/value_policies/aspect.hpp"
+#include "lue/framework/algorithm/value_policies/focal_diversity.hpp"
+#include "lue/framework/algorithm/value_policies/focal_high_pass.hpp"
+#include "lue/framework/algorithm/value_policies/focal_majority.hpp"
+#include "lue/framework/algorithm/value_policies/focal_maximum.hpp"
+#include "lue/framework/algorithm/value_policies/focal_mean.hpp"
+#include "lue/framework/algorithm/value_policies/focal_minimum.hpp"
+#include "lue/framework/algorithm/value_policies/focal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/slope.hpp"
