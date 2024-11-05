@@ -33,10 +33,8 @@ add_library(lue_py_framework_focal_operation SHARED
 
 add_library(lue_py_framework_global_operation SHARED
     src/algorithm/global_operation.cpp
-    # src/algorithm/global_operation/reclassify.cpp
-    # src/algorithm/global_operation/maximum.cpp
-    # src/algorithm/global_operation/minimum.cpp
-    # src/algorithm/global_operation/sum.cpp
+    src/algorithm/global_operation/global_operation.cpp
+    src/algorithm/global_operation/reclassify.cpp
 )
 
 add_library(lue_py_framework_local_operation SHARED
