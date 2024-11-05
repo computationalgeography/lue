@@ -48,6 +48,14 @@ namespace lue {
     using ArithmeticElements = std::tuple< {{ (UnsignedIntegralElements + SignedIntegralElements + FloatingPointElements) | join(", ") }} >;
 
     /*!
+        @brief      All signed arithmetic element types for which relevant class and function templates are
+                    instantiated, in some undefined order
+
+        This collection of types contains all signed integral and floating point element types.
+    */
+    using SignedArithmeticElements = std::tuple< {{ (SignedIntegralElements + FloatingPointElements) | join(", ") }} >;
+
+    /*!
         @brief      All material element types for which relevant class and function templates are
                     instantiated, in some undefined order
     */

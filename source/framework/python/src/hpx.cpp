@@ -287,7 +287,7 @@ namespace lue::framework {
         }
 
 
-        template<ArithmeticElement Element>
+        template<Arithmetic Element>
         void bind(pybind11::module& module)
         {
             bind_shared_future<Element>(module);

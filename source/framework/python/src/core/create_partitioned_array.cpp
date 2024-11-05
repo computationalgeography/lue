@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "shape.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -11,7 +12,7 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<ArithmeticElement Element, Rank rank>
+        template<Arithmetic Element, Rank rank>
         auto create_array(
             ShapeT<PartitionedArray<Element, rank>> const& array_shape,
             ShapeT<PartitionedArray<Element, rank>> const& partition_shape,

@@ -158,8 +158,4 @@ namespace lue {
         integral_element_supported<FlowDirectionElement>,
         "Reconfigure: FlowDirectionElement must be one of the integral elements");
 
-
-    template<typename T>
-    concept ArithmeticElement = arithmetic_element_supported<T>;
-
 }  // namespace lue

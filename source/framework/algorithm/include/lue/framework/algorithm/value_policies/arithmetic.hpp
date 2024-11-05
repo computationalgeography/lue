@@ -1,5 +1,11 @@
 #pragma once
 #include "lue/framework/algorithm/value_policies/add.hpp"
 #include "lue/framework/algorithm/value_policies/divide.hpp"
+#include "lue/framework/algorithm/value_policies/exp.hpp"
+#include "lue/framework/algorithm/value_policies/log.hpp"
+#include "lue/framework/algorithm/value_policies/log10.hpp"
 #include "lue/framework/algorithm/value_policies/multiply.hpp"
+#include "lue/framework/algorithm/value_policies/negate.hpp"
+#include "lue/framework/algorithm/value_policies/pow.hpp"
+#include "lue/framework/algorithm/value_policies/sqrt.hpp"
 #include "lue/framework/algorithm/value_policies/subtract.hpp"
