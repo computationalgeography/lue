@@ -78,16 +78,7 @@ add_library(lue_py_framework_routing_operation SHARED
 
 add_library(lue_py_framework_zonal_operation SHARED
     src/algorithm/zonal_operation.cpp
-    # src/algorithm/zonal_operation/clump.cpp
-    # src/algorithm/zonal_operation/zonal_area.cpp
-    # src/algorithm/zonal_operation/zonal_diversity.cpp
-    # src/algorithm/zonal_operation/zonal_majority.cpp
-    # src/algorithm/zonal_operation/zonal_maximum.cpp
-    # src/algorithm/zonal_operation/zonal_mean.cpp
-    # src/algorithm/zonal_operation/zonal_minimum.cpp
-    # src/algorithm/zonal_operation/zonal_normal.cpp
-    # src/algorithm/zonal_operation/zonal_sum.cpp
-    # src/algorithm/zonal_operation/zonal_uniform.cpp
+    src/algorithm/zonal_operation/zonal_operation.cpp
 )
 
 foreach(name focal global local routing zonal)
