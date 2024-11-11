@@ -192,8 +192,6 @@ if(LUE_BUILD_QUALITY_ASSURANCE)
 
     if(LUE_QUALITY_ASSURANCE_WITH_TESTS)
         set(LUE_BOOST_REQUIRED TRUE)
-        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS
-            filesystem system unit_test_framework)
 
         if(LUE_BUILD_FRAMEWORK)
             set(LUE_HPXRUN_REQUIRED TRUE)
