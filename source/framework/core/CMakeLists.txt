@@ -1,9 +1,13 @@
 add_test_conditionally(test)
 
+set(generated_source_files "")
+
 block()
     set(offset "include/lue/framework")
     set(ranks ${LUE_FRAMEWORK_RANKS})
     list(JOIN ranks ", " ranks)
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/configure.hpp")
 
     set(SignedIntegralElements ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
     list(TRANSFORM SignedIntegralElements PREPEND "\"")
@@ -34,13 +38,17 @@ block()
         INPUT_PATHNAME
             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/configure.hpp.in"
         OUTPUT_PATHNAME
-            "${CMAKE_CURRENT_BINARY_DIR}/${offset}/configure.hpp"
+            ${output_pathname}
         DICTIONARY
         '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","IDElement":"${LUE_FRAMEWORK_ID_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","MaterialElements":[${MaterialElements}],"ZoneElements":[${ZoneElements}],"SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
     )
+
+    list(APPEND generated_source_files "${output_pathname}")
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
 add_library(lue_framework_core STATIC
+    ${generated_source_files}
     src/configuration_entry.cpp
     src/debug.cpp
     src/framework.cpp

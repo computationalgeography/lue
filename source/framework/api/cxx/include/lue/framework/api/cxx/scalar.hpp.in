@@ -1,0 +1,27 @@
+#pragma once
+#include "lue/framework/algorithm/scalar.hpp"
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include <cstdint>
+
+
+namespace lue::api {
+
+    /*!
+        @brief      Class for representing scalars
+    */
+    class Scalar:
+        public VariantWrapper<
+            {% for Element in Elements %}
+                lue::Scalar<{{ Element }}>,
+            {% endfor %}
+            {{ Elements | join(", ") }}
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+}  // namespace lue::api

@@ -1,0 +1,31 @@
+#pragma once
+#include "lue/framework/algorithm/scalar.hpp"
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include "lue/framework/partitioned_array.hpp"
+#include <cstdint>
+
+
+namespace lue::api {
+
+    /*!
+        @brief      Class for representing continuous fields of information
+    */
+    class Field:
+        public VariantWrapper<
+            {% for Element in Elements %}
+                lue::PartitionedArray<{{ Element }}, 2>,
+            {% endfor %}
+            {% for Element in Elements %}
+                lue::Scalar<{{ Element }}>,
+            {% endfor %}
+            {{ Elements | join(", ") }}
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+}  // namespace lue::api

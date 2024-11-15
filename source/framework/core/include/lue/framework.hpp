@@ -14,6 +14,8 @@ namespace lue {
     void verify_rank_supported(Rank rank);
 
 
+    constexpr static std::size_t nr_arithmetic_elements = std::tuple_size_v<ArithmeticElements>;
+
     constexpr static std::size_t nr_unsigned_integral_elements = std::tuple_size_v<UnsignedIntegralElements>;
 
     constexpr static std::size_t nr_signed_integral_elements = std::tuple_size_v<SignedIntegralElements>;

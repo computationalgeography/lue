@@ -1,6 +1,53 @@
 add_test_conditionally(test)
 
+set(generated_source_files "")
+
+block()
+    set(offset "include/lue/framework/api/cxx")
+
+    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/field.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/field.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/literal.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/literal.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/scalar.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/scalar.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
 add_library(lue_framework_api_cxx SHARED
+    ${generated_source_files}
     src/create_array.cpp
     src/create_scalar.cpp
     src/io.cpp

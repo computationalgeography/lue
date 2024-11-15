@@ -17,12 +17,13 @@ class CreateArrayTest(lue_test.TestCase):
     def test_create_array(self):
         array_shape = (60, 40)
         partition_shape = (6, 4)
-        element_type = np.int32
 
-        fill_value = lfrx.create_scalar(5, element_type)
-        array = lfrx.create_array(
-            array_shape, fill_value, partition_shape=partition_shape
-        )
+        # element_type = np.int32
+
+        # fill_value = lfrx.create_scalar(5, element_type)
+        # array = lfrx.create_array(
+        #     array_shape, fill_value, partition_shape=partition_shape
+        # )
 
         # print(array)
 

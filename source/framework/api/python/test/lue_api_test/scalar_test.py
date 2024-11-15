@@ -16,14 +16,6 @@ class ScalarTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_scalar(self):
 
-        for element_type in [
-            np.uint8,
-            np.uint32,
-            np.int32,
-            np.uint64,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
+        for element_type in lfrx.arithmetic_element_types:
             pass
             # _ = lfrx.Scalar(5, element_type)
