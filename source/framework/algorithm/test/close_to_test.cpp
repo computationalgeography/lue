@@ -12,43 +12,46 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
-
-        using BooleanElement = lue::BooleanElement;
-        using Array = lue::PartitionedArray<Element, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Element const fill_value1{5};
-        Element const fill_value2{6};
-
-        Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
-        Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
-
-        // Compare two arrays with different values
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_CHECK(none(close_to<BooleanElement>(array1, array2)).future().get());
-        }
+            using namespace lue::default_policies;
 
-        // Compare two arrays with the same values
-        {
-            BOOST_CHECK(all(close_to<BooleanElement>(array1, array1)).future().get());
-        }
+            using BooleanElement = lue::BooleanElement;
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        // Compare array with scalar
-        // array == scalar
-        {
-            BOOST_CHECK(all(close_to<BooleanElement>(array1, fill_value1)).future().get());
-        }
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        // Compare array with scalar
-        // scalar == array
-        {
-            BOOST_CHECK(all(close_to<BooleanElement>(fill_value1, array1)).future().get());
-        }
+            Element const fill_value1{5};
+            Element const fill_value2{6};
 
-        // TODO Add tests with close values
+            Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
+            Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+
+            // Compare two arrays with different values
+            {
+                BOOST_CHECK(none(close_to<BooleanElement>(array1, array2)).future().get());
+            }
+
+            // Compare two arrays with the same values
+            {
+                BOOST_CHECK(all(close_to<BooleanElement>(array1, array1)).future().get());
+            }
+
+            // Compare array with scalar
+            // array == scalar
+            {
+                BOOST_CHECK(all(close_to<BooleanElement>(array1, fill_value1)).future().get());
+            }
+
+            // Compare array with scalar
+            // scalar == array
+            {
+                BOOST_CHECK(all(close_to<BooleanElement>(fill_value1, array1)).future().get());
+            }
+
+            // TODO Add tests with close values
+        }
     }
 
 }  // Anonymous namespace

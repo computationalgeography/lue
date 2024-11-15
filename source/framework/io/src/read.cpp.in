@@ -5,9 +5,9 @@
 namespace lue {
 
     template<typename Array, typename DatasetPtr>
-    Array read(
+    auto read(
         Array const& /* array */,
-        typename data_model::constant::RasterView<DatasetPtr>::Layer const& /* layer */)
+        typename data_model::constant::RasterView<DatasetPtr>::Layer const& /* layer */) -> Array
     {
         // Create new array with partitions that become ready once their
         // data has been read
@@ -28,10 +28,10 @@ namespace lue {
 
 
     template<typename Array, typename DatasetPtr>
-    Array read(
+    auto read(
         Array const& /* array */,
         typename data_model::variable::RasterView<DatasetPtr>::Layer const& /* layer */,
-        data_model::Index const /* idx */)
+        data_model::Index const /* idx */) -> Array
     {
 
         // Create new array with partitions that become ready once their

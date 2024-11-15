@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/definition/zonal_operation.hpp"
 #include "lue/framework/algorithm/zonal_mean.hpp"
 #include "lue/framework/algorithm/zonal_operation_export.hpp"
+#include "lue/framework/configure.hpp"
 #include <unordered_map>
 
 
@@ -23,7 +24,7 @@ namespace lue {
                 using OutputElement = InputElement;
 
                 using Sum = InputElement;
-                using Count = std::uint64_t;
+                using Count = CountElement;
 
 
                 class Aggregator
@@ -96,7 +97,7 @@ namespace lue {
                         template<typename Archive>
                         void serialize(Archive& archive, unsigned int const /* version */)
                         {
-                            archive& _statistic_by_zone;
+                            archive & _statistic_by_zone;
                         }
 
 

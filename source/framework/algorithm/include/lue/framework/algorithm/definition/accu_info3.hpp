@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/accu_info3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework.hpp"
 #include "lue/macro.hpp"
 
 
@@ -111,7 +112,7 @@ namespace lue {
             using CellClassData = DataT<CellClassPartition>;
             using Offset = OffsetT<FlowDirectionPartition>;
 
-            using CountElement = std::uint8_t;
+            using CountElement = SmallestIntegralElement;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;

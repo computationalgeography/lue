@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/accu.hpp"
 #include "lue/framework/algorithm/default_policies/accu3.hpp"
 #include "lue/framework/algorithm/value_policies/accu3.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -16,20 +15,6 @@ namespace {
 
     using MaterialElement = lue::FloatingPointElement<0>;
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
-
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
-    void test_accu(
-        Policies const& policies,
-        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        lue::PartitionedArray<MaterialElement, rank> const& material,
-        lue::PartitionedArray<MaterialElement, rank> const& accu_we_want)
-    {
-        using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
-
-        MaterialArray accu_we_got = lue::accu(policies, flow_direction, material);
-
-        lue::test::check_arrays_are_equal(accu_we_got, accu_we_want);
-    }
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
@@ -53,12 +38,7 @@ namespace {
         lue::PartitionedArray<MaterialElement, rank> const& material,
         lue::PartitionedArray<MaterialElement, rank> const& accu_we_want)
     {
-        {
-            using Policies = lue::policy::accu::DefaultPolicies<FlowDirectionElement, MaterialElement>;
-
-            test_accu(Policies{}, flow_direction, material, accu_we_want);
-        }
-
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
             using Policies = lue::policy::accu3::DefaultPolicies<FlowDirectionElement, MaterialElement>;
 
@@ -3529,13 +3509,7 @@ BOOST_AUTO_TEST_CASE(all_no_data_flow_direction)
     auto const material = lue::test::ones<MaterialElement>();
     auto const result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
 
-    {
-        using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu(policies, flow_direction, material, result_we_want);
-    }
-
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
         using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
 
@@ -3550,13 +3524,7 @@ BOOST_AUTO_TEST_CASE(all_no_data_material)
     auto const material = lue::test::no_data<MaterialElement>();
     auto const result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
 
-    {
-        using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu(policies, flow_direction, material, result_we_want);
-    }
-
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
         using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
 
@@ -3802,13 +3770,7 @@ BOOST_AUTO_TEST_CASE(merging_streams_case_01)
             },
         });
 
-    {
-        using Policies = lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu(policies, flow_direction, material, result_we_want);
-    }
-
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
         using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
 

@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/kinematic_wave.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework.hpp"
 #include "lue/macro.hpp"
 #include <limits>
 // #define BOOST_MATH_INSTRUMENT
@@ -447,7 +448,7 @@ namespace lue {
             using LengthPartition = ArrayPartition<LengthElement, rank>;
             using LengthData = DataT<LengthPartition>;
 
-            using CountElement = std::uint8_t;
+            using CountElement = SmallestIntegralElement;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
 

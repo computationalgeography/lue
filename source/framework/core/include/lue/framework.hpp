@@ -97,6 +97,26 @@ namespace lue {
                             std::uint8_t,
                             void>>>>>>;
 
+    using SmallestIntegralElement = std::conditional_t<
+        signed_integral_element_supported<std::int8_t>,
+        std::int8_t,
+        std::conditional_t<
+            unsigned_integral_element_supported<std::uint8_t>,
+            std::uint8_t,
+            std::conditional_t<
+                signed_integral_element_supported<std::int32_t>,
+                std::int32_t,
+                std::conditional_t<
+                    unsigned_integral_element_supported<std::uint32_t>,
+                    std::uint32_t,
+                    std::conditional_t<
+                        signed_integral_element_supported<std::int64_t>,
+                        std::int64_t,
+                        std::conditional_t<
+                            unsigned_integral_element_supported<std::uint64_t>,
+                            std::uint64_t,
+                            void>>>>>>;
+
     using LargestSignedIntegralElement = std::conditional_t<
         signed_integral_element_supported<std::int64_t>,
         std::int64_t,

@@ -11,6 +11,7 @@
 #include "lue/framework/algorithm/type_traits.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/core/serialize/array.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue {
@@ -1444,7 +1445,7 @@ namespace lue {
 
         // ---------------------------------------------------------------------
         // Calculate flow accumulation for intra-partition stream cells
-        using InflowCountElement = std::uint8_t;
+        using InflowCountElement = SmallestIntegralElement;
         using InflowCountArray = PartitionedArray<InflowCountElement, rank>;
 
         using PartitionIOArray =
@@ -1524,7 +1525,7 @@ namespace lue {
 
         // ---------------------------------------------------------------------
         // Calculate flow accumulation for intra-partition stream cells
-        using InflowCountElement = std::uint8_t;
+        using InflowCountElement = SmallestIntegralElement;
         using InflowCountArray = PartitionedArray<InflowCountElement, rank>;
 
         using PartitionIOArray =

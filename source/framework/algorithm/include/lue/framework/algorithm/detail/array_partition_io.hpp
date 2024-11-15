@@ -13,8 +13,8 @@
 namespace lue::detail {
 
     template<typename Index, typename Count, Rank rank>
-    bool is_within_partition(
-        lue::Indices<Index, rank> const& indices, lue::Shape<Count, rank> const& partition_shape)
+    auto is_within_partition(
+        lue::Indices<Index, rank> const& indices, lue::Shape<Count, rank> const& partition_shape) -> bool
     {
         return std::all_of(
             indices.begin(),

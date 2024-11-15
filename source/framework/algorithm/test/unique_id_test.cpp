@@ -11,18 +11,21 @@ namespace {
     template<typename IDElement, typename ConditionElement, std::size_t rank>
     void test_array()
     {
-        using Array = lue::PartitionedArray<ConditionElement, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Array array{lue::create_partitioned_array<ConditionElement>(array_shape, partition_shape, 1)};
-
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            auto unique_id = lue::default_policies::unique_id<IDElement>(array);
-            auto unique = lue::default_policies::unique(unique_id).get();
+            using Array = lue::PartitionedArray<ConditionElement, rank>;
 
-            BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+            Array array{lue::create_partitioned_array<ConditionElement>(array_shape, partition_shape, 1)};
+
+            {
+                auto unique_id = lue::default_policies::unique_id<IDElement>(array);
+                auto unique = lue::default_policies::unique(unique_id).get();
+
+                BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
+            }
         }
     }
 

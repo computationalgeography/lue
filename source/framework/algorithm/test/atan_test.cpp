@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm atan
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/all.hpp"
-#include "lue/framework/algorithm/default_policies/atan.hpp"
-#include "lue/framework/algorithm/default_policies/equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/all.hpp"
+#include "lue/framework/algorithm/value_policies/atan.hpp"
+#include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -12,7 +12,7 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
+        using namespace lue::value_policies;
 
         using Array = lue::PartitionedArray<Element, rank>;
 

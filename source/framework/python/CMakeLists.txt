@@ -57,23 +57,19 @@ add_library(lue_py_framework_local_operation SHARED
 
 add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation.cpp
-    # src/algorithm/routing_operation/accu.cpp
-    # src/algorithm/routing_operation/accu3.cpp
-    # src/algorithm/routing_operation/accu_fraction.cpp
-    # src/algorithm/routing_operation/accu_info.cpp
-    # src/algorithm/routing_operation/accu_info3.cpp
-    # src/algorithm/routing_operation/accu_threshold.cpp
-    # src/algorithm/routing_operation/accu_threshold3.cpp
-    # src/algorithm/routing_operation/d8_flow_direction.cpp
-    # src/algorithm/routing_operation/decreasing_order.cpp
-    # src/algorithm/routing_operation/downstream.cpp
-    # src/algorithm/routing_operation/downstream_distance.cpp
-    # src/algorithm/routing_operation/first_n.cpp
-    # src/algorithm/routing_operation/inflow_count.cpp
-    # src/algorithm/routing_operation/inflow_count3.cpp
-    # src/algorithm/routing_operation/inter_partition_stream.cpp
-    # src/algorithm/routing_operation/kinematic_wave.cpp
-    # src/algorithm/routing_operation/upstream.cpp
+    src/algorithm/routing_operation/accu3.cpp
+    src/algorithm/routing_operation/accu_fraction.cpp
+    src/algorithm/routing_operation/accu_info3.cpp
+    src/algorithm/routing_operation/accu_threshold3.cpp
+    src/algorithm/routing_operation/d8_flow_direction.cpp
+    src/algorithm/routing_operation/decreasing_order.cpp
+    src/algorithm/routing_operation/downstream.cpp
+    src/algorithm/routing_operation/downstream_distance.cpp
+    src/algorithm/routing_operation/first_n.cpp
+    src/algorithm/routing_operation/inflow_count3.cpp
+    src/algorithm/routing_operation/inter_partition_stream.cpp
+    src/algorithm/routing_operation/kinematic_wave.cpp
+    src/algorithm/routing_operation/upstream.cpp
 )
 
 add_library(lue_py_framework_zonal_operation SHARED

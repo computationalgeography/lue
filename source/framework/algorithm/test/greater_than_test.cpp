@@ -12,42 +12,45 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
-
-        using Array = lue::PartitionedArray<Element, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Element const fill_value1{5};
-        Element const fill_value2{6};
-
-        Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
-        Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
-
-        // Compare two arrays with different values
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_CHECK(none(array1 > array2).future().get());
-            BOOST_CHECK(all(array2 > array1).future().get());
-        }
+            using namespace lue::default_policies;
 
-        // Compare two arrays with the same values
-        {
-            BOOST_CHECK(none(array2 > array2).future().get());
-        }
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        // Compare array with scalar
-        // array < scalar
-        {
-            BOOST_CHECK(none(array2 > fill_value2).future().get());
-            BOOST_CHECK(all(array2 > fill_value1).future().get());
-        }
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        // Compare array with scalar
-        // scalar < array
-        {
-            BOOST_CHECK(none(fill_value2 > array2).future().get());
-            BOOST_CHECK(all(fill_value2 > array1).future().get());
+            Element const fill_value1{5};
+            Element const fill_value2{6};
+
+            Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
+            Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+
+            // Compare two arrays with different values
+            {
+                BOOST_CHECK(none(array1 > array2).future().get());
+                BOOST_CHECK(all(array2 > array1).future().get());
+            }
+
+            // Compare two arrays with the same values
+            {
+                BOOST_CHECK(none(array2 > array2).future().get());
+            }
+
+            // Compare array with scalar
+            // array < scalar
+            {
+                BOOST_CHECK(none(array2 > fill_value2).future().get());
+                BOOST_CHECK(all(array2 > fill_value1).future().get());
+            }
+
+            // Compare array with scalar
+            // scalar < array
+            {
+                BOOST_CHECK(none(fill_value2 > array2).future().get());
+                BOOST_CHECK(all(fill_value2 > array1).future().get());
+            }
         }
     }
 

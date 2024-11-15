@@ -4,6 +4,62 @@ add_test_conditionally(test)
 #     add_subdirectory(benchmark)
 # endif()
 
+
+### # Instantiate components -------------------------------------------------------
+### set(generated_source_files "")
+###
+### block()
+###     set(offset "include/lue/framework/algorithm/component/server")
+###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition_io.hpp")
+###
+###     set(Elements ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})
+###     list(TRANSFORM Elements PREPEND "\"")
+###     list(TRANSFORM Elements APPEND "\"")
+###     list(JOIN Elements ", " Elements)
+###
+###     generate_template_instantiation(
+###         INPUT_PATHNAME
+###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition_io.hpp.in"
+###         OUTPUT_PATHNAME
+###             "${output_pathname}"
+###         DICTIONARY
+###             '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+###     )
+###
+###     list(APPEND generated_source_files "${output_pathname}")
+###
+###     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+### endblock()
+###
+### block()
+###     set(offset "src/component")
+###
+###     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+###         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
+###             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+###                 string(REPLACE "::" "_" element ${Element})
+###
+###                 # Instantiate array_partition_io
+###                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition_io-${Policies}_${element}.cpp")
+###
+###                 generate_template_instantiation(
+###                     INPUT_PATHNAME
+###                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition_io.cpp.in"
+###                     OUTPUT_PATHNAME
+###                         "${output_pathname}"
+###                     DICTIONARY
+###                         '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+###                 )
+###                 list(APPEND generated_source_files "${output_pathname}")
+###             endforeach()
+###         endforeach()
+###     endforeach()
+###
+###     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+### endblock()
+
+# / Instantiate components -----------------------------------------------------
+
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
 )
@@ -53,10 +109,6 @@ target_link_libraries(lue_framework_algorithm
 )
 
 
-# TODO Maybe set these at a higher level?
-set(LUE_FRAMEWORK_POLICIES "DefaultPolicies" "DefaultValuePolicies")
-
-
 # Instantiate local operations -------------------------------------------------
 set(generated_source_files "")
 set(offset "src/local_operation")
@@ -64,7 +116,7 @@ set(offset "src/local_operation")
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
@@ -235,7 +287,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
@@ -264,7 +316,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS
                 LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
                 LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
@@ -307,7 +359,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS
                 LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
             )
@@ -544,7 +596,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
                 foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
@@ -576,7 +628,7 @@ block()
     set(IndexElement ${LUE_FRAMEWORK_INDEX_ELEMENT})
     set(ConditionElement ${LUE_FRAMEWORK_BOOLEAN_ELEMENT})
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
             math(EXPR count "${count} + 1")
 
@@ -601,7 +653,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
@@ -944,10 +996,6 @@ target_link_libraries(lue_framework_focal_operation
 )
 
 
-# TODO Maybe set these at a higher level?
-set(LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
-
-
 # Instantiate zonal operations -------------------------------------------------
 set(generated_source_files "")
 
@@ -956,7 +1004,7 @@ block()
     set(count "0")
     set(rank "2")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -981,7 +1029,7 @@ block()
     # Instantiate zonal_area
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1006,7 +1054,7 @@ block()
     # Instantiate zonal_diversity
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1033,7 +1081,7 @@ block()
     # Instantiate zonal_majority
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1060,7 +1108,7 @@ block()
     # Instantiate zonal_maximum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1087,7 +1135,7 @@ block()
     # Instantiate zonal_mean
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1114,7 +1162,7 @@ block()
     # Instantiate zonal_minimum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1141,7 +1189,7 @@ block()
     # Instantiate zonal_normal
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1168,7 +1216,7 @@ block()
     # Instantiate zonal_sum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1195,7 +1243,7 @@ block()
     # Instantiate zonal_uniform
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1260,7 +1308,6 @@ target_link_libraries(lue_framework_zonal_operation
 
 
 # Instantiate global operations ------------------------------------------------
-set(all_policies "DefaultPolicies" "DefaultValuePolicies")
 set(generated_source_files "")
 set(offset "src/global_operation")
 
@@ -1268,7 +1315,7 @@ set(offset "src/global_operation")
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
@@ -1295,7 +1342,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
@@ -1348,7 +1395,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
                 foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
@@ -1416,7 +1463,6 @@ target_link_libraries(lue_framework_global_operation
 
 
 # Instantiate routing operations -----------------------------------------------
-set(all_policies "DefaultPolicies" "DefaultValuePolicies")
 set(generated_source_files "")
 set(offset "src/routing_operation")
 
@@ -1424,21 +1470,8 @@ set(offset "src/routing_operation")
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         math(EXPR count "${count} + 1")
-
-        # Instantiate accu_info
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info-${count}.cpp")
-
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
 
         # Instantiate accu_info3
         string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
@@ -1461,32 +1494,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
-        foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
-            math(EXPR count "${count} + 1")
-
-            # Instantiate accu
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu-${count}.cpp")
-
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1511,7 +1519,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${Element})
@@ -1537,7 +1545,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${Element})
@@ -1617,7 +1625,7 @@ block()
     set(count "0")
     set(rank "2")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1653,7 +1661,7 @@ block()
 
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1704,7 +1712,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1729,7 +1737,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1754,7 +1762,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         math(EXPR count "${count} + 1")
 
         # Instantiate inflow_count3

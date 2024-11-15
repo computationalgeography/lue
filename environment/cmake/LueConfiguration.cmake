@@ -254,6 +254,31 @@ if(LUE_BUILD_FRAMEWORK)
     endif()
 
     # Policies for which templates are instantiated
+    set(LUE_FRAMEWORK_ALGORITHM_POLICIES
+        "DefaultValuePolicies" CACHE STRING
+        "Algorithm policies"
+    )
+    set_property(CACHE LUE_FRAMEWORK_ALGORITHM_POLICIES
+        PROPERTY
+            STRINGS
+                "DefaultValuePolicies"
+                "DefaultValuePolicies\;DefaultPolicies"
+                "DefaultPolicies"
+    )
+
+    LIST(FIND LUE_FRAMEWORK_ALGORITHM_POLICIES "DefaultPolicies" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED TRUE)
+    else()
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED FALSE)
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_ALGORITHM_POLICIES "DefaultValuePolicies" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED TRUE)
+    else()
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED FALSE)
+    endif()
 
     # Validate settings
     LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_BOOLEAN_ELEMENT} TYPE_PRESENT)

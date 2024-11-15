@@ -4,26 +4,27 @@
 #include "lue/framework/algorithm/detail/communicator.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/define.hpp"
+#include "lue/framework.hpp"
 #include <hpx/serialization.hpp>
 
 
 namespace lue::detail {
 
     template<typename Policies, typename FlowDirectionElement, Rank rank>
-    hpx::tuple<
-        ArrayPartition<std::uint8_t, rank>,
-        hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
-        hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
-    inflow_count3(
+    auto inflow_count3(
         Policies const& policies,
         ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
         InflowCountCommunicator<rank> inflow_count_communicator)
+        -> hpx::tuple<
+            ArrayPartition<SmallestIntegralElement, rank>,
+            hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
+            hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
     {
         // As long as we only use flow direction, external inflow and threshold to detect
         // no-data in input, there is no need to mark no-data in the output of inflow_count. We
         // won't be reading these cells anyway.
 
-        using CountElement = std::uint8_t;
+        using CountElement = SmallestIntegralElement;
         using InflowCountOutputPolicies = policy::
             OutputPolicies<policy::DontMarkNoData<CountElement>, policy::AllValuesWithinRange<CountElement>>;
         InflowCountOutputPolicies inflow_count_output_policies{};
@@ -66,13 +67,13 @@ namespace lue::detail {
             }
 
 
-            Index const& cell_idx() const
+            [[nodiscard]] auto cell_idx() const -> Index const&
             {
                 return _cell_idx;
             }
 
 
-            MaterialElement const& value() const
+            auto value() const -> MaterialElement const&
             {
                 return _value;
             }
@@ -86,7 +87,7 @@ namespace lue::detail {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _cell_idx& _value;
+                archive & _cell_idx & _value;
             }
 
 

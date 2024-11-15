@@ -14,18 +14,22 @@
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using Element = lue::FloatingPointElement<0>;
-    lue::Rank const rank = 2;
-    using namespace lue::default_policies;
+    if constexpr (lue::BuildOptions::default_policies_enabled)
+    {
+        using namespace lue::default_policies;
 
-    using Array = lue::PartitionedArray<Element, rank>;
+        using Element = lue::FloatingPointElement<0>;
+        lue::Rank const rank = 2;
 
-    auto const array_shape{lue::Test<Array>::shape()};
-    auto const partition_shape{lue::Test<Array>::partition_shape()};
+        using Array = lue::PartitionedArray<Element, rank>;
 
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{-5})};
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-    BOOST_CHECK(all(abs(array) == Element{5}).future().get());
+        Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{-5})};
+
+        BOOST_CHECK(all(abs(array) == Element{5}).future().get());
+    }
 }
 
 
@@ -34,25 +38,28 @@ BOOST_AUTO_TEST_CASE(out_of_range)
     // In 2's complement systems, the absolute value of the smallest integer value cannot
     // be represented. The out of range check must detect this.
 
-    using Element = lue::SignedIntegralElement<0>;
-    using BooleanElement = lue::BooleanElement;
-    lue::Rank const rank = 2;
-    using Array = lue::PartitionedArray<Element, rank>;
-
-    auto const array_shape{lue::Test<Array>::shape()};
-    auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-    using namespace lue::value_policies;
-
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
-        Array array{lue::create_partitioned_array(
-            array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest() + 1})};
-        BOOST_CHECK(all(valid<BooleanElement>(abs(array))).future().get());
-    }
+        using namespace lue::value_policies;
 
-    {
-        Array array{lue::create_partitioned_array(
-            array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest()})};
-        BOOST_CHECK(none(valid<BooleanElement>(abs(array))).future().get());
+        using Element = lue::SignedIntegralElement<0>;
+        using BooleanElement = lue::BooleanElement;
+        lue::Rank const rank = 2;
+        using Array = lue::PartitionedArray<Element, rank>;
+
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+        {
+            Array array{lue::create_partitioned_array(
+                array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest() + 1})};
+            BOOST_CHECK(all(valid<BooleanElement>(abs(array))).future().get());
+        }
+
+        {
+            Array array{lue::create_partitioned_array(
+                array_shape, partition_shape, Element{std::numeric_limits<Element>::lowest()})};
+            BOOST_CHECK(none(valid<BooleanElement>(abs(array))).future().get());
+        }
     }
 }

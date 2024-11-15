@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu_threshold
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/accu_threshold.hpp"
 #include "lue/framework/algorithm/value_policies/accu_threshold3.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
@@ -15,22 +14,6 @@ namespace {
 
     using MaterialElement = lue::FloatingPointElement<0>;
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
-
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
-    void test_accu_threshold(
-        Policies const& policies,
-        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        lue::PartitionedArray<MaterialElement, rank> const& material,
-        lue::PartitionedArray<MaterialElement, rank> const& threshold,
-        lue::PartitionedArray<MaterialElement, rank> const& flux_we_want,
-        lue::PartitionedArray<MaterialElement, rank> const& state_we_want)
-    {
-        auto [flux_we_got, state_we_got] = lue::accu_threshold(policies, flow_direction, material, threshold);
-
-        lue::test::check_arrays_are_equal(flux_we_got, flux_we_want);
-        lue::test::check_arrays_are_equal(state_we_got, state_we_want);
-    }
-
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
     void test_accu_threshold3(
@@ -92,14 +75,6 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example1)
 
     {
         using Policies =
-            lue::policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu_threshold(policies, flow_direction, material, threshold, flux_we_want, state_we_want);
-    }
-
-    {
-        using Policies =
             lue::policy::accu_threshold3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
         Policies policies{};
 
@@ -146,14 +121,6 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example2)
             0.0, 10.0, 9.0, 9.0,  9.0, 0.0, 10.0, 9.0, 9.0,  9.0,  0.0,  13.0, 14.0,
             9.0, 9.0,  0.0, 40.0, 9.0, 9.0, 50.0, 0.0, 40.0, 40.0, 40.0, 49.0,
         }});
-
-    {
-        using Policies =
-            lue::policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu_threshold(policies, flow_direction, material, threshold, flux_we_want, state_we_want);
-    }
 
     {
         using Policies =
@@ -687,15 +654,6 @@ BOOST_AUTO_TEST_CASE(parallel_east)
                 0,
             },
         });
-
-    {
-        using Policies =
-            lue::policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-        Policies policies{};
-
-        test_accu_threshold(
-            policies, flow_direction, external_inflow, threshold, outflow_we_want, remainder_we_want);
-    }
 
     {
         using Policies =

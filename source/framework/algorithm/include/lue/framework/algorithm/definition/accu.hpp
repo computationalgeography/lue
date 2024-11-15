@@ -130,7 +130,6 @@ namespace lue {
 
 }  // namespace lue
 
-#define STRIP_PARENS(X) X
 
 #define LUE_INSTANTIATE_ACCU(Policies, FlowDirectionElement, MaterialElement)                                \
                                                                                                              \

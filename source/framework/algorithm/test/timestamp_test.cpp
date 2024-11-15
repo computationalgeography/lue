@@ -25,6 +25,7 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(overloads)
 {
+    if constexpr (lue::BuildOptions::default_policies_enabled)
     {
         auto array{lue::default_policies::uniform<Element>(array_shape, partition_shape, 0, 100)};
 

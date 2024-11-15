@@ -13,35 +13,38 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            using namespace lue::default_policies;
 
-        using Scalar = lue::Scalar<Element>;
-        using Array = lue::PartitionedArray<Element, rank>;
+            using Scalar = lue::Scalar<Element>;
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        Element const value1{15};
-        Element const value2{6};
-        Element const value_we_want{15 % 6};
+            Element const value1{15};
+            Element const value2{6};
+            Element const value_we_want{15 % 6};
 
-        Scalar scalar1{value1};
-        Scalar scalar2{value2};
+            Scalar scalar1{value1};
+            Scalar scalar2{value2};
 
-        Array array1{lue::create_partitioned_array(array_shape, partition_shape, value1)};
-        Array array2{lue::create_partitioned_array(array_shape, partition_shape, value2)};
+            Array array1{lue::create_partitioned_array(array_shape, partition_shape, value1)};
+            Array array2{lue::create_partitioned_array(array_shape, partition_shape, value2)};
 
-        BOOST_CHECK(all(array1 % array2 == value_we_want).future().get());
-        BOOST_CHECK(all(array1 % scalar2 == value_we_want).future().get());
-        BOOST_CHECK(all(array1 % value2 == value_we_want).future().get());
+            BOOST_CHECK(all(array1 % array2 == value_we_want).future().get());
+            BOOST_CHECK(all(array1 % scalar2 == value_we_want).future().get());
+            BOOST_CHECK(all(array1 % value2 == value_we_want).future().get());
 
-        BOOST_CHECK(all(scalar1 % array2 == value_we_want).future().get());
-        BOOST_CHECK(all(value1 % array2 == value_we_want).future().get());
+            BOOST_CHECK(all(scalar1 % array2 == value_we_want).future().get());
+            BOOST_CHECK(all(value1 % array2 == value_we_want).future().get());
 
-        BOOST_CHECK((scalar1 % scalar2 == value_we_want).future().get());
-        BOOST_CHECK((scalar1 % value2 == value_we_want).future().get());
+            BOOST_CHECK((scalar1 % scalar2 == value_we_want).future().get());
+            BOOST_CHECK((scalar1 % value2 == value_we_want).future().get());
 
-        BOOST_CHECK((value1 % scalar2 == value_we_want).future().get());
+            BOOST_CHECK((value1 % scalar2 == value_we_want).future().get());
+        }
     }
 
 }  // Anonymous namespace

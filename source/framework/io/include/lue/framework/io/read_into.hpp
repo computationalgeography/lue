@@ -16,11 +16,11 @@ namespace lue {
     namespace detail {
 
         template<typename Element, Rank rank>
-        Array<Element, rank> read_block(
+        auto read_block(
             data_model::Array const& array,
             hdf5::Dataset::TransferPropertyList const& transfer_property_list,
             hdf5::Hyperslab const& block_hyperslab,
-            ShapeT<Array<Element, rank>> const& block_shape)
+            ShapeT<Array<Element, rank>> const& block_shape) -> Array<Element, rank>
         {
             using Block = Array<Element, rank>;
 
@@ -296,12 +296,12 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> read_into(
+    [[nodiscard]] auto read_into(
         Policies const& policies,
         std::string const& array_pathname,
         hdf5::Offset const& array_hyperslab_start,
         data_model::ID const object_id,
-        PartitionedArray<Element, rank>& array)
+        PartitionedArray<Element, rank>& array) -> hpx::future<void>
     {
         // TODO Can this function be made fully asynchronous? Currently the
         //     array can only be used once all partitions have been read. It
@@ -569,7 +569,7 @@ namespace lue {
     namespace detail {
 
         template<typename Count, Rank rank>
-        Shape<Count, rank> constant_array_shape(std::string const& array_pathname)
+        auto constant_array_shape(std::string const& array_pathname) -> Shape<Count, rank>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -601,7 +601,7 @@ namespace lue {
 
 
         template<typename Count, Rank rank>
-        Shape<Count, rank> variable_array_shape(std::string const& array_pathname)
+        auto variable_array_shape(std::string const& array_pathname) -> Shape<Count, rank>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -649,12 +649,12 @@ namespace lue {
 
 
     template<typename Element, typename Policies, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         Policies const& policies,
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> PartitionedArray<Element, rank>
     {
         using Array = PartitionedArray<Element, rank>;
         using Functor = InstantiateDefaultInitialized<Element, rank>;
@@ -673,11 +673,11 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> PartitionedArray<Element, rank>
     {
         using Policies = policy::read_into::DefaultPolicies<Element>;
 
@@ -687,11 +687,11 @@ namespace lue {
 
 
     template<typename Element, typename Policies, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         Policies const& policies,
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> PartitionedArray<Element, rank>
     {
         using Array = PartitionedArray<Element, rank>;
         using Shape = ShapeT<Array>;
@@ -704,10 +704,10 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
-        data_model::ID const object_id)
+        data_model::ID const object_id) -> PartitionedArray<Element, rank>
     {
         using Policies = policy::read_into::DefaultPolicies<Element>;
 
@@ -719,13 +719,13 @@ namespace lue {
 
 
     template<typename Element, typename Policies, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         Policies const& policies,
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> PartitionedArray<Element, rank>
     {
         using Array = PartitionedArray<Element, rank>;
         using Functor = InstantiateDefaultInitialized<Element, rank>;
@@ -744,12 +744,12 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> PartitionedArray<Element, rank>
     {
         using Policies = policy::read_into::DefaultPolicies<Element>;
 
@@ -759,12 +759,12 @@ namespace lue {
 
 
     template<typename Element, typename Policies, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         Policies const& policies,
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> PartitionedArray<Element, rank>
     {
         using Array = PartitionedArray<Element, rank>;
         using Shape = ShapeT<Array>;
@@ -782,11 +782,11 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    PartitionedArray<Element, rank> read(
+    auto read(
         std::string const& array_pathname,
         ShapeT<PartitionedArray<Element, rank>> const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx)
+        Index const time_step_idx) -> PartitionedArray<Element, rank>
     {
         using Policies = policy::read_into::DefaultPolicies<Element>;
 

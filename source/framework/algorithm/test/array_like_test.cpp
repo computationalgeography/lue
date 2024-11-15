@@ -13,24 +13,28 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
-
-        using Array = lue::PartitionedArray<Element, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Array input_array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
-
-        Element const fill_value{5};
-
-        auto output_array = lue::array_like(input_array, fill_value);
-
-        BOOST_CHECK(all(output_array == fill_value).future().get());
-
-        if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_CHECK(all(lue::locality_id(output_array) == lue::locality_id(input_array)).future().get());
+            using namespace lue::default_policies;
+
+            using Array = lue::PartitionedArray<Element, rank>;
+
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+            Array input_array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
+
+            Element const fill_value{5};
+
+            auto output_array = lue::array_like(input_array, fill_value);
+
+            BOOST_CHECK(all(output_array == fill_value).future().get());
+
+            if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+            {
+                BOOST_CHECK(
+                    all(lue::locality_id(output_array) == lue::locality_id(input_array)).future().get());
+            }
         }
     }
 

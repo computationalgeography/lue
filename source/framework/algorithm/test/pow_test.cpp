@@ -12,21 +12,24 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            using namespace lue::default_policies;
 
-        using Array = lue::PartitionedArray<Element, rank>;
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        Element const fill_value{2};
-        Element const exponent{3};
+            Element const fill_value{2};
+            Element const exponent{3};
 
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
 
-        auto pow = lue::default_policies::pow(array, exponent);
+            auto pow = lue::default_policies::pow(array, exponent);
 
-        BOOST_CHECK(all(pow == std::pow(fill_value, exponent)).future().get());
+            BOOST_CHECK(all(pow == std::pow(fill_value, exponent)).future().get());
+        }
     }
 
 }  // Anonymous namespace

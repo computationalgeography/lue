@@ -12,40 +12,46 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
-
-        using BooleanElement = lue::BooleanElement;
-        using Array = lue::PartitionedArray<Element, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Element const fill_value1{1};  // true
-        Element const fill_value2{0};  // false
-
-        Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
-        Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
-
-        // array || array
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_CHECK(
-                all(logical_exclusive_or<BooleanElement>(array1, array2)).future().get());  // true || false
-            BOOST_CHECK(
-                none(logical_exclusive_or<BooleanElement>(array1, array1)).future().get());  // true || true
-            BOOST_CHECK(
-                none(logical_exclusive_or<BooleanElement>(array2, array2)).future().get());  // false || false
-        }
+            using namespace lue::default_policies;
 
-        // array || scalar
-        {
-            BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(array1, fill_value1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(array1, fill_value2)).future().get());
-        }
+            using BooleanElement = lue::BooleanElement;
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        // scalar || array
-        {
-            BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(fill_value1, array1)).future().get());
-            BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(fill_value2, array1)).future().get());
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+            Element const fill_value1{1};  // true
+            Element const fill_value2{0};  // false
+
+            Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
+            Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+
+            // array || array
+            {
+                BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(array1, array2))
+                                .future()
+                                .get());  // true || false
+                BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(array1, array1))
+                                .future()
+                                .get());  // true || true
+                BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(array2, array2))
+                                .future()
+                                .get());  // false || false
+            }
+
+            // array || scalar
+            {
+                BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(array1, fill_value1)).future().get());
+                BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(array1, fill_value2)).future().get());
+            }
+
+            // scalar || array
+            {
+                BOOST_CHECK(none(logical_exclusive_or<BooleanElement>(fill_value1, array1)).future().get());
+                BOOST_CHECK(all(logical_exclusive_or<BooleanElement>(fill_value2, array1)).future().get());
+            }
         }
     }
 
