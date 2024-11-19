@@ -307,7 +307,7 @@ namespace lue::detail::integrate_and_allocate {
                 }
 
 
-                std::tuple<CropFractionPartitions, ZonalProductionsF> results()
+                auto results() -> std::tuple<CropFractionPartitions, ZonalProductionsF>
                 {
                     // Connect the promises with the futures
                     // This function must be called exactly once
@@ -928,7 +928,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<std::tuple<CropFractionPartitions, ZonalProductionsF>> results() const
+            auto results() const -> hpx::future<std::tuple<CropFractionPartitions, ZonalProductionsF>>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -939,7 +939,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> set_downstream_components(std::map<hpx::id_type, Walk>&& components)
+            auto set_downstream_components(std::map<hpx::id_type, Walk>&& components) -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -950,8 +950,8 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> walk(
-                RouteID const route_id, Data<RouteID, ZoneElement, ProductionElement> data) const
+            auto walk(RouteID const route_id, Data<RouteID, ZoneElement, ProductionElement> data) const
+                -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -962,7 +962,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> skip_walking_route_fragments(RouteID const route_id) const
+            auto skip_walking_route_fragments(RouteID const route_id) const -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());

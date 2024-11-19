@@ -9,16 +9,17 @@ set(LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES "DefaultValuePolicies")
 set(offset "src")
 
 block()
-    set(count "0")
     set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES)
         foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+            string(REPLACE "::" "_" zone_element ${ZoneElement})
+
             foreach(FloatingPointElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-                math(EXPR count "${count} + 1")
+                string(REPLACE "::" "_" floating_point_element ${FloatingPointElement})
 
                 # Instantiate integrate
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate-${zone_element}_${floating_point_element}_${rank}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/integrate.cpp.in"
@@ -30,7 +31,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate integrate_and_allocate
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate_and_allocate-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/integrate_and_allocate-${zone_element}_${floating_point_element}_${rank}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/integrate_and_allocate.cpp.in"

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +---+---+  +---+---+
     // | x | 2 |  | 3 | 1 |
     // +---+---+  +---+---+
-    ZoneArray const zone_array = lue::test::create_partitioned_array<ZoneArray>(
+    auto const zone_array = lue::test::create_partitioned_array<ZoneArray>(
         array_shape,
         partition_shape,
         {
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +----+----+  +----+----+
     // |  4 |  8 |  | 12 |  x |
     // +----+----+  +----+----+
-    FloatingPointArray const field = lue::test::create_partitioned_array<FloatingPointArray>(
+    auto const field = lue::test::create_partitioned_array<FloatingPointArray>(
         array_shape,
         partition_shape,
         {

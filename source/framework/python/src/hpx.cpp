@@ -430,8 +430,25 @@ namespace lue::framework {
         pybind11::implicitly_convertible<pybind11::none, hpx::shared_future<void>>();
         bind<ArithmeticElements>(shared_future_class);
 
-        // TODO Needed? If so, replace int32 by MaterielElement or so. The type may not be available.
+        // // These are required by image land.
+        // // TODO: Refactor and only bind for types we need.
+        // bind_make_ready_future<std::map<std::uint8_t, std::vector<float>>>(module);
+        // bind_make_ready_future<std::map<std::uint8_t, std::vector<double>>>(module);
+
+        // // bind_make_ready_future<std::map<std::int8_t, std::vector<float>>>(module);
+        // // bind_make_ready_future<std::map<std::int8_t, std::vector<double>>>(module);
+
+        // // bind_make_ready_future<std::map<std::uint32_t, std::vector<float>>>(module);
+        // // bind_make_ready_future<std::map<std::uint32_t, std::vector<double>>>(module);
+
         // bind_make_ready_future<std::map<std::int32_t, std::vector<float>>>(module);
+        // bind_make_ready_future<std::map<std::int32_t, std::vector<double>>>(module);
+
+        // // bind_make_ready_future<std::map<std::uint64_t, std::vector<float>>>(module);
+        // // bind_make_ready_future<std::map<std::uint64_t, std::vector<double>>>(module);
+
+        // // bind_make_ready_future<std::map<std::int64_t, std::vector<float>>>(module);
+        // // bind_make_ready_future<std::map<std::int64_t, std::vector<double>>>(module);
     }
 
 }  // namespace lue::framework

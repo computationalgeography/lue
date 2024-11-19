@@ -1,51 +1,42 @@
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
-#include <pybind11/pybind11.h>
+#include "bind.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue::image_land {
-    namespace detail {
+    namespace {
 
-        template<typename RouteID, typename IntegrandElement, Rank rank>
-        auto integrate(
-            SerialRoute<RouteID, rank> const& route,
-            PartitionedArray<IntegrandElement, rank> const& integrand,
-            Count const max_nr_cells) -> PartitionedArray<IntegrandElement, rank>
+        class Binder
         {
-            return lue::value_policies::integrate(route, integrand, max_nr_cells);
-        }
 
+            public:
 
-        template<typename RouteID, typename IntegrandElement, Rank rank>
-        void bind_integrate(pybind11::module& module)
-        {
-            using namespace pybind11::literals;
+                template<std::integral RouteID, std::floating_point IntegrandElement>
+                static void bind(pybind11::module& module)
+                {
+                    using namespace pybind11::literals;
 
-            module.def(
-                "integrate",
-                integrate<RouteID, IntegrandElement, rank>,
-                "route"_a,
-                "integrand"_a,
-                pybind11::kw_only(),
-                "max_nr_cells"_a = std::numeric_limits<Count>::max());
-        }
+                    Rank const rank{2};
 
-    }  // namespace detail
+                    module.def(
+                        "integrate",
+                        [](SerialRoute<RouteID, rank> const& route,
+                           PartitionedArray<IntegrandElement, rank> const& integrand,
+                           Count const max_nr_cells) -> PartitionedArray<IntegrandElement, rank>
+                        { return lue::value_policies::integrate(route, integrand, max_nr_cells); },
+                        "route"_a,
+                        "integrand"_a,
+                        pybind11::kw_only(),
+                        "max_nr_cells"_a = std::numeric_limits<Count>::max());
+                }
+        };
+
+    }  // Anonymous namespace
+
 
     void bind_integrate(pybind11::module& module)
     {
-        Rank const rank{2};
-
-        detail::bind_integrate<std::uint8_t, float, rank>(module);
-        detail::bind_integrate<std::uint32_t, float, rank>(module);
-        detail::bind_integrate<std::uint64_t, float, rank>(module);
-        detail::bind_integrate<std::int32_t, float, rank>(module);
-        detail::bind_integrate<std::int64_t, float, rank>(module);
-
-        detail::bind_integrate<std::uint8_t, double, rank>(module);
-        detail::bind_integrate<std::uint32_t, double, rank>(module);
-        detail::bind_integrate<std::uint64_t, double, rank>(module);
-        detail::bind_integrate<std::int32_t, double, rank>(module);
-        detail::bind_integrate<std::int64_t, double, rank>(module);
+        framework::bind<Binder, ZoneElements, FloatingPointElements>(module);
     }
 
 }  // namespace lue::image_land
