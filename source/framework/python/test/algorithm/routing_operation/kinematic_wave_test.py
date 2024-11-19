@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -21,12 +19,14 @@ class KinematicWaveTest(lue_test.TestCase):
         beta = 0.6
         time_step_duration = 15
 
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
 
-        for dtype in [np.float32, np.float64]:
-            discharge = lfr.create_array(array_shape, dtype, 5)
-            inflow = lfr.create_array(array_shape, dtype, 1)
-            channel_length = lfr.create_array(array_shape, dtype, 10)
+        for element_type in lfr.floating_point_element_types:
+            discharge = lfr.create_array(array_shape, element_type, 5)
+            inflow = lfr.create_array(array_shape, element_type, 1)
+            channel_length = lfr.create_array(array_shape, element_type, 10)
 
             lfr.kinematic_wave(
                 flow_direction,

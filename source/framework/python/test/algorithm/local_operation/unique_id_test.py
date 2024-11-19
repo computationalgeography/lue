@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -16,9 +14,9 @@ class UniqueIDTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
-        fill_value = 5
+        fill_value = 1
 
-        array = lfr.create_array(array_shape, np.uint8, fill_value)
+        array = lfr.create_array(array_shape, lfr.boolean_element_type, fill_value)
 
-        for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64]:
-            lfr.unique_id(array, dtype)
+        for element_type in lfr.integral_element_types:
+            lfr.unique_id(array, element_type)

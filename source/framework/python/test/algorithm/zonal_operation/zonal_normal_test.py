@@ -1,7 +1,5 @@
 import itertools
 
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -20,9 +18,9 @@ class ZonalNormalTest(lue_test.TestCase):
         array_shape = (60, 40)
         fill_zone = 3
 
-        for value_dtype, zone_dtype in itertools.product(
-            (np.float32, np.float64),
-            (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
+        for value_element_type, zone_element_type in itertools.product(
+            lfr.floating_point_element_types,
+            lfr.zone_element_types,
         ):
-            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
-            lfr.zonal_normal(zones, value_dtype)
+            zones = lfr.create_array(array_shape, zone_element_type, fill_zone)
+            _ = lfr.zonal_normal(zones, value_element_type)

@@ -134,6 +134,12 @@ def setglobaloption(option):
     print(f"lue.pcraster: discarding global option {option}\n")
 
 
+arithmetic_element_types = [np.uint8, np.int32, np.float32]
+boolean_element_type = np.uint8
+flow_direction_element_type = np.uint8
+floating_point_element_types = [np.float32]
+
+
 def numpy_scalar_type(expression):
     element_type_by_type = {
         getattr(lfr, "PartitionedArray<uint8, 2>"): np.uint8,
@@ -456,7 +462,9 @@ def accufraction(flow_direction, material, transportcapacity):
 
     if is_non_spatial(transportcapacity):
         # TODO Support non-spatial transportcapacity
-        transportcapacity = non_spatial_to_spatial(fill_value=transportcapacity, template=flow_direction)
+        transportcapacity = non_spatial_to_spatial(
+            fill_value=transportcapacity, template=flow_direction
+        )
 
     return lfr.accu_fraction(flow_direction, material, transportcapacity)
 
@@ -482,7 +490,9 @@ def accuthreshold(flow_direction, material, threshold):
 
     if is_non_spatial(threshold):
         # TODO Support non-spatial threshold
-        threshold = non_spatial_to_spatial(fill_value=threshold, template=flow_direction)
+        threshold = non_spatial_to_spatial(
+            fill_value=threshold, template=flow_direction
+        )
 
     return lfr.accu_threshold3(flow_direction, material, threshold)
 

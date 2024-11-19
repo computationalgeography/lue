@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,7 +16,7 @@ class LogicalInclusiveOrTest(lue_test.TestCase):
         array_shape = (60, 40)
         fill_value = 5
 
-        for dtype in [np.uint8, np.int32, np.uint32, np.int64, np.uint64]:
-            array = lfr.create_array(array_shape, dtype, fill_value)
+        for element_type in lfr.integral_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
             tmp = lfr.logical_exclusive_or(array, array)
             tmp = array ^ array

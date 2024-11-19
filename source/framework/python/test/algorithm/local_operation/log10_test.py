@@ -7,10 +7,10 @@ class Log10Test(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
 
-        for type_ in self.floating_point_types:
-            array = self.array[type_]
-            scalar = self.scalar[type_]
-            value = self.value[type_]
+        for element_type in lfr.floating_point_element_types:
+            array = self.array[element_type]
+            scalar = self.scalar[element_type]
+            value = self.value[element_type]
 
             _ = lfr.log10(array)
             _ = lfr.log10(scalar)

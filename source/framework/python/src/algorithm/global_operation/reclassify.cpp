@@ -155,7 +155,7 @@ namespace lue::framework {
 
             public:
 
-                template<Arithmetic Element>
+                template<std::integral Element>
                 static void bind(pybind11::module& module)
                 {
                     Rank const rank{2};
@@ -182,7 +182,7 @@ namespace lue::framework {
         // The lookup table is a Python dictionary. The dtype argument is to allow the caller
         // to specify exactly what type to use for the resulting array.
 
-        bind<Binder, UnsignedIntegralElements>(module);
+        bind<Binder, IntegralElements>(module);
     }
 
 }  // namespace lue::framework

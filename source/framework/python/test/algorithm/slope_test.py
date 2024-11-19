@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,7 +16,8 @@ class SlopeTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         fill_value = 5
-        elevation = lfr.create_array(array_shape, np.float32, fill_value)
         cell_size = 25
 
-        slope = lfr.slope(elevation, cell_size)
+        for element_type in lfr.floating_point_element_types:
+            elevation = lfr.create_array(array_shape, element_type, fill_value)
+            _ = lfr.slope(elevation, cell_size)

@@ -1,8 +1,10 @@
 #include "lue/py/framework/submodule.hpp"
 #include "hpx_runtime.hpp"
-// #include "lue/gdal.hpp"
 #include "lue/framework/algorithm/timestamp.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
+#include "lue/gdal.hpp"
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
 
@@ -43,8 +45,43 @@ namespace lue::framework {
             return hpx::find_here() == hpx::find_root_locality();
         }
 
+
+        template<Arithmetic Element>
+        auto type_of() -> pybind11::object
+        {
+            return pybind11::dtype::of<Element>().attr("type");
+        }
+
+
+        template<typename... Elements>
+        auto type_of([[maybe_unused]] std::tuple<Elements...>&& elements) -> std::vector<pybind11::object>
+        {
+            return {type_of<Elements>()...};
+        }
+
     }  // Anonymous namespace
 
+
+    // TODO Find a way to do this without creating an ArithmeticElements instance. We only have to iterate
+    //      over the tuple's types.
+
+    static std::vector<pybind11::object> const arithmetic_element_types = type_of(ArithmeticElements{});
+    static std::vector<pybind11::object> const unsigned_integral_element_types =
+        type_of(UnsignedIntegralElements{});
+    static std::vector<pybind11::object> const signed_integral_element_types =
+        type_of(SignedIntegralElements{});
+    static std::vector<pybind11::object> const integral_element_types = type_of(IntegralElements{});
+    static std::vector<pybind11::object> const floating_point_element_types =
+        type_of(FloatingPointElements{});
+    static std::vector<pybind11::object> const signed_arithmetic_element_types =
+        type_of(SignedArithmeticElements{});
+    static std::vector<pybind11::object> const material_element_types = type_of(MaterialElements{});
+    static std::vector<pybind11::object> const zone_element_types = type_of(ZoneElements{});
+    static pybind11::object const boolean_element_type = type_of<BooleanElement>();
+    static pybind11::object const count_element_type = type_of<CountElement>();
+    static pybind11::object const index_element_type = type_of<IndexElement>();
+    static pybind11::object const id_element_type = type_of<IDElement>();
+    static pybind11::object const flow_direction_element_type = type_of<FlowDirectionElement>();
 
     void bind_hpx(pybind11::module& module);
     void bind_create_array(pybind11::module& module);
@@ -89,7 +126,7 @@ namespace lue::framework {
     The :mod:`lue.framework` package ...
 )");
 
-        // gdal::register_gdal_drivers();
+        gdal::register_gdal_drivers();
 
         submodule.def("start_hpx_runtime", &start_hpx_runtime);
 
@@ -98,6 +135,23 @@ namespace lue::framework {
         submodule.def("on_root_locality", &on_root_locality);
 
         bind_hpx(submodule);
+
+
+        // Wrap configuration settings
+        submodule.attr("arithmetic_element_types") = arithmetic_element_types;
+        submodule.attr("unsigned_integral_element_types") = unsigned_integral_element_types;
+        submodule.attr("signed_integral_element_types") = signed_integral_element_types;
+        submodule.attr("integral_element_types") = integral_element_types;
+        submodule.attr("floating_point_element_types") = floating_point_element_types;
+        submodule.attr("signed_arithmetic_element_types") = signed_arithmetic_element_types;
+        submodule.attr("material_element_types") = material_element_types;
+        submodule.attr("zone_element_types") = zone_element_types;
+        submodule.attr("boolean_element_type") = boolean_element_type;
+        submodule.attr("count_element_type") = count_element_type;
+        submodule.attr("id_element_type") = id_element_type;
+        submodule.attr("index_element_type") = index_element_type;
+        submodule.attr("flow_direction_element_type") = flow_direction_element_type;
+
 
         // Wrap high-level data structures
         bind_scalar(submodule);

@@ -522,8 +522,9 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, Rank rank>
-    PartitionedArray<CellClass, rank> accu_info3(
+    auto accu_info3(
         Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> PartitionedArray<CellClass, rank>
     {
         using CellClassArray = PartitionedArray<CellClass, rank>;
         using CellClassPartitions = PartitionsT<CellClassArray>;

@@ -1,4 +1,4 @@
-import numpy as np
+import unittest
 
 import lue.framework as lfr
 import lue_test
@@ -12,19 +12,12 @@ def tearDownModule():
     lue_test.stop_hpx_runtime()
 
 
+@unittest.skipIf(not hasattr(lfr, "locality_id"), "locality_id is not built-in")
 class LocalityIDTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
 
-        for type_ in [
-            np.uint8,
-            np.uint32,
-            np.uint64,
-            np.int32,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
-            array = lfr.create_array(array_shape, type_, 0)
-            locality_id = lfr.locality_id(array)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, 0)
+            _ = lfr.locality_id(array)

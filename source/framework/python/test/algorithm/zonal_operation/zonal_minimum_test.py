@@ -1,7 +1,5 @@
 import itertools
 
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -21,18 +19,10 @@ class ZonalMinimumTest(lue_test.TestCase):
         fill_value = 5
         fill_zone = 3
 
-        for value_dtype, zone_dtype in itertools.product(
-            (
-                np.uint8,
-                np.int32,
-                np.uint32,
-                np.int64,
-                np.uint64,
-                np.float32,
-                np.float64,
-            ),
-            (np.uint8, np.int32, np.uint32, np.int64, np.uint64),
+        for value_element_type, zone_element_type in itertools.product(
+            lfr.arithmetic_element_types,
+            lfr.zone_element_types,
         ):
-            array = lfr.create_array(array_shape, value_dtype, fill_value)
-            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
-            lfr.zonal_minimum(array, zones)
+            array = lfr.create_array(array_shape, value_element_type, fill_value)
+            zones = lfr.create_array(array_shape, zone_element_type, fill_zone)
+            _ = lfr.zonal_minimum(array, zones)

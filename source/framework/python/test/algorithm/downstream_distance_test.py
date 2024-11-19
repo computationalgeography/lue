@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,9 +16,10 @@ class DownstreamDistanceTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         direction = 1
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
         cell_size = 10
 
-        downstream_distance = lfr.downstream_distance(
-            flow_direction, cell_size, np.float32
-        )
+        for element_type in lfr.floating_point_element_types:
+            _ = lfr.downstream_distance(flow_direction, cell_size, element_type)

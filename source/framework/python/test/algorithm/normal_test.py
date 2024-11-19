@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -20,22 +18,11 @@ class NormalTest(lue_test.TestCase):
         stddev = 55
         fill_value = 5
 
-        for argument_type in [
-            np.uint8,
-            np.uint32,
-            np.uint64,
-            np.int32,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
-            array = lfr.create_array(array_shape, argument_type, fill_value)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
 
-            for result_type in [
-                np.float32,
-                np.float64,
-            ]:
-                _ = lfr.normal(array, result_type, mean, stddev)
+            for result_element_type in lfr.floating_point_element_types:
+                _ = lfr.normal(array, result_element_type, mean, stddev)
 
     @lue_test.framework_test_case
     def test_overload2(self):
@@ -43,5 +30,5 @@ class NormalTest(lue_test.TestCase):
         mean = 33
         stddev = 55
 
-        for type_ in [np.float32, np.float64]:
-            lfr.normal(array_shape, type_, mean, stddev)
+        for element_type in lfr.floating_point_element_types:
+            lfr.normal(array_shape, element_type, mean, stddev)

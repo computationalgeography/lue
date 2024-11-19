@@ -27,9 +27,15 @@ class OperationTest(lue_test.TestCase):
         lpr.configuration.partition_shape = cls.partition_shape
         lpr.configuration.cell_size = 10
 
-        cls.numeric_types = lue_test.numeric_types
-        cls.dtype_by_type = lue_test.dtype_by_type
-        cls.value = lue_test.value_by_type
+        cls.numeric_types = lpr.arithmetic_element_types
+
+        cls.dtype_by_type = {
+            type_: lue_test.dtype_by_type[type_] for type_ in cls.numeric_types
+        }
+
+        cls.value = {
+            type_: lue_test.value_by_type[type_] for type_ in cls.numeric_types
+        }
         cls.non_spatial = {
             type_: lfr.create_scalar(cls.dtype_by_type[type_], cls.value[type_])
             for type_ in cls.numeric_types
@@ -43,8 +49,6 @@ class OperationTest(lue_test.TestCase):
             )
             for type_, value in cls.value.items()
         }
-
-
 
         # cls.non_spatial = {
         #     np.uint8: np.uint8(1),
@@ -103,5 +107,8 @@ class OperationTest(lue_test.TestCase):
         direction = 3
 
         cls.ldd = lfr.create_array(
-            cls.array_shape, np.uint8, direction, partition_shape=cls.partition_shape
+            cls.array_shape,
+            lpr.flow_direction_element_type,
+            direction,
+            partition_shape=cls.partition_shape,
         )

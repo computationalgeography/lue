@@ -3,7 +3,6 @@
 #include "lue/framework.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
-#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
@@ -117,39 +116,10 @@ namespace lue::api {
             return std::move(*field);
         }
 
-
-        template<typename... Elements>
-        auto dtype_of([[maybe_unused]] std::tuple<Elements...>&& elements)
-            -> std::array<pybind11::dtype, sizeof...(Elements)>
-        {
-            return std::array<pybind11::dtype, sizeof...(Elements)>{(pybind11::dtype::of<Elements>(), ...)};
-        }
-
-
-        template<typename... Elements>
-        auto dtype_of2([[maybe_unused]] std::tuple<Elements...>&& elements) -> std::vector<pybind11::dtype>
-        {
-            return std::vector<pybind11::dtype>{(pybind11::dtype::of<Elements>(), ...)};
-        }
-
     }  // Anonymous namespace
-
-
-    // TODO Find a way to do this without creating an ArithmeticElements instance. We only have to iterate
-    //      over the tuple's types.
-    // TODO Find a way to use an array instead of a vector. Not crucial, but that's what it is. Results in
-    //      runtime error:
-    //          ImportError: generic_type: cannot initialize type "VectorHSizeT": an object with that name is
-    //          already defined
-    // static std::array<pybind11::dtype, nr_arithmetic_elements> const arithmetic_element_types =
-    // dtype_of(ArithmeticElements{});
-
-    static std::vector<pybind11::dtype> const arithmetic_element_types = dtype_of2(ArithmeticElements{});
 
     void bind_scalar(pybind11::module& module)
     {
-        module.attr("arithmetic_element_types") = arithmetic_element_types;
-
         module.def(
             "create_scalar",
             [](double const value, pybind11::object const& dtype_args) -> Field

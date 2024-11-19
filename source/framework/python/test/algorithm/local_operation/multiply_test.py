@@ -7,10 +7,10 @@ class MultiplyTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
 
-        for type_ in self.floating_point_types:
-            value = self.value[type_]
-            scalar = self.scalar[type_]
-            array = self.array[type_]
+        for element_type in lfr.floating_point_element_types:
+            value = self.value[element_type]
+            scalar = self.scalar[element_type]
+            array = self.array[element_type]
 
             # array icw something else
             _ = lfr.multiply(array, array)
