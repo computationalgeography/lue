@@ -72,7 +72,7 @@ jobs:
                   cmake \
                   doxygen \
                   graphviz \
-                  hwloc \
+                  libhwloc-dev \
                   lftp \
                   libasio-dev \
                   libboost-dev \
