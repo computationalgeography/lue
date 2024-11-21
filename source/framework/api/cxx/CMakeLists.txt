@@ -86,6 +86,9 @@ target_sources(lue_framework_api_cxx
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/api/cxx/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/api/cxx/field.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/api/cxx/literal.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/api/cxx/scalar.hpp
 )
 
 target_link_libraries(lue_framework_api_cxx

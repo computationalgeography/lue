@@ -97,6 +97,7 @@ target_sources(lue_framework_partitioned_route
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
 )
 
 lue_install_development_libraries(

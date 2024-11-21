@@ -91,6 +91,7 @@ target_sources(lue_framework_partitioned_array
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
 )
 
 target_link_libraries(lue_framework_partitioned_array

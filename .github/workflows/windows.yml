@@ -57,8 +57,9 @@ jobs:
 
         - uses: conda-incubator/setup-miniconda@v3
           with:
-            miniforge-version: latest
             auto-update-conda: true
+            miniforge-version: latest
+            conda-remove-defaults: "true"
             conda-solver: "libmamba"
             python-version: ${{ matrix.python_version }}
 
@@ -71,7 +72,7 @@ jobs:
               # conda-build provides the conda-develop command used below
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
-
+              conda config --remove channels defaults
               conda install \
                   libboost-devel \
                   libboost-headers \

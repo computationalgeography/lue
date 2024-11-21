@@ -9,8 +9,8 @@ namespace lue {
     namespace detail {
 
         template<typename Policies, typename Partition>
-        hpx::future<std::set<ElementT<Partition>>> unique_partition_ready(
-            Policies const& policies, Partition const& partition)
+        auto unique_partition_ready(Policies const& policies, Partition const& partition)
+            -> hpx::future<std::set<ElementT<Partition>>>
         {
             using Data = DataT<Partition>;
             using Element = ElementT<Partition>;
@@ -38,8 +38,10 @@ namespace lue {
                             }
                         }
 
-                        Count const nr_unique_values = static_cast<Count>(unique_values.size());
+#ifndef NDEBUG
+                        auto const nr_unique_values = static_cast<Count>(unique_values.size());
                         lue_hpx_assert(nr_unique_values <= input_partition_data.nr_elements());
+#endif
 
                         return unique_values;
                     }

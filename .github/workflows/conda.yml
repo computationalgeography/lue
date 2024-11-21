@@ -37,6 +37,7 @@ jobs:
             - name: Install Conda
               uses: conda-incubator/setup-miniconda@v3
               with:
+                  conda-remove-defaults: "true"
                   miniforge-version: latest
                   python-version: 3.11
             - name: Build package
