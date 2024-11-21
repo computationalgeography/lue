@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/inflow_count3.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

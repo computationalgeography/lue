@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/reclassify.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 

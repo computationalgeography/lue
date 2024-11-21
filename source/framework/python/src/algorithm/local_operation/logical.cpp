@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/logical.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

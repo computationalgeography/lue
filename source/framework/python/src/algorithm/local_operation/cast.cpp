@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/cast.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
 
 

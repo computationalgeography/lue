@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::image_land {

@@ -1,8 +1,8 @@
-#include "bind.hpp"
 #include "lue/framework/configure.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

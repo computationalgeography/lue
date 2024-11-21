@@ -1,7 +1,7 @@
-#include "bind.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional

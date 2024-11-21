@@ -1,7 +1,7 @@
-#include "bind.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/serial_route.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

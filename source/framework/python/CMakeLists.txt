@@ -88,6 +88,7 @@ foreach(name focal global local routing zonal)
     target_include_directories(lue_py_framework_${name}_operation
         PRIVATE
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+            $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     )
 
     target_link_libraries(lue_py_framework_${name}_operation
@@ -191,8 +192,9 @@ target_compile_definitions(lue_py_framework
 
 target_include_directories(lue_py_framework
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
-        ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
+        $<TARGET_PROPERTY:lue::py_data_model,SOURCE_DIR>/include
+        $<TARGET_PROPERTY:lue::py,BINARY_DIR>/include  # configure.hpp
+        $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>

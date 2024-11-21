@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/value_policies/accu3.hpp"
-#include "bind.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

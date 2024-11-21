@@ -1,7 +1,7 @@
 #include "lue/framework/algorithm/value_policies/focal_operation.hpp"
 #include "array_to_kernel.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 using namespace pybind11::literals;

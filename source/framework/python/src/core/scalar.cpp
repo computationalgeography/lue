@@ -1,6 +1,6 @@
 #include "lue/py/framework/core/scalar.hpp"
-#include "bind.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/py/bind.hpp"
 
 
 using namespace pybind11::literals;

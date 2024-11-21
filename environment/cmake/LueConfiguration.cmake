@@ -484,7 +484,7 @@ endif()
 
 if(LUE_BOOST_REQUIRED)
     # Use Boost's own FindBoost module instead of the deprecated CMake version
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
+    find_package(Boost 1.70 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
@@ -658,7 +658,10 @@ if(LUE_HPX_REQUIRED)
             set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
         endif()
     else()
-        find_package(HPX REQUIRED)
+        block(SCOPE_FOR POLICIES)
+            cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
+            find_package(HPX 1.10...<1.11 REQUIRED)
+        endblock()
 
         if(HPX_FOUND)
             message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")

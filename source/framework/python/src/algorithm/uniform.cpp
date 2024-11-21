@@ -1,7 +1,7 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
-#include "bind.hpp"
 #include "shape.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 

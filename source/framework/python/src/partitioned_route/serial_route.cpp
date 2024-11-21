@@ -1,6 +1,6 @@
 #include "lue/framework/serial_route.hpp"
-#include "bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include "lue/py/configure.hpp"
 #include "lue/py/framework/stream.hpp"
 #include <pybind11/stl.h>
