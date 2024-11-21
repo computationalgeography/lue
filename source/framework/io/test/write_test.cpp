@@ -70,19 +70,19 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // elevation_t will contain values from the closed interval:
     // [lowest_value + t, highest_value + t]
     Element const lowest_value{-5000};
-    Element const highest_value{std::nextafter(-1000, std::numeric_limits<Element>::max())};
+    Element const highest_value{std::nextafter(Element{-1000}, std::numeric_limits<Element>::max())};
 
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
         Array elevation_written = lue::default_policies::uniform(
             grid_shape,
             partition_shape,
-            Element{lowest_value + time_step},
-            Element{highest_value + time_step});
-        write(elevation_written, array_pathname, object_id, time_step).get();
+            lowest_value + static_cast<Element>(time_step),
+            highest_value + static_cast<Element>(time_step));
+        write(elevation_written, array_pathname, object_id, static_cast<lue::Index>(time_step)).get();
 
-        Array elevation_read =
-            lue::read<Element, rank>(array_pathname, partition_shape, object_id, time_step);
+        Array elevation_read = lue::read<Element, rank>(
+            array_pathname, partition_shape, object_id, static_cast<lue::Index>(time_step));
 
         lue::test::check_arrays_are_equal(elevation_read, elevation_written);
     }
