@@ -10,7 +10,6 @@
 #include <boost/math/tools/roots.hpp>
 #include <fmt/format.h>
 #include <cmath>
-#include <format>
 
 
 namespace lue {
@@ -947,7 +946,7 @@ namespace lue {
         InflowCountCommunicatorArray inflow_count_communicators{
             "/lue/kinematic_wave/inflow_count/", localities};
         MaterialCommunicatorArray discharge_communicators{
-            std::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
+            fmt::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
 
 
         // For each partition, spawn a task that will solve the kinematic wave equation for the partition
