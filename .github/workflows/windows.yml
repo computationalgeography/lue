@@ -73,6 +73,7 @@ jobs:
               #      Conan package actually works
 
               conda install \
+                  libboost-devel \
                   libboost-headers \
                   conan \
                   conda-build \
