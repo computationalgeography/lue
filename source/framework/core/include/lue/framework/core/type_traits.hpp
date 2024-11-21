@@ -208,56 +208,56 @@ namespace lue {
     template<>
     struct TypeTraits<std::uint8_t>
     {
-            static constexpr std::string name{"uint8"};
+            static constexpr auto name{"uint8"};
     };
 
 
     template<>
     struct TypeTraits<std::int8_t>
     {
-            static constexpr std::string name{"int8"};
+            static constexpr auto name{"int8"};
     };
 
 
     template<>
     struct TypeTraits<std::uint32_t>
     {
-            static constexpr std::string name{"uint32"};
+            static constexpr auto name{"uint32"};
     };
 
 
     template<>
     struct TypeTraits<std::int32_t>
     {
-            static constexpr std::string name{"int32"};
+            static constexpr auto name{"int32"};
     };
 
 
     template<>
     struct TypeTraits<std::uint64_t>
     {
-            static constexpr std::string name{"uint64"};
+            static constexpr auto name{"uint64"};
     };
 
 
     template<>
     struct TypeTraits<std::int64_t>
     {
-            static constexpr std::string name{"int64"};
+            static constexpr auto name{"int64"};
     };
 
 
     template<>
     struct TypeTraits<float>
     {
-            static constexpr std::string name{"float32"};
+            static constexpr auto name{"float32"};
     };
 
 
     template<>
     struct TypeTraits<double>
     {
-            static constexpr std::string name{"float64"};
+            static constexpr auto name{"float64"};
     };
 
 
@@ -266,6 +266,6 @@ namespace lue {
         @tparam     Element Element type
     */
     template<typename Element>
-    constexpr std::string as_string = TypeTraits<Element>::name;
+    constexpr auto as_string = TypeTraits<Element>::name;
 
 }  // namespace lue

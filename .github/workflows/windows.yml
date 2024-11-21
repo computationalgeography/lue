@@ -171,6 +171,7 @@ jobs:
                       -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
                       -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
                       -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
+                      -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t \
                       -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D Hwloc_ROOT=$CONDA_PREFIX/Library \
