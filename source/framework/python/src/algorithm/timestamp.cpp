@@ -1,6 +1,6 @@
 #include "lue/framework/algorithm/timestamp.hpp"
-#include "lue/bind.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {

@@ -5,8 +5,6 @@
             "name": "hpx_shared_configuration",
             "hidden": true,
             "cacheVariables": {
-                "CMAKE_POLICY_DEFAULT_CMP0167": "NEW",
-                "CMAKE_POLICY_DEFAULT_CMP0169": "OLD",
                 "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
                 "HPX_WITH_EXAMPLES": "FALSE",
                 "HPX_WITH_FETCH_ASIO": "TRUE",

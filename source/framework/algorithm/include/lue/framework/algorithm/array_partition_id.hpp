@@ -33,7 +33,7 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (IDElement p = 0; p < nr_partitions(input_array); ++p)
+        for (Index p = 0; p < nr_partitions(input_array); ++p)
         {
             output_partitions[p] = hpx::dataflow(
                 hpx::launch::async,
@@ -42,7 +42,7 @@ namespace lue {
                 {
                     AnnotateFunction annotation{"array_partition_id"};
 
-                    return action(locality_id, policies, input_partition, p);
+                    return action(locality_id, policies, input_partition, static_cast<IDElement>(p));
                 },
 
                 input_partitions[p]);

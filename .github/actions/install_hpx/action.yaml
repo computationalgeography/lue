@@ -40,9 +40,6 @@ runs:
       run: |
         git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
 
-        # Port HPX-1.10 to CMake 3.30 (see policy CMP0167)
-        sed -i'.bak' '135 s/MODULE/CONFIG/' ${{ inputs.source_directory }}/cmake/HPX_SetupBoost.cmake
-
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
         mkdir ${{ inputs.build_directory }}

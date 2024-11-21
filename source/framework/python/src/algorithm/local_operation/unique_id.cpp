@@ -30,6 +30,17 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            using Element = std::int8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::unique_id<Element>(condition));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;

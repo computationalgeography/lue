@@ -21,7 +21,7 @@ used are the PCRaster ones:
 - int32 for nominal and ordinal values
 - float32 for scalar and directional values
 
-LUE itself supports additional cell representations (uint32, int64, uint64, float64).
+LUE itself supports additional cell representations (int8, uint32, int64, uint64, float64).
 
 LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
@@ -325,6 +325,7 @@ def lue_is_value(argument):
         (
             int,
             float,
+            np.int8,
             np.int32,
             np.int64,
             np.uint8,

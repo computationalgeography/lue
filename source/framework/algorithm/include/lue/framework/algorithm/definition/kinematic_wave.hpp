@@ -10,6 +10,7 @@
 #include <boost/math/tools/roots.hpp>
 #include <fmt/format.h>
 #include <cmath>
+#include <format>
 
 
 namespace lue {
@@ -917,7 +918,7 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename Element, Rank rank>
-    PartitionedArray<Element, rank> kinematic_wave(
+    auto kinematic_wave(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<Element, rank> const& current_discharge,
@@ -925,7 +926,7 @@ namespace lue {
         Element const alpha,
         Element const beta,
         Element const time_step_duration,
-        PartitionedArray<Element, rank> const& channel_length)
+        PartitionedArray<Element, rank> const& channel_length) -> PartitionedArray<Element, rank>
     {
         using Material = Element;
         using MaterialArray = PartitionedArray<Material, rank>;
@@ -945,7 +946,8 @@ namespace lue {
 
         InflowCountCommunicatorArray inflow_count_communicators{
             "/lue/kinematic_wave/inflow_count/", localities};
-        MaterialCommunicatorArray discharge_communicators{"/lue/kinematic_wave/", localities};
+        MaterialCommunicatorArray discharge_communicators{
+            std::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
 
 
         // For each partition, spawn a task that will solve the kinematic wave equation for the partition

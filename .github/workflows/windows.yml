@@ -156,7 +156,6 @@ jobs:
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
-                      -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                       -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
                       -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
                       -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
@@ -235,7 +234,6 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D lue_ROOT=${{ env.lue_development_install_directory }} \

@@ -100,11 +100,11 @@ namespace lue {
 
 
         template<typename Policies, typename FlowDirectionElement, Rank rank>
-        ArrayPartition<CellClass, rank> accu_info3_partition(
+        auto accu_info3_partition(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank> inflow_count_communicator,
-            CellClassCommunicator<rank> cell_class_communicator)
+            CellClassCommunicator<rank> cell_class_communicator) -> ArrayPartition<CellClass, rank>
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;

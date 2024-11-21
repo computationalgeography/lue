@@ -77,8 +77,8 @@ BOOST_AUTO_TEST_CASE(modulus_2d_random_values)
 
         {
             // clang-format off
-            {908, 12, 200, 5},
-            {-5, -10, 809, -1},
+            {98, 12, 20, 5},
+            {-5, -10, 89, -1},
             {0, 0, 0, 0},
             {5, 5, 5, 5}
             // clang-format on
@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(modulus_2d_random_values)
         partition_shape_specific,
         {
             // clang-format off
-            {908 % 2, 12 % 3, 200 % 6, 5 % 5},
-            {-5 % -5, -10 % 10, 809 % -10, -1 % 8},
+            {98 % 2, 12 % 3, 20 % 6, 5 % 5},
+            {-5 % -5, -10 % 10, 89 % -10, -1 % 8},
             {0, 0, 0, 0},
             {0, 0, 0, 0}
             // clang-format on

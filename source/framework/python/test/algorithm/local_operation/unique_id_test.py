@@ -13,7 +13,9 @@ def tearDownModule():
 class UniqueIDTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
-        array_shape = (60, 40)
+        # Use a small array. The element type may be a single byte integer.
+        # TODO Fix unique_id to write no-data when the ID ends up being out of range.
+        array_shape = (12, 8)
         fill_value = 1
 
         array = lfr.create_array(array_shape, lfr.boolean_element_type, fill_value)

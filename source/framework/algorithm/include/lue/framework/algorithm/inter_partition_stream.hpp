@@ -498,7 +498,7 @@ namespace lue {
                             count = input_material.inflow_count(*it);
                             lue_hpx_assert(count >= 1);
 
-                            lue_hpx_assert(inflow_count_data_copy(idx0, idx1) >= count);
+                            lue_hpx_assert(static_cast<Count>(inflow_count_data_copy(idx0, idx1)) >= count);
                             inflow_count_data_copy(idx0, idx1) -= count;
 
                             // If the remaining inflow count is

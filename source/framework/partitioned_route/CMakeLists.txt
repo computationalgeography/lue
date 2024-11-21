@@ -28,7 +28,7 @@ block()
         string(REPLACE "::" "_" element ${RouteID})
 
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition_${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME

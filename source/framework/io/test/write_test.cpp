@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework io write
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/default_policies/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/unique_id.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include "lue/framework/io/write_into.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -104,7 +105,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     ldm::Count const nr_rows{62};
     ldm::Count const nr_cols{42};
 
-    using Element = lue::SignedIntegralElement<0>;
+    using Element = lue::LargestSignedIntegralElement;
 
     ldm::ID object_id{};
 
@@ -134,11 +135,9 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::Count const nr_cols_partition{4};
     Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
-    Element const min_value{5};
-    Element const max_value{5555};
-
-    Array elevation_written =
-        lue::default_policies::uniform<Element>(grid_shape, partition_shape, min_value, max_value);
+    auto condition = lue::create_partitioned_array<lue::BooleanElement>(
+        grid_shape, partition_shape, lue::BooleanElement{1});
+    Array elevation_written = lue::value_policies::unique_id<Element>(condition);
 
     write(elevation_written, array_pathname, object_id).get();
 

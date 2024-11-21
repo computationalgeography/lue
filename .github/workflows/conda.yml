@@ -41,8 +41,7 @@ jobs:
                   python-version: 3.11
             - name: Build package
               run: |
-                  mamba install boa
-                  conda mambabuild environment/conda ${{ matrix.conda-bld-arg }}
+                  conda build environment/conda ${{ matrix.conda-bld-arg }}
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
               if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'

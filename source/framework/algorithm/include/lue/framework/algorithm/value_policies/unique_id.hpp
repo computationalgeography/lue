@@ -21,7 +21,8 @@ namespace lue {
     namespace value_policies {
 
         template<typename IDElement, typename ConditionElement, Rank rank>
-        PartitionedArray<IDElement, rank> unique_id(PartitionedArray<ConditionElement, rank> const& array)
+        auto unique_id(PartitionedArray<ConditionElement, rank> const& array)
+            -> PartitionedArray<IDElement, rank>
         {
             using Policies = policy::unique_id::DefaultValuePolicies<IDElement, ConditionElement>;
 

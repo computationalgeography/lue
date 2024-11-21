@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework.hpp"
 #include "lue/macro.hpp"
+#include <format>
 
 
 namespace lue {
@@ -577,10 +578,11 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> accu3(
+    auto accu3(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& external_inflow)
+        -> PartitionedArray<MaterialElement, rank>
     {
         AnnotateFunction annotation{"accu_meh"};
 
@@ -600,7 +602,8 @@ namespace lue {
         using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
 
         InflowCountCommunicatorArray inflow_count_communicators{"/lue/accu3/inflow_count/", localities};
-        MaterialCommunicatorArray material_communicators{"/lue/accu3/", localities};
+        MaterialCommunicatorArray material_communicators{
+            std::format("/lue/accu3/material/{}/", as_string<MaterialElement>), localities};
 
 
         // For each partition, spawn a task that will solve the

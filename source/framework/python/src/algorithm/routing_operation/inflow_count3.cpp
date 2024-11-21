@@ -33,7 +33,9 @@ namespace lue::framework {
 
     void bind_inflow_count3(pybind11::module& module)
     {
-        bind<Binder, SmallestIntegralElement>(module);
+        // We're using the boolean element type for the counts, assuming the boolean element type is a small
+        // integral capable of representing small numbers.
+        bind<Binder, BooleanElement>(module);
     }
 
 }  // namespace lue::framework

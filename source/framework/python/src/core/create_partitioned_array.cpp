@@ -52,6 +52,18 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            using Element = std::int8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;
@@ -283,6 +295,18 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            using Element = std::int8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array2<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;

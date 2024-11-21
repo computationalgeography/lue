@@ -25,6 +25,9 @@ option(LUE_BUILD_FRAMEWORK
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
+option(LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API
+    "Include PCRaster Python sub-package"
+    TRUE)
 option(LUE_FRAMEWORK_WITH_IMAGE_LAND
     "Include operations required for the IMAGE land-use allocation model"
     FALSE)
@@ -317,6 +320,46 @@ if(LUE_BUILD_FRAMEWORK)
     LIST(FIND LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT} TYPE_PRESENT)
     if(TYPE_PRESENT GREATER_EQUAL 0)
         set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE TRUE)
+    endif()
+
+    if(LUE_FRAMEWORK_WITH_PYTHON_API AND LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API)
+        # For the PCRaster Python sub-package, three types are required:
+        # - boolean / flow_direction: std::uint8
+        # - nominal, ordinal: std::int32
+        # - scalar, directional: float
+        # Verify these types are available. If not, error out with a message that allows the user to skip
+        # configuraing the build for this sub-package.
+
+        unset(error_messages)
+
+        if(NOT LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT STREQUAL "std::uint8_t")
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT to be std::uint8_t (currently: ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})")
+        endif()
+
+        if(NOT LUE_FRAMEWORK_BOOLEAN_ELEMENT STREQUAL "std::uint8_t")
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_BOOLEAN_ELEMENT to be std::uint8_t (currently: ${LUE_FRAMEWORK_BOOLEAN_ELEMENT})")
+        endif()
+
+        LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS "std::int32_t" TYPE_PRESENT)
+        if(TYPE_PRESENT EQUAL -1)
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_INTEGRAL_ELEMENTS to contain std::int32_t (currently: ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})")
+        endif()
+
+        LIST(FIND LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS "float" TYPE_PRESENT)
+        if(TYPE_PRESENT EQUAL -1)
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS to contain float (currently: ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})")
+        endif()
+
+        if(error_messages)
+            list(APPEND error_messages
+                "Set LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API=FALSE to continue without support for PCRaster")
+            list(JOIN error_messages "\n" error_message)
+            message(FATAL_ERROR ${error_message})
+        endif()
     endif()
 endif()
 

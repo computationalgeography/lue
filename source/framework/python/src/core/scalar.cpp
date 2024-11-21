@@ -34,6 +34,11 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            result = pybind11::cast(create_scalar<std::int8_t>(value));
+                            break;
+                        }
                         case 4:
                         {
                             result = pybind11::cast(create_scalar<std::int32_t>(value));

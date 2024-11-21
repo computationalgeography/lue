@@ -24,7 +24,7 @@ namespace lue {
         depends on too many things to describe here.
     */
     template<typename IDElement, typename Policies, typename ConditionElement, Rank rank>
-    PartitionedArray<IDElement, rank> unique_id(
-        Policies const& policies, PartitionedArray<ConditionElement, rank> const& array);
+    auto unique_id(Policies const& policies, PartitionedArray<ConditionElement, rank> const& array)
+        -> PartitionedArray<IDElement, rank>;
 
 }  // namespace lue
