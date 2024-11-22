@@ -22,7 +22,10 @@ if(LUE_HDF5_REQUIRED)
 endif()
 
 if(LUE_HPX_REQUIRED)
-    find_dependency(HPX 1.10)
+    block(SCOPE_FOR POLICIES)
+        cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
+        find_dependency(HPX 1.10...<1.11)
+    endblock()
 endif()
 
 if(LUE_MDSPAN_REQUIRED)
