@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     ldm::Count const nr_rows{62};
     ldm::Count const nr_cols{42};
 
-    using Element = lue::LargestSignedIntegralElement;
+    using Element = lue::LargestIntegralElement;
 
     ldm::ID object_id{};
 

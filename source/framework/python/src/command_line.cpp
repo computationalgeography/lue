@@ -1,6 +1,5 @@
 #include "command_line.hpp"
 #include "lue/assert.hpp"
-// TODO Only Python API is needed
 #include <pybind11/pybind11.h>
 
 
@@ -16,7 +15,7 @@ namespace lue {
         pybind11::object sys{pybind11::module_::import("sys")};
         pybind11::list argv_py{sys.attr("argv")};
 
-        _argc = argv_py.size();
+        _argc = static_cast<int>(argv_py.size());
 
         _argument_strings.resize(_argc);
         _argument_pointers.resize(_argument_strings.size() + 1);
@@ -34,13 +33,13 @@ namespace lue {
     }
 
 
-    int CommandLine::argc() const
+    auto CommandLine::argc() const -> int
     {
         return _argc;
     }
 
 
-    char** CommandLine::argv() const
+    auto CommandLine::argv() const -> char**
     {
         return _argv;
     }

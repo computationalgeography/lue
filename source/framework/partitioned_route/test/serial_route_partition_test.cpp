@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_CASE(default_construct_client)
 {
     // Server is not constructed!
 
-    using RouteID = lue::UnsignedIntegralElement<0>;
+    using RouteID = lue::LargestIntegralElement;
 
     // Default initialization
     {

@@ -15,9 +15,9 @@ namespace lue {
 
             CommandLine();
 
-            int argc() const;
+            [[nodiscard]] auto argc() const -> int;
 
-            char** argv() const;
+            [[nodiscard]] auto argv() const -> char**;
 
         private:
 
