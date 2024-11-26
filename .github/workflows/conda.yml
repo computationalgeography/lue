@@ -2,9 +2,13 @@ name: Conda packages
 
 on:
   pull_request:
+    paths-ignore:
+      - "!.github/workflows/conda.yml"
   push:
     branches:
       - "master"
+    paths-ignore:
+      - "!.github/workflows/conda.yml"
   workflow_dispatch:
 
 jobs:
