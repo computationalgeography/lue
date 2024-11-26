@@ -200,6 +200,7 @@ jobs:
                   -G "Ninja" \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
+                  -D Boost_USE_STATIC_LIBS=ON \
                   -D lue_ROOT=${{ env.lue_development_install_directory }} \
                   -D HPX_ROOT=${{ env.hpx_install_directory }} \
                   -D mdspan_ROOT=${{ env.mdspan_install_directory }}
