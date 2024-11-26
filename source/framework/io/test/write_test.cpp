@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework io write
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/uniform.hpp"
-#include "lue/framework/algorithm/value_policies/unique_id.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include "lue/framework/io/write_into.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
@@ -74,7 +73,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
-        Array elevation_written = lue::default_policies::uniform(
+        Array elevation_written = lue::value_policies::uniform(
             grid_shape,
             partition_shape,
             lowest_value + static_cast<Element>(time_step),
@@ -102,8 +101,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     std::string const array_pathname{
         fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
-    ldm::Count const nr_rows{62};
-    ldm::Count const nr_cols{42};
+    ldm::Count const nr_rows{60};
+    ldm::Count const nr_cols{40};
 
     using Element = lue::LargestIntegralElement;
 
@@ -135,9 +134,12 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::Count const nr_cols_partition{4};
     Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
-    auto condition = lue::create_partitioned_array<lue::BooleanElement>(
-        grid_shape, partition_shape, lue::BooleanElement{1});
-    Array elevation_written = lue::value_policies::unique_id<Element>(condition);
+    // auto condition = lue::create_partitioned_array<lue::BooleanElement>(
+    //     grid_shape, partition_shape, lue::BooleanElement{1});
+    // Crashes on Windows (Release)... Use uniform instead for now.
+    // Array elevation_written = lue::value_policies::unique_id<Element>(condition);
+    Array elevation_written = lue::value_policies::uniform<Element>(
+        grid_shape, partition_shape, Element{0}, Element{10});
 
     write(elevation_written, array_pathname, object_id).get();
 

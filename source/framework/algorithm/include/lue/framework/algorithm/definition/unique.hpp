@@ -78,8 +78,8 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    hpx::future<std::set<Element>> unique(
-        Policies const& policies, PartitionedArray<Element, rank> const& array)
+    auto unique(
+        Policies const& policies, PartitionedArray<Element, rank> const& array) -> hpx::future<std::set<Element>>
     {
         static_assert(std::is_integral_v<Element>);
 

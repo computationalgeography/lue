@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm unique_id
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/unique.hpp"
-#include "lue/framework/algorithm/default_policies/unique_id.hpp"
+#include "lue/framework/algorithm/value_policies/unique.hpp"
+#include "lue/framework/algorithm/value_policies/unique_id.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -11,7 +11,7 @@ namespace {
     template<typename IDElement, typename ConditionElement, std::size_t rank>
     void test_array()
     {
-        if constexpr (lue::BuildOptions::default_policies_enabled)
+        if constexpr (lue::BuildOptions::default_value_policies_enabled)
         {
             using Array = lue::PartitionedArray<ConditionElement, rank>;
 
@@ -21,8 +21,8 @@ namespace {
             Array array{lue::create_partitioned_array<ConditionElement>(array_shape, partition_shape, 1)};
 
             {
-                auto unique_id = lue::default_policies::unique_id<IDElement>(array);
-                auto unique = lue::default_policies::unique(unique_id).get();
+                auto unique_id = lue::value_policies::unique_id<IDElement>(array);
+                auto unique = lue::value_policies::unique(unique_id).get();
 
                 BOOST_REQUIRE_EQUAL(unique.size(), lue::nr_elements(array));
             }
