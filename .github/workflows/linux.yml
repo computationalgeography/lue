@@ -2,13 +2,9 @@ name: Linux CI
 
 on:
   pull_request:
-    paths-ignore:
-      - "!.github/workflows/linux.yml"
   push:
     branches:
       - "master"
-    paths-ignore:
-      - "!.github/workflows/linux.yml"
   workflow_dispatch:
 
 jobs:

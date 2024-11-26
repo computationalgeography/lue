@@ -2,13 +2,9 @@ name: Windows CI
 
 on:
   pull_request:
-    paths-ignore:
-      - "!.github/workflows/windows.yml"
   push:
     branches:
       - "master"
-    paths-ignore:
-      - "!.github/workflows/windows.yml"
   workflow_dispatch:
 
 jobs:
