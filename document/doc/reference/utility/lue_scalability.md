@@ -114,6 +114,8 @@ Contrary to the platform and worker configuration files, configuration files for
 for each command tested.
 
 
+(lue-scalability-calling-conventions)=
+
 ### Calling conventions
 
 The lue_scalability.py command requires each command to be tested to support certain command line options.

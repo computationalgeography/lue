@@ -26,23 +26,72 @@ def create_dot_graph(lue_dataset_pathname, pdf_graph_pathname):
     """
     Create a dot graph of the LUE file containing the experiment results
     """
-    dot_properties_pathname = os.path.expandvars(
-        "$LUE/document/lue_translate/dot_properties.json"
-    )
+    with tempfile.NamedTemporaryFile(suffix=".json") as dot_properties_file:
+        dot_properties_file.write(
+            b"""\
+{
+    "dot": {
+        "node": {
+            "fontcolor": "white"
+        }
+    },
 
-    with tempfile.NamedTemporaryFile(suffix=".dot") as dot_graph_file:
-        commands = []
-        commands.append(
-            "{} export --meta {} {} {}".format(
-                lue_translate(),
-                dot_properties_pathname,
-                lue_dataset_pathname,
-                dot_graph_file.name,
+    "hdf5": {
+        "group": {
+            "shape": "oval"
+        },
+        "dataset": {
+            "shape": "box"
+        }
+    },
+
+    "lue": {
+        "phenomenon": {
+            "fillcolor": "#791d72"
+        },
+        "property_set": {
+            "fillcolor": "#9a0000"
+        },
+        "object_tracker": {
+            "fillcolor": "#f08000",
+            "show": false
+        },
+        "property": {
+            "fillcolor": "#419702"
+        },
+        "time_domain": {
+            "fillcolor": "#36a2c9",
+            "show_details": false
+        },
+        "space_domain": {
+            "fillcolor": "#36a2c9",
+            "show_details": false
+        },
+        "value": {
+            "fillcolor": "#f08000",
+            "show": false,
+            "show_details": true
+        }
+    }
+}
+"""
+        )
+        dot_properties_file.seek(0)
+
+        with tempfile.NamedTemporaryFile(suffix=".dot") as dot_graph_file:
+            print(open(dot_properties_file.name, "r").read())
+            commands = []
+            commands.append(
+                "{} export --meta {} {} {}".format(
+                    lue_translate(),
+                    dot_properties_file.name,
+                    lue_dataset_pathname,
+                    dot_graph_file.name,
+                )
             )
-        )
-        commands.append(
-            "dot -Tpdf -o {} {}".format(pdf_graph_pathname, dot_graph_file.name)
-        )
+            commands.append(
+                "dot -Tpdf -o {} {}".format(pdf_graph_pathname, dot_graph_file.name)
+            )
 
-        for command in commands:
-            execute_command(command)
+            for command in commands:
+                execute_command(command)
