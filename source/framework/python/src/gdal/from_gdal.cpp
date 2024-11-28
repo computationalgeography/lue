@@ -136,8 +136,8 @@ namespace lue::framework {
             auto const geo_transform{gdal::geo_transform(*dataset)};
 
             pybind11::dict properties{};
-            properties("shape"_a = raster_shape);
-            properties("geo_transform"_a = geo_transform);
+            properties["shape"] = raster_shape;
+            properties["geo_transform"] = geo_transform;
 
             return properties;
         }

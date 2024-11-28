@@ -40,7 +40,7 @@ model to be (only) useful in scalability experiments. Here is the complete worki
 ```{literalinclude} game_of_life.py
    :caption: game_of_life.py, with the code added for performing scalability experiments highlighted
    :linenos:
-   :emphasize-lines: 9, 65, 67, 68, 70, 71, 73, 78, 79, 81, 83, 84
+   :emphasize-lines: 9, 65, 67, 68, 70, 71, 73, 78, 79, 81, 83, 84, 114-118
 ```
 
 A few changes were made to the original model. First an import statement was added for the
@@ -48,15 +48,19 @@ A few changes were made to the original model. First an import statement was add
 lue_scalability.py poses on a model.
 
 Next, the part of the model containing the code we want to measure the scalability of was identified. This is
-the code between the `run.start()`{l=python} and `run.wait()`{l=python} calls. The time it takes to execute
+the code between the `run.start()`{l=python} and `run.stop()`{l=python} calls. The time it takes to execute
 the statements between those calls ends up in the result file, and is used for further processing. It is
 important that time spent on code that should not be part of the measurements has finished executing before
 calling `run.start()`{l=python} and that time spent on code that should be part of the measurements has
-finished executing before calling `run.end()`{l=python}.
+finished executing before calling `run.stop()`{l=python}.
 
 An experiment involves measuring the time it takes to perform one or more model runs. All measurements end up
 in the result file. More information about the `scalability.instrument` sub-package can be found in the
 [associated reference](#source-lue-qa-python) pages.
+
+Finally, the lue_scalability.py assumes that the model supports certain command line options. These are
+described in the [lue_scalability.py reference page](#lue-scalability-calling-conventions). The model code is
+updated for this as well, see the last section of the code.
 
 
 ## Configuration
@@ -184,15 +188,15 @@ Example configuration for the partition shape experiment:
 
 Given the above configuration files we can start the scalability experiments. The first thing to do is to
 determine a good partition shape to use for the strong and weak scalability experiments. For this we can call
-lue_scalability.py with the prefixes of the paths containing the cluster, worker, and experiment configuration
-files. Additionally, we need to tell it that we want to perform a partition shape experiment. This results in
-a command like this:
+lue_scalability.py with the prefixes of the paths containing the platform, worker, and experiment
+configuration files. Additionally, we need to tell it that we want to perform a partition shape experiment.
+This results in a command like this:
 
 ```bash
 # 50 Is a model-specific argument. In this case the number of generations
 # that we want the model to simulate
 lue_scalability.py \
-    partition_shape script game_of_life.py "50" orkney cpu_core \
+    partition_shape script game_of_life.py "50" orkney core_numa_node \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -207,7 +211,7 @@ instead of script:
 
 ```bash
 lue_scalability.py \
-    partition_shape import game_of_life.py "50" orkney cpu_core \
+    partition_shape import game_of_life.py "50" orkney core_numa_node \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -218,7 +222,7 @@ again use the same command as before, but using the postprocess stage name inste
 
 ```bash
 lue_scalability.py \
-    partition_shape postprocess game_of_life.py "50" orkney cpu_core \
+    partition_shape postprocess game_of_life.py "50" orkney core_numa_node \
     ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
@@ -241,15 +245,12 @@ Performing a strong scalability experiment involves calling the same commands as
 experiment, but now using the strong_scalability experiment name instead of partition_shape:
 
 ```bash
-lue_scalability.py \
-    strong_scalability script game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
-lue_scalability.py \
-    strong_scalability import game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
-lue_scalability.py \
-    strong_scalability postprocess game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py strong_scalability script \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py strong_scalability import \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py strong_scalability postprocess \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
 ```{figure} strong_scalability.svg
@@ -260,9 +261,8 @@ Strong scalability efficiencies. The model executes almost 10 times faster when 
 loss in efficiency compared to a linear scaling model is about 20%.
 ```
 
-Both model users and LUE developers can be quite happy with these results. The model can actually use
-additional hardware to speed up the model, but there is still a challenge left for the developers to look
-into.
+LUE users can be quite happy with these results. These results show that the model can use additional hardware
+to speed up the model.
 
 
 ### Weak scalability
@@ -271,15 +271,12 @@ Performing a weak scalability experiment involves calling the same commands as i
 strong scalability experiment, but now using the weak_scalability experiment name:
 
 ```bash
-lue_scalability.py \
-    weak_scalability script game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
-lue_scalability.py \
-    weak_scalability import game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
-lue_scalability.py \
-    weak_scalability postprocess game_of_life.py "50" orkney cpu_core \
-    ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py weak_scalability script \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py weak_scalability import \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
+lue_scalability.py weak_scalability postprocess \
+    game_of_life.py "50" orkney core_numa_node ./lue_qa/configuration ./lue_qa/experiment /tmp/scalability
 ```
 
 ```{figure} weak_scalability.svg
@@ -290,8 +287,7 @@ Weak scalability efficiencies. The model takes a little bit more time when execu
 using 12 CPU cores. The loss in efficiency compared to a linear scaling model is about 20%.
 ```
 
-Given these results, model users can make good use of additional hardware to process larger datasets. As we
-learned already, there is still some room left for improvement.
+These results show that the model can use additional hardware to process larger datasets.
 
 
 ## Bash script

@@ -51,7 +51,7 @@ def generate_script_slurm(
                     os.path.dirname(result_pathname)
                 ),
                 # Run the benchmark, resulting in a json file
-                f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
+                f'mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} "{experiment.command_arguments}" '
                 # '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 # '--hpx:ini="hpx.os_threads={nr_threads}" '
                 '--hpx:threads="{nr_threads}" '
@@ -147,7 +147,7 @@ def generate_script_shell(
                 # Create directory for the resulting json file
                 "mkdir -p {}".format(os.path.dirname(result_pathname)),
                 # Run the benchmark, resulting in a json file
-                f"{experiment.command_pathname} {experiment.command_arguments} "
+                f'{experiment.command_pathname} "{experiment.command_arguments}" '
                 # '--hpx:ini="hpx.os_threads={nr_threads}" '
                 '--hpx:threads="{nr_threads}" '
                 # '--hpx:bind="{thread_binding}" '
