@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -16,5 +14,5 @@ class CellIndexTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
-        condition = lfr.create_array(array_shape, np.uint8, 1)
+        condition = lfr.create_array(array_shape, lfr.boolean_element_type, 1)
         lfr.cell_index(condition, 0)

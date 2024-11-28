@@ -20,6 +20,6 @@ target_include_directories(lue_utility
 target_link_libraries(lue_utility
     PUBLIC
         lue::data_model
-        docopt_s
+        docopt
         nlohmann_json::nlohmann_json
 )

@@ -3,7 +3,9 @@
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework.hpp"
 #include "lue/macro.hpp"
+#include <fmt/format.h>
 
 
 namespace lue {
@@ -206,7 +208,7 @@ namespace lue {
             using MaterialData = DataT<MaterialPartition>;
             using Offset = OffsetT<FlowDirectionPartition>;
 
-            using CountElement = std::uint8_t;
+            using CountElement = SmallestIntegralElement;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
@@ -663,12 +665,12 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
-    accu_threshold3(
+    auto accu_threshold3(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& external_inflow,
         PartitionedArray<MaterialElement, rank> const& threshold)
+        -> std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
     {
         AnnotateFunction const annotation{"accu_threshold: array"};
 
@@ -696,7 +698,8 @@ namespace lue {
 
         InflowCountCommunicatorArray inflow_count_communicators{
             "/lue/accu_threshold3/inflow_count/", localities};
-        MaterialCommunicatorArray material_communicators{"/lue/accu_threshold3/", localities};
+        MaterialCommunicatorArray material_communicators{
+            fmt::format("/lue/accu_threshold3/{}/", as_string<MaterialElement>), localities};
 
 
         // For each partition, spawn a task that will solve the

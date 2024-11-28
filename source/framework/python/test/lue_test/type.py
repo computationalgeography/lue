@@ -6,7 +6,7 @@ boolean_types = [
 ]
 
 signed_integral_types = [
-    # np.int8,
+    np.int8,
     np.int32,
     np.int64,
 ]
@@ -28,7 +28,7 @@ numeric_types = integral_types + floating_point_types
 
 value_by_type = {
     np.uint8: np.uint8(8),
-    # np.int8: np.int8(-8),
+    np.int8: np.int8(-8),
     np.uint32: np.uint32(32),
     np.uint64: np.uint64(64),
     np.int32: np.int32(-32),

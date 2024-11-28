@@ -4,7 +4,7 @@
 LUE_REGISTER_ARRAY_PARTITION_ACTIONS(
     {{ Element }},
     {{ rank }},
-    {{ Element }}_{{ rank }})
+    {{ Element | replace("::", "_") }}_{{ rank }})
 
 
 namespace lue::server {

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include <string>
 #include <type_traits>
 
 
@@ -196,5 +197,75 @@ namespace lue {
 
     template<typename Array>
     Count nr_partitions(Array const& array);
+
+
+    template<typename T>
+    struct TypeTraits
+    {
+    };
+
+
+    template<>
+    struct TypeTraits<std::uint8_t>
+    {
+            static constexpr auto name{"uint8"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::int8_t>
+    {
+            static constexpr auto name{"int8"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::uint32_t>
+    {
+            static constexpr auto name{"uint32"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::int32_t>
+    {
+            static constexpr auto name{"int32"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::uint64_t>
+    {
+            static constexpr auto name{"uint64"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::int64_t>
+    {
+            static constexpr auto name{"int64"};
+    };
+
+
+    template<>
+    struct TypeTraits<float>
+    {
+            static constexpr auto name{"float32"};
+    };
+
+
+    template<>
+    struct TypeTraits<double>
+    {
+            static constexpr auto name{"float64"};
+    };
+
+
+    /*!
+        @brief      String representation of @Element
+        @tparam     Element Element type
+    */
+    template<typename Element>
+    constexpr auto as_string = TypeTraits<Element>::name;
 
 }  // namespace lue

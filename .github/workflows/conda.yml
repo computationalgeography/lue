@@ -11,7 +11,7 @@ jobs:
     build:
         name: ${{ matrix.os }} / ${{ matrix.target-platform }}
         runs-on: ${{ matrix.os }}
-        timeout-minutes: 240
+        timeout-minutes: 300
         defaults:
             run:
                 shell: bash -l {0}
@@ -37,12 +37,13 @@ jobs:
             - name: Install Conda
               uses: conda-incubator/setup-miniconda@v3
               with:
+                  conda-remove-defaults: "true"
                   miniforge-version: latest
                   python-version: 3.11
             - name: Build package
               run: |
-                  mamba install boa
-                  conda mambabuild environment/conda ${{ matrix.conda-bld-arg }}
+                  conda install conda-build
+                  conda build environment/conda ${{ matrix.conda-bld-arg }}
             - name: Upload
               uses: Dylan700/sftp-upload-action@latest
               if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'

@@ -103,20 +103,20 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
-    accu_threshold(
+    auto accu_threshold(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& material,
-        PartitionedArray<MaterialElement, rank> const& threshold);
+        PartitionedArray<MaterialElement, rank> const& threshold)
+        -> std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>;
 
 
     template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
-    accu_threshold(
+    auto accu_threshold(
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& material,
         PartitionedArray<MaterialElement, rank> const& threshold)
+        -> std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
     {
         using Policies = policy::accu_threshold::DefaultPolicies<FlowDirectionElement, MaterialElement>;
 

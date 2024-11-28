@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -17,5 +15,6 @@ class WaitTest(lue_test.TestCase):
     def test_overloads(self):
         array_shape = (60, 40)
 
-        array = lfr.create_array(array_shape, np.int32, 5)
-        lfr.wait(array)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, 5)
+            lfr.wait(array)

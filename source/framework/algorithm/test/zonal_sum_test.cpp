@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 /// BOOST_AUTO_TEST_CASE(zonal_sum_0d_2d_int32)
@@ -20,7 +21,8 @@
 ///     Shape const partition_shape{{3, 3}};
 ///
 ///     ClassArray class_array{
-///         lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
+///         lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape,
+///         partition_shape))};
 ///
 ///     auto zonal_sum = lue::value_policies::zonal_sum<Value>(1, class_array);
 ///
@@ -43,8 +45,8 @@
 
 BOOST_AUTO_TEST_CASE(zonal_sum_2d_2d_int32)
 {
-    using Value = std::int32_t;
-    using Class = std::uint64_t;
+    using Value = lue::LargestIntegralElement;
+    using Class = lue::LargestUnsignedIntegralElement;
     std::size_t const rank = 2;
 
     using ValueArray = lue::PartitionedArray<Value, rank>;
@@ -68,7 +70,7 @@ BOOST_AUTO_TEST_CASE(zonal_sum_2d_2d_int32)
     ValueArray value_array{lue::create_partitioned_array<Value>(array_shape, partition_shape)};
     lue::range(value_array, Value{1}).get();
 
-    ClassArray class_array = lue::array_partition_id(value_array);
+    ClassArray class_array = lue::array_partition_id<Class>(value_array);
 
     auto zonal_sum = lue::value_policies::zonal_sum(value_array, class_array);
 

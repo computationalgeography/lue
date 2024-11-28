@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include <random>
 
 
@@ -21,8 +22,6 @@ namespace {
     using Offset = lue::Offset<lue::Index, rank>;
 
     using Shape = lue::Shape<lue::Count, rank>;  // = typename Array<std::int32_t>::Shape;
-
-    using RouteID = lue::RouteID;
 
 }  // Anonymous namespace
 
@@ -139,8 +138,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint32_t;
-    using ValueElement = double;
+    using ZoneElement = lue::UnsignedIntegralElement<0>;
+    using ValueElement = lue::FloatingPointElement<0>;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
@@ -855,8 +854,8 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     // Same as use_case_01, but with a single partition
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint32_t;
-    using ValueElement = double;
+    using ZoneElement = lue::UnsignedIntegralElement<0>;
+    using ValueElement = lue::FloatingPointElement<0>;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
@@ -1132,7 +1131,8 @@ BOOST_AUTO_TEST_CASE(use_case_03)
 
     lue::Rank const rank{2};
 
-    using ValueElement = double;
+    using ValueElement = lue::FloatingPointElement<0>;
+    using RouteID = lue::LargestSignedIntegralElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
 
@@ -1194,7 +1194,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         });
     // clang-format on
 
-    Route<lue::RouteID> const route_we_got = lue::value_policies::decreasing_order(value_array);
+    Route<RouteID> const route_we_got = lue::value_policies::decreasing_order<RouteID>(value_array);
 
     route_we_got.starts().wait();
 
@@ -1732,8 +1732,8 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
     // Verify that multiple threads don't trip over each other
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint64_t;
-    using ValueElement = float;
+    using ZoneElement = lue::LargestIntegralElement;
+    using ValueElement = lue::FloatingPointElement<0>;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
@@ -1769,8 +1769,9 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
     // Verify that a partition for which route fragments aren't recorded is still finished
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint64_t;
-    using ValueElement = float;
+    using ZoneElement = lue::LargestIntegralElement;
+    using ValueElement = lue::FloatingPointElement<0>;
+    using RouteID = lue::LargestSignedIntegralElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;
@@ -1785,8 +1786,8 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
 
     // Global
     {
-        Route<lue::RouteID> const route_we_got =
-            lue::value_policies::decreasing_order(value_array, max_nr_cells);
+        Route<RouteID> const route_we_got =
+            lue::value_policies::decreasing_order<RouteID>(value_array, max_nr_cells);
 
         route_we_got.starts().wait();
 
@@ -1827,8 +1828,8 @@ BOOST_AUTO_TEST_CASE(random_input)
 {
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint64_t;
-    using ValueElement = float;
+    using ZoneElement = lue::LargestIntegralElement;
+    using ValueElement = lue::FloatingPointElement<0>;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
     using ZoneArray = lue::PartitionedArray<ZoneElement, rank>;

@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,6 +16,7 @@ class InterPartitionStreamTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         direction = 4
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-
-        inter_partition_stream = lfr.inter_partition_stream(flow_direction)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
+        _ = lfr.inter_partition_stream(flow_direction)

@@ -28,63 +28,28 @@ file(GENERATE
 
 add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
-    src/algorithm/focal_operation/aspect.cpp
-    src/algorithm/focal_operation/focal_diversity.cpp
-    src/algorithm/focal_operation/focal_high_pass.cpp
-    src/algorithm/focal_operation/focal_majority.cpp
-    src/algorithm/focal_operation/focal_maximum.cpp
-    src/algorithm/focal_operation/focal_mean.cpp
-    src/algorithm/focal_operation/focal_minimum.cpp
-    src/algorithm/focal_operation/slope.cpp
-    src/algorithm/focal_operation/focal_sum.cpp
+    src/algorithm/focal_operation/focal_operation.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED
     src/algorithm/global_operation.cpp
+    src/algorithm/global_operation/global_operation.cpp
     src/algorithm/global_operation/reclassify.cpp
-    src/algorithm/global_operation/maximum.cpp
-    src/algorithm/global_operation/minimum.cpp
-    src/algorithm/global_operation/sum.cpp
 )
 
 add_library(lue_py_framework_local_operation SHARED
     src/algorithm/local_operation.cpp
     src/algorithm/local_operation/abs.cpp
-    src/algorithm/local_operation/acos.cpp
-    src/algorithm/local_operation/add.cpp
     src/algorithm/local_operation/all.cpp
-    src/algorithm/local_operation/asin.cpp
-    src/algorithm/local_operation/atan.cpp
-    src/algorithm/local_operation/atan2.cpp
+    src/algorithm/local_operation/arithmetic.cpp
     src/algorithm/local_operation/cast.cpp
     src/algorithm/local_operation/cell_index.cpp
-    src/algorithm/local_operation/cos.cpp
-    src/algorithm/local_operation/divide.cpp
-    src/algorithm/local_operation/equal_to.cpp
-    src/algorithm/local_operation/ceil.cpp
-    src/algorithm/local_operation/exp.cpp
-    src/algorithm/local_operation/floor.cpp
-    src/algorithm/local_operation/greater_than.cpp
-    src/algorithm/local_operation/greater_than_equal_to.cpp
+    src/algorithm/local_operation/comparison.cpp
     src/algorithm/local_operation/iterate_per_element.cpp
-    src/algorithm/local_operation/less_than.cpp
-    src/algorithm/local_operation/less_than_equal_to.cpp
-    src/algorithm/local_operation/log.cpp
-    src/algorithm/local_operation/log10.cpp
-    src/algorithm/local_operation/logical_and.cpp
-    src/algorithm/local_operation/logical_exclusive_or.cpp
-    src/algorithm/local_operation/logical_inclusive_or.cpp
-    src/algorithm/local_operation/logical_not.cpp
+    src/algorithm/local_operation/logical.cpp
     src/algorithm/local_operation/modulus.cpp
-    src/algorithm/local_operation/multiply.cpp
-    src/algorithm/local_operation/negate.cpp
-    src/algorithm/local_operation/not_equal_to.cpp
-    src/algorithm/local_operation/pow.cpp
-    src/algorithm/local_operation/round.cpp
-    src/algorithm/local_operation/sin.cpp
-    src/algorithm/local_operation/sqrt.cpp
-    src/algorithm/local_operation/subtract.cpp
-    src/algorithm/local_operation/tan.cpp
+    src/algorithm/local_operation/nearest_integer.cpp
+    src/algorithm/local_operation/trigonometry.cpp
     src/algorithm/local_operation/unique_id.cpp
     src/algorithm/local_operation/valid.cpp
     src/algorithm/local_operation/where.cpp
@@ -92,38 +57,24 @@ add_library(lue_py_framework_local_operation SHARED
 
 add_library(lue_py_framework_routing_operation SHARED
     src/algorithm/routing_operation.cpp
-    src/algorithm/routing_operation/accu.cpp
     src/algorithm/routing_operation/accu3.cpp
     src/algorithm/routing_operation/accu_fraction.cpp
-    src/algorithm/routing_operation/accu_info.cpp
     src/algorithm/routing_operation/accu_info3.cpp
-    src/algorithm/routing_operation/accu_threshold.cpp
     src/algorithm/routing_operation/accu_threshold3.cpp
     src/algorithm/routing_operation/d8_flow_direction.cpp
     src/algorithm/routing_operation/decreasing_order.cpp
     src/algorithm/routing_operation/downstream.cpp
     src/algorithm/routing_operation/downstream_distance.cpp
     src/algorithm/routing_operation/first_n.cpp
-    src/algorithm/routing_operation/inflow_count.cpp
     src/algorithm/routing_operation/inflow_count3.cpp
     src/algorithm/routing_operation/inter_partition_stream.cpp
     src/algorithm/routing_operation/kinematic_wave.cpp
     src/algorithm/routing_operation/upstream.cpp
-
 )
 
 add_library(lue_py_framework_zonal_operation SHARED
     src/algorithm/zonal_operation.cpp
-    src/algorithm/zonal_operation/clump.cpp
-    src/algorithm/zonal_operation/zonal_area.cpp
-    src/algorithm/zonal_operation/zonal_diversity.cpp
-    src/algorithm/zonal_operation/zonal_majority.cpp
-    src/algorithm/zonal_operation/zonal_maximum.cpp
-    src/algorithm/zonal_operation/zonal_mean.cpp
-    src/algorithm/zonal_operation/zonal_minimum.cpp
-    src/algorithm/zonal_operation/zonal_normal.cpp
-    src/algorithm/zonal_operation/zonal_sum.cpp
-    src/algorithm/zonal_operation/zonal_uniform.cpp
+    src/algorithm/zonal_operation/zonal_operation.cpp
 )
 
 foreach(name focal global local routing zonal)
@@ -132,6 +83,12 @@ foreach(name focal global local routing zonal)
     target_compile_definitions(lue_py_framework_${name}_operation
         PRIVATE
             NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
+    )
+
+    target_include_directories(lue_py_framework_${name}_operation
+        PRIVATE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+            $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     )
 
     target_link_libraries(lue_py_framework_${name}_operation
@@ -145,22 +102,59 @@ foreach(name focal global local routing zonal)
     )
 endforeach()
 
+set(generated_source_files "")
+set(offset "src/core")
+
+block()
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array.cpp")
+
+    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_array.cpp.in"
+        OUTPUT_PATHNAME
+            "${output_pathname}"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+
+    list(APPEND generated_source_files "${output_pathname}")
+
+    foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+        string(REPLACE "::" "_" element ${Element})
+
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array_${element}_${rank}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/bind_partitioned_array.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Element":"${Element}","rank":"${rank}"}'
+            )
+
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+
 add_library(lue_py_framework SHARED
     src/algorithm/array_partition_id.cpp
-    src/algorithm/locality_id.cpp
-    src/algorithm/timestamp.cpp
+    $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:src/algorithm/locality_id.cpp>
+    $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:src/algorithm/timestamp.cpp>
     src/algorithm/normal.cpp
     src/algorithm/uniform.cpp
 
     src/core/create_partitioned_array.cpp
-    src/core/partitioned_array.cpp
-    src/core/partitioned_array_uint8.cpp
-    src/core/partitioned_array_uint32.cpp
-    src/core/partitioned_array_uint64.cpp
-    src/core/partitioned_array_int32.cpp
-    src/core/partitioned_array_int64.cpp
-    src/core/partitioned_array_float.cpp
-    src/core/partitioned_array_double.cpp
+    ${generated_source_files}
     src/core/scalar.cpp
     src/core/wait.cpp
 
@@ -198,8 +192,9 @@ target_compile_definitions(lue_py_framework
 
 target_include_directories(lue_py_framework
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
-        ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
+        $<TARGET_PROPERTY:lue::py_data_model,SOURCE_DIR>/include
+        $<TARGET_PROPERTY:lue::py,BINARY_DIR>/include  # configure.hpp
+        $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>

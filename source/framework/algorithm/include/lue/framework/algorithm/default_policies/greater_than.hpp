@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/greater_than.hpp"
+#include "lue/framework/configure.hpp"
 
 
 namespace lue {
@@ -18,7 +19,7 @@ namespace lue {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
             greater_than, policy::greater_than::DefaultPolicies)
-        LUE_BINARY_COMPARISON_OPERATOR(>, greater_than)
+        LUE_BINARY_COMPARISON_OPERATOR(>, greater_than, BooleanElement)
 
     }  // namespace default_policies
 

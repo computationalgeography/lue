@@ -4,50 +4,48 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using namespace lue::default_policies;
-
-        using Array = lue::PartitionedArray<Element, rank>;
-
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
-
-        Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
-
-        // Request the IDs of each partition
-        auto array_partition_id = lue::array_partition_id(array);
-
-        BOOST_CHECK_EQUAL(array_partition_id.shape(), array.shape());
-
-        auto const& localities{array_partition_id.localities()};
-        auto const& partitions{array_partition_id.partitions()};
-
-        for (lue::Index p = 0; p < lue::nr_partitions(array_partition_id); ++p)
+        if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_CHECK(
-                all(localities[p], equal_to(localities[p], partitions[p], static_cast<std::uint64_t>(p)))
-                    .future()
-                    .get());
+            using namespace lue::default_policies;
+
+            using Array = lue::PartitionedArray<Element, rank>;
+
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
+
+            Array array{lue::create_partitioned_array<Element>(array_shape, partition_shape)};
+
+            // Request the IDs of each partition
+            auto array_partition_id = lue::array_partition_id<lue::IDElement>(array);
+
+            BOOST_CHECK_EQUAL(array_partition_id.shape(), array.shape());
+
+            auto const& localities{array_partition_id.localities()};
+            auto const& partitions{array_partition_id.partitions()};
+
+            for (lue::IDElement p = 0; p < lue::nr_partitions(array_partition_id); ++p)
+            {
+                BOOST_CHECK(all(localities[p], equal_to<lue::BooleanElement>(localities[p], partitions[p], p))
+                                .future()
+                                .get());
+            }
         }
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-
-#undef TEST_CASE
+    test_array<lue::SignedIntegralElement<0>, rank>();
+}

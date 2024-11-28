@@ -1,30 +1,34 @@
 #include "lue/framework/algorithm/array_partition_id.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {
     namespace {
 
-        Rank const rank{2};
-
-        template<typename Element>
-        PartitionedArray<std::uint64_t, rank> array_partition_id(PartitionedArray<Element, rank> const& array)
+        class Binder
         {
-            return lue::array_partition_id(array);
-        }
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    module.def(
+                        "array_partition_id",
+                        [](PartitionedArray<Element, rank> const& array)
+                        { return array_partition_id<IDElement>(array); });
+                }
+        };
 
     }  // Anonymous namespace
 
 
     void bind_array_partition_id(pybind11::module& module)
     {
-        module.def("array_partition_id", array_partition_id<std::uint8_t>);
-        module.def("array_partition_id", array_partition_id<std::uint32_t>);
-        module.def("array_partition_id", array_partition_id<std::uint64_t>);
-        module.def("array_partition_id", array_partition_id<std::int32_t>);
-        module.def("array_partition_id", array_partition_id<std::int64_t>);
-        module.def("array_partition_id", array_partition_id<float>);
-        module.def("array_partition_id", array_partition_id<double>);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

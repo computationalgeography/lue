@@ -17,16 +17,8 @@ class FocalMaximumTest(lue_test.TestCase):
     def test_overloads(self):
         array_shape = (60, 40)
         fill_value = 5
-        kernel = np.full((3, 3), 1, dtype=np.uint8)
+        kernel = np.full((3, 3), 1, dtype=lfr.boolean_element_type)
 
-        for dtype in [
-            np.uint8,
-            np.int32,
-            np.uint32,
-            np.int64,
-            np.uint64,
-            np.float32,
-            np.float64,
-        ]:
-            array = lfr.create_array(array_shape, dtype, fill_value)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
             lfr.focal_maximum(array, kernel)

@@ -2,6 +2,7 @@
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/inter_partition_stream.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -128,7 +129,7 @@ namespace {
 
     std::size_t const rank = 2;
 
-    using CountElement = std::uint64_t;
+    using CountElement = lue::CountElement;
     using InflowCount = lue::PartitionedArray<CountElement, rank>;
 
     using MaterialElement = lue::InterPartitionStreamMaterial<lue::Index, rank>;

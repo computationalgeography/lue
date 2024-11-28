@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,7 +16,10 @@ class Accu3Test(lue_test.TestCase):
         array_shape = (60, 40)
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-            external_inflow = lfr.create_array(array_shape, np.float64, 1)
+            flow_direction = lfr.create_array(
+                array_shape, lfr.flow_direction_element_type, direction
+            )
 
-            outflow = lfr.accu3(flow_direction, external_inflow)
+            for element_type in lfr.floating_point_element_types:
+                external_inflow = lfr.create_array(array_shape, element_type, 1)
+                outflow = lfr.accu3(flow_direction, external_inflow)

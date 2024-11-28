@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,7 +16,10 @@ class UpstreamTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         direction = 3
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-        material = lfr.create_array(array_shape, np.uint64, 1)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
 
-        upstream = lfr.upstream(flow_direction, material)
+        for element_type in lfr.material_element_types:
+            material = lfr.create_array(array_shape, element_type, 1)
+            _ = lfr.upstream(flow_direction, material)

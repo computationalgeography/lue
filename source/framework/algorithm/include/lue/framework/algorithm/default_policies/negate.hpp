@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/negate.hpp"
 #include "lue/framework/algorithm/operator.hpp"
+#include "lue/framework/configure.hpp"
 
 
 namespace lue {
@@ -18,7 +19,7 @@ namespace lue {
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
             negate, policy::negate::DefaultPolicies)
 
-        LUE_UNARY_LOGICAL_OPERATOR(-, negate)
+        LUE_UNARY_LOGICAL_OPERATOR(-, negate, BooleanElement)
 
     }  // namespace default_policies
 }  // namespace lue

@@ -1,4 +1,6 @@
 #include "lue/framework/algorithm/value_policies/cast.hpp"
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
 
 
@@ -23,14 +25,37 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            using Element = std::int8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::cast<std::int32_t>(argument));
+                            using Element = std::int32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::cast<std::int64_t>(argument));
+                            using Element = std::int64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                     }
@@ -44,17 +69,35 @@ namespace lue::framework {
                     {
                         case 1:
                         {
-                            result = pybind11::cast(value_policies::cast<std::uint8_t>(argument));
+                            using Element = std::uint8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::cast<std::uint32_t>(argument));
+                            using Element = std::uint32_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::cast<std::uint64_t>(argument));
+                            using Element = std::uint64_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                     }
@@ -68,12 +111,24 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            result = pybind11::cast(value_policies::cast<float>(argument));
+                            using Element = float;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                         case 8:
                         {
-                            result = pybind11::cast(value_policies::cast<double>(argument));
+                            using Element = double;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::cast<Element>(argument));
+                            }
+
                             break;
                         }
                     }
@@ -91,40 +146,41 @@ namespace lue::framework {
         }
 
 
-        template<typename Element>
-        void bind_cast_overloads(pybind11::module& module)
+        class Binder
         {
-            Rank const rank{2};
-            using Array = PartitionedArray<Element, rank>;
-            using Scalar = Scalar<Element>;
-            using Value = Element;
 
-            module.def(
-                "cast",
-                [](Array const& array, pybind11::object const& dtype_args)
-                { return cast(array, dtype_args); });
-            module.def(
-                "cast",
-                [](Scalar const& scalar, pybind11::object const& dtype_args)
-                { return cast(scalar, dtype_args); });
-            module.def(
-                "cast",
-                [](Value const value, pybind11::object const& dtype_args)
-                { return cast(value, dtype_args); });
-        }
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+                    using Array = PartitionedArray<Element, rank>;
+                    using Scalar = Scalar<Element>;
+                    using Value = Element;
+
+                    module.def(
+                        "cast",
+                        [](Array const& array, pybind11::object const& dtype_args)
+                        { return cast(array, dtype_args); });
+                    module.def(
+                        "cast",
+                        [](Scalar const& scalar, pybind11::object const& dtype_args)
+                        { return cast(scalar, dtype_args); });
+                    module.def(
+                        "cast",
+                        [](Value const value, pybind11::object const& dtype_args)
+                        { return cast(value, dtype_args); });
+                }
+        };
+
 
     }  // Anonymous namespace
 
 
     void bind_cast(pybind11::module& module)
     {
-        bind_cast_overloads<std::uint8_t>(module);
-        bind_cast_overloads<std::uint32_t>(module);
-        bind_cast_overloads<std::int32_t>(module);
-        bind_cast_overloads<std::uint64_t>(module);
-        bind_cast_overloads<std::int64_t>(module);
-        bind_cast_overloads<float>(module);
-        bind_cast_overloads<double>(module);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

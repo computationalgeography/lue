@@ -1,13 +1,57 @@
 add_test_conditionally(test)
 
-configure_file(
-    include/lue/framework/configure.hpp.in
-    include/lue/framework/configure.hpp
-)
+set(generated_source_files "")
+
+block()
+    set(offset "include/lue/framework")
+    set(ranks ${LUE_FRAMEWORK_RANKS})
+    list(JOIN ranks ", " ranks)
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/configure.hpp")
+
+    set(SignedIntegralElements ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
+    list(TRANSFORM SignedIntegralElements PREPEND "\"")
+    list(TRANSFORM SignedIntegralElements APPEND "\"")
+    list(JOIN SignedIntegralElements ", " SignedIntegralElements)
+
+    set(UnsignedIntegralElements ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS})
+    list(TRANSFORM UnsignedIntegralElements PREPEND "\"")
+    list(TRANSFORM UnsignedIntegralElements APPEND "\"")
+    list(JOIN UnsignedIntegralElements ", " UnsignedIntegralElements)
+
+    set(FloatingPointElements ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+    list(TRANSFORM FloatingPointElements PREPEND "\"")
+    list(TRANSFORM FloatingPointElements APPEND "\"")
+    list(JOIN FloatingPointElements ", " FloatingPointElements)
+
+    set(MaterialElements ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})
+    list(TRANSFORM MaterialElements PREPEND "\"")
+    list(TRANSFORM MaterialElements APPEND "\"")
+    list(JOIN MaterialElements ", " MaterialElements)
+
+    set(ZoneElements ${LUE_FRAMEWORK_ZONE_ELEMENTS})
+    list(TRANSFORM ZoneElements PREPEND "\"")
+    list(TRANSFORM ZoneElements APPEND "\"")
+    list(JOIN ZoneElements ", " ZoneElements)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/configure.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+        '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","IDElement":"${LUE_FRAMEWORK_ID_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","MaterialElements":[${MaterialElements}],"ZoneElements":[${ZoneElements}],"SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
+    )
+
+    list(APPEND generated_source_files "${output_pathname}")
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
 
 add_library(lue_framework_core STATIC
+    ${generated_source_files}
     src/configuration_entry.cpp
     src/debug.cpp
+    src/framework.cpp
     src/numa_domain.cpp
     src/runtime.cpp
 )

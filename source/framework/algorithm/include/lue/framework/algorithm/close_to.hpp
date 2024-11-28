@@ -9,13 +9,14 @@ namespace lue {
     namespace detail {
 
         // https://docs.scipy.org/doc/numpy/reference/generated/numpy.isclose.html
-        template<typename InputElement, typename OutputElement_ = std::uint8_t>
+        template<typename InputElement, typename OutputElement_>
         class CloseTo
         {
 
             public:
 
                 static_assert(std::is_floating_point_v<InputElement>);
+                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"close_to"};
 
@@ -34,8 +35,8 @@ namespace lue {
 
 
                 constexpr auto operator()(
-                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
-                    -> OutputElement
+                    InputElement const& input_element1,
+                    InputElement const& input_element2) const noexcept -> OutputElement
                 {
                     return std::abs(input_element1 - input_element2) <=
                            (_absolute_difference + _relative_difference * std::abs(input_element2));
@@ -48,7 +49,12 @@ namespace lue {
                 template<typename Archive>
                 void serialize(Archive& archive, unsigned int const /* version */)
                 {
-                    archive& _relative_difference& _absolute_difference;
+                    // clang-format off
+                    archive
+                        & _relative_difference
+                        & _absolute_difference
+                        ;
+                    // clang-format on
                 }
 
 

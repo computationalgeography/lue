@@ -11,14 +11,15 @@
 #include "lue/framework/algorithm/type_traits.hpp"
 #include "lue/framework/core/component/component_array.hpp"
 #include "lue/framework/core/serialize/array.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue {
     namespace detail {
 
         template<typename Element, Rank rank>
-        PartitionsT<PartitionedArray<Element, rank>> const& partitions(
-            PartitionedArray<Element, rank> const& array)
+        auto partitions(PartitionedArray<Element, rank> const& array)
+            -> PartitionsT<PartitionedArray<Element, rank>> const&
         {
             return array.partitions();
         }
@@ -49,7 +50,7 @@ namespace lue {
                     }
 
 
-                    std::tuple<FluxElement const&, StateElement const&> operator()() const
+                    auto operator()() const -> std::tuple<FluxElement const&, StateElement const&>
                     {
                         return std::forward_as_tuple(_flux, _state);
                     }
@@ -64,7 +65,7 @@ namespace lue {
                         hpx::serialization::input_archive& archive,
                         [[maybe_unused]] unsigned int const version)
                     {
-                        archive& _flux& _state;
+                        archive & _flux & _state;
                     }
 
 
@@ -72,7 +73,7 @@ namespace lue {
                         hpx::serialization::output_archive& archive,
                         [[maybe_unused]] unsigned int const version) const
                     {
-                        archive& _flux& _state;
+                        archive & _flux & _state;
                     }
 
 
@@ -107,7 +108,7 @@ namespace lue {
                     }
 
 
-                    OutputElement operator()(Index const idx0, Index const idx1)
+                    auto operator()(Index const idx0, Index const idx1) -> OutputElement
                     {
                         return std::forward_as_tuple(_flux(idx0, idx1), _state(idx0, idx1));
                     }
@@ -140,12 +141,12 @@ namespace lue {
             typename FlowDirectionPartitions,
             typename MaterialPartitions,
             typename Accumulator>
-        hpx::tuple<PartitionIOComponent, InflowCountPartition, PartitionT<MaterialPartitions>>
-        solve_intra_partition_stream_cells_1(
+        auto solve_intra_partition_stream_cells_1(
             Policies const& policies,
             OffsetT<PartitionT<FlowDirectionPartitions>> const& partition_offset,
             FlowDirectionPartitions const& flow_direction_partitions,
             MaterialPartitions const& material_partitions)
+            -> hpx::tuple<PartitionIOComponent, InflowCountPartition, PartitionT<MaterialPartitions>>
         {
             using FlowDirectionPartition = PartitionT<FlowDirectionPartitions>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
@@ -292,17 +293,17 @@ namespace lue {
             typename MaterialPartitions,
             typename Accumulator,
             typename CriterionPartitions>
-        hpx::tuple<
-            PartitionIOComponent,
-            InflowCountPartition,
-            PartitionT<MaterialPartitions>,
-            PartitionT<MaterialPartitions>>
-        solve_intra_partition_stream_cells_2(
+        auto solve_intra_partition_stream_cells_2(
             Policies const& policies,
             OffsetT<PartitionT<FlowDirectionPartitions>> const& partition_offset,
             FlowDirectionPartitions const& flow_direction_partitions,
             MaterialPartitions const& material_partitions,
             CriterionPartitions const& criterion_partitions)
+            -> hpx::tuple<
+                PartitionIOComponent,
+                InflowCountPartition,
+                PartitionT<MaterialPartitions>,
+                PartitionT<MaterialPartitions>>
         {
             using FlowDirectionPartition = PartitionT<FlowDirectionPartitions>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
@@ -1328,7 +1329,7 @@ namespace lue {
             typename InflowCountPartitions,
             typename MaterialPartitions,
             typename CriterionPartitions>
-        std::tuple<MaterialPartitions, MaterialPartitions> solve_flow_accumulation(
+        auto solve_flow_accumulation(
             Policies const& policies,
             Localities const& localities,
             FlowDirectionPartitions const& flow_direction_partitions,
@@ -1338,6 +1339,7 @@ namespace lue {
             CriterionPartitions const& criterion_partitions,
             MaterialPartitions&& current_flux_partitions,
             MaterialPartitions&& current_state_partitions)
+            -> std::tuple<MaterialPartitions, MaterialPartitions>
         {
             // This function must return results as quickly as possible
 
@@ -1416,11 +1418,11 @@ namespace lue {
         typename MaterialElement,
         typename Accumulator,
         Rank rank>
-    typename Accumulator::Result flow_accumulation(
+    auto flow_accumulation(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& material,
-        [[maybe_unused]] Accumulator&& accumulator)
+        [[maybe_unused]] Accumulator&& accumulator) -> typename Accumulator::Result
     {
         lue::Localities<rank> const& localities{flow_direction.localities()};
 
@@ -1443,7 +1445,7 @@ namespace lue {
 
         // ---------------------------------------------------------------------
         // Calculate flow accumulation for intra-partition stream cells
-        using InflowCountElement = std::uint8_t;
+        using InflowCountElement = SmallestIntegralElement;
         using InflowCountArray = PartitionedArray<InflowCountElement, rank>;
 
         using PartitionIOArray =
@@ -1523,7 +1525,7 @@ namespace lue {
 
         // ---------------------------------------------------------------------
         // Calculate flow accumulation for intra-partition stream cells
-        using InflowCountElement = std::uint8_t;
+        using InflowCountElement = SmallestIntegralElement;
         using InflowCountArray = PartitionedArray<InflowCountElement, rank>;
 
         using PartitionIOArray =

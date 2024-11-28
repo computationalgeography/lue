@@ -2,13 +2,14 @@
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
 #include "lue/framework/algorithm/value_policies/integrate_and_allocate.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using ZoneElement = std::uint32_t;
+    using ZoneElement = lue::UnsignedIntegralElement<0>;
     using RouteID = ZoneElement;
-    using FloatingPointElement = float;
+    using FloatingPointElement = lue::FloatingPointElement<0>;
 
     lue::Rank const rank{2};
 
@@ -37,7 +38,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +---+---+  +---+---+
     // | x | 2 |  | 3 | 1 |
     // +---+---+  +---+---+
-    ZoneArray const zone_array = lue::test::create_partitioned_array<ZoneArray>(
+    auto const zone_array = lue::test::create_partitioned_array<ZoneArray>(
         array_shape,
         partition_shape,
         {
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +----+----+  +----+----+
     // |  4 |  8 |  | 12 |  x |
     // +----+----+  +----+----+
-    FloatingPointArray const field = lue::test::create_partitioned_array<FloatingPointArray>(
+    auto const field = lue::test::create_partitioned_array<FloatingPointArray>(
         array_shape,
         partition_shape,
         {

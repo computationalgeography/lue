@@ -1,5 +1,6 @@
 #include "lue/framework/api/cxx/scalar.hpp"
 #include "lue/framework/api/cxx/create_scalar.hpp"
+#include "lue/framework.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 
@@ -11,7 +12,21 @@ namespace lue::api {
 
     namespace {
 
-        auto create_scalar(double value, pybind11::dtype const& dtype) -> Field
+        template<typename Element>
+        auto create_scalar(double const value) -> std::optional<Field>
+        {
+            std::optional<Field> result{};
+
+            if constexpr (lue::arithmetic_element_supported<Element>)
+            {
+                result = lue::api::create_scalar(static_cast<Element>(value));
+            }
+
+            return result;
+        }
+
+
+        auto create_scalar(double const value, pybind11::dtype const& dtype) -> Field
         {
             // TODO Out of range values must result in no-data values. This logic must be in the API layer or
             // higher. All bindings need it.
@@ -29,14 +44,19 @@ namespace lue::api {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            field = create_scalar<std::int8_t>(value);
+                            break;
+                        }
                         case 4:
                         {
-                            field = lue::api::create_scalar(static_cast<std::int32_t>(value));
+                            field = create_scalar<std::int32_t>(value);
                             break;
                         }
                         case 8:
                         {
-                            field = lue::api::create_scalar(static_cast<std::int64_t>(value));
+                            field = create_scalar<std::int64_t>(value);
                             break;
                         }
                     }
@@ -50,17 +70,17 @@ namespace lue::api {
                     {
                         case 1:
                         {
-                            field = lue::api::create_scalar(static_cast<std::uint8_t>(value));
+                            field = create_scalar<std::uint8_t>(value);
                             break;
                         }
                         case 4:
                         {
-                            field = lue::api::create_scalar(static_cast<std::uint32_t>(value));
+                            field = create_scalar<std::uint32_t>(value);
                             break;
                         }
                         case 8:
                         {
-                            field = lue::api::create_scalar(static_cast<std::uint64_t>(value));
+                            field = create_scalar<std::uint64_t>(value);
                             break;
                         }
                     }
@@ -74,12 +94,12 @@ namespace lue::api {
                     {
                         case 4:
                         {
-                            field = lue::api::create_scalar(static_cast<float>(value));
+                            field = create_scalar<float>(value);
                             break;
                         }
                         case 8:
                         {
-                            field = lue::api::create_scalar(std::move(value));
+                            field = create_scalar<double>(value);
                             break;
                         }
                     }
@@ -97,7 +117,6 @@ namespace lue::api {
         }
 
     }  // Anonymous namespace
-
 
     void bind_scalar(pybind11::module& module)
     {

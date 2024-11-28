@@ -2,15 +2,18 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/round.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(pcraster_manual_example1)
 {
-    auto const nd{lue::no_data<float>};
+    using Element = lue::FloatingPointElement<0>;
+
+    auto const nd{lue::policy::no_data_value<Element>};
     lue::Shape<lue::Count, 2> const array_shape{3, 3};
     lue::Shape<lue::Count, 2> const partition_shape{3, 3};
 
-    auto const expression = lue::test::create_partitioned_array<lue::PartitionedArray<float, 2>>(
+    auto const expression = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
         array_shape,
         partition_shape,
         {{
@@ -25,7 +28,7 @@ BOOST_AUTO_TEST_CASE(pcraster_manual_example1)
             8.9,
         }});
 
-    auto const result_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<float, 2>>(
+    auto const result_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
         array_shape,
         partition_shape,
         {{

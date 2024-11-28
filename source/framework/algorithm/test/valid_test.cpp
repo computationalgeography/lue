@@ -11,12 +11,13 @@
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using Element = std::int32_t;
-    using BooleanElement = std::uint8_t;
+    using Element = lue::LargestSignedIntegralElement;
+    using BooleanElement = lue::BooleanElement;
     constexpr lue::Rank rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;
@@ -31,28 +32,30 @@ namespace {
 BOOST_AUTO_TEST_CASE(default_policies)
 {
     // Default policies: all data are valid
-
-    using namespace lue::default_policies;
-
+    if constexpr (lue::BuildOptions::default_policies_enabled)
     {
-        Element const fill_value{0};
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
-    }
+        using namespace lue::default_policies;
 
-    {
-        Element const fill_value{-1};
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
-    }
+        {
+            Element const fill_value{0};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            BooleanArray result = valid<BooleanElement>(array);
+            BOOST_CHECK(all(result == BooleanElement{1}).future().get());
+        }
 
-    {
-        Element const fill_value{1};
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
+        {
+            Element const fill_value{-1};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            BooleanArray result = valid<BooleanElement>(array);
+            BOOST_CHECK(all(result == BooleanElement{1}).future().get());
+        }
+
+        {
+            Element const fill_value{1};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            BooleanArray result = valid<BooleanElement>(array);
+            BOOST_CHECK(all(result == BooleanElement{1}).future().get());
+        }
     }
 }
 
@@ -60,27 +63,29 @@ BOOST_AUTO_TEST_CASE(default_policies)
 BOOST_AUTO_TEST_CASE(default_value_policies)
 {
     // Default value policies: all non-no-data elements are valid
-
-    using namespace lue::value_policies;
-
-    // using ValidPolicies = lue::policy::valid::DefaultValuePolicies<BooleanElement, Element>;
-    using WherePolicies = lue::policy::where::DefaultValuePolicies<Element, BooleanElement, Element>;
-
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
-        // All valid data
-        Element const fill_value{1};
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array == fill_value, array);
-        BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{1}).future().get());
-    }
+        using namespace lue::value_policies;
 
-    {
-        // All invalid data
-        Element const fill_value{1};
-        Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
-        array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array != fill_value, array);
-        BooleanArray result = valid<BooleanElement>(array);
-        BOOST_CHECK(all(result == BooleanElement{0}).future().get());
+        // using ValidPolicies = lue::policy::valid::DefaultValuePolicies<BooleanElement, Element>;
+        using WherePolicies = lue::policy::where::DefaultValuePolicies<Element, BooleanElement, Element>;
+
+        {
+            // All valid data
+            Element const fill_value{1};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array == fill_value, array);
+            BooleanArray result = valid<BooleanElement>(array);
+            BOOST_CHECK(all(result == BooleanElement{1}).future().get());
+        }
+
+        {
+            // All invalid data
+            Element const fill_value{1};
+            Array array{lue::create_partitioned_array(array_shape, partition_shape, fill_value)};
+            array = lue::where<WherePolicies, BooleanElement>(WherePolicies{}, array != fill_value, array);
+            BooleanArray result = valid<BooleanElement>(array);
+            BOOST_CHECK(all(result == BooleanElement{0}).future().get());
+        }
     }
 }

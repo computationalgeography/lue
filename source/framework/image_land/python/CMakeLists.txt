@@ -32,23 +32,14 @@ set_target_properties(lue_py_image_land
 
 target_include_directories(lue_py_image_land
     PRIVATE
-        ### ${CMAKE_CURRENT_SOURCE_DIR}/../../data_model/python/include
-        ### ${CMAKE_CURRENT_BINARY_DIR}/../../python/include  # configure.hpp
+        $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ###         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 target_link_libraries(lue_py_image_land
     PRIVATE
-###         lue::framework_focal_operation
-###         lue::framework_global_operation
-###         lue::framework_local_operation
-###         lue::framework_routing_operation
-###         lue::framework_zonal_operation
         lue::image_land
-###         lue::framework_io
-###         lue::framework_model
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size

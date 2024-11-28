@@ -1,6 +1,7 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/serial_route.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {
@@ -12,15 +13,26 @@ namespace lue::framework {
             route.starts().wait();
         }
 
+
+        class Binder
+        {
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    module.def("wait", wait<Element, rank>);
+                }
+        };
+
     }  // Anonymous namespace
 
 
     void bind_wait_serial_route(pybind11::module& module)
     {
-        module.def("wait", wait<std::uint8_t, 2>);
-        module.def("wait", wait<std::uint32_t, 2>);
-        module.def("wait", wait<std::uint64_t, 2>);
-        module.def("wait", wait<std::int32_t, 2>);
-        module.def("wait", wait<std::int64_t, 2>);
+        bind<Binder, ZoneElements>(module);
     }
 }  // namespace lue::framework

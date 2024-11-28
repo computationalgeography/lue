@@ -32,22 +32,22 @@ namespace lue {
 
 #ifdef LUE_BUILD_DATA_MODEL
 #ifdef LUE_DATA_MODEL_WITH_PYTHON_API
-        automodules.push_back("data_model");
+        automodules.emplace_back("data_model");
 #endif
 #endif
 
 #ifdef LUE_BUILD_FRAMEWORK
 #ifdef LUE_FRAMEWORK_WITH_PYTHON_API
-        automodules.push_back("framework");
-        automodules.push_back("framework_x");
+        automodules.emplace_back("framework");
+        automodules.emplace_back("framework_x");
 #ifdef LUE_FRAMEWORK_WITH_IMAGE_LAND
-        automodules.push_back("image_land");
+        automodules.emplace_back("image_land");
 #endif
 #endif
 #endif
 
 #ifdef LUE_QUALITY_ASSURANCE_WITH_PYTHON_API
-        automodules.push_back("qa");
+        automodules.emplace_back("qa");
 #endif
 
         for (std::string& item : automodules)

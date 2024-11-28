@@ -1,12 +1,13 @@
 #define BOOST_TEST_MODULE lue framework partitioned_route serial_route
 #include "lue/framework/serial_route.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include "lue/stream.hpp"
 
 
 BOOST_AUTO_TEST_CASE(default_construct)
 {
-    using Route = lue::SerialRoute<std::uint32_t, 2>;
+    using Route = lue::SerialRoute<lue::LargestIntegralElement, 2>;
     using Shape = typename Route::Shape;
 
     // Default initialization

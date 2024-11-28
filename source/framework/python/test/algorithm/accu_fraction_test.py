@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,8 +16,11 @@ class AccuFractionTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         direction = 2
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-        material = lfr.create_array(array_shape, np.float64, 1)
-        fraction = lfr.create_array(array_shape, np.float64, 0.8)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
 
-        flux, state = lfr.accu_fraction(flow_direction, material, fraction)
+        for element_type in lfr.floating_point_element_types:
+            material = lfr.create_array(array_shape, element_type, 1)
+            fraction = lfr.create_array(array_shape, element_type, 0.8)
+            flux, state = lfr.accu_fraction(flow_direction, material, fraction)

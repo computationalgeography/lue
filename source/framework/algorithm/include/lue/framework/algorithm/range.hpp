@@ -89,8 +89,9 @@ namespace lue {
         future if you need to know when the filling is done.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> range(
-        PartitionedArray<Element, rank>& input_array, hpx::shared_future<Element> const& start_value)
+    [[nodiscard]] auto range(
+        PartitionedArray<Element, rank>& input_array,
+        hpx::shared_future<Element> const& start_value) -> hpx::future<void>
     {
         static_assert(rank == 2);
 
@@ -105,12 +106,12 @@ namespace lue {
 
         std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
 
-        for (Index p = 0; p < nr_partitions; ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            InputPartition& partition = partitions[p];
+            InputPartition& partition = partitions[partition_idx];
 
             // Once the partition is ready ask for its shape
-            partition_shapes[p] =
+            partition_shapes[partition_idx] =
                 partition.then([](InputPartition&& partition) { return partition.shape(); });
         }
 
@@ -127,6 +128,7 @@ namespace lue {
 
                     auto [data1_f, data2_f] = std::move(data);
 
+                    // Grab the partition shapes
                     auto partition_shapes_futures = data1_f.get();
                     std::vector<Shape> partition_shapes(nr_partitions);
                     std::transform(
@@ -134,13 +136,12 @@ namespace lue {
                         partition_shapes_futures.end(),
                         partition_shapes.begin(),
 
-                        [](auto&& future) { return future.get(); }
-
-                    );
+                        [](auto&& future) { return future.get(); });
 
                     lue::DynamicSpan<Shape, rank> partition_shapes_span(
                         partition_shapes.data(), nr_partitions0, nr_partitions1);
 
+                    // Grab the start value
                     Element start_value{data2_f.get()};
 
                     Count const stride = std::get<1>(array_shape);
@@ -152,12 +153,11 @@ namespace lue {
 
                     for (Index idx0 = 0; idx0 < nr_partitions0; ++idx0)
                     {
-
-                        Count const partition_nr_elements0 = std::get<0>(partition_shapes_span(idx0, 0));
+                        auto const [partition_nr_elements0, partition_nr_elements1] =
+                            partition_shapes_span(idx0, 0);
 
                         for (Index idx1 = 0; idx1 < nr_partitions1; ++idx1)
                         {
-
                             InputPartition const& input_partition = partitions(idx0, idx1);
 
                             lue_hpx_assert(input_partition.is_ready());
@@ -165,7 +165,7 @@ namespace lue {
                             range_partitions_span(idx0, idx1) = hpx::async(
                                 action, localities(idx0, idx1), input_partition, start_value, stride);
 
-                            start_value += partition_nr_elements0;
+                            start_value += partition_nr_elements1;
                         }
 
                         start_value += (partition_nr_elements0 - 1) * stride;
@@ -179,8 +179,8 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> range(
-        PartitionedArray<Element, rank>& input_array, Element const start_value)
+    [[nodiscard]] auto range(PartitionedArray<Element, rank>& input_array, Element const start_value)
+        -> hpx::future<void>
     {
         return range(input_array, hpx::make_ready_future<Element>(start_value).share());
     }

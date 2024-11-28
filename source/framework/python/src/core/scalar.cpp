@@ -1,4 +1,6 @@
 #include "lue/py/framework/core/scalar.hpp"
+#include "lue/framework/configure.hpp"
+#include "lue/py/bind.hpp"
 
 
 using namespace pybind11::literals;
@@ -32,6 +34,11 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            result = pybind11::cast(create_scalar<std::int8_t>(value));
+                            break;
+                        }
                         case 4:
                         {
                             result = pybind11::cast(create_scalar<std::int32_t>(value));
@@ -101,6 +108,23 @@ namespace lue::framework {
 
     }  // Anonymous namespace
 
+    namespace {
+
+        class Binder
+        {
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    bind_scalar<Element>(module);
+                }
+        };
+
+    }  // Anonymous namespace
+
+
     void bind_scalar(pybind11::module& module)
     {
         module.def(
@@ -115,13 +139,7 @@ namespace lue::framework {
             "dtype"_a,
             "value"_a);
 
-        bind_scalar<std::uint8_t>(module);
-        bind_scalar<std::uint32_t>(module);
-        bind_scalar<std::uint64_t>(module);
-        bind_scalar<std::int32_t>(module);
-        bind_scalar<std::int64_t>(module);
-        bind_scalar<float>(module);
-        bind_scalar<double>(module);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

@@ -2,9 +2,10 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/locality_id.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename Element, std::size_t rank>
     void test_array()
@@ -22,17 +23,15 @@ namespace detail {
         BOOST_CHECK_EQUAL(locality_id.shape(), array.partitions().shape());
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, Element)                                                                             \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##Element)                                                          \
-    {                                                                                                        \
-        detail::test_array<Element, rank>();                                                                 \
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
+
+    if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+    {
+        test_array<lue::SignedIntegralElement<0>, rank>();
     }
-
-TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-
-#undef TEST_CASE
+}

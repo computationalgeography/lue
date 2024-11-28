@@ -28,8 +28,8 @@ namespace lue {
     namespace value_policies {
 
         template<typename Count, typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Count, rank> focal_diversity(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        auto focal_diversity(PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+            -> PartitionedArray<Count, rank>
         {
             // TODO This one should be policy-based
             Element const fill_value{policy::no_data_value<Element>};

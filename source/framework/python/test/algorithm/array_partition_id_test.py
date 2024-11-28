@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -17,6 +15,6 @@ class ArrayPartitionIDTest(lue_test.TestCase):
     def test_overloads(self):
         array_shape = (60, 40)
 
-        array = lfr.create_array(array_shape, np.uint8, fill_value=5)
-
-        partition_id = lfr.array_partition_id(array)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value=5)
+            partition_id = lfr.array_partition_id(array)

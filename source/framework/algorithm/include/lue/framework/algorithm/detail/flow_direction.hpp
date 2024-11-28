@@ -9,14 +9,14 @@
 namespace lue::detail {
 
     template<typename FlowDirectionData>
-    bool downstream_cell(
+    auto downstream_cell(
         FlowDirectionData const& flow_direction_data,
         Count nr_elements0,
         Count nr_elements1,
         Index const idx0,
         Index const idx1,
         Index& offset0,
-        Index& offset1)
+        Index& offset1) -> bool
     {
         using FlowDirectionElement = ElementT<FlowDirectionData>;
 
@@ -76,8 +76,8 @@ namespace lue::detail {
 
 
     template<typename FlowDirectionData>
-    std::tuple<Index, Index> downstream_cell(
-        FlowDirectionData const& flow_direction_data, Index const idx0, Index const idx1)
+    auto downstream_cell(FlowDirectionData const& flow_direction_data, Index const idx0, Index const idx1)
+        -> std::tuple<Index, Index>
     {
         using FlowDirectionElement = ElementT<FlowDirectionData>;
 

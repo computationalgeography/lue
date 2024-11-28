@@ -25,6 +25,9 @@ option(LUE_BUILD_FRAMEWORK
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
+option(LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API
+    "Include PCRaster Python sub-package"
+    TRUE)
 option(LUE_FRAMEWORK_WITH_IMAGE_LAND
     "Include operations required for the IMAGE land-use allocation model"
     FALSE)
@@ -122,23 +125,243 @@ if(LUE_BUILD_DATA_MODEL)
 endif()
 
 
-set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
+if(LUE_BUILD_FRAMEWORK)
+    set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
-# NOTE These can be made configurable later on
-set(LUE_FRAMEWORK_CONDITION_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_BOOLEAN_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_INDEX_ELEMENT uint64_t)
-set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT uint8_t)
-set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS int8_t int32_t int64_t)
-set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS uint8_t uint32_t uint64_t)
-set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
-    ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
-    ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
-set(LUE_FRAMEWORK_ZONE_ELEMENTS ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
-set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS float double)
-set(LUE_FRAMEWORK_ELEMENTS
-    ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
-    ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+    # Types for which templates are instantiated
+    set(LUE_FRAMEWORK_BOOLEAN_ELEMENT
+        "std::uint8_t" CACHE STRING "Type to use for representing Boolean values")
+    set_property(CACHE LUE_FRAMEWORK_BOOLEAN_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint8_t"
+                "std::int8_t"
+    )
+
+    set(LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT
+        "std::uint8_t" CACHE STRING "Type to use for representing flow directions")
+    set_property(CACHE LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint8_t"
+                "std::int8_t"
+    )
+
+    set(LUE_FRAMEWORK_COUNT_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing counts")
+    set_property(CACHE LUE_FRAMEWORK_COUNT_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
+
+    set(LUE_FRAMEWORK_ID_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing IDs")
+    set_property(CACHE LUE_FRAMEWORK_ID_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
+
+    set(LUE_FRAMEWORK_INDEX_ELEMENT
+        "std::uint64_t" CACHE STRING "Type to use for representing indices")
+    set_property(CACHE LUE_FRAMEWORK_INDEX_ELEMENT
+        PROPERTY
+            STRINGS
+                "std::uint64_t"
+                "std::int64_t"
+                "std::uint32_t"
+                "std::int32_t"
+    )
+
+    set(LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
+        std::int8_t std::int32_t std::int64_t CACHE STRING "Type(s) to use for representing signed integral values")
+    set_property(CACHE LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
+        PROPERTY
+            STRINGS
+                "std::int8_t\;std::int32_t\;std::int64_t"
+                "std::int8_t\;std::int32_t"
+                "std::int8_t"
+                "std::int32_t\;std::int64_t"
+                "std::int32_t"
+    )
+
+    set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
+        std::uint8_t std::uint32_t std::uint64_t CACHE STRING "Type(s) to use for representing signed integral values")
+    set_property(CACHE LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
+        PROPERTY
+            STRINGS
+                "std::uint8_t\;std::uint32_t\;std::uint64_t"
+                "std::uint8_t\;std::uint32_t"
+                "std::uint8_t"
+                "std::uint32_t\;std::uint64_t"
+                "std::uint32_t"
+    )
+
+    set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS
+        ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})
+
+    set(LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+        float double CACHE STRING
+        "Type(s) to use for representing floating point values"
+    )
+    set_property(CACHE LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
+        PROPERTY
+            STRINGS
+                "float\;double"
+                "float"
+                "double"
+    )
+
+    set(LUE_FRAMEWORK_ELEMENTS
+        ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+    set(LUE_FRAMEWORK_MATERIAL_ELEMENTS
+        ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS}
+        ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
+
+    set(LUE_FRAMEWORK_ZONE_ELEMENTS
+        ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
+
+    # Ranks for which templates are instantiated. Rank 2 has to be there for the spatial algorithms.
+    set(LUE_FRAMEWORK_RANKS
+        2 CACHE STRING
+        "Rank(s) of arrays")
+    set_property(CACHE LUE_FRAMEWORK_RANKS
+        PROPERTY
+            STRINGS
+                "2"
+    )
+
+    include(CheckTypeSize)
+    set(CMAKE_EXTRA_INCLUDE_FILES "chrono")
+    check_type_size(
+        "std::chrono::high_resolution_clock::duration::rep"
+        LUE_FRAMEWORK_CLOCK_TICK_SIZE
+        LANGUAGE "CXX"
+    )
+    unset(CMAKE_EXTRA_INCLUDE_FILES)
+
+    if(${LUE_FRAMEWORK_CLOCK_TICK_SIZE} EQUAL "8")
+        set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT "std::uint64_t")
+    else()
+        message(FATAL_ERROR "Clock tick size is ${LUE_FRAMEWORK_CLOCK_TICK_SIZE}, which we haven't seen yet. Update CMake logic.")
+    endif()
+
+    # Policies for which templates are instantiated
+    set(LUE_FRAMEWORK_ALGORITHM_POLICIES
+        "DefaultValuePolicies" CACHE STRING
+        "Algorithm policies"
+    )
+    set_property(CACHE LUE_FRAMEWORK_ALGORITHM_POLICIES
+        PROPERTY
+            STRINGS
+                "DefaultValuePolicies"
+                "DefaultValuePolicies\;DefaultPolicies"
+                "DefaultPolicies"
+    )
+
+    LIST(FIND LUE_FRAMEWORK_ALGORITHM_POLICIES "DefaultPolicies" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED TRUE)
+    else()
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED FALSE)
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_ALGORITHM_POLICIES "DefaultValuePolicies" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED TRUE)
+    else()
+        set(LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED FALSE)
+    endif()
+
+    # Validate settings
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_BOOLEAN_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_BOOLEAN_ELEMENT (${LUE_FRAMEWORK_BOOLEAN_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_COUNT_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_COUNT_ELEMENT (${LUE_FRAMEWORK_COUNT_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT (${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_ID_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_ID_ELEMENT (${LUE_FRAMEWORK_ID_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_INDEX_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT EQUAL -1)
+        message(FATAL_ERROR "The type used for LUE_FRAMEWORK_INDEX_ELEMENT (${LUE_FRAMEWORK_INDEX_ELEMENT}) must be part of either LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS}) or LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS (currently: ${LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS})")
+    endif()
+
+    set(LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE FALSE)
+    LIST(FIND LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS "std::uint32_t" TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE TRUE)
+    endif()
+
+    set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE FALSE)
+    LIST(FIND LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS ${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT} TYPE_PRESENT)
+    if(TYPE_PRESENT GREATER_EQUAL 0)
+        set(LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE TRUE)
+    endif()
+
+    if(LUE_FRAMEWORK_WITH_PYTHON_API AND LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API)
+        # For the PCRaster Python sub-package, three types are required:
+        # - boolean / flow_direction: std::uint8
+        # - nominal, ordinal: std::int32
+        # - scalar, directional: float
+        # Verify these types are available. If not, error out with a message that allows the user to skip
+        # configuraing the build for this sub-package.
+
+        unset(error_messages)
+
+        if(NOT LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT STREQUAL "std::uint8_t")
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT to be std::uint8_t (currently: ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})")
+        endif()
+
+        if(NOT LUE_FRAMEWORK_BOOLEAN_ELEMENT STREQUAL "std::uint8_t")
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_BOOLEAN_ELEMENT to be std::uint8_t (currently: ${LUE_FRAMEWORK_BOOLEAN_ELEMENT})")
+        endif()
+
+        LIST(FIND LUE_FRAMEWORK_INTEGRAL_ELEMENTS "std::int32_t" TYPE_PRESENT)
+        if(TYPE_PRESENT EQUAL -1)
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_INTEGRAL_ELEMENTS to contain std::int32_t (currently: ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})")
+        endif()
+
+        LIST(FIND LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS "float" TYPE_PRESENT)
+        if(TYPE_PRESENT EQUAL -1)
+            list(APPEND error_messages
+                "The PCRaster Python sub-package requires LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS to contain float (currently: ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})")
+        endif()
+
+        if(error_messages)
+            list(APPEND error_messages
+                "Set LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API=FALSE to continue without support for PCRaster")
+            list(JOIN error_messages "\n" error_message)
+            message(FATAL_ERROR ${error_message})
+        endif()
+    endif()
+endif()
 
 
 # Handle external dependencies -------------------------------------------------
@@ -293,23 +516,11 @@ if(LUE_PYBIND11_REQUIRED)
         FIND_PACKAGE_ARGS 2.12
     )
     FetchContent_MakeAvailable(pybind11)
-
-    # Silence pybind11 for now
-    # https://github.com/computationalgeography/lue/issues/484
-    target_compile_definitions(pybind11::module
-        INTERFACE
-            PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF)
 endif()
 
 
 if(LUE_BOOST_REQUIRED)
-    if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
-        # HPX inspect tool requires Boost.Regex
-        list(APPEND LUE_REQUIRED_BOOST_COMPONENTS regex)
-    endif()
-
-    # Use Boost's own FindBoost module instead of the deprecated CMake version
-    find_package(Boost REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS} CONFIG)
+    find_package(Boost 1.70 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
@@ -483,7 +694,10 @@ if(LUE_HPX_REQUIRED)
             set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
         endif()
     else()
-        find_package(HPX REQUIRED)
+        block(SCOPE_FOR POLICIES)
+            cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
+            find_package(HPX 1.10...<1.11 REQUIRED)
+        endblock()
 
         if(HPX_FOUND)
             message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")

@@ -1,5 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional
@@ -135,62 +137,33 @@ namespace lue::framework {
                     no_data_value}));
         }
 
+
+        class Binder
+        {
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    // TODO Create a single wrapper function, accepting a py::array and work from
+                    //      there. Document this one wrapper function, etc.
+                    module.def(
+                        "from_numpy",
+                        from_numpy_py<Element>,
+                        "array"_a.noconvert(),
+                        pybind11::kw_only(),
+                        "partition_shape"_a = std::optional<pybind11::tuple>{},
+                        "no_data_value"_a = std::optional<Element>{});
+                }
+        };
+
     }  // Anonymous namespace
 
 
     void bind_from_numpy(pybind11::module& module)
     {
-        // TODO Create a single from_numpy_py function, accepting a py::array and work from
-        //      there. Document this one wrapper function, etc.
-        module.def(
-            "from_numpy",
-            from_numpy_py<uint8_t>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint8_t>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<uint32_t>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint32_t>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<uint64_t>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<uint64_t>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<int32_t>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<int32_t>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<int64_t>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<int64_t>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<float>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<float>{});
-        module.def(
-            "from_numpy",
-            from_numpy_py<double>,
-            "array"_a.noconvert(),
-            pybind11::kw_only(),
-            "partition_shape"_a = std::optional<pybind11::tuple>{},
-            "no_data_value"_a = std::optional<double>{});
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

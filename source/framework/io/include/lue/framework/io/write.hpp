@@ -8,16 +8,17 @@
 namespace lue {
 
     template<typename Array>
-    [[nodiscard]] hpx::future<void> write(Array const& array, std::string const& pathname);
+    [[nodiscard]] auto write(Array const& array, std::string const& pathname) -> hpx::future<void>;
 
     template<typename Array, typename DatasetPtr = std::shared_ptr<data_model::Dataset>>
-    [[nodiscard]] hpx::future<void> write(
-        Array const& array, typename data_model::constant::RasterView<DatasetPtr>::Layer& layer);
+    [[nodiscard]] auto write(
+        Array const& array,
+        typename data_model::constant::RasterView<DatasetPtr>::Layer& layer) -> hpx::future<void>;
 
     template<typename Array, typename DatasetPtr = std::shared_ptr<data_model::Dataset>>
-    [[nodiscard]] hpx::future<void> write(
+    [[nodiscard]] auto write(
         Array const& array,
         typename data_model::variable::RasterView<DatasetPtr>::Layer& layer,
-        data_model::Index idx);
+        data_model::Index idx) -> hpx::future<void>;
 
 }  // namespace lue

@@ -80,13 +80,14 @@ namespace lue {
 
 
     template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>
-    PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
-        Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation);
+    auto d8_flow_direction(
+        Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation)
+        -> PartitionedArray<FlowDirectionElement, rank>;
 
 
     template<typename FlowDirectionElement, typename ElevationElement, Rank rank>
-    PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
-        PartitionedArray<ElevationElement, rank> const& elevation)
+    auto d8_flow_direction(PartitionedArray<ElevationElement, rank> const& elevation)
+        -> PartitionedArray<FlowDirectionElement, rank>
     {
         using Policies = policy::d8_flow_direction::DefaultPolicies<FlowDirectionElement, ElevationElement>;
 

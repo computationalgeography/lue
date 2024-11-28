@@ -59,23 +59,23 @@ namespace lue {
 
             ~ArrayPartition() = default;
 
-            ArrayPartition& operator=(ArrayPartition const&) = default;
+            auto operator=(ArrayPartition const&) -> ArrayPartition& = default;
 
-            ArrayPartition& operator=(ArrayPartition&&) = default;
+            auto operator=(ArrayPartition&&) -> ArrayPartition& = default;
 
-            hpx::future<Data> data() const;
+            auto data() const -> hpx::future<Data>;
 
-            hpx::future<Data> slice(Slices const& slices) const;
+            auto slice(Slices const& slices) const -> hpx::future<Data>;
 
-            hpx::future<void> fill(Element value);
+            auto fill(Element value) -> hpx::future<void>;
 
-            hpx::future<void> set_data(Data const& data);
+            auto set_data(Data const& data) -> hpx::future<void>;
 
-            hpx::future<Offset> offset() const;
+            auto offset() const -> hpx::future<Offset>;
 
-            hpx::future<Shape> shape() const;
+            auto shape() const -> hpx::future<Shape>;
 
-            hpx::future<Count> nr_elements() const;
+            auto nr_elements() const -> hpx::future<Count>;
     };
 
 

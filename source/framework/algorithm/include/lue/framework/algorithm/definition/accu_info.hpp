@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu_info.hpp"
 #include "lue/framework/algorithm/definition/accu.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue {
@@ -520,7 +521,7 @@ namespace lue {
             IDPromiseArray<rank<CellClassPartitions>>&& cell_class_promises,
             hpx::promise<std::vector<PartitionedArray<PartitionClass, 2>>>&& partition_class_arrays_promise,
             hpx::promise<std::vector<PartitionedArray<double, 2>>>&& solvable_fraction_arrays_promise,
-            hpx::promise<std::vector<PartitionedArray<std::uint32_t, 2>>>&& nr_cells_to_solve_arrays_promise)
+            hpx::promise<std::vector<PartitionedArray<CountElement, 2>>>&& nr_cells_to_solve_arrays_promise)
         {
             // Perform as many iterations as needed to calculate a global
             // flow accumulation solution
@@ -546,7 +547,7 @@ namespace lue {
             using SolvableFractionPartition = PartitionT<SolvableFractionArray>;
             using SolvableFractionArrays = std::vector<SolvableFractionArray>;
 
-            using CountArray = PartitionedArray<std::uint32_t, 2>;
+            using CountArray = PartitionedArray<CountElement, 2>;
             using CountPartitions = PartitionsT<CountArray>;
             using CountPartition = PartitionT<CountArray>;
             using CountArrays = std::vector<CountArray>;
@@ -706,7 +707,7 @@ namespace lue {
                             localities(idx0, idx1),
                             {idx0, idx1},
                             {1, 1},
-                            static_cast<std::uint32_t>(nr_cells_to_solve)};
+                            static_cast<CountElement>(nr_cells_to_solve)};
                     }
                 }
 
@@ -830,7 +831,7 @@ namespace lue {
             CellClassPartitions,
             hpx::future<std::vector<PartitionedArray<PartitionClass, 2>>>,
             hpx::future<std::vector<PartitionedArray<double, 2>>>,
-            hpx::future<std::vector<PartitionedArray<std::uint32_t, 2>>>>
+            hpx::future<std::vector<PartitionedArray<CountElement, 2>>>>
         solve_flow_accumulation(
             Policies const& policies,
             Localities const& localities,
@@ -891,7 +892,7 @@ namespace lue {
             SolvableFractionArraysFuture solvable_fraction_arrays_future{
                 solvable_fraction_arrays_promise.get_future()};
 
-            using CountArray = PartitionedArray<std::uint32_t, 2>;
+            using CountArray = PartitionedArray<CountElement, 2>;
             using CountArrays = std::vector<CountArray>;
             using CountArraysPromise = hpx::promise<CountArrays>;
             using CountArraysFuture = hpx::future<CountArrays>;
@@ -937,7 +938,7 @@ namespace lue {
             PartitionedArray<CellClass, rank>,
             hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
             hpx::future<std::vector<PartitionedArray<double, rank>>>,
-            hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
+            hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>
         flow_accumulation(
             Policies const& policies,
             PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
@@ -962,7 +963,7 @@ namespace lue {
 
             // ---------------------------------------------------------------------
             // Calculate flow accumulation for intra-partition stream cells
-            using InflowCountElement = std::uint8_t;
+            using InflowCountElement = SmallestIntegralElement;
             using InflowCountArray = PartitionedArray<InflowCountElement, rank>;
             using CellClassArray = PartitionedArray<CellClass, rank>;
 
@@ -1045,7 +1046,7 @@ namespace lue {
         PartitionedArray<CellClass, rank>,
         hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
         hpx::future<std::vector<PartitionedArray<double, rank>>>,
-        hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
+        hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>
     accu_info(Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
     {
         // NOTE: Only make this function return information that
@@ -1069,6 +1070,6 @@ namespace lue {
         PartitionedArray<CellClass, 2>,                                                                      \
         hpx::future<std::vector<PartitionedArray<PartitionClass, 2>>>,                                       \
         hpx::future<std::vector<PartitionedArray<double, 2>>>,                                               \
-        hpx::future<std::vector<PartitionedArray<std::uint32_t, 2>>>>                                        \
+        hpx::future<std::vector<PartitionedArray<CountElement, 2>>>>                                         \
     accu_info<ArgumentType<void(Policies)>, FlowDirectionElement, 2>(                                        \
         ArgumentType<void(Policies)> const&, PartitionedArray<FlowDirectionElement, 2> const&);

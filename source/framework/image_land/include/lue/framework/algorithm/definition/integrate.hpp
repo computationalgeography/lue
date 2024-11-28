@@ -125,7 +125,7 @@ namespace lue::detail::integrate {
                 }
 
 
-                OutputPartition result_partition()
+                auto result_partition() -> OutputPartition
                 {
                     // Connect the promise with the future
                     // This function must be called exactly once
@@ -416,7 +416,7 @@ namespace lue::detail::integrate {
             }
 
 
-            OutputPartition result_partition() const
+            auto result_partition() const -> OutputPartition
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -427,7 +427,7 @@ namespace lue::detail::integrate {
             }
 
 
-            hpx::future<void> set_downstream_components(std::map<hpx::id_type, Walk>&& components)
+            auto set_downstream_components(std::map<hpx::id_type, Walk>&& components) -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -438,7 +438,7 @@ namespace lue::detail::integrate {
             }
 
 
-            hpx::future<void> walk(RouteID const route_id, Data<RouteID, IntegrandElement> data) const
+            auto walk(RouteID const route_id, Data<RouteID, IntegrandElement> data) const -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -449,7 +449,7 @@ namespace lue::detail::integrate {
             }
 
 
-            hpx::future<void> skip_walking_route_fragments(RouteID const route_id) const
+            auto skip_walking_route_fragments(RouteID const route_id) const -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());

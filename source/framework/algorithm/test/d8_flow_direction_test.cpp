@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm d8_flow_direction
 #include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -32,11 +33,10 @@ namespace {
 }  // Anonymous namespace
 
 
-BOOST_AUTO_TEST_CASE(use_case_01)
+BOOST_AUTO_TEST_CASE(south)
 {
-    // south, uint8 = f(double)
-    using Elevation = double;
-    using FlowDirection = std::uint8_t;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
     std::size_t const rank = 2;
 
     using DEM = lue::PartitionedArray<Elevation, rank>;
@@ -73,11 +73,10 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 }
 
 
-BOOST_AUTO_TEST_CASE(use_case_02)
+BOOST_AUTO_TEST_CASE(north)
 {
-    // north, uint8 = f(float)
-    using Elevation = float;
-    using FlowDirection = std::uint8_t;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
     std::size_t const rank = 2;
 
     using DEM = lue::PartitionedArray<Elevation, rank>;
@@ -114,11 +113,10 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 }
 
 
-BOOST_AUTO_TEST_CASE(use_case_03)
+BOOST_AUTO_TEST_CASE(east)
 {
-    // east, uint32
-    using Elevation = double;
-    using FlowDirection = std::uint32_t;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
     std::size_t const rank = 2;
 
     using DEM = lue::PartitionedArray<Elevation, rank>;
@@ -155,11 +153,10 @@ BOOST_AUTO_TEST_CASE(use_case_03)
 }
 
 
-BOOST_AUTO_TEST_CASE(use_case_04)
+BOOST_AUTO_TEST_CASE(west)
 {
-    // west, uint64
-    using Elevation = double;
-    using FlowDirection = std::uint64_t;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
     std::size_t const rank = 2;
 
     using DEM = lue::PartitionedArray<Elevation, rank>;
@@ -202,8 +199,8 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
     //     Parallel non-divergent flow accumulation for trillion cell
     //     digital elevation models on desktops or clusters
 
-    using Elevation = double;
-    using FlowDirection = std::uint32_t;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
     std::size_t const rank = 2;
 
     using DEM = lue::PartitionedArray<Elevation, rank>;
@@ -284,24 +281,23 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
 
 BOOST_AUTO_TEST_CASE(no_data)
 {
-    using ElevationElement = double;
-    using FlowDirectionElement = std::uint8_t;
-    using Policies =
-        lue::policy::d8_flow_direction::DefaultValuePolicies<FlowDirectionElement, ElevationElement>;
+    using Elevation = lue::FloatingPointElement<0>;
+    using FlowDirection = lue::FlowDirectionElement;
+    using Policies = lue::policy::d8_flow_direction::DefaultValuePolicies<FlowDirection, Elevation>;
     std::size_t const rank = 2;
 
-    using DEM = lue::PartitionedArray<ElevationElement, rank>;
-    using D8 = lue::PartitionedArray<FlowDirectionElement, rank>;
+    using DEM = lue::PartitionedArray<Elevation, rank>;
+    using D8 = lue::PartitionedArray<FlowDirection, rank>;
     using Shape = lue::ShapeT<DEM>;
 
     Shape const array_shape{{3, 3}};
     Shape const partition_shape{{3, 3}};
 
-    auto const y{lue::sink<FlowDirectionElement>};
+    auto const y{lue::sink<FlowDirection>};
 
     Policies policies{};
-    auto const x{lue::policy::no_data_value<ElevationElement>};
-    auto const u{lue::policy::no_data_value<FlowDirectionElement>};
+    auto const x{lue::policy::no_data_value<Elevation>};
+    auto const u{lue::policy::no_data_value<FlowDirection>};
 
     test_d8_flow_direction(
         policies,

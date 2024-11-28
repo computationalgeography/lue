@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/accu_info3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework.hpp"
 #include "lue/macro.hpp"
 
 
@@ -99,11 +100,11 @@ namespace lue {
 
 
         template<typename Policies, typename FlowDirectionElement, Rank rank>
-        ArrayPartition<CellClass, rank> accu_info3_partition(
+        auto accu_info3_partition(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank> inflow_count_communicator,
-            CellClassCommunicator<rank> cell_class_communicator)
+            CellClassCommunicator<rank> cell_class_communicator) -> ArrayPartition<CellClass, rank>
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
@@ -111,7 +112,7 @@ namespace lue {
             using CellClassData = DataT<CellClassPartition>;
             using Offset = OffsetT<FlowDirectionPartition>;
 
-            using CountElement = std::uint8_t;
+            using CountElement = SmallestIntegralElement;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
@@ -521,8 +522,9 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, Rank rank>
-    PartitionedArray<CellClass, rank> accu_info3(
+    auto accu_info3(
         Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> PartitionedArray<CellClass, rank>
     {
         using CellClassArray = PartitionedArray<CellClass, rank>;
         using CellClassPartitions = PartitionsT<CellClassArray>;

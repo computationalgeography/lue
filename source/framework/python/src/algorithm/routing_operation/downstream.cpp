@@ -1,35 +1,40 @@
 #include "lue/framework/algorithm/downstream.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework/configure.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {
     namespace {
 
-        Rank const rank{2};
-        using FlowDirectionElement = std::uint8_t;
-
-        template<typename MaterialElement>
-        PartitionedArray<MaterialElement, rank> downstream(
-            PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-            PartitionedArray<MaterialElement, rank> const& material)
+        class Binder
         {
-            using Policies = policy::downstream::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
 
-            return downstream(Policies{}, flow_direction, material);
-        }
+            public:
+
+                template<typename MaterialElement>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    module.def(
+                        "downstream",
+                        [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+                           PartitionedArray<MaterialElement, rank> const& material)
+                        {
+                            using Policies = policy::downstream::
+                                DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+
+                            return downstream(Policies{}, flow_direction, material);
+                        });
+                }
+        };
 
     }  // Anonymous namespace
 
 
     void bind_downstream(pybind11::module& module)
     {
-        module.def("downstream", downstream<std::uint8_t>);
-        module.def("downstream", downstream<std::int32_t>);
-        module.def("downstream", downstream<std::uint32_t>);
-        module.def("downstream", downstream<std::int64_t>);
-        module.def("downstream", downstream<std::uint64_t>);
-        module.def("downstream", downstream<float>);
-        module.def("downstream", downstream<double>);
+        bind<Binder, MaterialElements>(module);
     }
 
 }  // namespace lue::framework

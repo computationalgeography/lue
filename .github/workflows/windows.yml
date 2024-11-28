@@ -57,8 +57,8 @@ jobs:
 
         - uses: conda-incubator/setup-miniconda@v3
           with:
-            miniforge-version: latest
             auto-update-conda: true
+            miniforge-version: latest
             conda-solver: "libmamba"
             python-version: ${{ matrix.python_version }}
 
@@ -71,9 +71,10 @@ jobs:
               # conda-build provides the conda-develop command used below
               # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
               #      Conan package actually works
-
+              conda config --remove channels defaults
               conda install \
                   libboost-devel \
+                  libboost-headers \
                   conan \
                   conda-build \
                   docopt \
@@ -146,12 +147,16 @@ jobs:
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
 
+              # The element types for which relevant data structures and algorithms must be instantiated are
+              # passed in explicitly here. To test whether this works correct and to speed up the build on
+              # Windows, which is slow compared to the other platforms.
+              # The types used are the ones needed for compatibility with PCRaster.
+
               CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
                   cmake \
                       -S ${{ env.lue_source_directory }} \
                       -B ${{ env.lue_build_directory }} \
                       --preset conan-release \
-                      -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                       -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
                       -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
                       -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
@@ -161,6 +166,13 @@ jobs:
                       -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
                       -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
                       -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+                      -D LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS=std::int32_t \
+                      -D LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS=std::uint8_t \
+                      -D LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS=float \
+                      -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
+                      -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
+                      -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
+                      -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t \
                       -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
                       -D HPX_ROOT=${{ env.hpx_install_directory }} \
                       -D Hwloc_ROOT=$CONDA_PREFIX/Library \
@@ -224,7 +236,6 @@ jobs:
                   -S ${{ env.lue_consume_source_directory }} \
                   -B ${{ env.lue_consume_build_directory }} \
                   -G "Ninja" \
-                  -D CMAKE_POLICY_DEFAULT_CMP0167=NEW \
                   -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
                   -D CMAKE_BUILD_TYPE=Release \
                   -D lue_ROOT=${{ env.lue_development_install_directory }} \

@@ -17,10 +17,10 @@ namespace lue {
     namespace value_policies {
 
         template<typename ZoneElement, typename InputElement, Rank rank>
-        SerialRoute<ZoneElement, rank> decreasing_order(
+        auto decreasing_order(
             PartitionedArray<ZoneElement, rank> const& zone,
             PartitionedArray<InputElement, rank> const& value,
-            Count const max_nr_cells = std::numeric_limits<Count>::max())
+            Count const max_nr_cells = std::numeric_limits<Count>::max()) -> SerialRoute<ZoneElement, rank>
         {
             using Policies = policy::decreasing_order::DefaultValuePolicies<ZoneElement, InputElement>;
 
@@ -28,10 +28,10 @@ namespace lue {
         }
 
 
-        template<typename RouteID = lue::RouteID, typename InputElement, Rank rank>
-        SerialRoute<RouteID, rank> decreasing_order(
+        template<typename RouteID, typename InputElement, Rank rank>
+        auto decreasing_order(
             PartitionedArray<InputElement, rank> const& value,
-            Count const max_nr_cells = std::numeric_limits<Count>::max())
+            Count const max_nr_cells = std::numeric_limits<Count>::max()) -> SerialRoute<RouteID, rank>
         {
             using Policies = policy::decreasing_order::DefaultValuePolicies<RouteID, InputElement>;
 

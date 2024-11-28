@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,6 +16,6 @@ class ATan2Test(lue_test.TestCase):
         array_shape = (60, 40)
         fill_value = 5.5
 
-        for dtype in [np.float32, np.float64]:
-            array = lfr.create_array(array_shape, dtype, fill_value)
-            lfr.atan2(array, array)
+        for element_type in lfr.floating_point_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
+            _ = lfr.atan2(array, array)

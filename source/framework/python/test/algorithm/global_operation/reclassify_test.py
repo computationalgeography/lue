@@ -18,16 +18,16 @@ class ReclassifyTest(lue_test.TestCase):
         array_shape = (60, 40)
         id_ = 3
 
-        for from_type in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
-            ids = lfr.create_array(array_shape, from_type, id_)
+        for from_element_type in lfr.integral_element_types:
+            ids = lfr.create_array(array_shape, from_element_type, id_)
 
-            for to_type in [np.float32, np.float64]:
+            for to_element_type in lfr.floating_point_element_types:
                 lookup_table = {
                     1: 1.1,
                     2: 2.2,
                     3: 3.3,
                     4: 4.4,
                 }
-                array = lfr.reclassify(ids, lookup_table, dtype=to_type)
+                array = lfr.reclassify(ids, lookup_table, dtype=to_element_type)
 
-                self.assertEqual(array.dtype, np.dtype(to_type))
+                self.assertEqual(array.dtype, np.dtype(to_element_type))

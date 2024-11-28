@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue.image_land as img
 import lue_test
@@ -28,15 +26,16 @@ class IntegrateAndAllocateTest(lue_test.TestCase):
         production_fill_value = 5.5
         demand_fill_value = 5.5
         nr_zones = 1
-        zones = [zone_fill_value]
 
-        # TODO for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
-        for zone_dtype in [np.int32]:
-            # TODO for floating_point_type in [np.float32, np.float64]:
-            for floating_point_type in [np.float32]:
-                zone = lfr.create_array(array_shape, zone_dtype, zone_fill_value)
+        for zone_element_type in lfr.zone_element_types:
+            print(zone_element_type)
+            zones = [zone_element_type(zone_fill_value)]
+
+            for floating_point_element_type in lfr.floating_point_element_types:
+                print(floating_point_element_type)
+                zone = lfr.create_array(array_shape, zone_element_type, zone_fill_value)
                 suitability = lfr.create_array(
-                    array_shape, floating_point_type, suitability_fill_value
+                    array_shape, floating_point_element_type, suitability_fill_value
                 )
                 route = lfr.decreasing_order(
                     zone, suitability, max_nr_cells=max_nr_cells
@@ -44,37 +43,49 @@ class IntegrateAndAllocateTest(lue_test.TestCase):
 
                 sdp_factors_per_crop = [
                     lfr.create_array(
-                        array_shape, floating_point_type, sdp_factor_fill_value
+                        array_shape, floating_point_element_type, sdp_factor_fill_value
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, sdp_factor_fill_value
+                        array_shape, floating_point_element_type, sdp_factor_fill_value
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, sdp_factor_fill_value
+                        array_shape, floating_point_element_type, sdp_factor_fill_value
                     ),
                 ]
 
                 yield_factors_per_crop = [
                     lfr.create_array(
-                        array_shape, floating_point_type, yield_factor_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        yield_factor_fill_value,
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, yield_factor_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        yield_factor_fill_value,
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, yield_factor_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        yield_factor_fill_value,
                     ),
                 ]
 
                 crop_fractions = [
                     lfr.create_array(
-                        array_shape, floating_point_type, crop_fraction_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        crop_fraction_fill_value,
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, crop_fraction_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        crop_fraction_fill_value,
                     ),
                     lfr.create_array(
-                        array_shape, floating_point_type, crop_fraction_fill_value
+                        array_shape,
+                        floating_point_element_type,
+                        crop_fraction_fill_value,
                     ),
                 ]
 
@@ -94,7 +105,7 @@ class IntegrateAndAllocateTest(lue_test.TestCase):
                 )
 
                 irrigated_crop_fractions = lfr.create_array(
-                    array_shape, floating_point_type, crop_fraction_fill_value
+                    array_shape, floating_point_element_type, crop_fraction_fill_value
                 )
 
                 (

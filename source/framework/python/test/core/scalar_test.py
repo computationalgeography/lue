@@ -18,15 +18,18 @@ class ScalarTest(lue_test.TestCase):
     @classmethod
     @lue_test.framework_test_case
     def setUpClass(cls):
-        cls.signed_integral_types = lue_test.signed_integral_types
-        cls.unsigned_integral_types = lue_test.unsigned_integral_types
-        cls.integral_types = lue_test.integral_types
-        cls.floating_point_types = lue_test.floating_point_types
-        cls.numeric_types = lue_test.numeric_types
+        cls.signed_integral_types = lfr.signed_integral_element_types
+        cls.unsigned_integral_types = lfr.unsigned_integral_element_types
+        cls.integral_types = lfr.integral_element_types
+        cls.floating_point_types = lfr.floating_point_element_types
+        cls.numeric_types = lfr.arithmetic_element_types
         cls.value_by_type = lue_test.value_by_type
-        cls.dtype_by_floating_point_type = lue_test.dtype_by_floating_point_type
-        cls.dtype_by_type = lue_test.dtype_by_type
-
+        cls.dtype_by_floating_point_type = {
+            type_: lue_test.dtype_by_type[type_] for type_ in cls.floating_point_types
+        }
+        cls.dtype_by_type = {
+            type_: lue_test.dtype_by_type[type_] for type_ in cls.numeric_types
+        }
         cls.scalar_by_dtype = {
             cls.dtype_by_type[type_]: lfr.create_scalar(
                 cls.dtype_by_type[type_], cls.value_by_type[type_]

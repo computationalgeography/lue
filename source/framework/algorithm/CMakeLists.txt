@@ -4,6 +4,62 @@ add_test_conditionally(test)
 #     add_subdirectory(benchmark)
 # endif()
 
+
+### # Instantiate components -------------------------------------------------------
+### set(generated_source_files "")
+###
+### block()
+###     set(offset "include/lue/framework/algorithm/component/server")
+###     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition_io.hpp")
+###
+###     set(Elements ${LUE_FRAMEWORK_MATERIAL_ELEMENTS})
+###     list(TRANSFORM Elements PREPEND "\"")
+###     list(TRANSFORM Elements APPEND "\"")
+###     list(JOIN Elements ", " Elements)
+###
+###     generate_template_instantiation(
+###         INPUT_PATHNAME
+###             "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition_io.hpp.in"
+###         OUTPUT_PATHNAME
+###             "${output_pathname}"
+###         DICTIONARY
+###             '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+###     )
+###
+###     list(APPEND generated_source_files "${output_pathname}")
+###
+###     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+### endblock()
+###
+### block()
+###     set(offset "src/component")
+###
+###     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+###         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
+###             foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+###                 string(REPLACE "::" "_" element ${Element})
+###
+###                 # Instantiate array_partition_io
+###                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition_io-${Policies}_${element}.cpp")
+###
+###                 generate_template_instantiation(
+###                     INPUT_PATHNAME
+###                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition_io.cpp.in"
+###                     OUTPUT_PATHNAME
+###                         "${output_pathname}"
+###                     DICTIONARY
+###                         '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+###                 )
+###                 list(APPEND generated_source_files "${output_pathname}")
+###             endforeach()
+###         endforeach()
+###     endforeach()
+###
+###     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+### endblock()
+
+# / Instantiate components -----------------------------------------------------
+
 add_library(lue_framework_algorithm SHARED
     src/component/array_partition_io.cpp
 )
@@ -53,25 +109,19 @@ target_link_libraries(lue_framework_algorithm
 )
 
 
-# TODO Maybe set these at a higher level?
-set(LUE_FRAMEWORK_POLICIES "DefaultPolicies" "DefaultValuePolicies")
-set(ranks 2)
-
-
 # Instantiate local operations -------------------------------------------------
 set(generated_source_files "")
 set(offset "src/local_operation")
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(rank IN LISTS ranks)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
+
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                 # Instantiate add
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/add-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/add-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -84,7 +134,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate equal_to
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/equal_to-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/equal_to-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -97,7 +147,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate greater_than
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -110,7 +160,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate greater_than_equal_to
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than_equal_to-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/greater_than_equal_to-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -123,7 +173,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate less_than
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -136,7 +186,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate less_than_equal_to
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than_equal_to-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/less_than_equal_to-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -149,7 +199,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate not_equal_to
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/not_equal_to-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/not_equal_to-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -162,7 +212,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate valid
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/valid-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/valid-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -175,7 +225,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate multiply
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/multiply-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/multiply-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -188,7 +238,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate subtract
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/subtract-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/subtract-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -201,7 +251,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate where2
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where2-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where2-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -209,12 +259,12 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate where3
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where3-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/where3-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -222,7 +272,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -234,16 +284,14 @@ endblock()
 
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(rank IN LISTS ranks)
+            string(REPLACE "::" "_" element ${Element})
 
-			    math(EXPR count "${count} + 1")
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                 # Instantiate modulus
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -254,7 +302,6 @@ block()
                         '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-
             endforeach()
         endforeach()
     endforeach()
@@ -264,18 +311,17 @@ endblock()
 
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS
                 LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
                 LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
             )
-            foreach(rank IN LISTS ranks)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
+
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                 # Instantiate abs
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/abs-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/abs-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -288,7 +334,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate negate
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/negate-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/negate-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -307,17 +353,16 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS
                 LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS
             )
-            foreach(rank IN LISTS ranks)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
+
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                 # acos
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/acos-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/acos-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -330,7 +375,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # asin
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/asin-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/asin-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -343,7 +388,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # atan
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -356,7 +401,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # atan2
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan2-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/atan2-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -369,7 +414,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate close_to
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/close_to-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/close_to-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -382,7 +427,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # ceil
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/ceil-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/ceil-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -395,7 +440,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # cos
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cos-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cos-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -408,7 +453,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # divide
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/divide-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/divide-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -421,7 +466,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # exp
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/exp-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/exp-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -434,7 +479,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # floor
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/floor-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/floor-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -447,7 +492,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # log
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -460,7 +505,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # log10
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log10-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/log10-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -473,7 +518,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # pow
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/pow-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/pow-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -486,7 +531,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # round
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/round-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/round-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -499,7 +544,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # sin
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sin-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sin-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -512,7 +557,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # sqrt
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sqrt-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sqrt-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -525,7 +570,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # tan
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/tan-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/tan-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -544,16 +589,17 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            string(REPLACE "::" "_" output_element ${OutputElement})
+
             foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                foreach(rank IN LISTS ranks)
-                    math(EXPR count "${count} + 1")
+                string(REPLACE "::" "_" input_element ${InputElement})
+
+                foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                     # Instantiate cast
-                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cast-${count}.cpp")
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cast-${Policies}_${output_element}_${input_element}_${rank}.cpp")
 
                     generate_template_instantiation(
                         INPUT_PATHNAME
@@ -573,17 +619,18 @@ block()
 endblock()
 
 block()
-    set(count "0")
 
     set(IndexElement ${LUE_FRAMEWORK_INDEX_ELEMENT})
     set(ConditionElement ${LUE_FRAMEWORK_BOOLEAN_ELEMENT})
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(rank IN LISTS ranks)
-            math(EXPR count "${count} + 1")
+    string(REPLACE "::" "_" index_element ${IndexElement})
+    string(REPLACE "::" "_" condition_element ${ConditionElement})
+
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
             # Instantiate cell_index
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cell_index-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/cell_index-${Policies}_${index_element}_${condition_element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -601,15 +648,14 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(rank IN LISTS ranks)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
+
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
 
                 # Instantiate logical_and
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_and-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_and-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -622,7 +668,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate logical_exclusive_or
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_exclusive_or-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_exclusive_or-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -635,7 +681,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate logical_inclusive_or
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_inclusive_or-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_inclusive_or-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -648,7 +694,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate logical_not
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_not-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/logical_not-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -661,7 +707,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate unique_id
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique_id-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique_id-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -669,7 +715,7 @@ block()
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
-                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_CONDITION_ELEMENT}","IDElement":"${Element}","rank":"${rank}"}'
+                        '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","IDElement":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()
@@ -722,19 +768,15 @@ target_link_libraries(lue_framework_local_operation
 # Instantiate focal operations -------------------------------------------------
 set(generated_source_files "")
 set(offset "src/focal_operation")
-set(LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES "DefaultValuePolicies")
-set(Counts uint64_t)
 
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate focal_maximum
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_maximum-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_maximum-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -747,7 +789,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate focal_minimum
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_minimum-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_minimum-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -760,7 +802,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate focal_sum
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_sum-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_sum-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -779,14 +821,12 @@ endblock()
 
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate aspect
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/aspect-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/aspect-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -799,7 +839,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate focal_high_pass
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_high_pass-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_high_pass-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -812,7 +852,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate focal_mean
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_mean-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_mean-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -825,7 +865,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate gradients
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/gradients-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/gradients-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -838,7 +878,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate slope
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/slope-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/slope-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -857,14 +897,12 @@ endblock()
 
 
 block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate focal_majority
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_majority-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_majority-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -883,26 +921,22 @@ endblock()
 
 
 block()
-    set(count "0")
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            string(REPLACE "::" "_" element ${Element})
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_FOCAL_OPERATION_POLICIES)
-        foreach(Count IN LISTS Counts)
-            foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-                math(EXPR count "${count} + 1")
+            # Instantiate focal_diversity
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_diversity-${Policies}_${element}.cpp")
 
-                # Instantiate focal_diversity
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_diversity-${count}.cpp")
-
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_diversity.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                    '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/focal_diversity.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                '{"Policies":"${Policies}","Count":"${LUE_FRAMEWORK_COUNT_ELEMENT}","Element":"${Element}","Boolean":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
         endforeach()
     endforeach()
 
@@ -949,12 +983,6 @@ target_link_libraries(lue_framework_focal_operation
 )
 
 
-# TODO Maybe set these at a higher level?
-set(LUE_FRAMEWORK_POLICIES "DefaultValuePolicies")
-set(Counts uint64_t)
-set(Zones uint8_t uint32_t uint64_t int32_t int64_t)
-
-
 # Instantiate zonal operations -------------------------------------------------
 set(generated_source_files "")
 
@@ -963,8 +991,8 @@ block()
     set(count "0")
     set(rank "2")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Zone IN LISTS Zones)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             math(EXPR count "${count} + 1")
 
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/clump-${count}.cpp")
@@ -988,23 +1016,21 @@ block()
     # Instantiate zonal_area
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Count IN LISTS Counts)
-            foreach(Zone IN LISTS Zones)
-                math(EXPR count "${count} + 1")
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+            math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_area-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_area-${count}.cpp")
 
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_area.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                        '{"Policies":"${Policies}","Count":"${Count}","Zone":"${Zone}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_area.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Count":"${LUE_FRAMEWORK_COUNT_ELEMENT}","Zone":"${Zone}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
         endforeach()
     endforeach()
 
@@ -1015,24 +1041,22 @@ block()
     # Instantiate zonal_diversity
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Count IN LISTS Counts)
-            foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-                foreach(Zone IN LISTS Zones)
-                    math(EXPR count "${count} + 1")
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+                math(EXPR count "${count} + 1")
 
-                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_diversity-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_diversity-${count}.cpp")
 
-                    generate_template_instantiation(
-                        INPUT_PATHNAME
-                            "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_diversity.cpp.in"
-                        OUTPUT_PATHNAME
-                            "${output_pathname}"
-                        DICTIONARY
-                            '{"Policies":"${Policies}","Count":"${Count}","Element":"${Element}","Zone":"${Zone}"}'
-                    )
-                    list(APPEND generated_source_files "${output_pathname}")
-                endforeach()
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_diversity.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Count":"${LUE_FRAMEWORK_COUNT_ELEMENT}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
             endforeach()
         endforeach()
     endforeach()
@@ -1044,9 +1068,9 @@ block()
     # Instantiate zonal_majority
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_majority-${count}.cpp")
@@ -1071,9 +1095,9 @@ block()
     # Instantiate zonal_maximum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_maximum-${count}.cpp")
@@ -1098,9 +1122,9 @@ block()
     # Instantiate zonal_mean
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_mean-${count}.cpp")
@@ -1125,9 +1149,9 @@ block()
     # Instantiate zonal_minimum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_minimum-${count}.cpp")
@@ -1152,9 +1176,9 @@ block()
     # Instantiate zonal_normal
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_normal-${count}.cpp")
@@ -1179,9 +1203,9 @@ block()
     # Instantiate zonal_sum
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_sum-${count}.cpp")
@@ -1206,9 +1230,9 @@ block()
     # Instantiate zonal_uniform
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS Zones)
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_uniform-${count}.cpp")
@@ -1271,7 +1295,6 @@ target_link_libraries(lue_framework_zonal_operation
 
 
 # Instantiate global operations ------------------------------------------------
-set(all_policies "DefaultPolicies" "DefaultValuePolicies")
 set(generated_source_files "")
 set(offset "src/global_operation")
 
@@ -1279,9 +1302,9 @@ set(offset "src/global_operation")
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(rank IN LISTS ranks)
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
 
                 # Instantiate unique
@@ -1306,9 +1329,9 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(rank IN LISTS ranks)
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 math(EXPR count "${count} + 1")
 
                 # Instantiate maximum
@@ -1359,10 +1382,10 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
             foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-                foreach(rank IN LISTS ranks)
+                foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                     math(EXPR count "${count} + 1")
 
                     # Instantiate reclassify
@@ -1427,7 +1450,6 @@ target_link_libraries(lue_framework_global_operation
 
 
 # Instantiate routing operations -----------------------------------------------
-set(all_policies "DefaultPolicies" "DefaultValuePolicies")
 set(generated_source_files "")
 set(offset "src/routing_operation")
 
@@ -1435,21 +1457,8 @@ set(offset "src/routing_operation")
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         math(EXPR count "${count} + 1")
-
-        # Instantiate accu_info
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info-${count}.cpp")
-
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
 
         # Instantiate accu_info3
         string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
@@ -1469,38 +1478,11 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-set(material_elements uint64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
-
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
-        foreach(Element IN LISTS material_elements)
-            math(EXPR count "${count} + 1")
-
-            # Instantiate accu
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu-${count}.cpp")
-
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
-        foreach(Element IN LISTS material_elements)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
             math(EXPR count "${count} + 1")
 
             # Instantiate upstream
@@ -1524,7 +1506,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS all_policies)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${Element})
@@ -1550,7 +1532,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
             string(REPLACE "::" "_" name ${Element})
@@ -1630,7 +1612,7 @@ block()
     set(count "0")
     set(rank "2")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1666,7 +1648,7 @@ block()
 
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
@@ -1690,12 +1672,10 @@ block()
 endblock()
 
 
-set(materials uint8_t int64_t ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
-
 block()
     set(count "0")
 
-    foreach(Element IN LISTS materials)
+    foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
         math(EXPR count "${count} + 1")
         string(REPLACE "::" "_" name ${Element})
 
@@ -1719,7 +1699,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1744,7 +1724,7 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             math(EXPR count "${count} + 1")
 
@@ -1769,19 +1749,21 @@ endblock()
 block()
     set(count "0")
 
-    foreach(Policies IN LISTS LUE_FRAMEWORK_POLICIES)
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         math(EXPR count "${count} + 1")
 
         # Instantiate inflow_count3
         set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count3-${count}.cpp")
 
+        # We're using the boolean element type for the counts, assuming the boolean element type is a small
+        # integral capable of representing small numbers.
         generate_template_instantiation(
             INPUT_PATHNAME
                 "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count3.cpp.in"
             OUTPUT_PATHNAME
                 "${output_pathname}"
             DICTIONARY
-            '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"uint8_t"}'
+            '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
         )
         list(APPEND generated_source_files "${output_pathname}")
     endforeach()

@@ -1,6 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/io/read_into.hpp"
+#include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
@@ -13,7 +14,7 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        lh5::Offset shape_to_offset(DynamicShape const& shape)
+        auto shape_to_offset(DynamicShape const& shape) -> lh5::Offset
         {
             lh5::Offset result(shape.size());
 
@@ -26,7 +27,7 @@ namespace lue::framework {
         }
 
 
-        lh5::Shape shape_to_shape(DynamicShape const& shape)
+        auto shape_to_shape(DynamicShape const& shape) -> lh5::Shape
         {
             lh5::Shape result(shape.size());
 
@@ -40,42 +41,69 @@ namespace lue::framework {
 
 
         template<typename ArrayIO, Rank rank>
-        pybind11::object read(
+        auto read(
             ArrayIO const& io,
             lh5::Datatype const& datatype,
             std::string const& array_pathname,
             StaticShape<rank> const& partition_shape,
-            ldm::ID const object_id)
+            ldm::ID const object_id) -> pybind11::object
         {
             pybind11::object result;
 
-            if (datatype == lh5::std_uint8_le)
+            if constexpr (lue::arithmetic_element_supported<std::uint8_t>)
             {
-                result = io.template read<std::uint8_t, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::std_uint8_le)
+                {
+                    result = io.template read<std::uint8_t, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::std_uint32_le)
+
+            if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
             {
-                result = io.template read<std::uint32_t, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::std_uint32_le)
+                {
+                    result = io.template read<std::uint32_t, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::std_int32_le)
+
+            if constexpr (lue::arithmetic_element_supported<std::int32_t>)
             {
-                result = io.template read<std::int32_t, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::std_int32_le)
+                {
+                    result = io.template read<std::int32_t, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::std_uint64_le)
+
+            if constexpr (lue::arithmetic_element_supported<std::uint64_t>)
             {
-                result = io.template read<std::uint64_t, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::std_uint64_le)
+                {
+                    result = io.template read<std::uint64_t, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::std_int64_le)
+
+            if constexpr (lue::arithmetic_element_supported<std::int64_t>)
             {
-                result = io.template read<std::int64_t, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::std_int64_le)
+                {
+                    result = io.template read<std::int64_t, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::ieee_float32_le)
+
+            if constexpr (lue::arithmetic_element_supported<float>)
             {
-                result = io.template read<float, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::ieee_float32_le)
+                {
+                    result = io.template read<float, 2>(array_pathname, partition_shape, object_id);
+                }
             }
-            else if (datatype == lh5::ieee_float64_le)
+
+            if constexpr (lue::arithmetic_element_supported<double>)
             {
-                result = io.template read<double, 2>(array_pathname, partition_shape, object_id);
+                if (datatype == lh5::ieee_float64_le)
+                {
+                    result = io.template read<double, 2>(array_pathname, partition_shape, object_id);
+                }
             }
 
             if (!result)
@@ -90,11 +118,11 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> read_array(
+        auto read_array(
             std::string const& array_pathname,
             lh5::Hyperslab const& hyperslab,
             StaticShape<rank> const& partition_shape,
-            data_model::ID const object_id)
+            data_model::ID const object_id) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
@@ -106,11 +134,11 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        PartitionedArray<Element, rank> read_array(
+        auto read_array(
             std::string const& array_pathname,
             StaticShape<rank> const& partition_shape,
             data_model::ID const object_id,
-            Index const time_step_idx)
+            Index const time_step_idx) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::read_into::DefaultValuePolicies<Element>;
 
@@ -193,8 +221,9 @@ namespace lue::framework {
         }  // namespace variable
 
 
-        pybind11::object read_array_py1(
-            std::string const& array_pathname, std::optional<pybind11::tuple> const& partition_shape)
+        auto read_array_py1(
+            std::string const& array_pathname,
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
@@ -203,43 +232,53 @@ namespace lue::framework {
 
             Rank const rank{2};
 
-            if (rank != 2)
+            pybind11::object result;
+
+            verify_rank_supported(rank);
+
+            if constexpr (rank_supported(2))
             {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
-
-            StaticShape<rank> const static_array_shape{dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
-            StaticShape<rank> static_partition_shape{};
-
-            if (partition_shape)
-            {
-                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
-
-                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                if (rank == 2)
                 {
-                    throw std::runtime_error(fmt::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    StaticShape<rank> const static_array_shape{
+                        dynamic_shape_to_static_shape<2>(dynamic_array_shape)};
+                    StaticShape<rank> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                        if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                        {
+                            throw std::runtime_error(fmt::format(
+                                "Rank of array shape and partition shape must be equal ({} != {})",
+                                dynamic_array_shape.size(),
+                                dynamic_partition_shape.size()));
+                        }
+
+                        static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = read(
+                        constant::ArrayIO{}, datatype, array_pathname, static_partition_shape, object_id);
                 }
-
-                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
-            }
-            else
-            {
-                static_partition_shape = default_partition_shape(static_array_shape);
             }
 
-            return read(constant::ArrayIO{}, datatype, array_pathname, static_partition_shape, object_id);
+            lue_hpx_assert(result);
+
+            return result;
         }
 
 
-        pybind11::object read_array_py2(
+        auto read_array_py2(
             std::string const& array_pathname,
             pybind11::tuple const& center_cell,
             pybind11::tuple const& subset_shape,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             DynamicShape const center_cell_{tuple_to_shape(center_cell)};
             DynamicShape const subset_shape_{tuple_to_shape(subset_shape)};
@@ -251,11 +290,9 @@ namespace lue::framework {
 
             Rank const rank{2};
 
-            if (rank != 2)
-            {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
+            pybind11::object result;
+
+            verify_rank_supported(rank);
 
             if (center_cell_.size() != rank)
             {
@@ -274,41 +311,55 @@ namespace lue::framework {
                     subset_shape_.size()));
             }
 
-            StaticShape<rank> const static_array_shape{
-                dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
-            StaticShape<rank> static_partition_shape{};
-
-            if (partition_shape)
+            if constexpr (rank_supported(2))
             {
-                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
-
-                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                if (rank == 2)
                 {
-                    throw std::runtime_error(fmt::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    StaticShape<rank> const static_array_shape{
+                        dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
+                    StaticShape<rank> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                        if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                        {
+                            throw std::runtime_error(fmt::format(
+                                "Rank of array shape and partition shape must be equal ({} != {})",
+                                dynamic_array_shape.size(),
+                                dynamic_partition_shape.size()));
+                        }
+
+                        static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    lh5::Hyperslab const hyperslab{lh5::hyperslab(
+                        shape_to_offset(center_cell_), shape_to_shape(subset_shape_), dynamic_array_shape)};
+
+                    result = read(
+                        constant::ArrayIO{hyperslab},
+                        datatype,
+                        array_pathname,
+                        static_partition_shape,
+                        object_id);
                 }
-
-                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
-            }
-            else
-            {
-                static_partition_shape = default_partition_shape(static_array_shape);
             }
 
-            lh5::Hyperslab const hyperslab{lh5::hyperslab(
-                shape_to_offset(center_cell_), shape_to_shape(subset_shape_), dynamic_array_shape)};
+            lue_hpx_assert(result);
 
-            return read(
-                constant::ArrayIO{hyperslab}, datatype, array_pathname, static_partition_shape, object_id);
+            return result;
         }
 
 
-        pybind11::object read_array_py3(
+        auto read_array_py3(
             std::string const& array_pathname,
             Index const time_step_idx,
-            std::optional<pybind11::tuple> const& partition_shape)
+            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
@@ -317,41 +368,49 @@ namespace lue::framework {
 
             Rank const rank{2};
 
-            if (rank != 2)
+            pybind11::object result;
+
+            verify_rank_supported(rank);
+
+            if constexpr (rank_supported(2))
             {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
-
-            StaticShape<rank> const static_array_shape{
-                dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
-            StaticShape<rank> static_partition_shape{};
-
-            if (partition_shape)
-            {
-                DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
-
-                if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                if (rank == 2)
                 {
-                    throw std::runtime_error(fmt::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    StaticShape<rank> const static_array_shape{
+                        dynamic_shape_to_static_shape<rank>(dynamic_array_shape)};
+                    StaticShape<rank> static_partition_shape{};
+
+                    if (partition_shape)
+                    {
+                        DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
+
+                        if (dynamic_array_shape.size() != dynamic_partition_shape.size())
+                        {
+                            throw std::runtime_error(fmt::format(
+                                "Rank of array shape and partition shape must be equal ({} != {})",
+                                dynamic_array_shape.size(),
+                                dynamic_partition_shape.size()));
+                        }
+
+                        static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
+                    }
+                    else
+                    {
+                        static_partition_shape = default_partition_shape(static_array_shape);
+                    }
+
+                    result = read(
+                        variable::ArrayIO{time_step_idx},
+                        datatype,
+                        array_pathname,
+                        static_partition_shape,
+                        object_id);
                 }
-
-                static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
-            }
-            else
-            {
-                static_partition_shape = default_partition_shape(static_array_shape);
             }
 
-            return read(
-                variable::ArrayIO{time_step_idx},
-                datatype,
-                array_pathname,
-                static_partition_shape,
-                object_id);
+            lue_hpx_assert(result);
+
+            return result;
         }
 
     }  // Anonymous namespace

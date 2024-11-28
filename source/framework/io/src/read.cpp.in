@@ -1,0 +1,70 @@
+#include "lue/framework/io/write.hpp"
+#include "lue/framework/partitioned_array.hpp"
+
+
+namespace lue {
+
+    template<typename Array, typename DatasetPtr>
+    auto read(
+        Array const& /* array */,
+        typename data_model::constant::RasterView<DatasetPtr>::Layer const& /* layer */) -> Array
+    {
+        // Create new array with partitions that become ready once their
+        // data has been read
+
+        // Determine the extent of the array
+
+        // Determine a partition size
+
+        // Create a partitioned array
+
+        // Add continuations that read data in each partition
+
+
+        lue_hpx_assert(false);
+
+        return Array{};
+    }
+
+
+    template<typename Array, typename DatasetPtr>
+    auto read(
+        Array const& /* array */,
+        typename data_model::variable::RasterView<DatasetPtr>::Layer const& /* layer */,
+        data_model::Index const /* idx */) -> Array
+    {
+
+        // Create new array with partitions that become ready once their
+        // data has been read
+
+        lue_hpx_assert(false);
+
+        return Array{};
+    }
+
+
+    {% for Element in Elements %}
+        {% for rank in ranks %}
+
+            template PartitionedArray<{{ Element }}, {{ rank }}> read<PartitionedArray<{{ Element }}, {{ rank }}>, data_model::Dataset*>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::constant::RasterView<data_model::Dataset*>::Layer const&);
+
+            template PartitionedArray<{{ Element }}, {{ rank }}> read<PartitionedArray<{{ Element }}, {{ rank }}>, data_model::Dataset*>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::variable::RasterView<data_model::Dataset*>::Layer const&,
+                data_model::Index);
+
+            template PartitionedArray<{{ Element }}, {{ rank }}> read<PartitionedArray<{{ Element }}, {{ rank }}>, std::shared_ptr<data_model::Dataset>>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::constant::RasterView<std::shared_ptr<data_model::Dataset>>::Layer const&);
+
+            template PartitionedArray<{{ Element }}, {{ rank }}> read<PartitionedArray<{{ Element }}, {{ rank }}>, std::shared_ptr<data_model::Dataset>>(
+                PartitionedArray<{{ Element }}, {{ rank }}> const&,
+                data_model::variable::RasterView<std::shared_ptr<data_model::Dataset>>::Layer const&,
+                data_model::Index);
+
+        {% endfor %}
+    {% endfor %}
+
+}  // namespace lue

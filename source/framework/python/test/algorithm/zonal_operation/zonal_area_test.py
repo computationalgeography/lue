@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,6 +16,6 @@ class ZonalAreaTest(lue_test.TestCase):
         array_shape = (60, 40)
         fill_zone = 3
 
-        for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
-            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
-            lfr.zonal_area(zones)
+        for element_type in lfr.zone_element_types:
+            zones = lfr.create_array(array_shape, element_type, fill_zone)
+            _ = lfr.zonal_area(zones)

@@ -1,11 +1,12 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue {
 
-    using CellClass = std::uint8_t;
+    using CellClass = SmallestUnsignedIntegralElement;
     static constexpr CellClass intra_partition_stream_cell = 11;
     static constexpr CellClass ridge_cell = 12;
 
@@ -38,7 +39,8 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, Rank rank>
-    PartitionedArray<CellClass, rank> accu_info3(
-        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
+    auto accu_info3(
+        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> PartitionedArray<CellClass, rank>;
 
 }  // namespace lue

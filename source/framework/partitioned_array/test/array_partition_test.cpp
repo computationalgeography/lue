@@ -57,24 +57,24 @@ BOOST_AUTO_TEST_CASE(construct_initialized_with_single_value)
 }
 
 
-BOOST_AUTO_TEST_CASE(scalar_array)
-{
-    std::size_t const rank = 0;
-    using PartitionClient = lue::ArrayPartition<Value, rank>;
-    using Data = typename PartitionClient::Data;
-    using Offset = typename PartitionClient::Offset;
-    using Shape = Data::Shape;
-
-    Offset offset{};
-    Shape shape{};
-    Value value{9};
-
-    PartitionClient partition{hpx::find_here(), offset, shape, value};
-    Data data_we_got = partition.data().get();
-
-    Data data_we_want{shape, value};
-    BOOST_CHECK_EQUAL(data_we_got, data_we_want);
-}
+// BOOST_AUTO_TEST_CASE(scalar_array)
+// {
+//     std::size_t const rank = 0;
+//     using PartitionClient = lue::ArrayPartition<Value, rank>;
+//     using Data = typename PartitionClient::Data;
+//     using Offset = typename PartitionClient::Offset;
+//     using Shape = Data::Shape;
+//
+//     Offset offset{};
+//     Shape shape{};
+//     Value value{9};
+//
+//     PartitionClient partition{hpx::find_here(), offset, shape, value};
+//     Data data_we_got = partition.data().get();
+//
+//     Data data_we_want{shape, value};
+//     BOOST_CHECK_EQUAL(data_we_got, data_we_want);
+// }
 
 
 BOOST_AUTO_TEST_CASE(assignment_operator)

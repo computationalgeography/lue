@@ -9,7 +9,7 @@ profile = "black"
 # line-length = 110
 
 [tool.codespell]
-skip = "*.cpp,*.hpp,*.tex,*_test.py,pyproject.toml"
+skip = "*.cpp,*.cpp.in,*.hpp,*.hpp.in,*.tex,*_test.py,pyproject.toml"
 ignore-words-list = "nD"
 
 # [tool.pyright]

@@ -2,14 +2,15 @@
 #include "lue/framework/algorithm/value_policies/decreasing_order.hpp"
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using ZoneElement = std::int32_t;
+    using ZoneElement = lue::SignedIntegralElement<0>;
     using RouteID = ZoneElement;
-    using SuitabilityElement = float;
-    using IntegrandElement = float;
+    using SuitabilityElement = lue::FloatingPointElement<0>;
+    using IntegrandElement = lue::FloatingPointElement<0>;
 
     lue::Rank const rank{2};
 
@@ -38,7 +39,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +---+---+  +---+---+
     // | x | 2 |  | 3 | 1 |
     // +---+---+  +---+---+
-    ZoneArray const zone_array = lue::test::create_partitioned_array<ZoneArray>(
+    auto const zone_array = lue::test::create_partitioned_array<ZoneArray>(
         array_shape,
         partition_shape,
         {
@@ -74,7 +75,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // |  4 |  8 |  | 12 |  x |
     // +----+----+  +----+----+
     SuitabilityElement const s{lue::policy::no_data_value<SuitabilityElement>};
-    SuitabilityArray const field = lue::test::create_partitioned_array<SuitabilityArray>(
+    auto const field = lue::test::create_partitioned_array<SuitabilityArray>(
         array_shape,
         partition_shape,
         {
@@ -123,7 +124,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // |  1 |  2 |  |  1 |  2 |
     // +----+----+  +----+----+
     IntegrandElement const i{lue::policy::no_data_value<IntegrandElement>};
-    IntegrandArray const integrand = lue::test::create_partitioned_array<IntegrandArray>(
+    auto const integrand = lue::test::create_partitioned_array<IntegrandArray>(
         array_shape,
         partition_shape,
         {
@@ -160,7 +161,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // +----+----+  +----+----+
     // |  x |  4 |  |  3 |  x |
     // +----+----+  +----+----+
-    IntegrandArray const result_we_want = lue::test::create_partitioned_array<IntegrandArray>(
+    auto const result_we_want = lue::test::create_partitioned_array<IntegrandArray>(
         array_shape,
         partition_shape,
         {

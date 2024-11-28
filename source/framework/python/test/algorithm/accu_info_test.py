@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,11 +16,7 @@ class AccuInfoTest(lue_test.TestCase):
         array_shape = (60, 40)
 
         direction = 4
-        flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-
-        (
-            stream_class,
-            partition_class,
-            solvable_fraction,
-            nr_cells_to_solve,
-        ) = lfr.accu_info(flow_direction)
+        flow_direction = lfr.create_array(
+            array_shape, lfr.flow_direction_element_type, direction
+        )
+        _ = lfr.accu_info3(flow_direction)

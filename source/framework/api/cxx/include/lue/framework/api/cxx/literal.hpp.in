@@ -1,0 +1,23 @@
+#pragma once
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include <cstdint>
+
+
+namespace lue::api {
+
+    /*!
+        @brief      Class for representing literals
+    */
+    class Literal:
+        public VariantWrapper<
+            {{ Elements | join(", ") }}
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+}  // namespace lue::api

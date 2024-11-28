@@ -1,0 +1,11 @@
+#pragma once
+#include "lue/framework/algorithm/value_policies/clump.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_area.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_diversity.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_majority.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_maximum.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_mean.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_minimum.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_normal.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_sum.hpp"
+#include "lue/framework/algorithm/value_policies/zonal_uniform.hpp"

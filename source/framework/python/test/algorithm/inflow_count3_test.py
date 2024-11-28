@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,5 +16,7 @@ class InflowCount3Test(lue_test.TestCase):
         array_shape = (60, 40)
 
         for direction in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            flow_direction = lfr.create_array(array_shape, np.uint8, direction)
-            count = lfr.inflow_count3(flow_direction)
+            flow_direction = lfr.create_array(
+                array_shape, lfr.flow_direction_element_type, direction
+            )
+            _ = lfr.inflow_count3(flow_direction)

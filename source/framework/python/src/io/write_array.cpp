@@ -1,6 +1,7 @@
 #include "lue/framework/io/write_into.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lh5 = lue::hdf5;
@@ -12,20 +13,16 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        hpx::future<void> write_constant_array(
+        auto write_constant_array(
             [[maybe_unused]] PartitionedArray<Element, rank> const& array,
-            [[maybe_unused]] std::string const& array_pathname)
+            [[maybe_unused]] std::string const& array_pathname) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
             auto const [object_id, _, file_datatype] =
                 ldm::constant::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
-            if (rank != 2)
-            {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
+            verify_rank_supported(rank);
 
             using Policies = policy::write_into::DefaultValuePolicies<Element>;
 
@@ -34,47 +31,45 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        hpx::future<void> write_variable_array(
+        auto write_variable_array(
             [[maybe_unused]] PartitionedArray<Element, rank> const& array,
             [[maybe_unused]] Index const time_step_idx,
-            [[maybe_unused]] std::string const& array_pathname)
+            [[maybe_unused]] std::string const& array_pathname) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
             auto const [object_id, _, file_datatype] =
                 ldm::variable::probe_raster(dataset_pathname, phenomenon_name, property_set_name, layer_name);
 
-            if (rank != 2)
-            {
-                throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
-            }
+            verify_rank_supported(rank);
 
             using Policies = policy::write_into::DefaultValuePolicies<Element>;
 
             return write(Policies{}, array, array_pathname, object_id, time_step_idx);
         }
 
+
+        class Binder
+        {
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    module.def("write_array", write_constant_array<Element, rank>);
+                    module.def("write_array", write_variable_array<Element, rank>);
+                }
+        };
+
     }  // Anonymous namespace
 
 
     void bind_write_array(pybind11::module& module)
     {
-        module.def("write_array", write_constant_array<uint8_t, 2>);
-        module.def("write_array", write_constant_array<uint32_t, 2>);
-        module.def("write_array", write_constant_array<uint64_t, 2>);
-        module.def("write_array", write_constant_array<int32_t, 2>);
-        module.def("write_array", write_constant_array<int64_t, 2>);
-        module.def("write_array", write_constant_array<float, 2>);
-        module.def("write_array", write_constant_array<double, 2>);
-
-        module.def("write_array", write_variable_array<uint8_t, 2>);
-        module.def("write_array", write_variable_array<uint32_t, 2>);
-        module.def("write_array", write_variable_array<uint64_t, 2>);
-        module.def("write_array", write_variable_array<int32_t, 2>);
-        module.def("write_array", write_variable_array<int64_t, 2>);
-        module.def("write_array", write_variable_array<float, 2>);
-        module.def("write_array", write_variable_array<double, 2>);
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

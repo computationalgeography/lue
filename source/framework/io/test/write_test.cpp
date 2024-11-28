@@ -1,10 +1,11 @@
 #define BOOST_TEST_MODULE lue framework io write
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/io/read_into.hpp"
 #include "lue/framework/io/write_into.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
+#include "lue/framework.hpp"
 #include <hpx/config.hpp>
 
 
@@ -27,7 +28,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 
     ldm::ID object_id{};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<0>;
 
     {
         // Prepare a dataset for storing the rasters in
@@ -68,19 +69,19 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // elevation_t will contain values from the closed interval:
     // [lowest_value + t, highest_value + t]
     Element const lowest_value{-5000};
-    Element const highest_value{std::nextafter(-1000, std::numeric_limits<Element>::max())};
+    Element const highest_value{std::nextafter(Element{-1000}, std::numeric_limits<Element>::max())};
 
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
-        Array elevation_written = lue::default_policies::uniform(
+        Array elevation_written = lue::value_policies::uniform(
             grid_shape,
             partition_shape,
-            Element{lowest_value + time_step},
-            Element{highest_value + time_step});
-        write(elevation_written, array_pathname, object_id, time_step).get();
+            lowest_value + static_cast<Element>(time_step),
+            highest_value + static_cast<Element>(time_step));
+        write(elevation_written, array_pathname, object_id, static_cast<lue::Index>(time_step)).get();
 
-        Array elevation_read =
-            lue::read<Element, rank>(array_pathname, partition_shape, object_id, time_step);
+        Array elevation_read = lue::read<Element, rank>(
+            array_pathname, partition_shape, object_id, static_cast<lue::Index>(time_step));
 
         lue::test::check_arrays_are_equal(elevation_read, elevation_written);
     }
@@ -100,10 +101,10 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     std::string const array_pathname{
         fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
-    ldm::Count const nr_rows{62};
-    ldm::Count const nr_cols{42};
+    ldm::Count const nr_rows{60};
+    ldm::Count const nr_cols{40};
 
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
 
     ldm::ID object_id{};
 
@@ -133,11 +134,12 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::Count const nr_cols_partition{4};
     Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
-    Element const min_value{5};
-    Element const max_value{5555};
-
-    Array elevation_written =
-        lue::default_policies::uniform<Element>(grid_shape, partition_shape, min_value, max_value);
+    // auto condition = lue::create_partitioned_array<lue::BooleanElement>(
+    //     grid_shape, partition_shape, lue::BooleanElement{1});
+    // Crashes on Windows (Release)... Use uniform instead for now.
+    // Array elevation_written = lue::value_policies::unique_id<Element>(condition);
+    Array elevation_written = lue::value_policies::uniform<Element>(
+        grid_shape, partition_shape, Element{0}, Element{10});
 
     write(elevation_written, array_pathname, object_id).get();
 

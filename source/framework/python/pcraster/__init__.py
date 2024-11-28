@@ -21,7 +21,7 @@ used are the PCRaster ones:
 - int32 for nominal and ordinal values
 - float32 for scalar and directional values
 
-LUE itself supports additional cell representations (uint32, int64, uint64, float64).
+LUE itself supports additional cell representations (int8, uint32, int64, uint64, float64).
 
 LUE does not have the notion of non-spatial. This is relevant when passing two "non-spatial"
 arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in effect.
@@ -132,6 +132,12 @@ def clone():
 
 def setglobaloption(option):
     print(f"lue.pcraster: discarding global option {option}\n")
+
+
+arithmetic_element_types = [np.uint8, np.int32, np.float32]
+boolean_element_type = np.uint8
+flow_direction_element_type = np.uint8
+floating_point_element_types = [np.float32]
 
 
 def numpy_scalar_type(expression):
@@ -319,6 +325,7 @@ def lue_is_value(argument):
         (
             int,
             float,
+            np.int8,
             np.int32,
             np.int64,
             np.uint8,
@@ -456,7 +463,9 @@ def accufraction(flow_direction, material, transportcapacity):
 
     if is_non_spatial(transportcapacity):
         # TODO Support non-spatial transportcapacity
-        transportcapacity = non_spatial_to_spatial(fill_value=transportcapacity, template=flow_direction)
+        transportcapacity = non_spatial_to_spatial(
+            fill_value=transportcapacity, template=flow_direction
+        )
 
     return lfr.accu_fraction(flow_direction, material, transportcapacity)
 
@@ -482,7 +491,9 @@ def accuthreshold(flow_direction, material, threshold):
 
     if is_non_spatial(threshold):
         # TODO Support non-spatial threshold
-        threshold = non_spatial_to_spatial(fill_value=threshold, template=flow_direction)
+        threshold = non_spatial_to_spatial(
+            fill_value=threshold, template=flow_direction
+        )
 
     return lfr.accu_threshold3(flow_direction, material, threshold)
 

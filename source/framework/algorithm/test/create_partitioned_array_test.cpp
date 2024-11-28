@@ -12,11 +12,13 @@
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
+#include <type_traits>
 
 
 namespace {
 
-    using Element = std::int64_t;
+    using Element = lue::LargestSignedIntegralElement;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
@@ -29,7 +31,6 @@ namespace {
 
     template<typename Element, lue::Rank rank>
     class NumberPartitionsIndividually
-
     {
 
         public:
@@ -43,15 +44,17 @@ namespace {
 
 
             template<typename Policies>
-            Partition instantiate(
+            auto instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
                 lue::Index const partition_idx,
                 Offset const& offset,
-                Shape const& partition_shape)
+                Shape const& partition_shape) -> Partition
             {
-                Element const fill_value{partition_idx};
+                assert(partition_idx < 128);  // In case Element is int8_t
+
+                Element const fill_value{static_cast<Element>(partition_idx)};
 
                 return hpx::async(
 
@@ -68,10 +71,10 @@ namespace {
     template<
         // typename Policies,
         typename Partition>
-    std::vector<Partition> number_partition_per_locality(
+    auto number_partition_per_locality(
         // Policies const& /* policies */,
         std::vector<lue::OffsetT<Partition>> const& offsets,
-        std::vector<lue::ShapeT<Partition>> const& partition_shapes)
+        std::vector<lue::ShapeT<Partition>> const& partition_shapes) -> std::vector<Partition>
     {
         using Element = lue::ElementT<Partition>;
 
@@ -133,12 +136,12 @@ namespace {
 
 
             template<typename Policies>
-            hpx::future<std::vector<Partition>> instantiate(
+            auto instantiate(
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
                 std::vector<Offset> offsets,
-                std::vector<Shape> partition_shapes)
+                std::vector<Shape> partition_shapes) -> hpx::future<std::vector<Partition>>
             {
                 // Spawn a task that will create all partitions for. It must
                 // immediately return a collection of partitions which we
@@ -166,24 +169,28 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
 {
-    // Create a partitioned array in which the elements of the partitions
-    // have a unique value per partition. Each partition contains
-    // different numbers. The elements within each partition have the
-    // same number.
-    using namespace lue::default_policies;
+    if constexpr (lue::BuildOptions::default_policies_enabled)
+    {
+        // Create a partitioned array in which the elements of the partitions
+        // have a unique value per partition. Each partition contains
+        // different numbers. The elements within each partition have the
+        // same number.
+        using namespace lue::default_policies;
 
-    using Functor = NumberPartitionsIndividually<Element, rank>;
+        using Functor = NumberPartitionsIndividually<Element, rank>;
 
-    Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
+        Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
-    // The number of unique values per partition is 1
-    // Per partition a single count >= 0
-    lue::PartitionedArray<std::int64_t, 2> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(counts == std::int64_t{1}).future().get());
+        // The number of unique values per partition is 1
+        // Per partition a single count >= 0
+        using Count = lue::LargestSignedIntegralElement;
+        lue::PartitionedArray<Count, 2> counts = lue::partition_count_unique<Element, Count>(array);
+        BOOST_CHECK(all(counts == Count{1}).future().get());
 
-    // The number of unique values in the array equals the number of partitions
-    std::set<Element> const unique_values = unique(array).get();
-    BOOST_CHECK_EQUAL(unique_values.size(), lue::nr_partitions(array));
+        // The number of unique values in the array equals the number of partitions
+        std::set<Element> const unique_values = unique(array).get();
+        BOOST_CHECK_EQUAL(unique_values.size(), lue::nr_partitions(array));
+    }
 }
 
 
@@ -193,20 +200,28 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
     // have a unique value per partition per locality. The partitions
     // instantiated within the same locality contain the same numbers. The
     // elements within each partition have the same number.
+    if constexpr (lue::BuildOptions::default_policies_enabled)
+    {
+        using namespace lue::default_policies;
 
-    using namespace lue::default_policies;
+        if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+        {
+            using Element = std::uint32_t;  // locality IDs are uint32_t
+            using Functor = NumberPartitionsPerLocality<Element, rank>;
+            using Array = lue::PartitionedArray<Element, rank>;
 
-    using Functor = NumberPartitionsPerLocality<Element, rank>;
+            Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
-    Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
+            // The number of unique values per partition is 1
+            using Count = lue::LargestSignedIntegralElement;
+            lue::PartitionedArray<Count, rank> counts = lue::partition_count_unique<Element, Count>(array);
+            BOOST_CHECK(all(counts == Count{1}).future().get());
 
-    // The number of unique values per partition is 1
-    lue::PartitionedArray<std::int64_t, rank> counts = lue::partition_count_unique(array);
-    BOOST_CHECK(all(counts == std::int64_t{1}).future().get());
-
-    // The number of unique values in the array equals the number of localities
-    std::set<Element> const unique_values = unique(array).get();
-    BOOST_CHECK_EQUAL(unique_values.size(), hpx::get_num_localities().get());
+            // The number of unique values in the array equals the number of localities
+            std::set<Element> const unique_values = unique(array).get();
+            BOOST_CHECK_EQUAL(unique_values.size(), hpx::get_num_localities().get());
+        }
+    }
 }
 
 
@@ -252,22 +267,24 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     // Create a partitioned array filled with a value and verify that
     // all cells contain this fill value. Even cells in partitions at the
     // border of the array.
+    if constexpr (lue::BuildOptions::default_policies_enabled)
+    {
+        using namespace lue::default_policies;
 
-    using namespace lue::default_policies;
+        lue::Count const nr_rows = 300;
+        lue::Count const nr_cols = 400;
+        Shape const array_shape{{nr_rows, nr_cols}};
 
-    lue::Count const nr_rows = 300;
-    lue::Count const nr_cols = 400;
-    Shape const array_shape{{nr_rows, nr_cols}};
+        lue::Count const nr_rows_partition = 43;
+        lue::Count const nr_cols_partition = 43;
+        Shape const partition_shape{{nr_rows_partition, nr_cols_partition}};
 
-    lue::Count const nr_rows_partition = 43;
-    lue::Count const nr_cols_partition = 43;
-    Shape const partition_shape{{nr_rows_partition, nr_cols_partition}};
+        Element const fill_value{33};
 
-    Element const fill_value{33};
+        Array array = lue::create_partitioned_array(array_shape, partition_shape, fill_value);
 
-    Array array = lue::create_partitioned_array(array_shape, partition_shape, fill_value);
-
-    BOOST_CHECK(all(array == fill_value).future().get());
+        BOOST_CHECK(all(array == fill_value).future().get());
+    }
 }
 
 
@@ -302,8 +319,8 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     // Create an object, pointed to by a reference counted object. Complicate things a bit so
     // we can mimic an actual use-case with some foreign data structure.
-    std::size_t const nr_rows{60};
-    std::size_t const nr_cols{40};
+    std::size_t const nr_rows{9};
+    std::size_t const nr_cols{10};
     std::size_t const nr_values{nr_rows * nr_cols};
 
     using Buffer = std::vector<Element>;
@@ -314,7 +331,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     // Create a partitioned array, passing in the buffer
     Shape const array_shape{{nr_rows, nr_cols}};
-    Shape const partition_shape{{10, 10}};
+    Shape const partition_shape{{3, 5}};
 
     using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
 
@@ -330,7 +347,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
     BOOST_CHECK_EQUAL(array.shape(), array_shape);
-    BOOST_REQUIRE_EQUAL(array.nr_partitions(), 6 * 4);
+    BOOST_REQUIRE_EQUAL(array.nr_partitions(), 3 * 2);
 
     auto const& partitions = array.partitions();
     lue::wait_all(partitions);
@@ -376,66 +393,73 @@ BOOST_AUTO_TEST_CASE(use_case_3)
 {
     // Create a partitioned array given an existing buffer containing values to copy into
     // the array. Mark specific values from the buffer as no-data in the array.
-
-    using namespace lue::value_policies;
-
-    // Create an object, pointed to by a reference counted object
-    std::size_t const nr_rows{60};
-    std::size_t const nr_cols{40};
-    std::size_t const nr_values{nr_rows * nr_cols};
-
-    using Buffer = Element[];
-    using BufferHandle = boost::shared_ptr<Buffer>;
-
-    BufferHandle buffer_handle = boost::make_shared<Buffer>(nr_values);
-    std::fill_n(buffer_handle.get(), nr_values, 5);
-
-    // Put a special no-data value in the first cell of each partition
-    for (lue::Index i0 = 0; i0 < 6; ++i0)
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
-        for (lue::Index i1 = 0; i1 < 4; ++i1)
+        using namespace lue::value_policies;
+
+        // Create an object, pointed to by a reference counted object
+        std::size_t const nr_rows{60};
+        std::size_t const nr_cols{40};
+        std::size_t const nr_values{nr_rows * nr_cols};
+
+        using Buffer = Element[];
+        using BufferHandle = boost::shared_ptr<Buffer>;
+
+        BufferHandle buffer_handle = boost::make_shared<Buffer>(nr_values);
+        std::fill_n(buffer_handle.get(), nr_values, 5);
+
+        // Put a special no-data value in the first cell of each partition
+        for (lue::Index i0 = 0; i0 < 6; ++i0)
         {
-            buffer_handle.get()[i0 * 10 * nr_cols + i1 * 10] = 999;
-        }
-    }
-
-    // Create a partitioned array, passing in the buffer
-    Shape const array_shape{{nr_rows, nr_cols}};
-    Shape const partition_shape{{10, 10}};
-
-    using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
-
-    Functor functor{
-        buffer_handle,  // Copy: increments reference count
-        [](BufferHandle const& handle) -> Element* { return handle.get(); },
-        999};
-
-    using CreatePartitionedArrayPolicies =
-        lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
-    Array array = lue::create_partitioned_array(
-        CreatePartitionedArrayPolicies{}, array_shape, partition_shape, functor);
-
-    // In each partition we put a no-data value, so the number of no-data values must be equal
-    // to the number of partitions.
-    BOOST_CHECK_EQUAL(
-        lue::default_policies::sum(!valid<std::uint8_t>(array)).future().get(), array.nr_partitions());
-
-    // Now test these explicitly. All other values must then be valid, by definition.
-    auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
-
-    lue::policy::DefaultOutputNoDataPolicy<Element> ondp{};
-
-    for (lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
-    {
-        for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
-        {
-            BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+            for (lue::Index i1 = 0; i1 < 4; ++i1)
             {
-                auto const& partition{array.partitions()(partition0, partition1)};
-                auto const data{partition.data().get()};
+                buffer_handle.get()[i0 * 10 * nr_cols + i1 * 10] = 111;
+            }
+        }
 
-                BOOST_CHECK(ondp.is_no_data(data, 0, 0));
-                BOOST_CHECK(!ondp.is_no_data(data, 0, 1));
+        // Create a partitioned array, passing in the buffer
+        Shape const array_shape{{nr_rows, nr_cols}};
+        Shape const partition_shape{{10, 10}};
+
+        using Functor = lue::InstantiateFromBuffer<BufferHandle, rank>;
+
+        Functor functor{
+            buffer_handle,  // Copy: increments reference count
+            [](BufferHandle const& handle) -> Element* { return handle.get(); },
+            111};
+
+        using CreatePartitionedArrayPolicies =
+            lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
+        Array array = lue::create_partitioned_array(
+            CreatePartitionedArrayPolicies{}, array_shape, partition_shape, functor);
+
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            // In each partition we put a no-data value, so the number of no-data values must be equal
+            // to the number of partitions.
+            BOOST_CHECK_EQUAL(
+                lue::default_policies::sum(!valid<lue::BooleanElement>(array)).future().get(),
+                array.nr_partitions());
+        }
+
+        // Now test these explicitly. All other values must then be valid, by definition.
+        auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
+
+        lue::policy::DefaultOutputNoDataPolicy<Element> ondp{};
+
+        for (lue::Index partition0 = 0; partition0 < nr_partitions0; ++partition0)
+        {
+            for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
+            {
+                BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+                {
+                    auto const& partition{array.partitions()(partition0, partition1)};
+                    partition.wait();
+                    auto const data{partition.data().get()};
+
+                    BOOST_CHECK(ondp.is_no_data(data, 0, 0));
+                    BOOST_CHECK(!ondp.is_no_data(data, 0, 1));
+                }
             }
         }
     }

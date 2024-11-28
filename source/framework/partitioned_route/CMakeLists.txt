@@ -2,17 +2,33 @@ add_test_conditionally(test)
 
 
 # Instantiate serial route partition classes -----------------------------------
-set(ranks 1 2)
 set(generated_source_files "")
 
 block()
-    set(count "0")
+    set(offset "include/lue/framework/partitioned_route/server")
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/serial_route_partition.hpp")
 
-    foreach(rank IN LISTS ranks)
-        foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-            math(EXPR count "${count} + 1")
+    set(Elements ${LUE_FRAMEWORK_ZONE_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${count}.cpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/serial_route_partition.hpp.in"
+        OUTPUT_PATHNAME
+            "${output_pathname}"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+
+    list(APPEND generated_source_files "${output_pathname}")
+
+    foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+        string(REPLACE "::" "_" element ${RouteID})
+
+        foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -24,7 +40,7 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/serial_route_partition-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -81,6 +97,7 @@ target_sources(lue_framework_partitioned_route
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
 )
 
 lue_install_development_libraries(

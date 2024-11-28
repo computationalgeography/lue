@@ -1,6 +1,10 @@
 #include "lue/py/framework/submodule.hpp"
 #include "hpx_runtime.hpp"
+#include "lue/framework/algorithm/timestamp.hpp"
+#include "lue/concept.hpp"
+#include "lue/framework.hpp"
 #include "lue/gdal.hpp"
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
 
@@ -36,9 +40,26 @@ namespace lue::framework {
         }
 
 
-        bool on_root_locality()
+        auto on_root_locality() -> bool
         {
             return hpx::find_here() == hpx::find_root_locality();
+        }
+
+
+        template<Arithmetic Element>
+        auto type_of() -> pybind11::object
+        {
+            return pybind11::dtype::of<Element>().attr("type");
+        }
+
+
+        // TODO Find a way to do this without an Elements instance. We only have to iterate over the tuple's
+        // types.
+
+        template<typename... Elements>
+        auto type_of([[maybe_unused]] std::tuple<Elements...>&& elements) -> std::vector<pybind11::object>
+        {
+            return {type_of<Elements>()...};
         }
 
     }  // Anonymous namespace
@@ -97,6 +118,21 @@ namespace lue::framework {
 
         bind_hpx(submodule);
 
+        // Wrap configuration settings
+        submodule.attr("arithmetic_element_types") = type_of(ArithmeticElements{});
+        submodule.attr("unsigned_integral_element_types") = type_of(UnsignedIntegralElements{});
+        submodule.attr("signed_integral_element_types") = type_of(SignedIntegralElements{});
+        submodule.attr("integral_element_types") = type_of(IntegralElements{});
+        submodule.attr("floating_point_element_types") = type_of(FloatingPointElements{});
+        submodule.attr("signed_arithmetic_element_types") = type_of(SignedArithmeticElements{});
+        submodule.attr("material_element_types") = type_of(MaterialElements{});
+        submodule.attr("zone_element_types") = type_of(ZoneElements{});
+        submodule.attr("boolean_element_type") = type_of<BooleanElement>();
+        submodule.attr("count_element_type") = type_of<CountElement>();
+        submodule.attr("id_element_type") = type_of<IDElement>();
+        submodule.attr("index_element_type") = type_of<IndexElement>();
+        submodule.attr("flow_direction_element_type") = type_of<FlowDirectionElement>();
+
         // Wrap high-level data structures
         bind_scalar(submodule);
         bind_partitioned_array(submodule);
@@ -115,9 +151,18 @@ namespace lue::framework {
         bind_write_array(submodule);
 
         bind_array_partition_id(submodule);
-        bind_locality_id(submodule);
+
+        if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+        {
+            bind_locality_id(submodule);
+        }
+
+        if constexpr (lue::arithmetic_element_supported<ClockTick>)
+        {
+            bind_timestamp(submodule);
+        }
+
         bind_normal(submodule);
-        bind_timestamp(submodule);
         bind_uniform(submodule);
 
         bind_model(submodule);

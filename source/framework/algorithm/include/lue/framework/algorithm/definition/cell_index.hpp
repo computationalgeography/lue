@@ -18,6 +18,9 @@ namespace lue {
             // TODO Generalize for all ranks and all dimension_idx values. Use mdspan?
             static_assert(rank<ConditionPartition> == 2);
 
+            static_assert(std::is_same_v<policy::InputElementT<Policies, 0>, ElementT<ConditionPartition>>);
+            static_assert(std::is_same_v<policy::OutputElementT<Policies, 0>, IndexElement>);
+
             using Offset = OffsetT<ConditionPartition>;
             using ConditionElement = ElementT<ConditionPartition>;
             using ConditionData = DataT<ConditionPartition>;

@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/aspect.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -21,7 +22,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     lue::Count const nr_rows{5};
     lue::Count const nr_cols{5};
 
-    using Element = double;
+    using Element = lue::FloatingPointElement<lue::nr_floating_point_elements - 1>;
     lue::Rank const rank{2};
 
     using Array = lue::PartitionedArray<Element, rank>;

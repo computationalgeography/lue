@@ -1,10 +1,44 @@
 add_test_conditionally(test)
 
+block()
+    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/raster.cpp.in"
+        OUTPUT_PATHNAME
+            "${CMAKE_CURRENT_BINARY_DIR}/src/raster.cpp"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/read.cpp.in"
+        OUTPUT_PATHNAME
+            "${CMAKE_CURRENT_BINARY_DIR}/src/read.cpp"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/src/write.cpp.in"
+        OUTPUT_PATHNAME
+            "${CMAKE_CURRENT_BINARY_DIR}/src/write.cpp"
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+    )
+endblock()
+
 add_library(lue_framework_io
-    src/raster.cpp
-    src/read.cpp
     src/util.cpp
-    src/write.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/raster.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/read.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/write.cpp
 )
 
 add_library(lue::framework_io ALIAS lue_framework_io)

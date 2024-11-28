@@ -113,20 +113,20 @@ namespace lue {
         typename MaterialElement,
         typename FractionElement,
         Rank rank>
-    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
-    accu_fraction(
+    auto accu_fraction(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& material,
-        PartitionedArray<FractionElement, rank> const& fraction);
+        PartitionedArray<FractionElement, rank> const& fraction)
+        -> std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>;
 
 
     template<typename FlowDirectionElement, typename MaterialElement, typename FractionElement, Rank rank>
-    std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
-    accu_fraction(
+    auto accu_fraction(
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& material,
         PartitionedArray<FractionElement, rank> const& fraction)
+        -> std::tuple<PartitionedArray<MaterialElement, rank>, PartitionedArray<MaterialElement, rank>>
     {
         using Policies =
             policy::accu_fraction::DefaultPolicies<FlowDirectionElement, MaterialElement, FractionElement>;

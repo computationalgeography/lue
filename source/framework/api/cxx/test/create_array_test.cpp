@@ -1,11 +1,12 @@
 #define BOOST_TEST_MODULE lue framework api cxx create_array
 #include "lue/framework/api/cxx/create_array.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(create_array)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
     using Array = lue::PartitionedArray<Element, 2>;
     using Shape = lue::ShapeT<Array>;
@@ -33,7 +34,7 @@ BOOST_AUTO_TEST_CASE(create_array)
 
 BOOST_AUTO_TEST_CASE(create_array_without_partition_shape)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
     using Array = lue::PartitionedArray<Element, 2>;
     using Shape = lue::ShapeT<Array>;

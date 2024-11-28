@@ -2,6 +2,7 @@
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/downstream_distance.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
@@ -11,7 +12,7 @@ namespace {
 
     std::size_t const rank = 2;
 
-    using DistanceElement = double;
+    using DistanceElement = lue::FloatingPointElement<0>;
     using DistanceArray = lue::PartitionedArray<DistanceElement, rank>;
 
     template<typename Policies, typename FlowDirectionElement, typename DistanceElement, lue::Rank rank>

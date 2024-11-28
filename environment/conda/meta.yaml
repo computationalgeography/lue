@@ -26,7 +26,8 @@ requirements:
   host:
     - python
     - numpy
-    - libboost-devel
+    - libboost-devel  # Only CMake scripts (BoostConfig.cmake, etc)
+    - libboost-headers  # Only headers
     - hdf5
     - hpx
     - libgdal

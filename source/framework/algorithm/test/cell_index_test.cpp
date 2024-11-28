@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm cell_index
 #include "lue/framework/algorithm/value_policies/cell_index.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 template<typename ConditionElement, typename IndexElement>
@@ -22,11 +23,11 @@ void test_cell_index(
 
 BOOST_AUTO_TEST_CASE(single_partition)
 {
-    using ConditionElement = std::uint8_t;
-    using IndexElement = std::uint64_t;
+    using ConditionElement = lue::BooleanElement;
+    using IndexElement = lue::IndexElement;
 
-    auto const cx{lue::no_data<ConditionElement>};
-    auto const ix{lue::no_data<IndexElement>};
+    auto const cx{lue::policy::no_data_value<ConditionElement>};
+    auto const ix{lue::policy::no_data_value<IndexElement>};
 
     test_cell_index<ConditionElement, IndexElement>(
         {3, 3},
@@ -64,11 +65,11 @@ BOOST_AUTO_TEST_CASE(single_partition)
 
 BOOST_AUTO_TEST_CASE(multiple_partitions)
 {
-    using ConditionElement = std::uint8_t;
-    using IndexElement = std::uint64_t;
+    using ConditionElement = lue::BooleanElement;
+    using IndexElement = lue::IndexElement;
 
-    auto const cx{lue::no_data<ConditionElement>};
-    auto const ix{lue::no_data<IndexElement>};
+    auto const cx{lue::policy::no_data_value<ConditionElement>};
+    auto const ix{lue::policy::no_data_value<IndexElement>};
 
     test_cell_index<ConditionElement, IndexElement>(
         {6, 6},

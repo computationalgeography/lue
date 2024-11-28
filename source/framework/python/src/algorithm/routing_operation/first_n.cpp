@@ -1,39 +1,34 @@
 #include "lue/framework/algorithm/value_policies/first_n.hpp"
-#include <pybind11/pybind11.h>
+#include "lue/framework/configure.hpp"
+#include "lue/py/bind.hpp"
 
 
 namespace lue::framework {
-    namespace detail {
+    namespace {
 
-        template<typename RouteID, Rank rank>
-        auto first_n(SerialRoute<RouteID, rank> const& route, Count const max_nr_cells)
-            -> PartitionedArray<RouteID, rank>
+        class Binder
         {
-            // TODO Make the output element type configurable?
-            using OutputElement = RouteID;
 
-            return lue::value_policies::first_n<OutputElement>(route, max_nr_cells);
-        }
+            public:
 
+                template<typename RouteID>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
 
-        template<typename RouteID, Rank rank>
-        auto bind_first_n(pybind11::module& module)
-        {
-            module.def("first_n", first_n<RouteID, rank>);
-        }
+                    module.def(
+                        "first_n",
+                        [](SerialRoute<RouteID, rank> const& route, Count const max_nr_cells)
+                        { lue::value_policies::first_n<RouteID>(route, max_nr_cells); });
+                }
+        };
 
-    }  // namespace detail
+    }  // Anonymous namespace
 
 
     void bind_first_n(pybind11::module& module)
     {
-        Rank const rank{2};
-
-        detail::bind_first_n<std::uint8_t, rank>(module);
-        detail::bind_first_n<std::uint32_t, rank>(module);
-        detail::bind_first_n<std::uint64_t, rank>(module);
-        detail::bind_first_n<std::int32_t, rank>(module);
-        detail::bind_first_n<std::int64_t, rank>(module);
+        bind<Binder, IntegralElements>(module);
     }
 
 }  // namespace lue::framework

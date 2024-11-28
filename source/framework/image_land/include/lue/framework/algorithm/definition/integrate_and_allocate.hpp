@@ -120,11 +120,17 @@ namespace lue::detail::integrate_and_allocate {
                 assert(_zonal_demand_by_crop.find(zone) != _zonal_demand_by_crop.end());
 
                 auto const& demand{_zonal_demand_by_crop.at(zone)};
+
+#ifndef NDEBUG
                 auto const nr_crops = std::size(demand);
-
                 assert(crop_idx < static_cast<Index>(nr_crops));
+#endif
 
-                return demand[nr_crops];
+                // TODO A year later this seems wrong. Shouldn't demand_met be indexed by crop_idx?
+                // TODO Changed it. Revisit once we're working on these operations again.
+                // return demand[nr_crops];
+
+                return demand[crop_idx];
             }
 
 
@@ -134,9 +140,11 @@ namespace lue::detail::integrate_and_allocate {
                 assert(_zonal_production_by_crop.find(zone) != _zonal_production_by_crop.end());
 
                 auto const& production{_zonal_production_by_crop.at(zone)};
-                auto const nr_crops = std::size(production);
 
+#ifndef NDEBUG
+                auto const nr_crops = std::size(production);
                 assert(crop_idx < static_cast<Index>(nr_crops));
+#endif
 
                 return production[crop_idx];
             }
@@ -145,7 +153,14 @@ namespace lue::detail::integrate_and_allocate {
             auto set_production(
                 ZoneElement const zone, Index const crop_idx, FloatingPointElement const production) -> void
             {
-                _zonal_production_by_crop.at(zone)[crop_idx] = production;
+                auto& production_{_zonal_production_by_crop.at(zone)};
+
+#ifndef NDEBUG
+                auto const nr_crops = std::size(production_);
+                assert(crop_idx < static_cast<Index>(nr_crops));
+#endif
+
+                production_[crop_idx] = production;
             }
 
 
@@ -154,11 +169,17 @@ namespace lue::detail::integrate_and_allocate {
                 assert(_zonal_demand_met.find(zone) != _zonal_demand_met.end());
 
                 auto const& demand_met{_zonal_demand_met.at(zone)};
+
+#ifndef NDEBUG
                 auto const nr_crops = std::size(demand_met);
-
                 assert(crop_idx < static_cast<Index>(nr_crops));
+#endif
 
-                return demand_met[nr_crops];
+                // TODO A year later this seems wrong. Shouldn't demand_met be indexed by crop_idx?
+                // TODO Changed it. Revisit once we're working on these operations again.
+                // return demand_met[nr_crops];
+
+                return demand_met[crop_idx];
             }
 
 
@@ -307,7 +328,7 @@ namespace lue::detail::integrate_and_allocate {
                 }
 
 
-                std::tuple<CropFractionPartitions, ZonalProductionsF> results()
+                auto results() -> std::tuple<CropFractionPartitions, ZonalProductionsF>
                 {
                     // Connect the promises with the futures
                     // This function must be called exactly once
@@ -928,7 +949,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<std::tuple<CropFractionPartitions, ZonalProductionsF>> results() const
+            auto results() const -> hpx::future<std::tuple<CropFractionPartitions, ZonalProductionsF>>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -939,7 +960,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> set_downstream_components(std::map<hpx::id_type, Walk>&& components)
+            auto set_downstream_components(std::map<hpx::id_type, Walk>&& components) -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -950,8 +971,8 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> walk(
-                RouteID const route_id, Data<RouteID, ZoneElement, ProductionElement> data) const
+            auto walk(RouteID const route_id, Data<RouteID, ZoneElement, ProductionElement> data) const
+                -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());
@@ -962,7 +983,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            hpx::future<void> skip_walking_route_fragments(RouteID const route_id) const
+            auto skip_walking_route_fragments(RouteID const route_id) const -> hpx::future<void>
             {
                 lue_hpx_assert(this->is_ready());
                 lue_hpx_assert(this->get_id());

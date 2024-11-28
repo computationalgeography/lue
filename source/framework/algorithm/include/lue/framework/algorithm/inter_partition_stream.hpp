@@ -26,7 +26,7 @@ namespace lue {
             using CellIdxs = lue::Indices<Index, rank>;
             using CellsIdxs = std::vector<CellIdxs>;
 
-            using Count = std::uint64_t;
+            using Count = CountElement;
 
 
             InterPartitionStreamMaterial():
@@ -60,7 +60,7 @@ namespace lue {
             }
 
 
-            CellsIdxs const& input_cells_idxs() const
+            auto input_cells_idxs() const -> CellsIdxs const&
             {
                 return _input_cells_idxs;
             }
@@ -86,7 +86,7 @@ namespace lue {
             void serialize(
                 hpx::serialization::input_archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _input_cells_idxs& _stream_class& _count;
+                archive & _input_cells_idxs & _stream_class & _count;
             }
 
 
@@ -94,7 +94,7 @@ namespace lue {
                 hpx::serialization::output_archive& archive,
                 [[maybe_unused]] unsigned int const version) const
             {
-                archive& _input_cells_idxs& _stream_class& _count;
+                archive & _input_cells_idxs & _stream_class & _count;
             }
 
 
@@ -333,7 +333,7 @@ namespace lue {
             using FlowDirectionData = DataT<FlowDirectionPartition>;
             using FlowDirectionElement = ElementT<FlowDirectionPartitions>;
 
-            using InflowCountElement = std::uint8_t;
+            using InflowCountElement = SmallestIntegralElement;
             using InflowCountPartition = PartitionT<FlowDirectionPartition, InflowCountElement>;
             using InflowCountData = DataT<InflowCountPartition>;
 
@@ -498,7 +498,7 @@ namespace lue {
                             count = input_material.inflow_count(*it);
                             lue_hpx_assert(count >= 1);
 
-                            lue_hpx_assert(inflow_count_data_copy(idx0, idx1) >= count);
+                            lue_hpx_assert(static_cast<Count>(inflow_count_data_copy(idx0, idx1)) >= count);
                             inflow_count_data_copy(idx0, idx1) -= count;
 
                             // If the remaining inflow count is

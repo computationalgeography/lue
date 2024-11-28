@@ -345,6 +345,7 @@ namespace lue {
 
             private:
 
+                using RouteID = policy::InputElementT<Policies, 0>;
                 using ComponentServer = server::Walk<Policies, rank>;
                 using ComponentClientBase =
                     hpx::components::client_base<Walk<Policies, rank>, ComponentServer>;
@@ -382,12 +383,12 @@ namespace lue {
 
                 ~Walk() = default;
 
-                Walk& operator=(Walk const&) = default;
+                auto operator=(Walk const&) -> Walk& = default;
 
-                Walk& operator=(Walk&&) = default;
+                auto operator=(Walk&&) -> Walk& = default;
 
 
-                OutputPartition result_partition() const
+                auto result_partition() const -> OutputPartition
                 {
                     lue_hpx_assert(this->is_ready());
                     lue_hpx_assert(this->get_id());
@@ -398,7 +399,7 @@ namespace lue {
                 }
 
 
-                hpx::future<void> set_downstream_components(std::map<hpx::id_type, Walk>&& components)
+                auto set_downstream_components(std::map<hpx::id_type, Walk>&& components) -> hpx::future<void>
                 {
                     lue_hpx_assert(this->is_ready());
                     lue_hpx_assert(this->get_id());
@@ -409,7 +410,7 @@ namespace lue {
                 }
 
 
-                hpx::future<void> walk(RouteID const route_id, Data data) const
+                auto walk(RouteID const route_id, Data data) const -> hpx::future<void>
                 {
                     lue_hpx_assert(this->is_ready());
                     lue_hpx_assert(this->get_id());
@@ -420,7 +421,7 @@ namespace lue {
                 }
 
 
-                hpx::future<void> skip_walking_route_fragments(RouteID const route_id) const
+                auto skip_walking_route_fragments(RouteID const route_id) const -> hpx::future<void>
                 {
                     lue_hpx_assert(this->is_ready());
                     lue_hpx_assert(this->get_id());

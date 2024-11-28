@@ -10,7 +10,7 @@ set(LUE_MDSPAN_REQUIRED @LUE_MDSPAN_REQUIRED@)
 
 
 if(LUE_BOOST_REQUIRED)
-    find_dependency(Boost)
+    find_dependency(Boost 1.70)
 endif()
 
 if(LUE_FMT_REQUIRED)
@@ -22,7 +22,7 @@ if(LUE_HDF5_REQUIRED)
 endif()
 
 if(LUE_HPX_REQUIRED)
-    find_dependency(HPX 1.10)
+    find_dependency(HPX 1.10...<1.11)
 endif()
 
 if(LUE_MDSPAN_REQUIRED)

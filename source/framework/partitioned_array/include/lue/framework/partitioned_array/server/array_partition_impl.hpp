@@ -100,15 +100,15 @@ namespace lue::server {
         @brief      Return this partition's data
     */
     template<typename Element, Rank rank>
-    typename ArrayPartition<Element, rank>::Data ArrayPartition<Element, rank>::data() const
+    auto ArrayPartition<Element, rank>::data() const -> typename ArrayPartition<Element, rank>::Data
     {
         return _data;
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartition<Element, rank>::Data ArrayPartition<Element, rank>::slice(
-        Slices const& slices) const
+    auto ArrayPartition<Element, rank>::slice(Slices const& slices) const ->
+        typename ArrayPartition<Element, rank>::Data
     {
         if constexpr (rank == 0)
         {
@@ -136,21 +136,21 @@ namespace lue::server {
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartition<Element, rank>::Offset ArrayPartition<Element, rank>::offset() const
+    auto ArrayPartition<Element, rank>::offset() const -> typename ArrayPartition<Element, rank>::Offset
     {
         return _offset;
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartition<Element, rank>::Shape ArrayPartition<Element, rank>::shape() const
+    auto ArrayPartition<Element, rank>::shape() const -> typename ArrayPartition<Element, rank>::Shape
     {
         return _data.shape();
     }
 
 
     template<typename Element, Rank rank>
-    Count ArrayPartition<Element, rank>::nr_elements() const
+    auto ArrayPartition<Element, rank>::nr_elements() const -> Count
     {
         return _data.nr_elements();
     }

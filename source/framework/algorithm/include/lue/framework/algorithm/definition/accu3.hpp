@@ -3,7 +3,9 @@
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework.hpp"
 #include "lue/macro.hpp"
+#include <fmt/format.h>
 
 
 namespace lue {
@@ -133,12 +135,13 @@ namespace lue {
 
 
         template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-        ArrayPartition<MaterialElement, rank> accu3_partition(
+        auto accu3_partition(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             ArrayPartition<MaterialElement, rank> const& external_inflow_partition,
             InflowCountCommunicator<rank> inflow_count_communicator,
             MaterialCommunicator<MaterialElement, rank> material_communicator)
+            -> ArrayPartition<MaterialElement, rank>
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using FlowDirectionData = DataT<FlowDirectionPartition>;
@@ -146,7 +149,7 @@ namespace lue {
             using MaterialData = DataT<MaterialPartition>;
             using Offset = OffsetT<FlowDirectionPartition>;
 
-            using CountElement = std::uint8_t;
+            using CountElement = SmallestIntegralElement;
             using InflowCountPartition = ArrayPartition<CountElement, rank>;
             using InflowCountData = DataT<InflowCountPartition>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
@@ -575,10 +578,11 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> accu3(
+    auto accu3(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
         PartitionedArray<MaterialElement, rank> const& external_inflow)
+        -> PartitionedArray<MaterialElement, rank>
     {
         AnnotateFunction annotation{"accu_meh"};
 
@@ -598,7 +602,8 @@ namespace lue {
         using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
 
         InflowCountCommunicatorArray inflow_count_communicators{"/lue/accu3/inflow_count/", localities};
-        MaterialCommunicatorArray material_communicators{"/lue/accu3/", localities};
+        MaterialCommunicatorArray material_communicators{
+            fmt::format("/lue/accu3/material/{}/", as_string<MaterialElement>), localities};
 
 
         // For each partition, spawn a task that will solve the

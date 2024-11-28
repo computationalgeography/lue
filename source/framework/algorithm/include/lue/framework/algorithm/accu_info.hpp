@@ -1,11 +1,12 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array.hpp"
+#include "lue/framework.hpp"
 
 
 namespace lue {
 
-    using CellClass = std::uint8_t;
+    using CellClass = SmallestUnsignedIntegralElement;
     static constexpr CellClass intra_partition_stream_cell = 11;
     static constexpr CellClass ridge_cell = 12;
 
@@ -14,7 +15,7 @@ namespace lue {
     static constexpr CellClass partition_output_cell = 14;
     static constexpr CellClass undefined_cell = 55;
 
-    using PartitionClass = std::uint8_t;
+    using PartitionClass = SmallestUnsignedIntegralElement;
     static constexpr PartitionClass ready = 31;  // Partition is ready
     static constexpr PartitionClass hot = 32;    // Partition is (partly) being solved
     static constexpr PartitionClass cold = 33;   // Partition is not used
@@ -28,8 +29,10 @@ namespace lue {
             OutputsPolicies<
                 OutputPolicies<DontMarkNoData<CellClass>, AllValuesWithinRange<CellClass>>,
                 OutputPolicies<DontMarkNoData<PartitionClass>, AllValuesWithinRange<PartitionClass>>,
-                OutputPolicies<DontMarkNoData<double>, AllValuesWithinRange<double>>,
-                OutputPolicies<DontMarkNoData<std::uint32_t>, AllValuesWithinRange<std::uint32_t>>>,
+                OutputPolicies<
+                    DontMarkNoData<SmallestFloatingPointElement>,
+                    AllValuesWithinRange<SmallestFloatingPointElement>>,
+                OutputPolicies<DontMarkNoData<CountElement>, AllValuesWithinRange<CountElement>>>,
             InputsPolicies<SpatialOperationInputPolicies<
                 SkipNoData<FlowDirectionElement>,
                 FlowDirectionHalo<FlowDirectionElement>>>>;
@@ -72,10 +75,10 @@ namespace lue {
                 OutputPolicies<
                     DefaultOutputNoDataPolicy<PartitionClass>,
                     AllValuesWithinRange<PartitionClass>>,
-                OutputPolicies<DefaultOutputNoDataPolicy<double>, AllValuesWithinRange<double>>,
                 OutputPolicies<
-                    DefaultOutputNoDataPolicy<std::uint32_t>,
-                    AllValuesWithinRange<std::uint32_t>>>,
+                    DefaultOutputNoDataPolicy<SmallestFloatingPointElement>,
+                    AllValuesWithinRange<SmallestFloatingPointElement>>,
+                OutputPolicies<DefaultOutputNoDataPolicy<CountElement>, AllValuesWithinRange<CountElement>>>,
             InputsPolicies<SpatialOperationInputPolicies<
                 DetectNoDataByValue<FlowDirectionElement>,
                 FlowDirectionHalo<FlowDirectionElement>>>>;
@@ -113,21 +116,22 @@ namespace lue {
 
 
     template<typename Policies, typename FlowDirectionElement, Rank rank>
-    std::tuple<
-        PartitionedArray<CellClass, rank>,
-        hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-        hpx::future<std::vector<PartitionedArray<double, rank>>>,
-        hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
-    accu_info(Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction);
+    auto accu_info(
+        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> std::tuple<
+            PartitionedArray<CellClass, rank>,
+            hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+            hpx::future<std::vector<PartitionedArray<SmallestFloatingPointElement, rank>>>,
+            hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>;
 
 
     template<typename FlowDirectionElement, Rank rank>
-    std::tuple<
-        PartitionedArray<CellClass, rank>,
-        hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-        hpx::future<std::vector<PartitionedArray<double, rank>>>,
-        hpx::future<std::vector<PartitionedArray<std::uint32_t, rank>>>>
-    accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+    auto accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> std::tuple<
+            PartitionedArray<CellClass, rank>,
+            hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+            hpx::future<std::vector<PartitionedArray<SmallestFloatingPointElement, rank>>>,
+            hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>
     {
         using Policies = policy::accu_info::DefaultPolicies<FlowDirectionElement>;
 

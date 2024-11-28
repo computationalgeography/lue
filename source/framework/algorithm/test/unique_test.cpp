@@ -4,13 +4,16 @@
 #include "lue/framework/algorithm/value_policies/unique_id.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
-namespace detail {
+namespace {
 
     template<typename IDElement, std::size_t rank>
     void test_array()
     {
+        BOOST_TEST_INFO_SCOPE(fmt::format("test_array<{}, {}>", lue::as_string<IDElement>, rank));
+
         using Array = lue::PartitionedArray<IDElement, rank>;
 
         auto const array_shape{lue::Test<Array>::shape()};
@@ -29,7 +32,7 @@ namespace detail {
 
         // All different values
         {
-            using BooleanElement = std::uint8_t;
+            using BooleanElement = lue::BooleanElement;
 
             Array array{lue::create_partitioned_array<IDElement>(array_shape, partition_shape, fill_value)};
 
@@ -41,20 +44,13 @@ namespace detail {
         }
     }
 
-}  // namespace detail
+}  // Anonymous namespace
 
 
-#define TEST_CASE(rank, IDElement)                                                                           \
-                                                                                                             \
-    BOOST_AUTO_TEST_CASE(array_##rank##d_##IDElement)                                                        \
-    {                                                                                                        \
-        detail::test_array<IDElement, rank>();                                                               \
-    }
+BOOST_AUTO_TEST_CASE(use_case_01)
+{
+    lue::Rank const rank{2};
 
-// TEST_CASE(1, int32_t)
-TEST_CASE(2, int32_t)
-TEST_CASE(2, uint64_t)
-// TEST_CASE(1, int64_t)
-// TEST_CASE(2, int64_t)
-
-#undef TEST_CASE
+    test_array<lue::SignedIntegralElement<0>, rank>();
+    test_array<lue::UnsignedIntegralElement<0>, rank>();
+}

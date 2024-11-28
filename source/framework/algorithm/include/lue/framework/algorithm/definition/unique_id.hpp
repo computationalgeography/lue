@@ -12,10 +12,10 @@ namespace lue {
     namespace detail {
 
         template<typename Policies, typename ConditionPartition, typename IDPartition>
-        IDPartition unique_id_partition(
+        auto unique_id_partition(
             Policies const& policies,
             ConditionPartition const& condition_partition,
-            ElementT<IDPartition> start_value)
+            ElementT<IDPartition> start_value) -> IDPartition
         {
             lue_hpx_assert(condition_partition.is_ready());
             lue_hpx_assert(start_value > ElementT<IDPartition>{0});
@@ -172,11 +172,11 @@ namespace lue {
 
 
         template<typename IDElement, typename Policies, typename ConditionElement, Rank rank>
-        PartitionsT<PartitionedArray<IDElement, rank>> unique_id_partitions(
+        auto unique_id_partitions(
             Policies const& policies,
             Localities<rank> const& localities,
             PartitionsT<PartitionedArray<ConditionElement, rank>> const& condition_partitions,
-            Array<hpx::future<Count>, rank>&& partition_sizes)
+            Array<hpx::future<Count>, rank>&& partition_sizes) -> PartitionsT<PartitionedArray<IDElement, rank>>
         {
             using IDArray = PartitionedArray<IDElement, rank>;
             using IDPartitions = PartitionsT<IDArray>;
@@ -221,8 +221,8 @@ namespace lue {
 
 
     template<typename IDElement, typename Policies, typename ConditionElement, Rank rank>
-    PartitionedArray<IDElement, rank> unique_id(
-        Policies const& policies, PartitionedArray<ConditionElement, rank> const& condition_array)
+    auto unique_id(Policies const& policies, PartitionedArray<ConditionElement, rank> const& condition_array)
+        -> PartitionedArray<IDElement, rank>
     {
         using ConditionArray = PartitionedArray<ConditionElement, rank>;
         using ConditionPartitions = PartitionsT<ConditionArray>;

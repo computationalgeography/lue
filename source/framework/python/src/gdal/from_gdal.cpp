@@ -1,6 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/io/raster.hpp"
+#include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <fmt/format.h>
 #include <pybind11/stl.h>
@@ -49,41 +50,72 @@ namespace lue::framework {
             pybind11::object result;
             GDALDataType const data_type{gdal::data_type(*dataset)};
 
-            if (data_type == GDT_Byte)
+            if constexpr (lue::arithmetic_element_supported<std::uint8_t>)
             {
-                result = from_gdal<uint8_t>(name, static_partition_shape);
+                if (data_type == GDT_Byte)
+                {
+                    result = from_gdal<uint8_t>(name, static_partition_shape);
+                }
             }
-#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
-            else if (data_type == GDT_Int8)
+
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS == 1
+            if constexpr (lue::arithmetic_element_supported<std::int8_t>)
             {
-                result = from_gdal<int8_t>(name, static_partition_shape);
-            }
-#endif
-            else if (data_type == GDT_UInt32)
-            {
-                result = from_gdal<uint32_t>(name, static_partition_shape);
-            }
-            else if (data_type == GDT_Int32)
-            {
-                result = from_gdal<int32_t>(name, static_partition_shape);
-            }
-#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
-            else if (data_type == GDT_UInt64)
-            {
-                result = from_gdal<uint64_t>(name, static_partition_shape);
-            }
-            else if (data_type == GDT_Int64)
-            {
-                result = from_gdal<int64_t>(name, static_partition_shape);
+                if (data_type == GDT_Int8)
+                {
+                    result = from_gdal<int8_t>(name, static_partition_shape);
+                }
             }
 #endif
-            else if (data_type == GDT_Float32)
+
+            if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
             {
-                result = from_gdal<float>(name, static_partition_shape);
+                if (data_type == GDT_UInt32)
+                {
+                    result = from_gdal<uint32_t>(name, static_partition_shape);
+                }
             }
-            else if (data_type == GDT_Float64)
+
+            if constexpr (lue::arithmetic_element_supported<std::int32_t>)
             {
-                result = from_gdal<double>(name, static_partition_shape);
+                if (data_type == GDT_Int32)
+                {
+                    result = from_gdal<int32_t>(name, static_partition_shape);
+                }
+            }
+
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS == 1
+            if constexpr (lue::arithmetic_element_supported<std::uint64_t>)
+            {
+                if (data_type == GDT_UInt64)
+                {
+                    result = from_gdal<uint64_t>(name, static_partition_shape);
+                }
+            }
+
+            if constexpr (lue::arithmetic_element_supported<std::int64_t>)
+            {
+                if (data_type == GDT_Int64)
+                {
+                    result = from_gdal<int64_t>(name, static_partition_shape);
+                }
+            }
+#endif
+
+            if constexpr (lue::arithmetic_element_supported<float>)
+            {
+                if (data_type == GDT_Float32)
+                {
+                    result = from_gdal<float>(name, static_partition_shape);
+                }
+            }
+
+            if constexpr (lue::arithmetic_element_supported<double>)
+            {
+                if (data_type == GDT_Float64)
+                {
+                    result = from_gdal<double>(name, static_partition_shape);
+                }
             }
 
             if (!result)

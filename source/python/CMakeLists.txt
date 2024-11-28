@@ -63,7 +63,8 @@ if(LUE_BUILD_FRAMEWORK AND LUE_FRAMEWORK_WITH_PYTHON_API)
     if(LUE_FRAMEWORK_WITH_IMAGE_LAND)
         target_link_libraries(lue_py
             PRIVATE
-                lue::py_image_land)
+                lue::py_image_land
+        )
     endif()
 endif()
 

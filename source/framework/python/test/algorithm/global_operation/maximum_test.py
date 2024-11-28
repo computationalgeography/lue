@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -18,14 +16,6 @@ class MaximumTest(lue_test.TestCase):
         array_shape = (60, 40)
         fill_value = 5
 
-        for value_dtype in [
-            np.uint8,
-            np.uint32,
-            np.uint64,
-            np.int32,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
-            array = lfr.create_array(array_shape, value_dtype, fill_value)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
             lfr.maximum(array)

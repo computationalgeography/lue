@@ -1,5 +1,3 @@
-import numpy as np
-
 import lue.framework as lfr
 import lue_test
 
@@ -20,9 +18,11 @@ class FirstNTest(lue_test.TestCase):
         fill_value = 5.5
         max_nr_cells = 10
 
-        for zone_dtype in [np.uint8, np.uint32, np.uint64, np.int32, np.int64]:
-            values = lfr.create_array(array_shape, np.float32, fill_value)
-            zones = lfr.create_array(array_shape, zone_dtype, fill_zone)
+        for zone_element_type in lfr.zone_element_types:
+            values = lfr.create_array(
+                array_shape, lfr.floating_point_element_types[0], fill_value
+            )
+            zones = lfr.create_array(array_shape, zone_element_type, fill_zone)
             route = lfr.decreasing_order(zones, values)
 
             # TODO

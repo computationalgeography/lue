@@ -5,12 +5,13 @@
 #include "lue/framework/algorithm/value_policies/comparison.hpp"
 #include "lue/framework/algorithm/value_policies/zonal_normal.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    using Element = double;
-    using Class = std::uint64_t;
+    using Element = lue::FloatingPointElement<0>;
+    using Class = lue::UnsignedIntegralElement<0>;
     std::size_t const rank = 2;
 
     using ElementArray = lue::PartitionedArray<Element, rank>;
@@ -21,7 +22,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Shape const partition_shape{{3, 3}};
 
     ClassArray class_array{
-        lue::array_partition_id(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
+        lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
     auto zonal_normal = lue::value_policies::zonal_normal<Element>(class_array);
 

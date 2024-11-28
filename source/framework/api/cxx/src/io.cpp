@@ -4,7 +4,9 @@
 #include "overload.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/io/raster.hpp"
+#include "lue/framework.hpp"
 #include "lue/gdal.hpp"
+// #include <any>
 #include <optional>
 
 
@@ -33,47 +35,63 @@ namespace lue {
     namespace api {
         namespace {
 
+            template<typename Element>
+            auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape)
+                -> std::optional<Field::Variant>
+            {
+                std::optional<Field::Variant> result{};
+
+                if constexpr (lue::arithmetic_element_supported<Element>)
+                {
+                    result = read<Element>(name, partition_shape);
+                }
+
+                return result;
+            }
+
+
             auto from_gdal(
-                std::string const& name, Shape<Count, 2> const& partition_shape, GDALDataType const data_type)
-                -> Field
+                std::string const& name,
+                Shape<Count, 2> const& partition_shape,
+                GDALDataType const data_type) -> Field
             {
                 std::optional<Field::Variant> result{};
 
                 if (data_type == GDT_Byte)
                 {
-                    result = read<uint8_t>(name, partition_shape);
+                    result = from_gdal<std::uint8_t>(name, partition_shape);
                 }
 #if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
                 else if (data_type == GDT_Int8)
                 {
-                    result = read<int8_t>(name, partition_shape);
+                    result = from_gdal<std::int8_t>(name, partition_shape);
                 }
 #endif
                 else if (data_type == GDT_UInt32)
                 {
-                    result = read<uint32_t>(name, partition_shape);
+                    result = from_gdal<std::uint32_t>(name, partition_shape);
                 }
                 else if (data_type == GDT_Int32)
                 {
-                    result = read<int32_t>(name, partition_shape);
+                    result = from_gdal<std::int32_t>(name, partition_shape);
                 }
 #if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
                 else if (data_type == GDT_UInt64)
                 {
-                    result = read<uint64_t>(name, partition_shape);
+                    result = from_gdal<std::uint64_t>(name, partition_shape);
                 }
                 else if (data_type == GDT_Int64)
                 {
-                    result = read<int64_t>(name, partition_shape);
+                    result = from_gdal<std::int64_t>(name, partition_shape);
                 }
 #endif
                 else if (data_type == GDT_Float32)
                 {
-                    result = read<float>(name, partition_shape);
+                    result = from_gdal<float>(name, partition_shape);
                 }
                 else if (data_type == GDT_Float64)
                 {
-                    result = read<double>(name, partition_shape);
+                    result = from_gdal<double>(name, partition_shape);
                 }
 
                 if (!result)

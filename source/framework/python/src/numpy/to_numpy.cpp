@@ -1,5 +1,7 @@
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/partitioned_array.hpp"
+#include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional
@@ -13,8 +15,9 @@ namespace lue::framework {
     namespace {
 
         template<typename Element, Rank rank>
-        pybind11::array_t<Element> to_numpy(
-            PartitionedArray<Element, rank> const& array, std::optional<Element> const& no_data_value)
+        auto to_numpy(
+            PartitionedArray<Element, rank> const& array,
+            std::optional<Element> const& no_data_value) -> pybind11::array_t<Element>
         {
             // NOTE: For now we assume
             // - All arrays have rank 2
@@ -91,20 +94,31 @@ namespace lue::framework {
             return result;
         }
 
+
+        class Binder
+        {
+
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    module.def(
+                        "to_numpy",
+                        to_numpy<Element, rank>,
+                        "array"_a,
+                        "no_data_value"_a = std::optional<Element>{});
+                }
+        };
+
     }  // Anonymous namespace
 
 
     void bind_to_numpy(pybind11::module& module)
     {
-        module.def("to_numpy", to_numpy<uint8_t, 2>, "array"_a, "no_data_value"_a = std::optional<uint8_t>{});
-        module.def(
-            "to_numpy", to_numpy<uint32_t, 2>, "array"_a, "no_data_value"_a = std::optional<uint32_t>{});
-        module.def(
-            "to_numpy", to_numpy<uint64_t, 2>, "array"_a, "no_data_value"_a = std::optional<uint64_t>{});
-        module.def("to_numpy", to_numpy<int32_t, 2>, "array"_a, "no_data_value"_a = std::optional<int32_t>{});
-        module.def("to_numpy", to_numpy<int64_t, 2>, "array"_a, "no_data_value"_a = std::optional<int64_t>{});
-        module.def("to_numpy", to_numpy<float, 2>, "array"_a, "no_data_value"_a = std::optional<float>{});
-        module.def("to_numpy", to_numpy<double, 2>, "array"_a, "no_data_value"_a = std::optional<double>{});
+        bind<Binder, ArithmeticElements>(module);
     }
 
 }  // namespace lue::framework

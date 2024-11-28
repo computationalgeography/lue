@@ -1,15 +1,15 @@
 #define BOOST_TEST_MODULE lue framework algorithm inflow_count
 #include "flow_accumulation.hpp"
 #include "lue/framework/algorithm/definition/inflow_count3.hpp"
-#include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 namespace {
 
-    using FlowDirectionElement = std::uint32_t;
-    using CountElement = std::int32_t;
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using CountElement = std::uint8_t;  // TODO This should be configurable (SMALL_COUNT, ...)
     std::size_t const rank = 2;
 
     using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
@@ -28,21 +28,7 @@ namespace {
     auto const w{lue::west<FlowDirectionElement>};
     auto const nw{lue::north_west<FlowDirectionElement>};
     auto const p{lue::sink<FlowDirectionElement>};
-    auto const nd{lue::no_data<FlowDirectionElement>};
-
-
-    template<typename Policies, typename FlowDirectionArray, typename InflowCountArray>
-    void test_inflow_count(
-        Policies const& policies,
-        FlowDirectionArray const& flow_direction,
-        InflowCountArray const& inflow_count_we_want)
-    {
-        using CountElement = lue::ElementT<InflowCountArray>;
-
-        InflowCount inflow_count_we_got = lue::inflow_count<CountElement>(policies, flow_direction);
-
-        lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
-    }
+    auto const nd{lue::policy::no_data_value<FlowDirectionElement>};
 
 
     template<typename Policies, typename FlowDirectionArray, typename InflowCountArray>
@@ -66,17 +52,9 @@ namespace {
         using CountElement = lue::ElementT<InflowCountArray>;
         using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
 
-        {
-            using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+        using Policies = lue::policy::inflow_count3::DefaultPolicies<CountElement, FlowDirectionElement>;
 
-            test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
-        }
-
-        {
-            using Policies = lue::policy::inflow_count3::DefaultPolicies<CountElement, FlowDirectionElement>;
-
-            test_inflow_count3(Policies{}, flow_direction, inflow_count_we_want);
-        }
+        test_inflow_count3(Policies{}, flow_direction, inflow_count_we_want);
     }
 
 }  // Anonymous namespace
@@ -2245,19 +2223,10 @@ BOOST_AUTO_TEST_CASE(all_no_data)
             x,
         }});
 
-    {
-        test_inflow_count(
-            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
-
-    {
-        test_inflow_count3(
-            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
+    test_inflow_count3(
+        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+        flow_direction,
+        inflow_count_we_want);
 }
 
 
@@ -2321,19 +2290,10 @@ BOOST_AUTO_TEST_CASE(no_data)
             },
         });
 
-    {
-        test_inflow_count(
-            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
-
-    {
-        test_inflow_count3(
-            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
+    test_inflow_count3(
+        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+        flow_direction,
+        inflow_count_we_want);
 }
 
 
@@ -2561,19 +2521,10 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
             },
         });
 
-    {
-        test_inflow_count(
-            lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
-
-    {
-        test_inflow_count3(
-            lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-            flow_direction,
-            inflow_count_we_want);
-    }
+    test_inflow_count3(
+        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+        flow_direction,
+        inflow_count_we_want);
 }
 
 

@@ -20,26 +20,12 @@ class UniformTest(lue_test.TestCase):
         max_value = 55
         fill_value = 5
 
-        for argument_type in [
-            np.uint8,
-            np.uint32,
-            np.uint64,
-            np.int32,
-            np.int64,
-            np.float32,
-            np.float64,
-        ]:
-            array = lfr.create_array(array_shape, argument_type, fill_value)
+        for element_type in lfr.arithmetic_element_types:
+            array = lfr.create_array(array_shape, element_type, fill_value)
 
-            for result_type in [
-                np.uint32,
-                np.uint64,
-                np.int32,
-                np.int64,
-                np.float32,
-                np.float64,
-            ]:
-                _ = lfr.uniform(array, result_type, min_value, max_value)
+            for result_element_type in lfr.arithmetic_element_types:
+                if result_element_type not in [np.uint8, np.int8]:
+                    _ = lfr.uniform(array, result_element_type, min_value, max_value)
 
     @lue_test.framework_test_case
     def test_overload2(self):
@@ -47,5 +33,6 @@ class UniformTest(lue_test.TestCase):
         min_value = 33
         max_value = 55
 
-        for type_ in [np.uint32, np.uint64, np.int32, np.int64, np.float32, np.float64]:
-            lfr.uniform(array_shape, type_, min_value, max_value)
+        for element_type in lfr.arithmetic_element_types:
+            if element_type not in [np.uint8, np.int8]:
+                _ = lfr.uniform(array_shape, element_type, min_value, max_value)

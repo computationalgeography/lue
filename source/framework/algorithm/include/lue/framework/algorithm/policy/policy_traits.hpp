@@ -16,7 +16,7 @@ namespace lue::policy {
 
             public:
 
-                inline static constexpr T no_data_value()
+                inline static constexpr auto no_data_value() -> T
                 {
                     static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>);
 

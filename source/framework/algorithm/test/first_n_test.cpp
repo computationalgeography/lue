@@ -7,6 +7,7 @@
 #include "lue/framework/algorithm/value_policies/where.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 #include <random>
 
 
@@ -135,8 +136,8 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint32_t;
-    using ValueElement = double;
+    using ZoneElement = lue::UnsignedIntegralElement<0>;
+    using ValueElement = lue::FloatingPointElement<0>;
     using ResultElement = ZoneElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;
@@ -488,8 +489,8 @@ BOOST_AUTO_TEST_CASE(random_input)
 {
     lue::Rank const rank{2};
 
-    using ZoneElement = std::uint64_t;
-    using ValueElement = float;
+    using ZoneElement = lue::LargestUnsignedIntegralElement;
+    using ValueElement = lue::FloatingPointElement<0>;
     using ResultElement = ZoneElement;
     using Shape = lue::Shape<lue::Count, rank>;
     using ValueArray = lue::PartitionedArray<ValueElement, rank>;

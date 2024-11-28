@@ -6,13 +6,14 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = std::uint8_t>
+        template<typename InputElement, typename OutputElement_>
         class LogicalNot
         {
 
             public:
 
                 static_assert(std::is_integral_v<InputElement>);
+                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"logical_not"};
 

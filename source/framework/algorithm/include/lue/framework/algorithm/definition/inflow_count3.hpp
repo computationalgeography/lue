@@ -789,8 +789,9 @@ namespace lue {
 
 
     template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-    PartitionedArray<CountElement, rank> inflow_count3(
+    auto inflow_count3(
         Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
+        -> PartitionedArray<CountElement, rank>
     {
         // The result of this function must be equal to
         // upstream(flow_direction, material=1), but it should be faster

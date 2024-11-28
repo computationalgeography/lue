@@ -31,7 +31,7 @@ namespace lue::framework {
                                                                                                              \
             inline static std::string const name{name_};                                                     \
                                                                                                              \
-            inline static pybind11::dtype dtype()                                                            \
+            inline static auto dtype() -> pybind11::dtype                                                    \
             {                                                                                                \
                 return pybind11::dtype::of<Element>();                                                       \
             }                                                                                                \
@@ -50,14 +50,14 @@ namespace lue::framework {
 #undef TYPE_TRAITS
 
     template<typename Element>
-    std::string as_string()
+    auto as_string() -> std::string
     {
         return TypeTraits<Element>::name;
     }
 
 
     template<typename Element>
-    pybind11::dtype dtype()
+    auto dtype() -> pybind11::dtype
     {
         return TypeTraits<Element>::dtype();
     }
