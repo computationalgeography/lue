@@ -53,6 +53,9 @@ namespace lue::framework {
         }
 
 
+        // TODO Find a way to do this without an Elements instance. We only have to iterate over the tuple's
+        // types.
+
         template<typename... Elements>
         auto type_of([[maybe_unused]] std::tuple<Elements...>&& elements) -> std::vector<pybind11::object>
         {
@@ -61,27 +64,6 @@ namespace lue::framework {
 
     }  // Anonymous namespace
 
-
-    // TODO Find a way to do this without creating an ArithmeticElements instance. We only have to iterate
-    //      over the tuple's types.
-
-    static std::vector<pybind11::object> const arithmetic_element_types = type_of(ArithmeticElements{});
-    static std::vector<pybind11::object> const unsigned_integral_element_types =
-        type_of(UnsignedIntegralElements{});
-    static std::vector<pybind11::object> const signed_integral_element_types =
-        type_of(SignedIntegralElements{});
-    static std::vector<pybind11::object> const integral_element_types = type_of(IntegralElements{});
-    static std::vector<pybind11::object> const floating_point_element_types =
-        type_of(FloatingPointElements{});
-    static std::vector<pybind11::object> const signed_arithmetic_element_types =
-        type_of(SignedArithmeticElements{});
-    static std::vector<pybind11::object> const material_element_types = type_of(MaterialElements{});
-    static std::vector<pybind11::object> const zone_element_types = type_of(ZoneElements{});
-    static pybind11::object const boolean_element_type = type_of<BooleanElement>();
-    static pybind11::object const count_element_type = type_of<CountElement>();
-    static pybind11::object const index_element_type = type_of<IndexElement>();
-    static pybind11::object const id_element_type = type_of<IDElement>();
-    static pybind11::object const flow_direction_element_type = type_of<FlowDirectionElement>();
 
     void bind_hpx(pybind11::module& module);
     void bind_create_array(pybind11::module& module);
@@ -136,22 +118,20 @@ namespace lue::framework {
 
         bind_hpx(submodule);
 
-
         // Wrap configuration settings
-        submodule.attr("arithmetic_element_types") = arithmetic_element_types;
-        submodule.attr("unsigned_integral_element_types") = unsigned_integral_element_types;
-        submodule.attr("signed_integral_element_types") = signed_integral_element_types;
-        submodule.attr("integral_element_types") = integral_element_types;
-        submodule.attr("floating_point_element_types") = floating_point_element_types;
-        submodule.attr("signed_arithmetic_element_types") = signed_arithmetic_element_types;
-        submodule.attr("material_element_types") = material_element_types;
-        submodule.attr("zone_element_types") = zone_element_types;
-        submodule.attr("boolean_element_type") = boolean_element_type;
-        submodule.attr("count_element_type") = count_element_type;
-        submodule.attr("id_element_type") = id_element_type;
-        submodule.attr("index_element_type") = index_element_type;
-        submodule.attr("flow_direction_element_type") = flow_direction_element_type;
-
+        submodule.attr("arithmetic_element_types") = type_of(ArithmeticElements{});
+        submodule.attr("unsigned_integral_element_types") = type_of(UnsignedIntegralElements{});
+        submodule.attr("signed_integral_element_types") = type_of(SignedIntegralElements{});
+        submodule.attr("integral_element_types") = type_of(IntegralElements{});
+        submodule.attr("floating_point_element_types") = type_of(FloatingPointElements{});
+        submodule.attr("signed_arithmetic_element_types") = type_of(SignedArithmeticElements{});
+        submodule.attr("material_element_types") = type_of(MaterialElements{});
+        submodule.attr("zone_element_types") = type_of(ZoneElements{});
+        submodule.attr("boolean_element_type") = type_of<BooleanElement>();
+        submodule.attr("count_element_type") = type_of<CountElement>();
+        submodule.attr("id_element_type") = type_of<IDElement>();
+        submodule.attr("index_element_type") = type_of<IndexElement>();
+        submodule.attr("flow_direction_element_type") = type_of<FlowDirectionElement>();
 
         // Wrap high-level data structures
         bind_scalar(submodule);

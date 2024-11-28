@@ -516,12 +516,6 @@ if(LUE_PYBIND11_REQUIRED)
         FIND_PACKAGE_ARGS 2.12
     )
     FetchContent_MakeAvailable(pybind11)
-
-    # Silence pybind11 for now
-    # https://github.com/computationalgeography/lue/issues/484
-    target_compile_definitions(pybind11::module
-        INTERFACE
-            PYBIND11_NO_ASSERT_GIL_HELD_INCREF_DECREF)
 endif()
 
 
