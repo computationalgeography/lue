@@ -8,7 +8,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 {
     lue::qa::Run run{};
     run.start();
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
     run.stop();
 
     using namespace std::chrono_literals;
