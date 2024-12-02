@@ -28,7 +28,8 @@ file(GENERATE
 
 add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
-    src/algorithm/focal_operation/focal_operation.cpp
+    src/algorithm/focal_operation/focal_operation-1.cpp
+    src/algorithm/focal_operation/focal_operation-2.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED
@@ -151,7 +152,8 @@ add_library(lue_py_framework SHARED
     $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:src/algorithm/locality_id.cpp>
     $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:src/algorithm/timestamp.cpp>
     src/algorithm/normal.cpp
-    src/algorithm/uniform.cpp
+    src/algorithm/uniform-1.cpp
+    src/algorithm/uniform-2.cpp
 
     src/core/create_partitioned_array.cpp
     ${generated_source_files}
