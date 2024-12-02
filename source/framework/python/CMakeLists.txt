@@ -28,7 +28,8 @@ file(GENERATE
 
 add_library(lue_py_framework_focal_operation SHARED
     src/algorithm/focal_operation.cpp
-    src/algorithm/focal_operation/focal_operation.cpp
+    src/algorithm/focal_operation/focal_operation-1.cpp
+    src/algorithm/focal_operation/focal_operation-2.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED
