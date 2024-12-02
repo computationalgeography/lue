@@ -151,7 +151,8 @@ add_library(lue_py_framework SHARED
     $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:src/algorithm/locality_id.cpp>
     $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:src/algorithm/timestamp.cpp>
     src/algorithm/normal.cpp
-    src/algorithm/uniform.cpp
+    src/algorithm/uniform-1.cpp
+    src/algorithm/uniform-2.cpp
 
     src/core/create_partitioned_array.cpp
     ${generated_source_files}
