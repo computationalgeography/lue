@@ -59,10 +59,10 @@ namespace lue::framework {
     namespace {
 
         template<typename Element>
-        pybind11::object from_numpy_py(
+        auto from_numpy_py(
             pybind11::array_t<Element> const& array,
             std::optional<pybind11::tuple> const& partition_shape,
-            std::optional<Element> const& no_data_value)
+            std::optional<Element> const& no_data_value) -> pybind11::object
         {
             // NOTE: For now we assume
             // - All arrays have rank 2
