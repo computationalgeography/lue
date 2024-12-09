@@ -15,7 +15,7 @@ jobs:
                 macos_version: ["13", "14"]
                 compiler:
                     - { name: clang, c: clang, cxx: clang++ }
-                python_version: ["3.12"]
+                python_version: ["3.13"]
             fail-fast: false
 
         runs-on: macos-${{ matrix.macos_version }}
