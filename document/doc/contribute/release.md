@@ -63,15 +63,29 @@ Useful links:
     - [ ] Update the recipe files in the PR:
         - [ ] Verify sha256 is the same as the one found above
     - [ ] Wait for all builds to succeed
-    - [ ] Add build times to the table
 - [ ] Merge PR
     - [ ] Double check build number is correct
     - [ ] Wait for all builds to succeed
 - [ ] Revisit any outstanding PRs:
     - [ ] Close the ones handled by the new release
     - [ ] Rebase and merge the others
-- [ ] Write blog post about the release
-- [ ] Post about the release on [Mastodon](https://scicomm.xyz/@lue)
-- [ ] Update [tutorial repo](https://github.com/computationalgeography/lue_tutorial)
-    - [ ] Bump LUE version number in `{main,develop}/environment/configuration/conda_environment.yml`
-    - [ ] Verify actions still succeed, or fix things until they do
+- [ ] Add maximum build times of last merged PR to the table below
+- [ ] Postprocess release:
+    - [ ] Bump version number in:
+        - [ ] The main `CMakeLists.txt`
+        - [ ] `environment/conda/meta.yaml`
+    - [ ] Update the Releases page in the documentation to contain a section for the new version
+    - [ ] Write blog post about the release
+    - [ ] Post about the release on [Mastodon](https://scicomm.xyz/@lue)
+    - [ ] Update [tutorial repo](https://github.com/computationalgeography/lue_tutorial)
+        - [ ] Bump LUE version number in `{main,develop}/environment/configuration/conda_environment.yml`
+        - [ ] Verify actions still succeed, or fix things until they do
+
+
+## Build times
+
+On Conda-Forge infrastructure. Maximum build times.
+
+| date     | version | linux_64 | osx_arm64 | win_64 |
+| ---      | ---     | ---      | ---       | ---    |
+| 20241206 | 0.3.9   | 3h 51m   | 3h 52m    | 5h 29m |

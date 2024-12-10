@@ -39,7 +39,7 @@ jobs:
               with:
                   conda-remove-defaults: "true"
                   miniforge-version: latest
-                  python-version: 3.11
+                  python-version: 3.12
             - name: Build package
               run: |
                   conda install conda-build
