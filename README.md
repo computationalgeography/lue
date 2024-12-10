@@ -57,6 +57,7 @@ the related technology.
 ## Installation
 
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/version.svg)](https://anaconda.org/conda-forge/lue)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/latest_release_date.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/platforms.svg)](https://anaconda.org/conda-forge/lue)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lue/badges/downloads.svg)](https://anaconda.org/conda-forge/lue)
 

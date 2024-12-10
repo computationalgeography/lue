@@ -2,19 +2,28 @@
 
 # Releases
 
+## 0.3.10
+
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.10+)
+
+
 ## 0.3.9
 
-- [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.9+)
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.9+)
 
 
 ## 0.3.8
 
-- [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.8+)
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.8+)
 
 
 ## 0.3.7
 
-- [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.7+)
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.7+)
 
 
 ## 0.3.6
@@ -25,4 +34,5 @@
 - Add `LUE_BUILD_QUALITY_ASSURANCE` target with support for quality assurance.
 - No need to construct `numpy.dtype` instances explicitly anymore. Operations accepting a `numpy.dtype` now
   also accept Numpy scalar type (e.g. `numpy.float64`).
-- [Full list of closed issues on Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.6+)
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.6+)

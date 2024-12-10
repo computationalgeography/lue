@@ -1,3 +1,5 @@
+(doc-publications)=
+
 # Publications
 
 ```{bibliography}

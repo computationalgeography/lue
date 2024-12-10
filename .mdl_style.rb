@@ -17,3 +17,4 @@ exclude_rule 'MD046'
 # The parameters which can be changed are mentioned in the rules page (Parameters: ...)
 rule 'MD007', :indent => 4
 rule 'MD013', :line_length => 110
+rule 'MD026', :punctuation => ".,;:!"
