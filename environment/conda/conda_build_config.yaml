@@ -18,4 +18,4 @@ hdf5:
 libgdal:
   - 3.9
 python:
-  - 3.11
+  - 3.12
