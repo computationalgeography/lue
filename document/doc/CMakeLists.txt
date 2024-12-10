@@ -27,6 +27,7 @@ configure_file(
 )
 
 foreach(name IN ITEMS
+    about/cite.md
     about/license.md
     about/project.md
     about/publication.md
@@ -37,6 +38,7 @@ foreach(name IN ITEMS
     contribute/index.md
     contribute/release.md
     example/index.md
+    faq.md
     index.md
     manual/data_model/concept.md
     manual/data_model/format.md
@@ -114,6 +116,7 @@ foreach(name IN ITEMS
 
     framework/doc/howto/index.md
     framework/doc/howto/add_local_operation.md
+    framework/doc/howto/trace.md
 
     framework/algorithm/doc/group.dox
 

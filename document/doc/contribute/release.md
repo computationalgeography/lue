@@ -3,70 +3,75 @@
 Releases are automatically archived on Zenodo. After making a release, a DOI is made available by Zenodo which
 can be used in publications.
 
+Useful links:
+
 - https://guides.github.com/activities/citable-code/
+- [conda-forge maintainer documentation](https://conda-forge.org/docs/maintainer/)
+- [LUE feedstock repository](https://github.com/conda-forge/lue-feedstock)
+- [LUE feedstock builds](https://dev.azure.com/conda-forge/feedstock-builds/_build?definitionId=10907&_a=summary)
 
 
-Checklist:
+## Prepare
 
-- [ ] Before the release:
+- [ ] Verify that the version number in the main `CMakeLists.txt` is correct
+- [ ] Verify that the Releases page in the documentation contains a section for the new version
+- [ ] Update list of authors in `CITATION.cff`, if necessary
+- [ ] Initiate a Conda-Forge PR:
+    - [ ] Create a zip and determine sha256:
 
-    - [ ] Make sure the version number in the main CMakeLists.txt is correct
-    - [ ] Make sure the releases page in the documentation is correct
-    - [ ] Draft a release on Github. Currently we do not use the letter v to prefix version numbers.
+        ```bash
+        cd $HOME/tmp
+        version="<version>"
+        branch="master"
+        git clone --depth 1 https://github.com/computationalgeography/lue.git --branch ${branch} \
+            --single-branch lue-${version}
+        tar cjf lue-${version}.tar.bz2 lue-${version}
+        openssl sha256 lue-${version}.tar.bz2
+        ```
 
-- [ ] After the release:
+    - [ ] Upload zip to `https://lue.computationalgeography.org/download/lue-<version>.tar.bz2`
+- [ ] Wait for PR to appear on https://github.com/conda-forge/lue-feedstock/pulls . This can take hours.
+- [ ] Checkout the PR's branch and update the recipe files:
+    - [ ] Verify sha256 is the same as the one found above
+    - [ ] Verify the build number is correct (zero for new version, bumped if not)
+    - [ ] Compare files with the ones in LUE's `environment/conda` directory. Harmonize.
+    - [ ] Update project's description if needed (feedstock's `README.md`)
+    - [ ] Verify `@conda-forge-admin, please rerender` has been run
+    - [ ] Do whatever it takes to make the builds succeed
+        - In case the sources must be updated, an update of the hash in the feedstock's `meta.yaml` will
+          trigger a rebuild of the packages
+    - [ ] Verify all build logs make sense. If not, fix things or create a GH issue to get it fixed before the
+          next release.
 
-    - [ ] Bump the version number in the main CMakeLists.txt
-    - [ ] Update the releases page in the documentation
 
+## Release
 
+- [ ] Draft a release on GitHub. We do not use the letter v to prefix version numbers.
+    - [ ] Create a new zip with the same name and determine sha256:
 
-## Conda package
+        ```bash
+        cd $HOME/tmp
+        version="<version>"
+        branch="${version}"
+        git clone --depth 1 https://github.com/computationalgeography/lue.git --branch ${branch} \
+            --single-branch lue-${version}
+        tar cjf lue-${version}.tar.bz2 lue-${version}
+        openssl sha256 lue-${version}.tar.bz2
+        ```
 
-Conda-Forge detects new LUE releases automatically. In our case, Conda-Forge looks in a specific location for
-a zipped tar file containing the LUE source files
-(`https://pcraster.geo.uu.nl/pcraster/packages/src/lue-<version>.tar.bz2`). The first step in creating a
-Conda package for a new release of LUE, is to upload a new zipped tar file to this location. Example workflow:
-
-```bash
-# Create a directory containing (only) the sources associated with the new release. Currently
-# it is relevant that this directory contains the .git subdirectory.
-mkdir -p tmp  # Whatever
-cd tmp
-# Update for actual tag associated with release
-git clone --depth 1 https://github.com/computationalgeography/lue.git --branch 0.3.4 --single-branch
-tar cjf lue-0.3.4.tar.bz2 lue
-# Determine hash, to store in meta.yaml
-openssl sha256 lue-0.3.4.tar.bz2
-# ... ftp zip to ftp server ...
-```
-
-It may take a few hours for Conda-Forge to detect the new release. Once it has, a pull request is created
-automatically, and all kinds of tests and builds are started automatically. These may or may not succeed.
-Information about this can be found on the [lue-feedstock page](https://github.com/conda-forge/lue-feedstock)
-at Github.
-
-The pull request is based on a new branch in a clone of the `lue-feedstock` repository, located in the
-`regro-cf-autotick-bot` Github organisation. To make changes to this branch, the following workflow can be
-used:
-
-```bash
-# Clone the repository and checkout the branch associated with the PR
-mkdir -p development/project/github/regro-cf-autotick-bot  # Whatever
-cd development/project/github/regro-cf-autotick-bot
-git clone git@github.com:regro-cf-autotick-bot/lue-feedstock.git
-git checkout 0.3.4_h813c5f  # Update for actual branch mentioned in PR
-# ... make changes ...
-git push
-```
-
-```{important}
-Before merging the changes in the pull request's branch the build number in `meta.yaml` must be correct:
-
-- In case LUE's version was bumped, the build number must be 0. This is done by the bot that created the pull
-  request in the first place.
-- In case LUE's version was not bumped, the build number must be bumped by 1. In this case there was some
-  other reason for rebuilding a Conda package.
-```
-
-Once the PR is fine, merge it into the main branch.
+    - [ ] Upload zip to `https://lue.computationalgeography.org/download/lue-<version>.tar.bz2`
+    - [ ] Update the recipe files in the PR:
+        - [ ] Verify sha256 is the same as the one found above
+    - [ ] Wait for all builds to succeed
+    - [ ] Add build times to the table
+- [ ] Merge PR
+    - [ ] Double check build number is correct
+    - [ ] Wait for all builds to succeed
+- [ ] Revisit any outstanding PRs:
+    - [ ] Close the ones handled by the new release
+    - [ ] Rebase and merge the others
+- [ ] Write blog post about the release
+- [ ] Post about the release on [Mastodon](https://scicomm.xyz/@lue)
+- [ ] Update [tutorial repo](https://github.com/computationalgeography/lue_tutorial)
+    - [ ] Bump LUE version number in `{main,develop}/environment/configuration/conda_environment.yml`
+    - [ ] Verify actions still succeed, or fix things until they do

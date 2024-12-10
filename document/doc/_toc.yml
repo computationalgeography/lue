@@ -71,6 +71,8 @@ parts:
       - file: pcraster/port.md
       - file: pcraster/status.md
 
+    - file: faq.md
+
   - caption: Developer
     chapters:
 
@@ -110,12 +112,14 @@ parts:
         - file: source/framework/doc/howto/index.md
           sections:
           - file: source/framework/doc/howto/add_local_operation.md
+          - file: source/framework/doc/howto/trace.md
 
   - caption: About
     chapters:
 
     - file: about/project.md
     - file: about/release.md
+    - file: about/cite.md
     - file: example/index.md
     - file: about/publication.md
     - file: about/license.md
