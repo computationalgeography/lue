@@ -11,6 +11,6 @@ class AbsTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.abs(array)
-            _ = lfr.abs(scalar)
-            _ = lfr.abs(value)
+            self.assert_overload(lfr.abs, array)
+            self.assert_overload(lfr.abs, scalar)
+            self.assert_overload(lfr.abs, value)

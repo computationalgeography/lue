@@ -12,6 +12,6 @@ class NegateTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.negate(array)
-            _ = lfr.negate(scalar)
-            _ = lfr.negate(value)
+            self.assert_overload(lfr.negate, array)
+            self.assert_overload(lfr.negate, scalar)
+            self.assert_overload(lfr.negate, value)

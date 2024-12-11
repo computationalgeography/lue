@@ -2,17 +2,10 @@ import numpy as np
 
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class UniformTest(lue_test.TestCase):
+class UniformTest(OperationTest):
     @lue_test.framework_test_case
     def test_overload1(self):
         array_shape = (60, 40)
@@ -25,7 +18,9 @@ class UniformTest(lue_test.TestCase):
 
             for result_element_type in lfr.arithmetic_element_types:
                 if result_element_type not in [np.uint8, np.int8]:
-                    _ = lfr.uniform(array, result_element_type, min_value, max_value)
+                    self.assert_overload(
+                        lfr.uniform, array, result_element_type, min_value, max_value
+                    )
 
     @lue_test.framework_test_case
     def test_overload2(self):
@@ -35,4 +30,6 @@ class UniformTest(lue_test.TestCase):
 
         for element_type in lfr.arithmetic_element_types:
             if element_type not in [np.uint8, np.int8]:
-                _ = lfr.uniform(array_shape, element_type, min_value, max_value)
+                self.assert_overload(
+                    lfr.uniform, array_shape, element_type, min_value, max_value
+                )

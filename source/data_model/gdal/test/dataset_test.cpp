@@ -169,3 +169,35 @@ BOOST_AUTO_TEST_CASE(create_copy)
     BOOST_CHECK_EQUAL(lgd::nr_raster_bands(*dataset_copy_ptr), nr_bands);
     BOOST_CHECK_EQUAL(lgd::data_type(*dataset_copy_ptr), data_type);
 }
+
+
+BOOST_AUTO_TEST_CASE(geo_transform)
+{
+    namespace lgd = lue::gdal;
+
+    lgd::register_gdal_drivers();
+
+    std::string const driver_name{"GTiff"};
+    std::string const dataset_name{"geo_transform.tif"};
+
+    lgd::Shape const raster_shape{60, 40};
+    lgd::Count const nr_bands{2};
+    GDALDataType const data_type{GDALDataType::GDT_Int32};
+    lgd::Extent const cell_size{10};
+    lgd::Coordinate const west{-200};
+    lgd::Coordinate const north{200};
+    lgd::GeoTransform const geo_transform{west, cell_size, 0, north, 0, -cell_size};
+
+    if (std::filesystem::exists(dataset_name))
+    {
+        lgd::delete_dataset(*lgd::driver(driver_name), dataset_name);
+    }
+
+    auto dataset_ptr = lgd::create_dataset(driver_name, dataset_name, raster_shape, nr_bands, data_type);
+    lgd::set_geo_transform(*dataset_ptr, geo_transform);
+    dataset_ptr.reset();
+
+    dataset_ptr = lgd::open_dataset(dataset_name, GDALAccess::GA_ReadOnly);
+
+    BOOST_CHECK_EQUAL(lgd::geo_transform(*dataset_ptr), geo_transform);
+}

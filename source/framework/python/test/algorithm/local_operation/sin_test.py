@@ -12,6 +12,6 @@ class SinTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.sin(array)
-            _ = lfr.sin(scalar)
-            _ = lfr.sin(value)
+            self.assert_overload(lfr.sin, array)
+            self.assert_overload(lfr.sin, scalar)
+            self.assert_overload(lfr.sin, value)

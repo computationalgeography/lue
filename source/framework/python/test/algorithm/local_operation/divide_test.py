@@ -13,16 +13,16 @@ class DivideTest(OperationTest):
             array = self.array[element_type]
 
             # array icw something else
-            _ = lfr.divide(array, array)
-            _ = lfr.divide(array, scalar)
-            _ = lfr.divide(array, value)
-            _ = lfr.divide(scalar, array)
-            _ = lfr.divide(value, array)
+            self.assert_overload(lfr.divide, array, array)
+            self.assert_overload(lfr.divide, array, scalar)
+            self.assert_overload(lfr.divide, array, value)
+            self.assert_overload(lfr.divide, scalar, array)
+            self.assert_overload(lfr.divide, value, array)
 
             # scalar icw something else, if not handled already
-            _ = lfr.divide(scalar, scalar)
-            _ = lfr.divide(scalar, value)
-            _ = lfr.divide(value, scalar)
+            self.assert_overload(lfr.divide, scalar, scalar)
+            self.assert_overload(lfr.divide, scalar, value)
+            self.assert_overload(lfr.divide, value, scalar)
 
             # value icw something else, if not handled already
-            _ = lfr.divide(value, value)
+            self.assert_overload(lfr.divide, value, value)

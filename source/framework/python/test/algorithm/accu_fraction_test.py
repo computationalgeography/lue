@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class AccuFractionTest(lue_test.TestCase):
+class AccuFractionTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -23,4 +16,4 @@ class AccuFractionTest(lue_test.TestCase):
         for element_type in lfr.floating_point_element_types:
             material = lfr.create_array(array_shape, element_type, 1)
             fraction = lfr.create_array(array_shape, element_type, 0.8)
-            flux, state = lfr.accu_fraction(flow_direction, material, fraction)
+            self.assert_overload(lfr.accu_fraction, flow_direction, material, fraction)

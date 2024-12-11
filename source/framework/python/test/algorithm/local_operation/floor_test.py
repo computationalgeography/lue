@@ -12,6 +12,6 @@ class FloorTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.floor(array)
-            _ = lfr.floor(scalar)
-            _ = lfr.floor(value)
+            self.assert_overload(lfr.floor, array)
+            self.assert_overload(lfr.floor, scalar)
+            self.assert_overload(lfr.floor, value)

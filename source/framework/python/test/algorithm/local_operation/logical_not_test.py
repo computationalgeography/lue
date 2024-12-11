@@ -12,6 +12,6 @@ class LogicalNotTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.logical_not(array)
-            _ = lfr.logical_not(scalar)
-            _ = lfr.logical_not(value)
+            self.assert_overload(lfr.logical_not, array)
+            self.assert_overload(lfr.logical_not, scalar)
+            self.assert_overload(lfr.logical_not, value)

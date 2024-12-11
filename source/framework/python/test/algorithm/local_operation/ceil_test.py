@@ -12,6 +12,6 @@ class CeilTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.ceil(array)
-            _ = lfr.ceil(scalar)
-            _ = lfr.ceil(value)
+            self.assert_overload(lfr.ceil, array)
+            self.assert_overload(lfr.ceil, scalar)
+            self.assert_overload(lfr.ceil, value)

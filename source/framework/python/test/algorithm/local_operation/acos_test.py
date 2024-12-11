@@ -12,6 +12,6 @@ class ACosTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.acos(array)
-            _ = lfr.acos(scalar)
-            _ = lfr.acos(value)
+            self.assert_overload(lfr.acos, array)
+            self.assert_overload(lfr.acos, scalar)
+            self.assert_overload(lfr.acos, value)

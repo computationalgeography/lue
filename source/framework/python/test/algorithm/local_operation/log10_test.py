@@ -12,6 +12,6 @@ class Log10Test(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.log10(array)
-            _ = lfr.log10(scalar)
-            _ = lfr.log10(value)
+            self.assert_overload(lfr.log10, array)
+            self.assert_overload(lfr.log10, scalar)
+            self.assert_overload(lfr.log10, value)

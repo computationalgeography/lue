@@ -56,3 +56,11 @@ class OperationTest(lue_test.TestCase):
             type_: lfr.create_scalar(cls.dtype_by_type[type_], cls.value[type_])
             for type_ in cls.numeric_types
         }
+
+    def assert_overload(self, function, *args, **kwargs):
+        results = function(*args, **kwargs)
+
+        if isinstance(results, tuple):
+            self.assertTrue(all(result is not None for result in results), results)
+        else:
+            self.assertIsNotNone(results)

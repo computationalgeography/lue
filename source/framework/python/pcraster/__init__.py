@@ -59,10 +59,10 @@ class Configuration(object):
     def __init__(
         self,
         *,
-        bounding_box=None,
-        cell_size=None,
-        array_shape=None,
-        partition_shape=None,
+        bounding_box: BoundingBox | None = None,
+        cell_size: float | None = None,
+        array_shape: tuple[int, int] | None = None,
+        partition_shape: tuple[int, int] | None = None,
     ):
         self.bounding_box = bounding_box
         self.cell_size = cell_size
@@ -97,12 +97,13 @@ def setclone(pathname):
 
     configuration.bounding_box = bounding_box
     configuration.cell_size = cell_size
-    configuration.array_shape = array_shape
+    configuration.array_shape = tuple(array_shape)
 
     partition_shape = os.getenv("LUE_PARTITION_SHAPE", default=None)
 
     if partition_shape is not None:
         partition_shape = tuple(int(extent) for extent in partition_shape.split(","))
+        partition_shape = partition_shape[0], partition_shape[1]
 
     configuration.partition_shape = partition_shape
 
@@ -424,6 +425,7 @@ def report(expression, pathname):
     # if is_non_spatial(expression):
     #     expression = non_spatial_to_spatial(fill_value=expression)
 
+    # TODO Pass in clone information
     lfr.to_gdal(expression, pathname)
 
 

@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class KinematicWaveTest(lue_test.TestCase):
+class KinematicWaveTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -28,7 +21,8 @@ class KinematicWaveTest(lue_test.TestCase):
             inflow = lfr.create_array(array_shape, element_type, 1)
             channel_length = lfr.create_array(array_shape, element_type, 10)
 
-            lfr.kinematic_wave(
+            self.assert_overload(
+                lfr.kinematic_wave,
                 flow_direction,
                 discharge,
                 inflow,

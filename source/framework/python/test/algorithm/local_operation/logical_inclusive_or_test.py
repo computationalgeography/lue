@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class LogicalInclusiveOrTest(lue_test.TestCase):
+class LogicalInclusiveOrTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -18,5 +11,5 @@ class LogicalInclusiveOrTest(lue_test.TestCase):
 
         for element_type in lfr.integral_element_types:
             array = lfr.create_array(array_shape, element_type, fill_value)
-            tmp = lfr.logical_inclusive_or(array, array)
-            tmp = array | array
+            self.assert_overload(lfr.logical_inclusive_or, array, array)
+            _ = array | array
