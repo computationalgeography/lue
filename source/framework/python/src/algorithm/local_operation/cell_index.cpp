@@ -10,7 +10,7 @@ namespace lue::framework {
         module.def(
             "cell_index",
             [](PartitionedArray<BooleanElement, 2> const& condition, Index const dimension_idx)
-            { value_policies::cell_index<IndexElement>(condition, dimension_idx); });
+            { return value_policies::cell_index<IndexElement>(condition, dimension_idx); });
     }
 
 }  // namespace lue::framework

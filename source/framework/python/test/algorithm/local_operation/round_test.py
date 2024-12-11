@@ -12,6 +12,6 @@ class RoundTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.round(array)
-            _ = lfr.round(scalar)
-            _ = lfr.round(value)
+            self.assert_overload(lfr.round, array)
+            self.assert_overload(lfr.round, scalar)
+            self.assert_overload(lfr.round, value)

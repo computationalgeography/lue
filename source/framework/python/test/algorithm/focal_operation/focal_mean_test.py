@@ -2,17 +2,10 @@ import numpy as np
 
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class FocalMeanTest(lue_test.TestCase):
+class FocalMeanTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -21,4 +14,4 @@ class FocalMeanTest(lue_test.TestCase):
 
         for element_type in lfr.floating_point_element_types:
             array = lfr.create_array(array_shape, element_type, fill_value)
-            lfr.focal_mean(array, kernel)
+            self.assert_overload(lfr.focal_mean, array, kernel)

@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class AccuThreshold3Test(lue_test.TestCase):
+class AccuThreshold3Test(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -24,6 +17,6 @@ class AccuThreshold3Test(lue_test.TestCase):
                 external_inflow = lfr.create_array(array_shape, element_type, 1)
                 threshold = lfr.create_array(array_shape, element_type, 5)
 
-                outflow, remainder = lfr.accu_threshold3(
-                    flow_direction, external_inflow, threshold
+                self.assert_overload(
+                    lfr.accu_threshold3, flow_direction, external_inflow, threshold
                 )

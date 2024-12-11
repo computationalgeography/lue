@@ -12,6 +12,6 @@ class CosTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.cos(array)
-            _ = lfr.cos(scalar)
-            _ = lfr.cos(value)
+            self.assert_overload(lfr.cos, array)
+            self.assert_overload(lfr.cos, scalar)
+            self.assert_overload(lfr.cos, value)

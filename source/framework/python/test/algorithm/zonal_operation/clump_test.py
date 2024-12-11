@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class ClumpTest(lue_test.TestCase):
+class ClumpTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -23,4 +16,4 @@ class ClumpTest(lue_test.TestCase):
                 lfr.Connectivity.diagonal,
                 lfr.Connectivity.nondiagonal,
             ]:
-                _ = lfr.clump(zones, connectivity)
+                self.assert_overload(lfr.clump, zones, connectivity)

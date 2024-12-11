@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class UniqueIDTest(lue_test.TestCase):
+class UniqueIDTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         # Use a small array. The element type may be a single byte integer.

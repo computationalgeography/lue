@@ -12,6 +12,6 @@ class TanTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.tan(array)
-            _ = lfr.tan(scalar)
-            _ = lfr.tan(value)
+            self.assert_overload(lfr.tan, array)
+            self.assert_overload(lfr.tan, scalar)
+            self.assert_overload(lfr.tan, value)

@@ -12,6 +12,6 @@ class ExpTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.exp(array)
-            _ = lfr.exp(scalar)
-            _ = lfr.exp(value)
+            self.assert_overload(lfr.exp, array)
+            self.assert_overload(lfr.exp, scalar)
+            self.assert_overload(lfr.exp, value)

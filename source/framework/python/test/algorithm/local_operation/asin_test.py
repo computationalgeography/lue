@@ -12,6 +12,6 @@ class ASinTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.asin(array)
-            _ = lfr.asin(scalar)
-            _ = lfr.asin(value)
+            self.assert_overload(lfr.asin, array)
+            self.assert_overload(lfr.asin, scalar)
+            self.assert_overload(lfr.asin, value)

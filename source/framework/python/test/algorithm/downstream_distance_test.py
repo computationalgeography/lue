@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class DownstreamDistanceTest(lue_test.TestCase):
+class DownstreamDistanceTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -22,4 +15,6 @@ class DownstreamDistanceTest(lue_test.TestCase):
         cell_size = 10
 
         for element_type in lfr.floating_point_element_types:
-            _ = lfr.downstream_distance(flow_direction, cell_size, element_type)
+            self.assert_overload(
+                lfr.downstream_distance, flow_direction, cell_size, element_type
+            )

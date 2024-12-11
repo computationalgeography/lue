@@ -13,16 +13,16 @@ class SubtractTest(OperationTest):
             array = self.array[element_type]
 
             # array icw something else
-            _ = lfr.subtract(array, array)
-            _ = lfr.subtract(array, scalar)
-            _ = lfr.subtract(array, value)
-            _ = lfr.subtract(scalar, array)
-            _ = lfr.subtract(value, array)
+            self.assert_overload(lfr.subtract, array, array)
+            self.assert_overload(lfr.subtract, array, scalar)
+            self.assert_overload(lfr.subtract, array, value)
+            self.assert_overload(lfr.subtract, scalar, array)
+            self.assert_overload(lfr.subtract, value, array)
 
             # scalar icw something else, if not handled already
-            _ = lfr.subtract(scalar, scalar)
-            _ = lfr.subtract(scalar, value)
-            _ = lfr.subtract(value, scalar)
+            self.assert_overload(lfr.subtract, scalar, scalar)
+            self.assert_overload(lfr.subtract, scalar, value)
+            self.assert_overload(lfr.subtract, value, scalar)
 
             # value icw something else, if not handled already
-            _ = lfr.subtract(value, value)
+            self.assert_overload(lfr.subtract, value, value)

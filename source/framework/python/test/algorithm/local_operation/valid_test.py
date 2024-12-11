@@ -12,6 +12,6 @@ class ValidTest(OperationTest):
             scalar = self.scalar[element_type]
             array = self.array[element_type]
 
-            _ = lfr.valid(array)
-            _ = lfr.valid(scalar)
-            _ = lfr.valid(value)
+            self.assert_overload(lfr.valid, array)
+            self.assert_overload(lfr.valid, scalar)
+            self.assert_overload(lfr.valid, value)

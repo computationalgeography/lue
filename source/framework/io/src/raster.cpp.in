@@ -476,7 +476,7 @@ namespace lue {
         if constexpr (!gdal::supports<Element>())
         {
             gdal::verify_support<Element>();
-            return hpx::future<void>{};
+            return hpx::make_ready_future();
         }
         else
         {
@@ -501,6 +501,8 @@ namespace lue {
             Element no_data_value;
             ondp.mark_no_data(no_data_value);
 
+            auto const& raster_shape{array.shape()};
+
             {
                 Count const nr_bands{1};
                 GDALDataType const data_type{gdal::data_type_v<Element>};
@@ -508,15 +510,28 @@ namespace lue {
                     "GTiff",
                     name,
                     gdal::Shape{
-                        static_cast<gdal::Count>(array.shape()[0]),
-                        static_cast<gdal::Count>(array.shape()[1])},
+                        static_cast<gdal::Count>(raster_shape[0]),
+                        static_cast<gdal::Count>(raster_shape[1])},
                     nr_bands,
                     data_type)};
                 gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
                 gdal::set_no_data_value(*band_ptr, no_data_value);
 
-                if (!clone_name.empty())
+                if (clone_name.empty())
+                {
+                    gdal::GeoTransform geo_transform{
+                        0.0,  // west
+                        1.0,  // cell width
+                        0.0,  // row rotation
+                        static_cast<gdal::Coordinate>(raster_shape[0]),  // north
+                        0.0,  // col rotation
+                        -1.0,  // cell height (neg for north-up)
+                    };
+
+                    gdal::set_geo_transform(*dataset_ptr, geo_transform);
+                }
+                else
                 {
                     // Copy stuff from clone dataset
 

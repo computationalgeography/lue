@@ -1,16 +1,9 @@
 import lue.framework as lfr
 import lue_test
+from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
-
-
-class FirstNTest(lue_test.TestCase):
+class FirstNTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
         array_shape = (60, 40)
@@ -28,4 +21,4 @@ class FirstNTest(lue_test.TestCase):
             # TODO
             # RuntimeError: this promise has no valid shared state: HPX(no_state)
             # https://github.com/computationalgeography/lue/issues/629
-            # lfr.first_n(route, max_nr_cells)
+            # self.assert_overload(lfr.first_n, route, max_nr_cells)

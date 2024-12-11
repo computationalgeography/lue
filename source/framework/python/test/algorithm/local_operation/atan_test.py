@@ -12,6 +12,6 @@ class ATanTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.atan(array)
-            _ = lfr.atan(scalar)
-            _ = lfr.atan(value)
+            self.assert_overload(lfr.atan, array)
+            self.assert_overload(lfr.atan, scalar)
+            self.assert_overload(lfr.atan, value)

@@ -12,6 +12,6 @@ class SqrtTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.sqrt(array)
-            _ = lfr.sqrt(scalar)
-            _ = lfr.sqrt(value)
+            self.assert_overload(lfr.sqrt, array)
+            self.assert_overload(lfr.sqrt, scalar)
+            self.assert_overload(lfr.sqrt, value)

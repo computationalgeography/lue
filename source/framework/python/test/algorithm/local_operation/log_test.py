@@ -4,6 +4,7 @@ from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
 class LogTest(OperationTest):
+
     @lue_test.framework_test_case
     def test_overloads(self):
 
@@ -12,6 +13,6 @@ class LogTest(OperationTest):
             scalar = self.scalar[element_type]
             value = self.value[element_type]
 
-            _ = lfr.log(array)
-            _ = lfr.log(scalar)
-            _ = lfr.log(value)
+            self.assert_overload(lfr.log, array)
+            self.assert_overload(lfr.log, scalar)
+            self.assert_overload(lfr.log, value)

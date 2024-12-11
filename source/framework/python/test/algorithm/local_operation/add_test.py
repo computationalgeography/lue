@@ -13,16 +13,16 @@ class AddTest(OperationTest):
             array = self.array[element_type]
 
             # array icw something else
-            _ = lfr.add(array, array)
-            _ = lfr.add(array, scalar)
-            _ = lfr.add(array, value)
-            _ = lfr.add(scalar, array)
-            _ = lfr.add(value, array)
+            self.assert_overload(lfr.add, array, array)
+            self.assert_overload(lfr.add, array, scalar)
+            self.assert_overload(lfr.add, array, value)
+            self.assert_overload(lfr.add, scalar, array)
+            self.assert_overload(lfr.add, value, array)
 
             # scalar icw something else, if not handled already
-            _ = lfr.add(scalar, scalar)
-            _ = lfr.add(scalar, value)
-            _ = lfr.add(value, scalar)
+            self.assert_overload(lfr.add, scalar, scalar)
+            self.assert_overload(lfr.add, scalar, value)
+            self.assert_overload(lfr.add, value, scalar)
 
             # value icw something else, if not handled already
-            _ = lfr.add(value, value)
+            self.assert_overload(lfr.add, value, value)
