@@ -3,7 +3,7 @@
 
 namespace lue::detail {
 
-    hpx::future<void> when_all_get(std::vector<hpx::future<void>>&& futures)
+    auto when_all_get(std::vector<hpx::future<void>>&& futures) -> hpx::future<void>
     {
         // When waiting on the result of asynchronous actions returning
         // nothing (hpx::future<void>), any exception thrown will evaporate if

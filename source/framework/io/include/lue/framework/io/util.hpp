@@ -8,11 +8,11 @@
 
 namespace lue::detail {
 
-    hpx::future<void> when_all_get(std::vector<hpx::future<void>>&& futures);
+    auto when_all_get(std::vector<hpx::future<void>>&& futures) -> hpx::future<void>;
 
 
     template<typename Shape>
-    hdf5::Hyperslab shape_to_hyperslab(Shape const& shape)
+    auto shape_to_hyperslab(Shape const& shape) -> hdf5::Hyperslab
     {
         // Return the hyperslab represented by the shape passed in
         return hdf5::Hyperslab{hdf5::Shape{shape.begin(), shape.end()}};
@@ -20,7 +20,7 @@ namespace lue::detail {
 
 
     template<typename Shape>
-    Shape hyperslab_to_shape(hdf5::Hyperslab const& hyperslab)
+    auto hyperslab_to_shape(hdf5::Hyperslab const& hyperslab) -> Shape
     {
         // Return the shape represented by the hyperslab passed in
         lue_hpx_assert(std::all_of(
@@ -36,8 +36,8 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab hyperslab(
-        Offset<Index, rank> const& partition_offset, Shape<Count, rank> const& partition_shape)
+    auto hyperslab(Offset<Index, rank> const& partition_offset, Shape<Count, rank> const& partition_shape)
+        -> hdf5::Hyperslab
     {
         hdf5::Offset offset(rank);
         std::copy(partition_offset.begin(), partition_offset.end(), offset.begin());
@@ -50,10 +50,10 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab hyperslab(
+    auto hyperslab(
         hdf5::Offset const& array_hyperslab_start,
         Offset<Index, rank> const& partition_offset,
-        Shape<Count, rank> const& partition_shape)
+        Shape<Count, rank> const& partition_shape) -> hdf5::Hyperslab
     {
         hdf5::Offset offset(rank);
         lue_hpx_assert(array_hyperslab_start.size() == rank);
@@ -72,11 +72,11 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab hyperslab(
+    auto hyperslab(
         Offset<Index, rank> const& partition_offset,
         Shape<Count, rank> const& partition_shape,
         Index const location_in_time_idx,
-        Index const time_step_idx)
+        Index const time_step_idx) -> hdf5::Hyperslab
     {
         hdf5::Offset offset(rank + 2);
         std::copy(partition_offset.begin(), partition_offset.end(), offset.begin() + 2);
@@ -93,12 +93,12 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab hyperslab(
+    auto hyperslab(
         hdf5::Offset const& array_hyperslab_start,
         Offset<Index, rank> const& partition_offset,
         Shape<Count, rank> const& partition_shape,
         Index const location_in_time_idx,
-        Index const time_step_idx)
+        Index const time_step_idx) -> hdf5::Hyperslab
     {
         hdf5::Offset offset(rank + 2);
         lue_hpx_assert(array_hyperslab_start.size() == rank);
@@ -121,7 +121,7 @@ namespace lue::detail {
 
 
     template<typename PartitionServer>
-    hdf5::Hyperslab hyperslab(PartitionServer const& partition_server)
+    auto hyperslab(PartitionServer const& partition_server) -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition server
         // instance passed in, as an HDF5 hyperslab. The result is useful
@@ -139,8 +139,8 @@ namespace lue::detail {
         @exception  .
     */
     template<typename PartitionServer>
-    hdf5::Hyperslab hyperslab(
-        hdf5::Offset const& array_hyperslab_start, PartitionServer const& partition_server)
+    auto hyperslab(hdf5::Offset const& array_hyperslab_start, PartitionServer const& partition_server)
+        -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition server
         // instance passed in, as an HDF5 hyperslab. The result is useful
@@ -150,8 +150,10 @@ namespace lue::detail {
 
 
     template<typename PartitionServer>
-    hdf5::Hyperslab hyperslab(
-        PartitionServer const& partition_server, Index const location_in_time_idx, Index const time_step_idx)
+    auto hyperslab(
+        PartitionServer const& partition_server,
+        Index const location_in_time_idx,
+        Index const time_step_idx) -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition server
         // instance passed in, as an HDF5 hyperslab. The result is useful
@@ -162,11 +164,11 @@ namespace lue::detail {
 
 
     template<typename PartitionServer>
-    hdf5::Hyperslab hyperslab(
+    auto hyperslab(
         hdf5::Offset const& array_hyperslab_start,
         PartitionServer const& partition_server,
         Index const location_in_time_idx,
-        Index const time_step_idx)
+        Index const time_step_idx) -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition server
         // instance passed in, as an HDF5 hyperslab. The result is useful
@@ -181,8 +183,8 @@ namespace lue::detail {
 
 
     template<typename Element, Rank rank>
-    std::map<hpx::id_type, std::vector<PartitionT<PartitionedArray<Element, rank>>>> partitions_by_locality(
-        PartitionedArray<Element, rank> const& array)
+    auto partitions_by_locality(PartitionedArray<Element, rank> const& array)
+        -> std::map<hpx::id_type, std::vector<PartitionT<PartitionedArray<Element, rank>>>>
     {
         // The partitions in the array are distributed over localities. We
         // perform I/O per locality, so for each of the localities, we must
@@ -231,6 +233,53 @@ namespace lue::detail {
         return result;
     }
 
+
+    template<typename Element, Rank rank>
+    auto partition_idxs_by_locality(PartitionedArray<Element, rank> const& array)
+        -> std::map<hpx::id_type, std::vector<Index>>
+    {
+        // The partitions in the array are distributed over localities. We perform I/O per locality, so for
+        // each of the localities, we must determine which partitions are stored there. Then we can attach a
+        // continuation to the (group of) partitions that will perform the I/O on the locality.
+
+        // Per locality the collection of linear indices of partition component clients
+        std::map<hpx::id_type, std::vector<Index>> result;
+
+        {
+            // All localities used by this array
+            Localities<rank> const& localities{array.localities()};
+            auto const nr_partitions{lue::nr_partitions(array)};
+
+            // Try to prevent reallocations while adding partitions to the collections. Assume the partitions
+            // are evenly distributed over all localities.
+            Count const max_nr_partitions_per_locality{
+                (nr_partitions / Count(hpx::find_all_localities().size())) + 1};
+
+            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+            {
+                hpx::id_type const locality{localities[partition_idx]};
+
+                if (result.find(locality) == result.end())
+                {
+                    // For this locality, we do not have created a collection of partitions yet. Create one
+                    // and already reserve (hopefully) enough memory.
+                    std::vector<Index> empty_partition_collection{};
+                    empty_partition_collection.reserve(max_nr_partitions_per_locality);
+                    result[locality] = std::move(empty_partition_collection);
+                }
+
+                // This fails if the distribution of partitions over localities is not even. Update heuristics
+                // if that is the case, if possible. Otherwise just remove the assert.
+                lue_hpx_assert(result[locality].capacity() > result[locality].size());
+
+                result[locality].push_back(partition_idx);
+            }
+        }
+
+        return result;
+    }
+
+
     template<typename Offset, typename Shape, typename Element>
     using PartitionTuple = std::tuple<Offset, Shape, Element*>;
 
@@ -240,11 +289,11 @@ namespace lue::detail {
 
 
     template<typename Partition>
-    std::tuple<
-        PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>>,
-        OffsetT<Partition>,
-        ShapeT<Partition>>
-    partition_tuples(std::vector<Partition> const& partitions)
+    auto partition_tuples(std::vector<Partition> const& partitions)
+        -> std::tuple<
+            PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>>,
+            OffsetT<Partition>,
+            ShapeT<Partition>>
     {
         using Offset = OffsetT<Partition>;
         using Shape = ShapeT<Partition>;
@@ -302,11 +351,11 @@ namespace lue::detail {
 
 
     template<typename Partition, typename Compare>
-    std::tuple<
-        PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>>,
-        OffsetT<Partition>,
-        ShapeT<Partition>>
-    partition_tuples(std::vector<Partition>& partitions, Compare compare)
+    auto partition_tuples(std::vector<Partition>& partitions, Compare compare)
+        -> std::tuple<
+            PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>>,
+            OffsetT<Partition>,
+            ShapeT<Partition>>
     {
         auto [partition_tuples, block_offset, block_shape] = detail::partition_tuples(partitions);
 
@@ -356,10 +405,10 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab block_hyperslab(
+    auto block_hyperslab(
         hdf5::Offset const& array_hyperslab_start,
         Offset<Index, rank> const& block_offset,
-        Shape<Count, rank> const& block_shape)
+        Shape<Count, rank> const& block_shape) -> hdf5::Hyperslab
     {
         using Offset = lue::Offset<Index, rank>;
 
@@ -377,11 +426,11 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab block_hyperslab(
+    auto block_hyperslab(
         hdf5::Offset const& array_hyperslab_start,
         Index const time_step_idx,
         Offset<Index, rank> const& block_offset,
-        Shape<Count, rank> const& block_shape)
+        Shape<Count, rank> const& block_shape) -> hdf5::Hyperslab
     {
         using Offset = lue::Offset<Index, rank>;
 
@@ -399,10 +448,10 @@ namespace lue::detail {
 
 
     template<Rank rank>
-    hdf5::Hyperslab block_hyperslab(
+    auto block_hyperslab(
         Index const time_step_idx,
         Offset<Index, rank> const& block_offset,
-        Shape<Count, rank> const& block_shape)
+        Shape<Count, rank> const& block_shape) -> hdf5::Hyperslab
     {
         hdf5::Offset array_hyperslab_start(rank, 0);
 

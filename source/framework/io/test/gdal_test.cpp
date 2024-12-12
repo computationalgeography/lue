@@ -1,6 +1,6 @@
-#define BOOST_TEST_MODULE lue framework io raster
+#define BOOST_TEST_MODULE lue framework io gdal
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/io/raster.hpp"
+#include "lue/framework/io/gdal.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(round_trip_1)
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::from_gdal<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(round_trip_2)
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::from_gdal<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(round_trip_3)
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::from_gdal<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(round_trip_4)
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
-    Array array_read{lue::read<Element>(name, partition_shape)};
+    Array array_read{lue::from_gdal<Element>(name, partition_shape)};
 
     lue::test::check_arrays_are_equal(array_read, array_written);
 }

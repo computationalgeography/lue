@@ -3,7 +3,7 @@
 #include "fmt/format.h"
 #include "overload.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/framework/io/raster.hpp"
+#include "lue/framework/io/gdal.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 // #include <any>
@@ -43,7 +43,7 @@ namespace lue {
 
                 if constexpr (lue::arithmetic_element_supported<Element>)
                 {
-                    result = read<Element>(name, partition_shape);
+                    result = lue::from_gdal<Element>(name, partition_shape);
                 }
 
                 return result;

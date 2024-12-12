@@ -635,7 +635,7 @@ namespace lue {
     }  // namespace detail
 
 
-    namespace policy::write_into {
+    namespace policy::to_lue {
 
         template<typename OutputElement>
         using DefaultPolicies =
@@ -645,11 +645,11 @@ namespace lue {
         using DefaultValuePolicies = policy::
             DefaultValuePolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
-    }  // namespace policy::write_into
+    }  // namespace policy::to_lue
 
 
     template<typename Policies, typename Element, Rank rank>
-    [[nodiscard]] auto write(
+    [[nodiscard]] auto to_lue(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
@@ -723,19 +723,19 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] auto write(
+    [[nodiscard]] auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id) -> hpx::future<void>
     {
-        using Policies = policy::write_into::DefaultPolicies<Element>;
+        using Policies = policy::to_lue::DefaultPolicies<Element>;
 
-        return write(Policies{}, array, array_pathname, object_id);
+        return to_lue(Policies{}, array, array_pathname, object_id);
     }
 
 
     template<typename Policies, typename Element, Rank rank>
-    [[nodiscard]] auto write(
+    [[nodiscard]] auto to_lue(
         Policies const& policies,
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
@@ -815,15 +815,15 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] auto write(
+    [[nodiscard]] auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id,
         Index const time_step_idx) -> hpx::future<void>
     {
-        using Policies = policy::write_into::DefaultPolicies<Element>;
+        using Policies = policy::to_lue::DefaultPolicies<Element>;
 
-        return write(Policies{}, array, array_pathname, object_id, time_step_idx);
+        return to_lue(Policies{}, array, array_pathname, object_id, time_step_idx);
     }
 
 }  // namespace lue

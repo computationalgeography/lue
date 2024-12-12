@@ -129,6 +129,7 @@ class ToNumPyTest(lue_test.TestCase):
                 dtype = np.dtype(element_type)
                 numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
 
+                # TODO gh484
                 # lue_array = lfr.from_numpy(numpy_array, partition_shape=partition_shape)
                 # numpy_array = lfr.to_numpy(lue_array)
 
@@ -151,6 +152,7 @@ class ToNumPyTest(lue_test.TestCase):
                 dtype = np.dtype(element_type)
                 numpy_array = np.arange(nr_cells, dtype=dtype).reshape(array_shape)
 
+                # TODO gh484
                 # lue_array = (
                 #     lfr.from_numpy(numpy_array, partition_shape=partition_shape) + 5
                 # )

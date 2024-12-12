@@ -5,12 +5,13 @@
 namespace lue {
 
     template<typename Element>
-    PartitionedArray<Element, 2> read(std::string const& name, Shape<Count, 2> const& partition_shape);
+    auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape)
+        -> PartitionedArray<Element, 2>;
 
     template<typename Element>
-    hpx::future<void> write(
+    auto write(
         PartitionedArray<Element, 2> const& array,
         std::string const& name,
-        std::string const& clone_name = "");
+        std::string const& clone_name = "") -> hpx::future<void>;
 
 }  // namespace lue
