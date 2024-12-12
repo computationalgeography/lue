@@ -1,16 +1,27 @@
 #pragma once
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/io/configure.hpp"
+#include "lue/framework/io/configure.hpp"  // LUE_USE_PARALLEL_IO
+#include "lue/framework/io/io_strategy.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/data_model.hpp"
 #ifdef LUE_USE_PARALLEL_IO
-// TODO PARALLEL_IO
 // Only available in case MPI is used in HPX
 #include <hpx/mpi_base/mpi_environment.hpp>
 #endif
+
+
+/*!
+    @file
+
+    Thiѕ header contains the implementation of the various from_lue function overloads.
+
+    The goal is to return an array as soon as possible, allowing the caller to create more work, while
+    the read-tasks start the reading. The idea is that, as soon as partitions have been read, they can
+    participate in computations, while other partitions are still being read.
+*/
 
 
 namespace lue {
@@ -91,8 +102,6 @@ namespace lue {
             hdf5::File::AccessPropertyList access_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            // TODO PARALLEL_IO
-
             if (hpx::util::mpi_environment::enabled())
             {
                 // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
@@ -126,8 +135,6 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            // TODO PARALLEL_IO
-
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // Use collective I/O
@@ -243,8 +250,6 @@ namespace lue {
             hdf5::File::AccessPropertyList access_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            // TODO PARALLEL_IO
-
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
@@ -281,8 +286,6 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #ifdef LUE_USE_PARALLEL_IO
-            // TODO PARALLEL_IO
-
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // Use collective I/O
@@ -370,351 +373,200 @@ namespace lue {
 
 
         template<typename Policies, typename Partitions>
-        struct ReadIntoPartitionsAction:
+        struct ReadPartitionsConstantAction:
             hpx::actions::make_action<
                 decltype(&read_partitions_constant<Policies, Partitions>),
                 &read_partitions_constant<Policies, Partitions>,
-                ReadIntoPartitionsAction<Policies, Partitions>>::type
+                ReadPartitionsConstantAction<Policies, Partitions>>::type
         {
         };
 
 
         template<typename Policies, typename Partitions>
-        struct ReadIntoPartitionsAction2:
+        struct ReadPartitionsVariableAction:
             hpx::actions::make_action<
                 decltype(&read_partitions_variable<Policies, Partitions>),
                 &read_partitions_variable<Policies, Partitions>,
-                ReadIntoPartitionsAction2<Policies, Partitions>>::type
+                ReadPartitionsVariableAction<Policies, Partitions>>::type
         {
         };
 
-    }  // namespace detail
 
-
-    template<typename Policies, Rank rank>
-    [[nodiscard]] auto from_lue(
-        Policies const& policies,
-        std::string const& array_pathname,
-        hdf5::Offset const& array_hyperslab_start,
-        data_model::ID const object_id,
-        PartitionedArray<policy::OutputElementT<Policies>, rank>&& array)
-        -> PartitionedArray<policy::OutputElementT<Policies>, rank>
-    {
-        // We can read from a dataset from multiple localities (processes) at the same time. We cannot read
-        // from a dataset from multiple threads in a single process at the same time. We cannot assume that
-        // the HDF5 library is thread safe.
-        // → Reads into partitions located in different localities don't have to be serialized
-        // → Reads into partitions located in the same locality must be serialized
-
-        // 1. Group partitions per locality
-        // 2. Per group, spawn a task which reads each partition, in turn
-
-        using Element = policy::OutputElementT<Policies>;
-        using Array = PartitionedArray<Element, rank>;
-        using Partition = PartitionT<Array>;
-
-        auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
-        lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
-
-        using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
-        Action action{};
-
-        for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
+        template<typename Policies, Rank rank>
+        [[nodiscard]] auto from_lue(
+            Policies const& policies,
+            std::string const& array_pathname,
+            hdf5::Offset const& array_hyperslab_start,
+            data_model::ID const object_id,
+            PartitionedArray<policy::OutputElementT<Policies>, rank>&& array)
+            -> PartitionedArray<policy::OutputElementT<Policies>, rank>
         {
-            std::vector<Partition> partitions{};
-            partitions.resize(partition_idxs.size());
+            // We can read from a dataset from multiple localities (processes) at the same time. We cannot
+            // read from a dataset from multiple threads in a single process at the same time. We cannot
+            // assume that the HDF5 library is thread safe. → Reads into partitions located in different
+            // localities don't have to be serialized → Reads into partitions located in the same locality
+            // must be serialized
 
-            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
+            // 1. Group partitions per locality
+            // 2. Per group, spawn a task which reads each partition, in turn
+
+            using Element = policy::OutputElementT<Policies>;
+            using Array = PartitionedArray<Element, rank>;
+            using Partition = PartitionT<Array>;
+
+            auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+            lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
+
+            using Action = ReadPartitionsConstantAction<Policies, std::vector<Partition>>;
+            Action action{};
+
+            for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
-                partitions[idx++] = array.partitions()[partition_idx];
-            }
+                std::vector<Partition> partitions{};
+                partitions.resize(partition_idxs.size());
 
-            std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
-                hpx::dataflow(
-                    hpx::launch::async,
-                    hpx::unwrapping(
+                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
+                {
+                    partitions[idx++] = array.partitions()[partition_idx];
+                }
 
-                        [locality = locality,
-                         action,
-                         policies,
-                         array_pathname,
-                         array_hyperslab_start,
-                         object_id](std::vector<Partition>&& partitions)
+                std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
+                    hpx::dataflow(
+                        hpx::launch::async,
+                        hpx::unwrapping(
+
+                            [locality = locality,
+                             action,
+                             policies,
+                             array_pathname,
+                             array_hyperslab_start,
+                             object_id](std::vector<Partition>&& partitions)
+                            {
+                                return action(
+                                    locality,
+                                    policies,
+                                    array_pathname,
+                                    array_hyperslab_start,
+                                    object_id,
+                                    std::move(partitions));
+                            }),
+
+                        hpx::when_all(partitions.begin(), partitions.end())),
+                    std::size(partitions));
+
+                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
+                {
+                    // Replace the current partition with a new one which becomes ready once the reading has
+                    // finished. Under the hood the new partition is the same and the current one, but this is
+                    // not important here.
+                    array.partitions()[partition_idx] = partition_fs[idx++].then(
+                        [](auto&& partition_f)
                         {
-                            return action(
-                                locality,
-                                policies,
-                                array_pathname,
-                                array_hyperslab_start,
-                                object_id,
-                                std::move(partitions));
-                        }),
+                            lue_hpx_assert(partition_f.valid());
+                            lue_hpx_assert(partition_f.is_ready());
 
-                    hpx::when_all(partitions.begin(), partitions.end())),
-                std::size(partitions));
+                            Partition partition{partition_f.get()};
 
-            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
-            {
-                // Replace the current partition with a new one which becomes ready once the reading has
-                // finished. Under the hood the new partition is the same and the current one, but this is not
-                // important here.
-                array.partitions()[partition_idx] = partition_fs[idx++].then(
-                    [](auto&& partition_f)
-                    {
-                        lue_hpx_assert(partition_f.valid());
-                        lue_hpx_assert(partition_f.is_ready());
+                            lue_hpx_assert(partition.valid());
 
-                        Partition partition{partition_f.get()};
-
-                        lue_hpx_assert(partition.valid());
-
-                        return partition;
-                    });
-            }
-        }
-
-        for (auto const& partition : array.partitions())
-        {
-            lue_hpx_assert(partition.valid());
-        }
-
-        return array;
-
-
-        // std::vector<hpx::future<void>> reads_per_locality;
-        // {
-        //     using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
-        //     Action action{};
-
-        //     reads_per_locality.reserve(std::size(partitions_by_locality));
-
-        //     for(auto& [locality, partitions]: partitions_by_locality)
-        //     {
-        //         reads_per_locality.push_back(
-        //             hpx::dataflow(
-        //                 hpx::launch::async,
-        //                 hpx::unwrapping(
-
-        //                         [locality, action, policies, array_pathname, object_id](
-        //                             std::vector<Partition> const& partitions)
-        //                         {
-        //                             return action(locality, policies, array_pathname, object_id,
-        //                             partitions);
-        //                         }
-
-        //                     ),
-
-        //                 hpx::when_all(partitions.begin(), partitions.end())));
-        //     }
-        // }
-
-        // return detail::when_all_get(std::move(reads_per_locality));
-    }
-
-
-    // template<
-    //     typename Policies,
-    //     typename Element,
-    //     Rank rank>
-    // [[nodiscard]] hpx::future<void> from_lue(
-    //     Policies const& policies,
-    //     std::string const& array_pathname,
-    //     data_model::ID const object_id,
-    //     PartitionedArray<Element, rank>& array)
-    // {
-    //     // TODO Can this function be made fully asynchronous? Currently the
-    //     //     array can only be used once all partitions have been read. It
-    //     //     would be nice to be able to already work with those partitions
-    //     //     that have been read already.
-
-    //     using Array = PartitionedArray<Element, rank>;
-    //     using Partition = PartitionT<Array>;
-
-    //     auto partitions_by_locality{detail::partitions_by_locality(array)};
-    //     lue_hpx_assert(partitions_by_locality.size() <= hpx::find_all_localities().size());
-
-    //     // -------------------------------------------------------------------------
-    //     // Iterate over each locality and attach a continuation to all its
-    //     // partitions to read into.
-
-    //     // Wait for each locality to have finished reading before telling
-    //     // the next one to start reading. All this must work with a
-    //     // non-threadsafe HDF5 library.
-    //     {
-    //         using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
-    //         Action action{};
-
-    //         for(auto& [locality, partitions]: partitions_by_locality)
-    //         {
-    //             hpx::dataflow(
-    //                 hpx::launch::async,
-    //                 hpx::unwrapping(
-
-    //                         [locality, action, policies, array_pathname, object_id](
-    //                             std::vector<Partition> const& partitions)
-    //                         {
-    //                             return action(locality, policies, array_pathname, object_id, partitions);
-    //                         }
-
-    //                     ),
-
-    //                 hpx::when_all(partitions.begin(), partitions.end())).get();
-    //         }
-    //     }
-
-    //     return hpx::make_ready_future<void>();
-
-
-    //     // std::vector<hpx::future<void>> reads_per_locality;
-    //     // {
-    //     //     using Action = detail::ReadIntoPartitionsAction<Policies, std::vector<Partition>>;
-    //     //     Action action{};
-
-    //     //     reads_per_locality.reserve(std::size(partitions_by_locality));
-
-    //     //     for(auto& [locality, partitions]: partitions_by_locality)
-    //     //     {
-    //     //         reads_per_locality.push_back(
-    //     //             hpx::dataflow(
-    //     //                 hpx::launch::async,
-    //     //                 hpx::unwrapping(
-
-    //     //                         [locality, action, policies, array_pathname, object_id](
-    //     //                             std::vector<Partition> const& partitions)
-    //     //                         {
-    //     //                             return action(locality, policies, array_pathname, object_id,
-    //     partitions);
-    //     //                         }
-
-    //     //                     ),
-
-    //     //                 hpx::when_all(partitions.begin(), partitions.end())));
-    //     //     }
-    //     // }
-
-    //     // return detail::when_all_get(std::move(reads_per_locality));
-    // }
-
-
-    template<typename Policies, Rank rank>
-    [[nodiscard]] auto from_lue(
-        Policies const& policies,
-        std::string const& array_pathname,
-        hdf5::Offset const& array_hyperslab_start,
-        data_model::ID const object_id,
-        Index const time_step_idx,
-        PartitionedArray<policy::OutputElementT<Policies>, rank>&& array)
-        -> PartitionedArray<policy::OutputElementT<Policies>, rank>
-    {
-        using Element = policy::OutputElementT<Policies>;
-        using Array = PartitionedArray<Element, rank>;
-        using Partition = PartitionT<Array>;
-
-        auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
-        lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
-
-        using Action = detail::ReadIntoPartitionsAction2<Policies, std::vector<Partition>>;
-        Action action{};
-
-        for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
-        {
-            std::vector<Partition> partitions{};
-            partitions.resize(partition_idxs.size());
-
-            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
-            {
-                partitions[idx++] = array.partitions()[partition_idx];
+                            return partition;
+                        });
+                }
             }
 
-            std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
-                hpx::dataflow(
-                    hpx::launch::async,
-                    hpx::unwrapping(
+            for (auto const& partition : array.partitions())
+            {
+                lue_hpx_assert(partition.valid());
+            }
 
-                        [locality = locality,
-                         action,
-                         policies,
-                         array_pathname,
-                         array_hyperslab_start,
-                         object_id,
-                         time_step_idx](std::vector<Partition>&& partitions)
+            return array;
+        }
+
+
+        template<typename Policies, Rank rank>
+        [[nodiscard]] auto from_lue(
+            Policies const& policies,
+            std::string const& array_pathname,
+            hdf5::Offset const& array_hyperslab_start,
+            data_model::ID const object_id,
+            Index const time_step_idx,
+            PartitionedArray<policy::OutputElementT<Policies>, rank>&& array)
+            -> PartitionedArray<policy::OutputElementT<Policies>, rank>
+        {
+            using Element = policy::OutputElementT<Policies>;
+            using Array = PartitionedArray<Element, rank>;
+            using Partition = PartitionT<Array>;
+
+            auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+            lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
+
+            using Action = ReadPartitionsVariableAction<Policies, std::vector<Partition>>;
+            Action action{};
+
+            for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
+            {
+                std::vector<Partition> partitions{};
+                partitions.resize(partition_idxs.size());
+
+                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
+                {
+                    partitions[idx++] = array.partitions()[partition_idx];
+                }
+
+                std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
+                    hpx::dataflow(
+                        hpx::launch::async,
+                        hpx::unwrapping(
+
+                            [locality = locality,
+                             action,
+                             policies,
+                             array_pathname,
+                             array_hyperslab_start,
+                             object_id,
+                             time_step_idx](std::vector<Partition>&& partitions)
+                            {
+                                return action(
+                                    locality,
+                                    policies,
+                                    array_pathname,
+                                    array_hyperslab_start,
+                                    object_id,
+                                    time_step_idx,
+                                    std::move(partitions));
+                            }),
+
+                        hpx::when_all(partitions.begin(), partitions.end())),
+                    std::size(partitions));
+
+                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
+                {
+                    // Replace the current partition with a new one which becomes ready once the reading has
+                    // finished. Under the hood the new partition is the same and the current one, but this is
+                    // not important here.
+                    array.partitions()[partition_idx] = partition_fs[idx++].then(
+                        [](auto&& partition_f)
                         {
-                            return action(
-                                locality,
-                                policies,
-                                array_pathname,
-                                array_hyperslab_start,
-                                object_id,
-                                time_step_idx,
-                                std::move(partitions));
-                        }),
+                            lue_hpx_assert(partition_f.valid());
+                            lue_hpx_assert(partition_f.is_ready());
 
-                    hpx::when_all(partitions.begin(), partitions.end())),
-                std::size(partitions));
+                            Partition partition{partition_f.get()};
 
-            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
-            {
-                // Replace the current partition with a new one which becomes ready once the reading has
-                // finished. Under the hood the new partition is the same and the current one, but this is not
-                // important here.
-                array.partitions()[partition_idx] = partition_fs[idx++].then(
-                    [](auto&& partition_f)
-                    {
-                        lue_hpx_assert(partition_f.valid());
-                        lue_hpx_assert(partition_f.is_ready());
+                            lue_hpx_assert(partition.valid());
 
-                        Partition partition{partition_f.get()};
-
-                        lue_hpx_assert(partition.valid());
-
-                        return partition;
-                    });
+                            return partition;
+                        });
+                }
             }
+
+            for (auto const& partition : array.partitions())
+            {
+                lue_hpx_assert(partition.valid());
+            }
+
+            return array;
         }
 
-        for (auto const& partition : array.partitions())
-        {
-            lue_hpx_assert(partition.valid());
-        }
-
-        return array;
-
-        // return hpx::make_ready_future<void>();
-
-
-        // std::vector<hpx::future<void>> reads_per_locality;
-        // {
-        //     using Action = detail::ReadIntoPartitionsAction2<Policies, std::vector<Partition>>;
-        //     Action action{};
-
-        //     reads_per_locality.reserve(std::size(partitions_by_locality));
-
-        //     for(auto& [locality, partitions]: partitions_by_locality)
-        //     {
-        //         reads_per_locality.push_back(
-        //             hpx::dataflow(
-        //                 hpx::launch::async,
-        //                 hpx::unwrapping(
-
-        //                         [locality, action, policies, array_pathname, object_id, time_step_idx](
-        //                             std::vector<Partition> const& partitions)
-        //                         {
-        //                             return action(
-        //                                 locality, policies, array_pathname, object_id, time_step_idx,
-        //                                 partitions);
-        //                         }
-
-        //                     ),
-
-        //                 hpx::when_all(partitions.begin(), partitions.end())));
-        //     }
-        // }
-
-        // return detail::when_all_get(std::move(reads_per_locality));
-    }
-
-
-    namespace detail {
 
         template<typename Shape>
         auto constant_array_shape(std::string const& array_pathname) -> Shape
@@ -780,11 +632,19 @@ namespace lue {
 
     namespace policy::from_lue {
 
+        /*!
+            @brief      Default policies
+            @tparam     OutputElement Type of output elements
+        */
         template<typename OutputElement>
         using DefaultPolicies =
             policy::DefaultPolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
 
 
+        /*!
+            @brief      Default value policies
+            @tparam     OutputElement Type of output elements
+        */
         template<typename OutputElement>
         using DefaultValuePolicies = policy::
             DefaultValuePolicies<AllValuesWithinDomain<>, OutputElements<OutputElement>, InputElements<>>;
@@ -792,20 +652,16 @@ namespace lue {
     }  // namespace policy::from_lue
 
 
-    // The goal here is to return an array as soon as possible, allowing the caller to create more work, while
-    // the read tasks start the reading. The idea is that, as soon as partitions have been read, they can
-    // participate in computations, while other partitions are still being read.
-
-
     /*!
-        @brief      Read an array from a LUE dataset
-        @tparam     Policies Policies to use
+        @brief      Read a hyperslab from an array from a LUE dataset
+        @tparam     Policies Policies type
         @tparam     Shape Shape type
-        @param      policies
-        @param      array_pathname
-        @param      hyperslab
-        @param      partition_shape
-        @param      object_id
+        @param      policies Policies to use
+        @param      array_pathname Pathname of the property to read from, formatted as
+                    `<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>`
+        @param      hyperslab Hyperslab to read from the array
+        @param      partition_shape Shape of the array partitions to use
+        @param      object_id ID of object whose property value to read
         @return     New array
         @exception  .
     */
@@ -824,10 +680,15 @@ namespace lue {
         Shape const array_shape{detail::hyperslab_to_shape<Shape>(hyperslab)};
         Array array{create_partitioned_array(policies, array_shape, partition_shape, Functor{})};
 
-        return from_lue(policies, array_pathname, hyperslab.start(), object_id, std::move(array));
+        return detail::from_lue(policies, array_pathname, hyperslab.start(), object_id, std::move(array));
     }
 
 
+    /*!
+        @overload
+
+        Default policies will be used.
+    */
     template<typename Element, typename Shape>
     auto from_lue(
         std::string const& array_pathname,
@@ -841,6 +702,11 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+
+        The whole array will be read.
+    */
     template<typename Policies, typename Shape>
     auto from_lue(
         Policies const& policies,
@@ -855,6 +721,11 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+
+        Default policies will be used and the whole array will be read.
+    */
     template<typename Element, typename Shape>
     auto from_lue(
         std::string const& array_pathname,
@@ -870,6 +741,20 @@ namespace lue {
     // -------------------------------------------------------------------------
 
 
+    /*!
+        @brief      Read a hyperslab from a temporal array from a LUE dataset
+        @tparam     Policies Policies type
+        @tparam     Shape Shape type
+        @param      policies Policies to use
+        @param      array_pathname Pathname of the property to read from, formatted as
+                    `<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>`
+        @param      hyperslab Hyperslab to read from the array
+        @param      partition_shape Shape of the array partitions to use
+        @param      object_id ID of object whose property value to read
+        @param      time_step_idx Index of time step to read
+        @return     New array
+        @exception  .
+    */
     template<typename Policies, typename Shape>
     auto from_lue(
         Policies const& policies,
@@ -886,11 +771,16 @@ namespace lue {
         Shape const array_shape{detail::hyperslab_to_shape<Shape>(hyperslab)};
         Array array{create_partitioned_array(policies, array_shape, partition_shape, Functor{})};
 
-        return from_lue(
+        return detail::from_lue(
             policies, array_pathname, hyperslab.start(), object_id, time_step_idx, std::move(array));
     }
 
 
+    /*!
+        @overload
+
+        Default policies will be used.
+    */
     template<typename Element, typename Shape>
     auto from_lue(
         std::string const& array_pathname,
@@ -905,6 +795,11 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+
+        The whole array will be read.
+    */
     template<typename Policies, typename Shape>
     auto from_lue(
         Policies const& policies,
@@ -925,12 +820,19 @@ namespace lue {
     }
 
 
+    /*!
+        @overload
+
+        Default policies will be used and the whole array will be read.
+    */
     template<typename Element, typename Shape>
     auto from_lue(
         std::string const& array_pathname,
         Shape const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx) -> PartitionedArray<Element, rank<Shape>>
+        Index const time_step_idx  // ,
+        // TODO IOStrategy const strategy = {{IOStrategy::Grouping::Locality}}
+        ) -> PartitionedArray<Element, rank<Shape>>
     {
         using Policies = policy::from_lue::DefaultPolicies<Element>;
 

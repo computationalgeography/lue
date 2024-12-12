@@ -25,7 +25,7 @@ namespace lue {
             enum class PartitionGrouping {
 
                 /*!
-                    @brief      Handle a single partition
+                    @brief      Handle each partition individually
 
                     Reading:
 

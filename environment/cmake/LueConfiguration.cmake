@@ -442,6 +442,7 @@ if(LUE_BUILD_DOCUMENTATION)
     set(LUE_GRAPHVIZ_REQUIRED TRUE)
     set(LUE_JUPYTER_BOOK_REQUIRED TRUE)
     set(LUE_SPHINX_REQUIRED TRUE)
+    set(LUE_DOXYGEN_AWESOME_CSS_REQUIRED TRUE)
 
     find_program(EDIT_DOT_GRAPH
         edit_dot_graph.py
@@ -762,6 +763,25 @@ endif()
 
 if(LUE_DOXYGEN_REQUIRED)
     find_package(Doxygen REQUIRED dot)
+endif()
+
+
+if(LUE_DOXYGEN_AWESOME_CSS_REQUIRED)
+    FetchContent_Declare(doxygen-awesome-css
+        GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
+        GIT_TAG 568f56cde6ac78b6dfcc14acd380b2e745c301ea  # v2.3.4
+        # URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip
+    )
+    FetchContent_MakeAvailable(doxygen-awesome-css)
+
+    # Save the location the files were cloned into
+    # This allows us to get the path to doxygen-awesome.css
+    FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
+
+    # # Generate the Doxyfile
+    # set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
+    # set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    # configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 endif()
 
 

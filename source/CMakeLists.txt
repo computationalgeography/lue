@@ -58,6 +58,14 @@ if(LUE_BUILD_DOCUMENTATION)
     ### )
 
     # set(DOXYGEN_ENABLE_PREPROCESSING FALSE)
+    set(DOXYGEN_GENERATE_TREEVIEW TRUE)  # optional. Also works without treeview
+    set(DOXYGEN_DISABLE_INDEX FALSE)
+    set(DOXYGEN_FULL_SIDEBAR FALSE)
+    set(DOXYGEN_HTML_EXTRA_STYLESHEET "${AWESOME_CSS_DIR}/doxygen-awesome.css")
+    set(DOXYGEN_EXCLUDE_SYMBOLS "*::detail::*")
+    set(DOXYGEN_HTML_COLORSTYLE "LIGHT") # required with Doxygen >= 1.9.5
+    set(DOXYGEN_HIDE_UNDOC_MEMBERS TRUE)
+
     doxygen_add_docs(cpp_doc
         doc
         shared
