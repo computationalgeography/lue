@@ -1,15 +1,17 @@
 #pragma once
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/io/configure.hpp"  // LUE_USE_PARALLEL_IO
+#include "lue/framework/core/component.hpp"
+#include "lue/framework/io/dataset.hpp"
 #include "lue/framework/io/io_strategy.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
+#include "lue/configure.hpp"
 #include "lue/data_model.hpp"
-#ifdef LUE_USE_PARALLEL_IO
+#if LUE_FRAMEWORK_WITH_PARALLEL_IO
 // Only available in case MPI is used in HPX
-#include <hpx/mpi_base/mpi_environment.hpp>
+// #include <hpx/mpi_base/mpi_environment.hpp>
 #endif
 
 
@@ -27,114 +29,22 @@
 namespace lue {
     namespace detail {
 
-        // template<typename Element, Rank rank>
-        // auto read_block(
-        //     data_model::Array const& array,
-        //     hdf5::Dataset::TransferPropertyList const& transfer_property_list,
-        //     hdf5::Hyperslab const& block_hyperslab,
-        //     ShapeT<Array<Element, rank>> const& block_shape) -> Array<Element, rank>
-        // {
-        //     using Block = Array<Element, rank>;
-
-        //     Block block{block_shape};
-        //     hdf5::Datatype const memory_datatype{hdf5::native_datatype<Element>()};
-
-        //     // Read values into the block
-        //     array.read(memory_datatype, block_hyperslab, transfer_property_list, block.data());
-
-        //     // TODO Use no-data policy
-        //     // If no-data in the dataset, write no-data to the partition
-
-        //     return block;
-        // }
-
-
-        // template<typename Partition>
-        // void copy_partition_elements(
-        //     Array<ElementT<Partition>, rank<Partition>> const& block,
-        //     Offset<Index, rank<Partition>> const& block_offset,
-        //     PartitionTuples<OffsetT<Partition>, ShapeT<Partition>, ElementT<Partition>> const&
-        //         partition_tuples)
-        // {
-        //     // block_offset: Offset of the block within the array
-        //     // hyperslab. It is required to be able to transpate partition
-        //     // offsets, which are relative to the array hyperslab, to
-        //     // offsets within the block read.
-
-        //     using Offset = OffsetT<Partition>;
-        //     using Slice = typename Array<ElementT<Partition>, rank<Partition>>::Slice;
-
-        //     // Copy hyperslabs from block into the individual partitions
-        //     for (auto& [partition_offset, partition_shape, partition_buffer] : partition_tuples)
-        //     {
-        //         // Select hyperslab corresponding to this partition from
-        //         // block and copy the values to the partition's buffer
-
-        //         // Offset of the partition relative to the block!
-        //         Offset partition_block_offset{
-        //             std::get<0>(partition_offset) - std::get<0>(block_offset),
-        //             std::get<1>(partition_offset) - std::get<1>(block_offset)};
-
-        //         Slice partition_row_slice{
-        //             std::get<0>(partition_block_offset),
-        //             std::get<0>(partition_block_offset) + std::get<0>(partition_shape)};
-        //         Slice partition_col_slice{
-        //             std::get<1>(partition_block_offset),
-        //             std::get<1>(partition_block_offset) + std::get<1>(partition_shape)};
-
-        //         copy(submdspan(block.span(), partition_row_slice, partition_col_slice), partition_buffer);
-        //     }
-        // }
-
-
-        template<typename Policies, typename Partitions>
-        auto read_partitions_constant(
+        template<typename Policies, typename Property, typename CreateHyperslab, typename Partitions>
+        auto read_partitions(
             Policies const& policies,
-            std::string const& array_pathname,
-            hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block read from array
+            Property const& property,
+            CreateHyperslab create_hyperslab,
             data_model::ID const object_id,
             Partitions&& partitions) -> Partitions
         {
-            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
-                parse_array_pathname(array_pathname);
-
-            // Open dataset. Configure for use of parallel I/O if necessary.
-            hdf5::File::AccessPropertyList access_property_list{};
-
-#ifdef LUE_USE_PARALLEL_IO
-            if (hpx::util::mpi_environment::enabled())
-            {
-                // // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
-                // ::MPI_Comm communicator{MPI_COMM_WORLD};
-                // ::MPI_Info info{MPI_INFO_NULL};
-                // access_property_list.use_mpi_communicator(communicator, info);
-            }
-#endif
-
-            auto const dataset{
-                data_model::open_dataset(dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
-
-            // Open phenomenon
-            auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
-
-            // Open property-set
-            auto const& property_set{phenomenon.property_sets()[property_set_name]};
-
-            // Open property
-            lue_hpx_assert(property_set.properties().contains(property_name));
-            lue_hpx_assert(
-                property_set.properties().shape_per_object(property_name) ==
-                data_model::ShapePerObject::different);
-            lue_hpx_assert(
-                property_set.properties().value_variability(property_name) ==
-                data_model::ValueVariability::constant);
-            using Properties = data_model::different_shape::Properties;
-            auto const& property{property_set.properties().collection<Properties>()[property_name]};
-
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-#ifdef LUE_USE_PARALLEL_IO
+#if LUE_FRAMEWORK_WITH_PARALLEL_IO
+            // All tasks can perform independent I/O, asynchronous → independent is OK when blocks are
+            // non-overlapping / non-interleaved
+
+            // KDJ: Old stuff, never worked, replace by something that does
             // if(hpx::util::mpi_environment::enabled())
             // {
             //     // Use collective I/O
@@ -148,36 +58,6 @@ namespace lue {
 
             using Partition = typename Partitions::value_type;
             using Element = ElementT<Partition>;
-            // Rank const rank{lue::rank<Partition>};
-
-
-            // TODO Switch on some strategy
-
-            // // -----------------------------------
-            // // Read the whole block containing the partitions and distribute parts of it over the
-            // partitions.
-            // // This is faster than reading small blocks per individual partition. At the cost of reading
-            // too
-            // // much and having to allocate more memory.
-
-            // // NOTE: We assume here that the partitions are clustered...
-
-            // {
-            //     using Block = Array<Element, rank>;
-
-            //     auto [partition_tuples, block_offset, block_shape] = detail::partition_tuples(partitions);
-            //     Block block{read_block<Element, rank>(
-            //         array,
-            //         transfer_property_list,
-            //         block_hyperslab(array_hyperslab_start, block_offset, block_shape),
-            //         block_shape)};
-            //     copy_partition_elements<Partition>(block, block_offset, partition_tuples);
-            // }
-            // // -----------------------------------
-
-
-            // -----------------------------------
-            // Approach reading partitions individually
 
             // For each partition, spawn a task that will read from the dataset into the array. This task
             // returns a partition component client which becomes ready once the reading has finished. Use
@@ -191,22 +71,16 @@ namespace lue {
                 Partition const& partition{partitions[partition_idx]};
                 lue_hpx_assert(partition.is_ready());
 
-                auto read_partition = [policies,
-                                       partition,
-                                       array_hyperslab_start,
-                                       array,
-                                       memory_datatype,
-                                       transfer_property_list]() -> Partition
+                auto read_partition =
+                    [policies, partition, create_hyperslab, array, memory_datatype, transfer_property_list]()
+                    -> Partition
                 {
                     auto partition_ptr{detail::ready_component_ptr(partition)};
                     auto& partition_server{*partition_ptr};
                     Element* buffer{partition_server.data().data()};
 
                     array.read(
-                        memory_datatype,
-                        hyperslab(array_hyperslab_start, partition_server),
-                        transfer_property_list,
-                        buffer);
+                        memory_datatype, create_hyperslab(partition_server), transfer_property_list, buffer);
 
                     // TODO Use no-data policy
                     // If no-data in the dataset, write no-data to the partition
@@ -228,9 +102,48 @@ namespace lue {
 
                 lue_hpx_assert(new_partitions[partition_idx].valid());
             }
-            // -----------------------------------
 
             return new_partitions;
+        }
+
+
+        template<typename Policies, typename Partitions>
+        auto read_partitions_constant(
+            Policies const& policies,
+            std::string const& array_pathname,
+            hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block read from array
+            data_model::ID const object_id,
+            Partitions&& partitions) -> Partitions
+        {
+            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+                parse_array_pathname(array_pathname);
+            auto const dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
+
+            // Open phenomenon
+            auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
+
+            // Open property-set
+            auto const& property_set{phenomenon.property_sets()[property_set_name]};
+
+            // Open property
+            lue_hpx_assert(property_set.properties().contains(property_name));
+            lue_hpx_assert(
+                property_set.properties().shape_per_object(property_name) ==
+                data_model::ShapePerObject::different);
+            lue_hpx_assert(
+                property_set.properties().value_variability(property_name) ==
+                data_model::ValueVariability::constant);
+            using Properties = data_model::different_shape::Properties;
+            auto const& property{property_set.properties().collection<Properties>()[property_name]};
+
+            using Partition = typename Partitions::value_type;
+            using PartitionServer = Partition::Server;
+
+            auto create_hyperslab = [array_hyperslab_start](PartitionServer const& partition_server)
+            { return hyperslab(array_hyperslab_start, partition_server); };
+
+            return read_partitions(
+                policies, property, create_hyperslab, object_id, std::forward<Partitions>(partitions));
         }
 
 
@@ -245,22 +158,7 @@ namespace lue {
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
-
-            // Open dataset. Configure for use of parallel I/O if necessary.
-            hdf5::File::AccessPropertyList access_property_list{};
-
-#ifdef LUE_USE_PARALLEL_IO
-            // if(hpx::util::mpi_environment::enabled())
-            // {
-            //     // ::MPI_Comm communicator{hpx::util::mpi_environment::communicator()};
-            //     ::MPI_Comm communicator{MPI_COMM_WORLD};
-            //     ::MPI_Info info{MPI_INFO_NULL};
-            //     access_property_list.use_mpi_communicator(communicator, info);
-            // }
-#endif
-
-            auto const dataset{
-                data_model::open_dataset(dataset_pathname, H5F_ACC_RDONLY, access_property_list)};
+            auto const dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
 
             // Open phenomenon
             auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
@@ -282,93 +180,15 @@ namespace lue {
             using Properties = data_model::different_shape::constant_shape::Properties;
             auto const& property{property_set.properties().collection<Properties>()[property_name]};
 
-            // Open value. Configure for use of parallel I/O if necessary.
-            hdf5::Dataset::TransferPropertyList transfer_property_list{};
-
-#ifdef LUE_USE_PARALLEL_IO
-            // if(hpx::util::mpi_environment::enabled())
-            // {
-            //     // Use collective I/O
-            //     transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
-            // }
-#endif
-
-            // Iterate over partitions and read each partition's piece from the dataset
-            auto const& value{property.value()};
-            auto const array{value[object_id]};
-
             using Partition = typename Partitions::value_type;
-            using Element = ElementT<Partition>;
+            using PartitionServer = Partition::Server;
 
-            // TODO Switch on some strategy
+            auto create_hyperslab =
+                [array_hyperslab_start, time_step_idx](PartitionServer const& partition_server)
+            { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
 
-            // // -----------------------------------
-            // {
-            //     using Block = Array<Element, rank>;
-
-            //     auto [partition_tuples, block_offset, block_shape] = detail::partition_tuples(partitions);
-            //     Block block{read_block<Element, rank>(
-            //         array,
-            //         transfer_property_list,
-            //         block_hyperslab(array_hyperslab_start, time_step_idx, block_offset, block_shape),
-            //         block_shape)};
-
-            //     copy_partition_elements<Partition>(block, block_offset, partition_tuples);
-            // }
-            // // -----------------------------------
-
-            // -----------------------------------
-            // Approach reading partitions individually
-
-            Partitions new_partitions(std::size(partitions));
-            hdf5::Datatype const memory_datatype{hdf5::native_datatype<Element>()};
-
-            for (std::size_t partition_idx = 0; partition_idx < std::size(partitions); ++partition_idx)
-            {
-                Partition const& partition{partitions[partition_idx]};
-                lue_hpx_assert(partition.is_ready());
-
-                auto read_partition = [policies,
-                                       partition,
-                                       array_hyperslab_start,
-                                       time_step_idx,
-                                       array,
-                                       memory_datatype,
-                                       transfer_property_list]() -> Partition
-                {
-                    auto partition_ptr{detail::ready_component_ptr(partition)};
-                    auto& partition_server{*partition_ptr};
-                    Element* buffer{partition_server.data().data()};
-
-                    array.read(
-                        memory_datatype,
-                        hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx),
-                        transfer_property_list,
-                        buffer);
-
-                    // TODO Use no-data policy
-                    // If no-data in the dataset, write no-data to the partition
-
-                    return partition;
-                };
-
-                if (partition_idx == 0)
-                {
-                    new_partitions[partition_idx] = hpx::async(read_partition);
-                }
-                else
-                {
-                    lue_hpx_assert(new_partitions[partition_idx - 1].valid());
-                    new_partitions[partition_idx] = new_partitions[partition_idx - 1].then(
-                        [read_partition]([[maybe_unused]] Partition const& previous_new_partition)
-                        { return read_partition(); });
-                }
-
-                lue_hpx_assert(new_partitions[partition_idx].valid());
-            }
-            // -----------------------------------
-
-            return new_partitions;
+            return read_partitions(
+                policies, property, create_hyperslab, object_id, std::forward<Partitions>(partitions));
         }
 
 
@@ -403,9 +223,9 @@ namespace lue {
         {
             // We can read from a dataset from multiple localities (processes) at the same time. We cannot
             // read from a dataset from multiple threads in a single process at the same time. We cannot
-            // assume that the HDF5 library is thread safe. → Reads into partitions located in different
-            // localities don't have to be serialized → Reads into partitions located in the same locality
-            // must be serialized
+            // assume that the HDF5 library is thread safe.
+            // → Reads into partitions located in different localities don't have to be serialized
+            // → Reads into partitions located in the same locality must be serialized
 
             // 1. Group partitions per locality
             // 2. Per group, spawn a task which reads each partition, in turn
@@ -430,6 +250,26 @@ namespace lue {
                     partitions[idx++] = array.partitions()[partition_idx];
                 }
 
+                // std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
+                //     hpx::async(
+                //         [locality = locality,
+                //          action,
+                //          policies,
+                //          array_pathname,
+                //          array_hyperslab_start,
+                //          object_id](std::vector<Partition>&& partitions)
+                //         {
+                //             return action(
+                //                 locality,
+                //                 policies,
+                //                 array_pathname,
+                //                 array_hyperslab_start,
+                //                 object_id,
+                //                 std::move(partitions));
+                //         }),
+                //     std::size(partitions));
+
+                // TODO Wait in the remote process
                 std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
                     hpx::dataflow(
                         hpx::launch::async,
@@ -513,6 +353,7 @@ namespace lue {
                     partitions[idx++] = array.partitions()[partition_idx];
                 }
 
+                // TODO Wait in the remote process
                 std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
                     hpx::dataflow(
                         hpx::launch::async,
@@ -830,9 +671,7 @@ namespace lue {
         std::string const& array_pathname,
         Shape const& partition_shape,
         data_model::ID const object_id,
-        Index const time_step_idx  // ,
-        // TODO IOStrategy const strategy = {{IOStrategy::Grouping::Locality}}
-        ) -> PartitionedArray<Element, rank<Shape>>
+        Index const time_step_idx) -> PartitionedArray<Element, rank<Shape>>
     {
         using Policies = policy::from_lue::DefaultPolicies<Element>;
 

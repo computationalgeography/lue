@@ -731,6 +731,9 @@ if(LUE_HPX_REQUIRED)
     #             endif()
     #         endif()
     endif()
+
+    message(STATUS "HPX_WITH_NETWORKING           : ${HPX_WITH_NETWORKING}")
+    message(STATUS "HPX_WITH_PARCELPORT_MPI       : ${HPX_WITH_PARCELPORT_MPI}")
 endif()
 
 
@@ -819,7 +822,11 @@ if(LUE_HDF5_REQUIRED)
     # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
     # toolchain).
     find_package(HDF5 MODULE REQUIRED COMPONENTS C)
+    set(CMAKE_REQUIRED_INCLUDES "${HDF5_C_INCLUDE_DIRS}")
+    check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
+    unset(CMAKE_REQUIRED_INCLUDED)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
+    message(STATUS "HDF5_IS_THREADSAFE            : ${HDF5_IS_THREADSAFE}")
 endif()
 
 if(LUE_JUPYTER_BOOK_REQUIRED)
@@ -845,3 +852,12 @@ if(LUE_SPHINX_REQUIRED)
         message(FATAL_ERROR "sphinx not found")
     endif()
 endif()
+
+# Only allow the user to configure the use of parallel I/O if this is something that is supported by the
+# platform. If so, the default is to support parallel I/O.
+cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
+    "Use parallel I/O for formats that support it"
+    TRUE
+    "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
+    FALSE
+)

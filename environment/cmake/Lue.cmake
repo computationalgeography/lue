@@ -95,6 +95,7 @@ message(STATUS "+ python api                  : ${LUE_DATA_MODEL_WITH_PYTHON_API
 message(STATUS "+ utilities                   : ${LUE_DATA_MODEL_WITH_UTILITIES}")
 message(STATUS "Build framework               : ${LUE_BUILD_FRAMEWORK}")
 message(STATUS "+ python api                  : ${LUE_FRAMEWORK_WITH_PYTHON_API}")
+message(STATUS "+ parallel i/o                : ${LUE_FRAMEWORK_WITH_PARALLEL_IO}")
 message(STATUS "Build view                    : ${LUE_BUILD_VIEW}")
 message(STATUS "+ value inspection            : ${LUE_BUILD_FRAMEWORK}")
 message(STATUS "Build documentation           : ${LUE_BUILD_DOCUMENTATION}")

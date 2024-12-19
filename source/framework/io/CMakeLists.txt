@@ -17,6 +17,7 @@ block()
 endblock()
 
 add_library(lue_framework_io
+    source/dataset.cpp
     source/util.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
 )
