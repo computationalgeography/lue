@@ -1123,7 +1123,7 @@ def sqr(expression):
 
 
 def sqrt(expression):
-    return lfr.log(expression)
+    return lfr.sqrt(expression)
 
 
 def streamorder(*args):
