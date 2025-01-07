@@ -29,6 +29,7 @@ arguments to an operator (e.g.: ``a & b``). The regular Python rules are then in
 
 import enum
 import os
+import pathlib
 from dataclasses import dataclass
 
 import numpy as np
@@ -78,6 +79,8 @@ configuration = Configuration()
 
 
 def setclone(pathname):
+    if not pathlib.Path(pathname).exists():
+        raise RuntimeError(f"setclone: File '{pathname}' does not exist")
 
     raster_properties = lfr.probe_gdal(pathname)
     array_shape = raster_properties["shape"]
@@ -106,6 +109,7 @@ def setclone(pathname):
         partition_shape = partition_shape[0], partition_shape[1]
 
     configuration.partition_shape = partition_shape
+    configuration.pathname = pathname
 
 
 def clone():
@@ -425,8 +429,7 @@ def report(expression, pathname):
     # if is_non_spatial(expression):
     #     expression = non_spatial_to_spatial(fill_value=expression)
 
-    # TODO Pass in clone information
-    lfr.to_gdal(expression, pathname)
+    lfr.to_gdal(expression, pathname, configuration.pathname)
 
 
 def div(expression1, expression2):
