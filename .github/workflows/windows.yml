@@ -60,33 +60,40 @@ jobs:
             auto-update-conda: true
             miniforge-version: latest
             conda-solver: "libmamba"
+            conda-remove-defaults: true
             python-version: ${{ matrix.python_version }}
 
         - name: setup platform
           run: |
-
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
               # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
+
               # conda-build provides the conda-develop command used below
-              # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
-              #      Conan package actually works
-              conda config --remove channels defaults
               conda install \
-                  libboost-devel \
-                  libboost-headers \
                   conan \
                   conda-build \
-                  docopt \
-                  libgdal \
-                  hdf5 \
                   jinja2 \
-                  libhwloc \
                   matplotlib \
-                  mimalloc \
                   ninja \
                   numpy \
                   ruamel.yaml
+
+              mkdir ${{ env.lue_build_directory }}
+
+              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/host_profile
+              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+                  ${{ matrix.compiler.cxx }} \
+                  ${{ env.lue_source_directory }}/build_profile
+
+              LUE_CONAN_PACKAGES="boost docopt gdal glfw imgui hdf5 hwloc mimalloc vulkan-headers vulkan-loader" \
+                  conan install ${{ env.lue_source_directory }} \
+                      --profile:host=${{ env.lue_source_directory }}/host_profile \
+                      --profile:build=${{ env.lue_source_directory }}/build_profile \
+                      --build=missing \
+                      --output-folder=${{ env.lue_build_directory }}
 
         - uses: ilammy/msvc-dev-cmd@v1
           with:
@@ -110,7 +117,7 @@ jobs:
             #       C:\Users\runneradmin\miniconda3\envs\test/Library
             #     Invalid character escape '\U'.
             # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
-            cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
             hpx_branch: ${{ env.hpx_branch }}
             source_directory: ${{ env.hpx_source_directory }}
             build_directory: ${{ env.hpx_build_directory }}
@@ -128,25 +135,6 @@ jobs:
 
         - name: configure
           run: |
-              # TODO Use the GDAL Conan package instead of the Conda package, once the GDAL
-              #      Conan package actually works
-              #      boost gdal hdf5 hwloc mimalloc
-              mkdir ${{ env.lue_build_directory }}
-
-              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/host_profile
-              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/build_profile
-
-              LUE_CONAN_PACKAGES="glfw imgui vulkan-headers vulkan-loader" \
-                  conan install ${{ env.lue_source_directory }} \
-                      --profile:host=${{ env.lue_source_directory }}/host_profile \
-                      --profile:build=${{ env.lue_source_directory }}/build_profile \
-                      --build=missing \
-                      --output-folder=${{ env.lue_build_directory }}
-
               # The element types for which relevant data structures and algorithms must be instantiated are
               # passed in explicitly here. To test whether this works correct and to speed up the build on
               # Windows, which is slow compared to the other platforms.
@@ -204,9 +192,8 @@ jobs:
                   --exclude-regex "(algorithm_decreasing_order_test|algorithm_image_land_integrate_test|algorithm_image_land_integrate_and_allocate_test|lue_py_image_land_python_test)"
 
               # Tests of runtime targets
-              # Add location of dependencies installed with Conan to the runtime environment
-              # Not needed yet.
-              # ${{ env.lue_build_directory }}/conanrun.bat
+              # Add location of shared libraries installed with Conan to the runtime environment
+              ${{ env.lue_build_directory }}/conanrun.bat
 
               ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
               ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
