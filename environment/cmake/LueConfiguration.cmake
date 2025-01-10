@@ -511,9 +511,9 @@ if(LUE_PYBIND11_REQUIRED)
 
     FetchContent_Declare(pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG 3e9dfa2866941655c56877882565e7577de6fc7b  # 2.12.0
+        GIT_TAG a2e59f0e7065404b44dfe92a28aca47ba1378dc4  # 2.13.6
         SYSTEM
-        FIND_PACKAGE_ARGS 2.12
+        FIND_PACKAGE_ARGS 2.12 CONFIG
     )
     FetchContent_MakeAvailable(pybind11)
 endif()
@@ -770,7 +770,9 @@ endif()
 
 
 if(LUE_GDAL_REQUIRED)
-    find_package(GDAL REQUIRED)
+    # https://gdal.org/en/stable/development/cmake.html
+    find_package(GDAL REQUIRED CONFIG)
+    message(STATUS "Found GDAL version ${GDAL_VERSION} in ${GDAL_DIR}")
 endif()
 
 

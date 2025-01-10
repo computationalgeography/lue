@@ -12,15 +12,15 @@ jobs:
 
         strategy:
             matrix:
-                os: ["ubuntu-22.04"]
+                os: ["ubuntu-24.04"]
                 python_version: ["3.10", "3.13"]
                 compiler:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
-                    - { name: gcc  , version: 11, c: gcc-10  , cxx: g++-10    , package: g++-10   }
+                    - { name: gcc  , version: 10, c: gcc-10  , cxx: g++-10    , package: g++-10   }
                     - { name: gcc  , version: 12, c: gcc-12  , cxx: g++-12    , package: g++-12   }
-                    - { name: clang, version: 15, c: clang-15, cxx: clang++-15, package: clang-15 }
+                    - { name: clang, version: 18, c: clang-18, cxx: clang++-18, package: clang-18 }
             fail-fast: false
 
         runs-on: ${{ matrix.os }}
@@ -85,7 +85,8 @@ jobs:
                   libvulkan-dev \
                   ${{ matrix.compiler.package }} \
                   ninja-build \
-                  nlohmann-json3-dev
+                  nlohmann-json3-dev \
+                  pybind11-dev
               pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
 
         - name: "install hpx"
