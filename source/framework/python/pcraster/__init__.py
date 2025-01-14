@@ -848,6 +848,8 @@ def ldd(expression):
 
 
 def lddcreate(elevation, outflowdepth, corevolume, corearea, catchmentprecipitation):
+    elevation = read_if_necessary(elevation)[0]
+
     return lfr.d8_flow_direction(elevation)
 
 
