@@ -114,7 +114,6 @@ target_link_libraries(lue_py_data_model
         pybind11::opt_size
         pybind11::windows_extras
         Python::NumPy
-        nonstd::span-lite
 )
 
 # TODO pybind11_strip does not work on macOS, when building using Conda packages

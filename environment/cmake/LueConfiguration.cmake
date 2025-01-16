@@ -115,10 +115,6 @@ endif()
 
 
 if(LUE_BUILD_DATA_MODEL)
-    if(LUE_DATA_MODEL_WITH_PYTHON_API)
-        set(LUE_SPAN_LITE_REQUIRED TRUE)
-    endif()
-
     if(LUE_DATA_MODEL_WITH_UTILITIES)
         set(LUE_BUILD_GDAL TRUE)
     endif()
@@ -820,15 +816,6 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
-if(LUE_SPAN_LITE_REQUIRED)
-    FetchContent_Declare(span-lite
-        GIT_REPOSITORY https://github.com/martinmoene/span-lite.git
-        GIT_TAG cbb9c3c5162a0d7018c7b3e053153a04d4fbbbb9  # 0.10.3
-        SYSTEM
-        FIND_PACKAGE_ARGS
-    )
-    FetchContent_MakeAvailable(span-lite)
-endif()
 
 if(LUE_SPHINX_REQUIRED)
     # TODO Find Sphinx Python package.
