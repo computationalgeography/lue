@@ -1,13 +1,13 @@
 add_test_conditionally(test)
 
 add_library(lue_utility
-    src/application.cpp
-    src/command.cpp
-    src/environment.cpp
-    src/metadata.cpp
-    src/print_message.cpp
-    src/progress_indicator.cpp
-    src/stopwatch.cpp
+    source/application.cpp
+    source/command.cpp
+    source/environment.cpp
+    source/metadata.cpp
+    source/print_message.cpp
+    source/progress_indicator.cpp
+    source/stopwatch.cpp
 )
 
 add_library(lue::utility ALIAS lue_utility)

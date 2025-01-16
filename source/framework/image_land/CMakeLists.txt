@@ -6,7 +6,7 @@ endif()
 
 # Instantiate image_land operations --------------------------------------------
 set(LUE_FRAMEWORK_IMAGE_LAND_OPERATION_POLICIES "DefaultValuePolicies")
-set(offset "src")
+set(offset "source")
 
 block()
     set(rank "2")

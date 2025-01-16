@@ -1,15 +1,15 @@
 add_executable(lue_view
-    src/application.cpp
-    src/cache.cpp
-    src/configuration.cpp
-    src/dataset.cpp
-    src/main.cpp
-    src/show_dataset.cpp
-    src/show_main_menu_bar.cpp
+    source/application.cpp
+    source/cache.cpp
+    source/configuration.cpp
+    source/dataset.cpp
+    source/main.cpp
+    source/show_dataset.cpp
+    source/show_main_menu_bar.cpp
 
     $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,
-        src/vulkan_application.cpp,
-        src/opengl_application.cpp
+        source/vulkan_application.cpp,
+        source/opengl_application.cpp
     >
 )
 

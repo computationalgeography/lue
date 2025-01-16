@@ -1,33 +1,33 @@
 # Our higher level API on top of imgui + glfw
 
 add_library(lue_imgui STATIC
-    src/menu.cpp
-    src/selectable.cpp
-    src/tab_bar.cpp
-    src/tab_item.cpp
-    src/tree_node.cpp
-    src/window.cpp
+    source/menu.cpp
+    source/selectable.cpp
+    source/tab_bar.cpp
+    source/tab_item.cpp
+    source/tree_node.cpp
+    source/window.cpp
 
     $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,
-        ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_vulkan.cpp
-        src/glfw/vulkan_binding.cpp
-        src/glfw/vulkan_frame.cpp
-        src/glfw/vulkan_surface.cpp,
-        ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_opengl3.cpp
-        src/glfw/opengl_binding.cpp
-        src/glfw/opengl_frame.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/source/imgui_impl_vulkan.cpp
+        source/glfw/vulkan_binding.cpp
+        source/glfw/vulkan_frame.cpp
+        source/glfw/vulkan_surface.cpp,
+        ${CMAKE_CURRENT_BINARY_DIR}/source/imgui_impl_opengl3.cpp
+        source/glfw/opengl_binding.cpp
+        source/glfw/opengl_frame.cpp
     >
 
-    src/glfw/binding.cpp
-    src/glfw/frame.cpp
+    source/glfw/binding.cpp
+    source/glfw/frame.cpp
 
-    ${CMAKE_CURRENT_BINARY_DIR}/src/imgui_impl_glfw.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/source/imgui_impl_glfw.cpp
 )
 
 target_include_directories(lue_imgui
     PUBLIC
         # Imgui binding headers copied by Conan
-        ${CMAKE_CURRENT_BINARY_DIR}/src
+        ${CMAKE_CURRENT_BINARY_DIR}/source
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 

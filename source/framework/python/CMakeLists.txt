@@ -27,55 +27,55 @@ file(GENERATE
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 
 add_library(lue_py_framework_focal_operation SHARED
-    src/algorithm/focal_operation.cpp
-    src/algorithm/focal_operation/focal_operation-1.cpp
-    src/algorithm/focal_operation/focal_operation-2.cpp
+    source/algorithm/focal_operation.cpp
+    source/algorithm/focal_operation/focal_operation-1.cpp
+    source/algorithm/focal_operation/focal_operation-2.cpp
 )
 
 add_library(lue_py_framework_global_operation SHARED
-    src/algorithm/global_operation.cpp
-    src/algorithm/global_operation/global_operation.cpp
-    src/algorithm/global_operation/reclassify.cpp
+    source/algorithm/global_operation.cpp
+    source/algorithm/global_operation/global_operation.cpp
+    source/algorithm/global_operation/reclassify.cpp
 )
 
 add_library(lue_py_framework_local_operation SHARED
-    src/algorithm/local_operation.cpp
-    src/algorithm/local_operation/abs.cpp
-    src/algorithm/local_operation/all.cpp
-    src/algorithm/local_operation/arithmetic.cpp
-    src/algorithm/local_operation/cast.cpp
-    src/algorithm/local_operation/cell_index.cpp
-    src/algorithm/local_operation/comparison.cpp
-    src/algorithm/local_operation/iterate_per_element.cpp
-    src/algorithm/local_operation/logical.cpp
-    src/algorithm/local_operation/modulus.cpp
-    src/algorithm/local_operation/nearest_integer.cpp
-    src/algorithm/local_operation/trigonometry.cpp
-    src/algorithm/local_operation/unique_id.cpp
-    src/algorithm/local_operation/valid.cpp
-    src/algorithm/local_operation/where.cpp
+    source/algorithm/local_operation.cpp
+    source/algorithm/local_operation/abs.cpp
+    source/algorithm/local_operation/all.cpp
+    source/algorithm/local_operation/arithmetic.cpp
+    source/algorithm/local_operation/cast.cpp
+    source/algorithm/local_operation/cell_index.cpp
+    source/algorithm/local_operation/comparison.cpp
+    source/algorithm/local_operation/iterate_per_element.cpp
+    source/algorithm/local_operation/logical.cpp
+    source/algorithm/local_operation/modulus.cpp
+    source/algorithm/local_operation/nearest_integer.cpp
+    source/algorithm/local_operation/trigonometry.cpp
+    source/algorithm/local_operation/unique_id.cpp
+    source/algorithm/local_operation/valid.cpp
+    source/algorithm/local_operation/where.cpp
 )
 
 add_library(lue_py_framework_routing_operation SHARED
-    src/algorithm/routing_operation.cpp
-    src/algorithm/routing_operation/accu3.cpp
-    src/algorithm/routing_operation/accu_fraction.cpp
-    src/algorithm/routing_operation/accu_info3.cpp
-    src/algorithm/routing_operation/accu_threshold3.cpp
-    src/algorithm/routing_operation/d8_flow_direction.cpp
-    src/algorithm/routing_operation/decreasing_order.cpp
-    src/algorithm/routing_operation/downstream.cpp
-    src/algorithm/routing_operation/downstream_distance.cpp
-    src/algorithm/routing_operation/first_n.cpp
-    src/algorithm/routing_operation/inflow_count3.cpp
-    src/algorithm/routing_operation/inter_partition_stream.cpp
-    src/algorithm/routing_operation/kinematic_wave.cpp
-    src/algorithm/routing_operation/upstream.cpp
+    source/algorithm/routing_operation.cpp
+    source/algorithm/routing_operation/accu3.cpp
+    source/algorithm/routing_operation/accu_fraction.cpp
+    source/algorithm/routing_operation/accu_info3.cpp
+    source/algorithm/routing_operation/accu_threshold3.cpp
+    source/algorithm/routing_operation/d8_flow_direction.cpp
+    source/algorithm/routing_operation/decreasing_order.cpp
+    source/algorithm/routing_operation/downstream.cpp
+    source/algorithm/routing_operation/downstream_distance.cpp
+    source/algorithm/routing_operation/first_n.cpp
+    source/algorithm/routing_operation/inflow_count3.cpp
+    source/algorithm/routing_operation/inter_partition_stream.cpp
+    source/algorithm/routing_operation/kinematic_wave.cpp
+    source/algorithm/routing_operation/upstream.cpp
 )
 
 add_library(lue_py_framework_zonal_operation SHARED
-    src/algorithm/zonal_operation.cpp
-    src/algorithm/zonal_operation/zonal_operation.cpp
+    source/algorithm/zonal_operation.cpp
+    source/algorithm/zonal_operation/zonal_operation.cpp
 )
 
 foreach(name focal global local routing zonal)
@@ -88,7 +88,7 @@ foreach(name focal global local routing zonal)
 
     target_include_directories(lue_py_framework_${name}_operation
         PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
             $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     )
 
@@ -104,7 +104,7 @@ foreach(name focal global local routing zonal)
 endforeach()
 
 set(generated_source_files "")
-set(offset "src/core")
+set(offset "source/core")
 
 block()
     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array.cpp")
@@ -148,41 +148,41 @@ block()
 endblock()
 
 add_library(lue_py_framework SHARED
-    src/algorithm/array_partition_id.cpp
-    $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:src/algorithm/locality_id.cpp>
-    $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:src/algorithm/timestamp.cpp>
-    src/algorithm/normal.cpp
-    src/algorithm/uniform-1.cpp
-    src/algorithm/uniform-2.cpp
+    source/algorithm/array_partition_id.cpp
+    $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:source/algorithm/locality_id.cpp>
+    $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:source/algorithm/timestamp.cpp>
+    source/algorithm/normal.cpp
+    source/algorithm/uniform-1.cpp
+    source/algorithm/uniform-2.cpp
 
-    src/core/create_partitioned_array.cpp
+    source/core/create_partitioned_array.cpp
     ${generated_source_files}
-    src/core/scalar.cpp
-    src/core/wait.cpp
+    source/core/scalar.cpp
+    source/core/wait.cpp
 
-    src/io/read_array.cpp
-    src/io/write_array.cpp
+    source/io/read_array.cpp
+    source/io/write_array.cpp
 
-    src/command_line.cpp
+    source/command_line.cpp
 
-    src/gdal/from_gdal.cpp
-    src/gdal/to_gdal.cpp
+    source/gdal/from_gdal.cpp
+    source/gdal/to_gdal.cpp
 
-    src/hpx.cpp
-    src/hpx_runtime.cpp
+    source/hpx.cpp
+    source/hpx_runtime.cpp
 
-    src/model/model.cpp
-    src/model/progressor.cpp
-    src/model/simulate.cpp
+    source/model/model.cpp
+    source/model/progressor.cpp
+    source/model/simulate.cpp
 
-    src/numpy/from_numpy.cpp
-    src/numpy/to_numpy.cpp
+    source/numpy/from_numpy.cpp
+    source/numpy/to_numpy.cpp
 
-    src/partitioned_route/serial_route.cpp
-    src/partitioned_route/wait.cpp
+    source/partitioned_route/serial_route.cpp
+    source/partitioned_route/wait.cpp
 
-    src/python_extension.cpp
-    src/submodule.cpp
+    source/python_extension.cpp
+    source/submodule.cpp
 )
 
 add_library(lue::py_framework ALIAS lue_py_framework)
@@ -199,7 +199,7 @@ target_include_directories(lue_py_framework
         $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
 )
 
 target_link_libraries(lue_py_framework

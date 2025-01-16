@@ -22,7 +22,7 @@ if(LUE_DATA_MODEL_WITH_PYTHON_API)
     ###         lue_hl/include
     ###         lue_py/include
     ###         lue_time/include
-    ###     DESTINATION src
+    ###     DESTINATION source
     ###     COMPONENT python EXCLUDE_FROM_ALL
     ###     FILES_MATCHING
     ###         PATTERN "*.hpp"
@@ -30,8 +30,8 @@ if(LUE_DATA_MODEL_WITH_PYTHON_API)
 
     ### foreach(directory_name lue_hdf5 lue_cxx lue_hl lue_py lue_time)
     ###     install(
-    ###         DIRECTORY ${directory_name}/src
-    ###         DESTINATION src/${directory_name}
+    ###         DIRECTORY ${directory_name}/source
+    ###         DESTINATION source/${directory_name}
     ###         COMPONENT python EXCLUDE_FROM_ALL
     ###         FILES_MATCHING
     ###             PATTERN "*.hpp"

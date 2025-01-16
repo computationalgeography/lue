@@ -28,11 +28,11 @@ block()
         string(REPLACE "::" "_" element ${RouteID})
 
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/serial_route_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/serial_route_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/serial_route_partition.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -40,11 +40,11 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/serial_route_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/server/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/server/serial_route_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/serial_route_partition.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -58,7 +58,7 @@ block()
 endblock()
 
 add_library(lue_framework_partitioned_route SHARED
-    src/server/serial_route_partition.cpp
+    source/server/serial_route_partition.cpp
     ${generated_source_files}
 )
 

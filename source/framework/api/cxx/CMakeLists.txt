@@ -48,11 +48,11 @@ endblock()
 
 add_library(lue_framework_api_cxx SHARED
     ${generated_source_files}
-    src/create_array.cpp
-    src/create_scalar.cpp
-    src/io.cpp
-    src/local/add.cpp
-    src/local/uniform.cpp
+    source/create_array.cpp
+    source/create_scalar.cpp
+    source/io.cpp
+    source/local/add.cpp
+    source/local/uniform.cpp
 )
 
 add_library(lue::framework_api_cxx ALIAS lue_framework_api_cxx)
@@ -70,7 +70,7 @@ generate_export_header(lue_framework_api_cxx
 
 target_include_directories(lue_framework_api_cxx
     PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp

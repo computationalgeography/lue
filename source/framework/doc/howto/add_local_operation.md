@@ -51,7 +51,7 @@ This is the one and only place for the code that implements the algorithm.
 ### Add explicit instantiations
 
 - [](#source-framework-algorithm-templates)
-- `src/local_operation/my_local_operation.cpp.in`
+- `source/local_operation/my_local_operation.cpp.in`
 - `CMakeLists.txt`
 
 
@@ -74,6 +74,6 @@ Notes:
 
 ### Add definition
 
-- `python/src/algorithm/local_operation/my_local_operation.cpp`
-- `python/src/algorithm/local_operation.cpp`
+- `python/source/algorithm/local_operation/my_local_operation.cpp`
+- `python/source/algorithm/local_operation.cpp`
 - `python/CMakeLists.txt`

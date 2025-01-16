@@ -1,6 +1,6 @@
 add_library(lue_data_model_test STATIC
-    src/dataset_fixture.cpp
-    src/file_fixture.cpp
+    source/dataset_fixture.cpp
+    source/file_fixture.cpp
 )
 
 add_library(lue::data_model_test ALIAS lue_data_model_test)

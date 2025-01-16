@@ -4,18 +4,18 @@ configure_file(
 )
 
 configure_file(
-    src/git.cpp.in
-    src/git.cpp
+    source/git.cpp.in
+    source/git.cpp
 )
 
 configure_file(
-    src/version.cpp.in
-    src/version.cpp
+    source/version.cpp.in
+    source/version.cpp
 )
 
 add_library(lue_shared STATIC
-    ${CMAKE_CURRENT_BINARY_DIR}/src/git.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/source/git.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
 add_library(lue::shared ALIAS lue_shared)

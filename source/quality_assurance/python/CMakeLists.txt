@@ -5,8 +5,8 @@ add_test_conditionally(test)
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 add_library(lue_py_qa SHARED
-    src/python_extension.cpp
-    src/submodule.cpp
+    source/python_extension.cpp
+    source/submodule.cpp
 )
 
 add_library(lue::py_qa ALIAS lue_py_qa)

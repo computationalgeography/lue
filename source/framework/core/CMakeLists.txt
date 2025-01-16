@@ -49,11 +49,11 @@ endblock()
 
 add_library(lue_framework_core STATIC
     ${generated_source_files}
-    src/configuration_entry.cpp
-    src/debug.cpp
-    src/framework.cpp
-    src/numa_domain.cpp
-    src/runtime.cpp
+    source/configuration_entry.cpp
+    source/debug.cpp
+    source/framework.cpp
+    source/numa_domain.cpp
+    source/runtime.cpp
 )
 
 add_library(lue::framework_core ALIAS lue_framework_core)
