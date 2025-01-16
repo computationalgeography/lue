@@ -1,4 +1,5 @@
 include(CheckCXXSymbolExists)
+include(CMakeDependentOption)
 
 
 # Options to be set by the user ------------------------------------------------
