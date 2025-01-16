@@ -102,10 +102,10 @@ namespace lue {
                 Band(Band&&) = delete;
 
 
-                Band& operator=(Band const&) = delete;
+                auto operator=(Band const&) -> Band& = delete;
 
 
-                Band& operator=(Band&&) = delete;
+                auto operator=(Band&&) -> Band& = delete;
 
 
                 template<typename Element>
@@ -139,7 +139,7 @@ namespace lue {
 
 
         template<typename Element>
-        std::tuple<Element, bool> no_data_value(::GDALRasterBand& band)
+        auto no_data_value(::GDALRasterBand& band) -> std::tuple<Element, bool>
         {
             return gdal::no_data_value<Element>(band);
         }
@@ -167,9 +167,9 @@ namespace lue {
 
                 ~ReadPartition() = default;
 
-                ReadPartition& operator=(ReadPartition const&) = default;
+                auto operator=(ReadPartition const&) -> ReadPartition& = default;
 
-                ReadPartition& operator=(ReadPartition&&) = delete;
+                auto operator=(ReadPartition&&) -> ReadPartition& = delete;
 
 
                 static constexpr Rank rank{2};
@@ -182,11 +182,11 @@ namespace lue {
 
 
                 template<typename InputNoDataPolicy, typename OutputNoDataPolicy>
-                Partition instantiate(
+                auto instantiate(
                     InputNoDataPolicy const indp,
                     OutputNoDataPolicy const ondp,
                     Offset const& offset,
-                    Shape const& shape)
+                    Shape const& shape) -> Partition
                 {
                     AnnotateFunction const annotate{"read_partition"};
 
@@ -234,11 +234,11 @@ namespace lue {
 
 
         template<typename Policies, typename Partition>
-        std::vector<Partition> read_partition_per_locality(
+        auto read_partition_per_locality(
             Policies const& policies,
             std::string const& name,
             std::vector<lue::OffsetT<Partition>> const& offsets,
-            std::vector<lue::ShapeT<Partition>> const& partition_shapes)
+            std::vector<lue::ShapeT<Partition>> const& partition_shapes) -> std::vector<Partition>
         {
             gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_ReadOnly)};
             gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
@@ -319,12 +319,12 @@ namespace lue {
 
 
                 template<typename Policies>
-                hpx::future<std::vector<Partition>> instantiate(
+                auto instantiate(
                     hpx::id_type const locality_id,
                     [[maybe_unused]] Policies const& policies,
                     [[maybe_unused]] Shape const& array_shape,
                     std::vector<Offset> offsets,
-                    std::vector<Shape> partition_shapes)
+                    std::vector<Shape> partition_shapes) -> hpx::future<std::vector<Partition>>
                 {
                     using Action = ReadPartitionsPerLocalityAction<Policies, Partition>;
                     Action action{};
@@ -440,26 +440,24 @@ namespace lue {
                 Policies policies{};
                 return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
             }
-            else
-            {
-                // A no-data value is set in the band. Let's be nice and use it. Upon reading,
-                // it will be converted to our own conventions for handling no-data.
 
-                if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
-                {
-                    // No-data value is a NaN. This is what LUE uses as no-data for floating point
-                    // by default.
-                    using Policies = policy::from_gdal::ValuePolicies<Element>;
-                    Policies policies{};
-                    return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
-                }
-                else
-                {
-                    // No-data value is not NaN. Use a special no-data policy for this special value.
-                    using Policies = policy::from_gdal::SpecialValuePolicy<Element>;
-                    Policies policies{no_data_value};
-                    return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
-                }
+            // A no-data value is set in the band. Let's be nice and use it. Upon reading,
+            // it will be converted to our own conventions for handling no-data.
+
+            if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
+            {
+                // No-data value is a NaN. This is what LUE uses as no-data for floating point
+                // by default.
+                using Policies = policy::from_gdal::ValuePolicies<Element>;
+                Policies policies{};
+                return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+            }
+
+            {
+                // No-data value is not NaN. Use a special no-data policy for this special value.
+                using Policies = policy::from_gdal::SpecialValuePolicy<Element>;
+                Policies policies{no_data_value};
+                return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
             }
         }
     }
@@ -483,13 +481,9 @@ namespace lue {
             using Partition = PartitionT<Array>;
 
             // Write a partitioned array to a raster band using the GDAL API.
-            // All localities containing partitions are iterated over. For each partition within
-            // a locality for which the data is ready, the data will be written. Only for
-            // one ready partition will the data be written at the same time. This requires some
-            // synchronization:
-            // - Iterate over all localities. Only move to next locality once all partitions within
-            //   a locality are written.
-            // - Within a locality, write all partitions.
+
+            // Each partition that has become ready is written to the dataset, on the locality containing
+            // the partition. No two partitions are written at the same time.
 
             // On the / this root locality:
             // - Create the dataset to write a band in

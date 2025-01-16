@@ -8,7 +8,6 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/configure.hpp"
-// #include "lue/data_model.hpp"
 #if LUE_FRAMEWORK_WITH_PARALLEL_IO
 // Only available in case MPI is used in HPX
 // #include <hpx/mpi_base/mpi_environment.hpp>

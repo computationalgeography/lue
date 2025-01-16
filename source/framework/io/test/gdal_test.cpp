@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(round_trip_1)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_raster_round_trip_1.tif"};
 
-    lue::write<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).wait();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(round_trip_2)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_raster_round_trip_2.tif"};
 
-    lue::write<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).wait();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(round_trip_3)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_raster_round_trip_3.tif"};
 
-    lue::write<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).wait();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(round_trip_4)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_raster_round_trip_4.tif"};
 
-    lue::write<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).wait();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
