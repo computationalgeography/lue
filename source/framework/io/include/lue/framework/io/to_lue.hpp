@@ -5,7 +5,7 @@
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/configure.hpp"
-#include "lue/data_model.hpp"
+// #include "lue/data_model.hpp"
 #if LUE_FRAMEWORK_WITH_PARALLEL_IO
 // Only available in case MPI is used in HPX
 // #include <hpx/mpi_base/mpi_environment.hpp>
@@ -274,7 +274,6 @@ namespace lue {
                     `<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>`
         @param      object_id ID of object whose property value to write
         @return     A future which becomes ready once the writing is done
-        @exception  .
     */
     template<typename Policies, Rank rank>
     [[nodiscard]] auto to_lue(
@@ -283,23 +282,11 @@ namespace lue {
         std::string const& array_pathname,
         data_model::ID const object_id) -> hpx::future<void>
     {
-        // TODO
-        // - Each locality must write its own partitions
-        // - A single task must write all partitions within a locality
-        // - Each ready partition must be written once it becomes ready
-        // - There should be no wait between partitions, just write each partition ASAP
-        // - Opening a dataset must be done per locality, collectively, once for the set of partitions to
-        //   write
-        // - Don't wait for partitions before spawning the task. Waiting must be done within the task, on the
-        //   locality itself.
-        // - Each task must return a future which only becomes ready once all partitions have finished writing
-
-
         using Element = policy::InputElementT<Policies>;
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
 
-        auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
         lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
 
         std::vector<hpx::shared_future<void>> localities_finished{};
@@ -316,10 +303,11 @@ namespace lue {
         else
         {
             // Only a single locality can open the file for writing at the same time. Write partitions per
-            // locality.
+            // locality, serialized.
             for (std::size_t locality_idx = 0;
                  auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
+                // Copy current partitions from input array to a new collection
                 std::vector<Partition> partitions{};
                 partitions.resize(partition_idxs.size());
 
@@ -331,6 +319,9 @@ namespace lue {
                 hpx::shared_future<void> previous_locality_finished =
                     locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
 
+                // Spawn a task that writes the current partitions to the dataset. This returns a future which
+                // becomes ready once the partitions have been written.
+                // Each next task is spawned once the previous task has finіshed writing.
                 localities_finished.push_back(hpx::dataflow(
                     hpx::launch::async,
                     [locality = locality,
@@ -390,7 +381,6 @@ namespace lue {
         @param      object_id ID of object whose property value to write
         @param      time_step_idx Index of time step to write
         @return     A future which becomes ready once the writing is done
-        @exception  .
     */
     template<typename Policies, Rank rank>
     [[nodiscard]] auto to_lue(
@@ -404,7 +394,8 @@ namespace lue {
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
 
-        auto partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+        // Group partitions by locality
+        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
         lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
 
         std::vector<hpx::shared_future<void>> localities_finished{};
@@ -421,10 +412,13 @@ namespace lue {
         else
         {
             // Only a single locality can open the file for writing at the same time. Write partitions per
-            // locality.
+            // locality, serialized.
+
+            // Iterate over all grouped partitions
             for (std::size_t locality_idx = 0;
                  auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
+                // Copy current partitions from input array to a new collection
                 std::vector<Partition> partitions{};
                 partitions.resize(partition_idxs.size());
 
@@ -436,6 +430,9 @@ namespace lue {
                 hpx::shared_future<void> previous_locality_finished =
                     locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
 
+                // Spawn a task that writes the current partitions to the dataset. This returns a future which
+                // becomes ready once the partitions have been written.
+                // Each next task is spawned once the previous task has finіshed writing.
                 localities_finished.push_back(hpx::dataflow(
                     hpx::launch::async,
                     [locality = locality,

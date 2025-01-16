@@ -16,20 +16,19 @@ def tearDownModule():
 class WriteArrayTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_write_constant_array(self):
-        # TODO https://github.com/computationalgeography/lue/issues/483
-        return
-
-        # Create an array, write it to a dataset, read it back in,
-        # and verify the array read is equal to the array written.
+        # Create an array, write it to a dataset, read it back in, and verify the array read is equal to the
+        # array written.
 
         array_shape = (60, 40)
         partition_shape = (10, 10)
         dtype = np.int32
-        fill_value = 0
+        # fill_value = 0
 
         # Create an array with random values and some no-data
-        array = lfr.uniform(array_shape, dtype, 1, 10, partition_shape=partition_shape)
-        array = lfr.where(array < 8, array)
+        array_written = lfr.uniform(
+            array_shape, dtype, 1, 10, partition_shape=partition_shape
+        )
+        array_written = lfr.where(array_written < 8, array_written)
 
         dataset_pathname = "write_constant_array.lue"
         phenomenon_name = "earth"
@@ -46,15 +45,16 @@ class WriteArrayTest(lue_test.TestCase):
         )
         raster_view.add_layer(layer_name, dtype)
 
+        # Let go of the dataset
         del raster_view
         del dataset
 
-        written = lfr.write_array(array, array_pathname)
-        written.get()
+        # Write and wait until finished
+        lfr.write_array(array_written, array_pathname).get()
 
         array_read = lfr.read_array(array_pathname, partition_shape=partition_shape)
 
-        self.assertTrue(lfr.all(array_read == array).future.get())
+        self.assertTrue(lfr.all(array_read == array_written).future.get())
 
     @lue_test.framework_test_case
     def test_write_variable_array(self):
@@ -68,14 +68,14 @@ class WriteArrayTest(lue_test.TestCase):
         nr_time_steps = 7
 
         # Create t arrays with random values and some no-data
-        arrays = []
+        arrays_written = []
 
         for t in range(nr_time_steps):
             array = lfr.uniform(
                 array_shape, dtype, 1, 10, partition_shape=partition_shape
             )
             array = lfr.where(array < 8, array)
-            arrays.append(array)
+            arrays_written.append(array)
 
         dataset_pathname = "write_variable_array.lue"
         phenomenon_name = "earth"
@@ -109,15 +109,13 @@ class WriteArrayTest(lue_test.TestCase):
         del raster_view
         del dataset
 
-        written = []
+        for t in range(nr_time_steps):
+            # Write and wait until finished, otherwise the writes will trip over each other
+            lfr.write_array(arrays_written[t], t, array_pathname).get()
 
         for t in range(nr_time_steps):
-            written.append(lfr.write_array(arrays[t], t, array_pathname))
-
-        for t in range(nr_time_steps):
-            written[t].get()
             array_read = lfr.read_array(
                 array_pathname, t, partition_shape=partition_shape
             )
 
-            self.assertTrue(lfr.all(array_read == arrays[t]).future.get())
+            self.assertTrue(lfr.all(array_read == arrays_written[t]).future.get())

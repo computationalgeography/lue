@@ -9,10 +9,13 @@
 #include <hpx/config.hpp>
 
 
+#include "lue/framework/algorithm/value_policies/add.hpp"
+
+
 BOOST_AUTO_TEST_CASE(use_case_1)
 {
-    // Write a stack of floating point rasters and read them back
-    // in. Compare the rasters read with the range of the rasters written.
+    // Write a stack of floating point rasters and read them back in. Compare the rasters read with the range
+    // of the rasters written.
     namespace ldm = lue::data_model;
 
     std::string const dataset_pathname{"use_case_1.lue"};
@@ -25,6 +28,11 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     ldm::Count const nr_time_steps{50};
     ldm::Count const nr_rows{60};
     ldm::Count const nr_cols{40};
+
+    double const west{0};
+    double const south{0};
+    double const east{400};
+    double const north{600};
 
     ldm::ID object_id{};
 
@@ -49,7 +57,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             nr_time_steps + 1,
             {0, nr_time_steps + 1},
             raster_shape,
-            {0, 0, 400, 600});
+            {west, south, east, north});
         object_id = view.object_id();
 
         view.add_layer<Element>(layer_name);
@@ -71,27 +79,47 @@ BOOST_AUTO_TEST_CASE(use_case_1)
     Element const lowest_value{-5000};
     Element const highest_value{std::nextafter(Element{-1000}, std::numeric_limits<Element>::max())};
 
+    std::vector<Array> arrays_written(nr_time_steps + 1);
+
+    // Create arrays
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
-        Array elevation_written = lue::value_policies::uniform(
+        arrays_written[time_step] = lue::value_policies::uniform(
             grid_shape,
             partition_shape,
             lowest_value + static_cast<Element>(time_step),
             highest_value + static_cast<Element>(time_step));
-        lue::to_lue(elevation_written, array_pathname, object_id, static_cast<lue::Index>(time_step)).get();
+    }
 
-        // TODO Array elevation_read = lue::from_lue<Element>(
-        // TODO     array_pathname, partition_shape, object_id, static_cast<lue::Index>(time_step));
+    // Write arrays
+    for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
+    {
+        // Write and wait until finished
+        lue::to_lue(arrays_written[time_step], array_pathname, object_id, static_cast<lue::Index>(time_step))
+            .get();
+    }
 
-        // TODO lue::test::check_arrays_are_equal(elevation_read, elevation_written);
+    // Read arrays. This may fail because the dataset is still open for reading. Therefore, wait a little bit
+    // before continuing.
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(500ms);
+
+    for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
+    {
+        // Once in a while this test fails (segmentation fault). Replacing the call to from_lue by
+        //     Array array_read = lue::value_policies::add(arrays_written[time_step], Element{0});
+        // solves it, so it seems the bug is in from_lue. But where...
+        Array array_read = lue::from_lue<Element>(
+            array_pathname, partition_shape, object_id, static_cast<lue::Index>(time_step));
+
+        lue::test::check_arrays_are_equal(array_read, arrays_written[time_step]);
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(use_case_2)
 {
-    // Write a raster with integers and read it back in. Compare raster
-    // written with raster read.
+    // Write a constant raster with integers and read it back in. Compare raster written with raster read.
     namespace ldm = lue::data_model;
 
     std::string const dataset_pathname{"use_case_2.lue"};
@@ -103,6 +131,10 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     ldm::Count const nr_rows{60};
     ldm::Count const nr_cols{40};
+    double const west{0};
+    double const south{0};
+    double const east{400};
+    double const north{600};
 
     using Element = lue::LargestIntegralElement;
 
@@ -118,7 +150,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         DatasetPtr dataset_ptr = std::make_shared<ldm::Dataset>(ldm::create_dataset(dataset_pathname));
 
         RasterView view = ldm::constant::create_raster_view(
-            dataset_ptr, phenomenon_name, property_set_name, raster_shape, {0, 0, 400, 600});
+            dataset_ptr, phenomenon_name, property_set_name, raster_shape, {west, south, east, north});
         object_id = view.object_id();
 
         view.add_layer<Element>(layer_name);
@@ -137,15 +169,16 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     // auto condition = lue::create_partitioned_array<lue::BooleanElement>(
     //     grid_shape, partition_shape, lue::BooleanElement{1});
     // Crashes on Windows (Release)... Use uniform instead for now.
-    // Array elevation_written = lue::value_policies::unique_id<Element>(condition);
-    Array elevation_written =
+    // Array array_written = lue::value_policies::unique_id<Element>(condition);
+    Array array_written =
         lue::value_policies::uniform<Element>(grid_shape, partition_shape, Element{0}, Element{10});
 
-    lue::to_lue(elevation_written, array_pathname, object_id).get();
+    // Write and wait until finished
+    lue::to_lue(array_written, array_pathname, object_id).get();
 
-    Array elevation_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
+    Array array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
 
-    lue::test::check_arrays_are_equal(elevation_read, elevation_written);
+    lue::test::check_arrays_are_equal(array_read, array_written);
 }
 
 

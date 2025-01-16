@@ -9,7 +9,7 @@ namespace lue {
         -> PartitionedArray<Element, 2>;
 
     template<typename Element>
-    auto write(
+    auto to_gdal(
         PartitionedArray<Element, 2> const& array,
         std::string const& name,
         std::string const& clone_name = "") -> hpx::future<void>;

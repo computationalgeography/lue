@@ -25,7 +25,7 @@ namespace lue::framework {
                     {
                         // If not one of the types not supported by older versions of GDAL OR using a GDAL
                         // version that supports them ...
-                        module.def("to_gdal", write<Element>, "array"_a, "name"_a, "clone_name"_a = "");
+                        module.def("to_gdal", to_gdal<Element>, "array"_a, "name"_a, "clone_name"_a = "");
                     }
                 }
         };

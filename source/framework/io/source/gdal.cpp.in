@@ -466,7 +466,7 @@ namespace lue {
 
 
     template<typename Element>
-    auto write(
+    auto to_gdal(
         PartitionedArray<Element, 2> const& array,
         std::string const& name,
         std::string const& clone_name) -> hpx::future<void>
@@ -610,7 +610,7 @@ namespace lue {
         template lue::PartitionedArray<{{ Element }}, {{ rank }}> lue::from_gdal<{{ Element }}>(
             std::string const&, lue::Shape<lue::Count, {{ rank }}> const&);
 
-        template hpx::future<void> lue::write<{{ Element }}>(
+        template hpx::future<void> lue::to_gdal<{{ Element }}>(
             lue::PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&, std::string const&);
 
     {% endfor %}

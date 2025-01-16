@@ -136,7 +136,8 @@ namespace lue {
         @brief      Return a future to the underlying data
     */
     template<typename Element, Rank rank>
-    hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::data() const
+    auto ArrayPartition<Element, rank>::data() const
+        -> hpx::future<typename ArrayPartition<Element, rank>::Data>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -152,8 +153,8 @@ namespace lue {
         @brief      Return a future to a subset of the underlying data
     */
     template<typename Element, Rank rank>
-    hpx::future<typename ArrayPartition<Element, rank>::Data> ArrayPartition<Element, rank>::slice(
-        Slices const& slices) const
+    auto ArrayPartition<Element, rank>::slice(Slices const& slices) const
+        -> hpx::future<typename ArrayPartition<Element, rank>::Data>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -169,7 +170,7 @@ namespace lue {
         @brief      Return a future to the number of elements
     */
     template<typename Element, Rank rank>
-    hpx::future<Count> ArrayPartition<Element, rank>::nr_elements() const
+    auto ArrayPartition<Element, rank>::nr_elements() const -> hpx::future<Count>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -185,7 +186,8 @@ namespace lue {
         @brief      Return a future to the offset
     */
     template<typename Element, Rank rank>
-    hpx::future<typename ArrayPartition<Element, rank>::Offset> ArrayPartition<Element, rank>::offset() const
+    auto ArrayPartition<Element, rank>::offset() const
+        -> hpx::future<typename ArrayPartition<Element, rank>::Offset>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -201,7 +203,8 @@ namespace lue {
         @brief      Return a future to the shape
     */
     template<typename Element, Rank rank>
-    hpx::future<typename ArrayPartition<Element, rank>::Shape> ArrayPartition<Element, rank>::shape() const
+    auto ArrayPartition<Element, rank>::shape() const
+        -> hpx::future<typename ArrayPartition<Element, rank>::Shape>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -218,7 +221,7 @@ namespace lue {
         @return     A future that will become ready once the partition is filled
     */
     template<typename Element, Rank rank>
-    hpx::future<void> ArrayPartition<Element, rank>::fill(Element const value)
+    auto ArrayPartition<Element, rank>::fill(Element const value) -> hpx::future<void>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
@@ -235,7 +238,7 @@ namespace lue {
         @return     A future that will become ready once the data is assigned
     */
     template<typename Element, Rank rank>
-    hpx::future<void> ArrayPartition<Element, rank>::set_data(Data const& data)
+    auto ArrayPartition<Element, rank>::set_data(Data const& data) -> hpx::future<void>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
