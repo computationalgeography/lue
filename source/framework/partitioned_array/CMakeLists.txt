@@ -28,11 +28,11 @@ block()
         string(REPLACE "::" "_" element ${Element})
 
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/array_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/array_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/array_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/array_partition.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -40,11 +40,11 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/server/array_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/server/array_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/server/array_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/array_partition.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -58,7 +58,7 @@ block()
 endblock()
 
 add_library(lue_framework_partitioned_array SHARED
-    src/server/array_partition.cpp
+    source/server/array_partition.cpp
     ${generated_source_files}
 )
 

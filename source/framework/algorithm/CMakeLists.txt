@@ -32,7 +32,7 @@ add_test_conditionally(test)
 ### endblock()
 ###
 ### block()
-###     set(offset "src/component")
+###     set(offset "source/component")
 ###
 ###     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
 ###         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
@@ -61,7 +61,7 @@ add_test_conditionally(test)
 # / Instantiate components -----------------------------------------------------
 
 add_library(lue_framework_algorithm SHARED
-    src/component/array_partition_io.cpp
+    source/component/array_partition_io.cpp
 )
 
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
@@ -111,7 +111,7 @@ target_link_libraries(lue_framework_algorithm
 
 # Instantiate local operations -------------------------------------------------
 set(generated_source_files "")
-set(offset "src/local_operation")
+set(offset "source/local_operation")
 
 block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
@@ -767,7 +767,7 @@ target_link_libraries(lue_framework_local_operation
 
 # Instantiate focal operations -------------------------------------------------
 set(generated_source_files "")
-set(offset "src/focal_operation")
+set(offset "source/focal_operation")
 
 
 block()
@@ -995,11 +995,11 @@ block()
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             math(EXPR count "${count} + 1")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/clump-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/clump-${count}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/clump.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/clump.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -1020,11 +1020,11 @@ block()
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
             math(EXPR count "${count} + 1")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_area-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_area-${count}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_area.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_area.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -1046,11 +1046,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_diversity-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_diversity-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_diversity.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_diversity.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1073,11 +1073,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_majority-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_majority-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_majority.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_majority.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1100,11 +1100,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_maximum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_maximum-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_maximum.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_maximum.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1127,11 +1127,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_mean-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_mean-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_mean.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_mean.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1154,11 +1154,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_minimum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_minimum-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_minimum.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_minimum.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1181,11 +1181,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_normal-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_normal-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_normal.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_normal.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1208,11 +1208,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_sum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_sum-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_sum.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_sum.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1235,11 +1235,11 @@ block()
             foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
                 math(EXPR count "${count} + 1")
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/src/zonal_operation/zonal_uniform-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_uniform-${count}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/src/zonal_operation/zonal_uniform.cpp.in"
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_uniform.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY
@@ -1296,7 +1296,7 @@ target_link_libraries(lue_framework_zonal_operation
 
 # Instantiate global operations ------------------------------------------------
 set(generated_source_files "")
-set(offset "src/global_operation")
+set(offset "source/global_operation")
 
 
 block()
@@ -1451,7 +1451,7 @@ target_link_libraries(lue_framework_global_operation
 
 # Instantiate routing operations -----------------------------------------------
 set(generated_source_files "")
-set(offset "src/routing_operation")
+set(offset "source/routing_operation")
 
 
 block()
@@ -1776,8 +1776,8 @@ endblock()
 
 add_library(lue_framework_routing_operation SHARED
     ${generated_source_files}
-    src/routing_operation/channel.cpp
-    src/routing_operation/walk/cell_counter.cpp
+    source/routing_operation/channel.cpp
+    source/routing_operation/walk/cell_counter.cpp
 )
 
 add_library(lue::framework_routing_operation ALIAS lue_framework_routing_operation)

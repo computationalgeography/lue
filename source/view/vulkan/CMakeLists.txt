@@ -1,10 +1,10 @@
 add_library(lue_vulkan STATIC
-    src/application_info.cpp
-    src/debug_report_callback.cpp
-    src/error.cpp
-    src/instance.cpp
-    src/physical_device.cpp
-    src/queue_family.cpp
+    source/application_info.cpp
+    source/debug_report_callback.cpp
+    source/error.cpp
+    source/instance.cpp
+    source/physical_device.cpp
+    source/queue_family.cpp
 )
 
 target_include_directories(lue_vulkan

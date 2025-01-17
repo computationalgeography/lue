@@ -1,12 +1,12 @@
 add_test_conditionally(test)
 
 add_library(lue_qa
-    src/scalability/array_experiment.cpp
-    src/scalability/experiment.cpp
-    src/scalability/io.cpp
-    src/scalability/run.cpp
-    src/scalability/stopwatch.cpp
-    src/scalability/time_interval.cpp
+    source/scalability/array_experiment.cpp
+    source/scalability/experiment.cpp
+    source/scalability/io.cpp
+    source/scalability/run.cpp
+    source/scalability/stopwatch.cpp
+    source/scalability/time_interval.cpp
 )
 
 add_library(lue::qa ALIAS lue_qa)

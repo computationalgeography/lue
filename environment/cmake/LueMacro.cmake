@@ -177,40 +177,6 @@ function(edit_data_model_graphs)
 endfunction()
 
 
-function(lue_add_benchmark)
-    set(OPTIONS "")
-    set(ONE_VALUE_ARGUMENTS
-        CATEGORY
-        NAME)
-    set(MULTI_VALUE_ARGUMENTS
-        LINK_LIBRARIES)
-
-    cmake_parse_arguments(ADD_BENCHMARK "${OPTIONS}"
-        "${ONE_VALUE_ARGUMENTS}" "${MULTI_VALUE_ARGUMENTS}" ${ARGN})
-
-    if(ADD_BENCHMARK_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Macro called with unrecognized arguments: "
-            "${ADD_BENCHMARK_UNPARSED_ARGUMENTS}"
-        )
-    endif()
-
-    set(category ${ADD_BENCHMARK_CATEGORY})
-    set(name ${ADD_BENCHMARK_NAME})
-
-    add_executable(lue_${category}_${name}_benchmark
-        ${name}_benchmark.cpp
-    )
-
-    target_link_libraries(lue_${category}_${name}_benchmark
-        PRIVATE
-            ${ADD_BENCHMARK_LINK_LIBRARIES}
-            lue::framework_algorithm
-            lue::benchmark
-    )
-endfunction()
-
-
 function(lue_install_programs)
     set(options
     )

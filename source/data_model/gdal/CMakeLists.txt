@@ -6,20 +6,20 @@ configure_file(
 )
 
 configure_file(
-    src/version.cpp.in
-    src/version.cpp
+    source/version.cpp.in
+    source/version.cpp
 )
 
 add_library(lue_gdal STATIC
-    src/blocks.cpp
-    src/compare_rasters.cpp
-    src/data_type.cpp
-    src/dataset.cpp
-    src/driver.cpp
-    src/error.cpp
-    src/raster.cpp
-    src/raster_band.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
+    source/blocks.cpp
+    source/compare_rasters.cpp
+    source/data_type.cpp
+    source/dataset.cpp
+    source/driver.cpp
+    source/error.cpp
+    source/raster.cpp
+    source/raster_band.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
 add_library(lue::gdal ALIAS lue_gdal)

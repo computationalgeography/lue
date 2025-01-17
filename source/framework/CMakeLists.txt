@@ -16,8 +16,6 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/partitioned_route)
 add_subdirectory(algorithm)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/algorithm)
 
-# add_subdirectory(case_study)
-
 add_subdirectory(io)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/io)
 
@@ -28,11 +26,6 @@ endif()
 
 add_subdirectory(model)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/model)
-
-# if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-#     add_subdirectory(benchmark)
-#     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/benchmark)
-# endif()
 
 if(LUE_FRAMEWORK_WITH_PYTHON_API)
     add_subdirectory(python)

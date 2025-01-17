@@ -6,34 +6,34 @@ configure_file(
 )
 
 configure_file(
-    src/version.cpp.in
-    src/version.cpp
+    source/version.cpp.in
+    source/version.cpp
 )
 
 add_library(lue_hdf5 STATIC
-    src/attribute.cpp
-    src/attributes.cpp
-    src/chunk.cpp
-    src/dataset.cpp
-    src/dataspace.cpp
-    src/datatype.cpp
-    src/error_stack.cpp
-    src/file.cpp
-    src/group.cpp
-    src/hard_link.cpp
-    src/hyperslab.cpp
-    src/identifier.cpp
-    src/issue.cpp
-    src/issues.cpp
-    src/link.cpp
-    src/object_info.cpp
-    src/primary_data_object.cpp
-    src/property_list.cpp
-    src/shape.cpp
-    src/soft_link.cpp
-    src/validate.cpp
-    src/vlen_memory.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/version.cpp
+    source/attribute.cpp
+    source/attributes.cpp
+    source/chunk.cpp
+    source/dataset.cpp
+    source/dataspace.cpp
+    source/datatype.cpp
+    source/error_stack.cpp
+    source/file.cpp
+    source/group.cpp
+    source/hard_link.cpp
+    source/hyperslab.cpp
+    source/identifier.cpp
+    source/issue.cpp
+    source/issues.cpp
+    source/link.cpp
+    source/object_info.cpp
+    source/primary_data_object.cpp
+    source/property_list.cpp
+    source/shape.cpp
+    source/soft_link.cpp
+    source/validate.cpp
+    source/vlen_memory.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
 add_library(lue::hdf5 ALIAS lue_hdf5)

@@ -85,7 +85,7 @@ class LUERecipe(ConanFile):
                 "imgui_impl_vulkan.cpp",
             ]
             output_directory_pathname = os.path.join(
-                self.build_folder, "source", "view", "imgui", "src"
+                self.build_folder, "source", "view", "imgui", "source"
             )
 
             os.makedirs(output_directory_pathname, exist_ok=True)
