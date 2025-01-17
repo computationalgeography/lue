@@ -1,6 +1,6 @@
 #include "shape.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/framework/io/raster.hpp"
+#include "lue/framework/io/gdal.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <fmt/format.h>
@@ -16,7 +16,7 @@ namespace lue::framework {
         template<typename Element>
         auto from_gdal(std::string const& name, StaticShape<2> const& partition_shape) -> pybind11::object
         {
-            return pybind11::cast(read<Element>(name, partition_shape));
+            return pybind11::cast(lue::from_gdal<Element>(name, partition_shape));
         }
 
 

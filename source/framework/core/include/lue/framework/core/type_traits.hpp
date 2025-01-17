@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/concept.hpp"
 #include <string>
 #include <type_traits>
 
@@ -76,12 +77,30 @@ namespace lue {
     using ElementsT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Elements;
 
 
+    namespace detail {
+
+        template<typename Shaped>
+        struct ShapedTraits
+        {
+                static constexpr Rank rank = detail::ArrayTraits<detail::remove_cvref_t<Shaped>>::rank;
+        };
+
+
+        template<TupleLike T>
+        struct ShapedTraits<T>
+        {
+                static constexpr Rank rank = std::tuple_size_v<T>;
+        };
+
+    }  // namespace detail
+
+
     /*!
-        @brief      Rank of an array-like type
-        @tparam     Array-like type
+        @brief      Rank of a type
+        @tparam     Array-like type or a tuple containing extents
     */
-    template<typename Array>
-    static constexpr Rank rank = detail::ArrayTraits<detail::remove_cvref_t<Array>>::rank;
+    template<typename Shaped>
+    static constexpr Rank rank = detail::ShapedTraits<Shaped>::rank;
 
 
     template<typename Array>

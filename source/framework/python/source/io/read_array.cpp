@@ -1,6 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
-#include "lue/framework/io/read_into.hpp"
+#include "lue/framework/io/from_lue.hpp"
+#include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -40,6 +41,24 @@ namespace lue::framework {
         }
 
 
+        template<Arithmetic Element, Rank rank, typename ArrayIO>
+        auto read(
+            ArrayIO const& io,
+            std::string const& array_pathname,
+            StaticShape<rank> const& partition_shape,
+            ldm::ID const object_id) -> pybind11::object
+        {
+            pybind11::object result{};
+
+            if constexpr (lue::arithmetic_element_supported<Element>)
+            {
+                result = io.template read<Element, 2>(array_pathname, partition_shape, object_id);
+            }
+
+            return result;
+        }
+
+
         template<typename ArrayIO, Rank rank>
         auto read(
             ArrayIO const& io,
@@ -50,60 +69,37 @@ namespace lue::framework {
         {
             pybind11::object result;
 
-            if constexpr (lue::arithmetic_element_supported<std::uint8_t>)
+            if (datatype == lh5::std_int8_le)
             {
-                if (datatype == lh5::std_uint8_le)
-                {
-                    result = io.template read<std::uint8_t, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::int8_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
+            else if (datatype == lh5::std_uint8_le)
             {
-                if (datatype == lh5::std_uint32_le)
-                {
-                    result = io.template read<std::uint32_t, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::uint8_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<std::int32_t>)
+            else if (datatype == lh5::std_uint32_le)
             {
-                if (datatype == lh5::std_int32_le)
-                {
-                    result = io.template read<std::int32_t, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::uint32_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<std::uint64_t>)
+            else if (datatype == lh5::std_int32_le)
             {
-                if (datatype == lh5::std_uint64_le)
-                {
-                    result = io.template read<std::uint64_t, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::int32_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<std::int64_t>)
+            else if (datatype == lh5::std_uint64_le)
             {
-                if (datatype == lh5::std_int64_le)
-                {
-                    result = io.template read<std::int64_t, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::uint64_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<float>)
+            else if (datatype == lh5::std_int64_le)
             {
-                if (datatype == lh5::ieee_float32_le)
-                {
-                    result = io.template read<float, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<std::int64_t, 2>(io, array_pathname, partition_shape, object_id);
             }
-
-            if constexpr (lue::arithmetic_element_supported<double>)
+            else if (datatype == lh5::ieee_float32_le)
             {
-                if (datatype == lh5::ieee_float64_le)
-                {
-                    result = io.template read<double, 2>(array_pathname, partition_shape, object_id);
-                }
+                result = read<float, 2>(io, array_pathname, partition_shape, object_id);
+            }
+            else if (datatype == lh5::ieee_float64_le)
+            {
+                result = read<double, 2>(io, array_pathname, partition_shape, object_id);
             }
 
             if (!result)
@@ -117,33 +113,31 @@ namespace lue::framework {
         }
 
 
-        template<typename Element, Rank rank>
+        template<typename Element, typename Shape>
         auto read_array(
             std::string const& array_pathname,
             lh5::Hyperslab const& hyperslab,
-            StaticShape<rank> const& partition_shape,
-            data_model::ID const object_id) -> PartitionedArray<Element, rank>
+            Shape const& partition_shape,
+            data_model::ID const object_id) -> PartitionedArray<Element, rank<Shape>>
         {
-            using Policies = policy::read_into::DefaultValuePolicies<Element>;
+            using Policies = policy::from_lue::DefaultValuePolicies<Element>;
 
-            return hyperslab.empty() ? lue::read<Element, Policies, rank>(
-                                           Policies{}, array_pathname, partition_shape, object_id)
-                                     : lue::read<Element, Policies, rank>(
-                                           Policies{}, array_pathname, hyperslab, partition_shape, object_id);
+            return hyperslab.empty()
+                       ? lue::from_lue(Policies{}, array_pathname, partition_shape, object_id)
+                       : lue::from_lue(Policies{}, array_pathname, hyperslab, partition_shape, object_id);
         }
 
 
-        template<typename Element, Rank rank>
+        template<typename Element, typename Shape>
         auto read_array(
             std::string const& array_pathname,
-            StaticShape<rank> const& partition_shape,
+            Shape const& partition_shape,
             data_model::ID const object_id,
-            Index const time_step_idx) -> PartitionedArray<Element, rank>
+            Index const time_step_idx) -> PartitionedArray<Element, rank<Shape>>
         {
-            using Policies = policy::read_into::DefaultValuePolicies<Element>;
+            using Policies = policy::from_lue::DefaultValuePolicies<Element>;
 
-            return lue::read<Element, Policies, rank>(
-                Policies{}, array_pathname, partition_shape, object_id, time_step_idx);
+            return lue::from_lue(Policies{}, array_pathname, partition_shape, object_id, time_step_idx);
         }
 
 
@@ -162,22 +156,22 @@ namespace lue::framework {
                     }
 
 
-                    ArrayIO(lh5::Hyperslab const hyperslab):
+                    ArrayIO(lh5::Hyperslab hyperslab):
 
-                        _hyperslab{hyperslab}
+                        _hyperslab{std::move(hyperslab)}
 
                     {
                     }
 
 
                     template<typename Element, Rank rank>
-                    pybind11::object read(
+                    [[nodiscard]] auto read(
                         std::string const& array_pathname,
                         StaticShape<rank> const& partition_shape,
-                        data_model::ID const object_id) const
+                        data_model::ID const object_id) const -> pybind11::object
                     {
-                        return pybind11::cast(read_array<Element, rank>(
-                            array_pathname, _hyperslab, partition_shape, object_id));
+                        return pybind11::cast(
+                            read_array<Element>(array_pathname, _hyperslab, partition_shape, object_id));
                     }
 
 
@@ -204,13 +198,13 @@ namespace lue::framework {
                     }
 
                     template<typename Element, Rank rank>
-                    pybind11::object read(
+                    [[nodiscard]] auto read(
                         std::string const& array_pathname,
                         StaticShape<rank> const& partition_shape,
-                        data_model::ID const object_id) const
+                        data_model::ID const object_id) const -> pybind11::object
                     {
-                        return pybind11::cast(read_array<Element, rank>(
-                            array_pathname, partition_shape, object_id, _time_step_idx));
+                        return pybind11::cast(
+                            read_array<Element>(array_pathname, partition_shape, object_id, _time_step_idx));
                     }
 
                 private:

@@ -1,7 +1,7 @@
 set(scope lue_framework_io)
 set(names
-    raster
-    write
+    gdal
+    lue
 )
 
 foreach(name ${names})

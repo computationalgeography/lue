@@ -1,4 +1,4 @@
-#include "lue/framework/io/write_into.hpp"
+#include "lue/framework/io/to_lue.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
@@ -24,9 +24,9 @@ namespace lue::framework {
 
             verify_rank_supported(rank);
 
-            using Policies = policy::write_into::DefaultValuePolicies<Element>;
+            using Policies = policy::to_lue::DefaultValuePolicies<Element>;
 
-            return write(Policies{}, array, array_pathname, object_id);
+            return to_lue(Policies{}, array, array_pathname, object_id);
         }
 
 
@@ -43,9 +43,9 @@ namespace lue::framework {
 
             verify_rank_supported(rank);
 
-            using Policies = policy::write_into::DefaultValuePolicies<Element>;
+            using Policies = policy::to_lue::DefaultValuePolicies<Element>;
 
-            return write(Policies{}, array, array_pathname, object_id, time_step_idx);
+            return to_lue(Policies{}, array, array_pathname, object_id, time_step_idx);
         }
 
 

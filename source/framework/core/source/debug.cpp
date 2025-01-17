@@ -1,9 +1,9 @@
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/configure.hpp"
 #include <hpx/include/compute.hpp>
-#ifdef LUE_HPX_WITH_MPI
-#include <hpx/mpi_base/mpi_environment.hpp>
-#endif
+// #ifdef LUE_HPX_WITH_MPI
+// #include <hpx/mpi_base/mpi_environment.hpp>
+// #endif
 #include "hpx/runtime_distributed/find_localities.hpp"
 #include "hpx/runtime_distributed/get_locality_name.hpp"
 #include <hpx/include/lcos.hpp>
@@ -78,28 +78,28 @@ namespace lue {
         }
 
 
-#ifdef LUE_HPX_WITH_MPI
-        std::string locality_rank_mapping()
-        {
-            std::ostringstream stream;
-            stream << hpx::get_locality_id();
-
-            return fmt::format(
-                "locality: {} -- rank(HPX): {}",  // -- rank(env): {}",
-                stream.str(),
-                hpx::util::mpi_environment::rank()
-                // , std::getenv("OMPI_COMM_WORLD_RANK")
-            );
-        }
-#endif
+        // #ifdef LUE_HPX_WITH_MPI
+        //         std::string locality_rank_mapping()
+        //         {
+        //             std::ostringstream stream;
+        //             stream << hpx::get_locality_id();
+        //
+        //             return fmt::format(
+        //                 "locality: {} -- rank(HPX): {}",  // -- rank(env): {}",
+        //                 stream.str(),
+        //                 hpx::util::mpi_environment::rank()
+        //                 // , std::getenv("OMPI_COMM_WORLD_RANK")
+        //             );
+        //         }
+        // #endif
 
     }  // Anonymous namespace
 }  // namespace lue
 
 
-#ifdef LUE_HPX_WITH_MPI
-HPX_PLAIN_ACTION(lue::locality_rank_mapping, LocalityRankMapping)
-#endif
+// #ifdef LUE_HPX_WITH_MPI
+// HPX_PLAIN_ACTION(lue::locality_rank_mapping, LocalityRankMapping)
+// #endif
 
 
 namespace lue {
@@ -136,20 +136,20 @@ namespace lue {
         auto all_locality_names = join(lue::all_locality_names(), ", ");
 
 
-#ifdef LUE_HPX_WITH_MPI
-        auto const locality_ids = hpx::find_all_localities();
-        std::vector<hpx::future<std::string>> locality_rank_mappings(locality_ids.size());
-        LocalityRankMapping action{};
-
-        hpx::transform(
-            hpx::execution::par,
-            locality_ids.begin(),
-            locality_ids.end(),
-            locality_rank_mappings.begin(),
-            [action](auto const locality_id) { return hpx::async(action, locality_id); });
-
-        auto all_locality_rank_mappings = join(std::move(locality_rank_mappings), ", ");
-#endif
+        // #ifdef LUE_HPX_WITH_MPI
+        //         auto const locality_ids = hpx::find_all_localities();
+        //         std::vector<hpx::future<std::string>> locality_rank_mappings(locality_ids.size());
+        //         LocalityRankMapping action{};
+        //
+        //         hpx::transform(
+        //             hpx::execution::par,
+        //             locality_ids.begin(),
+        //             locality_ids.end(),
+        //             locality_rank_mappings.begin(),
+        //             [action](auto const locality_id) { return hpx::async(action, locality_id); });
+        //
+        //         auto all_locality_rank_mappings = join(std::move(locality_rank_mappings), ", ");
+        // #endif
 
 
         auto format_message = [this_locality_nr,
@@ -197,11 +197,11 @@ namespace lue {
             root_locality_name,
             current_nr_localities,
             all_locality_names,
-#ifdef LUE_HPX_WITH_MPI
-            all_locality_rank_mappings
-#else
+            // #ifdef LUE_HPX_WITH_MPI
+            //             all_locality_rank_mappings
+            // #else
             "-"
-#endif
+            // #endif
         );
 
         return description;

@@ -2,10 +2,10 @@
 
 
 #cmakedefine HDF5_IS_PARALLEL
+#cmakedefine HDF5_IS_THREADSAFE
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
     class BuildOptions
     {
@@ -20,7 +20,14 @@ namespace lue {
 #endif
                 };
 
+            static constexpr bool hdf5_is_threadsafe{
+#ifdef HDF5_IS_THREADSAFE
+                    true
+#else
+                    false
+#endif
+                };
+
         };
 
-    }  // namespace hdf5
-}  // namespace lue
+} // namespace lue::hdf5

@@ -75,7 +75,7 @@ namespace lue {
 
             auto shape() const -> hpx::future<Shape>;
 
-            auto nr_elements() const -> hpx::future<Count>;
+            [[nodiscard]] auto nr_elements() const -> hpx::future<Count>;
     };
 
 

@@ -6,9 +6,9 @@
 #include <hpx/config.hpp>
 
 
-#if (defined(HPX_HAVE_NETWORKING) && defined(HPX_HAVE_PARCELPORT_MPI)) || defined(HPX_HAVE_MODULE_MPI_BASE)
-#define LUE_HPX_WITH_MPI
-#endif
+// #if (defined(HPX_HAVE_NETWORKING) && defined(HPX_HAVE_PARCELPORT_MPI)) || defined(HPX_HAVE_MODULE_MPI_BASE)
+// #define LUE_HPX_WITH_MPI
+// #endif
 
 
 namespace lue {
