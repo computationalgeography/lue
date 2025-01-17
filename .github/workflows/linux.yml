@@ -18,8 +18,7 @@ jobs:
                     # To be recognized by Conan, name must be one of:
                     #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
                     #     'msvc', 'qcc', 'sun-cc'
-                    - { name: gcc  , version: 10, c: gcc-10  , cxx: g++-10    , package: g++-10   }
-                    - { name: gcc  , version: 12, c: gcc-12  , cxx: g++-12    , package: g++-12   }
+                    - { name: gcc  , version: 13, c: gcc-13  , cxx: g++-13    , package: g++-13   }
                     - { name: clang, version: 18, c: clang-18, cxx: clang++-18, package: clang-18 }
             fail-fast: false
 
