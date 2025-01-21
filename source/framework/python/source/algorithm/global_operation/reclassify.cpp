@@ -11,34 +11,21 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        template<typename FromElement, typename ToElement, Rank rank>
-        auto reclassify2(
-            PartitionedArray<FromElement, rank> const& array,
-            LookupTable<FromElement, ToElement> const& lookup_table) -> PartitionedArray<ToElement, rank>
+        template<typename ToElement, std::integral FromElement, std::floating_point LUTElement>
+        auto cast_lut(LookupTable<FromElement, LUTElement> const& lookup_table)
+            -> LookupTable<FromElement, ToElement>
         {
-            return value_policies::reclassify(array, lookup_table);
-        }
-
-
-        template<typename ToElement2, typename FromElement, typename ToElement1>
-        auto cast_lut(LookupTable<FromElement, ToElement1> const& lookup_table)
-            -> LookupTable<FromElement, ToElement2>
-        {
-            static_assert(std::is_integral_v<FromElement>);
-            static_assert(std::is_floating_point_v<ToElement1>);
-            static_assert(std::is_floating_point_v<ToElement2>);
-
-            if constexpr (std::is_same_v<ToElement1, ToElement2>)
+            if constexpr (std::is_same_v<LUTElement, ToElement>)
             {
                 return lookup_table;
             }
             else
             {
-                LookupTable<FromElement, ToElement2> result;
+                LookupTable<FromElement, ToElement> result;
 
                 for (auto const& [key, value] : lookup_table)
                 {
-                    result[key] = static_cast<ToElement2>(value);
+                    result[key] = static_cast<ToElement>(value);
                 }
 
                 return result;
@@ -46,10 +33,26 @@ namespace lue::framework {
         }
 
 
-        template<typename FromElement, typename ToElement, Rank rank>
+        template<Arithmetic ToElement, std::integral FromElement, std::floating_point LUTElement, Rank rank>
         auto reclassify(
             PartitionedArray<FromElement, rank> const& array,
-            LookupTable<FromElement, ToElement> const& lookup_table,
+            LookupTable<FromElement, LUTElement> const& lookup_table) -> pybind11::object
+        {
+            pybind11::object result{};
+
+            if constexpr (arithmetic_element_supported<ToElement>)
+            {
+                result = pybind11::cast(value_policies::reclassify(array, cast_lut<ToElement>(lookup_table)));
+            }
+
+            return result;
+        }
+
+
+        template<std::integral FromElement, std::floating_point LUTElement, Rank rank>
+        auto reclassify(
+            PartitionedArray<FromElement, rank> const& array,
+            LookupTable<FromElement, LUTElement> const& lookup_table,
             pybind11::dtype const& dtype) -> pybind11::object
         {
             // Switch on dtype and call a function that returns an array of the
@@ -65,12 +68,19 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 1:
+                        {
+                            result = reclassify<std::int8_t>(array, lookup_table);
+                            break;
+                        }
                         case 4:
                         {
+                            result = reclassify<std::int32_t>(array, lookup_table);
                             break;
                         }
                         case 8:
                         {
+                            result = reclassify<std::int64_t>(array, lookup_table);
                             break;
                         }
                     }
@@ -84,14 +94,17 @@ namespace lue::framework {
                     {
                         case 1:
                         {
+                            result = reclassify<std::uint8_t>(array, lookup_table);
                             break;
                         }
                         case 4:
                         {
+                            result = reclassify<std::uint32_t>(array, lookup_table);
                             break;
                         }
                         case 8:
                         {
+                            result = reclassify<std::uint64_t>(array, lookup_table);
                             break;
                         }
                     }
@@ -105,24 +118,12 @@ namespace lue::framework {
                     {
                         case 4:
                         {
-                            using Element = float;
-
-                            if constexpr (arithmetic_element_supported<Element>)
-                            {
-                                result = pybind11::cast(reclassify2(array, cast_lut<Element>(lookup_table)));
-                            }
-
+                            result = reclassify<float>(array, lookup_table);
                             break;
                         }
                         case 8:
                         {
-                            using Element = double;
-
-                            if constexpr (arithmetic_element_supported<Element>)
-                            {
-                                result = pybind11::cast(reclassify2(array, cast_lut<Element>(lookup_table)));
-                            }
-
+                            result = reclassify<double>(array, lookup_table);
                             break;
                         }
                     }
@@ -140,16 +141,6 @@ namespace lue::framework {
         }
 
 
-        // template<typename FromElement, typename ToElement, Rank rank>
-        // auto reclassify(
-        //     PartitionedArray<FromElement, rank> const& array,
-        //     LookupTable<FromElement, ToElement> const& lookup_table,
-        //     pybind11::object const& dtype_args) -> pybind11::object
-        // {
-        //     return reclassify1(array, lookup_table, pybind11::dtype::from_args(dtype_args));
-        // }
-
-
         class Binder
         {
 
@@ -160,12 +151,12 @@ namespace lue::framework {
                 {
                     Rank const rank{2};
                     using FromElement = Element;
-                    using ToElement = LargestFloatingPointElement;
+                    using LUTElement = LargestFloatingPointElement;
 
                     module.def(
                         "reclassify",
                         [](PartitionedArray<FromElement, rank> const& array,
-                           LookupTable<FromElement, ToElement> const& lookup_table,
+                           LookupTable<FromElement, LUTElement> const& lookup_table,
                            pybind11::object const& dtype_args)  // -> pybind11::object
                         { return reclassify(array, lookup_table, pybind11::dtype::from_args(dtype_args)); },
                         "array"_a,

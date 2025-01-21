@@ -14,12 +14,12 @@ class ReclassifyTest(OperationTest):
         for from_element_type in lfr.integral_element_types:
             ids = lfr.create_array(array_shape, from_element_type, id_)
 
-            for to_element_type in lfr.floating_point_element_types:
+            for to_element_type in lfr.arithmetic_element_types:
                 lookup_table = {
-                    1: 1.1,
-                    2: 2.2,
-                    3: 3.3,
-                    4: 4.4,
+                    1: 4,
+                    2: 3,
+                    3: 2,
+                    4: 1,
                 }
                 array = lfr.reclassify(ids, lookup_table, dtype=to_element_type)
 

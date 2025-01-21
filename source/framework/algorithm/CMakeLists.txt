@@ -1384,7 +1384,7 @@ block()
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(OutputElement IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            foreach(OutputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
                 foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                     math(EXPR count "${count} + 1")
 
