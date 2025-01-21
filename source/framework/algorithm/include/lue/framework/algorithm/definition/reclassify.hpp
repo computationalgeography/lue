@@ -8,10 +8,11 @@ namespace lue {
     namespace detail {
 
         template<typename OutputPartition, typename Policies, typename InputPartition>
-        OutputPartition reclassify_partition_ready(
+        auto reclassify_partition_ready(
             Policies const& policies,
             InputPartition const& input_partition,
             LookupTable<ElementT<InputPartition>, ElementT<OutputPartition>> const& lookup_table)
+            -> OutputPartition
         {
             using Offset = OffsetT<InputPartition>;
             using InputData = DataT<InputPartition>;
@@ -68,11 +69,11 @@ namespace lue {
 
 
         template<typename Policies, typename InputPartition, typename OutputPartition>
-        OutputPartition reclassify_partition(
+        auto reclassify_partition(
             Policies const& policies,
             InputPartition const& input_partition,
             hpx::shared_future<LookupTable<ElementT<InputPartition>, ElementT<OutputPartition>>> const&
-                lookup_table)
+                lookup_table) -> OutputPartition
         {
             using FromElement = ElementT<InputPartition>;
             using ToElement = ElementT<OutputPartition>;
@@ -105,10 +106,11 @@ namespace lue {
 
 
     template<typename Policies, typename FromElement, typename ToElement, Rank rank>
-    PartitionedArray<ToElement, rank> reclassify(
+    auto reclassify(
         Policies const& policies,
         PartitionedArray<FromElement, rank> const& input_array,
         hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table)
+        -> PartitionedArray<ToElement, rank>
     {
         // Spawn a task for each partition that will reclassify it
 
@@ -128,10 +130,10 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[p] =
-                hpx::async(action, localities[p], policies, input_partitions[p], lookup_table);
+            output_partitions[partition_idx] = hpx::async(
+                action, localities[partition_idx], policies, input_partitions[partition_idx], lookup_table);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};

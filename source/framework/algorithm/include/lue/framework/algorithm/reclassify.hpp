@@ -11,17 +11,18 @@ namespace lue {
 
 
     template<typename Policies, typename FromElement, typename ToElement, Rank rank>
-    PartitionedArray<ToElement, rank> reclassify(
+    auto reclassify(
         Policies const& policies,
         PartitionedArray<FromElement, rank> const& array,
-        hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table);
+        hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table)
+        -> PartitionedArray<ToElement, rank>;
 
 
     template<typename Policies, typename FromElement, typename ToElement, Rank rank>
-    PartitionedArray<ToElement, rank> reclassify(
+    auto reclassify(
         Policies const& policies,
         PartitionedArray<FromElement, rank> const& array,
-        LookupTable<FromElement, ToElement> const& lookup_table)
+        LookupTable<FromElement, ToElement> const& lookup_table) -> PartitionedArray<ToElement, rank>
     {
         return reclassify(policies, array, hpx::make_ready_future(lookup_table).share());
     }

@@ -17,9 +17,10 @@ namespace lue {
     namespace value_policies {
 
         template<typename FromElement, typename ToElement, Rank rank>
-        PartitionedArray<ToElement, rank> reclassify(
+        auto reclassify(
             PartitionedArray<FromElement, rank> const& array,
             hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table)
+            -> PartitionedArray<ToElement, rank>
         {
             using Policies = policy::reclassify::DefaultValuePolicies<FromElement, ToElement>;
 
@@ -28,9 +29,9 @@ namespace lue {
 
 
         template<typename FromElement, typename ToElement, Rank rank>
-        PartitionedArray<ToElement, rank> reclassify(
+        auto reclassify(
             PartitionedArray<FromElement, rank> const& array,
-            LookupTable<FromElement, ToElement> const& lookup_table)
+            LookupTable<FromElement, ToElement> const& lookup_table) -> PartitionedArray<ToElement, rank>
         {
             using Policies = policy::reclassify::DefaultValuePolicies<FromElement, ToElement>;
 
