@@ -72,7 +72,7 @@ def generate_script_slurm_threads(
                     benchmark,
                     experiment,
                     array_shape,
-                    partition_shape,
+                    partition_shape if nr_workers > 1 else array_shape,
                     nr_workers=nr_workers,
                 ),
             )
@@ -396,7 +396,7 @@ def generate_script_shell(
                     benchmark,
                     experiment,
                     array_shape,
-                    partition_shape,
+                    partition_shape if nr_workers > 1 else array_shape,
                     nr_workers=nr_workers,
                 ),
             ),
