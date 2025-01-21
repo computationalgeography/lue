@@ -21,11 +21,9 @@ def generate_script_slurm_threads(
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_threads = nr_workers
-        result_pathname = experiment.benchmark_result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
-        )
-
-        a = 3
+        # result_pathname = experiment.benchmark_result_pathname(
+        #     result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
+        # )
 
         job_steps += [
             # Run the benchmark, resulting in a json file
@@ -46,7 +44,7 @@ def generate_script_slurm_threads(
                     benchmark,
                     experiment,
                     array_shape,
-                    partition_shape,
+                    partition_shape if nr_workers > 1 else array_shape,
                     nr_workers=nr_workers,
                 ),
             )
@@ -115,9 +113,9 @@ def generate_script_slurm_numa_nodes(
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers
-        result_pathname = experiment.benchmark_result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
-        )
+        # result_pathname = experiment.benchmark_result_pathname(
+        #     result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
+        # )
 
         job_steps += [
             # Run the benchmark, resulting in a json file
@@ -220,7 +218,6 @@ def generate_script_slurm_cluster_nodes(
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
-
         result_pathname = experiment.benchmark_result_pathname(
             result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
         )
@@ -357,7 +354,7 @@ def generate_script_shell(
                     benchmark,
                     experiment,
                     array_shape,
-                    partition_shape,
+                    partition_shape if nr_workers > 1 else array_shape,
                     nr_workers=nr_workers,
                 ),
             ),

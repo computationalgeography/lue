@@ -79,7 +79,6 @@ def create_dot_graph(lue_dataset_pathname, pdf_graph_pathname):
         dot_properties_file.seek(0)
 
         with tempfile.NamedTemporaryFile(suffix=".dot") as dot_graph_file:
-            print(open(dot_properties_file.name, "r").read())
             commands = []
             commands.append(
                 "{} export --meta {} {} {}".format(
