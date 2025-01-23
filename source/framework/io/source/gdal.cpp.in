@@ -9,6 +9,7 @@
 #include <hpx/components/get_ptr.hpp>
 #include <hpx/shared_mutex.hpp>
 #include <memory>
+#include <utility>
 
 
 namespace lue {
@@ -77,6 +78,22 @@ namespace lue {
 
 
     namespace {
+
+        void verify_compatibility(
+            Shape<Count, 2> const& array_shape,
+            Hyperslab<2> const& hyperslab)
+        {
+            if(hyperslab.is_strided())
+            {
+                throw std::runtime_error("Handling strided hyperslab is not supported yet");
+            }
+
+            if(!hyperslab.is_contained_by(array_shape))
+            {
+                throw std::runtime_error("Hyperslab extents beyond array");
+            }
+        }
+
 
         class Band
         {
@@ -310,9 +327,10 @@ namespace lue {
                 static constexpr bool instantiate_per_locality{true};
 
 
-                ReadPartitionsPerLocality(std::string const& name):
+                ReadPartitionsPerLocality(std::string name, Hyperslab<rank>::Offsets const& offsets={0, 0}):
 
-                    _name{name}
+                    _name{std::move(name)},
+                    _offsets{offsets}
 
                 {
                 }
@@ -328,6 +346,15 @@ namespace lue {
                 {
                     using Action = ReadPartitionsPerLocalityAction<Policies, Partition>;
                     Action action{};
+
+                    for(auto& offset: offsets)
+                    {
+                        std::transform(_offsets.begin(), _offsets.end(), offset.begin(), offset.begin(),
+                            [](auto offset1, auto const offset2)
+                            {
+                                return offset1 + offset2;
+                            });
+                    }
 
                     return hpx::async(
 
@@ -345,6 +372,9 @@ namespace lue {
             private:
 
                 std::string _name;
+
+                // Offset of all partitions within the raster
+                Hyperslab<rank>::Offsets _offsets;
         };
 
 
@@ -389,6 +419,25 @@ namespace lue {
         {
         };
 
+
+        template<Arithmetic Element>
+        auto meta(std::string const& name) -> std::tuple<Shape<Count, 2>, Element, bool>
+        {
+            gdal::Raster raster{gdal::open_dataset(name, ::GA_ReadOnly)};
+            gdal::Raster::Band raster_band{raster.band(1)};
+
+            Shape<Count, 2> array_shape{};
+
+            auto const raster_shape = raster.shape();
+            array_shape[0] = static_cast<Count>(raster_shape[0]);
+            array_shape[1] = static_cast<Count>(raster_shape[1]);
+
+            auto [no_data_value, no_data_value_is_valid] = raster_band.no_data_value<Element>();
+
+            return {array_shape, no_data_value, no_data_value_is_valid};
+        }
+
+
     }  // Anonymous namespace
 
 
@@ -416,19 +465,7 @@ namespace lue {
             // - Determine the no-data value to use
             // Only then can we call the logic that creates a partitioned array asynchronously.
 
-            Shape<Count, 2> array_shape;
-            bool no_data_value_is_valid{};
-            Element no_data_value;
-
-            {
-                gdal::Raster raster{gdal::open_dataset(name, ::GA_ReadOnly)};
-                gdal::Raster::Band raster_band{raster.band(1)};
-
-                auto const raster_shape = raster.shape();
-                array_shape[0] = static_cast<Count>(raster_shape[0]);
-                array_shape[1] = static_cast<Count>(raster_shape[1]);
-                std::tie(no_data_value, no_data_value_is_valid) = raster_band.no_data_value<Element>();
-            }
+            auto const [array_shape, no_data_value, no_data_value_is_valid] = meta<Element>(name);
 
             using Functor = ReadPartitionsPerLocality<Element>;
 
@@ -458,6 +495,54 @@ namespace lue {
                 using Policies = policy::from_gdal::SpecialValuePolicy<Element>;
                 Policies policies{no_data_value};
                 return create_partitioned_array(policies, array_shape, partition_shape, Functor{name});
+            }
+        }
+    }
+
+
+    template<typename Element>
+    auto from_gdal(std::string const& name, Hyperslab<2> const& hyperslab, Shape<Count, 2> const& partition_shape)
+        -> PartitionedArray<Element, 2>
+    {
+        if constexpr (!gdal::supports<Element>())
+        {
+            gdal::verify_support<Element>();
+            return PartitionedArray<Element, 2>{};
+        }
+        else
+        {
+            auto const [array_shape, no_data_value, no_data_value_is_valid] = meta<Element>(name);
+
+            verify_compatibility(array_shape, hyperslab);
+
+            using Functor = ReadPartitionsPerLocality<Element>;
+
+            if (!no_data_value_is_valid)
+            {
+                // No no-data value is set in the band. Don't bother with no-data.
+
+                using Policies = policy::from_gdal::DefaultPolicies<Element>;
+                Policies policies{};
+                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
+            }
+
+            // A no-data value is set in the band. Let's be nice and use it. Upon reading,
+            // it will be converted to our own conventions for handling no-data.
+
+            if (std::is_floating_point_v<Element> && std::isnan(no_data_value))
+            {
+                // No-data value is a NaN. This is what LUE uses as no-data for floating point
+                // by default.
+                using Policies = policy::from_gdal::ValuePolicies<Element>;
+                Policies policies{};
+                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
+            }
+
+            {
+                // No-data value is not NaN. Use a special no-data policy for this special value.
+                using Policies = policy::from_gdal::SpecialValuePolicy<Element>;
+                Policies policies{no_data_value};
+                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
             }
         }
     }
@@ -603,6 +688,9 @@ namespace lue {
 
         template lue::PartitionedArray<{{ Element }}, {{ rank }}> lue::from_gdal<{{ Element }}>(
             std::string const&, lue::Shape<lue::Count, {{ rank }}> const&);
+
+        template lue::PartitionedArray<{{ Element }}, {{ rank }}> lue::from_gdal<{{ Element }}>(
+            std::string const&, lue::Hyperslab<{{ rank }}> const&, lue::Shape<lue::Count, {{ rank }}> const&);
 
         template hpx::future<void> lue::to_gdal<{{ Element }}>(
             lue::PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&, std::string const&);

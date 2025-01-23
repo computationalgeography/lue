@@ -157,6 +157,7 @@ add_library(lue_py_framework SHARED
 
     source/core/create_partitioned_array.cpp
     ${generated_source_files}
+    source/core/hyperslab.cpp
     source/core/scalar.cpp
     source/core/wait.cpp
 
