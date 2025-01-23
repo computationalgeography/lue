@@ -4,6 +4,7 @@ set(names
     configuration_entry
     domain_decomposition
     hilbert_curve
+    hyperslab
     index_util
     linear_curve
     math

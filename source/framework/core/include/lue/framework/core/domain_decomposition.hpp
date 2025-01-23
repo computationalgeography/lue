@@ -361,7 +361,7 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    Shape<Index, rank> default_partition_shape(Shape<Index, rank> const& array_shape)
+    auto default_partition_shape(Shape<Index, rank> const& array_shape) -> Shape<Index, rank>
     {
         Count const nr_worker_threads{static_cast<Count>(hpx::get_num_worker_threads())};
 
