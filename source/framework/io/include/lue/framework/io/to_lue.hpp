@@ -37,11 +37,11 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #if LUE_FRAMEWORK_WITH_PARALLEL_IO
-            if (hpx::util::mpi_environment::enabled())
-            {
-                // // Use collective I/O
-                // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
-            }
+            // if (hpx::util::mpi_environment::enabled())
+            // {
+            //     // // Use collective I/O
+            //     // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
+            // }
 #endif
 
             auto& value{property.value()};
