@@ -230,12 +230,12 @@ these differences as much as possible.
 *   - idiv, `//`
     - ❌
     - 1
-*   - if then
+*   - ifthen
     - ✅
-    -
-*   - if then else
+    - where(condition_expression, true_expression)
+*   - ifthenelse
     - ✅
-    -
+    - where(condition_expression, true_expression, false_expression)
 *   - influencesimplegauss
     - ❌
     - ?
