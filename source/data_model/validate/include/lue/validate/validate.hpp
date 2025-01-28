@@ -2,21 +2,19 @@
 #include "lue/utility/application.hpp"
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        class Validate: public Application
+    class Validate: public Application
 
-        {
+    {
 
-            public:
+        public:
 
-                explicit Validate(std::vector<std::string> const& arguments);
+            Validate(int argc, char const* const* argv);
 
-                int run_implementation() final;
+            auto run_implementation() -> int final;
 
-            private:
-        };
+        private:
+    };
 
-    }  // namespace utility
-}  // namespace lue
+}  // namespace lue::utility

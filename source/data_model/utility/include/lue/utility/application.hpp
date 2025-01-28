@@ -2,35 +2,34 @@
 #include "lue/utility/command.hpp"
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        class Application: public Command
-        {
+    class Application: public Command
+    {
 
-            public:
+        public:
 
-                Application(Application const&) = delete;
+            Application(Application const&) = delete;
 
-                Application(Application&&) = delete;
+            Application(Application&&) = delete;
 
-                ~Application() override = default;
+            ~Application() override = default;
 
-                Application& operator=(Application const&) = delete;
+            auto operator=(Application const&) -> Application& = delete;
 
-                Application& operator=(Application&&) = delete;
+            auto operator=(Application&&) -> Application& = delete;
 
-            protected:
+        protected:
 
-                Application(std::string const& usage, std::vector<std::string> const& arguments);
+            Application(cxxopts::Options&& options, int argc, char const* const* argv);
 
-                Application(
-                    std::string const& usage,
-                    std::vector<std::string> const& arguments,
-                    SubcommandCreators const& subcommand_creators);
+            Application(
+                cxxopts::Options&& options,
+                int argc,
+                char const* const* argv,
+                SubcommandCreators&& subcommand_creators);
 
-            private:
-        };
+        private:
+    };
 
-    }  // namespace utility
-}  // namespace lue
+}  // namespace lue::utility

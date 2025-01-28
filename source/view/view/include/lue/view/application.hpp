@@ -13,7 +13,7 @@ namespace lue::view {
 
         protected:
 
-            Application(std::vector<std::string> const& arguments);
+            Application(int argc, char const* const* argv);
     };
 
 }  // namespace lue::view

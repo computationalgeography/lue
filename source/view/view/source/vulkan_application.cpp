@@ -352,9 +352,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
 
 namespace lue::view {
 
-    VulkanApplication::VulkanApplication(std::vector<std::string> const& arguments):
+    VulkanApplication::VulkanApplication(int const argc, char const* const* argv):
 
-        Application{arguments}
+        Application{argc, argv}
 
     {
     }
@@ -365,7 +365,7 @@ namespace lue::view {
     }
 
 
-    int VulkanApplication::run_implementation()
+    auto VulkanApplication::run_implementation() -> int
     {
         // TODO Make sure that creating a window is optional. We also want to support off-screen
         //      rendering. The imgui stuff is only used to interact with the visualizations,
@@ -379,8 +379,13 @@ namespace lue::view {
         //      - To keep things separated, this function can call different functions, depending
         //        on the mode
 
+        if (!argument_parsed("dataset"))
+        {
+            throw std::runtime_error("missing dataset");
+        }
+
         // TODO Move this elsewhere
-        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
+        auto const dataset_names = argument<std::vector<std::string>>("dataset");
 
 
         // Initialize GLFW -----------------------------------------------------

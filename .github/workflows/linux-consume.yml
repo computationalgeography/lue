@@ -50,7 +50,6 @@ jobs:
                   hwloc \
                   libasio-dev \
                   libboost-dev \
-                  libdocopt-dev \
                   libfmt-dev \
                   libgdal-dev \
                   libgoogle-perftools-dev \

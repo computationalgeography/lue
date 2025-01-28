@@ -1,7 +1,7 @@
 #include "lue/translate/translate.hpp"
 
 
-int main(int argc, char* argv[])
+auto main(int argc, char* argv[]) -> int
 {
-    return lue::utility::Translate({argv + 1, argv + argc}).run();
+    return lue::utility::Translate(argc, argv).run();
 }

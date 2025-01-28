@@ -34,13 +34,11 @@ requirements:
     - pybind11
     - fmt
     - docopt  # templatize.py
-    - docopt.cpp
     - jinja2  # templatize.py
     - nlohmann_json
 
   run:
     - docopt  # lue.qa
-    - docopt.cpp
     - hdf5
     - hpx
     - libgdal

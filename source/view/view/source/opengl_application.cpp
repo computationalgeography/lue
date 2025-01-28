@@ -7,9 +7,9 @@
 
 namespace lue::view {
 
-    OpenGLApplication::OpenGLApplication(std::vector<std::string> const& arguments):
+    OpenGLApplication::OpenGLApplication(int const argc, char const* const* argv):
 
-        Application{arguments}
+        Application{argc, argv}
 
     {
     }
@@ -20,9 +20,14 @@ namespace lue::view {
     }
 
 
-    int OpenGLApplication::run_implementation()
+    auto OpenGLApplication::run_implementation() -> int
     {
-        auto const dataset_names = argument<std::vector<std::string>>("<dataset>");
+        if (!argument_parsed("dataset"))
+        {
+            throw std::runtime_error("missing dataset");
+        }
+
+        auto const dataset_names = argument<std::vector<std::string>>("dataset");
 
         glfw::Library library{};
         glfw::Monitor monitor{};

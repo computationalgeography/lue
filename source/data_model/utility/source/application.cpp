@@ -1,28 +1,25 @@
 #include "lue/utility/application.hpp"
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        Application::Application(std::string const& usage, std::vector<std::string> const& arguments)
+    Application::Application(cxxopts::Options&& options, int argc, char const* const* argv):
 
-            :
-            Command(usage, arguments)
+        Command(std::move(options), argc, argv)
 
-        {
-        }
+    {
+    }
 
 
-        Application::Application(
-            std::string const& usage,
-            std::vector<std::string> const& arguments,
-            SubcommandCreators const& subcommand_creators)
+    Application::Application(
+        cxxopts::Options&& options,
+        int argc,
+        char const* const* argv,
+        SubcommandCreators&& subcommand_creators):
 
-            :
-            Command(usage, arguments, subcommand_creators)
+        Command(std::move(options), argc, argv, std::move(subcommand_creators))
 
-        {
-        }
+    {
+    }
 
-    }  // namespace utility
-}  // namespace lue
+}  // namespace lue::utility
