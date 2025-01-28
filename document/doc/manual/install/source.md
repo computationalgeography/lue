@@ -127,14 +127,13 @@ The next variables determine what happens in each case by default.
 - FALSE: Install Foo using Conan
 
 | Variable                 | WIN32 | APPLE | Other |
-| ---                      | ---   | ---   | --- |
-| `LUE_HAVE_BOOST`         | FALSE | TRUE  | TRUE |
-| `LUE_HAVE_DOCOPT`        | FALSE | FALSE | TRUE |
-| `LUE_HAVE_DOXYGEN`       | FALSE | TRUE  | TRUE |
-| `LUE_HAVE_GDAL`          | FALSE | TRUE  | TRUE |
-| `LUE_HAVE_FMT`           | FALSE | TRUE  | TRUE |
-| `LUE_HAVE_GLFW`          | FALSE | TRUE  | TRUE |
-| `LUE_HAVE_HDF5`          | FALSE | TRUE  | TRUE |
+| ---                      | ---   | ---   | ---   |
+| `LUE_HAVE_BOOST`         | FALSE | TRUE  | TRUE  |
+| `LUE_HAVE_DOXYGEN`       | FALSE | TRUE  | TRUE  |
+| `LUE_HAVE_GDAL`          | FALSE | TRUE  | TRUE  |
+| `LUE_HAVE_FMT`           | FALSE | TRUE  | TRUE  |
+| `LUE_HAVE_GLFW`          | FALSE | TRUE  | TRUE  |
+| `LUE_HAVE_HDF5`          | FALSE | TRUE  | TRUE  |
 | `LUE_HAVE_MS_GSL`        | FALSE | FALSE | FALSE |
 | `LUE_HAVE_NLOHMANN_JSON` | FALSE | TRUE  | FALSE |
 | `LUE_HAVE_PYBIND11`      | FALSE | FALSE | FALSE |

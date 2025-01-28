@@ -11,17 +11,11 @@ namespace lue::utility {
 
         public:
 
-            explicit Translate(std::vector<std::string> const& arguments);
+            Translate(int argc, char const* const* argv);
 
         private:
 
-            // static CommandPtr import_data      (std::vector<std::string> const&
-            //                                         arguments);
-
             static auto export_data(std::vector<std::string> const& arguments) -> CommandPtr;
-
-            // void           print_format        (std::string const& dataset_name,
-            //                                     std::string const& format);
 
             gdal::QuietErrorHandler _gdal_error_handler;
     };

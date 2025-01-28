@@ -9,13 +9,13 @@ namespace lue::view {
 
         public:
 
-            VulkanApplication(std::vector<std::string> const& arguments);
+            VulkanApplication(int argc, char const* const* argv);
 
             ~VulkanApplication();
 
         protected:
 
-            int run_implementation() final;
+            auto run_implementation() -> int final;
     };
 
 }  // namespace lue::view

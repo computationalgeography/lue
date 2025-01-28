@@ -3,14 +3,14 @@
 #include <iostream>
 
 
-int main(int argc, char* argv[])
+auto main(int argc, char* argv[]) -> int
 {
     int result{EXIT_FAILURE};
 
     try
     {
-        result = lue::view::VulkanApplication({argv + 1, argv + argc}).run();
-        // result = lue::view::OpenGLApplication({argv + 1, argv + argc}).run();
+        result = lue::view::VulkanApplication{argc, argv}.run();
+        // result = lue::view::OpenGLApplication{argc, argv}.run();
     }
     catch (std::exception const& exception)
     {

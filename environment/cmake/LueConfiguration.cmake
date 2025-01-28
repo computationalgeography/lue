@@ -376,7 +376,7 @@ if(LUE_BUILD_DATA_MODEL)
     endif()
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
-        set(LUE_DOCOPT_REQUIRED TRUE)
+        set(LUE_CXXOPTS_REQUIRED TRUE)
         set(LUE_GDAL_REQUIRED TRUE)
         set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
@@ -390,7 +390,6 @@ endif()
 
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_BOOST_REQUIRED TRUE)
-    set(LUE_DOCOPT_REQUIRED TRUE)
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
@@ -429,7 +428,6 @@ endif()
 
 
 if(LUE_BUILD_VIEW)
-    set(LUE_DOCOPT_REQUIRED TRUE)
     set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GLFW_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
@@ -525,6 +523,17 @@ if(LUE_BOOST_REQUIRED)
             "Boost-1.75's safe_numerics library is known to contain a bug:\n"
             "https://github.com/boostorg/safe_numerics/issues/94")
     endif()
+endif()
+
+
+if(LUE_CXXOPTS_REQUIRED)
+    FetchContent_Declare(cxxopts
+        GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+        GIT_TAG 3bf268481da8208d171d8908e6491459de3651d7  # 3.2.0
+        SYSTEM
+        FIND_PACKAGE_ARGS 3.2 CONFIG
+    )
+    FetchContent_MakeAvailable(cxxopts)
 endif()
 
 
@@ -747,21 +756,6 @@ if(LUE_IMGUI_REQUIRED)
     else()
         find_package(OpenGL REQUIRED)
     endif()
-endif()
-
-
-if(LUE_DOCOPT_REQUIRED)
-    FetchContent_Declare(docopt
-        GIT_REPOSITORY https://github.com/docopt/docopt.cpp.git
-        GIT_TAG 42ebcec9dc2c99a1b3a4542787572045763ad196  # 0.6.3
-        SYSTEM
-        # Using the system version is inconvenient since headers are then in a docopt/ subdirectory...
-        # FIND_PACKAGE_ARGS
-    )
-    FetchContent_MakeAvailable(docopt)
-
-    # The docopt package shipѕ with CMake scripts that define a target named docopt (shared
-    # library) and docopt_s (static library).
 endif()
 
 

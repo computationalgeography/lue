@@ -9,15 +9,13 @@ namespace lue::view {
 
         public:
 
-            OpenGLApplication(std::vector<std::string> const& arguments);
+            OpenGLApplication(int argc, char const* const* argv);
 
             ~OpenGLApplication();
 
         protected:
 
-            int run_implementation() final;
-
-        private:
+            auto run_implementation() -> int final;
     };
 
 }  // namespace lue::view

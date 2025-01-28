@@ -2,34 +2,32 @@
 #include "lue/utility/command.hpp"
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        class Export: public Command
-        {
+    class Export: public Command
+    {
 
-            public:
+        public:
 
-                static std::string const name;
+            static std::string const name;
 
-                static CommandPtr command(std::vector<std::string> const& arguments);
+            static auto command(int argc, char const* const* argv) -> CommandPtr;
 
-                explicit Export(std::vector<std::string> const& arguments);
+            Export(int argc, char const* const* argv);
 
-                Export(Export const& other) = delete;
+            Export(Export const& other) = delete;
 
-                Export(Export&& other) = delete;
+            Export(Export&& other) = delete;
 
-                ~Export() override = default;
+            ~Export() override = default;
 
-                Export& operator=(Export const& other) = delete;
+            auto operator=(Export const& other) -> Export& = delete;
 
-                Export& operator=(Export&& other) = delete;
+            auto operator=(Export&& other) -> Export& = delete;
 
-            protected:
+        protected:
 
-                int run_implementation() override;
-        };
+            auto run_implementation() -> int override;
+    };
 
-    }  // namespace utility
-}  // namespace lue
+}  // namespace lue::utility

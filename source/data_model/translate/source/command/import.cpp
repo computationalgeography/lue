@@ -6,87 +6,60 @@
 
 
 namespace lue::utility {
-    namespace {
-
-        std::string const usage = R"(
-Translate data into the LUE dataset format
-
-usage:
-    import [-m <name>] [--add] [--skip-validate] <output> <inputs>...
-    import (-h | --help)
-
-arguments:
-    <inputs>    Input dataset(s)
-    <output>    Output dataset
-
-options:
-    -h --help   Show this screen
-    -m <name> --meta=<name>  File containing metadata to use during import
-    --add       Add data to the output dataset instead of overwriting it
-    --skip-validate  Skip validating the resulting LUE dataset
-)";
-
-
-        // std::string const usage = R"(
-        // Translate data into the LUE dataset format
-        //
-        // usage:
-        //     import [-m <name>] <input> <output>
-        //     import --start=<time_point> --cell=<duration> <input> <output>
-        //     import (-h | --help)
-        //
-        // arguments:
-        //     <input>                Input dataset
-        //     <output>               Output dataset
-        //
-        // options:
-        //     -h --help              Show this screen
-        //     -m <name> --meta=<name>  File containing metadata to use during import
-        //     --start=<time_point>   Time point of first slice
-        //     --cell=<duration>      Duration of time step
-        //
-        // Time points must be formatted according to the ISO-8601 standard.
-        //
-        // Durations must be formatted according to the ISO-8601 standard. A duration
-        // determines the resolution of the discretization, and the associated
-        // time point must 'match' this resolution: it makes no sense to provide
-        // a time point at a higher resolution than the duration. For example,
-        // given a duration of months (P1M), the time point must be given as YYYY-MM
-        // (and not YYYY-MM-DD, for example).
-        // )";
-
-    }  // Anonymous namespace
-
-
     std::string const Import::name = "import";
 
-
-    Command::CommandPtr Import::command(std::vector<std::string> const& arguments)
+    auto Import::command(int argc, char const* const* argv) -> CommandPtr
     {
-        return std::make_unique<Import>(arguments);
+        return std::make_unique<Import>(argc, argv);
     }
 
 
-    Import::Import(std::vector<std::string> const& arguments)
+    Import::Import(int const argc, char const* const* argv):
 
-        :
-        Command(usage, arguments)
+        Command(
+            []()
+            {
+                cxxopts::Options options{Import::name, "Translate data into the LUE dataset format"};
+                options.add_options()("h,help", "Show usage")(
+                    "m,meta", "File containing metadata to use during import", cxxopts::value<std::string>())(
+                    "add",
+                    "Add data to the output dataset instead of overwriting it",
+                    cxxopts::value<bool>()->default_value("false"))(
+                    "skip-validate",
+                    "Skip validating the resulting LUE dataset",
+                    cxxopts::value<bool>()->default_value("false"))(
+                    "output", "Output dataset", cxxopts::value<std::string>())(
+                    "input", "Input dataset(s)", cxxopts::value<std::vector<std::string>>());
+                options.parse_positional({"output", "input"});
+                options.positional_help("<output> <input>...");
+                options.show_positional_help();
+                return options;
+            }(),
+            argc,
+            argv)
 
     {
     }
 
 
-    int Import::run_implementation()
+    auto Import::run_implementation() -> int
     {
-        auto const input_dataset_names = argument<std::vector<std::string>>("<inputs>");
-        auto const output_dataset_name = argument<std::string>("<output>");
+        if (!argument_parsed("input"))
+        {
+            throw std::runtime_error("missing input");
+        }
 
-        bool const metadata_passed = argument_parsed("--meta");
-        bool const add_passed = argument<bool>("--add");
-        bool const skip_validate = argument<bool>("--skip-validate");
+        if (!argument_parsed("output"))
+        {
+            throw std::runtime_error("missing output");
+        }
+
+        auto const input_dataset_names = argument<std::vector<std::string>>("input");
+        auto const output_dataset_name = argument<std::string>("output");
+        bool const add_data = argument<bool>("add");
+        bool const skip_validate = argument<bool>("skip-validate");
         // bool const stack_passed = argument_parsed("--start");
-
-        auto const metadata = metadata_passed ? Metadata(argument<std::string>("--meta")) : Metadata();
+        auto const metadata = argument_parsed("meta") ? Metadata(argument<std::string>("meta")) : Metadata();
 
         auto const first_input_dataset_name = input_dataset_names[0];
 
@@ -113,14 +86,14 @@ options:
             // First input is a dataset that can be read by GDAL.
             // We need to convert from a GDAL format to the LUE format.
             translate_gdal_raster_dataset_to_lue(
-                input_dataset_names, output_dataset_name, add_passed, metadata);
+                input_dataset_names, output_dataset_name, add_data, metadata);
         }
 
         // Support import of various file formats into a single lue dataset
         else if (std::filesystem::path(first_input_dataset_name).extension() == ".json")
         {
             assert(input_dataset_names.size() == 1);
-            translate_json_to_lue(first_input_dataset_name, output_dataset_name, add_passed, metadata);
+            translate_json_to_lue(first_input_dataset_name, output_dataset_name, add_data, metadata);
         }
         else
         {

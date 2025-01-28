@@ -34,29 +34,22 @@
 
 
 namespace lue::view {
-    namespace {
 
-        std::string const usage = fmt::format(
-            R"(
-View LUE datasets
+    Application::Application(int const argc, char const* const* argv):
 
-usage:
-    {0}
-    {0} <dataset>...
-    {0} (-h | --help) | --version
-
-options:
-    -h --help   Show this screen
-    --version   Show version
-)",
-            "lue_view");
-
-    }  // Anonymous namespace
-
-
-    Application::Application(std::vector<std::string> const& arguments):
-
-        utility::Application{usage, arguments}
+        utility::Application{
+            []()
+            {
+                cxxopts::Options options{"lue_view", "View LUE datasets"};
+                options.add_options()("h,help", "Show usage")("v,version", "Show version")(
+                    "dataset", "Input dataset(s)", cxxopts::value<std::vector<std::string>>());
+                options.parse_positional({"dataset"});
+                options.positional_help("<dataset>");
+                options.show_positional_help();
+                return options;
+            }(),
+            argc,
+            argv}
 
     {
         // Turn off error stack traversal. The default functions prints
