@@ -1,7 +1,6 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "submodule.hpp"
 #include "lue/py/data_model/conversion.hpp"
-#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
@@ -9,15 +8,13 @@ using namespace pybind11::literals;
 
 namespace lue::data_model {
 
-    void bind_raster_view([[maybe_unused]] pybind11::module& module)
+    void bind_raster_view(pybind11::module& module)
     {
-
         using RasterViewBase = RasterView<Dataset*>;
         using ConstantRasterView = constant::RasterView<Dataset*>;
         using VariableRasterView = variable::RasterView<Dataset*>;
 
-
-        pybind11::class_<RasterViewBase, DatasetView<Dataset*>>(module, "RasterView");
+        pybind11::class_<RasterViewBase, DatasetView<Dataset*>>(module, "RasterViewBase");
 
         {
             pybind11::module submodule = module.def_submodule("constant");

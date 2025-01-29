@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace lue::data_model {
 
-    void bind_dataset_view([[maybe_unused]] pybind11::module& module)
+    void bind_dataset_view(pybind11::module& module)
     {
         pybind11::class_<DatasetView<Dataset*>>(module, "DatasetView");
     }

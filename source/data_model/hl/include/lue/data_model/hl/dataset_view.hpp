@@ -4,46 +4,44 @@
 #include <memory>
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            @brief      Class for objects managing a dataset with a specific kind of data in mind
+    /*!
+        @brief      Class for objects managing a dataset with a specific kind of data in mind
 
-            A dataset view provides an API to a dataset that is convenient for a limited set of data kinds.
-            Within a concrete view's implementation, it can be assumed that no other kinds of data are stored
-            than the one the view is responsible for, although this does not imply that no other kinds of data
-            are stored in the dataset. A single dataset can be potentially managed by multiple views.
-        */
-        template<typename DatasetPtr>
-        class LUE_DATA_MODEL_HL_EXPORT DatasetView
-        {
+        A dataset view provides an API to a dataset that is convenient for a limited set of data kinds.
+        Within a concrete view's implementation, it can be assumed that no other kinds of data are stored
+        than the one the view is responsible for, although this does not imply that no other kinds of data
+        are stored in the dataset. A single dataset can be potentially managed by multiple views.
+    */
+    template<typename DatasetPtr>
+    class LUE_DATA_MODEL_HL_EXPORT DatasetView
+    {
 
-            public:
+        public:
 
-                Dataset const& operator*() const;
+            auto operator*() const -> Dataset const&;
 
-                Dataset& operator*();
+            auto operator*() -> Dataset&;
 
-                virtual ~DatasetView() = default;
+            virtual ~DatasetView() = default;
 
-            protected:
+        protected:
 
-                explicit DatasetView(DatasetPtr dataset);
+            explicit DatasetView(DatasetPtr dataset);
 
-                DatasetView(DatasetView const&) = default;
+            DatasetView(DatasetView const&) = default;
 
-                DatasetView(DatasetView&&) noexcept = default;
+            DatasetView(DatasetView&&) noexcept = default;
 
-                DatasetView& operator=(DatasetView const&) = default;
+            auto operator=(DatasetView const&) -> DatasetView& = default;
 
-                DatasetView& operator=(DatasetView&&) noexcept = default;
+            auto operator=(DatasetView&&) noexcept -> DatasetView& = default;
 
-            private:
+        private:
 
-                //! A pointer to the dataset this view manages
-                DatasetPtr _dataset;
-        };
+            //! A pointer to the dataset this view manages
+            DatasetPtr _dataset;
+    };
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model
