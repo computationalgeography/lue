@@ -33,5 +33,5 @@ target_link_libraries(lue_framework_io
         lue::framework_algorithm
         lue::data_model_hl
         lue::gdal
-        MPI::MPI_CXX
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_PARALLEL_IO}>:MPI::MPI_CXX>
 )
