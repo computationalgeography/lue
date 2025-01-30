@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework io lue
-#include "lue/framework/algorithm/create_partitioned_array.hpp"
+// #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/io/from_lue.hpp"
 #include "lue/framework/io/to_lue.hpp"
@@ -7,9 +7,6 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/framework.hpp"
 #include <hpx/config.hpp>
-
-
-#include "lue/framework/algorithm/value_policies/add.hpp"
 
 
 BOOST_AUTO_TEST_CASE(use_case_1)
@@ -98,11 +95,6 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         lue::to_lue(arrays_written[time_step], array_pathname, object_id, static_cast<lue::Index>(time_step))
             .get();
     }
-
-    // Read arrays. This may fail because the dataset is still open for reading. Therefore, wait a little bit
-    // before continuing.
-    using namespace std::chrono_literals;
-    std::this_thread::sleep_for(500ms);
 
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {

@@ -5,11 +5,6 @@
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/configure.hpp"
-// #include "lue/data_model.hpp"
-#if LUE_FRAMEWORK_WITH_PARALLEL_IO
-// Only available in case MPI is used in HPX
-// #include <hpx/mpi_base/mpi_environment.hpp>
-#endif
 
 
 /*!
@@ -37,11 +32,7 @@ namespace lue {
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
 #if LUE_FRAMEWORK_WITH_PARALLEL_IO
-            // if (hpx::util::mpi_environment::enabled())
-            // {
-            //     // // Use collective I/O
-            //     // transfer_property_list.set_transfer_mode(::H5FD_MPIO_COLLECTIVE);
-            // }
+            transfer_property_list.set_transfer_mode(H5FD_MPIO_INDEPENDENT);
 #endif
 
             auto& value{property.value()};
@@ -61,7 +52,7 @@ namespace lue {
         auto write_partitions_constant(
             Policies const& policies,
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block written to array
-            Partitions&& partitions,
+            Partitions const& partitions,
             std::string const& array_pathname,
             data_model::ID const object_id) -> hpx::future<void>
         {
@@ -144,7 +135,7 @@ namespace lue {
         auto write_partitions_variable(
             Policies const& policies,
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block written to array
-            Partitions&& partitions,
+            Partitions const& partitions,
             std::string const& array_pathname,
             data_model::ID const object_id,
             Index const time_step_idx) -> hpx::future<void>
@@ -295,58 +286,50 @@ namespace lue {
         using Action = detail::WritePartitionsConstantAction<Policies, std::vector<Partition>>;
         Action action{};
 
-        if constexpr (BuildOptions::framework_with_parallel_io)
+        // Only a single locality can open the file for writing at the same time. Write partitions per
+        // locality, serialized.
+        for (std::size_t locality_idx = 0;
+             auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
-            // All localities must collectively open the file for writing
-            // TODO
-        }
-        else
-        {
-            // Only a single locality can open the file for writing at the same time. Write partitions per
-            // locality, serialized.
-            for (std::size_t locality_idx = 0;
-                 auto const& [locality, partition_idxs] : partition_idxs_by_locality)
+            // Copy current partitions from input array to a new collection
+            std::vector<Partition> partitions{};
+            partitions.resize(partition_idxs.size());
+
+            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
             {
-                // Copy current partitions from input array to a new collection
-                std::vector<Partition> partitions{};
-                partitions.resize(partition_idxs.size());
-
-                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
-                {
-                    partitions[idx++] = array.partitions()[partition_idx];
-                }
-
-                hpx::shared_future<void> previous_locality_finished =
-                    locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
-
-                // Spawn a task that writes the current partitions to the dataset. This returns a future which
-                // becomes ready once the partitions have been written.
-                // Each next task is spawned once the previous task has finіshed writing.
-                localities_finished.push_back(hpx::dataflow(
-                    hpx::launch::async,
-                    [locality = locality,
-                     action,
-                     policies,
-                     array_hyperslab = detail::shape_to_hyperslab(array.shape()),
-                     array_pathname,
-                     object_id](
-                        [[maybe_unused]] auto const& previous_locality_finished,
-                        hpx::future<std::vector<Partition>>&& partitions_f)
-                    {
-                        return action(
-                                   locality,
-                                   policies,
-                                   array_hyperslab.start(),
-                                   partitions_f.get(),
-                                   array_pathname,
-                                   object_id)
-                            .share();
-                    },
-                    previous_locality_finished,
-                    hpx::when_all(partitions.begin(), partitions.end())));
-
-                ++locality_idx;
+                partitions[idx++] = array.partitions()[partition_idx];
             }
+
+            hpx::shared_future<void> previous_locality_finished =
+                locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
+
+            // Spawn a task that writes the current partitions to the dataset. This returns a future which
+            // becomes ready once the partitions have been written.
+            // Each next task is spawned once the previous task has finіshed writing.
+            localities_finished.push_back(hpx::dataflow(
+                hpx::launch::async,
+                [locality = locality,
+                 action,
+                 policies,
+                 array_hyperslab = detail::shape_to_hyperslab(array.shape()),
+                 array_pathname,
+                 object_id](
+                    [[maybe_unused]] auto const& previous_locality_finished,
+                    hpx::future<std::vector<Partition>>&& partitions_f)
+                {
+                    return action(
+                               locality,
+                               policies,
+                               array_hyperslab.start(),
+                               partitions_f.get(),
+                               array_pathname,
+                               object_id)
+                        .share();
+                },
+                previous_locality_finished,
+                hpx::when_all(partitions.begin(), partitions.end())));
+
+            ++locality_idx;
         }
 
         return hpx::when_all(localities_finished.begin(), localities_finished.end());
@@ -404,62 +387,54 @@ namespace lue {
         using Action = detail::WritePartitionsVariableAction<Policies, std::vector<Partition>>;
         Action action{};
 
-        if constexpr (BuildOptions::framework_with_parallel_io)
-        {
-            // All localities must collectively open the file for writing
-            // TODO
-        }
-        else
-        {
-            // Only a single locality can open the file for writing at the same time. Write partitions per
-            // locality, serialized.
+        // Only a single locality can open the file for writing at the same time. Write partitions per
+        // locality, serialized.
 
-            // Iterate over all grouped partitions
-            for (std::size_t locality_idx = 0;
-                 auto const& [locality, partition_idxs] : partition_idxs_by_locality)
+        // Iterate over all grouped partitions
+        for (std::size_t locality_idx = 0;
+             auto const& [locality, partition_idxs] : partition_idxs_by_locality)
+        {
+            // Copy current partitions from input array to a new collection
+            std::vector<Partition> partitions{};
+            partitions.resize(partition_idxs.size());
+
+            for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
             {
-                // Copy current partitions from input array to a new collection
-                std::vector<Partition> partitions{};
-                partitions.resize(partition_idxs.size());
-
-                for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
-                {
-                    partitions[idx++] = array.partitions()[partition_idx];
-                }
-
-                hpx::shared_future<void> previous_locality_finished =
-                    locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
-
-                // Spawn a task that writes the current partitions to the dataset. This returns a future which
-                // becomes ready once the partitions have been written.
-                // Each next task is spawned once the previous task has finіshed writing.
-                localities_finished.push_back(hpx::dataflow(
-                    hpx::launch::async,
-                    [locality = locality,
-                     action,
-                     policies,
-                     array_hyperslab = detail::shape_to_hyperslab(array.shape()),
-                     array_pathname,
-                     object_id,
-                     time_step_idx](
-                        [[maybe_unused]] auto const& previous_locality_finished,
-                        hpx::future<std::vector<Partition>>&& partitions_f)
-                    {
-                        return action(
-                                   locality,
-                                   policies,
-                                   array_hyperslab.start(),
-                                   partitions_f.get(),
-                                   array_pathname,
-                                   object_id,
-                                   time_step_idx)
-                            .share();
-                    },
-                    previous_locality_finished,
-                    hpx::when_all(partitions.begin(), partitions.end())));
-
-                ++locality_idx;
+                partitions[idx++] = array.partitions()[partition_idx];
             }
+
+            hpx::shared_future<void> previous_locality_finished =
+                locality_idx == 0 ? hpx::make_ready_future() : localities_finished.back();
+
+            // Spawn a task that writes the current partitions to the dataset. This returns a future which
+            // becomes ready once the partitions have been written.
+            // Each next task is spawned once the previous task has finіshed writing.
+            localities_finished.push_back(hpx::dataflow(
+                hpx::launch::async,
+                [locality = locality,
+                 action,
+                 policies,
+                 array_hyperslab = detail::shape_to_hyperslab(array.shape()),
+                 array_pathname,
+                 object_id,
+                 time_step_idx](
+                    [[maybe_unused]] auto const& previous_locality_finished,
+                    hpx::future<std::vector<Partition>>&& partitions_f)
+                {
+                    return action(
+                               locality,
+                               policies,
+                               array_hyperslab.start(),
+                               partitions_f.get(),
+                               array_pathname,
+                               object_id,
+                               time_step_idx)
+                        .share();
+                },
+                previous_locality_finished,
+                hpx::when_all(partitions.begin(), partitions.end())));
+
+            ++locality_idx;
         }
 
         return hpx::when_all(localities_finished.begin(), localities_finished.end());
