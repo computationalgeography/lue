@@ -93,9 +93,8 @@ namespace lue {
                 {
                     std::tie(new_partitions[partition_idx], partitions_read_f[partition_idx]) =
                         hpx::split_future(hpx::async(
-                            [read_partition]() -> std::tuple<Partition, bool> {
-                                return {read_partition(), true};
-                            }));
+                            [read_partition]() -> std::tuple<Partition, bool>
+                            { return {read_partition(), true}; }));
                 }
                 else
                 {
@@ -106,9 +105,8 @@ namespace lue {
                                 .then(/* TODO sync? */
                                       [read_partition](
                                           [[maybe_unused]] Partition const& previous_new_partition)
-                                          -> std::tuple<Partition, bool> {
-                                          return {read_partition(), true};
-                                      }));
+                                          -> std::tuple<Partition, bool>
+                                      { return {read_partition(), true}; }));
                 }
 
                 lue_hpx_assert(new_partitions[partition_idx].valid());
@@ -150,7 +148,7 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
-            auto [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
+            auto&& [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 hpx::unwrapping(
                     [policies, array_pathname, array_hyperslab_start, object_id](
@@ -209,7 +207,7 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
-            auto [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
+            auto&& [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 hpx::unwrapping(
                     [policies, array_pathname, array_hyperslab_start, object_id, time_step_idx](
@@ -594,8 +592,9 @@ namespace lue {
     */
     template<typename Element, typename Shape>
     auto from_lue(
-        std::string const& array_pathname, Shape const& partition_shape, data_model::ID const object_id)
-        -> PartitionedArray<Element, rank<Shape>>
+        std::string const& array_pathname,
+        Shape const& partition_shape,
+        data_model::ID const object_id) -> PartitionedArray<Element, rank<Shape>>
     {
         using Policies = policy::from_lue::DefaultPolicies<Element>;
 
