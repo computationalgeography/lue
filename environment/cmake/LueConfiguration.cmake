@@ -79,6 +79,14 @@ option(LUE_VALIDATE_IDXS
     "Validate array indices are within array bounds (expensive!)"
     FALSE)
 
+# Only allow the user to configure the use of parallel I/O if this is something that is supported by the
+# platform. If so, the default is to support parallel I/O.
+cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
+    "Use parallel I/O for formats that support it"
+    TRUE
+    "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
+    FALSE
+)
 
 # Options related to the availability of external packages.
 if(WIN32)
@@ -402,6 +410,10 @@ if(LUE_BUILD_FRAMEWORK)
 
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
+    endif()
+
+    if(LUE_FRAMEWORK_WITH_PARALLEL_IO)
+        set(LUE_MPI_REQUIRED TRUE)
     endif()
 endif()
 
@@ -828,6 +840,12 @@ if(LUE_JUPYTER_BOOK_REQUIRED)
     find_package(JupyterBook REQUIRED)
 endif()
 
+
+if(LUE_MPI_REQUIRED)
+    find_package(MPI REQUIRED)
+endif()
+
+
 if(LUE_NLOHMANN_JSON_REQUIRED)
     FetchContent_Declare(nlohmann_json
         GIT_REPOSITORY https://github.com/nlohmann/json.git
@@ -847,12 +865,3 @@ if(LUE_SPHINX_REQUIRED)
         message(FATAL_ERROR "sphinx not found")
     endif()
 endif()
-
-# Only allow the user to configure the use of parallel I/O if this is something that is supported by the
-# platform. If so, the default is to support parallel I/O.
-cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
-    "Use parallel I/O for formats that support it"
-    TRUE
-    "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
-    FALSE
-)
