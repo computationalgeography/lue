@@ -148,7 +148,7 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
-            auto&& [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
+            auto [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 hpx::unwrapping(
                     [policies, array_pathname, array_hyperslab_start, object_id](
@@ -191,7 +191,8 @@ namespace lue {
             keep_dataset_open_until_all_partitions_read(
                 std::move(all_partitions_read_f), std::move(dataset_f));
 
-            return partitions_f;
+            // For some reason, RVO doesn't kick in on some compilers (Clang, MSVS)
+            return std::move(partitions_f);
         }
 
 
@@ -207,7 +208,7 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
-            auto&& [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
+            auto [dataset_f, partitions_f, all_partitions_read_f] = hpx::split_future(hpx::dataflow(
                 hpx::launch::async,
                 hpx::unwrapping(
                     [policies, array_pathname, array_hyperslab_start, object_id, time_step_idx](
@@ -253,7 +254,8 @@ namespace lue {
             keep_dataset_open_until_all_partitions_read(
                 std::move(all_partitions_read_f), std::move(dataset_f));
 
-            return partitions_f;
+            // For some reason, RVO doesn't kick in on some compilers (Clang, MSVS)
+            return std::move(partitions_f);
         }
 
 
