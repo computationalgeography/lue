@@ -25,15 +25,15 @@ namespace lue {
 
             virtual ~Model() = default;
 
-            Model& operator=(Model const&) = default;
+            auto operator=(Model const&) -> Model& = default;
 
-            Model& operator=(Model&&) = default;
+            auto operator=(Model&&) -> Model& = default;
 
-            virtual void preprocess(Count const sample_nr);
+            virtual void preprocess(Count sample_nr);
 
             virtual void initialize();
 
-            virtual hpx::shared_future<void> simulate(Count const time_step);
+            virtual auto simulate(Count time_step) -> hpx::shared_future<void>;
 
             virtual void finalize();
 
@@ -43,11 +43,11 @@ namespace lue {
     };
 
 
-    void preprocess(Model& model, Count const sample_nr);
+    void preprocess(Model& model, Count sample_nr);
 
     void initialize(Model& model);
 
-    hpx::shared_future<void> simulate(Model& model, Count const time_step);
+    auto simulate(Model& model, Count time_step) -> hpx::shared_future<void>;
 
     void finalize(Model& model);
 

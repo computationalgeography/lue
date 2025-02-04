@@ -16,8 +16,8 @@ namespace lue {
     /*!
         @brief      Initialize the modelled state
 
-        The current state of the simulated system is undefined. After calling
-        this function, it must be representable for t = 0.
+        The current state of the simulated system is undefined. After calling this function, it must be
+        representable for t = 0.
 
         The default does nothing.
     */
@@ -27,16 +27,19 @@ namespace lue {
 
 
     /*!
-        @brief      Simulate the state of the modelled system during an
-                    additional time step (t = t + 1)
+        @brief      Simulate the state of the modelled system during an additional time step (t = t + 1)
+        @warning    The returned future must reflect the status of the work that has to be done to end up
+                    state of t + 1. The future must become ready only once this work has finished. Typically,
+                    the (partitions of the) last state variable can be used for that. Knowing when the work
+                    related to a time step has finished is crucial for being able to limit the rate with
+                    which tasks are created (see for example run_deterministic()).
 
-        The current state of the simulated system is representable for t =
-        t. After calling this function, it must be representable for t =
-        t + 1.
+        The current state of the simulated system is representable for t = t. After calling this function, it
+        must be representable for t = t + 1.
 
         The default does nothing.
     */
-    hpx::shared_future<void> Model::simulate([[maybe_unused]] Count const time_step)
+    auto Model::simulate([[maybe_unused]] Count const time_step) -> hpx::shared_future<void>
     {
         return hpx::make_ready_future<void>();
     }
@@ -85,7 +88,7 @@ namespace lue {
     /*!
         @brief      Call Model.simulate(Count const)
     */
-    hpx::shared_future<void> simulate(Model& model, Count const time_step)
+    auto simulate(Model& model, Count const time_step) -> hpx::shared_future<void>
     {
         return model.simulate(time_step);
     }

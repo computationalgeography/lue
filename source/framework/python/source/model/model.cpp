@@ -28,7 +28,7 @@ namespace lue::framework {
             }
 
 
-            hpx::shared_future<void> simulate(Count const time_step) override
+            auto simulate(Count const time_step) -> hpx::shared_future<void> override
             {
                 PYBIND11_OVERRIDE(hpx::shared_future<void>, Model, simulate, time_step);
             }
