@@ -69,7 +69,7 @@ namespace lue {
 
 
         template<typename Container>
-        bool is_all_less(Container const& container1, Container const& container2)
+        auto is_all_less(Container const& container1, Container const& container2) -> bool
         {
             return std::mismatch(
                        container1.begin(), container1.end(), container2.begin(), std::less_equal<>{}) ==
@@ -78,7 +78,8 @@ namespace lue {
 
 
         template<typename Count, Rank rank>
-        bool is_subset_of(Shape<Count, rank> const& small_shape, Shape<Count, rank> const& large_shape)
+        auto is_subset_of(Shape<Count, rank> const& small_shape, Shape<Count, rank> const& large_shape)
+            -> bool
         {
             return is_all_less(small_shape, large_shape);
         }
@@ -87,8 +88,8 @@ namespace lue {
 
 
     template<typename Count, Rank rank>
-    Array<Shape<Count, rank>, rank> partition_shapes(
-        Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
+    auto partition_shapes(Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
+        -> Array<Shape<Count, rank>, rank>
     {
         using Shape = lue::Shape<Count, rank>;
         using Shapes = lue::Array<Shape, rank>;
@@ -135,17 +136,18 @@ namespace lue {
         begin_indices.fill(0);
         Shape end_indices{shape_in_partitions};
 
-        for (Rank d = 0; d < rank; ++d)
+        for (Rank dimension_idx = 0; dimension_idx < rank; ++dimension_idx)
         {
             Count new_extent =
                 // Extent of a partition
-                partition_shape[d] +
+                partition_shape[dimension_idx] +
                 // Number of cells needed to fill extent of array
-                array_shape[d] - (shape_in_partitions[d] * partition_shape[d]);
+                array_shape[dimension_idx] -
+                (shape_in_partitions[dimension_idx] * partition_shape[dimension_idx]);
 
-            lue_hpx_assert(new_extent < 2 * partition_shape[d]);
+            lue_hpx_assert(new_extent < 2 * partition_shape[dimension_idx]);
 
-            if (new_extent != partition_shape[d])
+            if (new_extent != partition_shape[dimension_idx])
             {
                 // We can select the relevant shapes using start
                 // indices and end indices along all dimensions. For
@@ -160,11 +162,15 @@ namespace lue {
 
                 // Resize the last partition shape along the current
                 // dimension
-                begin_indices_hyperslab[d] = shape_in_partitions[d] - 1;
-                end_indices_hyperslab[d] = shape_in_partitions[d];
+                begin_indices_hyperslab[dimension_idx] = shape_in_partitions[dimension_idx] - 1;
+                end_indices_hyperslab[dimension_idx] = shape_in_partitions[dimension_idx];
 
                 detail::reshape_shapes<Count, rank>(
-                    partition_shapes, begin_indices_hyperslab, end_indices_hyperslab, d, new_extent);
+                    partition_shapes,
+                    begin_indices_hyperslab,
+                    end_indices_hyperslab,
+                    dimension_idx,
+                    new_extent);
             }
         }
 
@@ -173,8 +179,8 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    Shape<Index, rank> shape_in_partitions(
-        Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+    auto shape_in_partitions(Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+        -> Shape<Index, rank>
     {
         Shape<Index, rank> result;
 
@@ -191,7 +197,8 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    std::size_t nr_partitions(Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+    auto nr_partitions(Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+        -> std::size_t
     {
         auto const shape = shape_in_partitions(area_shape, partition_shape);
 
@@ -214,8 +221,8 @@ namespace lue {
         to match the array's extent.
     */
     template<typename Index, std::size_t rank>
-    Shape<Index, rank> max_partition_shape(
-        Shape<Index, rank> const& array_shape, Index const min_nr_partitions)
+    auto max_partition_shape(Shape<Index, rank> const& array_shape, Index const min_nr_partitions)
+        -> Shape<Index, rank>
     {
         static_assert(rank > 0);
 
@@ -225,7 +232,7 @@ namespace lue {
 
         Shape<Index, rank> partition_shape{array_shape};
 
-        Index const nr_partitions_per_dimension =
+        auto const nr_partitions_per_dimension =
             static_cast<Index>(std::ceil(std::pow(min_nr_partitions, 1.0 / rank)));
 
         Index nr_partitions = 0;
@@ -247,7 +254,7 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    Indices<Index, rank> linear_to_shape_index(Shape<Index, rank> const& shape, Index idx)
+    auto linear_to_shape_index(Shape<Index, rank> const& shape, Index idx) -> Indices<Index, rank>
     {
         static_assert(rank > 0);
         lue_hpx_assert(idx < std::accumulate(shape.begin(), shape.end(), Index{1}, std::multiplies<Index>()));
@@ -283,8 +290,8 @@ namespace lue {
 
 
     template<typename Index, std::size_t rank>
-    Shape<Index, rank> clamp_area_shape(
-        Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+    auto clamp_area_shape(Shape<Index, rank> const& area_shape, Shape<Index, rank> const& partition_shape)
+        -> Shape<Index, rank>
     {
         // Iterate over each extent and divide the area extent by the partition
         // extent (rounded up). Create a new area shape in which along each
@@ -312,10 +319,12 @@ namespace lue {
         @return     Partition shape
 
         This function always returns square partitions shapes.
+
+        If @a nr_worker_threads equals one, the @a array_shape passed in is returned as partition shape.
     */
     template<typename Index, std::size_t rank>
-    Shape<Index, rank> default_partition_shape(
-        Shape<Index, rank> const& array_shape, Count const nr_worker_threads)
+    auto default_partition_shape(Shape<Index, rank> const& array_shape, Count const nr_worker_threads)
+        -> Shape<Index, rank>
     {
         assert(nr_worker_threads > 0);
 
@@ -325,8 +334,9 @@ namespace lue {
 
         Count const array_size{nr_elements(array_shape)};
 
-        // Get out when the array is empty
-        if (array_size == 0)
+        // Get out when the array is empty or the number of threads equals one. In case of a single thread,
+        // it likely won't help to partition the data. This will just add overheads.
+        if (array_size == 0 || nr_worker_threads == 1)
         {
             return array_shape;
         }
@@ -338,16 +348,16 @@ namespace lue {
 
         if (not_enough_elements)
         {
-            // Shrink the partition. Try to end up with enough partitions to use all cores. It
-            // is OK if that is not possible.
+            // Shrink the partition. Try to end up with enough partitions to use all cores. It is OK if that
+            // is not possible.
             Count const min_array_dimension_extent{*std::min_element(array_shape.begin(), array_shape.end())};
 
             dimension_size = std::max(Count{1}, min_array_dimension_extent / nr_worker_threads);
         }
         else
         {
-            // Try the default partition size. This should result in enough partitions to
-            // distribute over all cores.
+            // Try the default partition size. This should result in enough partitions to distribute over all
+            // cores.
             dimension_size = std::max(
                 Count{1}, static_cast<Count>(std::floor(std::pow(default_partition_size, 1.0 / rank))));
         }
