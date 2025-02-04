@@ -130,7 +130,26 @@ namespace lue::framework {
                 {
                     Rank const rank{2};
 
-                    module.def("uniform", uniform<Element, rank>);
+                    module.def(
+                        "uniform",
+                        uniform<Element, rank>,
+                        R"(
+    Create new array, filled with uniformly distributed random values
+
+    :param array: "Clone array" to query for array shape and partition shape
+            to use
+    :param numpy.dtype dtype: Type of the array elements
+    :param min_value: Minimum potentially generated value
+    :param max_value: Maximum potentially generated value
+    :rtype: PartitionedArray specialization
+
+    The type of the array returned depends on the rank of the array and
+    the type of the array elements.
+)",
+                        "array"_a,
+                        "dtype"_a,
+                        "min_value"_a,
+                        "max_value"_a);
                 }
         };
 
