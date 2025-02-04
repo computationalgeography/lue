@@ -48,7 +48,9 @@ namespace lue {
         lue_hpx_assert(first_time_step <= last_time_step);
 
         Count const nr_time_steps{last_time_step - first_time_step + 1};
-        rate_limit = rate_limit > 0 ? rate_limit : nr_time_steps;
+        bool const rate_limit_used{rate_limit > 0};
+        Count const default_rate_limit{nr_time_steps};
+        rate_limit = rate_limit_used ? rate_limit : default_rate_limit;
 
         std::int64_t const max_difference{rate_limit};
         std::int64_t const lower_limit{first_time_step};
