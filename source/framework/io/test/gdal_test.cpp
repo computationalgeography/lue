@@ -8,6 +8,7 @@
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <hpx/config.hpp>
+#include <random>
 
 
 BOOST_AUTO_TEST_CASE(array_all_valid)
@@ -232,4 +233,47 @@ BOOST_AUTO_TEST_CASE(incorrect_hyperslab)
             [](auto const& exception)
             { return std::string(exception.what()).find("extents beyond array") != std::string::npos; });
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(to_gdal)
+{
+    // Random array shapes, random partition shapeѕ, all valid. Verify that no exception is thrown.
+
+    using Element = lue::LargestIntegralElement;
+    lue::Rank const rank{2};
+    using Shape = lue::Shape<lue::Count, rank>;
+    using Array = lue::PartitionedArray<Element, rank>;
+
+    std::random_device random_device{};
+    std::default_random_engine random_number_engine(random_device());
+
+    auto const array_shape = [&]()
+    {
+        lue::Count const min{100};
+        lue::Count const max{500};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    };
+
+    auto const partition_shape = [&]()
+    {
+        lue::Count const min{40};
+        lue::Count const max{50};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Shape{
+            distribution(random_number_engine),
+            distribution(random_number_engine),
+        };
+    };
+
+    Element const fill_value{5};
+    Array array{lue::create_partitioned_array<Element>(array_shape(), partition_shape(), fill_value)};
+    std::string const name{"lue_framework_io_gdal_to_gdal.tif"};
+    lue::to_gdal<Element>(array, name).wait();
 }
