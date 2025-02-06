@@ -15,10 +15,7 @@ namespace lue::framework {
     namespace {
 
         template<typename T>
-        using Array = pybind11::array_t<T>;
-
-        template<typename T>
-        using ReferenceCountedObject = std::shared_ptr<Array<T>>;
+        using ReferenceCountedObject = std::shared_ptr<T[]>;
 
     }  // Anonymous namespace
 
@@ -45,7 +42,7 @@ namespace lue::framework {
 
         template<typename Element>
         auto from_numpy_py(
-            pybind11::array_t<Element> const& array,
+            pybind11::array_t<Element, pybind11::array::c_style> const& array,
             std::optional<pybind11::tuple> const& partition_shape,
             std::optional<Element> const& no_data_value) -> pybind11::object
         {
@@ -84,31 +81,37 @@ namespace lue::framework {
                 static_partition_shape = default_partition_shape(static_array_shape);
             }
 
-            // The goal is to create a partitioned array, given a Numpy array. We want to do
-            // this asynchronously. So, even though the function returns an array immediately,
-            // the partitions might not be ready to use yet.
-            // This is nice, because other code can already attach continuations to the
-            // partitions. Or do something else entirely.
-            // This is a bit dangerous as well:
-            // - Modifying the Numpy array while partitions are still being created
-            //   results in rubish in the resulting array. Don't do this.
-            // - The Numpy array must not be deleted while array partitions are still being
-            //   created. This is prevented by copying array instances around. This increases
-            //   the reference count of the underlying pybind11 object.
+            // The goal is to create a partitioned array, given a Numpy array. We want to do this
+            // asynchronously. So, even though the function returns an array immediately, the partitions might
+            // not be ready to use yet.
+            //
+            // This is nice, because other code can already attach continuations to the partitions. Or do
+            // something else entirely.
+            //
+            // The problem is that we can't easily use the Python API in threads. This requires obtaining and
+            // releasing the GIL from/to the thread running the Python interpreter.
+            // A solution for this is to just copy the data here, and then asynchronously create the
+            // partitions
 
             using Policies = lue::policy::create_partitioned_array::DefaultValuePolicies<Element>;
             using Functor = lue::InstantiateFromBuffer<ReferenceCountedObject<Element>, 2>;
 
-            ReferenceCountedObject<Element> object{std::make_shared<Array<Element>>(array)};
+            // The source array buffer
+            pybind11::buffer_info source_array_buffer_info{array.request()};
+            Element const* source_buffer{static_cast<Element*>(source_array_buffer_info.ptr)};
+
+            // The target array buffer
+            auto const nr_elements(lue::nr_elements(static_array_shape));
+            ReferenceCountedObject<Element> copy_buffer(std::make_shared<Element[]>(nr_elements));
+            std::copy(source_buffer, source_buffer + nr_elements, copy_buffer.get());
 
             return pybind11::cast(lue::create_partitioned_array(
                 Policies{},
                 static_array_shape,
                 static_partition_shape,
                 Functor{
-                    object,  // Copy: increments reference count
-                    [](ReferenceCountedObject<Element> const& object) -> Element*
-                    { return const_cast<Element*>(object->data()); },
+                    std::move(copy_buffer),
+                    [](ReferenceCountedObject<Element> const& buffer) -> Element* { return buffer.get(); },
                     no_data_value}));
         }
 
@@ -129,8 +132,7 @@ namespace lue::framework {
                         "array"_a.noconvert(),
                         pybind11::kw_only(),
                         "partition_shape"_a = std::optional<pybind11::tuple>{},
-                        "no_data_value"_a = std::optional<Element>{},
-                        pybind11::return_value_policy::move);
+                        "no_data_value"_a = std::optional<Element>{});
                 }
         };
 
