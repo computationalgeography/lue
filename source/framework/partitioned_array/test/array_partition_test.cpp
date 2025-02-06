@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
         solve();
 
         BOOST_CHECK(partition1.valid());
-        partition1.wait();
+        partition1.get();
         BOOST_CHECK(partition1.is_ready());
     }
 

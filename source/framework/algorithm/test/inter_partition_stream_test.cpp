@@ -63,7 +63,7 @@ namespace lue::test {
 
         ArrayPartitionIO array_partition_io_we_have_local{
             hpx::components::migrate(array_partition_io_we_have, hpx::find_here())};
-        array_partition_io_we_have_local.wait();
+        array_partition_io_we_have_local.get();
         BOOST_REQUIRE(array_partition_io_we_have_local.is_ready());
         auto array_partition_io_we_have_ptr{detail::ready_component_ptr(array_partition_io_we_have_local)};
         auto const& array_partition_io_we_have_server{*array_partition_io_we_have_ptr};
@@ -71,7 +71,7 @@ namespace lue::test {
 
         ArrayPartitionIO array_partition_io_we_want_local{
             hpx::components::migrate(array_partition_io_we_want, hpx::find_here())};
-        array_partition_io_we_want_local.wait();
+        array_partition_io_we_want_local.get();
         BOOST_REQUIRE(array_partition_io_we_want_local.is_ready());
         auto array_partition_io_we_want_ptr{detail::ready_component_ptr(array_partition_io_we_want_local)};
         auto const& array_partition_io_we_want_server{*array_partition_io_we_want_ptr};

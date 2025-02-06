@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(construct_server02)
         hpx::new_<RoutePartition>(server_locality, partition_offset, partition_shape, std::move(fragments))};
 
     // Wait for the server component to be created in the remote locality before querying it
-    partition_client.wait();
+    partition_client.get();
 
     BOOST_CHECK_EQUAL(partition_client.offset().get(), partition_offset);
     BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_shape);

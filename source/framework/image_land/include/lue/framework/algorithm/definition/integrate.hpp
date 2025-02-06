@@ -102,7 +102,7 @@ namespace lue::detail::integrate {
 
                     lue_hpx_assert(_route_partition.is_ready());
                     lue_hpx_assert(_integrand_partition.is_ready());
-                    // _route_partition.wait();
+                    // _route_partition.get();
                     auto route_partition_ptr{ready_component_ptr(_route_partition)};
 
                     _output_partition = OutputPartition{hpx::new_<OutputPartitionServer>(

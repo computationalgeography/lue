@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(array_all_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_int_all_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(array_none_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_int_none_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(array_float_all_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_float_all_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(array_float_none_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_float_none_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -122,8 +122,8 @@ BOOST_AUTO_TEST_CASE(hyperslab)
     std::string const row_idxs_name{"lue_framework_io_gdal_hyperslab_row_idxs.tif"};
     std::string const col_idxs_name{"lue_framework_io_gdal_hyperslab_col_idxs.tif"};
 
-    lue::to_gdal(row_idxs_written, row_idxs_name).wait();
-    lue::to_gdal(col_idxs_written, col_idxs_name).wait();
+    lue::to_gdal(row_idxs_written, row_idxs_name).get();
+    lue::to_gdal(col_idxs_written, col_idxs_name).get();
 
     Hyperslab const hyperslab{{30, 20}, {20, 10}};
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(valid_hyperslab)
 
     std::string const idxs_name{"lue_framework_io_gdal_wrong_hyperslab_idxs.tif"};
 
-    lue::to_gdal(idxs_written, idxs_name).wait();
+    lue::to_gdal(idxs_written, idxs_name).get();
 
     {
         // Hyperslab corresponds with whole array
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(incorrect_hyperslab)
 
     std::string const idxs_name{"lue_framework_io_gdal_wrong_hyperslab_idxs.tif"};
 
-    lue::to_gdal(idxs_written, idxs_name).wait();
+    lue::to_gdal(idxs_written, idxs_name).get();
 
     {
         // Empty hyperslab

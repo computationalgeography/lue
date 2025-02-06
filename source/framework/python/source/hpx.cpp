@@ -235,8 +235,6 @@ namespace lue::framework {
 
                 .def("get", [](hpx::future<Element>& future) { return future.get(); })
 
-                .def("wait", [](hpx::future<Element> const& future) { return future.wait(); })
-
                 ;
         }
 
@@ -262,8 +260,6 @@ namespace lue::framework {
                     pybind11::overload_cast<>(&hpx::shared_future<Element>::get, pybind11::const_),
                     // Copy to keep things simple. Use const reference in case Element can be big.
                     pybind11::return_value_policy::move)
-
-                .def("wait", [](hpx::shared_future<Element> const& future) { return future.wait(); })
 
                 ;
         }
@@ -426,7 +422,7 @@ namespace lue::framework {
                     [](hpx::shared_future<void> const& future)
                     { return informal_string_representation(future); })
 
-                .def("wait", [](hpx::shared_future<void> const& future) { return future.wait(); })
+                .def("get", [](hpx::shared_future<void>& future) { return future.get(); })
 
             ;
 

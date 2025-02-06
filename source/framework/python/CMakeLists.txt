@@ -159,7 +159,6 @@ add_library(lue_py_framework SHARED
     ${generated_source_files}
     source/core/hyperslab.cpp
     source/core/scalar.cpp
-    source/core/wait.cpp
 
     source/io/read_array.cpp
     source/io/write_array.cpp
@@ -180,7 +179,6 @@ add_library(lue_py_framework SHARED
     source/numpy/to_numpy.cpp
 
     source/partitioned_route/serial_route.cpp
-    source/partitioned_route/wait.cpp
 
     source/python_extension.cpp
     source/submodule.cpp

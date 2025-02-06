@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
                 BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
                 {
                     auto const& partition{array.partitions()(partition0, partition1)};
-                    partition.wait();
+                    partition.get();
                     auto const data{partition.data().get()};
 
                     BOOST_CHECK(ondp.is_no_data(data, 0, 0));

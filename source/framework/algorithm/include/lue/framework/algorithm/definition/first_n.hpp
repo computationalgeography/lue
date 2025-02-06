@@ -69,7 +69,7 @@ namespace lue {
 
                         ondp.mark_no_data(no_data_value);
 
-                        _route_partition.wait();
+                        _route_partition.get();
                         auto route_partition_ptr{ready_component_ptr(_route_partition)};
 
                         _output_partition = OutputPartition{hpx::new_<OutputPartitionServer>(

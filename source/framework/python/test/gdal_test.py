@@ -24,7 +24,7 @@ class GdalTest(lue_test.TestCase):
         name = "gdal_array_default_partition_shape.tif"
 
         written = lfr.to_gdal(array_written, name)
-        written.wait()  # Caveat! Don't read before the raster is written!
+        written.get()  # Caveat! Don't read before the raster is written!
 
         array_read = lfr.from_gdal(name)
 
@@ -46,7 +46,7 @@ class GdalTest(lue_test.TestCase):
         name = "gdal_array_custom_partition_shape.tif"
 
         written = lfr.to_gdal(array_written, name)
-        written.wait()  # Caveat! Don't read before the raster is written!
+        written.get()  # Caveat! Don't read before the raster is written!
 
         array_read = lfr.from_gdal(name, partition_shape=partition_shape)
 
@@ -65,11 +65,11 @@ class GdalTest(lue_test.TestCase):
 
         row_idxs_name = "gdal_hyperslab_row_idxs.tif"
         written = lfr.to_gdal(row_idxs_written, row_idxs_name)
-        written.wait()
+        written.get()
 
         col_idxs_name = "gdal_hyperslab_col_idxs.tif"
         written = lfr.to_gdal(col_idxs_written, col_idxs_name)
-        written.wait()
+        written.get()
 
         hyperslab_shape = (200, 100)
         hyperslab = lfr.Hyperslab(center=(300, 200), shape=hyperslab_shape)

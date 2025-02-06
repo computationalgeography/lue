@@ -326,15 +326,12 @@ namespace lue::detail {
         hpx::future<Array<PartitionOffsets, rank>> upstream_partition_offsets_f{
             upstream_partition_offsets(partition_io_partitions, ready_partitions)};
 
-
         hpx::wait_all(solved_partitions_f.begin(), solved_partitions_f.end());
         std::transform(
             solved_partitions_f.begin(),
             solved_partitions_f.end(),
             solved_partitions_.begin(),
             [](auto& f) { return f.get(); });
-        upstream_partition_offsets_f.wait();
-
 
         return std::make_tuple(std::move(solved_partitions_), upstream_partition_offsets_f.get());
     }
@@ -371,7 +368,6 @@ namespace lue::detail {
             solved_partitions_f.end(),
             solved_partitions_.begin(),
             [](auto& f) { return f.get(); });
-        upstream_partition_offset_counts_f.wait();
 
         return std::make_tuple(std::move(solved_partitions_), upstream_partition_offset_counts_f.get());
     }

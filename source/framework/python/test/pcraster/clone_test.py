@@ -13,7 +13,7 @@ class CloneTest(OperationTest):
             raster_name = "test_setclone.tif"
 
             # Write a raster
-            lfr.to_gdal(spatial, raster_name).wait()
+            lfr.to_gdal(spatial, raster_name).get()
 
             # Use the written raster as clone
             lpr.setclone(raster_name)
@@ -43,7 +43,7 @@ class CloneTest(OperationTest):
             )
             raster_name = "test_non_spatial_to_spatial.tif"
 
-            lfr.to_gdal(spatial, raster_name).wait()
+            lfr.to_gdal(spatial, raster_name).get()
             lpr.setclone(raster_name)
 
             spatial_out = lpr.spatial(non_spatial)
