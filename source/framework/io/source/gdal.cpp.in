@@ -202,14 +202,33 @@ namespace lue {
                 auto instantiate(
                     InputNoDataPolicy const indp,
                     OutputNoDataPolicy const ondp,
-                    Offset const& offset,
+                    Offset const& hyperslab_offset,
+                    Offset const& partition_offset,
                     Shape const& shape) -> Partition
                 {
                     AnnotateFunction const annotate{"read_partition"};
 
+                    // - hyperslab_offset contains the number of cells to offset the partitions to read by
+                    // - partition_offsets contains the offset per partition to read, relative to the
+                    //   hyperslab_offset
+                    //
+                    // → When reading a partition, both offsets must be summed
+                    // → When creating a partition, only partition_offset must be used
+
                     Data data{shape};
 
-                    _band_ptr->read_partition(offset, data);
+                    {
+                        // Offset within the raster to read the partition from
+                        Offset offset{hyperslab_offset};
+
+                        std::transform(offset.begin(), offset.end(), partition_offset.begin(), offset.begin(),
+                            [](auto offset1, auto const offset2)
+                            {
+                                return offset1 + offset2;
+                            });
+
+                        _band_ptr->read_partition(offset, data);
+                    }
 
                     std::transform(
                         data.begin(),
@@ -225,7 +244,7 @@ namespace lue {
                             return value;
                         });
 
-                    return Partition{hpx::find_here(), offset, std::move(data)};
+                    return Partition{hpx::find_here(), partition_offset, std::move(data)};
                 }
 
             private:
@@ -254,7 +273,8 @@ namespace lue {
         auto read_partition_per_locality(
             Policies const& policies,
             std::string const& name,
-            std::vector<lue::OffsetT<Partition>> const& offsets,
+            lue::OffsetT<Partition> const& hyperslab_offset,
+            std::vector<lue::OffsetT<Partition>> const& partition_offsets,
             std::vector<lue::ShapeT<Partition>> const& partition_shapes) -> std::vector<Partition>
         {
             gdal::DatasetPtr dataset_ptr{gdal::open_dataset(name, ::GA_ReadOnly)};
@@ -262,7 +282,7 @@ namespace lue {
 
             using Element = lue::ElementT<Partition>;
 
-            std::size_t const nr_partitions{std::size(offsets)};
+            std::size_t const nr_partitions{std::size(partition_offsets)};
             std::vector<Partition> partitions(nr_partitions);
 
             auto indp{std::get<0>(policies.inputs_policies()).input_no_data_policy()};
@@ -279,9 +299,10 @@ namespace lue {
                 [indp,
                  ondp,
                  partition_reader,
-                 offset = offsets[0],
+                 hyperslab_offset = hyperslab_offset,
+                 partition_offset = partition_offsets[0],
                  partition_shape = partition_shapes[0]]() mutable
-                { return partition_reader.instantiate(indp, ondp, offset, partition_shape); });
+                { return partition_reader.instantiate(indp, ondp, hyperslab_offset, partition_offset, partition_shape); });
 
             for (std::size_t idx = 1; idx < nr_partitions; ++idx)
             {
@@ -290,9 +311,10 @@ namespace lue {
                     [indp,
                      ondp,
                      partition_reader,
-                     offset = offsets[idx],
+                     hyperslab_offset = hyperslab_offset,
+                     partition_offset = partition_offsets[idx],
                      partition_shape = partition_shapes[idx]](auto const& /* previous_partition */) mutable
-                    { return partition_reader.instantiate(indp, ondp, offset, partition_shape); }
+                    { return partition_reader.instantiate(indp, ondp, hyperslab_offset, partition_offset, partition_shape); }
 
                 );
             }
@@ -327,10 +349,10 @@ namespace lue {
                 static constexpr bool instantiate_per_locality{true};
 
 
-                ReadPartitionsPerLocality(std::string name, Hyperslab<rank>::Offsets const& offsets={0, 0}):
+                ReadPartitionsPerLocality(std::string name, Hyperslab<rank>::Offsets const& hyperslab_offset={0, 0}):
 
                     _name{std::move(name)},
-                    _offsets{offsets}
+                    _hyperslab_offset{hyperslab_offset}
 
                 {
                 }
@@ -341,20 +363,11 @@ namespace lue {
                     hpx::id_type const locality_id,
                     [[maybe_unused]] Policies const& policies,
                     [[maybe_unused]] Shape const& array_shape,
-                    std::vector<Offset> offsets,
+                    std::vector<Offset> partition_offsets,
                     std::vector<Shape> partition_shapes) -> hpx::future<std::vector<Partition>>
                 {
                     using Action = ReadPartitionsPerLocalityAction<Policies, Partition>;
                     Action action{};
-
-                    for(auto& offset: offsets)
-                    {
-                        std::transform(_offsets.begin(), _offsets.end(), offset.begin(), offset.begin(),
-                            [](auto offset1, auto const offset2)
-                            {
-                                return offset1 + offset2;
-                            });
-                    }
 
                     return hpx::async(
 
@@ -362,9 +375,10 @@ namespace lue {
                          action = std::move(action),
                          policies,
                          name = _name,
-                         offsets = std::move(offsets),
+                         hyperslab_offset = _hyperslab_offset,
+                         partition_offsets = std::move(partition_offsets),
                          partition_shapes = std::move(partition_shapes)]()
-                        { return action(locality_id, policies, name, offsets, partition_shapes); }
+                        { return action(locality_id, policies, name, hyperslab_offset, partition_offsets, partition_shapes); }
 
                     );
                 }
@@ -374,7 +388,7 @@ namespace lue {
                 std::string _name;
 
                 // Offset of all partitions within the raster
-                Hyperslab<rank>::Offsets _offsets;
+                Hyperslab<rank>::Offsets _hyperslab_offset;
         };
 
 
