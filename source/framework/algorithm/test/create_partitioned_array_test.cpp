@@ -327,6 +327,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     using BufferHandle = std::shared_ptr<Buffer>;
 
     BufferHandle buffer_handle = std::make_shared<Buffer>(nr_values);
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 1);
     std::iota(buffer_handle->begin(), buffer_handle->end(), 0);
 
     // Create a partitioned array, passing in the buffer
@@ -352,9 +353,9 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     auto const& partitions = array.partitions();
     lue::wait_all(partitions);
 
-    // buffer_handle and the functor containing a copy of buffer_handle
+    // buffer_handle and the functor contain a copy of buffer_handle
     // At least once this test failed (use_count was 3). Could be this specific test is wrong.
-    // BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
+    BOOST_CHECK_EQUAL(buffer_handle.use_count(), 2);
 
     auto const [nr_partitions0, nr_partitions1] = array.partitions().shape();
 

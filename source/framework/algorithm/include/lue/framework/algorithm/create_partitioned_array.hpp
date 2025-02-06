@@ -750,14 +750,14 @@ namespace lue {
 
                 auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                // A single instance of this class are used to instantiate all new partitions. This
-                // happens asynchronously. A partition client (a future to the server instance)
-                // is returned immediately, but the server instance itself is not created yet.
-                // To be able to create the server instance later on, when the
-                // InstantiateFromBuffer instance is already gone, we still need to be able to
-                // access to the buffer. Because of that, we pass a copy of the BufferHandle
-                // instance and the GrabBuffer function to the lambda. Copying the BufferHandle
+                // A single instance of this class is used to instantiate all new partitions. This happens
+                // asynchronously. A partition client (a future to the server instance) is returned
+                // immediately, but the server instance itself is not created yet. To be able to create the
+                // server instance later on, when the InstantiateFromBuffer instance is already gone, we still
+                // need to be able to access to the buffer. Because of that, we pass a copy of the
+                // BufferHandle instance and the GrabBuffer function to the lambda. Copying the BufferHandle
                 // instance increases the reference count and keeps the underlying buffer alive.
+
                 return hpx::async(
 
                     [locality_id,
@@ -765,12 +765,12 @@ namespace lue {
                      array_shape,
                      offset,
                      partition_shape,
-                     buffer_handle = _buffer_handle,
+                     buffer_handle = _buffer_handle,  // Copy, increases reference count
                      grab_buffer = _grab_buffer,
                      no_data_value = _no_data_value]()
                     {
-                        // Create a partition instance and copy the relevant cells from
-                        // the input buffer to the partition instance
+                        // Create a partition instance and copy the relevant cells from the input buffer to
+                        // the partition instance
 
                         // A 1D array of elements to copy
                         Element const* buffer = grab_buffer(buffer_handle);
@@ -863,10 +863,7 @@ namespace lue {
 
 
     template<typename Functor>
-    concept PartitionInstantiator = requires(Functor functor)
-    {
-        functor.instantiate_per_locality;
-    };
+    concept PartitionInstantiator = requires(Functor functor) { functor.instantiate_per_locality; };
 
 
     /*!
@@ -1004,7 +1001,8 @@ namespace lue {
     // create array, fill with fill value --------------------------------------------------------------------
 
     template<typename Element, Rank rank>
-    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
+        requires std::is_arithmetic_v<Element>
+    auto create_partitioned_array(
         Shape<Count, rank> const& array_shape,
         Shape<Count, rank> const& partition_shape,
         Scalar<Element> const& fill_value) -> PartitionedArray<Element, rank>
@@ -1018,7 +1016,8 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
+        requires std::is_arithmetic_v<Element>
+    auto create_partitioned_array(
         Shape<Count, rank> const& array_shape,
         Shape<Count, rank> const& partition_shape,
         Element const fill_value) -> PartitionedArray<Element, rank>
@@ -1028,17 +1027,18 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
-        Shape<Count, rank> const& array_shape,
-        Scalar<Element> const& fill_value) -> PartitionedArray<Element, rank>
+        requires std::is_arithmetic_v<Element>
+    auto create_partitioned_array(Shape<Count, rank> const& array_shape, Scalar<Element> const& fill_value)
+        -> PartitionedArray<Element, rank>
     {
         return create_partitioned_array(array_shape, default_partition_shape(array_shape), fill_value);
     }
 
 
     template<typename Element, Rank rank>
-    requires std::is_arithmetic_v<Element> auto create_partitioned_array(
-        Shape<Count, rank> const& array_shape, Element const fill_value) -> PartitionedArray<Element, rank>
+        requires std::is_arithmetic_v<Element>
+    auto create_partitioned_array(Shape<Count, rank> const& array_shape, Element const fill_value)
+        -> PartitionedArray<Element, rank>
     {
         return create_partitioned_array(
             array_shape, default_partition_shape(array_shape), Scalar<Element>{fill_value});
