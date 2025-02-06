@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(array_all_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_int_all_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(array_none_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_int_none_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(array_float_all_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_float_all_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(array_float_none_valid)
     Array array_written{lue::create_partitioned_array<Element>(array_shape, partition_shape, fill_value)};
     std::string const name{"lue_framework_io_gdal_array_float_none_valid.tif"};
 
-    lue::to_gdal<Element>(array_written, name).wait();
+    lue::to_gdal<Element>(array_written, name).get();
 
     BOOST_CHECK(lue::gdal::try_open_dataset(name, GDALAccess::GA_ReadOnly));
 
@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE(hyperslab)
     std::string const row_idxs_name{"lue_framework_io_gdal_hyperslab_row_idxs.tif"};
     std::string const col_idxs_name{"lue_framework_io_gdal_hyperslab_col_idxs.tif"};
 
-    lue::to_gdal(row_idxs_written, row_idxs_name).wait();
-    lue::to_gdal(col_idxs_written, col_idxs_name).wait();
+    lue::to_gdal(row_idxs_written, row_idxs_name).get();
+    lue::to_gdal(col_idxs_written, col_idxs_name).get();
 
     Hyperslab const hyperslab{{30, 20}, {20, 10}};
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(valid_hyperslab)
 
     std::string const idxs_name{"lue_framework_io_gdal_wrong_hyperslab_idxs.tif"};
 
-    lue::to_gdal(idxs_written, idxs_name).wait();
+    lue::to_gdal(idxs_written, idxs_name).get();
 
     {
         // Hyperslab corresponds with whole array
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(incorrect_hyperslab)
 
     std::string const idxs_name{"lue_framework_io_gdal_wrong_hyperslab_idxs.tif"};
 
-    lue::to_gdal(idxs_written, idxs_name).wait();
+    lue::to_gdal(idxs_written, idxs_name).get();
 
     {
         // Empty hyperslab
@@ -236,19 +236,19 @@ BOOST_AUTO_TEST_CASE(incorrect_hyperslab)
 }
 
 
-BOOST_AUTO_TEST_CASE(to_gdal)
+BOOST_AUTO_TEST_CASE(round_trip)
 {
     // Random array shapes, random partition shapeѕ, all valid. Verify that no exception is thrown.
-
     using Element = lue::LargestIntegralElement;
     lue::Rank const rank{2};
     using Shape = lue::Shape<lue::Count, rank>;
     using Array = lue::PartitionedArray<Element, rank>;
+    using Hyperslab = lue::Hyperslab<2>;
 
     std::random_device random_device{};
     std::default_random_engine random_number_engine(random_device());
 
-    auto const array_shape = [&]()
+    auto const random_array_shape = [&]()
     {
         lue::Count const min{100};
         lue::Count const max{500};
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(to_gdal)
         };
     };
 
-    auto const partition_shape = [&]()
+    auto const random_partition_shape = [&]()
     {
         lue::Count const min{40};
         lue::Count const max{50};
@@ -272,8 +272,26 @@ BOOST_AUTO_TEST_CASE(to_gdal)
         };
     };
 
+    auto const random_hyperslab = [&]()
+    {
+        lue::Count const min{40};
+        lue::Count const max{50};
+        std::uniform_int_distribution<lue::Count> distribution(min, max);
+
+        return Hyperslab{{50, 50}, {distribution(random_number_engine), distribution(random_number_engine)}};
+    };
+
     Element const fill_value{5};
-    Array array{lue::create_partitioned_array<Element>(array_shape(), partition_shape(), fill_value)};
-    std::string const name{"lue_framework_io_gdal_to_gdal.tif"};
-    lue::to_gdal<Element>(array, name).wait();
+    Array array{
+        lue::create_partitioned_array<Element>(random_array_shape(), random_partition_shape(), fill_value)};
+
+    std::string const name_whole{"lue_framework_io_gdal_to_gdal_whole.tif"};
+    lue::to_gdal<Element>(array, name_whole).get();
+
+    auto const hyperslab{random_hyperslab()};
+    array = lue::from_gdal<Element>(name_whole, hyperslab, lue::default_partition_shape(hyperslab.counts()));
+
+    // This used to fail due to a bug in handling hyperslab and partition offsets
+    std::string const name_subset{"lue_framework_io_gdal_to_gdal_subset.tif"};
+    lue::to_gdal<Element>(array, name_subset).get();
 }

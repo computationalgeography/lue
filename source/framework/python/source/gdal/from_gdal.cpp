@@ -36,12 +36,12 @@ namespace lue::framework {
             std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
         {
             gdal::DatasetPtr dataset{gdal::open_dataset(name, GDALAccess::GA_ReadOnly)};
-            auto const raster_shape{gdal::shape(*dataset)};
-            StaticShape<2> static_array_shape{raster_shape[0], raster_shape[1]};
             StaticShape<2> static_partition_shape{};
 
             if (partition_shape)
             {
+                auto const raster_shape{gdal::shape(*dataset)};
+                StaticShape<2> static_array_shape{raster_shape[0], raster_shape[1]};
                 DynamicShape const dynamic_partition_shape{tuple_to_shape(*partition_shape)};
 
                 if (static_array_shape.size() != dynamic_partition_shape.size())
