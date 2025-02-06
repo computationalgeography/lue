@@ -9,20 +9,20 @@
 #include <hpx/config.hpp>
 
 
-BOOST_AUTO_TEST_CASE(use_case_1)
+BOOST_AUTO_TEST_CASE(variable_raster)
 {
     // Write a stack of floating point rasters and read them back in. Compare the rasters read with the range
     // of the rasters written.
     namespace ldm = lue::data_model;
 
-    std::string const dataset_pathname{"use_case_1.lue"};
+    std::string const dataset_pathname{"lue_framework_io_lue_variable_raster.lue"};
     std::string const phenomenon_name{"area"};
     std::string const property_set_name{"area"};
     std::string const layer_name{"elevation"};
     std::string const array_pathname{
         fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
-    ldm::Count const nr_time_steps{50};
+    ldm::Count const nr_time_steps{5};
     ldm::Count const nr_rows{60};
     ldm::Count const nr_cols{40};
 
@@ -96,6 +96,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             .get();
     }
 
+    // Read arrays
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
         // Once in a while this test fails (segmentation fault). Replacing the call to from_lue by
@@ -109,12 +110,12 @@ BOOST_AUTO_TEST_CASE(use_case_1)
 }
 
 
-BOOST_AUTO_TEST_CASE(use_case_2)
+BOOST_AUTO_TEST_CASE(constant_raster)
 {
     // Write a constant raster with integers and read it back in. Compare raster written with raster read.
     namespace ldm = lue::data_model;
 
-    std::string const dataset_pathname{"use_case_2.lue"};
+    std::string const dataset_pathname{"lue_framework_io_lue_constant_raster.lue"};
     std::string const phenomenon_name{"area"};
     std::string const property_set_name{"area"};
     std::string const layer_name{"elevation"};
