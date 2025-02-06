@@ -569,7 +569,7 @@ namespace lue {
 
                 lue_hpx_assert(input_partitions[p].valid());
 
-                input_partitions[p].wait();
+                input_partitions[p].get();
 
                 output_partitions[p] = hpx::dataflow(
                     hpx::launch::async,

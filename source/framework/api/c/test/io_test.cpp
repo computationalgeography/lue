@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(round_trip)
 
     // std::string const name{"api_cxx_io_round_trip.tif"};
 
-    // lue::api::to_gdal(field, name).wait();
+    // lue::api::to_gdal(field, name).get();
 
     // lue::api::Field result = lue::api::from_gdal(name);
 

@@ -68,7 +68,6 @@ namespace lue::framework {
     void bind_hpx(pybind11::module& module);
     void bind_create_array(pybind11::module& module);
     void bind_hyperslab(pybind11::module& module);
-    void bind_wait_partitioned_array(pybind11::module& module);
     void bind_focal_operations(pybind11::module& module);
     void bind_global_operations(pybind11::module& module);
     void bind_local_operations(pybind11::module& module);
@@ -77,7 +76,6 @@ namespace lue::framework {
     void bind_partitioned_array(pybind11::module& module);
     void bind_scalar(pybind11::module& module);
     void bind_serial_route(pybind11::module& module);
-    void bind_wait_serial_route(pybind11::module& module);
 
     void bind_array_partition_id(pybind11::module& module);
     void bind_locality_id(pybind11::module& module);
@@ -139,12 +137,10 @@ namespace lue::framework {
         bind_scalar(submodule);
         bind_partitioned_array(submodule);
         bind_serial_route(submodule);
-        bind_wait_serial_route(submodule);
 
         // Wrap high-level algorithms
         bind_create_array(submodule);
         bind_hyperslab(submodule);
-        bind_wait_partitioned_array(submodule);
         bind_focal_operations(submodule);
         bind_global_operations(submodule);
         bind_local_operations(submodule);

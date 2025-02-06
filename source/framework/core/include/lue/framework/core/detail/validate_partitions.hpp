@@ -36,7 +36,7 @@
 ///         // the expected offset
 ///
 ///         Partition const& partition{this->partition()};
-///         partition.wait();
+///         partition.get();
 ///         Offset const partition_offset{partition.offset().get()};
 ///         _partition_shape = partition.shape().get();
 ///         Cursor const& cursor{this->cursor()};

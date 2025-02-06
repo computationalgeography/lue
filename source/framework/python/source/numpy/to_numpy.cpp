@@ -52,7 +52,7 @@ namespace lue::framework {
 
             for (Index p = 0; p < nr_partitions; ++p)
             {
-                partitions[p].wait();  // Blocks
+                partitions[p].get();  // Blocks
 
                 // These calls block and may involve network traffic
                 auto partition_data_f{partitions[p].data()};

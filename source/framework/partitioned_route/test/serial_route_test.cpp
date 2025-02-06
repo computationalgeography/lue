@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(default_construct)
 //     // BOOST_CHECK_EQUAL(route.shape(), array_shape);
 //     // BOOST_CHECK(route.valid());
 //     // BOOST_CHECK_EQUAL(route.partitions().shape(), shape_in_partitions);
-//     // route.starts().wait();
+//     // route.starts().get();
 //     // BOOST_CHECK(route.is_ready());
 //     // BOOST_CHECK_EQUAL(route.nr_routes(), 0);
 // }

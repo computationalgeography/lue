@@ -43,9 +43,9 @@ namespace lue {
                 //     hpx::make_ready_future<Element>(20);
                 Element const max_nr_iterations{25};
 
-                // uniform(min_nr_iterations, max_nr_iterations, state).wait();
+                // uniform(min_nr_iterations, max_nr_iterations, state).get();
 
-                fill(state, max_nr_iterations).wait();
+                fill(state, max_nr_iterations).get();
 
                 hpx::sliding_semaphore semaphore{static_cast<std::int64_t>(max_tree_depth)};
 
@@ -94,7 +94,7 @@ namespace lue {
                     // hpx::async(
                     //     high_priority_executor,
                     //     &detail::iterate_per_element<Element, 2>,
-                    //     task, max_tree_depth).wait();
+                    //     task, max_tree_depth).get();
                     result = detail::iterate_per_element<Element, 2>(task, max_tree_depth);
                     break;
                 }

@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     Route<ZoneElement> const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.starts().wait();
+    route_we_got.starts().get();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -904,7 +904,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     Route<ZoneElement> const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.starts().wait();
+    route_we_got.starts().get();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -1196,7 +1196,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
 
     Route<RouteID> const route_we_got = lue::value_policies::decreasing_order<RouteID>(value_array);
 
-    route_we_got.starts().wait();
+    route_we_got.starts().get();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -1753,7 +1753,7 @@ BOOST_AUTO_TEST_CASE(single_partition_many_routes)
 
     Route<ZoneElement> const route_we_got = lue::value_policies::decreasing_order(zone_array, value_array);
 
-    route_we_got.starts().wait();
+    route_we_got.starts().get();
 
     // This assumes all zones actually occur in zone_array
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
@@ -1789,7 +1789,7 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
         Route<RouteID> const route_we_got =
             lue::value_policies::decreasing_order<RouteID>(value_array, max_nr_cells);
 
-        route_we_got.starts().wait();
+        route_we_got.starts().get();
 
         BOOST_CHECK_EQUAL(route_we_got.nr_routes(), 1);
 
@@ -1808,7 +1808,7 @@ BOOST_AUTO_TEST_CASE(single_partition_empty_route)
         Route<ZoneElement> const route_we_got =
             lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells);
 
-        route_we_got.starts().wait();
+        route_we_got.starts().get();
 
         BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
@@ -1889,7 +1889,7 @@ BOOST_AUTO_TEST_CASE(random_input)
     Route<ZoneElement> const route_we_got =
         lue::value_policies::decreasing_order(zone_array, value_array, max_nr_cells);
 
-    route_we_got.starts().wait();
+    route_we_got.starts().get();
 
     BOOST_CHECK_EQUAL(route_we_got.nr_routes(), nr_zones);
 
