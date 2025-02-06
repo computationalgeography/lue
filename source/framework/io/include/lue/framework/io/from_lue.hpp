@@ -132,6 +132,7 @@ namespace lue {
                     // to it.
                     // We only get here once the partitions are ready, so by definition the dataset_f
                     // is ready.
+                    lue_hpx_assert(dataset_f.valid());
                     lue_hpx_assert(dataset_f.is_ready());
                 });
         }
