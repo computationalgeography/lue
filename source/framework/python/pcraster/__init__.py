@@ -110,6 +110,7 @@ def setclone(pathname):
 
     configuration.partition_shape = partition_shape
     configuration.pathname = pathname
+    configuration.timeseries_files = {}
 
 
 def clone():
@@ -1161,9 +1162,15 @@ def timeinputordinal(*args):
 
 
 def timeinputscalar(timeseries_pathname: str, id_expression, timestep: int):
-    lines = open(timeseries_pathname).readlines()
-    nr_rows_to_skip = int(lines[1]) + 2
-    lines = lines[nr_rows_to_skip:]
+    if timeseries_pathname in configuration.timeseries_files.keys():
+        lines = configuration.timeseries_files[timeseries_pathname]
+    else:
+        with open(timeseries_pathname) as tss:
+            lines = tss.readlines()
+            nr_rows_to_skip = int(lines[1]) + 2
+            lines = lines[nr_rows_to_skip:]
+            configuration.timeseries_files[timeseries_pathname] = lines
+
     line = lines[timestep - 1]
     values = line.split()[1:]
     lookup_table = {id_ + 1: float(values[id_]) for id_ in range(len(values))}
