@@ -1162,7 +1162,7 @@ def timeinputordinal(*args):
 
 
 def timeinputscalar(timeseries_pathname: str, id_expression, timestep: int):
-    if timeseries_pathname in configuration.timeseries_files.keys():
+    if timeseries_pathname in configuration.timeseries_files:
         lines = configuration.timeseries_files[timeseries_pathname]
     else:
         with open(timeseries_pathname) as tss:
