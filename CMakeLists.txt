@@ -1,5 +1,6 @@
 cmake_minimum_required(
-    VERSION 3.30)
+    VERSION 3.31  # We use comments in presets files
+)
 project(LUE
     VERSION 0.3.10
     LANGUAGES C CXX
