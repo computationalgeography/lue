@@ -1,5 +1,5 @@
 {
-    "version": 6,
+    "version": 10,
     "include": [
         "CMakeHPXPresets.json"
     ],
@@ -8,6 +8,37 @@
             "name": "ninja_configuration",
             "hidden": true,
             "generator": "Ninja"
+        },
+        {
+            "name": "lue_gcc_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "$comment": [
+                    "https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html"
+                ],
+                "CMAKE_C_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs",
+                "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs -ftemplate-backtrace-limit=0"
+            }
+        },
+        {
+            "name": "lue_clang_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "$comment": [
+                    "https://clang.llvm.org/docs/DiagnosticsReference.html"
+                ],
+                "CMAKE_C_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs",
+                "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs"
+            }
+        },
+        {
+            "name": "lue_msvc_configuration",
+            "hidden": true,
+            "cacheVariables": {
+                "$comment": [
+                    "https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170"
+                ]
+            }
         },
         {
             "name": "lue_debug_configuration",
