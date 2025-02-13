@@ -12,10 +12,10 @@
         {
             "name": "lue_gcc_configuration",
             "hidden": true,
+            "$comment": [
+                "https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html"
+            ],
             "cacheVariables": {
-                "$comment": [
-                    "https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html"
-                ],
                 "CMAKE_C_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs",
                 "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs -ftemplate-backtrace-limit=0"
             }
@@ -23,10 +23,10 @@
         {
             "name": "lue_clang_configuration",
             "hidden": true,
+            "$comment": [
+                "https://clang.llvm.org/docs/DiagnosticsReference.html"
+            ],
             "cacheVariables": {
-                "$comment": [
-                    "https://clang.llvm.org/docs/DiagnosticsReference.html"
-                ],
                 "CMAKE_C_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs",
                 "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs"
             }
@@ -34,10 +34,10 @@
         {
             "name": "lue_msvc_configuration",
             "hidden": true,
+            "$comment": [
+                "https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170"
+            ],
             "cacheVariables": {
-                "$comment": [
-                    "https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170"
-                ]
             }
         },
         {
