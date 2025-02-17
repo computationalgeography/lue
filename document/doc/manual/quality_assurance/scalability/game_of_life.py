@@ -62,7 +62,7 @@ def game_of_life_scalability(
 ) -> None:
 
     generation = initialize_generation(array_shape, partition_shape)
-    generation.get()
+    generation.future().get()
 
     experiment = lqi.ArrayExperiment(nr_workers, array_shape, partition_shape)
     experiment.start()
@@ -75,7 +75,7 @@ def game_of_life_scalability(
         for _ in range(1, nr_generations + 1):
             generation = next_generation(generation)
 
-        generation.get()
+        generation.future().get()
         run.stop()
 
         experiment.add(run)
