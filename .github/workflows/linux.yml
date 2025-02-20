@@ -205,7 +205,7 @@ jobs:
               ${{ env.lue_consume_build_directory }}/lue_consume_framework
 
         - name: documentation
-          if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-12' && matrix.python_version == '3.13'
+          if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
           env:
               ftp_server: ${{ secrets.FTP_SERVER }}
               ftp_port: ${{ secrets.FTP_PORT }}
