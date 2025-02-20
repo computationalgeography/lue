@@ -9,7 +9,7 @@ Here is a quick list of the steps:
 
 1. Configure an HPX build to use APEX, e.g.:
 
-    ```cmake
+    ```
     -D HPX_WITH_APEX=TRUE -D HPX_WITH_FETCH_APEX=TRUE
     ```
 

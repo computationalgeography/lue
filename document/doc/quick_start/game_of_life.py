@@ -16,14 +16,15 @@ Shape = tuple[int, int]
 def initialize_generation(
     array_shape: Shape, partition_shape: Shape | None
 ) -> Generation:
-    generation = lfr.create_array(
-        array_shape=array_shape,
-        partition_shape=partition_shape,
-        dtype=np.dtype(np.float32),
-        fill_value=0,
-    )
     fraction_alive_cells = 0.25
-    generation = lfr.uniform(generation, np.float32, 0, 1) <= fraction_alive_cells
+    random_field = lfr.uniform(
+        array_shape,
+        np.dtype(np.float32),
+        min_value=0,
+        max_value=1,
+        partition_shape=partition_shape,
+    )
+    generation = random_field <= fraction_alive_cells
 
     return generation
 
@@ -99,7 +100,7 @@ def game_of_life(
     )
 
     lfr.run_deterministic(
-        model, lfr.DefaultProgressor(), nr_time_steps=nr_generations, rate_limit=4
+        model, lfr.DefaultProgressor(), nr_time_steps=nr_generations, rate_limit=5
     )
 
 
