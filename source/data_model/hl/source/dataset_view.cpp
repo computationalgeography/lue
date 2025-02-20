@@ -40,12 +40,12 @@ namespace lue {
         }
 
 
-#define INSTANTIATE_DATASET_VIEW(DatasetPtr) template class DatasetView<DatasetPtr>;
+#define LUE_INSTANTIATE_DATASET_VIEW(DatasetPtr) template class DatasetView<DatasetPtr>;
 
-        INSTANTIATE_DATASET_VIEW(Dataset*)
-        INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
+        LUE_INSTANTIATE_DATASET_VIEW(Dataset*)
+        LUE_INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
 
-#undef INSTANTIATE_DATASET_VIEW
+#undef LUE_INSTANTIATE_DATASET_VIEW
 
     }  // namespace data_model
 }  // namespace lue

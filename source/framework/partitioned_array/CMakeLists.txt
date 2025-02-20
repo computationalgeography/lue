@@ -62,36 +62,10 @@ add_library(lue_framework_partitioned_array SHARED
     ${generated_source_files}
 )
 
-add_library(lue::framework_partitioned_array ALIAS lue_framework_partitioned_array)
-
-set_target_properties(lue_framework_partitioned_array
-    PROPERTIES
-        EXPORT_NAME framework_partitioned_array
-        VERSION ${LUE_VERSION}
-        SOVERSION ${LUE_VERSION_MAJOR}
-)
-
-generate_export_header(lue_framework_partitioned_array
-    EXPORT_FILE_NAME include/lue/framework/partitioned_array/export.hpp
-    EXPORT_MACRO_NAME LUE_FPA_EXPORT)
-
-target_include_directories(lue_framework_partitioned_array
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
-)
-
-target_sources(lue_framework_partitioned_array
-    PUBLIC
-        FILE_SET
-            HEADERS
-        BASE_DIRS
-            include
-            ${CMAKE_CURRENT_BINARY_DIR}/include
-        FILES
-            include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
+lue_configure_shared_library(
+    TARGET_BASENAME framework_partitioned_array
+    EXPORT_HEADER_PATHNAME include/lue/framework/partitioned_array/export.hpp
+    EXPORT_MACRO_BASENAME FPA
 )
 
 target_link_libraries(lue_framework_partitioned_array
@@ -99,11 +73,3 @@ target_link_libraries(lue_framework_partitioned_array
         HPX::component
     PUBLIC
         lue::framework_core)
-
-lue_install_development_libraries(
-    TARGETS lue_framework_partitioned_array
-)
-
-lue_install_runtime_libraries(
-    TARGETS lue_framework_partitioned_array
-)

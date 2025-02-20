@@ -53,47 +53,14 @@ add_library(lue_image_land SHARED
     ${generated_source_files}
 )
 
-add_library(lue::image_land ALIAS lue_image_land)
-
-set_target_properties(lue_image_land
-    PROPERTIES
-        EXPORT_NAME image_land
-        VERSION ${LUE_VERSION}
-        SOVERSION ${LUE_VERSION_MAJOR}
-)
-
-generate_export_header(lue_image_land
-    EXPORT_FILE_NAME include/lue/framework/algorithm/image_land_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_IMAGE_LAND_OPERATION_EXPORT)
-
-target_include_directories(lue_image_land
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
-)
-
-target_sources(lue_image_land
-    PUBLIC
-        FILE_SET
-            HEADERS
-        BASE_DIRS
-            ${CMAKE_CURRENT_BINARY_DIR}/include
-        FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/image_land_operation_export.hpp
+lue_configure_shared_library(
+    TARGET_BASENAME image_land
+    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/image_land_operation_export.hpp
+    EXPORT_MACRO_BASENAME IMAGE_LAND_OPERATION
 )
 
 target_link_libraries(lue_image_land
     PUBLIC
         lue::framework_algorithm
         lue::framework_routing_operation
-)
-
-lue_install_runtime_libraries(
-    TARGETS
-        lue_image_land
-)
-
-lue_install_development_libraries(
-    TARGETS
-        lue_image_land
 )

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/gdal/define.hpp"
+#include "lue/gdal/export.hpp"
 
 
 namespace lue::gdal {
@@ -9,7 +10,7 @@ namespace lue::gdal {
 
         A natural block is a block that can be read / written efficiently from / to a raster band.
     */
-    class Blocks
+    class LUE_GDAL_EXPORT Blocks
     {
 
         public:

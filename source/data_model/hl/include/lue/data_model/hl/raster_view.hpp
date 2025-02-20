@@ -133,7 +133,7 @@ namespace lue::data_model {
         };
 
 
-        bool contains_raster(
+        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
 
 
@@ -145,7 +145,7 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
@@ -231,7 +231,7 @@ namespace lue::data_model {
         }
 
 
-        bool contains_raster(
+        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
 
 
@@ -243,7 +243,7 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
@@ -261,4 +261,35 @@ namespace lue::data_model {
             typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);
 
     }  // namespace variable
+
+
+#define LUE_DECLARE_INSTANTIATE_RASTER_VIEW(DatasetPtr)                                                      \
+    extern template class LUE_DATA_MODEL_HL_EXPORT RasterView<DatasetPtr>;                                   \
+    extern template class LUE_DATA_MODEL_HL_EXPORT constant::RasterView<DatasetPtr>;                         \
+    extern template class LUE_DATA_MODEL_HL_EXPORT variable::RasterView<DatasetPtr>;                         \
+                                                                                                             \
+    extern template LUE_DATA_MODEL_HL_EXPORT constant::RasterView<DatasetPtr>                                \
+    constant::create_raster_view<DatasetPtr>(                                                                \
+        DatasetPtr dataset,                                                                                  \
+        std::string const& phenomenon_name,                                                                  \
+        std::string const& property_set_name,                                                                \
+        hdf5::Shape const& grid_shape,                                                                       \
+        typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);                             \
+                                                                                                             \
+    extern template LUE_DATA_MODEL_HL_EXPORT variable::RasterView<DatasetPtr>                                \
+    variable::create_raster_view<DatasetPtr>(                                                                \
+        DatasetPtr dataset,                                                                                  \
+        std::string const& phenomenon_name,                                                                  \
+        std::string const& property_set_name,                                                                \
+        Clock const& clock,                                                                                  \
+        Count nr_time_steps,                                                                                 \
+        typename RasterView<DatasetPtr>::TimeBox const& time_box,                                            \
+        hdf5::Shape const& grid_shape,                                                                       \
+        typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);
+
+    LUE_DECLARE_INSTANTIATE_RASTER_VIEW(Dataset*)
+    LUE_DECLARE_INSTANTIATE_RASTER_VIEW(std::shared_ptr<Dataset>)
+
+#undef LUE_DECLARE_INSTANTIATE_RASTER_VIEW
+
 }  // namespace lue::data_model

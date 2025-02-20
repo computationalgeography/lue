@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gdal/export.hpp"
 #include <gdal_priv.h>
 #include <string>
 
@@ -13,10 +14,10 @@ namespace lue::gdal {
     using DriverPtr = GDALDriver*;
 
 
-    auto register_gdal_drivers() -> void;
+    LUE_GDAL_EXPORT auto register_gdal_drivers() -> void;
 
-    auto driver(std::string const& name) -> DriverPtr;
+    LUE_GDAL_EXPORT auto driver(std::string const& name) -> DriverPtr;
 
-    auto driver_name(std::string const& dataset_name) -> std::string;
+    LUE_GDAL_EXPORT auto driver_name(std::string const& dataset_name) -> std::string;
 
 }  // namespace lue::gdal

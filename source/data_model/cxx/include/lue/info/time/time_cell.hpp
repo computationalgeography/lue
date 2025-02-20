@@ -12,7 +12,7 @@ namespace lue {
             Time cells are time boxes with additional information about the
             number of cells in which each box is discretized.
         */
-        class TimeCell: public TimeBox
+        class LUE_DATA_MODEL_EXPORT TimeCell: public TimeBox
         {
 
             public:

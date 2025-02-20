@@ -12,7 +12,7 @@ namespace lue {
                 /*!
                     @brief      Collection of same shape x constant shape properties
                 */
-                class Properties: public Collection<Property>
+                class LUE_DATA_MODEL_EXPORT Properties: public Collection<Property>
                 {
 
                     public:
@@ -49,7 +49,7 @@ namespace lue {
                 Properties create_properties(hdf5::Group& parent);
 
             }  // namespace constant_shape
-        }      // namespace same_shape
+        }  // namespace same_shape
 
 
         template<>

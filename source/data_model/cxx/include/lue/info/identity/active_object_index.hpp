@@ -21,7 +21,7 @@ namespace lue {
             The indices stored are the indices into the value array of each
             active object.
         */
-        class ActiveObjectIndex: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT ActiveObjectIndex: public same_shape::constant_shape::Value
         {
 
             public:

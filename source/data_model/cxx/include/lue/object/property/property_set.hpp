@@ -14,7 +14,7 @@ namespace lue {
             @brief      Class representing a set of properties sharing a time
                         and space domain
         */
-        class PropertySet: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT PropertySet: public hdf5::Group
         {
 
             public:

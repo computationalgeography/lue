@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/dataset.hpp"
+#include "lue/framework/io/export.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
@@ -533,7 +534,7 @@ namespace lue {
         @return     New array
     */
     template<typename Policies, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         Policies const& policies,
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
@@ -557,7 +558,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         Shape const& partition_shape,
@@ -575,7 +576,7 @@ namespace lue {
         The whole array will be read.
     */
     template<typename Policies, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         Policies const& policies,
         std::string const& array_pathname,
         Shape const& partition_shape,
@@ -594,7 +595,7 @@ namespace lue {
         Default policies will be used and the whole array will be read.
     */
     template<typename Element, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         std::string const& array_pathname,
         Shape const& partition_shape,
         data_model::ID const object_id) -> PartitionedArray<Element, rank<Shape>>
@@ -622,7 +623,7 @@ namespace lue {
         @return     New array
     */
     template<typename Policies, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         Policies const& policies,
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
@@ -648,7 +649,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         std::string const& array_pathname,
         hdf5::Hyperslab const& hyperslab,
         Shape const& partition_shape,
@@ -667,7 +668,7 @@ namespace lue {
         The whole array will be read.
     */
     template<typename Policies, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         Policies const& policies,
         std::string const& array_pathname,
         Shape const& partition_shape,
@@ -692,7 +693,7 @@ namespace lue {
         Default policies will be used and the whole array will be read.
     */
     template<typename Element, typename Shape>
-    auto from_lue(
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue(
         std::string const& array_pathname,
         Shape const& partition_shape,
         data_model::ID const object_id,

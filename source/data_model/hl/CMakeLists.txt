@@ -1,16 +1,15 @@
 add_test_conditionally(test)
 
-add_library(lue_data_model_hl
+add_library(lue_data_model_hl SHARED
     source/dataset_view.cpp
     source/raster_view.cpp
     source/util.cpp
 )
 
-add_library(lue::data_model_hl ALIAS lue_data_model_hl)
-
-target_include_directories(lue_data_model_hl
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+lue_configure_shared_library(
+    TARGET_BASENAME data_model_hl
+    EXPORT_HEADER_PATHNAME include/lue/data_model/hl/export.hpp
+    EXPORT_MACRO_BASENAME DATA_MODEL_HL
 )
 
 target_link_libraries(lue_data_model_hl

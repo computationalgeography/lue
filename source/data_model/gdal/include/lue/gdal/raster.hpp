@@ -9,7 +9,7 @@ namespace lue::gdal {
     /*!
         @brief      Utility class for performing I/O to a raster and its bands
     */
-    class Raster
+    class LUE_GDAL_EXPORT Raster
     {
 
         public:

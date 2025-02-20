@@ -6,7 +6,7 @@
 namespace lue {
     namespace data_model {
 
-        class PropertySets: public Collection<PropertySet>
+        class LUE_DATA_MODEL_EXPORT PropertySets: public Collection<PropertySet>
         {
 
             public:

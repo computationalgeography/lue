@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/data_model/export.hpp"
 #include "lue/core/array.hpp"
 #include "lue/core/index_range.hpp"
 #include "lue/hdf5.hpp"
@@ -18,7 +19,7 @@ namespace lue {
                     the rank of the individual object arrays. This first dimension
                     represents the objects per active set.
                 */
-                class Value: public Array
+                class LUE_DATA_MODEL_EXPORT Value: public Array
                 {
 
                     public:
@@ -70,27 +71,27 @@ namespace lue {
                 };
 
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& memory_datatype,
                     void const* no_data_value = nullptr);
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& memory_datatype,
                     hdf5::Shape const& array_shape,
                     void const* no_data_value = nullptr);
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& file_datatype,
                     hdf5::Datatype const& memory_datatype,
                     void const* no_data_value = nullptr);
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& file_datatype,
@@ -98,9 +99,9 @@ namespace lue {
                     hdf5::Shape const& array_shape,
                     void const* no_data_value = nullptr);
 
-                bool value_exists(hdf5::Group const& parent, std::string const& name);
+                LUE_DATA_MODEL_EXPORT bool value_exists(hdf5::Group const& parent, std::string const& name);
 
             }  // namespace constant_shape
-        }      // namespace same_shape
-    }          // namespace data_model
+        }  // namespace same_shape
+    }  // namespace data_model
 }  // namespace lue

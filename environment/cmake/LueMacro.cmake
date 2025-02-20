@@ -4,7 +4,7 @@
 # DIRECTORY_NAME: Name of subdirectory containing the target.
 function(add_test_conditionally
         DIRECTORY_NAME)
-    if(LUE_BUILD_QUALITY_ASSURANCE AND LUE_QUALITY_ASSURANCE_WITH_TESTS)
+    if(LUE_BUILD_TESTS)
         add_subdirectory(${DIRECTORY_NAME})
     endif()
 endfunction()
@@ -366,4 +366,103 @@ function(generate_template_instantiation)
         DEPENDS ${ARG_INPUT_PATHNAME}
         VERBATIM
     )
+endfunction()
+
+
+# Common basic CMake logic for configuring a shared library that is intended to be installed
+function(lue_configure_shared_library)
+    set(prefix ARG)
+    set(no_values "")
+    set(single_values
+        TARGET_BASENAME
+        EXPORT_HEADER_PATHNAME
+        EXPORT_MACRO_BASENAME
+    )
+    set(multi_values "")
+
+    cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
+
+    if(${prefix}_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "Function called with unrecognized arguments: "
+            "${${prefix}_UNPARSED_ARGUMENTS}")
+    endif()
+
+    set(target_basename ${ARG_TARGET_BASENAME})
+    set(export_header_pathname ${ARG_EXPORT_HEADER_PATHNAME})
+    set(export_macro_basename ${ARG_EXPORT_MACRO_BASENAME})
+
+    set(target_name "lue_${target_basename}")
+    set(export_macro_name "LUE_${export_macro_basename}_EXPORT")
+
+    add_library(lue::${target_basename} ALIAS ${target_name})
+
+    set_target_properties(${target_name}
+        PROPERTIES
+            EXPORT_NAME ${target_basename}
+            VERSION ${LUE_VERSION}
+            SOVERSION ${LUE_VERSION_MAJOR}
+    )
+
+    generate_export_header(${target_name}
+        EXPORT_FILE_NAME ${export_header_pathname}
+        EXPORT_MACRO_NAME ${export_macro_name})
+
+    target_include_directories(${target_name}
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export header
+    )
+
+    target_sources(${target_name}
+        PUBLIC
+            FILE_SET
+                HEADERS
+            BASE_DIRS
+                include
+                ${CMAKE_CURRENT_BINARY_DIR}/include
+            FILES
+                include/lue
+                ${CMAKE_CURRENT_BINARY_DIR}/${export_header_pathname}
+    )
+    lue_install_runtime_libraries(
+        TARGETS
+            ${target_name}
+    )
+
+    lue_install_development_libraries(
+        TARGETS
+            ${target_name}
+    )
+endfunction()
+
+function(lue_configure_static_library_for_tests)
+    # Tests need a static library to be able to access everything. Create it, given a configured shared
+    # library.
+    set(prefix ARG)
+    set(no_values "")
+    set(single_values
+        TARGET_NAME_SHARED_LIB
+        TARGET_NAME_STATIC_LIB
+    )
+    set(multi_values "")
+
+    cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
+
+    if(${prefix}_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR
+            "Function called with unrecognized arguments: "
+            "${${prefix}_UNPARSED_ARGUMENTS}")
+    endif()
+
+    set(target_name_shared_lib ${ARG_TARGET_NAME_SHARED_LIB})
+    set(target_name_static_lib ${ARG_TARGET_NAME_STATIC_LIB})
+
+    get_target_property(sources ${target_name_shared_lib} SOURCES)
+    get_target_property(include_directories ${target_name_shared_lib} INCLUDE_DIRECTORIES)
+    get_target_property(link_libraries ${target_name_shared_lib} LINK_LIBRARIES)
+
+    add_library(${target_name_static_lib} STATIC ${sources})
+    target_include_directories(${target_name_static_lib} PUBLIC ${include_directories})
+    target_link_libraries(${target_name_static_lib} ${link_libraries})
 endfunction()

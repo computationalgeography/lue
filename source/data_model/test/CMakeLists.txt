@@ -12,5 +12,5 @@ target_include_directories(lue_data_model_test
 
 target_link_libraries(lue_data_model_test
     PUBLIC
-        lue::data_model
+        lue_data_model_static
 )

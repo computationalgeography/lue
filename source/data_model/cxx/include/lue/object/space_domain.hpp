@@ -21,7 +21,7 @@ namespace lue {
         /*!
             @brief      Class representing the space domain
         */
-        class SpaceDomain: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT SpaceDomain: public hdf5::Group
         {
 
             public:

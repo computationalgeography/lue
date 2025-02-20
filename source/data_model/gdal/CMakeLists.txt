@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 configure_file(
     include/configure.hpp.in
     include/lue/gdal/configure.hpp
@@ -10,7 +8,7 @@ configure_file(
     source/version.cpp
 )
 
-add_library(lue_gdal STATIC
+add_library(lue_gdal SHARED
     source/blocks.cpp
     source/compare_rasters.cpp
     source/data_type.cpp
@@ -22,27 +20,17 @@ add_library(lue_gdal STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
-add_library(lue::gdal ALIAS lue_gdal)
-
-set_target_properties(lue_gdal
-    PROPERTIES
-        EXPORT_NAME gdal
-)
-
-target_include_directories(lue_gdal
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+lue_configure_shared_library(
+    TARGET_BASENAME gdal
+    EXPORT_HEADER_PATHNAME include/lue/gdal/export.hpp
+    EXPORT_MACRO_BASENAME GDAL
 )
 
 target_sources(lue_gdal
     PUBLIC
-        FILE_SET HEADERS
-        BASE_DIRS
-            include
-            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILE_SET
+            HEADERS
         FILES
-            include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/gdal/configure.hpp
 )
 
@@ -55,6 +43,10 @@ target_link_libraries(lue_gdal
         fmt::fmt
 )
 
-lue_install_development_libraries(
-    TARGETS lue_gdal
-)
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_gdal
+        TARGET_NAME_STATIC_LIB lue_gdal_static
+    )
+    add_subdirectory(test)
+endif()

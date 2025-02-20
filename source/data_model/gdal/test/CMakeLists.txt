@@ -12,7 +12,7 @@ add_unit_tests(
     SCOPE lue_gdal
     NAMES ${names}
     LIBRARIES
-        lue::gdal
+        lue_gdal_static
         lue::shared
     TARGETS
         test_names

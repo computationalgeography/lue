@@ -1,12 +1,11 @@
 #pragma once
+#include "lue/data_model/hl/export.hpp"
 #include "lue/object/dataset.hpp"
 #include <memory>
 
 
 namespace lue {
     namespace data_model {
-
-        /// using DatasetPtr = std::shared_ptr<Dataset>;
 
         /*!
             @brief      Class for objects managing a dataset with a specific
@@ -48,6 +47,15 @@ namespace lue {
                 //! A pointer to the dataset this view manages
                 DatasetPtr _dataset;
         };
+
+
+#define LUE_DECLARE_INSTANTIATE_DATASET_VIEW(DatasetPtr)                                                     \
+    extern template class LUE_DATA_MODEL_HL_EXPORT DatasetView<DatasetPtr>;
+
+        LUE_DECLARE_INSTANTIATE_DATASET_VIEW(Dataset*)
+        LUE_DECLARE_INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
+
+#undef LUE_DECLARE_INSTANTIATE_DATASET_VIEW
 
     }  // namespace data_model
 }  // namespace lue

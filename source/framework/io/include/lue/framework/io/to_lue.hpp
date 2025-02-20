@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/dataset.hpp"
+#include "lue/framework/io/export.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/configure.hpp"
@@ -267,7 +268,7 @@ namespace lue {
         @return     A future which becomes ready once the writing is done
     */
     template<typename Policies, Rank rank>
-    [[nodiscard]] auto to_lue(
+    LUE_FRAMEWORK_IO_EXPORT [[nodiscard]] auto to_lue(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies>, rank> const& array,
         std::string const& array_pathname,
@@ -342,7 +343,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] auto to_lue(
+    LUE_FRAMEWORK_IO_EXPORT [[nodiscard]] auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id) -> hpx::future<void>
@@ -366,7 +367,7 @@ namespace lue {
         @return     A future which becomes ready once the writing is done
     */
     template<typename Policies, Rank rank>
-    [[nodiscard]] auto to_lue(
+    LUE_FRAMEWORK_IO_EXPORT [[nodiscard]] auto to_lue(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies>, rank> const& array,
         std::string const& array_pathname,
@@ -447,7 +448,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] auto to_lue(
+    LUE_FRAMEWORK_IO_EXPORT [[nodiscard]] auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id,

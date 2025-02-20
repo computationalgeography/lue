@@ -16,16 +16,15 @@ block()
     )
 endblock()
 
-add_library(lue_framework_io
+add_library(lue_framework_io SHARED
     source/dataset.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
 )
 
-add_library(lue::framework_io ALIAS lue_framework_io)
-
-target_include_directories(lue_framework_io
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+lue_configure_shared_library(
+    TARGET_BASENAME framework_io
+    EXPORT_HEADER_PATHNAME include/lue/framework/io/export.hpp
+    EXPORT_MACRO_BASENAME FRAMEWORK_IO
 )
 
 target_link_libraries(lue_framework_io
