@@ -66,6 +66,7 @@ foreach(name IN ITEMS
     pcraster/port.md
     pcraster/status.md
     quick_start/cpp.md
+    quick_start/game_of_life.py
     quick_start/index.md
     quick_start/python.md
     reference/algorithm/clump.md
