@@ -49,6 +49,7 @@ namespace lue {
         };
 
 
+#if !defined(_MSC_VER)
 #define LUE_DECLARE_INSTANTIATE_DATASET_VIEW(DatasetPtr)                                                     \
     extern template class LUE_DATA_MODEL_HL_EXPORT DatasetView<DatasetPtr>;
 
@@ -56,6 +57,7 @@ namespace lue {
         LUE_DECLARE_INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
 
 #undef LUE_DECLARE_INSTANTIATE_DATASET_VIEW
+#endif
 
     }  // namespace data_model
 }  // namespace lue

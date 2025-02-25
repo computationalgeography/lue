@@ -9,7 +9,7 @@ add_library(lue_framework_api_c SHARED
 
 lue_configure_shared_library(
     TARGET_BASENAME framework_api_c
-    EXPORT_HEADER_PATHNAME include/lue/framework/api/c/export.hpp
+    EXPORT_HEADER_PATHNAME include/lue/framework/api/c/export.h
     EXPORT_MACRO_BASENAME FCAPI
 )
 

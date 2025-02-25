@@ -109,6 +109,7 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
+        lue::shared
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size

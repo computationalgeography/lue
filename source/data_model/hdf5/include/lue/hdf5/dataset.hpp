@@ -18,7 +18,7 @@ namespace lue {
 
             public:
 
-                class CreationPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT CreationPropertyList: public PropertyList
                 {
 
                     public:
@@ -79,7 +79,7 @@ namespace lue {
                 };
 
 
-                class AccessPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT AccessPropertyList: public PropertyList
                 {
 
                     public:
@@ -88,7 +88,7 @@ namespace lue {
                 };
 
 
-                class TransferPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT TransferPropertyList: public PropertyList
                 {
 
                     public:

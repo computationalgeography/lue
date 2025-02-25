@@ -14,7 +14,7 @@ namespace lue::hdf5 {
 
         public:
 
-            class AccessPropertyList: public PropertyList
+            class LUE_HDF5_EXPORT AccessPropertyList: public PropertyList
             {
 
                 public:
