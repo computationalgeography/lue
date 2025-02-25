@@ -17,7 +17,7 @@ namespace lue::gdal {
             /*!
                 @brief      Utility class for performing I/O to a raster band
             */
-            class Band
+            class LUE_GDAL_EXPORT Band
             {
 
                 public:
