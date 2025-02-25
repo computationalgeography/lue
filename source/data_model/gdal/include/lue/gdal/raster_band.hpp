@@ -111,7 +111,7 @@ namespace lue::gdal {
                     boolean is false.
     */
     template<typename Element>
-    LUE_GDAL_EXPORT auto no_data_value(GDALRasterBand& band) -> std::tuple<Element, bool>
+    auto no_data_value(GDALRasterBand& band) -> std::tuple<Element, bool>
     {
         int success{};
         Element value{detail::no_data_value<Element>(band, &success)};
@@ -127,7 +127,7 @@ namespace lue::gdal {
                     on the context this may or may not be an error.
     */
     template<typename Element>
-    LUE_GDAL_EXPORT auto set_no_data_value(GDALRasterBand& band, Element const value) -> bool
+    auto set_no_data_value(GDALRasterBand& band, Element const value) -> bool
     {
         return detail::set_no_data_value(band, value) == CE_None;
     }

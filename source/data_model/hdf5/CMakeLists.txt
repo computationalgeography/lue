@@ -72,5 +72,10 @@ if(LUE_BUILD_TESTS)
         TARGET_NAME_SHARED_LIB lue_hdf5
         TARGET_NAME_STATIC_LIB lue_hdf5_static
     )
+    target_compile_definitions(lue_hdf5_static
+        PUBLIC
+            H5_USE_110_API
+            $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
+    )
     add_subdirectory(test)
 endif()

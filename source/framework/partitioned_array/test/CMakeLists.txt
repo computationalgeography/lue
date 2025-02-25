@@ -38,7 +38,7 @@ foreach(name ${names})
 
     target_link_libraries(${test_name}
         PRIVATE
-            lue::framework_partitioned_array
+            lue_framework_partitioned_array_static
             lue::framework_test
             Boost::headers
     )
@@ -59,7 +59,6 @@ foreach(name ${names})
         APPEND
         PROPERTY
             ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:GDAL::GDAL>/../bin>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>

@@ -1,6 +1,3 @@
-add_test_conditionally(test)
-
-
 # Instantiate array partition classes ------------------------------------------
 set(generated_source_files "")
 
@@ -81,3 +78,11 @@ target_link_libraries(lue_framework_partitioned_array
         HPX::component
     PUBLIC
         lue::framework_core)
+
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_framework_partitioned_array
+        TARGET_NAME_STATIC_LIB lue_framework_partitioned_array_static
+    )
+    add_subdirectory(test)
+endif()

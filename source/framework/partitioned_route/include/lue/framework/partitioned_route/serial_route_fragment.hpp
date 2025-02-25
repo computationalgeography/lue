@@ -22,7 +22,7 @@ namespace lue {
         fragment is a piece of a route whose cell indxs are all located in a single partition.
     */
     template<Rank rank>
-    class /* LUE_PARTITIONED_ROUTE_EXPORT */ SerialRouteFragment
+    class SerialRouteFragment
     {
         public:
 

@@ -805,14 +805,16 @@ namespace lue::data_model {
     template class constant::RasterView<DatasetPtr>;                                                         \
     template class variable::RasterView<DatasetPtr>;                                                         \
                                                                                                              \
-    template constant::RasterView<DatasetPtr> constant::create_raster_view<DatasetPtr>(                      \
+    template LUE_DATA_MODEL_HL_EXPORT constant::RasterView<DatasetPtr>                                       \
+    constant::create_raster_view<DatasetPtr>(                                                                \
         DatasetPtr dataset,                                                                                  \
         std::string const& phenomenon_name,                                                                  \
         std::string const& property_set_name,                                                                \
         hdf5::Shape const& grid_shape,                                                                       \
         typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);                             \
                                                                                                              \
-    template variable::RasterView<DatasetPtr> variable::create_raster_view<DatasetPtr>(                      \
+    template LUE_DATA_MODEL_HL_EXPORT variable::RasterView<DatasetPtr>                                       \
+    variable::create_raster_view<DatasetPtr>(                                                                \
         DatasetPtr dataset,                                                                                  \
         std::string const& phenomenon_name,                                                                  \
         std::string const& property_set_name,                                                                \

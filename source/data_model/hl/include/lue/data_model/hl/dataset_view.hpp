@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/data_model/hl/export.hpp"
 #include "lue/object/dataset.hpp"
 #include <memory>
 
@@ -18,7 +17,7 @@ namespace lue {
             no other kinds of data are stored in the dataset. A single dataset
             can be potentially managed by multiple views.
         */
-        template<typename DatasetPtr = std::shared_ptr<Dataset>>
+        template<typename DatasetPtr /* = std::shared_ptr<Dataset> */>
         class DatasetView
         {
 
@@ -47,17 +46,6 @@ namespace lue {
                 //! A pointer to the dataset this view manages
                 DatasetPtr _dataset;
         };
-
-
-#if !defined(_MSC_VER)
-#define LUE_DECLARE_INSTANTIATE_DATASET_VIEW(DatasetPtr)                                                     \
-    extern template class LUE_DATA_MODEL_HL_EXPORT DatasetView<DatasetPtr>;
-
-        LUE_DECLARE_INSTANTIATE_DATASET_VIEW(Dataset*)
-        LUE_DECLARE_INSTANTIATE_DATASET_VIEW(std::shared_ptr<Dataset>)
-
-#undef LUE_DECLARE_INSTANTIATE_DATASET_VIEW
-#endif
 
     }  // namespace data_model
 }  // namespace lue

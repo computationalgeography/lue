@@ -13,7 +13,7 @@ namespace lue::gdal {
         @exception  std::runtime_error In case GDAL does not support I/O of @a Element values
     */
     template<typename Element>
-    void LUE_GDAL_EXPORT verify_support()
+    void verify_support()
     {
         if constexpr (
             (std::is_same_v<Element, std::int64_t> || std::is_same_v<Element, std::uint64_t>) &&
@@ -32,7 +32,7 @@ namespace lue::gdal {
 
 
     template<typename Element>
-    constexpr LUE_GDAL_EXPORT auto supports() -> bool
+    constexpr auto supports() -> bool
     {
         if constexpr (std::is_same_v<Element, std::int8_t>)
         {

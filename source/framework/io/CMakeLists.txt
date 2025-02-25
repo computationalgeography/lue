@@ -28,8 +28,10 @@ lue_configure_shared_library(
 )
 
 target_link_libraries(lue_framework_io
-    PUBLIC
+    PRIVATE
         lue::framework_algorithm
+    PUBLIC
+        lue::framework_partitioned_array
         lue::data_model_hl
         lue::gdal
         $<$<BOOL:${LUE_FRAMEWORK_WITH_PARALLEL_IO}>:MPI::MPI_CXX>

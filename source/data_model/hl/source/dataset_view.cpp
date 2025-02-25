@@ -1,4 +1,5 @@
 #include "lue/data_model/hl/dataset_view.hpp"
+#include "lue/data_model/hl/export.hpp"
 
 
 namespace lue {

@@ -1,8 +1,9 @@
 #include "lue/framework/partitioned_route/serial_route_partition_impl.hpp"
+#include "lue/framework/partitioned_route/export.hpp"
 
 
 namespace lue {
 
-    template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
+    template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
 
 }  // namespace lue

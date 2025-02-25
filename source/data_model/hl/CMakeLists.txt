@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 add_library(lue_data_model_hl SHARED
     source/dataset_view.cpp
     source/raster_view.cpp
@@ -16,3 +14,11 @@ target_link_libraries(lue_data_model_hl
     PUBLIC
         lue::data_model
 )
+
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_data_model_hl
+        TARGET_NAME_STATIC_LIB lue_data_model_hl_static
+    )
+    add_subdirectory(test)
+endif()

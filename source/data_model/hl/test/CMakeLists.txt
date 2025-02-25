@@ -6,7 +6,7 @@ add_unit_tests(
     SCOPE lue_data_model_hl
     NAMES ${names}
     LIBRARIES
-        lue::data_model_hl
+        lue_data_model_hl_static
         lue::data_model_test
     TARGETS
         test_names
