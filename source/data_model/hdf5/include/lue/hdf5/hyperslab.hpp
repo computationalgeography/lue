@@ -15,7 +15,7 @@ namespace lue {
 
             A hyperslab defines a subset of a dataspace.
         */
-        class Hyperslab
+        class LUE_HDF5_EXPORT Hyperslab
         {
 
             public:
@@ -69,7 +69,8 @@ namespace lue {
         };
 
 
-        Hyperslab hyperslab(Offset const& subset_center, Shape const& subset_shape, Shape const& array_shape);
+        LUE_HDF5_EXPORT Hyperslab
+        hyperslab(Offset const& subset_center, Shape const& subset_shape, Shape const& array_shape);
 
     }  // namespace hdf5
 }  // namespace lue

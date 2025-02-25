@@ -68,6 +68,14 @@ lue_configure_shared_library(
     EXPORT_MACRO_BASENAME FPA
 )
 
+target_sources(lue_framework_partitioned_array
+    PUBLIC
+        FILE_SET
+            HEADERS
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
+)
+
 target_link_libraries(lue_framework_partitioned_array
     PRIVATE
         HPX::component

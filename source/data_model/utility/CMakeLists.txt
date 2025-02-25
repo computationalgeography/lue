@@ -22,4 +22,6 @@ target_link_libraries(lue_utility
         lue::data_model
         cxxopts::cxxopts
         nlohmann_json::nlohmann_json
+    PRIVATE
+        lue::shared
 )

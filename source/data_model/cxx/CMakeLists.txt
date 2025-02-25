@@ -74,6 +74,8 @@ target_link_libraries(lue_data_model
         lue::hdf5
         Boost::headers
         fmt::fmt
+    PRIVATE
+        lue::shared
 )
 
 if(LUE_BUILD_TESTS)

@@ -1,9 +1,10 @@
 #pragma once
+#include "lue/hdf5/export.hpp"
 #include <string>
 
 
 namespace lue {
 
-    std::string hdf5_version();
+    LUE_HDF5_EXPORT std::string hdf5_version();
 
 }  // namespace lue

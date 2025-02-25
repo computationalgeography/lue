@@ -116,7 +116,7 @@ namespace lue {
         /*!
             @brief      This class represents an attribute
         */
-        class Attribute
+        class LUE_HDF5_EXPORT Attribute
         {
 
             public:
@@ -211,7 +211,7 @@ namespace lue {
         }
 
 
-        Attribute create_attribute(
+        LUE_HDF5_EXPORT Attribute create_attribute(
             Identifier const& location,
             std::string const& name,
             Datatype const& datatype,

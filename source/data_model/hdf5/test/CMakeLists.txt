@@ -14,7 +14,7 @@ add_unit_tests(
     SCOPE lue_hdf5
     NAMES ${names}
     LIBRARIES
-        lue::hdf5
+        lue_hdf5_static
     TARGETS
         test_names
 )

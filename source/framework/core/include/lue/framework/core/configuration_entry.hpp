@@ -1,5 +1,6 @@
 #pragma once
-#include <hpx/modules/runtime_local.hpp>
+#include <cstdint>
+#include <string>
 
 
 namespace lue {
