@@ -47,6 +47,7 @@ if(LUE_BUILD_TESTS)
     lue_configure_static_library_for_tests(
         TARGET_NAME_SHARED_LIB lue_gdal
         TARGET_NAME_STATIC_LIB lue_gdal_static
+        EXPORT_MACRO_BASENAME GDAL
     )
     add_subdirectory(test)
 endif()

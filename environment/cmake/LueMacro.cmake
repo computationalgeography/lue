@@ -444,6 +444,7 @@ function(lue_configure_static_library_for_tests)
     set(single_values
         TARGET_NAME_SHARED_LIB
         TARGET_NAME_STATIC_LIB
+        EXPORT_MACRO_BASENAME
     )
     set(multi_values "")
 
@@ -457,15 +458,28 @@ function(lue_configure_static_library_for_tests)
 
     set(target_name_shared_lib ${ARG_TARGET_NAME_SHARED_LIB})
     set(target_name_static_lib ${ARG_TARGET_NAME_STATIC_LIB})
+    set(export_macro_basename ${ARG_EXPORT_MACRO_BASENAME})
 
     get_target_property(sources ${target_name_shared_lib} SOURCES)
     get_target_property(include_directories ${target_name_shared_lib} INCLUDE_DIRECTORIES)
     get_target_property(link_libraries ${target_name_shared_lib} LINK_LIBRARIES)
-    # get_target_property(compile_definitions ${target_name_shared_lib} COMPILE_DEFINITIONS)
-    # string(JOIN " " compile_definitions ${compile_definitions})
 
-    add_library(${target_name_static_lib} STATIC ${sources})
-    target_include_directories(${target_name_static_lib} PUBLIC ${include_directories})
-    target_link_libraries(${target_name_static_lib} ${link_libraries})
-    # target_compile_definitions(${target_name_static_lib} PUBLIC "${compile_definitions}")
+    add_library(${target_name_static_lib} STATIC
+        ${sources}
+    )
+
+    target_include_directories(${target_name_static_lib}
+        PUBLIC
+            ${include_directories}
+    )
+
+    target_link_libraries(${target_name_static_lib}
+        PUBLIC
+            ${link_libraries}
+    )
+
+    target_compile_definitions(${target_name_static_lib}
+        PRIVATE
+            LUE_${export_macro_basename}_STATIC_DEFINE
+    )
 endfunction()

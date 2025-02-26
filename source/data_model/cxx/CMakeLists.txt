@@ -82,6 +82,7 @@ if(LUE_BUILD_TESTS)
     lue_configure_static_library_for_tests(
         TARGET_NAME_SHARED_LIB lue_data_model
         TARGET_NAME_STATIC_LIB lue_data_model_static
+        EXPORT_MACRO_BASENAME DATA_MODEL
     )
     add_subdirectory(test)
 endif()

@@ -185,16 +185,16 @@ namespace lue {
         LUE_HDF5_EXPORT bool is_ieee_floating_point_le(Datatype const& datatype);
 
         template<typename T>
-        Datatype native_datatype();
+        LUE_HDF5_EXPORT Datatype native_datatype();
 
         template<typename T>
-        Datatype std_datatype_le();
+        LUE_HDF5_EXPORT Datatype std_datatype_le();
 
         template<typename T>
-        Datatype ieee_datatype_le();
+        LUE_HDF5_EXPORT Datatype ieee_datatype_le();
 
         template<typename T>
-        Datatype std_datatype();
+        LUE_HDF5_EXPORT Datatype std_datatype();
 
     }  // namespace hdf5
 }  // namespace lue

@@ -71,6 +71,7 @@ if(LUE_BUILD_TESTS)
     lue_configure_static_library_for_tests(
         TARGET_NAME_SHARED_LIB lue_hdf5
         TARGET_NAME_STATIC_LIB lue_hdf5_static
+        EXPORT_MACRO_BASENAME HDF5
     )
     target_compile_definitions(lue_hdf5_static
         PUBLIC
