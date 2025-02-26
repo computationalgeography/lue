@@ -1,0 +1,23 @@
+# https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository#configuring-the-template-chooser
+---
+blank_issues_enabled: false
+
+contact_links:
+  - name: Documentation
+    url: https://lue.computationalgeography.org/doc/index.html
+    about: >-
+      Please use GitHub - open issue located on top of each documentation page.
+
+  - name: Community chat
+    url: https://matrix.to/#/#lue:matrix.org
+    about: Matrix room to ask questions about using LUE
+
+  - name: Chat amongst developers
+    url: https://matrix.to/#/#lue-dev:matrix.org
+    about: Matrix room  about the development of LUE
+
+  - name: Open a blank issue
+    url:
+      "https://github.com/computationalgeography/lue/\
+      issues/new?template=Blank+issue"
+    about: Please open a blank issue to if you don't see your issue type here.

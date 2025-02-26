@@ -1,0 +1,21 @@
+---
+name: "Feature request"
+description: "You have an idea for a new feature?"
+title: "[Feature request]: "
+labels:
+  - "feature"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature!
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: Feature description
+      description: >-
+        Please briefly and clearly describe what you are currently missing
+        in LUE.
+    validations:
+      required: true
