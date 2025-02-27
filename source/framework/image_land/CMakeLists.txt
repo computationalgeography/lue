@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 if(LUE_FRAMEWORK_WITH_PYTHON_API)
     add_subdirectory(python)
 endif()
@@ -50,6 +48,7 @@ endblock()
 # / Instantiate image_land operations ------------------------------------------
 
 add_library(lue_image_land SHARED
+    source/integrate.cpp
     ${generated_source_files}
 )
 
@@ -64,3 +63,12 @@ target_link_libraries(lue_image_land
         lue::framework_algorithm
         lue::framework_routing_operation
 )
+
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_image_land
+        TARGET_NAME_STATIC_LIB lue_image_land_static
+        EXPORT_MACRO_BASENAME IMAGE_LAND_OPERATION
+    )
+    add_subdirectory(test)
+endif()
