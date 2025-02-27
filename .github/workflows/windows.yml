@@ -88,7 +88,9 @@ jobs:
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
-              LUE_CONAN_PACKAGES="boost docopt gdal glfw imgui hdf5 hwloc mimalloc vulkan-headers vulkan-loader" \
+              # Boost is a dependency of thrift which is a dependency of gdal. Explicitly adding boost here
+              # results in conflicts.
+              LUE_CONAN_PACKAGES="docopt gdal glfw imgui hdf5 hwloc mimalloc vulkan-headers vulkan-loader" \
                   conan install ${{ env.lue_source_directory }} \
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \

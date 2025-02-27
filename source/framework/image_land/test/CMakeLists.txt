@@ -37,7 +37,6 @@ foreach(name ${names})
             APPEND
             PROPERTY
                 ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_route>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
@@ -45,8 +44,6 @@ foreach(name ${names})
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_routing_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
                     PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::image_land>
-                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
         )
     endif()
 endforeach()
