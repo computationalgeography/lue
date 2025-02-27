@@ -1,12 +1,13 @@
 #pragma once
 #include "lue/data_model/hl/dataset_view.hpp"
+#include "lue/data_model/hl/export.hpp"
 #include <array>
 
 
 namespace lue::data_model {
 
     template<typename DatasetPtr>
-    class RasterView: public DatasetView<DatasetPtr>
+    class LUE_DATA_MODEL_HL_EXPORT RasterView: public DatasetView<DatasetPtr>
     {
 
         public:
@@ -69,7 +70,7 @@ namespace lue::data_model {
                         single area
         */
         template<typename DatasetPtr>
-        class RasterView: public data_model::RasterView<DatasetPtr>
+        class LUE_DATA_MODEL_HL_EXPORT RasterView: public data_model::RasterView<DatasetPtr>
         {
 
             public:
@@ -133,7 +134,7 @@ namespace lue::data_model {
         };
 
 
-        bool contains_raster(
+        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
 
 
@@ -145,7 +146,7 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
@@ -173,7 +174,7 @@ namespace lue::data_model {
             a single time box and space box that will be filled by the model.
         */
         template<typename DatasetPtr>
-        class RasterView: public data_model::RasterView<DatasetPtr>
+        class LUE_DATA_MODEL_HL_EXPORT RasterView: public data_model::RasterView<DatasetPtr>
         {
 
             public:
@@ -202,7 +203,17 @@ namespace lue::data_model {
                 hdf5::Shape::value_type nr_time_steps() const;
 
                 template<typename Element>
-                Layer add_layer(std::string const& name);
+                Layer add_layer(std::string const& name)
+                {
+                    if constexpr (std::is_same_v<Element, bool>)
+                    {
+                        return add_layer(name, hdf5::native_datatype<std::uint8_t>());
+                    }
+                    else
+                    {
+                        return add_layer(name, hdf5::native_datatype<Element>());
+                    }
+                }
 
                 Layer add_layer(std::string const& name, hdf5::Datatype const& datatype);
 
@@ -216,22 +227,7 @@ namespace lue::data_model {
         };
 
 
-        template<typename DatasetPtr>
-        template<typename Element>
-        typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(std::string const& name)
-        {
-            if constexpr (std::is_same_v<Element, bool>)
-            {
-                return add_layer(name, hdf5::native_datatype<std::uint8_t>());
-            }
-            else
-            {
-                return add_layer(name, hdf5::native_datatype<Element>());
-            }
-        }
-
-
-        bool contains_raster(
+        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
 
 
@@ -243,7 +239,7 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,

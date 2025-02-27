@@ -9,7 +9,7 @@ namespace lue {
             - Zero or more space points per item
             - Each space point has a unique location in space
         */
-        class MobileSpacePoint: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT MobileSpacePoint: public same_shape::constant_shape::Value
         {
 
             public:

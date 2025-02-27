@@ -17,7 +17,7 @@ namespace lue::hdf5 {
         Copies can be made. Only when the last copy goes out of scope will the
         identifier be closed.
     */
-    class Identifier
+    class LUE_HDF5_EXPORT Identifier
     {
 
         public:

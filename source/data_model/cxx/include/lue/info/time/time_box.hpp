@@ -9,7 +9,7 @@ namespace lue {
             - Zero or more time boxes per item
             - Each time box has a unique location in time
         */
-        class TimeBox: public LocationInTime
+        class LUE_DATA_MODEL_EXPORT TimeBox: public LocationInTime
         {
 
             public:

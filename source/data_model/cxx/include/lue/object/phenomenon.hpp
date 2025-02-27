@@ -15,7 +15,7 @@ namespace lue {
             - collection property sets: for storing property sets containing
               information for the collection of objects as a whole
         */
-        class Phenomenon: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT Phenomenon: public hdf5::Group
         {
 
             public:

@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/hdf5/export.hpp"
 #include "lue/hdf5/shape.hpp"
 
 
@@ -9,7 +10,7 @@ namespace lue {
 
         std::size_t upper_chunk_size_limit();
 
-        Shape chunk_shape(Shape const& value_shape, std::size_t size_of_element);
+        LUE_HDF5_EXPORT Shape chunk_shape(Shape const& value_shape, std::size_t size_of_element);
 
         Shape::value_type size_of_chunk(Shape const& chunk, std::size_t size_of_element);
 

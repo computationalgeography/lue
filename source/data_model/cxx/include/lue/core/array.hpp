@@ -1,11 +1,12 @@
 #pragma once
+#include "lue/data_model/export.hpp"
 #include "lue/hdf5.hpp"
 
 
 namespace lue {
     namespace data_model {
 
-        class Array: public hdf5::Dataset
+        class LUE_DATA_MODEL_EXPORT Array: public hdf5::Dataset
         {
 
             public:

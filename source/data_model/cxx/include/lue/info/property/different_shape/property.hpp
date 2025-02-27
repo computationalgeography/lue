@@ -8,7 +8,7 @@ namespace lue {
     namespace data_model {
         namespace different_shape {
 
-            class Property: public PropertyGroup
+            class LUE_DATA_MODEL_EXPORT Property: public PropertyGroup
             {
 
                 public:

@@ -1,10 +1,11 @@
 #pragma once
+#include "lue/gdal/export.hpp"
 #include <gdal_priv.h>
 #include <string>
 
 
 namespace lue::gdal {
 
-    auto as_string(GDALDataType const& data_type) -> std::string;
+    LUE_GDAL_EXPORT auto as_string(GDALDataType const& data_type) -> std::string;
 
 }  // namespace lue::gdal

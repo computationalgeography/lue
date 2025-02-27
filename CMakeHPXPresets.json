@@ -9,6 +9,7 @@
                 "HPX_WITH_EXAMPLES": "FALSE",
                 "HPX_WITH_FETCH_ASIO": "TRUE",
                 "HPX_WITH_HWLOC": "TRUE",
+                "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_PKGCONFIG": "FALSE",
                 "HPX_WITH_TESTS": "FALSE"
             }

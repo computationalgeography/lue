@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/gdal/define.hpp"
+#include "lue/gdal/export.hpp"
 #include <gdal_priv.h>
 
 
@@ -13,33 +14,35 @@ namespace lue::gdal {
     using RasterBandPtr = GDALRasterBand*;
 
 
-    auto data_type(GDALRasterBand& band) -> GDALDataType;
+    LUE_GDAL_EXPORT auto data_type(GDALRasterBand& band) -> GDALDataType;
 
-    auto block_shape(GDALRasterBand& band) -> Shape;
+    LUE_GDAL_EXPORT auto block_shape(GDALRasterBand& band) -> Shape;
 
-    auto shape(GDALRasterBand& band) -> Shape;
+    LUE_GDAL_EXPORT auto shape(GDALRasterBand& band) -> Shape;
 
-    auto read_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
+    LUE_GDAL_EXPORT auto read_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
 
-    auto write_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
+    LUE_GDAL_EXPORT auto write_block(GDALRasterBand& band, Offset const& block_offset, void* buffer) -> void;
 
-    auto read(
+    LUE_GDAL_EXPORT auto read(
         GDALRasterBand& band,
         Offset const& offset,
         Shape const& raster_shape,
         GDALDataType data_type,
         void* buffer) -> void;
 
-    auto read(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer) -> void;
+    LUE_GDAL_EXPORT auto read(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer)
+        -> void;
 
-    auto write(
+    LUE_GDAL_EXPORT auto write(
         GDALRasterBand& band,
         Offset const& offset,
         Shape const& raster_shape,
         GDALDataType data_type,
         void* buffer) -> void;
 
-    auto write(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer) -> void;
+    LUE_GDAL_EXPORT auto write(GDALRasterBand& band, Shape const& shape, GDALDataType data_type, void* buffer)
+        -> void;
 
 
     namespace detail {

@@ -6,7 +6,7 @@
 namespace lue {
     namespace data_model {
 
-        class Universes: public Collection<Universe>
+        class LUE_DATA_MODEL_EXPORT Universes: public Collection<Universe>
         {
 
             public:

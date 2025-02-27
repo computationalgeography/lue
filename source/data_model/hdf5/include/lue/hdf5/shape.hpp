@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/hdf5/export.hpp"
 #include <hdf5.h>
 #include <vector>
 
@@ -17,7 +18,7 @@ namespace lue {
         };
 
 
-        Shape::value_type size_of_shape(Shape const& shape, std::size_t size_of_element = 1);
+        LUE_HDF5_EXPORT Shape::value_type size_of_shape(Shape const& shape, std::size_t size_of_element = 1);
 
     }  // namespace hdf5
 }  // namespace lue

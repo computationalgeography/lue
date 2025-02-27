@@ -17,7 +17,7 @@ namespace lue {
 
             An HDF5 group can be opened multiple times.
         */
-        class Group: public PrimaryDataObject
+        class LUE_HDF5_EXPORT Group: public PrimaryDataObject
         {
 
             public:
@@ -77,9 +77,9 @@ namespace lue {
         };
 
 
-        bool group_exists(Group const& parent, std::string const& name);
+        LUE_HDF5_EXPORT bool group_exists(Group const& parent, std::string const& name);
 
-        Group create_group(Group& parent, std::string const& name);
+        LUE_HDF5_EXPORT Group create_group(Group& parent, std::string const& name);
 
     }  // namespace hdf5
 }  // namespace lue

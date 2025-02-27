@@ -19,7 +19,7 @@ namespace lue {
             - same_shape::variable_shape::Value
             - different_shape::constant_shape::Value
         */
-        class ActiveSetIndex: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT ActiveSetIndex: public same_shape::constant_shape::Value
         {
 
             public:

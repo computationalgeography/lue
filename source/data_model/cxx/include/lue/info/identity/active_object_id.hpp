@@ -25,7 +25,7 @@ namespace lue {
             - same_shape::variable_shape::Value
             - different_shape::constant_shape::Value
         */
-        class ActiveObjectID: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT ActiveObjectID: public same_shape::constant_shape::Value
         {
 
             public:

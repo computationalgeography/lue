@@ -13,12 +13,12 @@ namespace lue {
         /*!
             @brief      Class representing an HDF5 dataset
         */
-        class Dataset: public PrimaryDataObject
+        class LUE_HDF5_EXPORT Dataset: public PrimaryDataObject
         {
 
             public:
 
-                class CreationPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT CreationPropertyList: public PropertyList
                 {
 
                     public:
@@ -79,7 +79,7 @@ namespace lue {
                 };
 
 
-                class AccessPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT AccessPropertyList: public PropertyList
                 {
 
                     public:
@@ -88,7 +88,7 @@ namespace lue {
                 };
 
 
-                class TransferPropertyList: public PropertyList
+                class LUE_HDF5_EXPORT TransferPropertyList: public PropertyList
                 {
 
                     public:
@@ -185,14 +185,14 @@ namespace lue {
         };
 
 
-        bool dataset_exists(Identifier const& parent, std::string const& name);
+        LUE_HDF5_EXPORT bool dataset_exists(Identifier const& parent, std::string const& name);
 
-        Dataset open_dataset(
+        LUE_HDF5_EXPORT Dataset open_dataset(
             Identifier& parent,
             std::string const& name,
             Dataset::AccessPropertyList const& access_property_list = Dataset::AccessPropertyList{});
 
-        Dataset create_dataset(
+        LUE_HDF5_EXPORT Dataset create_dataset(
             Identifier& parent,
             std::string const& name,
             Datatype const& datatype,

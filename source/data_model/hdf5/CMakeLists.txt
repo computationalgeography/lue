@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 configure_file(
     include/configure.hpp.in
     include/lue/hdf5/configure.hpp
@@ -10,7 +8,7 @@ configure_file(
     source/version.cpp
 )
 
-add_library(lue_hdf5 STATIC
+add_library(lue_hdf5 SHARED
     source/attribute.cpp
     source/attributes.cpp
     source/chunk.cpp
@@ -36,11 +34,18 @@ add_library(lue_hdf5 STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
-add_library(lue::hdf5 ALIAS lue_hdf5)
+lue_configure_shared_library(
+    TARGET_BASENAME hdf5
+    EXPORT_HEADER_PATHNAME include/lue/hdf5/export.hpp
+    EXPORT_MACRO_BASENAME HDF5
+)
 
-set_target_properties(lue_hdf5
-    PROPERTIES
-        EXPORT_NAME hdf5
+target_sources(lue_hdf5
+    PUBLIC
+        FILE_SET
+            HEADERS
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
 )
 
 target_compile_definitions(lue_hdf5
@@ -53,32 +58,25 @@ target_compile_definitions(lue_hdf5
         $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
 )
 
-target_include_directories(lue_hdf5
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-)
-
-target_sources(lue_hdf5
-    PUBLIC
-        FILE_SET HEADERS
-        BASE_DIRS
-            include
-            ${CMAKE_CURRENT_BINARY_DIR}/include
-        FILES
-            include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
-)
-
 target_link_libraries(lue_hdf5
     PUBLIC
-        lue::shared
         HDF5::HDF5
     PRIVATE
+        lue::shared
         Boost::headers
         fmt::fmt
 )
 
-lue_install_development_libraries(
-    TARGETS lue_hdf5
-)
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_hdf5
+        TARGET_NAME_STATIC_LIB lue_hdf5_static
+        EXPORT_MACRO_BASENAME HDF5
+    )
+    target_compile_definitions(lue_hdf5_static
+        PUBLIC
+            H5_USE_110_API
+            $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
+    )
+    add_subdirectory(test)
+endif()

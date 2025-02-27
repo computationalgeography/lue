@@ -800,19 +800,21 @@ namespace lue::data_model {
     }  // namespace variable
 
 
-#define INSTANTIATE_RASTER_VIEW(DatasetPtr)                                                                  \
+#define LUE_INSTANTIATE_RASTER_VIEW(DatasetPtr)                                                              \
     template class RasterView<DatasetPtr>;                                                                   \
     template class constant::RasterView<DatasetPtr>;                                                         \
     template class variable::RasterView<DatasetPtr>;                                                         \
                                                                                                              \
-    template constant::RasterView<DatasetPtr> constant::create_raster_view<DatasetPtr>(                      \
+    template LUE_DATA_MODEL_HL_EXPORT constant::RasterView<DatasetPtr>                                       \
+    constant::create_raster_view<DatasetPtr>(                                                                \
         DatasetPtr dataset,                                                                                  \
         std::string const& phenomenon_name,                                                                  \
         std::string const& property_set_name,                                                                \
         hdf5::Shape const& grid_shape,                                                                       \
         typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);                             \
                                                                                                              \
-    template variable::RasterView<DatasetPtr> variable::create_raster_view<DatasetPtr>(                      \
+    template LUE_DATA_MODEL_HL_EXPORT variable::RasterView<DatasetPtr>                                       \
+    variable::create_raster_view<DatasetPtr>(                                                                \
         DatasetPtr dataset,                                                                                  \
         std::string const& phenomenon_name,                                                                  \
         std::string const& property_set_name,                                                                \
@@ -822,9 +824,9 @@ namespace lue::data_model {
         hdf5::Shape const& grid_shape,                                                                       \
         typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);
 
-    INSTANTIATE_RASTER_VIEW(Dataset*)
-    INSTANTIATE_RASTER_VIEW(std::shared_ptr<Dataset>)
+    LUE_INSTANTIATE_RASTER_VIEW(Dataset*)
+    LUE_INSTANTIATE_RASTER_VIEW(std::shared_ptr<Dataset>)
 
-#undef INSTANTIATE_DATASET_VIEW
+#undef LUE_INSTANTIATE_RASTER_VIEW
 
 }  // namespace lue::data_model

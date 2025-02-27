@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/data_model/export.hpp"
 #include <optional>
 #include <string>
 
@@ -31,7 +32,7 @@ namespace lue {
                 of its era. This class supports using, for example, the first day
                 of this year as the epoch, or 'now'.
             */
-            class Epoch
+            class LUE_DATA_MODEL_EXPORT Epoch
             {
 
                 public:
@@ -82,5 +83,5 @@ namespace lue {
             };
 
         }  // namespace time
-    }      // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

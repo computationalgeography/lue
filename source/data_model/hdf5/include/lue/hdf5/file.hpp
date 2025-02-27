@@ -9,12 +9,12 @@ namespace lue::hdf5 {
     /*!
         @brief      This class represents an HDF5 file
     */
-    class File: public Group
+    class LUE_HDF5_EXPORT File: public Group
     {
 
         public:
 
-            class AccessPropertyList: public PropertyList
+            class LUE_HDF5_EXPORT AccessPropertyList: public PropertyList
             {
 
                 public:
@@ -62,14 +62,15 @@ namespace lue::hdf5 {
     };
 
 
-    bool file_exists(std::string const& name);
+    LUE_HDF5_EXPORT bool file_exists(std::string const& name);
 
-    File create_file(std::string const& name);
+    LUE_HDF5_EXPORT File create_file(std::string const& name);
 
-    File create_file(std::string const& name, File::AccessPropertyList const& access_property_list);
+    LUE_HDF5_EXPORT File
+    create_file(std::string const& name, File::AccessPropertyList const& access_property_list);
 
-    File create_in_memory_file(std::string const& name);
+    LUE_HDF5_EXPORT File create_in_memory_file(std::string const& name);
 
-    void remove_file(std::string const& name);
+    LUE_HDF5_EXPORT void remove_file(std::string const& name);
 
 }  // namespace lue::hdf5

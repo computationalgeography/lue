@@ -5,7 +5,7 @@
 namespace lue {
     namespace data_model {
 
-        class Universe: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT Universe: public hdf5::Group
         {
 
             public:

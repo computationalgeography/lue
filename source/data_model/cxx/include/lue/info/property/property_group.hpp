@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/data_model/export.hpp"
 #include "lue/core/define.hpp"
 #include "lue/hdf5.hpp"
 
@@ -6,7 +7,7 @@
 namespace lue {
     namespace data_model {
 
-        class PropertyGroup: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT PropertyGroup: public hdf5::Group
         {
 
             public:

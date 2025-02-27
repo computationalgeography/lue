@@ -10,7 +10,7 @@ namespace lue {
             @brief      This class is a base class for the HDF5 primary data objects
                         (Dataset, Group, named datatype)
         */
-        class PrimaryDataObject
+        class LUE_HDF5_EXPORT PrimaryDataObject
         {
 
             public:

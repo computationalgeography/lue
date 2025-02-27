@@ -10,7 +10,7 @@ namespace lue {
         /*!
             @brief      Information about issue found during validation
         */
-        class Issue
+        class LUE_HDF5_EXPORT Issue
         {
 
             public:

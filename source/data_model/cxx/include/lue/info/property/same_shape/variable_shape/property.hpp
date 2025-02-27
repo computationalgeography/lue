@@ -9,7 +9,7 @@ namespace lue {
         namespace same_shape {
             namespace variable_shape {
 
-                class Property: public PropertyGroup
+                class LUE_DATA_MODEL_EXPORT Property: public PropertyGroup
                 {
 
                     public:
@@ -61,7 +61,7 @@ namespace lue {
                     std::string const& description = "");
 
             }  // namespace variable_shape
-        }      // namespace same_shape
+        }  // namespace same_shape
 
 
         template<>

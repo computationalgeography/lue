@@ -5,7 +5,7 @@
 namespace lue {
     namespace data_model {
 
-        class Clock
+        class LUE_DATA_MODEL_EXPORT Clock
         {
 
             public:

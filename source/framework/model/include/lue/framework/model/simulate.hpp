@@ -36,6 +36,21 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+        @brief      Execute @a model iteratively, from time step @a first_time_step up and until time step
+                    @a last_time_step
+        @tparam     Model Type of the model
+        @tparam     Progressor Type of the progressor
+        @param      model Model to execute
+        @param      progressor Progressor to report progress to
+        @param      first_time_step First time step to execute
+        @param      last_time_step Last time step to execute
+        @param      rate_limit Maximum number of time steps to execute "at the same time"
+        @exception  .
+
+        A rate limit can be used to put a brake on the speed with which model time steps are simulated.
+        Without it, the system may be flooded with too many tasks.
+    */
     template<typename Model, typename Progressor>
     void simulate(
         Model& model,

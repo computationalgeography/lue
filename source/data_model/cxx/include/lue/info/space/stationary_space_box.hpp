@@ -9,7 +9,7 @@ namespace lue {
             - One space box per item
             - Each space box has a unique location in space
         */
-        class StationarySpaceBox: public same_shape::Value
+        class LUE_DATA_MODEL_EXPORT StationarySpaceBox: public same_shape::Value
         {
 
             public:

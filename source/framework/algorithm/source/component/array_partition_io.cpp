@@ -29,3 +29,6 @@ LUE_REGISTER(lue_FlowAccumulationMaterial_double)
 LUE_REGISTER(lue_AccuInfoMaterial)
 
 #undef LUE_REGISTER
+
+// Boilerplate required once per component module
+HPX_REGISTER_COMPONENT_MODULE()

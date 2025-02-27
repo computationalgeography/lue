@@ -11,7 +11,7 @@ namespace lue {
         using TimeConfiguration = Configuration<TimeDomainItemType>;
 
 
-        class TimeDomain: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT TimeDomain: public hdf5::Group
         {
 
             public:

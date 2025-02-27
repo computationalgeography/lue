@@ -6,7 +6,7 @@
 namespace lue {
     namespace hdf5 {
 
-        class VLenMemory
+        class LUE_HDF5_EXPORT VLenMemory
         {
 
             public:

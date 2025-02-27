@@ -247,4 +247,5 @@ jobs:
 
               export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"
               ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_io

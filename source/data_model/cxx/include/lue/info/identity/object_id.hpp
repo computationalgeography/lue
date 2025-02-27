@@ -13,7 +13,7 @@ namespace lue {
 
             @sa         same_shape::Value, different_shape::Value
         */
-        class ObjectID: public same_shape::Value
+        class LUE_DATA_MODEL_EXPORT ObjectID: public same_shape::Value
         {
 
             public:

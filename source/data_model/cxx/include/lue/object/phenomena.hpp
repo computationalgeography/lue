@@ -6,7 +6,7 @@
 namespace lue {
     namespace data_model {
 
-        class Phenomena: public Collection<Phenomenon>
+        class LUE_DATA_MODEL_EXPORT Phenomena: public Collection<Phenomenon>
         {
 
             public:

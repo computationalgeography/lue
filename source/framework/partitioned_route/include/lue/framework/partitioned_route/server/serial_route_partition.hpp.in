@@ -16,7 +16,7 @@ namespace lue::server {
         @brief      Component server class for serial route partitions
     */
     template<typename RouteID, Rank rank>
-    class LUE_FPR_EXPORT SerialRoutePartition:
+    class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition:
         public hpx::components::component_base<SerialRoutePartition<RouteID, rank>>
     {
 

@@ -15,7 +15,7 @@ namespace lue {
                     The implementation uses an HDF5 group with for each location in time
                     an HDF5 dataset with the object arrays of the active objects.
                 */
-                class Value: public ValueGroup
+                class LUE_DATA_MODEL_EXPORT Value: public ValueGroup
                 {
 
                     public:
@@ -51,13 +51,13 @@ namespace lue {
                 };
 
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& memory_datatype,
                     Rank rank);
 
-                Value create_value(
+                LUE_DATA_MODEL_EXPORT Value create_value(
                     hdf5::Group& parent,
                     std::string const& name,
                     hdf5::Datatype const& file_datatype,
@@ -65,6 +65,6 @@ namespace lue {
                     Rank rank);
 
             }  // namespace variable_shape
-        }      // namespace same_shape
-    }          // namespace data_model
+        }  // namespace same_shape
+    }  // namespace data_model
 }  // namespace lue

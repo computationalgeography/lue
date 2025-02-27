@@ -5,7 +5,7 @@
 namespace lue {
     namespace hdf5 {
 
-        class HardLink: public Link
+        class LUE_HDF5_EXPORT HardLink: public Link
         {
 
             public:

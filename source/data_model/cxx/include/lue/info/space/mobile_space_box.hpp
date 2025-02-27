@@ -9,7 +9,7 @@ namespace lue {
             - Zero or more space boxes per item
             - Each space box has a unique location in space
         */
-        class MobileSpaceBox: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT MobileSpaceBox: public same_shape::constant_shape::Value
         {
 
             public:
