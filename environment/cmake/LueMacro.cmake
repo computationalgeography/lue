@@ -38,18 +38,18 @@ function(add_unit_tests)
 
         add_executable(${test_name} ${module_name}.cpp)
 
-        target_link_libraries(${test_name}
-            PRIVATE
-                ${ARG_LIBRARIES}
-                Boost::headers
-        )
-
         if(export_macro_basename)
             target_compile_definitions(${test_name}
                 PRIVATE
                     LUE_${export_macro_basename}_STATIC_DEFINE
             )
         endif()
+
+        target_link_libraries(${test_name}
+            PRIVATE
+                ${ARG_LIBRARIES}
+                Boost::headers
+        )
 
         add_test(NAME ${test_name}
             COMMAND ${test_name}
@@ -483,6 +483,11 @@ function(lue_configure_static_library_for_tests)
         ${sources}
     )
 
+    target_compile_definitions(${target_name_static_lib}
+        PRIVATE
+            LUE_${export_macro_basename}_STATIC_DEFINE
+    )
+
     target_include_directories(${target_name_static_lib}
         PUBLIC
             ${include_directories}
@@ -491,10 +496,5 @@ function(lue_configure_static_library_for_tests)
     target_link_libraries(${target_name_static_lib}
         PUBLIC
             ${link_libraries}
-    )
-
-    target_compile_definitions(${target_name_static_lib}
-        PRIVATE
-            LUE_${export_macro_basename}_STATIC_DEFINE
     )
 endfunction()

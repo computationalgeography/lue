@@ -5,6 +5,11 @@ add_library(lue_data_model_test STATIC
 
 add_library(lue::data_model_test ALIAS lue_data_model_test)
 
+target_compile_definitions(lue_data_model_test
+    PRIVATE
+        LUE_DATA_MODEL_STATIC_DEFINE
+)
+
 target_include_directories(lue_data_model_test
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
