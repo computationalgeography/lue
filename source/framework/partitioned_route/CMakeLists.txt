@@ -1,6 +1,3 @@
-add_test_conditionally(test)
-
-
 # Instantiate serial route partition classes -----------------------------------
 set(generated_source_files "")
 
@@ -62,48 +59,25 @@ add_library(lue_framework_partitioned_route SHARED
     ${generated_source_files}
 )
 
-add_library(lue::framework_partitioned_route ALIAS lue_framework_partitioned_route)
-
-set_target_properties(lue_framework_partitioned_route
-    PROPERTIES
-        EXPORT_NAME framework_partitioned_route
-        VERSION ${LUE_VERSION}
-        SOVERSION ${LUE_VERSION_MAJOR}
-)
-
-generate_export_header(lue_framework_partitioned_route
-    EXPORT_FILE_NAME include/lue/framework/partitioned_route/export.hpp
-    EXPORT_MACRO_NAME LUE_FPR_EXPORT)
-
-target_include_directories(lue_framework_partitioned_route
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
+lue_configure_shared_library(
+    TARGET_BASENAME framework_partitioned_route
+    EXPORT_HEADER_PATHNAME include/lue/framework/partitioned_route/export.hpp
+    EXPORT_MACRO_BASENAME PARTITIONED_ROUTE
 )
 
 target_link_libraries(lue_framework_partitioned_route
     PRIVATE
         HPX::component
     PUBLIC
-        lue::framework_core)
+        lue::framework_core
+)
 
 target_sources(lue_framework_partitioned_route
     PUBLIC
         FILE_SET
             HEADERS
-        BASE_DIRS
-            include
-            ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
-            include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
 )
 
-lue_install_development_libraries(
-    TARGETS lue_framework_partitioned_route
-)
-
-lue_install_runtime_libraries(
-    TARGETS lue_framework_partitioned_route
-)
+add_test_conditionally(test)

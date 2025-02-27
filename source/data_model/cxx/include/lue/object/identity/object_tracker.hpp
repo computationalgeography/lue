@@ -18,7 +18,7 @@ namespace lue {
             different_shape::constant_shape::Value | ActiveSetIndex, ActiveObjectIndex, ActiveObjectID
             different_shape::variable_shape::Value | -
         */
-        class ObjectTracker: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT ObjectTracker: public hdf5::Group
         {
 
             public:

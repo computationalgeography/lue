@@ -11,7 +11,7 @@ namespace lue {
             /*!
                 @brief      Collection of same shape x constant value properties
             */
-            class Properties: public Collection<Property>
+            class LUE_DATA_MODEL_EXPORT Properties: public Collection<Property>
             {
 
                 public:

@@ -202,7 +202,8 @@ jobs:
               cmake --build ${{ env.lue_consume_build_directory }} --target all
 
               ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
         - name: documentation
           if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'

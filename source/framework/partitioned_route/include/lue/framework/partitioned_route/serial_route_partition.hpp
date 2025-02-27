@@ -12,7 +12,7 @@ namespace lue {
         server instance. Multiple instances can be associated with a single server instance.
     */
     template<typename RouteID, Rank rank>
-    class LUE_FPR_EXPORT SerialRoutePartition:
+    class SerialRoutePartition:
         public hpx::components::
             client_base<SerialRoutePartition<RouteID, rank>, server::SerialRoutePartition<RouteID, rank>>
 

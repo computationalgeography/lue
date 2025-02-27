@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/gdal/export.hpp"
 
 
 namespace lue::gdal {
@@ -8,7 +9,7 @@ namespace lue::gdal {
         @brief      Class which installs (pushes) a quiet error handler upon construction and de-installs
                     (pops) it again upon destruction
     */
-    class QuietErrorHandler
+    class LUE_GDAL_EXPORT QuietErrorHandler
     {
 
         public:

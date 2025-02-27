@@ -9,7 +9,7 @@ namespace lue {
             - One space point per item
             - Each space point has a unique location in space
         */
-        class StationarySpacePoint: public same_shape::Value
+        class LUE_DATA_MODEL_EXPORT StationarySpacePoint: public same_shape::Value
         {
 
             public:

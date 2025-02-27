@@ -1,11 +1,12 @@
 #pragma once
+#include "lue/hdf5/export.hpp"
 #include <hdf5.h>
 
 
 namespace lue {
     namespace hdf5 {
 
-        class ObjectInfo
+        class LUE_HDF5_EXPORT ObjectInfo
         {
 
             public:

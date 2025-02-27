@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/data_model/export.hpp"
 #include "lue/array/value_group.hpp"
 #include "lue/core/array.hpp"
 #include "lue/core/define.hpp"
@@ -14,7 +15,7 @@ namespace lue {
 
                 The implementation uses an HDF5 dataset per object array.
             */
-            class Value: public ValueGroup
+            class LUE_DATA_MODEL_EXPORT Value: public ValueGroup
             {
 
                 public:
@@ -56,13 +57,13 @@ namespace lue {
             };
 
 
-            Value create_value(
+            LUE_DATA_MODEL_EXPORT Value create_value(
                 hdf5::Group& parent,
                 std::string const& name,
                 hdf5::Datatype const& memory_datatype,
                 Rank rank);
 
-            Value create_value(
+            LUE_DATA_MODEL_EXPORT Value create_value(
                 hdf5::Group& parent,
                 std::string const& name,
                 hdf5::Datatype const& file_datatype,
@@ -70,5 +71,5 @@ namespace lue {
                 Rank rank);
 
         }  // namespace different_shape
-    }      // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

@@ -11,7 +11,7 @@ namespace lue {
                         attribute raw data
             @sa         [H5S: Dataspace Interface](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5S.html)
         */
-        class Dataspace
+        class LUE_HDF5_EXPORT Dataspace
         {
 
             public:
@@ -47,9 +47,10 @@ namespace lue {
         };
 
 
-        Dataspace create_dataspace(Shape const& dimension_sizes);
+        LUE_HDF5_EXPORT Dataspace create_dataspace(Shape const& dimension_sizes);
 
-        Dataspace create_dataspace(Shape const& dimension_sizes, Shape const& max_dimension_sizes);
+        LUE_HDF5_EXPORT Dataspace
+        create_dataspace(Shape const& dimension_sizes, Shape const& max_dimension_sizes);
 
     }  // namespace hdf5
 }  // namespace lue

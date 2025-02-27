@@ -633,7 +633,7 @@ namespace lue {
 
 #define NATIVE_DATATYPE(type, datatype)                                                                      \
     template<>                                                                                               \
-    Datatype native_datatype<type>()                                                                         \
+    LUE_HDF5_EXPORT Datatype native_datatype<type>()                                                         \
     {                                                                                                        \
         return native_##datatype;                                                                            \
     }
@@ -652,7 +652,7 @@ namespace lue {
 #undef NATIVE_DATATYPE
 
         template<>
-        Datatype native_datatype<std::string>()
+        LUE_HDF5_EXPORT Datatype native_datatype<std::string>()
         {
             static auto const datatype = create_string_datatype();
             return datatype;
@@ -661,7 +661,7 @@ namespace lue {
 
 #define STD_DATATYPE_LE(type, datatype)                                                                      \
     template<>                                                                                               \
-    Datatype std_datatype_le<type>()                                                                         \
+    LUE_HDF5_EXPORT Datatype std_datatype_le<type>()                                                         \
     {                                                                                                        \
         return std_##datatype;                                                                               \
     }
@@ -680,7 +680,7 @@ namespace lue {
 
 #define IEEE_DATATYPE_LE(type, datatype)                                                                     \
     template<>                                                                                               \
-    Datatype ieee_datatype_le<type>()                                                                        \
+    LUE_HDF5_EXPORT Datatype ieee_datatype_le<type>()                                                        \
     {                                                                                                        \
         return ieee_##datatype;                                                                              \
     }
@@ -692,7 +692,7 @@ namespace lue {
 
 
         template<>
-        Datatype std_datatype<std::string>()
+        LUE_HDF5_EXPORT Datatype std_datatype<std::string>()
         {
             static auto const datatype = create_string_datatype();
             return datatype;

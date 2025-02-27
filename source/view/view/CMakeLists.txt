@@ -28,6 +28,7 @@ target_link_libraries(lue_view
     PRIVATE
         lue::imgui
         lue::utility
+        lue::shared
 )
 
 lue_install_executables(

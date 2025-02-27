@@ -10,7 +10,7 @@
 namespace lue {
     namespace data_model {
 
-        class Properties: public hdf5::Group
+        class LUE_DATA_MODEL_EXPORT Properties: public hdf5::Group
         {
 
             public:

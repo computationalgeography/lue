@@ -203,4 +203,5 @@ jobs:
               cmake --build ${{ env.lue_consume_build_directory }} --target all
 
               ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+              ${{ env.lue_consume_build_directory }}/lue_consume_framework_io

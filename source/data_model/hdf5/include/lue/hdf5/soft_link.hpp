@@ -5,7 +5,7 @@
 namespace lue {
     namespace hdf5 {
 
-        class SoftLink: public Link
+        class LUE_HDF5_EXPORT SoftLink: public Link
         {
 
             public:

@@ -15,7 +15,7 @@ namespace lue {
             - universes, which together represent alternative states of a system
             - phenomena, which together represent one state of a system
         */
-        class Dataset: public hdf5::File
+        class LUE_DATA_MODEL_EXPORT Dataset: public hdf5::File
         {
 
             public:
@@ -67,21 +67,22 @@ namespace lue {
         };
 
 
-        bool dataset_exists(std::string const& name);
+        LUE_DATA_MODEL_EXPORT bool dataset_exists(std::string const& name);
 
-        Dataset open_dataset(
+        LUE_DATA_MODEL_EXPORT Dataset open_dataset(
             std::string const& name,
             unsigned int flags = H5F_ACC_RDONLY,
             hdf5::File::AccessPropertyList const& access_property_list = hdf5::File::AccessPropertyList{});
 
-        Dataset create_dataset(
+        LUE_DATA_MODEL_EXPORT Dataset create_dataset(
             std::string const& name,
             std::string const& description = "",
             hdf5::File::AccessPropertyList access_property_list = hdf5::File::AccessPropertyList{});
 
-        Dataset create_in_memory_dataset(std::string const& name, std::string const& description = "");
+        LUE_DATA_MODEL_EXPORT Dataset
+        create_in_memory_dataset(std::string const& name, std::string const& description = "");
 
-        void remove_dataset(std::string const& name);
+        LUE_DATA_MODEL_EXPORT void remove_dataset(std::string const& name);
 
     }  // namespace data_model
 }  // namespace lue

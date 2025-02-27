@@ -22,7 +22,7 @@ namespace lue {
                         validation
             @sa         Issue
         */
-        class Issues
+        class LUE_HDF5_EXPORT Issues
         {
 
             public:

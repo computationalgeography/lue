@@ -9,9 +9,7 @@ include(GenerateExportHeader)
 
 set(LUE_CXX_STANDARD 20)
 
-if(CMAKE_VERSION VERSION_GREATER "2.28.0")
-    set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
-endif()
+set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 
 # Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)

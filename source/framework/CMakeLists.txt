@@ -31,7 +31,7 @@ if(LUE_FRAMEWORK_WITH_PYTHON_API)
     add_subdirectory(python)
 endif()
 
-if(LUE_BUILD_QUALITY_ASSURANCE AND LUE_QUALITY_ASSURANCE_WITH_TESTS)
+if(LUE_BUILD_TESTS)
     add_subdirectory(test)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/test)
 endif()

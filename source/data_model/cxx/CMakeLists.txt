@@ -1,6 +1,4 @@
-add_test_conditionally(test)
-
-add_library(lue_data_model STATIC
+add_library(lue_data_model SHARED
 
     # Core stuff ---------------------------------------------------------------
     source/core/array.cpp
@@ -65,26 +63,10 @@ add_library(lue_data_model STATIC
     source/validate.cpp
 )
 
-add_library(lue::data_model ALIAS lue_data_model)
-
-set_target_properties(lue_data_model
-    PROPERTIES
-        EXPORT_NAME data_model
-)
-
-target_include_directories(lue_data_model
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
-
-target_sources(lue_data_model
-    PUBLIC
-        FILE_SET
-            HEADERS
-        BASE_DIRS
-            include
-        FILES
-            include/lue
+lue_configure_shared_library(
+    TARGET_BASENAME data_model
+    EXPORT_HEADER_PATHNAME include/lue/data_model/export.hpp
+    EXPORT_MACRO_BASENAME DATA_MODEL
 )
 
 target_link_libraries(lue_data_model
@@ -92,8 +74,15 @@ target_link_libraries(lue_data_model
         lue::hdf5
         Boost::headers
         fmt::fmt
+    PRIVATE
+        lue::shared
 )
 
-lue_install_development_libraries(
-    TARGETS lue_data_model
-)
+if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_data_model
+        TARGET_NAME_STATIC_LIB lue_data_model_static
+        EXPORT_MACRO_BASENAME DATA_MODEL
+    )
+    add_subdirectory(test)
+endif()

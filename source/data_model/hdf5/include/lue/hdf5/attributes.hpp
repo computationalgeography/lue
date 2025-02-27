@@ -9,7 +9,7 @@ namespace lue {
             @brief      This class represents the collection of attributes attached
                         to an object
         */
-        class Attributes
+        class LUE_HDF5_EXPORT Attributes
         {
 
             public:
