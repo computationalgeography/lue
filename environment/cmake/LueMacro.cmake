@@ -13,7 +13,11 @@ endfunction()
 function(add_unit_tests)
     set(prefix ARG)
     set(no_values "")
-    set(single_values SCOPE TARGETS)
+    set(single_values
+        SCOPE
+        TARGETS
+        EXPORT_MACRO_BASENAME
+    )
     set(multi_values NAMES LIBRARIES)
 
     cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
@@ -22,6 +26,10 @@ function(add_unit_tests)
         message(FATAL_ERROR
             "Function called with unrecognized arguments: "
             "${${prefix}_UNPARSED_ARGUMENTS}")
+    endif()
+
+    if(ARG_EXPORT_MACRO_BASENAME)
+        set(export_macro_basename ${ARG_EXPORT_MACRO_BASENAME})
     endif()
 
     foreach(name ${ARG_NAMES})
@@ -35,6 +43,13 @@ function(add_unit_tests)
                 ${ARG_LIBRARIES}
                 Boost::headers
         )
+
+        if(export_macro_basename)
+            target_compile_definitions(${test_name}
+                PRIVATE
+                    LUE_${export_macro_basename}_STATIC_DEFINE
+            )
+        endif()
 
         add_test(NAME ${test_name}
             COMMAND ${test_name}

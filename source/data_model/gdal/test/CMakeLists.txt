@@ -14,6 +14,8 @@ add_unit_tests(
     LIBRARIES
         lue_gdal_static
         lue::shared
+    EXPORT_MACRO_BASENAME
+        GDAL
     TARGETS
         test_names
 )
