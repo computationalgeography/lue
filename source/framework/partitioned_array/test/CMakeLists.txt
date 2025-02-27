@@ -38,7 +38,7 @@ foreach(name ${names})
 
     target_link_libraries(${test_name}
         PRIVATE
-            lue_framework_partitioned_array_static
+            lue::framework_partitioned_array
             lue::framework_test
             Boost::headers
     )

@@ -79,11 +79,4 @@ target_link_libraries(lue_framework_partitioned_array
     PUBLIC
         lue::framework_core)
 
-if(LUE_BUILD_TESTS)
-    lue_configure_static_library_for_tests(
-        TARGET_NAME_SHARED_LIB lue_framework_partitioned_array
-        TARGET_NAME_STATIC_LIB lue_framework_partitioned_array_static
-        EXPORT_MACRO_BASENAME FPA
-    )
-    add_subdirectory(test)
-endif()
+add_test_conditionally(test)
