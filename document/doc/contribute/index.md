@@ -10,6 +10,23 @@ this part of the manual. You will likely not need to know about the contents.
 ```
 
 
+## Copyright and licensing
+
+- Copyright of LUE work that is part of the LUE source repository stays with the individual contributor
+- New code files should include a [short-form SPDX ID](https://spdx.dev/learn/handling-license-info/) at the
+  top, indicating the project license for code, which is MIT. This should look like the following:
+
+    ```
+    // SPDX-License-Identifier: MIT
+    ```
+
+- A contributor must agree to the [Developer Certificate of Origin](developer_certificate_of_origin.txt)
+- All contributions must include a "Signed-off-by" line in the commit message, with the contributors' name and
+  email address. See also Git's [--sign-off
+  argument](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---signoff) which makes signing
+  trivial to do.
+
+
 ## Issues
 
 ### Create a new issue

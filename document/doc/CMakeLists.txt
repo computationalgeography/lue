@@ -34,6 +34,7 @@ foreach(name IN ITEMS
     about/related.md
     about/release.md
     about/short_description.md
+    contribute/developer_certificate_of_origin.txt
     contribute/documentation.md
     contribute/index.md
     contribute/release.md
