@@ -69,6 +69,8 @@ class Configuration(object):
         self.cell_size = cell_size
         self.array_shape = array_shape
         self.partition_shape = partition_shape
+        self.pathname = ""
+        self.timeseries_files: dict[str, list[str]] = {}
 
 
 """
@@ -180,29 +182,22 @@ VALUESCALE = enum.Enum(
 ) = VALUESCALE
 
 
-# NOTE to_numpy is a synchronization point
 def pcr2numpy(array, no_data_value):
     return lfr.to_numpy(array, no_data_value)
 
 
 def numpy2pcr(data_type, array, no_data_value):
     assert (
-        data_type == Ldd
-        and array.dtype == np.uint8
-        or data_type == Scalar
-        and array.dtype == np.float32
+        (data_type in [Boolean, Ldd] and array.dtype == np.uint8)
+        or (data_type in [Nominal, Ordinal] and array.dtype == np.int32)
+        or (data_type == Scalar and array.dtype == np.float32)
     ), f"{data_type} vs {array.dtype}"
 
-    # TODO LUE get rid of the wait, if possible
-    # Why is the wait needed? OK, don't change the array while LUE is working with
-    # it, but this should not result in a segfault.
-    array = lfr.from_numpy(
+    return lfr.from_numpy(
         array,
         partition_shape=configuration.partition_shape,
         no_data_value=no_data_value,
     )
-    lfr.wait(array)
-    return array
 
 
 def lue_is_uint8_raster(argument):
