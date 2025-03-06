@@ -69,6 +69,8 @@ class Configuration(object):
         self.cell_size = cell_size
         self.array_shape = array_shape
         self.partition_shape = partition_shape
+        self.pathname = ""
+        self.timeseries_files: dict[str, list[str]] = {}
 
 
 """
@@ -180,7 +182,6 @@ VALUESCALE = enum.Enum(
 ) = VALUESCALE
 
 
-# NOTE to_numpy is a synchronization point
 def pcr2numpy(array, no_data_value):
     return lfr.to_numpy(array, no_data_value)
 
