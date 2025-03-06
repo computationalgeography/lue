@@ -16,19 +16,24 @@ class NumpyTest(OperationTest):
                 self.non_spatial[expression_type],
             )
 
-            lpr.pcr2numpy(spatial, no_data_value=non_spatial)
+            lpr.pcr2numpy(spatial, no_data_value=non_spatial.future.get())
 
     @lue_test.framework_test_case
     def test_numpy2pcr(self):
         nr_rows = 10
         nr_cols = 20
 
-        # for expression_type in [np.uint8, np.int32, np.float32]:
-        #     array = np.ones(shape=(nr_rows, nr_cols), dtype=expression_type)
-        # TODO hier verder
+        for data_type in [lpr.Boolean, lpr.Ldd]:
+            expression_type = np.uint8
+            array = np.ones(shape=(nr_rows, nr_cols), dtype=expression_type)
+            _ = lpr.numpy2pcr(data_type, array, 2)
 
-        data_type = lpr.Ldd
-        expression_type = np.uint8
-        array = np.ones(shape=(nr_rows, nr_cols), dtype=expression_type)
-        no_data_value = expression_type(1)
-        _ = lpr.numpy2pcr(data_type, array, no_data_value)
+        for data_type in [lpr.Nominal, lpr.Ordinal]:
+            expression_type = np.int32
+            array = np.ones(shape=(nr_rows, nr_cols), dtype=expression_type)
+            _ = lpr.numpy2pcr(data_type, array, 2)
+
+        for data_type in [lpr.Scalar]:
+            expression_type = np.float32
+            array = np.ones(shape=(nr_rows, nr_cols), dtype=expression_type)
+            _ = lpr.numpy2pcr(data_type, array, 2.0)
