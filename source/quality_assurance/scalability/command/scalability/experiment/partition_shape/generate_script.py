@@ -31,6 +31,8 @@ def generate_script_slurm(
 
     nr_threads = benchmark.worker.nr_threads
     nr_localities = benchmark.worker.nr_localities
+    nr_tasks=nr_localities
+    mpirun_configuration = job.mpirun_configuration(cluster)
 
     for array_shape in experiment.array.shapes:
         for partition_shape in experiment.partition.shapes:
@@ -54,13 +56,9 @@ def generate_script_slurm(
                 f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
                 # '--hpx:ini="hpx.parcel.mpi.enable=1" '
                 # '--hpx:ini="hpx.os_threads={nr_threads}" '
-                '--hpx:threads="{nr_threads}" '
+                f'--hpx:threads="{nr_threads}" '
                 # '--hpx:bind="{thread_binding}" '
                 "{program_configuration}".format(
-                    nr_tasks=nr_localities,
-                    mpirun_configuration=job.mpirun_configuration(cluster),
-                    # srun_configuration=job.srun_configuration(cluster),
-                    nr_threads=nr_threads,
                     # thread_binding=hpx.thread_binding(nr_threads),
                     program_configuration=job.program_configuration(
                         result_prefix,

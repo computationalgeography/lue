@@ -17,6 +17,8 @@ def generate_script_slurm_threads(
     job_steps = []
     array_shape = experiment.array.shape
     partition_shape = experiment.partition.shape
+    nr_tasks = 1  # Single NUMA node or cluster node
+    mpirun_configuration = job.mpirun_configuration(cluster)
 
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
@@ -30,14 +32,9 @@ def generate_script_slurm_threads(
             f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
             # '--hpx:ini="hpx.parcel.mpi.enable=1" '
             # '--hpx:ini="hpx.os_threads={nr_threads}" '
-            '--hpx:threads="{nr_threads}" '
+            f'--hpx:threads="{nr_threads}" '
             # '--hpx:bind="{thread_binding}" '
             "{program_configuration}".format(
-                nr_tasks=1,  # Single NUMA node or cluster node
-                mpirun_configuration=job.mpirun_configuration(cluster),
-                # srun_configuration=job.srun_configuration(cluster),
-                nr_threads=nr_threads,
-                # thread_binding=hpx.thread_binding(nr_threads),
                 program_configuration=job.program_configuration(
                     result_prefix,
                     cluster,
