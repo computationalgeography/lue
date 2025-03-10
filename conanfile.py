@@ -6,7 +6,7 @@ import os
 import shutil
 
 from conan import ConanFile
-from conan.tools.cmake import CMakeDeps, CMakeToolchain, cmake_layout
+from conan.tools.cmake import CMakeDeps, CMakeToolchain
 
 
 def install_conan_package(name):
@@ -29,8 +29,18 @@ class LUERecipe(ConanFile):
         # Upper bound of the version ranges should be left open, or should be set to some
         # sensible value, known or likely to result in a failed build.
 
+        # Note: HPX' find logic looks for Asio package (capital A) and uses Asio::asio target. Conan uses
+        # lower casing. Sigh...
+        if install_conan_package("asio"):
+            self.requires("asio/[>=1.21]")
+
+        # Multiple targets depend on Boost, resulting in version conflicts. Allow the version to be
+        # overridden.
         if install_conan_package("boost"):
-            self.requires("boost/[1.74 || >1.75]")
+            self.requires("boost/[1.74 || >1.75]", override=True)
+
+        if install_conan_package("cxxopts"):
+            self.requires("cxxopts/3.2.0")
 
         if install_conan_package("docopt.cpp"):
             self.requires("docopt.cpp/[>=0.6.2]")
@@ -41,7 +51,7 @@ class LUERecipe(ConanFile):
         # 20230829 Conan package for more recent versions seem broken
         # https://github.com/conan-io/conan-center-index/issues/17830
         if install_conan_package("gdal"):
-            self.requires("gdal/[>=3.4.1 <3.5]")
+            self.requires("gdal/[>=3.8]")
 
         if install_conan_package("glfw"):
             self.requires("glfw/[>=3.3.6]")
@@ -49,11 +59,15 @@ class LUERecipe(ConanFile):
         if install_conan_package("hdf5"):
             self.requires("hdf5/[>=1.10.7]")
 
+        # Note: HPX's find logic looks for Hwloc (capital H), while Conan uses lower casing. Sigh...
         if install_conan_package("hwloc"):
             self.requires("hwloc/[>=2.7.0]")
 
         if install_conan_package("imgui"):
             self.requires("imgui/[>=1.89 <2]")
+
+        if install_conan_package("jemalloc"):
+            self.requires("jemalloc/[>=5.2.1]")
 
         if install_conan_package("mimalloc"):
             self.requires("mimalloc/[>=2 <3]")
