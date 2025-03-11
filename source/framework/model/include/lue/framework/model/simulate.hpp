@@ -8,10 +8,10 @@
 namespace lue {
     namespace detail {
 
-        auto attach_signaller = [](hpx::sliding_semaphore& semaphore,
-                                   auto&& previous_state,
-                                   auto&& current_state,
-                                   Count const lower_limit)
+        static auto attach_signaller = [](hpx::sliding_semaphore& semaphore,
+                                          auto&& previous_state,
+                                          auto&& current_state,
+                                          Count const lower_limit)
         {
             // To prevent states to overtake each other, we order them explicitly here
 
@@ -46,11 +46,11 @@ namespace lue {
         @param      progressor Progressor to report progress to
         @param      first_time_step First time step to execute
         @param      last_time_step Last time step to execute
-        @param      rate_limit Maximum number of time steps to execute "at the same time"
+        @param      rate_limit Maximum number of time steps to "execute at the same time"
         @exception  .
 
         A rate limit can be used to put a brake on the speed with which model time steps are simulated.
-        Without it, the system may be flooded with too many tasks.
+        Without it (the default case), the system may be flooded with too many tasks.
     */
     template<typename Model, typename Progressor>
     void simulate(
@@ -64,9 +64,9 @@ namespace lue {
         lue_hpx_assert(first_time_step <= last_time_step);
 
         Count const nr_time_steps{last_time_step - first_time_step + 1};
-        bool const rate_limit_used{rate_limit > 0};
+        bool const use_custom_rate_limit{rate_limit > 0};
         Count const default_rate_limit{nr_time_steps};
-        rate_limit = rate_limit_used ? rate_limit : default_rate_limit;
+        rate_limit = use_custom_rate_limit ? rate_limit - 1 : default_rate_limit;
 
         std::int64_t const max_difference{rate_limit};
         hpx::sliding_semaphore semaphore{max_difference, first_time_step};
@@ -83,18 +83,16 @@ namespace lue {
             {
                 State current_state = simulate(model, current_time_step);
 
-                // Every rate_limit time steps, attach an additional continuation which will
-                // trigger the semaphore once the computation has reached this point. This informs the
-                // semaphore that "old" states have finished.
-                // if (((time_step_idx + 1) % rate_limit) == 0)
-                // {
+                // Every time step, attach an additional continuation to the current state. Once this current
+                // state becomes ready, the semaphore will be informed.
                 previous_state = detail::attach_signaller(
                     semaphore, std::move(previous_state), std::move(current_state), current_time_step);
-                // }
 
                 // Set the new upper limit. Wait if necessary. Continue if / once the difference
-                // between the lower and upper limits is not larger than max_difference set.
+                // between the lower and upper limits is not larger than the max_difference set.
                 semaphore.wait(current_time_step);
+
+                simulate(progressor, current_time_step);
 
                 if (current_time_step == last_time_step)
                 {
@@ -104,8 +102,6 @@ namespace lue {
                     // last state may or may not be already ready.
                     previous_state.wait();
                 }
-
-                simulate(progressor, current_time_step);
             }
         }
     }
