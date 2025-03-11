@@ -66,7 +66,10 @@ namespace lue {
         Count const nr_time_steps{last_time_step - first_time_step + 1};
         bool const use_custom_rate_limit{rate_limit > 0};
         Count const default_rate_limit{nr_time_steps};
-        rate_limit = use_custom_rate_limit ? rate_limit - 1 : default_rate_limit;
+        rate_limit = use_custom_rate_limit ? rate_limit : default_rate_limit;
+
+        lue_hpx_assert(rate_limit > 0);
+        rate_limit -= 1;  // Otherwise we get rate_limit + 1 time steps in flight
 
         std::int64_t const max_difference{rate_limit};
         hpx::sliding_semaphore semaphore{max_difference, first_time_step};
