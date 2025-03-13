@@ -73,6 +73,7 @@ jobs:
               conda install \
                   conan \
                   conda-build \
+                  docopt \
                   jinja2 \
                   matplotlib \
                   ninja \
