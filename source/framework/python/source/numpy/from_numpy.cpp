@@ -2,9 +2,9 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
-#include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional
+#include <format>
 
 
 using namespace pybind11::literals;
@@ -68,7 +68,7 @@ namespace lue::framework {
 
                 if (static_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Rank of array shape and partition shape must be equal ({} != {})",
                         static_array_shape.size(),
                         dynamic_partition_shape.size()));

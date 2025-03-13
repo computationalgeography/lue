@@ -12,7 +12,7 @@ namespace lue {
 
             - Zero or more locations in time per item
         */
-        class LocationInTime: public same_shape::constant_shape::Value
+        class LUE_DATA_MODEL_EXPORT LocationInTime: public same_shape::constant_shape::Value
         {
 
             public:

@@ -1,7 +1,7 @@
 #include "lue/hdf5/link.hpp"
 #include "lue/hdf5/group.hpp"
-#include <fmt/format.h>
 #include <cassert>
+#include <format>
 
 
 namespace lue {
@@ -56,7 +56,7 @@ namespace lue {
             if (status < 0)
             {
                 throw std::runtime_error(
-                    fmt::format("Information about object {} at {} cannot be obtained", name, id.pathname()));
+                    std::format("Information about object {} at {} cannot be obtained", name, id.pathname()));
             }
 
             return info.type;
@@ -67,7 +67,7 @@ namespace lue {
         {
             if (!link_exists(id, name))
             {
-                throw std::runtime_error(fmt::format("Link {} does not exist at {}", name, id.pathname()));
+                throw std::runtime_error(std::format("Link {} does not exist at {}", name, id.pathname()));
             }
 
             ::H5L_info_t info;
@@ -76,7 +76,7 @@ namespace lue {
             if (status < 0)
             {
                 throw std::runtime_error(
-                    fmt::format("Information about link {} at {} cannot be obtained", name, id.pathname()));
+                    std::format("Information about link {} at {} cannot be obtained", name, id.pathname()));
             }
 
             return info;

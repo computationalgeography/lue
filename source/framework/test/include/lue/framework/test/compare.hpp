@@ -65,7 +65,7 @@ namespace lue::test {
                     BOOST_CHECK_MESSAGE(
                         (std::isnan(partition_data1[i]) && std::isnan(partition_data2[i])) ||
                             (partition_data1[i] == partition_data2[i]),
-                        fmt::format("{} != {}", partition_data1[i], partition_data2[i]));
+                        std::format("{} != {}", partition_data1[i], partition_data2[i]));
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace lue::test {
 
         for (Index partition_idx = 0; partition_idx < partitions1.nr_elements(); ++partition_idx)
         {
-            BOOST_TEST_CONTEXT(fmt::format("Partition index: {}", partition_idx))
+            BOOST_TEST_CONTEXT(std::format("Partition index: {}", partition_idx))
             check_partition_is_equal(partitions1[partition_idx], partitions2[partition_idx]);
         }
     }
@@ -171,7 +171,7 @@ namespace lue::test {
 
         for (Index partition_idx = 0; partition_idx < partitions1.nr_elements(); ++partition_idx)
         {
-            BOOST_TEST_CONTEXT(fmt::format("Partition index: {}", partition_idx))
+            BOOST_TEST_CONTEXT(std::format("Partition index: {}", partition_idx))
             check_partition_is_close(partitions1[partition_idx], partitions2[partition_idx], tolerance);
         }
     }
@@ -230,7 +230,7 @@ namespace lue::test {
 
         for (Index component_idx = 0; component_idx < nr_elements(components1); ++component_idx)
         {
-            BOOST_TEST_CONTEXT(fmt::format("Component index: {}", component_idx))
+            BOOST_TEST_CONTEXT(std::format("Component index: {}", component_idx))
             check_component_is_equal_(components1[component_idx], components2[component_idx]);
         }
     }

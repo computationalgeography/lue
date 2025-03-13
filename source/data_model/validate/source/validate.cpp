@@ -1,11 +1,11 @@
 #include "lue/validate/validate.hpp"
 #include "lue/validate.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace {
 
-    std::string const usage = fmt::format(
+    std::string const usage = std::format(
         R"(
 Validate LUE datasets
 

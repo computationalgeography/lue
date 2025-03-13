@@ -90,7 +90,7 @@ jobs:
 
               # Boost is a dependency of thrift which is a dependency of gdal. Explicitly adding boost here
               # results in conflicts.
-              LUE_CONAN_PACKAGES="docopt gdal glfw imgui hdf5 hwloc mimalloc vulkan-headers vulkan-loader" \
+              LUE_CONAN_PACKAGES="boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader" \
                   conan install ${{ env.lue_source_directory }} \
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \

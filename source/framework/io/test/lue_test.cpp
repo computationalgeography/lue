@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
     std::string const property_set_name{"area"};
     std::string const layer_name{"elevation"};
     std::string const array_pathname{
-        fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
+        std::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
     ldm::Count const nr_time_steps{5};
     ldm::Count const nr_rows{60};
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(constant_raster)
     std::string const property_set_name{"area"};
     std::string const layer_name{"elevation"};
     std::string const array_pathname{
-        fmt::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
+        std::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, layer_name)};
 
     ldm::Count const nr_rows{60};
     ldm::Count const nr_cols{40};

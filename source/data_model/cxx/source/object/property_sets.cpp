@@ -128,7 +128,7 @@ namespace lue {
         {
             if (collection_exists(parent, name))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Property-set collection {} already exists at {}", name, parent.id().pathname()));
             }
 

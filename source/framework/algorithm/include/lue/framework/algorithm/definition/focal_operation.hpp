@@ -9,7 +9,7 @@
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
-#include <fmt/format.h>
+#include <format>
 #include <stdexcept>
 
 
@@ -264,7 +264,7 @@ namespace lue {
         inline void throw_partition_too_small_exception(
             Count const nr_elements0, Count const nr_elements1, Radius const kernel_size)
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Partition shape ({}, {}) is too small for focal kernel with "
                 "size {}. This can happen when the array is partitioned in such "
                 "a way that there are small partitions containing bordering cells "
@@ -853,7 +853,7 @@ namespace lue {
                             meh::InputData<InputPartitions> const&... partition_data)
                         {
                             AnnotateFunction const annotation{
-                                fmt::format("{}: partition", functor_name<Functor>)};
+                                std::format("{}: partition", functor_name<Functor>)};
 
                             HPX_UNUSED(input_partitions);
 
@@ -915,7 +915,7 @@ namespace lue {
                             OutputData output_partition_data)
                         {
                             AnnotateFunction const annotation{
-                                fmt::format("{}: partition", functor_name<Functor>)};
+                                std::format("{}: partition", functor_name<Functor>)};
 
                             HPX_UNUSED(input_partitions);
 
@@ -1983,7 +1983,7 @@ namespace lue {
         static_assert(sizeof...(arrays) >= 1);
         static_assert(rank == 2);
 
-        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
 
         return detail::focal_operation_2d(policies, kernel, std::move(functor), arrays...);
     }

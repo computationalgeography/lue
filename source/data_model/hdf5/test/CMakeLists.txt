@@ -15,8 +15,6 @@ add_unit_tests(
     NAMES ${names}
     LIBRARIES
         lue_hdf5_static
-    EXPORT_MACRO_BASENAME
-        HDF5
     TARGETS
         test_names
 )

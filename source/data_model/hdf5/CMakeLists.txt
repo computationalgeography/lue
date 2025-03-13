@@ -64,7 +64,6 @@ target_link_libraries(lue_hdf5
     PRIVATE
         lue::shared
         Boost::headers
-        fmt::fmt
 )
 
 if(LUE_BUILD_TESTS)
@@ -73,10 +72,20 @@ if(LUE_BUILD_TESTS)
         TARGET_NAME_STATIC_LIB lue_hdf5_static
         EXPORT_MACRO_BASENAME HDF5
     )
+
     target_compile_definitions(lue_hdf5_static
         PUBLIC
             H5_USE_110_API
             $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
     )
+
+    # target_link_libraries(lue_hdf5_static
+    #     PUBLIC
+    #         HDF5::HDF5
+    #     PRIVATE
+    #         lue::shared
+    #         Boost::headers
+    # )
+
     add_subdirectory(test)
 endif()

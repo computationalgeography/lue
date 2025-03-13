@@ -1,5 +1,5 @@
 #include "lue/hdf5/primary_data_object.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {

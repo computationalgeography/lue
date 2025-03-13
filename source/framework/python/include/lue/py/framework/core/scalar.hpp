@@ -26,7 +26,7 @@ namespace lue::framework {
         template<typename Element>
         auto formal_string_representation([[maybe_unused]] Scalar<Element> const& scalar) -> std::string
         {
-            return fmt::format("Scalar<{}>{{}}", as_string<Element>());
+            return std::format("Scalar<{}>{{}}", as_string<Element>());
         }
 
 
@@ -51,8 +51,8 @@ namespace lue::framework {
         auto class_ =
             pybind11::class_<Scalar>(
                 module,
-                fmt::format("Scalar<{}>", as_string<Element>()).c_str(),
-                fmt::format(
+                std::format("Scalar<{}>", as_string<Element>()).c_str(),
+                std::format(
                     R"(
     Scalar containing element of type {}
 )",

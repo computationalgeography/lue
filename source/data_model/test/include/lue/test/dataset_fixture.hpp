@@ -3,42 +3,38 @@
 #include <memory>
 
 
-namespace lue {
-    namespace data_model {
-        namespace test {
+namespace lue::data_model::test {
 
-            class DatasetFixture
-            {
+    class DatasetFixture
+    {
 
-                public:
+        public:
 
-                    DatasetFixture();
+            DatasetFixture();
 
-                    DatasetFixture(DatasetFixture const&) = delete;
+            DatasetFixture(DatasetFixture const&) = delete;
 
-                    DatasetFixture(DatasetFixture&&) = delete;
+            DatasetFixture(DatasetFixture&&) = delete;
 
-                    ~DatasetFixture();
+            ~DatasetFixture();
 
-                    DatasetFixture& operator=(DatasetFixture const&) = delete;
+            auto operator=(DatasetFixture const&) -> DatasetFixture& = delete;
 
-                    DatasetFixture& operator=(DatasetFixture&&) = delete;
+            auto operator=(DatasetFixture&&) -> DatasetFixture& = delete;
 
-                    std::string const& pathname() const;
+            [[nodiscard]] auto pathname() const -> std::string const&;
 
-                    Dataset& dataset();
+            auto dataset() -> Dataset&;
 
-                    void keep_dataset_upon_destruction();
+            void keep_dataset_upon_destruction();
 
-                private:
+        private:
 
-                    std::string const _pathname;
+            std::string const _pathname;
 
-                    bool _remove_dataset_upon_destruction;
+            bool _remove_dataset_upon_destruction;
 
-                    std::unique_ptr<Dataset> _dataset;
-            };
+            std::unique_ptr<Dataset> _dataset;
+    };
 
-        }  // namespace test
-    }      // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model::test

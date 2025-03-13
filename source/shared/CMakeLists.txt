@@ -43,11 +43,6 @@ target_sources(lue_shared
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/configure.hpp
 )
 
-target_link_libraries(lue_shared
-    PUBLIC
-        fmt::fmt
-)
-
 lue_install_development_libraries(
     TARGETS lue_shared
 )

@@ -17,7 +17,7 @@ namespace lue {
 
             static std::string formal_string_representation(PropertySet const& property_set)
             {
-                return fmt::format("PropertySet(pathname='{}')", property_set.id().pathname());
+                return std::format("PropertySet(pathname='{}')", property_set.id().pathname());
             }
 
 
@@ -41,7 +41,7 @@ namespace lue {
             {
                 auto const& properties = property_set.properties();
 
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    same_shape properties: [{}]\n"
                     "    same_shape/constant_shape properties: [{}]\n"
@@ -477,7 +477,7 @@ namespace lue {
                             // AttributeError: 'x' object has no attribute 'y'
                             // Ours is a little bit different:
                             throw pybind11::key_error(
-                                fmt::format("Property set does not contain property '{}'", property_name));
+                                std::format("Property set does not contain property '{}'", property_name));
                         }
 
                         return property_reference(property_set.properties(), property_name);

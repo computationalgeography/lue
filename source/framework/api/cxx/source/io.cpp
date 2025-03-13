@@ -1,12 +1,12 @@
 #include "lue/framework/api/cxx/io.hpp"
 #include "detail/unsupported_overload.hpp"
-#include "fmt/format.h"
 #include "overload.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/io/gdal.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 // #include <any>
+#include <format>
 #include <optional>
 
 
@@ -97,7 +97,7 @@ namespace lue {
                 if (!result)
                 {
                     throw std::runtime_error(
-                        fmt::format("Unsupported datatype: {}", "TODO"));  // as_string(data_type)));
+                        std::format("Unsupported datatype: {}", "TODO"));  // as_string(data_type)));
                 }
 
                 return std::move(*result);

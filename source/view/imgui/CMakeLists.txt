@@ -39,8 +39,6 @@ target_compile_definitions(lue_imgui
 add_library(lue::imgui ALIAS lue_imgui)
 
 target_link_libraries(lue_imgui
-    PRIVATE
-        fmt::fmt
     PUBLIC
         lue::glfw
         $<$<BOOL:${LUE_VIEW_USE_VULKAN}>:lue::vulkan>

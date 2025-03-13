@@ -1,6 +1,6 @@
 #include "lue/py/data_model/conversion.hpp"
-#include <fmt/format.h>
 #include <numpy/arrayobject.h>
+#include <format>
 #include <map>
 #include <optional>
 
@@ -105,7 +105,7 @@ namespace lue {
 
         if (!datatype)
         {
-            throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+            throw std::runtime_error(std::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
         }
 
         return *datatype;
@@ -133,7 +133,7 @@ namespace lue {
         if (dtype_by_datatype.find(datatype) == dtype_by_datatype.end())
         {
             throw std::runtime_error(
-                fmt::format("Unsupported datatype ({})", native_datatype_as_string(datatype)));
+                std::format("Unsupported datatype ({})", native_datatype_as_string(datatype)));
         }
 
         return dtype_by_datatype[datatype];

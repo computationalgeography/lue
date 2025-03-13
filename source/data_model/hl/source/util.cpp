@@ -1,7 +1,7 @@
 #include "lue/data_model/hl/util.hpp"
 #include <boost/algorithm/string/split.hpp>
-#include <fmt/format.h>
 #include <filesystem>
+#include <format>
 #include <vector>
 
 
@@ -20,7 +20,7 @@ namespace lue {
 
             if (tokens.size() != 3)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Array pathname must be formatted as "
                     "<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
                     array_pathname));
@@ -49,7 +49,7 @@ namespace lue {
 
             if (tokens.size() < 4)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Array pathname must be formatted as "
                     "<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
                     array_pathname));

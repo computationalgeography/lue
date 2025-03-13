@@ -2,6 +2,8 @@ name: macOS CI
 
 on:
   pull_request:
+    branches-ignore:
+      - "*"
   push:
     branches:
       - "master"
@@ -60,7 +62,6 @@ jobs:
               brew install \
                   boost \
                   conan \
-                  fmt \
                   gdal \
                   glfw \
                   graphviz \

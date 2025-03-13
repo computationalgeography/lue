@@ -73,7 +73,6 @@ target_link_libraries(lue_data_model
     PUBLIC
         lue::hdf5
         Boost::headers
-        fmt::fmt
     PRIVATE
         lue::shared
 )
@@ -84,5 +83,6 @@ if(LUE_BUILD_TESTS)
         TARGET_NAME_STATIC_LIB lue_data_model_static
         EXPORT_MACRO_BASENAME DATA_MODEL
     )
+
     add_subdirectory(test)
 endif()

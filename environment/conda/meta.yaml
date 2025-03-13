@@ -32,7 +32,6 @@ requirements:
     - hpx
     - libgdal
     - pybind11
-    - fmt
     - docopt  # templatize.py
     - jinja2  # templatize.py
     - nlohmann_json

@@ -2,9 +2,9 @@
 #include "lue/framework/partitioned_array.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
-#include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>  // std::optional
+#include <format>
 
 
 using namespace pybind11::literals;
@@ -26,7 +26,7 @@ namespace lue::framework {
             if (rank != 2)
             {
                 throw std::runtime_error(
-                    fmt::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
+                    std::format("Unsupported rank ({}). Currently only rank 2 is supported", rank));
             }
 
             auto const shape{lue::shape(array)};

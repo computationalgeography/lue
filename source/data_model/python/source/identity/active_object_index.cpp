@@ -1,7 +1,7 @@
 #include "lue/info/identity/active_object_index.hpp"
 #include "../python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,7 +14,7 @@ namespace lue {
 
             static std::string formal_string_representation(ActiveObjectIndex const& index)
             {
-                return fmt::format("ActiveObjectIndex(pathname='{}')", index.id().pathname());
+                return std::format("ActiveObjectIndex(pathname='{}')", index.id().pathname());
             }
 
 

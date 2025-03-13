@@ -372,7 +372,6 @@ endif()
 # Handle external dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
     set(LUE_HDF5_REQUIRED TRUE)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_BOOST_REQUIRED TRUE)
 
     if(LUE_BUILD_FRAMEWORK)
@@ -398,7 +397,6 @@ endif()
 
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_BOOST_REQUIRED TRUE)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
     set(LUE_MDSPAN_REQUIRED TRUE)
@@ -441,7 +439,6 @@ endif()
 
 
 if(LUE_BUILD_VIEW)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GLFW_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
@@ -801,19 +798,6 @@ if(LUE_GRAPHVIZ_REQUIRED)
         include(GraphvizMacro)
     endif()
 endif()
-
-if(LUE_FMT_REQUIRED)
-    # In fmt, install rules are disabled if it's a subproject
-    set(FMT_INSTALL ON)
-    FetchContent_Declare(fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG e69e5f977d458f2650bb346dadf2ad30c5320281  # 10.2.1
-        SYSTEM
-        FIND_PACKAGE_ARGS 10
-    )
-    FetchContent_MakeAvailable(fmt)
-endif()
-
 
 if(LUE_HDF5_REQUIRED)
     # Explicitly use Module Mode, to prevent the use of HDF5's own CMake find logic. This latter

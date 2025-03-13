@@ -14,7 +14,7 @@ namespace lue::framework {
         // Verify rank of shape of array corresponds with the one requested
         if (array.ndim() != rank)
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Rank of array shape must be equal to rank of array ({} != {})", array.ndim(), 2));
         }
 
@@ -24,7 +24,7 @@ namespace lue::framework {
         if (!is_hypercube(shape))
         {
             throw std::runtime_error(
-                fmt::format("Shape of array to use as kernel must be a hypercube (a square in 2D)"));
+                std::format("Shape of array to use as kernel must be a hypercube (a square in 2D)"));
         }
 
 

@@ -39,8 +39,7 @@ target_sources(lue_gdal
 target_link_libraries(lue_gdal
     PUBLIC
         GDAL::GDAL
-    PRIVATE
-        fmt::fmt
+        lue::shared
 )
 
 if(LUE_BUILD_TESTS)

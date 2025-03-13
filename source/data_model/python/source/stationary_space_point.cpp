@@ -1,7 +1,7 @@
 #include "lue/info/space/stationary_space_point.hpp"
 #include "python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,13 +14,13 @@ namespace lue {
 
             static std::string formal_string_representation(StationarySpacePoint const& point)
             {
-                return fmt::format("StationarySpacePoint(pathname='{}')", point.id().pathname());
+                return std::format("StationarySpacePoint(pathname='{}')", point.id().pathname());
             }
 
 
             static std::string informal_string_representation(StationarySpacePoint const& point)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    nr_points: {}",
                     formal_string_representation(point),

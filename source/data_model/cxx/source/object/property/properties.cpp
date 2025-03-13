@@ -1,7 +1,7 @@
 #include "lue/object/property/properties.hpp"
 #include "lue/core/tag.hpp"
 #include <boost/optional.hpp>
-#include <fmt/core.h>
+#include <format>
 #include <functional>
 
 
@@ -102,7 +102,7 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format("Property named {} does not exist", name));
+                throw std::runtime_error(std::format("Property named {} does not exist", name));
             }
 
             return *result;
@@ -128,7 +128,7 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format("Property named {} does not exist", name));
+                throw std::runtime_error(std::format("Property named {} does not exist", name));
             }
 
             return *result;
@@ -154,7 +154,7 @@ namespace lue {
             if (!result)
             {
                 throw std::runtime_error(
-                    fmt::format("Property named {} does not exist or does not vary through time", name));
+                    std::format("Property named {} does not exist or does not vary through time", name));
             }
 
             return *result;
@@ -196,7 +196,7 @@ namespace lue {
 
             if (result == nullptr)
             {
-                throw std::runtime_error(fmt::format("Property named {} does not exist", name));
+                throw std::runtime_error(std::format("Property named {} does not exist", name));
             }
 
             return *result;
@@ -207,7 +207,7 @@ namespace lue {
         {
             if (contains(name))
             {
-                throw std::runtime_error(fmt::format("Property named {} already exists", name));
+                throw std::runtime_error(std::format("Property named {} already exists", name));
             }
         }
 
@@ -250,7 +250,7 @@ namespace lue {
             if (hdf5::group_exists(parent, properties_tag))
             {
                 throw std::runtime_error(
-                    fmt::format("Properties group already exists at {}", parent.id().pathname()));
+                    std::format("Properties group already exists at {}", parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, properties_tag)};

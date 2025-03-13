@@ -1,9 +1,9 @@
 #include "lue/hdf5/group.hpp"
 #include "lue/hdf5/dataset.hpp"
-#include <fmt/format.h>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <format>
 
 
 namespace lue {
@@ -19,7 +19,7 @@ namespace lue {
                 if (status < 0)
                 {
                     throw std::runtime_error(
-                        fmt::format("Cannot iterate through links in group at {}", location.pathname()));
+                        std::format("Cannot iterate through links in group at {}", location.pathname()));
                 }
             }
 
@@ -97,7 +97,7 @@ namespace lue {
         {
             if (!id().is_valid())
             {
-                throw std::runtime_error(fmt::format("Cannot open group {} in {}", name, parent.pathname()));
+                throw std::runtime_error(std::format("Cannot open group {} in {}", name, parent.pathname()));
             }
 
             std::filesystem::path const path{id().pathname()};
@@ -300,7 +300,7 @@ namespace lue {
         {
             if (group_exists(parent, name))
             {
-                throw std::runtime_error(fmt::format("Group {} already exists", name));
+                throw std::runtime_error(std::format("Group {} already exists", name));
             }
 
             Identifier group_id{
@@ -309,7 +309,7 @@ namespace lue {
             if (!group_id.is_valid())
             {
                 throw std::runtime_error(
-                    fmt::format("Cannot create group {} at {}", name, parent.id().pathname()));
+                    std::format("Cannot create group {} at {}", name, parent.id().pathname()));
             }
 
             return Group{parent, std::move(group_id)};

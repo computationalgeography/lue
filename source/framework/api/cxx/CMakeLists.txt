@@ -80,7 +80,6 @@ target_link_libraries(lue_framework_api_cxx
     PRIVATE
         lue::framework_io
         lue::framework_local_operation
-        fmt::fmt
     PUBLIC
         lue::framework_algorithm
         lue::framework_partitioned_array

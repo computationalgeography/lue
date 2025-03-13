@@ -1,8 +1,8 @@
 #include "lue/hdf5/file.hpp"
 #include "lue/hdf5/version.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <filesystem>
+#include <format>
 
 
 namespace lue::hdf5 {
@@ -122,7 +122,7 @@ namespace lue::hdf5 {
     {
         if (!id().is_valid())
         {
-            throw std::runtime_error(fmt::format("Cannot open file {}", name));
+            throw std::runtime_error(std::format("Cannot open file {}", name));
         }
     }
 
@@ -171,7 +171,7 @@ namespace lue::hdf5 {
 
         if (status < 0)
         {
-            throw std::runtime_error(fmt::format("Cannot flush file {}", pathname()));
+            throw std::runtime_error(std::format("Cannot flush file {}", pathname()));
         }
     }
 
@@ -183,7 +183,7 @@ namespace lue::hdf5 {
 
         if (status < 0)
         {
-            throw std::runtime_error(fmt::format("Cannot determine intent of file {}", pathname()));
+            throw std::runtime_error(std::format("Cannot determine intent of file {}", pathname()));
         }
 
         return intent;
@@ -221,7 +221,7 @@ namespace lue::hdf5 {
 
         if (!id.is_valid())
         {
-            throw std::runtime_error(fmt::format("Cannot create file {}", name));
+            throw std::runtime_error(std::format("Cannot create file {}", name));
         }
 
         File file{std::move(id)};

@@ -92,7 +92,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Phenomenon {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Phenomenon {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};

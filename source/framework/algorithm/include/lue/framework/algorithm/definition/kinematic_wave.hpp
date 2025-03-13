@@ -8,8 +8,8 @@
 #include <limits>
 // #define BOOST_MATH_INSTRUMENT
 #include <boost/math/tools/roots.hpp>
-#include <fmt/format.h>
 #include <cmath>
+#include <format>
 
 
 namespace lue {
@@ -219,7 +219,7 @@ namespace lue {
                 // {
                 //     // This only seems to happen when upstream_discharge == 0, current_discharge == 0, and
                 //     // lateral_inflow > 0
-                //     throw std::runtime_error(fmt::format(
+                //     throw std::runtime_error(std::format(
                 //         "Iterating to a solution took more iterations than expected: "
                 //         "    upstream discharge: {}, "
                 //         "    current discharge: {}, "
@@ -946,7 +946,7 @@ namespace lue {
         InflowCountCommunicatorArray inflow_count_communicators{
             "/lue/kinematic_wave/inflow_count/", localities};
         MaterialCommunicatorArray discharge_communicators{
-            fmt::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
+            std::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
 
 
         // For each partition, spawn a task that will solve the kinematic wave equation for the partition
