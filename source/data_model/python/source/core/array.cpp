@@ -7,10 +7,10 @@
 #include "lue/py/data_model/conversion.hpp"
 #include "lue/py/data_model/numpy.hpp"
 #include <boost/algorithm/string/trim.hpp>
-#include <fmt/format.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -130,7 +130,7 @@ namespace lue {
 
             if (static_cast<hdf5::Shape::value_type>(index) >= array_shape[dimension_idx])
             {
-                throw pybind11::index_error(fmt::format(
+                throw pybind11::index_error(std::format(
                     "index {} outside of range of valid indices [0, {})", index, array_shape[dimension_idx]));
             }
 
@@ -425,7 +425,7 @@ namespace lue {
 
             // if(from_datatype != array.datatype())
             // {
-            //     throw std::runtime_error(fmt::format(
+            //     throw std::runtime_error(std::format(
             //             "Value type of value(s) to assign from ({}) must equal "
             //             "the value type of the array to assign to ({})",
             //             hdf5::native_datatype_as_string(from_datatype),
@@ -887,7 +887,7 @@ namespace lue {
 
                         if (!utf8_encoded_strings && !unicode_strings)
                         {
-                            throw std::runtime_error(fmt::format(
+                            throw std::runtime_error(std::format(
                                 "Expected array with utf8 encoded strings or "
                                 "Unicode strings, but got array with format {}",
                                 info.format));

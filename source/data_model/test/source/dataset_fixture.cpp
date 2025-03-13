@@ -2,53 +2,49 @@
 #include <cassert>
 
 
-namespace lue {
-    namespace data_model {
-        namespace test {
+namespace lue::data_model::test {
 
-            DatasetFixture::DatasetFixture():
+    DatasetFixture::DatasetFixture():
 
-                _pathname{"my_dataset.lue"},
-                _remove_dataset_upon_destruction{true},
-                _dataset{std::make_unique<Dataset>(create_dataset(_pathname))}
+        _pathname{"my_dataset.lue"},
+        _remove_dataset_upon_destruction{true},
+        _dataset{std::make_unique<Dataset>(create_dataset(_pathname))}
 
+    {
+        assert(dataset_exists(_pathname));
+    }
+
+
+    DatasetFixture::~DatasetFixture()
+    {
+        if (_remove_dataset_upon_destruction)
+        {
+            if (dataset_exists(_pathname))
             {
-                assert(dataset_exists(_pathname));
+                _dataset.reset();
+                remove_dataset(_pathname);
             }
 
-
-            DatasetFixture::~DatasetFixture()
-            {
-                if (_remove_dataset_upon_destruction)
-                {
-                    if (dataset_exists(_pathname))
-                    {
-                        _dataset.reset();
-                        remove_dataset(_pathname);
-                    }
-
-                    assert(!dataset_exists(_pathname));
-                }
-            }
+            assert(!dataset_exists(_pathname));
+        }
+    }
 
 
-            std::string const& DatasetFixture::pathname() const
-            {
-                return _pathname;
-            }
+    auto DatasetFixture::pathname() const -> std::string const&
+    {
+        return _pathname;
+    }
 
 
-            Dataset& DatasetFixture::dataset()
-            {
-                return *_dataset;
-            }
+    auto DatasetFixture::dataset() -> Dataset&
+    {
+        return *_dataset;
+    }
 
 
-            void DatasetFixture::keep_dataset_upon_destruction()
-            {
-                _remove_dataset_upon_destruction = false;
-            }
+    void DatasetFixture::keep_dataset_upon_destruction()
+    {
+        _remove_dataset_upon_destruction = false;
+    }
 
-        }  // namespace test
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model::test

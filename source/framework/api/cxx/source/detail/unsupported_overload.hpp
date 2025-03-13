@@ -1,8 +1,9 @@
 #pragma once
 #include "detail/type_name.hpp"
 #include "lue/framework/api/cxx/field.hpp"
-#include <fmt/ranges.h>
+#include "lue/string.hpp"
 #include <concepts>
+#include <format>
 #include <initializer_list>
 #include <string>
 
@@ -13,10 +14,10 @@ namespace lue::api::detail {
     void throw_unsupported_overload_exception(
         std::string_view const& name, ArgumentTypeNames const&... type_names)
     {
-        throw std::runtime_error{fmt::format(
+        throw std::runtime_error{std::format(
             "Unsupported C++ overload called: {}({})",
             name,
-            fmt::join(std::initializer_list<std::string_view>{type_names...}, ", "))};
+            join(std::initializer_list<std::string_view>{type_names...}, ", "))};
     }
 
 

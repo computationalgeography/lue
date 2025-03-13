@@ -15,7 +15,7 @@ namespace lue {
             // void throw_not_supported_yet(
             //     std::string const& message)
             // {
-            //     throw std::runtime_error(fmt::format(
+            //     throw std::runtime_error(std::format(
             //         "This feature is not supported yet: {}\n"
             //         "You may want to open an issue here: "
             //         "https://github.com/computationalgeography/lue/issues",
@@ -28,7 +28,7 @@ namespace lue {
             {
                 issues.add_warning(
                     id,
-                    fmt::format(
+                    std::format(
                         "validation of this feature is not supported yet: {} -- "
                         "you may want to open an issue here: "
                         "https://github.com/computationalgeography/lue/issues",
@@ -91,11 +91,11 @@ namespace lue {
 
                 for (auto const& id : ids)
                 {
-                    stream << fmt::format("{}:\n", id.pathname());
+                    stream << std::format("{}:\n", id.pathname());
 
                     for (auto const& message_ : messages[id])
                     {
-                        stream << fmt::format("- [{}/{}] {}\n", ++issue_count, nr_issues, message_);
+                        stream << std::format("- [{}/{}] {}\n", ++issue_count, nr_issues, message_);
                     }
                 }
             }
@@ -117,7 +117,7 @@ namespace lue {
             {
                 issues.add_error(
                     id,
-                    fmt::format(
+                    std::format(
                         "Object IDs must be unique, but at least one duplicate was found "
                         "({})",
                         *it));
@@ -146,7 +146,7 @@ namespace lue {
             {
                 issues.add_error(
                     id,
-                    fmt::format(
+                    std::format(
                         "Values must be strictly increasing, "
                         "but at least two adjacent values where not "
                         "({} >= {})",
@@ -176,7 +176,7 @@ namespace lue {
             {
                 issues.add_error(
                     id,
-                    fmt::format(
+                    std::format(
                         "Values must be (nonstrictly) increasing, "
                         "but at least two adjacent values where not "
                         "({} > {})",
@@ -201,7 +201,7 @@ namespace lue {
             {
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Number of object arrays in value array does not equal "
                         "the number of IDs ({} != {})",
                         nr_object_arrays,
@@ -224,7 +224,7 @@ namespace lue {
             {
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Number of object arrays in value does not equal "
                         "the number of IDs ({} != {})",
                         nr_object_arrays,
@@ -243,7 +243,7 @@ namespace lue {
                     {
                         issues.add_error(
                             value.id(),
-                            fmt::format("For at least one object, no value is stored (id={})", id));
+                            std::format("For at least one object, no value is stored (id={})", id));
                     }
                 }
             }
@@ -266,7 +266,7 @@ namespace lue {
                 {
                     issues.add_error(
                         value.id(),
-                        fmt::format(
+                        std::format(
                             "Number of object arrays in value array does not equal "
                             "the number of active object IDs in object tracker "
                             "({} != {})",
@@ -315,7 +315,7 @@ namespace lue {
 
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Number of value arrays must be equal to the number of "
                         "objects that have been active ({} != {})",
                         nr_value_arrays,
@@ -332,7 +332,7 @@ namespace lue {
 
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Each active object must have a corresponding value array, "
                         "but at least value array for object with ID {} is missing",
                         *it));
@@ -380,7 +380,7 @@ namespace lue {
                         {
                             issues.add_error(
                                 value.id(),
-                                fmt::format(
+                                std::format(
                                     "Number of object arrays stored in each value array "
                                     "must equal the number of times the object is active "
                                     "(at least value array of object with ID {} does not "
@@ -416,7 +416,7 @@ namespace lue {
             {
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Number of value arrays in value does not equal "
                         "the number of active sets in object tracker "
                         "({} != {})",
@@ -447,7 +447,7 @@ namespace lue {
                     {
                         issues.add_error(
                             value.id(),
-                            fmt::format(
+                            std::format(
                                 "Number of object arrays stored does not equal "
                                 "the size of the active set "
                                 "({} != {})",
@@ -481,7 +481,7 @@ namespace lue {
             {
                 issues.add_error(
                     value.id(),
-                    fmt::format(
+                    std::format(
                         "Number of value arrays in value does not equal "
                         "the number of active sets in object tracker "
                         "({} != {})",
@@ -512,7 +512,7 @@ namespace lue {
                 // //     auto const nr_object_arrays = value_array.nr_arrays();
 
                 // //     if(nr_object_arrays != active_set_size) {
-                // //         issues.add_error(value.id(), fmt::format(
+                // //         issues.add_error(value.id(), std::format(
                 // //             "Number of object arrays stored does not equal "
                 // //             "the size of the active set "
                 // //             "({} != {})",
@@ -547,7 +547,7 @@ namespace lue {
                 {
                     issues.add_error(
                         active_set_index_id,
-                        fmt::format(
+                        std::format(
                             "{} IDs of active objects are stored, "
                             "but indices of active sets are missing",
                             active_object_ids.size()));
@@ -558,7 +558,7 @@ namespace lue {
                 // Actually, this is not an error. It is allowed to only
                 // store empty active sets.
                 // if(active_object_ids.empty()) {
-                //     issues.add_error(active_set_index_id, fmt::format(
+                //     issues.add_error(active_set_index_id, std::format(
                 //         "{} indices of active sets are stored, "
                 //         "but IDs of active objects are missing",
                 //         active_set_idxs.size()
@@ -579,7 +579,7 @@ namespace lue {
                     {
                         issues.add_error(
                             active_set_index_id,
-                            fmt::format(
+                            std::format(
                                 "Start indices of active sets must be "
                                 "monotonic increasing, but "
                                 "next index {} < current index {}",
@@ -594,7 +594,7 @@ namespace lue {
                     {
                         issues.add_error(
                             active_set_index_id,
-                            fmt::format(
+                            std::format(
                                 "Part of the collection of active object IDs is "
                                 "missing (end index {} > collection size {})",
                                 end_idx,
@@ -632,7 +632,7 @@ namespace lue {
                 {
                     issues.add_error(
                         active_set_index_id,
-                        fmt::format(
+                        std::format(
                             "{} Indices of active objects are stored, "
                             "but indices of active sets are missing",
                             active_object_idxs.size()));
@@ -654,7 +654,7 @@ namespace lue {
                     {
                         issues.add_error(
                             active_set_index_id,
-                            fmt::format(
+                            std::format(
                                 "Start indices of active sets must be "
                                 "monotonic increasing, but "
                                 "next index {} < current index {}",
@@ -669,7 +669,7 @@ namespace lue {
                     {
                         issues.add_error(
                             active_object_index_id,
-                            fmt::format(
+                            std::format(
                                 "Part of the collection of active object indices is "
                                 "missing (end index {} > collection size {})",
                                 end_idx,
@@ -732,7 +732,7 @@ namespace lue {
                     {
                         issues.add_error(
                             active_object_id.id(),
-                            fmt::format(
+                            std::format(
                                 "All active object IDs must also be part of the "
                                 "collection of static object IDs "
                                 "(at least {} is not)",
@@ -771,7 +771,7 @@ namespace lue {
                 {
                     issues.add_error(
                         time_box.id(),
-                        fmt::format(
+                        std::format(
                             "Number of boxes in time domain does not equal "
                             "the number of active set indices in object tracker "
                             "({} != {})",
@@ -805,7 +805,7 @@ namespace lue {
             {
                 issues.add_error(
                     time_cell.id(),
-                    fmt::format(
+                    std::format(
                         "For each box a count must be written, but "
                         "the number of counts does not equal the number of boxes "
                         "({} != {})",
@@ -831,7 +831,7 @@ namespace lue {
                 {
                     issues.add_error(
                         time_cell.id(),
-                        fmt::format(
+                        std::format(
                             "Number of cells in time domain does not equal "
                             "the number of active set indices in object tracker "
                             "({} != {})",
@@ -863,7 +863,7 @@ namespace lue {
                 {
                     issues.add_error(
                         time_point.id(),
-                        fmt::format(
+                        std::format(
                             "Number of points in time domain does not equal "
                             "the number of active set indices in object tracker "
                             "({} != {})",
@@ -1007,7 +1007,7 @@ namespace lue {
             {
                 issues.add_error(
                     discretization_property.id(),
-                    fmt::format(
+                    std::format(
                         "Number of object arrays in discretization property "
                         "must equal the number of object arrays discretized "
                         "({} != {})",
@@ -1032,7 +1032,7 @@ namespace lue {
             {
                 issues.add_error(
                     discretization_property.id(),
-                    fmt::format(
+                    std::format(
                         "When discretizing a same_shape::constant_shape property "
                         "the number of object arrays in the discretization property must "
                         "equal 1 "
@@ -1089,7 +1089,7 @@ namespace lue {
                     {
                         issues.add_error(
                             discretization_property.id(),
-                            fmt::format(
+                            std::format(
                                 "Number of object arrays in discretization property "
                                 "must be 1 ({} != 1)",
                                 discretization_value.nr_arrays()));
@@ -1106,7 +1106,7 @@ namespace lue {
                 {
                     issues.add_error(
                         discretization_property.id(),
-                        fmt::format(
+                        std::format(
                             "Discretization property must contain unsigned "
                             "integral values "
                             "({} is not unsigned integral)",
@@ -1359,7 +1359,7 @@ namespace lue {
                             {
                                 issues.add_error(
                                     discretization_property.id(),
-                                    fmt::format(
+                                    std::format(
                                         "Number of counts in discretization property "
                                         "must equal the number of locations in time "
                                         "for which values are discretized "
@@ -1372,7 +1372,7 @@ namespace lue {
                             {
                                 issues.add_error(
                                     discretization_property.id(),
-                                    fmt::format(
+                                    std::format(
                                         "Discretization property must contain unsigned "
                                         "integral values "
                                         "({} is not unsigned integral)",
@@ -1384,7 +1384,7 @@ namespace lue {
                             {
                                 issues.add_error(
                                     discretization_property.id(),
-                                    fmt::format(
+                                    std::format(
                                         "The rank of the discretization property "
                                         "values must be 1, but it currently is {}",
                                         discretization_value.array_shape().size()));
@@ -1395,7 +1395,7 @@ namespace lue {
                             {
                                 issues.add_error(
                                     discretization_property.id(),
-                                    fmt::format(
+                                    std::format(
                                         "The number of counts in the discretization "
                                         "property must equal the number of locations "
                                         "in time in the discretized property "
@@ -1507,7 +1507,7 @@ namespace lue {
                         {
                             issues.add_error(
                                 space_domain.id(),
-                                fmt::format(
+                                std::format(
                                     "Discretization of presence in space is only supported "
                                     "for space domain item type {}, but it is {}",
                                     aspect_to_string(SpaceDomainItemType::box),
@@ -1562,7 +1562,7 @@ namespace lue {
 
                                                 issues.add_error(
                                                     presence_property.id(),
-                                                    fmt::format(
+                                                    std::format(
                                                         "Time domain of presence property "
                                                         "must equal the time domain of the "
                                                         "property-set containing the "
@@ -1669,7 +1669,7 @@ namespace lue {
                     //     auto const nr_objects = object_tracker.id().nr_objects();
 
                     //     if(nr_objects != 1) {
-                    //         issues.add_error(object_tracker.id().id(), fmt::format(
+                    //         issues.add_error(object_tracker.id().id(), std::format(
                     //             "Number of object IDs in object tracker "
                     //             "of collection properties does not equal 1 "
                     //             "({} != 1)",
@@ -1718,7 +1718,7 @@ namespace lue {
                         {
                             issues.add_error(
                                 property_set_.id(),
-                                fmt::format(
+                                std::format(
                                     "Size of each active set in object tracker "
                                     "of collection properties does not equal "
                                     "the number of active object IDs "
@@ -1735,7 +1735,7 @@ namespace lue {
                             {
                                 issues.add_error(
                                     property_set_.id(),
-                                    fmt::format(
+                                    std::format(
                                         "Size of each active set in object tracker "
                                         "of collection properties does not equal "
                                         "the number of active object indices "
@@ -1879,7 +1879,7 @@ namespace lue {
 
             if (issues.errors_found() || (fail_on_warning && issues.warnings_found()))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "{}"
                     "LUE is work in progress -- if you encounter "
                     "false-negatives, then please open an issue here: "
@@ -1901,7 +1901,7 @@ namespace lue {
 
             if (issues.errors_found() || (fail_on_warning && issues.warnings_found()))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "{}"
                     "LUE is work in progress -- if you encounter "
                     "false-negatives, then please open an issue here: "

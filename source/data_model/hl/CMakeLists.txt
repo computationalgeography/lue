@@ -21,5 +21,11 @@ if(LUE_BUILD_TESTS)
         TARGET_NAME_STATIC_LIB lue_data_model_hl_static
         EXPORT_MACRO_BASENAME DATA_MODEL_HL
     )
+
+    # target_link_libraries(lue_data_model_hl_static
+    #     PUBLIC
+    #         lue_data_model_static
+    # )
+
     add_subdirectory(test)
 endif()

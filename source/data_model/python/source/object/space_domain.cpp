@@ -13,7 +13,7 @@ namespace lue {
 
             static std::string formal_string_representation(SpaceConfiguration const& configuration)
             {
-                return fmt::format(
+                return std::format(
                     "SpaceConfiguration(mobility='{}', item_type='{}')",
                     aspect_to_string(configuration.value<Mobility>()),
                     aspect_to_string(configuration.value<SpaceDomainItemType>()));
@@ -28,7 +28,7 @@ namespace lue {
 
             static std::string formal_string_representation(SpaceDomain const& domain)
             {
-                return fmt::format("SpaceDomain(pathname='{}')", domain.id().pathname());
+                return std::format("SpaceDomain(pathname='{}')", domain.id().pathname());
             }
 
 

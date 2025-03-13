@@ -10,6 +10,29 @@ function(add_test_conditionally
 endfunction()
 
 
+function(append_conan_runtime_lib_dirs)
+    foreach(path ${CONAN_RUNTIME_LIB_DIRS})
+        list(APPEND conan_runtime_lib_dir_tweak "PATH=path_list_prepend:${path}")
+    endforeach()
+
+    set_property(
+        TEST
+            ${ARGN}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                ${conan_runtime_lib_dir_tweak}
+    )
+endfunction()
+
+
+function(append_3rd_party_runtime_lib_dirs)
+    if(CONAN_RUNTIME_LIB_DIRS)
+        append_conan_runtime_lib_dirs(${ARGN})
+    endif()
+endfunction()
+
+
 function(add_unit_tests)
     set(prefix ARG)
     set(no_values "")
@@ -57,6 +80,8 @@ function(add_unit_tests)
 
         list(APPEND test_names ${test_name})
     endforeach()
+
+    append_3rd_party_runtime_lib_dirs(${test_names})
 
     set(${ARG_TARGETS} ${test_names} PARENT_SCOPE)
 endfunction()
@@ -483,8 +508,9 @@ function(lue_configure_static_library_for_tests)
         ${sources}
     )
 
+    # NOTE Assuming PUBLIC is OK. It is convenient as targets linked to don't need to define these symbols.
     target_compile_definitions(${target_name_static_lib}
-        PRIVATE
+        PUBLIC
             LUE_${export_macro_basename}_STATIC_DEFINE
     )
 

@@ -12,8 +12,9 @@ namespace lue {
 
         template<typename Policies, typename InputPartition, typename OutputPartition, typename Functor>
         auto unary_local_operation_partition(
-            Policies const& policies, InputPartition const& input_partition, Functor const& functor)
-            -> OutputPartition
+            Policies const& policies,
+            InputPartition const& input_partition,
+            Functor const& functor) -> OutputPartition
         {
             using Offset = OffsetT<InputPartition>;
             using InputData = DataT<InputPartition>;
@@ -29,7 +30,7 @@ namespace lue {
                         Offset const& offset, InputData const& input_partition_data)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: partition", functor_name<Functor>)};
+                            std::format("{}: partition", functor_name<Functor>)};
 
                         HPX_UNUSED(input_partition);
 
@@ -109,7 +110,7 @@ namespace lue {
         using OutputPartitions = PartitionsT<OutputArray>;
         using OutputPartition = PartitionT<OutputArray>;
 
-        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
 
         lue_hpx_assert(all_are_valid(input_array.partitions()));
 
@@ -185,11 +186,10 @@ namespace lue {
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>>, rank> const&,                  \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>>, rank>;                      \
+        -> PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>>, rank>;                     \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     unary_local_operation<ArgumentType<void(Policies)>, ArgumentType<void(Functor)>>(                        \
         ArgumentType<void(Policies)> const&,                                                                 \
         Scalar<policy::InputElementT<ArgumentType<void(Policies)>>> const&,                                  \
-        ArgumentType<void(Functor)> const&)                                                                  \
-        ->Scalar<policy::OutputElementT<ArgumentType<void(Policies)>>>;
+        ArgumentType<void(Functor)> const&) -> Scalar<policy::OutputElementT<ArgumentType<void(Policies)>>>;

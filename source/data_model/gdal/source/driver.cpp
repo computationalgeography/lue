@@ -1,8 +1,8 @@
 #include "lue/gdal/driver.hpp"
-#include <fmt/format.h>
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
+#include <format>
 #include <map>
 #include <stdexcept>
 
@@ -53,7 +53,7 @@ namespace lue::gdal {
 
         if (driver_ptr == nullptr)
         {
-            throw std::runtime_error(fmt::format("Driver {} is not available", name));
+            throw std::runtime_error(std::format("Driver {} is not available", name));
         }
 
         return driver_ptr;

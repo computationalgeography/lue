@@ -5,7 +5,7 @@
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework.hpp"
 #include "lue/macro.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -603,7 +603,7 @@ namespace lue {
 
         InflowCountCommunicatorArray inflow_count_communicators{"/lue/accu3/inflow_count/", localities};
         MaterialCommunicatorArray material_communicators{
-            fmt::format("/lue/accu3/material/{}/", as_string<MaterialElement>), localities};
+            std::format("/lue/accu3/material/{}/", as_string<MaterialElement>), localities};
 
 
         // For each partition, spawn a task that will solve the

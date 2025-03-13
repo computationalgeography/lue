@@ -3,9 +3,9 @@
 #include "lue/imgui.hpp"
 #include "lue/version.hpp"
 #include "lue/vulkan.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <cmath>
+#include <format>
 
 #include <iostream>
 
@@ -54,7 +54,7 @@
 #ifndef NDEBUG
 auto format_as(VkDebugReportObjectTypeEXT object_type)
 {
-    // Use enum names if this can be querried from the Vulkan API
+    // Use enum names if this can be queried from the Vulkan API
     // https://docs.vulkan.org/spec/latest/chapters/debugging.html#VkDebugReportObjectTypeEXT
     return static_cast<int>(object_type);
 }
@@ -70,7 +70,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
     char const* message,
     [[maybe_unused]] void* user_data)
 {
-    std::cerr << fmt::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
+    std::cerr << std::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
               << std::endl;
 
     return VK_FALSE;

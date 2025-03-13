@@ -1,7 +1,7 @@
 #include "lue/translate/format/dot.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/transformed.hpp>
-#include <fmt/format.h>
+#include <format>
 
 
 // Unused suitable color: "fillcolor": "#094d8e"
@@ -108,7 +108,7 @@ namespace lue {
                     _stream{stream}
 
                 {
-                    _stream << fmt::format(
+                    _stream << std::format(
                         R"(
 subgraph cluster_{} {{
     label=<{}>
@@ -152,7 +152,7 @@ subgraph cluster_{} {{
             std::string const& style = "solid",
             std::string const& label = "")
         {
-            stream << fmt::format(
+            stream << std::format(
                 R"(
     {} -> {} [
         weight={}
@@ -185,7 +185,7 @@ subgraph cluster_{} {{
         {
             // Dump something to notify the user that this part of the dataset
             // is empty
-            stream << fmt::format(
+            stream << std::format(
                 R"(
     {} [
         label="<empty>"
@@ -219,7 +219,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -250,7 +250,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -283,7 +283,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -316,7 +316,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -349,7 +349,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -382,7 +382,7 @@ subgraph cluster_{} {{
                   })
                 : value.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -410,7 +410,7 @@ subgraph cluster_{} {{
 
     void to_dot(data_model::PropertyGroup& property, std::ostream& stream, utility::Metadata const& metadata)
     {
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -553,7 +553,7 @@ subgraph cluster_{} {{
                   })
                 : time_domain.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -614,7 +614,7 @@ subgraph cluster_{} {{
                   })
                 : space_domain.id().name();
 
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -686,7 +686,7 @@ subgraph cluster_{} {{
         std::ostream& stream,
         utility::Metadata const& metadata)
     {
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -729,7 +729,7 @@ subgraph cluster_{} {{
     void to_dot(
         data_model::PropertySet& property_set, std::ostream& stream, utility::Metadata const& metadata)
     {
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -833,7 +833,7 @@ subgraph cluster_{} {{
     */
     void to_dot(data_model::Phenomenon& phenomenon, std::ostream& stream, utility::Metadata const& metadata)
     {
-        stream << fmt::format(
+        stream << std::format(
             R"(
     {} [
         label=<{}>
@@ -948,7 +948,7 @@ subgraph cluster_{} {{
         // write the data values. We do have to write the organization, in HDF5,
         // of the data values.
 
-        stream << fmt::format(
+        stream << std::format(
             R"(digraph {{
     fontname="Courier"
     fontsize=10

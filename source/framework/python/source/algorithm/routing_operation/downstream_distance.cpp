@@ -1,7 +1,7 @@
 #include "lue/framework/algorithm/downstream_distance.hpp"
 #include "lue/framework.hpp"
-#include <fmt/format.h>
 #include <pybind11/numpy.h>
+#include <format>
 
 
 namespace lue::framework {
@@ -61,7 +61,7 @@ namespace lue::framework {
                 if (!result)
                 {
                     throw std::runtime_error(
-                        fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+                        std::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
                 }
 
                 return result;

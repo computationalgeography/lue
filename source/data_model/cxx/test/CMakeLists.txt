@@ -51,7 +51,19 @@ add_unit_tests(
     SCOPE lue_cxx
     NAMES ${names}
     LIBRARIES
+        lue_data_model_static
         lue::data_model_test
+    EXPORT_MACRO_BASENAME
+        DATA_MODEL
     TARGETS
         test_names
+)
+
+set_property(
+    TEST
+        ${test_names}
+    APPEND
+    PROPERTY
+        ENVIRONMENT_MODIFICATION
+            PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::hdf5>
 )

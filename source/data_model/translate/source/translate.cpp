@@ -1,7 +1,7 @@
 #include "lue/translate/translate.hpp"
 #include "lue/gdal.hpp"
 #include "lue/translate/command.hpp"
-#include <fmt/format.h>
+#include <format>
 #include <hdf5.h>
 
 

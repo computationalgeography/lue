@@ -15,13 +15,13 @@ namespace lue {
 
             static std::string formal_string_representation(Universe const& universe)
             {
-                return fmt::format("Universe(pathname='{}')", universe.id().pathname());
+                return std::format("Universe(pathname='{}')", universe.id().pathname());
             }
 
 
             static std::string informal_string_representation(Universe const& universe)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    phenomena: [{}]",
                     formal_string_representation(universe),
@@ -128,7 +128,7 @@ namespace lue {
                             // AttributeError: 'x' object has no attribute 'y'
                             // Ours is a little bit different:
                             throw pybind11::key_error(
-                                fmt::format("Universe does not contain phenomenon '{}'", phenomenon_name));
+                                std::format("Universe does not contain phenomenon '{}'", phenomenon_name));
                         }
 
                         return py::cast(universe.phenomena()[phenomenon_name]);

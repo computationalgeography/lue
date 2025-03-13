@@ -58,9 +58,8 @@ namespace {
 
                 return hpx::async(
 
-                    [locality_id, offset, partition_shape, fill_value]() {
-                        return Partition{locality_id, offset, partition_shape, fill_value};
-                    }
+                    [locality_id, offset, partition_shape, fill_value]()
+                    { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
                 );
             }
@@ -90,9 +89,8 @@ namespace {
 
         partitions[0] = hpx::async(
 
-            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]() {
-                return Partition{locality_id, offset, partition_shape, fill_value};
-            }
+            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]()
+            { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
         );
 
@@ -101,9 +99,8 @@ namespace {
             partitions[idx] = partitions[idx - 1].then(
 
                 [locality_id, offset = offsets[idx], partition_shape = partition_shapes[idx], fill_value](
-                    auto const& /* previous_partition */) {
-                    return Partition{locality_id, offset, partition_shape, fill_value};
-                }
+                    auto const& /* previous_partition */)
+                { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
             );
         }
@@ -366,7 +363,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     {
         for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
         {
-            BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+            BOOST_TEST_CONTEXT(std::format("Partition {}, {}", partition0, partition1))
             {
                 auto const& partition{partitions(partition0, partition1)};
                 auto const data{partition.data().get()};
@@ -376,7 +373,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                 {
                     for (lue::Index cell1 = 0; cell1 < nr_cells1; ++cell1)
                     {
-                        BOOST_TEST_CONTEXT(fmt::format("Cell {}, {}", cell0, cell1))
+                        BOOST_TEST_CONTEXT(std::format("Cell {}, {}", cell0, cell1))
                         {
                             BOOST_CHECK_EQUAL(
                                 data(cell0, cell1),
@@ -455,7 +452,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
         {
             for (lue::Index partition1 = 0; partition1 < nr_partitions1; ++partition1)
             {
-                BOOST_TEST_CONTEXT(fmt::format("Partition {}, {}", partition0, partition1))
+                BOOST_TEST_CONTEXT(std::format("Partition {}, {}", partition0, partition1))
                 {
                     auto const& partition{array.partitions()(partition0, partition1)};
                     partition.get();

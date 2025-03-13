@@ -16,16 +16,6 @@ namespace lue {
 
                 explicit Attributes(Identifier const& id);
 
-                Attributes(Attributes const&) = default;
-
-                Attributes(Attributes&&) = default;
-
-                ~Attributes() = default;
-
-                Attributes& operator=(Attributes const&) = default;
-
-                Attributes& operator=(Attributes&&) = default;
-
                 Attribute add(
                     std::string const& name, Datatype const& file_datatype, Dataspace const& dataspace);
 

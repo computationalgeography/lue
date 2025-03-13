@@ -107,7 +107,7 @@ auto setup_benchmark(
     int argc, char* argv[], lue::benchmark::Environment const& environment, lue::benchmark::Task const& task)
 {
     std::map<std::string, docopt::value> arguments{
-        docopt::docopt(fmt::format(usage, argv[0]), {argv + 1, argv + argc}, true)};
+        docopt::docopt(std::format(usage, argv[0]), {argv + 1, argv + argc}, true)};
 
     std::string const array_pathname{arguments.at("<flow_direction>").asString()};
     std::vector<lue::Index> center_cell;
