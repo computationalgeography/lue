@@ -63,6 +63,11 @@ jobs:
             conda-remove-defaults: true
             python-version: ${{ matrix.python_version }}
 
+        - uses: ilammy/msvc-dev-cmd@v1
+          with:
+              arch: ${{ matrix.architecture }}
+              toolset: ${{ matrix.vs.msvc_toolset }}
+
         - name: setup platform
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
@@ -97,11 +102,6 @@ jobs:
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
-
-        - uses: ilammy/msvc-dev-cmd@v1
-          with:
-              arch: ${{ matrix.architecture }}
-              toolset: ${{ matrix.vs.msvc_toolset }}
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
