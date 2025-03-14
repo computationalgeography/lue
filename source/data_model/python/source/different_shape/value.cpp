@@ -1,7 +1,7 @@
 #include "lue/array/different_shape/value.hpp"
 #include "submodule.hpp"
-#include <fmt/format.h>
 #include <pybind11/numpy.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -44,7 +44,7 @@ namespace lue {
 
                             if (shapes.shape()[1] != value.rank())
                             {
-                                throw std::runtime_error(fmt::format(
+                                throw std::runtime_error(std::format(
                                     "Shape sizes ({}) must be equal to the rank of each "
                                     "object array ({})",
                                     shapes.ndim(),

@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/partitioned_array.hpp"
-#include <fmt/ranges.h>
+#include "lue/string.hpp"
+#include <format>
 #include <stdexcept>
 
 
@@ -24,15 +25,16 @@ namespace lue::detail {
     {
         if (array1.shape() != array2.shape())
         {
-            throw std::runtime_error(fmt::format("Shapes differ: {} vs {}", array1.shape(), array2.shape()));
+            throw std::runtime_error(std::format(
+                "Shapes differ: {} vs {}", join(array1.shape(), ", "), join(array2.shape(), ", ")));
         }
 
         if (array1.partitions().shape() != array2.partitions().shape())
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Shapes in partitions differ: {} vs {}",
-                array1.partitions().shape(),
-                array2.partitions().shape()));
+                join(array1.partitions().shape(), ", "),
+                join(array2.partitions().shape(), ", ")));
         }
     }
 

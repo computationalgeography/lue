@@ -1,7 +1,7 @@
 #include "lue/info/space/mobile_space_box.hpp"
 #include "python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,13 +14,13 @@ namespace lue {
 
             static std::string formal_string_representation(MobileSpaceBox const& box)
             {
-                return fmt::format("MobileSpaceBox(pathname='{}')", box.id().pathname());
+                return std::format("MobileSpaceBox(pathname='{}')", box.id().pathname());
             }
 
 
             static std::string informal_string_representation(MobileSpaceBox const& box)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    nr_boxes: {}",
                     formal_string_representation(box),

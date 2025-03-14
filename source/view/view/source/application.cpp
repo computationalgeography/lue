@@ -1,7 +1,7 @@
 #include "lue/view/application.hpp"
 #include "lue/hdf5.hpp"
 #include "lue/imgui.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 // - Visualize property values

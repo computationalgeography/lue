@@ -3,8 +3,8 @@
 #include "lue/stream.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
+#include <boost/algorithm/string/join.hpp>
 #include <boost/test/included/unit_test.hpp>
-#include <fmt/ranges.h>
 #include <numeric>
 
 
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(raster_round_trip_01)
     }
 
     auto const differences = lgd::compare_rasters(input_gdal_raster_name, output_gdal_raster_name);
-    BOOST_TEST(differences.empty(), fmt::format("{}", fmt::join(differences, ", ")));
+    BOOST_TEST(differences.empty(), std::format("{}", boost::algorithm::join(differences, ", ")));
 }
 
 

@@ -2,8 +2,8 @@
 #include "lue/git.hpp"
 #include "lue/utility/print_message.hpp"
 #include "lue/version.hpp"
-#include <fmt/format.h>
 #include <cassert>
+#include <format>
 #include <iostream>
 
 
@@ -47,7 +47,7 @@ namespace lue::utility {
 
             if (_parse_result.count("version") != 0)
             {
-                handle_info(fmt::format("{} (build {})", version(), short_sha1()));
+                handle_info(std::format("{} (build {})", version(), short_sha1()));
             }
         }
 
@@ -70,7 +70,7 @@ namespace lue::utility {
 
                 if (!_sub_command)
                 {
-                    handle_error(fmt::format("Unknown command: {}", command_name_parsed));
+                    handle_error(std::format("Unknown command: {}", command_name_parsed));
                 }
             }
 
@@ -109,7 +109,7 @@ namespace lue::utility {
 
     void Command::handle_error(std::string const& message)
     {
-        print_error_message(fmt::format("{}, pass '--help' for more information", message));
+        print_error_message(std::format("{}, pass '--help' for more information", message));
         exit(EXIT_FAILURE);
     }
 

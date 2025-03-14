@@ -1,6 +1,6 @@
 #include "lue/hdf5/soft_link.hpp"
 #include "lue/hdf5/group.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -46,7 +46,7 @@ namespace lue {
             if (status < 0)
             {
                 throw std::runtime_error(
-                    fmt::format("Cannot create soft link {} at {}", name, target.pathname()));
+                    std::format("Cannot create soft link {} at {}", name, target.pathname()));
             }
 
             return SoftLink{group, name};

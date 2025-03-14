@@ -113,7 +113,7 @@ namespace lue::framework {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+                throw std::runtime_error(std::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
             }
 
             return result;

@@ -395,7 +395,7 @@ namespace lue::utility {
 
             if (!raster_view.contains(property_name))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Constant raster layer named {} is not part of property_set {}",
                     property_name,
                     property_set_name));
@@ -453,7 +453,7 @@ namespace lue::utility {
 
             //     if (!raster_view.contains(property_name))
             //     {
-            //         throw std::runtime_error(fmt::format(
+            //         throw std::runtime_error(std::format(
             //             "Constant raster layer named {} is not part of property_set {}",
             //             property_name,
             //             property_set_name));
@@ -478,7 +478,7 @@ namespace lue::utility {
 
             ///     if (!raster_view.contains(property_name))
             ///     {
-            ///         throw std::runtime_error(fmt::format(
+            ///         throw std::runtime_error(std::format(
             ///             "Variable raster layer named {} is not part of property_set {}",
             ///             property_name,
             ///             property_set_name));
@@ -527,7 +527,7 @@ namespace lue::utility {
         }
         else
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "No property-set named {} found in phenomenon {}", property_set_name, phenomenon_name));
         }
 
@@ -540,7 +540,7 @@ namespace lue::utility {
         /// if (!json::has_key(root_json, lue_dataset_name))
         /// {
         ///     throw std::runtime_error(
-        ///         fmt::format("No information for dataset {} present in metadata", lue_dataset_name));
+        ///         std::format("No information for dataset {} present in metadata", lue_dataset_name));
         /// }
 
         /// auto const dataset_json = json::object(root_json, lue_dataset_name);
@@ -548,7 +548,7 @@ namespace lue::utility {
         /// // Phenomena -----------------------------------------------------------
         /// if (!json::has_key(dataset_json, "phenomena"))
         /// {
-        ///     throw std::runtime_error(fmt::format(
+        ///     throw std::runtime_error(std::format(
         ///         "No information about phenomena present in metadata for "
         ///         "dataset {}",
         ///         lue_dataset_name));
@@ -558,7 +558,7 @@ namespace lue::utility {
 
         /// if (phenomena_json.size() != 1)
         /// {
-        ///     throw std::runtime_error(fmt::format(
+        ///     throw std::runtime_error(std::format(
         ///         "Expected information about 1 phenomenon in metadata for "
         ///         "dataset {}, but got {}",
         ///         lue_dataset_name,
@@ -571,7 +571,7 @@ namespace lue::utility {
         /// // Property-sets -----------------------------------------------------------
         /// if (!json::has_key(phenomenon_json, "property_sets"))
         /// {
-        ///     throw std::runtime_error(fmt::format(
+        ///     throw std::runtime_error(std::format(
         ///         "No information about property-sets present in metadata for "
         ///         "phenomenon {} in dataset {}",
         ///         phenomenon_name,
@@ -582,7 +582,7 @@ namespace lue::utility {
 
         /// if (property_sets_json.size() != 1)
         /// {
-        ///     throw std::runtime_error(fmt::format(
+        ///     throw std::runtime_error(std::format(
         ///         "Expected information about 1 property-set in metadata for "
         ///         "phenomenon {} in dataset {}, but got {}",
         ///         phenomenon_name,
@@ -602,7 +602,7 @@ namespace lue::utility {
 
         ///     if (properties_json.size() != 1)
         ///     {
-        ///         throw std::runtime_error(fmt::format(
+        ///         throw std::runtime_error(std::format(
         ///             "Expected information about 1 property in metadata for "
         ///             "property-set {} in phenomenon {} in dataset {}, but got {}",
         ///             property_set_name,
@@ -631,7 +631,7 @@ namespace lue::utility {
 
         ///     if (!raster_view.contains(property_name))
         ///     {
-        ///         throw std::runtime_error(fmt::format(
+        ///         throw std::runtime_error(std::format(
         ///             "Constant raster layer named {} is not part of property_set {}",
         ///             property_name,
         ///             property_set_name));
@@ -721,7 +721,7 @@ namespace lue::utility {
         /// ///     Properties& properties{property_set.properties()};
         /// ///
         /// ///     if(!properties.contains(property_name)) {
-        /// ///         throw std::runtime_error(fmt::format(
+        /// ///         throw std::runtime_error(std::format(
         /// ///             "Property {} is not part of property-set {}",
         /// ///             property_name, property_set_name));
         /// ///     }
@@ -970,7 +970,7 @@ namespace lue::utility {
         {
             if (!add)
             {
-                throw std::runtime_error(fmt::format("Dataset {} already exists", lue_dataset_name));
+                throw std::runtime_error(std::format("Dataset {} already exists", lue_dataset_name));
             }
 
             return ldm::open_dataset(lue_dataset_name);

@@ -1,7 +1,7 @@
 #include "lue/info/identity/active_object_id.hpp"
 #include "../python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,13 +14,13 @@ namespace lue {
 
             static std::string formal_string_representation(ActiveObjectID const& id)
             {
-                return fmt::format("ActiveObjectID(pathname='{}')", id.id().pathname());
+                return std::format("ActiveObjectID(pathname='{}')", id.id().pathname());
             }
 
 
             static std::string informal_string_representation(ActiveObjectID const& id)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "   nr_ids: {}",
                     formal_string_representation(id),

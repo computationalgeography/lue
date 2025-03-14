@@ -17,18 +17,18 @@ namespace lue {
 
             if (!epoch.origin())
             {
-                result = fmt::format("Epoch(kind={})", aspect_to_string(epoch.kind()));
+                result = std::format("Epoch(kind={})", aspect_to_string(epoch.kind()));
             }
             else
             {
                 if (!epoch.calendar())
                 {
-                    result = fmt::format(
+                    result = std::format(
                         "Epoch(kind={}, origin='{}')", aspect_to_string(epoch.kind()), *epoch.origin());
                 }
                 else
                 {
-                    result = fmt::format(
+                    result = std::format(
                         "Epoch(kind={}, origin='{}', calendar={})",
                         aspect_to_string(epoch.kind()),
                         *epoch.origin(),

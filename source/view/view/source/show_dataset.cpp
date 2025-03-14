@@ -3,7 +3,7 @@
 #include "lue/configure.hpp"
 #include "lue/define.hpp"
 #include "lue/imgui.hpp"
-#include <fmt/format.h>
+#include <format>
 #include <functional>
 #include <sstream>
 
@@ -257,12 +257,12 @@ namespace lue {
             void show_identifier(hdf5::Identifier const& identifier)
             {
                 ImGui::TextUnformatted(
-                    fmt::format("HDF5 identifier: {}", static_cast<hid_t>(identifier)).c_str());
+                    std::format("HDF5 identifier: {}", static_cast<hid_t>(identifier)).c_str());
                 // TODO(KDJ) type()
                 // TODO(KDJ) info()
-                ImGui::TextUnformatted(fmt::format("is_valid: {}", identifier.is_valid()).c_str());
-                ImGui::TextUnformatted(fmt::format("pathname: {}", identifier.pathname()).c_str());
-                ImGui::TextUnformatted(fmt::format("name: {}", identifier.name()).c_str());
+                ImGui::TextUnformatted(std::format("is_valid: {}", identifier.is_valid()).c_str());
+                ImGui::TextUnformatted(std::format("pathname: {}", identifier.pathname()).c_str());
+                ImGui::TextUnformatted(std::format("name: {}", identifier.name()).c_str());
             }
 
 
@@ -315,7 +315,7 @@ namespace lue {
             {
                 ImGui::Text("rank: ");
                 ImGui::SameLine();
-                ImGui::TextUnformatted(fmt::format("{}", rank).c_str());
+                ImGui::TextUnformatted(std::format("{}", rank).c_str());
                 ImGui::SameLine();
                 help_marker("The rank of each array stored per object.");
             }
@@ -325,7 +325,7 @@ namespace lue {
             {
                 ImGui::Text("nr objects: ");
                 ImGui::SameLine();
-                ImGui::TextUnformatted(fmt::format("{}", nr_objects).c_str());
+                ImGui::TextUnformatted(std::format("{}", nr_objects).c_str());
                 ImGui::SameLine();
                 help_marker("The number of objects for which arrays are stored.");
             }
@@ -373,7 +373,7 @@ namespace lue {
             {
                 ImGui::Text("nr arrays: ");
                 ImGui::SameLine();
-                ImGui::TextUnformatted(fmt::format("{}", value.nr_arrays()).c_str());
+                ImGui::TextUnformatted(std::format("{}", value.nr_arrays()).c_str());
                 ImGui::SameLine();
                 help_marker("For each object an nD array is stored.");
 
@@ -478,7 +478,7 @@ namespace lue {
             {
                 ImGui::Text("nr arrays: ");
                 ImGui::SameLine();
-                ImGui::TextUnformatted(fmt::format("{}", value.nr_arrays()).c_str());
+                ImGui::TextUnformatted(std::format("{}", value.nr_arrays()).c_str());
                 ImGui::SameLine();
                 help_marker("For each active object an nD array is stored.");
 
@@ -558,12 +558,12 @@ namespace lue {
                 {
                     if (!epoch.calendar())
                     {
-                        result = fmt::format(
+                        result = std::format(
                             "{} / {}", data_model::aspect_to_string(epoch.kind()), *epoch.origin());
                     }
                     else
                     {
-                        result = fmt::format(
+                        result = std::format(
                             "{} / {} / {}",
                             data_model::aspect_to_string(epoch.kind()),
                             *epoch.origin(),
@@ -604,7 +604,7 @@ namespace lue {
 
                     ImGui::Text("nr_units: ");
                     ImGui::SameLine();
-                    ImGui::TextUnformatted(fmt::format("{}", clock.nr_units()).c_str());
+                    ImGui::TextUnformatted(std::format("{}", clock.nr_units()).c_str());
                 }
 
                 // Value
@@ -849,7 +849,7 @@ namespace lue {
                     auto const& properties = property_set.properties();
 
                     if (auto tree_node = imgui::TreeNode(
-                            fmt::format("properties ({})", properties.size()),
+                            std::format("properties ({})", properties.size()),
                             ImGuiTreeNodeFlags_DefaultOpen))
                     {
                         LUE_UNUSED(tree_node);
@@ -957,7 +957,7 @@ namespace lue {
                     if (show_details || object_id.nr_objects() > 0)
                     {
                         if (auto tree_node =
-                                imgui::TreeNode(fmt::format("object_id ({})", object_id.nr_objects())))
+                                imgui::TreeNode(std::format("object_id ({})", object_id.nr_objects())))
                         {
                             LUE_UNUSED(tree_node);
 
@@ -972,7 +972,7 @@ namespace lue {
                     if (show_details || !property_sets.empty())
                     {
                         if (auto tree_node = imgui::TreeNode(
-                                fmt::format("collection property-sets ({})", property_sets.size()),
+                                std::format("collection property-sets ({})", property_sets.size()),
                                 ImGuiTreeNodeFlags_DefaultOpen))
                         {
                             LUE_UNUSED(tree_node);
@@ -988,7 +988,7 @@ namespace lue {
                     if (show_details || !property_sets.empty())
                     {
                         if (auto tree_node = imgui::TreeNode(
-                                fmt::format("property-sets ({})", property_sets.size()),
+                                std::format("property-sets ({})", property_sets.size()),
                                 ImGuiTreeNodeFlags_DefaultOpen))
                         {
                             LUE_UNUSED(tree_node);
@@ -1093,7 +1093,7 @@ namespace lue {
                     if (show_details || !phenomena.empty())
                     {
                         if (auto tree_node = imgui::TreeNode(
-                                fmt::format("phenomena ({})", phenomena.size()),
+                                std::format("phenomena ({})", phenomena.size()),
                                 ImGuiTreeNodeFlags_DefaultOpen))
                         {
                             LUE_UNUSED(tree_node);
@@ -1109,7 +1109,7 @@ namespace lue {
                     if (show_details || !universes.empty())
                     {
                         if (auto tree_node = imgui::TreeNode(
-                                fmt::format("universes ({})", universes.size()),
+                                std::format("universes ({})", universes.size()),
                                 ImGuiTreeNodeFlags_DefaultOpen))
                         {
                             LUE_UNUSED(tree_node);
