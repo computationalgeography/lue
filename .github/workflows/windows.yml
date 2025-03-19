@@ -41,6 +41,7 @@ jobs:
           lue_consume_build_directory: lue_consume_build
           conan_prefix: ${{ github.workspace }}/.conan2
           conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
           hpx_branch: v1.10.0
@@ -77,7 +78,7 @@ jobs:
           env:
             cache-name: cache-conda
           with:
-            path: ${{ CONDA }}/miniconda3
+            path: ${{ env.conda_prefix }}
             key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conda_packages }}
 
         - name: install conda packages
