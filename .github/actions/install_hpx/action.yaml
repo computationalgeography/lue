@@ -39,7 +39,7 @@ runs:
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       run: |
 
-        if [[ -f ${{ inputs.source_directory }}
+        if [[ -f ${{ inputs.source_directory }} ]]; then
             # In case the source dir exists, the caller likely put some files in there for us to use
             cd ${{ inputs.source_directory }}
             git init
