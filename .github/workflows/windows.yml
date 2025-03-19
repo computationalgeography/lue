@@ -40,7 +40,7 @@ jobs:
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
           conan_prefix: ${{ github.workspace }}/.conan2
-          conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conan_packages: "boost conan cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
           conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
@@ -90,8 +90,6 @@ jobs:
 
               # conda-build provides the conda-develop command used below
               conda install ${{ env.conda_packages }}
-
-        - uses: turtlebrowser/get-conan@v1.0
 
         - name: cache conan
           id: cache-conan
