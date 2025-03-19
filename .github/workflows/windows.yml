@@ -133,28 +133,28 @@ jobs:
               cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
               cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
 
-              # - name: "install hpx"
-              #   uses: ./lue_source/.github/actions/install_hpx
-              #   with:
-              #     cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
-              #     c_compiler: ${{ matrix.compiler.c }}
-              #     cxx_compiler: ${{ matrix.compiler.cxx }}
-              #     build_type: ${{ env.build_type }}
-              #     cmake_preset: hpx_release_windows_node_configuration
-              #     cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets.json
-              #     # Passing path for Hwloc_ROOT to prevent:
-              #     #     HPXConfig.cmake:160 (set):
-              #     #     Syntax error in cmake code at
-              #     #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
-              #     #     when parsing string
-              #     #       C:\Users\runneradmin\miniconda3\envs\test/Library
-              #     #     Invalid character escape '\U'.
-              #     # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
-              #     # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
-              #     hpx_branch: ${{ env.hpx_branch }}
-              #     source_directory: ${{ env.hpx_source_directory }}
-              #     build_directory: ${{ env.hpx_build_directory }}
-              #     install_directory: ${{ env.hpx_install_directory }}
+        - name: "install hpx"
+          uses: ./lue_source/.github/actions/install_hpx
+          with:
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            c_compiler: ${{ matrix.compiler.c }}
+            cxx_compiler: ${{ matrix.compiler.cxx }}
+            build_type: ${{ env.build_type }}
+            cmake_preset: hpx_release_windows_node_configuration
+            cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets.json
+            # Passing path for Hwloc_ROOT to prevent:
+            #     HPXConfig.cmake:160 (set):
+            #     Syntax error in cmake code at
+            #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
+            #     when parsing string
+            #       C:\Users\runneradmin\miniconda3\envs\test/Library
+            #     Invalid character escape '\U'.
+            # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
+            # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+            hpx_branch: ${{ env.hpx_branch }}
+            source_directory: ${{ env.hpx_source_directory }}
+            build_directory: ${{ env.hpx_build_directory }}
+            install_directory: ${{ env.hpx_install_directory }}
 
 #
 #         - name: "install mdspan"
