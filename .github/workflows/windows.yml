@@ -42,7 +42,8 @@ jobs:
           lue_consume_build_directory: lue_consume_build
           # TODO github.workspace contains backslashes which prevents the caching to work
           # conan_prefix: ${{ github.workspace }}/.conan2
-          conan_prefix: D:/a/lue/lue/.conan2
+          # conan_prefix: D:/a/lue/lue/.conan2
+          conda_prefix: "C:/Users/runneradmin/.conan2"
           conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
           # conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
@@ -96,6 +97,7 @@ jobs:
         - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
+              ls -l ${{ env.conan_prefix }}
               mkdir ${{ env.hpx_source_directory }}
               curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
                   https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
