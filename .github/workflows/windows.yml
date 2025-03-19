@@ -97,7 +97,6 @@ jobs:
         - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
-              ls -l ${{ env.conan_prefix }}
               mkdir ${{ env.hpx_source_directory }}
               curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
                   https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
@@ -126,6 +125,7 @@ jobs:
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
 
+              ls -l ${{ env.conan_prefix }}
               conan list
 
               cp ${{ env.hpx_build_directory }}/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
