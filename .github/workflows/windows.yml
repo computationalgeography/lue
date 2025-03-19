@@ -97,7 +97,7 @@ jobs:
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
               curl --silent --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
-                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan{{ env.build_type }}.json
+                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
 
               # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
