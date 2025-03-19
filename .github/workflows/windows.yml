@@ -39,7 +39,10 @@ jobs:
           lue_development_install_directory: lue_development_install
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
-          lue_conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conan_prefix: ${{ github.workspace }}/.conan2
+          conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conda_prefix: ${{ github.workspace }}/miniconda3
+          conda_packages: "conda-build docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
           hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
@@ -56,6 +59,11 @@ jobs:
           with:
             path: ${{ env.lue_source_directory }}
 
+        - uses: ilammy/msvc-dev-cmd@v1
+          with:
+              arch: ${{ matrix.architecture }}
+              toolset: ${{ matrix.vs.msvc_toolset }}
+
         - uses: conda-incubator/setup-miniconda@v3
           with:
             auto-update-conda: true
@@ -64,29 +72,26 @@ jobs:
             conda-remove-defaults: true
             python-version: ${{ matrix.python_version }}
 
-        - uses: ilammy/msvc-dev-cmd@v1
+        - name: cache conda
+          id: cache-conda
+          uses: actions/cache@v4
+          env:
+            cache-name: cache-conda
           with:
-              arch: ${{ matrix.architecture }}
-              toolset: ${{ matrix.vs.msvc_toolset }}
+            path: ${{ env.conda_prefix }}
+            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conda_packages }}
 
-        - name: Conan installation
-          uses: turtlebrowser/get-conan@v1.0
-
-        - name: setup platform
+        - name: install conda packages
+          if: ${{steps.cache-conda.outputs.cache-hit != 'true'}}
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
               # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
 
               # conda-build provides the conda-develop command used below
-              conda install \
-                  conda-build \
-                  docopt \
-                  jinja2 \
-                  matplotlib \
-                  ninja \
-                  numpy \
-                  ruamel.yaml
+              conda install ${{ env.conda_packages }}
+
+        - uses: turtlebrowser/get-conan@v1.0
 
         - name: cache conan
           id: cache-conan
@@ -94,12 +99,14 @@ jobs:
           env:
             cache-name: cache-conan
           with:
-            path: ${{ github.workspace }}/.conan2
-            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.lue_conan_packages }}
+            path: ${{ env.conan_prefix }}
+            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conan_packages }}
 
-        - name: Create Conan profiles
+        - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
+              conan profile show --profile default
+              conan list
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
@@ -108,13 +115,12 @@ jobs:
                   ${{ env.lue_source_directory }}/build_profile
 
               mkdir ${{ env.lue_build_directory }}
-              LUE_CONAN_PACKAGES="${{ env.lue_conan_packages }}" \
+              LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
                   conan install ${{ env.lue_source_directory }} \
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
-              conan config show
               conan list
 
         - name: "install hpx"
