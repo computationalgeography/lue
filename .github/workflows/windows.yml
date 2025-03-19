@@ -98,7 +98,7 @@ jobs:
             key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.lue_conan_packages }}
 
         - name: Create Conan profiles
-          if ${{steps.cache-conan.outputs.cache-hit != 'true'}}
+          if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
