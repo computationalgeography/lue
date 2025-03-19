@@ -39,6 +39,7 @@ jobs:
           lue_development_install_directory: lue_development_install
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
+          lue_conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
           hpx_version: 1.10.0
           hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
@@ -68,6 +69,9 @@ jobs:
               arch: ${{ matrix.architecture }}
               toolset: ${{ matrix.vs.msvc_toolset }}
 
+        - name: Conan installation
+          uses: turtlebrowser/get-conan@v1.0
+
         - name: setup platform
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
@@ -76,7 +80,6 @@ jobs:
 
               # conda-build provides the conda-develop command used below
               conda install \
-                  conan \
                   conda-build \
                   docopt \
                   jinja2 \
@@ -85,8 +88,18 @@ jobs:
                   numpy \
                   ruamel.yaml
 
-              mkdir ${{ env.lue_build_directory }}
+        - name: cache conan
+          id: cache-conan
+          uses: actions/cache@v4
+          env:
+            cache-name: cache-conan
+          with:
+            path: ${{ github.workspace }}/.conan2
+            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.lue_conan_packages }}
 
+        - name: Create Conan profiles
+          if ${{steps.cache-conan.outputs.cache-hit != 'true'}}
+          run: |
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
@@ -94,14 +107,15 @@ jobs:
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
-              # Boost is a dependency of thrift which is a dependency of gdal. Explicitly adding boost here
-              # results in conflicts.
-              LUE_CONAN_PACKAGES="boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader" \
+              mkdir ${{ env.lue_build_directory }}
+              LUE_CONAN_PACKAGES="${{ env.lue_conan_packages }}" \
                   conan install ${{ env.lue_source_directory }} \
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
+              conan config show
+              conan list
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
