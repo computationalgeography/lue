@@ -41,7 +41,7 @@ jobs:
           lue_consume_build_directory: lue_consume_build
           conan_prefix: ${{ github.workspace }}/.conan2
           conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
-          conda_prefix: "C:/Users/runneradmin/miniconda3"
+          # conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
           hpx_branch: v1.10.0
@@ -72,17 +72,17 @@ jobs:
             conda-remove-defaults: true
             python-version: ${{ matrix.python_version }}
 
-        - name: cache conda
-          id: cache-conda
-          uses: actions/cache@v4
-          env:
-            cache-name: cache-conda
-          with:
-            path: ${{ env.conda_prefix }}
-            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conda_packages }}
+        # - name: cache conda
+        #   id: cache-conda
+        #   uses: actions/cache@v4
+        #   env:
+        #     cache-name: cache-conda
+        #   with:
+        #     path: ${{ env.conda_prefix }}
+        #     key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conda_packages }}
 
         - name: install conda packages
-          if: ${{steps.cache-conda.outputs.cache-hit != 'true'}}
+          # if: ${{steps.cache-conda.outputs.cache-hit != 'true'}}
           run: |
               # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
               # settings are used when building LUE. Mixing Conda/Conan packages likely results
@@ -106,6 +106,8 @@ jobs:
               # conan profile detect
               # conan profile show --profile default
               # conan list
+              type python
+              type python3
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
