@@ -38,11 +38,21 @@ runs:
       shell: bash -l {0}
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       run: |
-        git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+
+        if [[ -f ${{ inputs.source_directory }}
+            # In case the source dir exists, the caller likely put some files in there for us to use
+            cd ${{ inputs.source_directory }}
+            git init
+            git remote add upstream https://github.com/STEllAR-GROUP/hpx.git
+            git fetch --depth=1 --tags upstream ${{ inputs.hpx_branch }}
+            git checkout --force ${{ inputs.hpx_branch }}
+        else
+            git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        fi
 
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
-        mkdir ${{ inputs.build_directory }}
+        mkdir -p ${{ inputs.build_directory }}
 
         cmake \
             -S ${{ inputs.source_directory }} \
