@@ -40,9 +40,9 @@ jobs:
           lue_consume_source_directory: lue_consume_source
           lue_consume_build_directory: lue_consume_build
           conan_prefix: ${{ github.workspace }}/.conan2
-          conan_packages: "boost conan cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
           conda_prefix: "C:/Users/runneradmin/miniconda3"
-          conda_packages: "conda-build docopt jinja2 matplotlib ninja numpy ruamel.yaml"
+          conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
           hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
@@ -103,8 +103,9 @@ jobs:
         - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
-              conan profile show --profile default
-              conan list
+              # conan profile detect
+              # conan profile show --profile default
+              # conan list
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
