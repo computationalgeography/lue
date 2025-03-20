@@ -96,8 +96,7 @@ jobs:
         - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
-              # Install Conan packages and don't dump associated CMake scripts. Important thing here is to
-              # get the packages in the conan package directory.
+              # Install Conan packages and store the environment files besides them
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
@@ -110,66 +109,67 @@ jobs:
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
-                      --envs-generation=false
+                      --output-folder=${{ env.conan_prefix }/environment}
 
               ls -l ${{ env.conan_prefix }}
+              ls -l ${{ env.conan_prefix }}/environment
               conan list
 
-        - name: generate conan environment scripts
-          run: |
-              # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories.
-              # Given that all Conan packages are already in the cache, no packages should be downloaded and
-              # built by this step.
-              mkdir ${{ env.hpx_build_directory }}
-              LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
-                  conan install ${{ env.lue_source_directory }} \
-                      --profile:host=${{ env.lue_source_directory }}/host_profile \
-                      --profile:build=${{ env.lue_source_directory }}/build_profile \
-                      --build=missing \
-                      --output-folder=${{ env.hpx_build_directory }}
-
-              mkdir ${{ env.lue_build_directory }}
-              LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
-                  conan install ${{ env.lue_source_directory }} \
-                      --profile:host=${{ env.lue_source_directory }}/host_profile \
-                      --profile:build=${{ env.lue_source_directory }}/build_profile \
-                      --build=missing \
-                      --output-folder=${{ env.lue_build_directory }}
-
-              mkdir ${{ env.hpx_source_directory }}
-              curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
-                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
-
-              cp ${{ env.hpx_build_directory }}/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
-              cp ${{ env.hpx_build_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}/CMakeConanPresets.json
-              cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
-              cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
-
-        - name: "install hpx"
-          uses: ./lue_source/.github/actions/install_hpx
-          env:
-              hpx_version: 1.10.0
-              hpx_branch: v1.10.0
-          with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
-            c_compiler: ${{ matrix.compiler.c }}
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: ${{ env.build_type }}
-            cmake_preset: hpx_release_windows_node_configuration
-            cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets.json
-            # Passing path for Hwloc_ROOT to prevent:
-            #     HPXConfig.cmake:160 (set):
-            #     Syntax error in cmake code at
-            #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
-            #     when parsing string
-            #       C:\Users\runneradmin\miniconda3\envs\test/Library
-            #     Invalid character escape '\U'.
-            # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
-            # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
-            hpx_branch: ${{ env.hpx_branch }}
-            source_directory: ${{ env.hpx_source_directory }}
-            build_directory: ${{ env.hpx_build_directory }}
-            install_directory: ${{ env.hpx_install_directory }}
+              #         - name: distribute conan environment scripts
+              #           run: |
+              #               # # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories.
+              #               # # Given that all Conan packages are already in the cache, no packages should be downloaded and
+              #               # # built by this step.
+              #               # mkdir ${{ env.hpx_build_directory }}
+              #               # LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
+              #               #     conan install ${{ env.lue_source_directory }} \
+              #               #         --profile:host=${{ env.lue_source_directory }}/host_profile \
+              #               #         --profile:build=${{ env.lue_source_directory }}/build_profile \
+              #               #         --build=missing \
+              #               #         --output-folder=${{ env.hpx_build_directory }}
+              #
+              #               # mkdir ${{ env.lue_build_directory }}
+              #               # LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
+              #               #     conan install ${{ env.lue_source_directory }} \
+              #               #         --profile:host=${{ env.lue_source_directory }}/host_profile \
+              #               #         --profile:build=${{ env.lue_source_directory }}/build_profile \
+              #               #         --build=missing \
+              #               #         --output-folder=${{ env.lue_build_directory }}
+              #
+              #               mkdir ${{ env.hpx_source_directory }}
+              #               curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
+              #                   https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
+              #
+              #               cp ${{ env.hpx_build_directory }}/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
+              #               cp ${{ env.hpx_build_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}/CMakeConanPresets.json
+              #               cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
+              #               cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
+              #
+              #         - name: "install hpx"
+              #           uses: ./lue_source/.github/actions/install_hpx
+              #           env:
+              #               hpx_version: 1.10.0
+              #               hpx_branch: v1.10.0
+              #           with:
+              #             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+              #             c_compiler: ${{ matrix.compiler.c }}
+              #             cxx_compiler: ${{ matrix.compiler.cxx }}
+              #             build_type: ${{ env.build_type }}
+              #             cmake_preset: hpx_release_windows_node_configuration
+              #             cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets.json
+              #             # Passing path for Hwloc_ROOT to prevent:
+              #             #     HPXConfig.cmake:160 (set):
+              #             #     Syntax error in cmake code at
+              #             #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
+              #             #     when parsing string
+              #             #       C:\Users\runneradmin\miniconda3\envs\test/Library
+              #             #     Invalid character escape '\U'.
+              #             # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
+              #             # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+              #             hpx_branch: ${{ env.hpx_branch }}
+              #             source_directory: ${{ env.hpx_source_directory }}
+              #             build_directory: ${{ env.hpx_build_directory }}
+              #             install_directory: ${{ env.hpx_install_directory }}
 
 #
 #         - name: "install mdspan"
