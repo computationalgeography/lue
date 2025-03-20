@@ -45,6 +45,7 @@ jobs:
           # conan_prefix: D:/a/lue/lue/.conan2
           conan_prefix: "C:/Users/runneradmin/.conan2"
           conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+          conan_build_nr: 1
           # conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
           hpx_version: 1.10.0
@@ -92,16 +93,13 @@ jobs:
             cache-name: cache-conan
           with:
             path: ${{ env.conan_prefix }}
-            key: ${{ runner.os }}-builder-${{ env.cache-name }}-${{ env.conan_packages }}
+            key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
 
         - name: install conan packages
           if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
           run: |
-              mkdir ${{ env.hpx_source_directory }}
-              curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
-                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
-
-              # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories
+              # Install Conan packages and don't dump associated CMake scripts. Important thing here is to
+              # get the packages in the conan package directory.
               python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/host_profile
@@ -109,6 +107,20 @@ jobs:
                   ${{ matrix.compiler.cxx }} \
                   ${{ env.lue_source_directory }}/build_profile
 
+              LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
+                  conan install ${{ env.lue_source_directory }} \
+                      --profile:host=${{ env.lue_source_directory }}/host_profile \
+                      --profile:build=${{ env.lue_source_directory }}/build_profile \
+                      --build=missing \
+                      --envs-generation=false
+
+              ls -l ${{ env.conan_prefix }}
+              conan list
+
+        - name: generate conan environment scripts
+              # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories.
+              # Given that all Conan packages are already in the cache, no packages should be downloaded and
+              # built by this step.
               mkdir ${{ env.hpx_build_directory }}
               LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
                   conan install ${{ env.lue_source_directory }} \
@@ -125,8 +137,9 @@ jobs:
                       --build=missing \
                       --output-folder=${{ env.lue_build_directory }}
 
-              ls -l ${{ env.conan_prefix }}
-              conan list
+              mkdir ${{ env.hpx_source_directory }}
+              curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets.json \
+                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
 
               cp ${{ env.hpx_build_directory }}/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
               cp ${{ env.hpx_build_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}/CMakeConanPresets.json
