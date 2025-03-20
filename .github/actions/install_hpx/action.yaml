@@ -39,14 +39,6 @@ runs:
       if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       run: |
         if [ ! -d "${{ inputs.source_directory }}" ]; then
-            # In case the source dir exists, the caller likely put some files in there for us to use
-            cd ${{ inputs.source_directory }}
-            git init
-            git remote add upstream https://github.com/STEllAR-GROUP/hpx.git
-            git fetch --depth=1 --tags upstream ${{ inputs.hpx_branch }}
-            git checkout --force ${{ inputs.hpx_branch }}
-            cd ..
-        else
             git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
         fi
 
