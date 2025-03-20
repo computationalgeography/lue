@@ -138,6 +138,8 @@ jobs:
               # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
               sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
 
+              cat ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           env:
