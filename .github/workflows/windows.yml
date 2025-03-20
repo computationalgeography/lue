@@ -42,10 +42,10 @@ jobs:
       lue_consume_build_directory: lue_consume_build
       # TODO github.workspace contains backslashes which prevents the caching to work
       # conan_prefix: ${{ github.workspace }}/.conan2
-      # conan_prefix: D:/a/lue/lue/.conan2
       conan_prefix: "C:/Users/runneradmin/.conan2"
       conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
       conda_prefix: "~/conda_pkgs_dir"
+      # conda-build provides the conda-develop command
       conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
       hpx_version: 1.10.0
       hpx_branch: v1.10.0
@@ -83,17 +83,12 @@ jobs:
         auto-update-conda: true
         miniforge-version: latest
         # conda-solver: "libmamba"
-        # conda-remove-defaults: true
+        conda-remove-defaults: true
         python-version: ${{ matrix.python_version }}
         use-only-tar-bz2: true  # Required for caching to work properly
 
     - name: install conda packages
       run: |
-        # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
-        # settings are used when building LUE. Mixing Conda/Conan packages likely results
-        # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
-
-        # conda-build provides the conda-develop command used below
         conda install ${{ env.conda_packages }}
 
     - name: cache conan
@@ -155,7 +150,7 @@ jobs:
     - name: "install hpx"
       uses: ./lue_source/.github/actions/install_hpx
       env:
-          hpx_build_nr: 1
+        hpx_build_nr: 1
       with:
         cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
         c_compiler: ${{ matrix.compiler.c }}
