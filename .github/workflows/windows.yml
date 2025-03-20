@@ -138,8 +138,6 @@ jobs:
               # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
               sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
 
-              cat ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
-
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           env:
@@ -149,7 +147,7 @@ jobs:
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: ${{ env.build_type }}
-            cmake_preset: hpx_release_windows_node_configuration
+            cmake_preset: hpx_release_windows_node_conan_configuration
             cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json
             # Passing path for Hwloc_ROOT to prevent:
             #     HPXConfig.cmake:160 (set):
