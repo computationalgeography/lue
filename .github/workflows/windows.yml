@@ -47,6 +47,8 @@ jobs:
           conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
           # conda_prefix: "C:/Users/runneradmin/miniconda3"
           conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
+          hpx_version: 1.10.0
+          hpx_branch: v1.10.0
           hpx_source_directory: hpx_source
           hpx_build_directory: hpx_build
           hpx_install_directory: hpx_install
@@ -115,26 +117,9 @@ jobs:
               ls -l ${{ env.conan_prefix }}/environment
               conan list
 
-        - name: distribute conan environment scripts
+        - name: clone and patch hpx
           run: |
-              # # Install Conan packages and dump associated CMake scripts in HPX and LUE build directories.
-              # # Given that all Conan packages are already in the cache, no packages should be downloaded and
-              # # built by this step.
-              # mkdir ${{ env.hpx_build_directory }}
-              # LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
-              #     conan install ${{ env.lue_source_directory }} \
-              #         --profile:host=${{ env.lue_source_directory }}/host_profile \
-              #         --profile:build=${{ env.lue_source_directory }}/build_profile \
-              #         --build=missing \
-              #         --output-folder=${{ env.hpx_build_directory }}
-
-              # mkdir ${{ env.lue_build_directory }}
-              # LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
-              #     conan install ${{ env.lue_source_directory }} \
-              #         --profile:host=${{ env.lue_source_directory }}/host_profile \
-              #         --profile:build=${{ env.lue_source_directory }}/build_profile \
-              #         --build=missing \
-              #         --output-folder=${{ env.lue_build_directory }}
+              git clone --depth 1 --branch ${{ env.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ env.hpx_source_directory }}
 
               curl --create-dirs --output ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json \
                   https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
@@ -147,11 +132,15 @@ jobs:
               cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
               cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
 
+              # Port HPX-1.10 to CMake 3.30 (see policy CMP0167). Otherwise it won't pick up Conan's Boost module.
+              sed -i'' '135 s/MODULE/CONFIG/' ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+
+              # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
+              sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
           env:
-              hpx_version: 1.10.0
-              hpx_branch: v1.10.0
               hpx_build_nr: 1
           with:
             cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
