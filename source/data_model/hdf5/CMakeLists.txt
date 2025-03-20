@@ -1,52 +1,5 @@
-configure_file(
-    include/configure.hpp.in
-    include/lue/hdf5/configure.hpp
-)
-
-configure_file(
-    source/version.cpp.in
-    source/version.cpp
-)
-
-add_library(lue_hdf5 SHARED
-    source/attribute.cpp
-    source/attributes.cpp
-    source/chunk.cpp
-    source/dataset.cpp
-    source/dataspace.cpp
-    source/datatype.cpp
-    source/error_stack.cpp
-    source/file.cpp
-    source/group.cpp
-    source/hard_link.cpp
-    source/hyperslab.cpp
-    source/identifier.cpp
-    source/issue.cpp
-    source/issues.cpp
-    source/link.cpp
-    source/object_info.cpp
-    source/primary_data_object.cpp
-    source/property_list.cpp
-    source/shape.cpp
-    source/soft_link.cpp
-    source/validate.cpp
-    source/vlen_memory.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
-)
-
-lue_configure_shared_library(
-    TARGET_BASENAME hdf5
-    EXPORT_HEADER_PATHNAME include/lue/hdf5/export.hpp
-    EXPORT_MACRO_BASENAME HDF5
-)
-
-target_sources(lue_hdf5
-    PUBLIC
-        FILE_SET
-            HEADERS
-        FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
-)
+add_library(lue_hdf5 SHARED)
+add_library(lue::hdf5 ALIAS lue_hdf5)
 
 target_compile_definitions(lue_hdf5
     PUBLIC
@@ -58,12 +11,81 @@ target_compile_definitions(lue_hdf5
         $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
 )
 
+set_target_properties(lue_hdf5
+    PROPERTIES
+        EXPORT_NAME hdf5
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+)
+
+generate_export_header(lue_hdf5
+    EXPORT_FILE_NAME include/lue/hdf5/export.hpp
+    EXPORT_MACRO_NAME LUE_HDF5_EXPORT
+)
+
+configure_file(
+    include/configure.hpp.in
+    include/lue/hdf5/configure.hpp
+)
+
+configure_file(
+    source/version.cpp.in
+    source/version.cpp
+)
+
+target_sources(lue_hdf5
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/configure.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/hdf5/export.hpp
+    PRIVATE
+        source/attribute.cpp
+        source/attributes.cpp
+        source/chunk.cpp
+        source/dataset.cpp
+        source/dataspace.cpp
+        source/datatype.cpp
+        source/error_stack.cpp
+        source/file.cpp
+        source/group.cpp
+        source/hard_link.cpp
+        source/hyperslab.cpp
+        source/identifier.cpp
+        source/issue.cpp
+        source/issues.cpp
+        source/link.cpp
+        source/object_info.cpp
+        source/primary_data_object.cpp
+        source/property_list.cpp
+        source/shape.cpp
+        source/soft_link.cpp
+        source/validate.cpp
+        source/vlen_memory.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
+        source/test/file_fixture.cpp
+)
+
 target_link_libraries(lue_hdf5
     PUBLIC
         HDF5::HDF5
-    PRIVATE
         lue::shared
+    PRIVATE
         Boost::headers
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_hdf5
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_hdf5
 )
 
 if(LUE_BUILD_TESTS)
@@ -78,14 +100,6 @@ if(LUE_BUILD_TESTS)
             H5_USE_110_API
             $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
     )
-
-    # target_link_libraries(lue_hdf5_static
-    #     PUBLIC
-    #         HDF5::HDF5
-    #     PRIVATE
-    #         lue::shared
-    #         Boost::headers
-    # )
 
     add_subdirectory(test)
 endif()

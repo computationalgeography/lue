@@ -1,3 +1,17 @@
+add_library(lue_compile_features INTERFACE)
+add_library(lue::compile_features ALIAS lue_compile_features)
+
+target_compile_features(lue_compile_features
+    INTERFACE
+        cxx_std_${LUE_MIN_CXX_STANDARD}
+)
+
+install(
+    TARGETS lue_compile_features
+    EXPORT lue_development
+    EXCLUDE_FROM_ALL
+)
+
 add_subdirectory(shared)
 
 if(LUE_BUILD_DATA_MODEL)

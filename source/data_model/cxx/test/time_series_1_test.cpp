@@ -1,9 +1,14 @@
 #define BOOST_TEST_MODULE lue time_series 1
-#include "lue/test.hpp"
+#include "lue/test/algorithm.hpp"
+#include "lue/test/dataset_fixture.hpp"
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/stream.hpp"
+#include "lue/navigate.hpp"
+#include "lue/validate.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::DatasetFixture)
 {
     // Time series as implemented here:
     // - Discharge at catchment outlets
@@ -20,16 +25,16 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     // IDs
     // Object IDs for information that does not change through time
     std::vector<lue::data_model::ID> ids(nr_areas);
-    lue::data_model::test::generate_random_ids(ids);
+    lue::data_model::generate_random_ids(ids);
     lue::data_model::ID const collection_id = 5;
 
     // Object tracking info for information that changes through time
     std::vector<lue::data_model::Count> active_set_sizes(nr_time_boxes);
-    lue::data_model::test::generate_random_counts(active_set_sizes, 0, nr_areas);
+    lue::data_model::generate_random_counts(active_set_sizes, 0, nr_areas);
     std::vector<lue::data_model::Index> active_set_idxs(nr_time_boxes);
     std::vector<lue::data_model::ID> active_ids(
         std::accumulate(active_set_sizes.begin(), active_set_sizes.end(), std::size_t{0}));
-    lue::data_model::test::select_random_ids(active_set_sizes, active_set_idxs, active_ids, nr_areas);
+    lue::data_model::select_random_ids(active_set_sizes, active_set_idxs, active_ids, nr_areas);
 
     // Time domain
     // Boxes in time
@@ -39,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const time_coordinate_datatype{
         lue::hdf5::NativeDatatypeTraits<TimeCoordinateValueType>::type_id()};
     std::vector<TimeCoordinateValueType> time_boxes(nr_time_boxes * 2);
-    lue::data_model::test::generate_random_strictly_increasing_values(time_boxes, 0, 1000);
+    lue::data_model::generate_random_strictly_increasing_values(time_boxes, 0, 1000);
 
     // Space domain
     // Points in space that don't change location:
@@ -51,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
         lue::hdf5::NativeDatatypeTraits<SpaceCoordinateValueType>::type_id()};
     std::size_t const rank = 2;
     std::vector<SpaceCoordinateValueType> space_points(nr_areas * rank);
-    lue::data_model::test::generate_random_values(space_points, 0, 1000);
+    lue::data_model::generate_random_values(space_points, 0, 1000);
 
     // Discretization property
     // Number of time steps per time box.
@@ -59,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const shape_datatype{
         lue::hdf5::NativeDatatypeTraits<lue::hdf5::Shape::value_type>::type_id()};
     std::vector<lue::hdf5::Shape::value_type> shapes(nr_time_boxes);
-    lue::data_model::test::generate_random_values(shapes, 10, 20);
+    lue::data_model::generate_random_values(shapes, 10, 20);
 
     // Discharge property
     // Amount of discharge per active object and per time box. This
@@ -73,7 +78,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     {
         discharge_values[t].resize(shapes[t] * active_set_sizes[t]);
     }
-    lue::data_model::test::generate_random_values(discharge_values, 0.0, 1500.0);
+    lue::data_model::generate_random_values(discharge_values, 0.0, 1500.0);
 
     // Create and write
     {

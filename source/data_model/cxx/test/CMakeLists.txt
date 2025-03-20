@@ -52,7 +52,6 @@ add_unit_tests(
     NAMES ${names}
     LIBRARIES
         lue_data_model_static
-        lue::data_model_test
     EXPORT_MACRO_BASENAME
         DATA_MODEL
     TARGETS

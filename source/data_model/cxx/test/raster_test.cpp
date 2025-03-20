@@ -1,9 +1,14 @@
 #define BOOST_TEST_MODULE lue raster
-#include "lue/test.hpp"
+#include "lue/test/algorithm.hpp"
+#include "lue/test/dataset_fixture.hpp"
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/stream.hpp"
+#include "lue/navigate.hpp"
+#include "lue/validate.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::DatasetFixture)
 {
     std::string const phenomenon_name = "areas";
     std::string const property_set_name = "areas";
@@ -16,18 +21,18 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const coordinate_datatype{lue::hdf5::NativeDatatypeTraits<int>::type_id()};
     std::size_t const rank = 2;
     std::vector<int> boxes(40 /* -> nr_areas * rank * 2 */);
-    lue::data_model::test::generate_random_values(boxes, 0, 1000);
+    lue::data_model::generate_random_values(boxes, 0, 1000);
 
     // IDs
     std::vector<lue::data_model::ID> ids(nr_areas);
-    lue::data_model::test::generate_random_ids(ids);
+    lue::data_model::generate_random_ids(ids);
 
     // Discretization property
     std::string const discretization_property_name = "discretization";
     lue::hdf5::Datatype const shape_datatype{
         lue::hdf5::NativeDatatypeTraits<lue::hdf5::Shape::value_type>::type_id()};
     std::vector<lue::hdf5::Shape::value_type> shapes(nr_areas * rank);
-    lue::data_model::test::generate_random_values(shapes, 10, 20);
+    lue::data_model::generate_random_values(shapes, 10, 20);
 
     // Elevation property
     std::string const elevation_property_name = "elevation";
@@ -39,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     {
         values[o].resize(shapes[s] * shapes[s + 1]);
     }
-    lue::data_model::test::generate_random_values(values, 5.0, 15.0);
+    lue::data_model::generate_random_values(values, 5.0, 15.0);
 
 
     // Create and write

@@ -7,7 +7,7 @@ useCompilerCache()
 include(FetchContent)
 include(GenerateExportHeader)
 
-set(LUE_CXX_STANDARD 20)
+set(LUE_MIN_CXX_STANDARD 20)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 
@@ -15,8 +15,8 @@ set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 include(LueConfiguration)
 
 # ... only now set settings relevant for (only) our own targets
-set(CMAKE_CXX_STANDARD ${LUE_CXX_STANDARD})
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+# set(CMAKE_CXX_STANDARD ${LUE_MIN_CXX_STANDARD})
+# set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_EXTENSIONS FALSE)
 if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)

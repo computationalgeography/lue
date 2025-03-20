@@ -12,10 +12,3 @@ add_unit_tests(
     TARGETS
         test_names
 )
-
-foreach(name ${names})
-    target_include_directories(lue_translate_${name}_test
-        PUBLIC
-            $<TARGET_PROPERTY:lue::data_model_test,INCLUDE_DIRECTORIES>
-    )
-endforeach()
