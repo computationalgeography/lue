@@ -8,160 +8,174 @@ on:
   workflow_dispatch:
 
 jobs:
-    build:
+  build:
 
-        strategy:
-            matrix:
-                os: ["windows-2022"]
-                compiler:
-                  - { name: "visual studio", c: cl, cxx: cl }
-                vs:
-                  - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14" }
-                python_version: ["3.12"]
-                architecture: ["amd64"]
-            fail-fast: false
+    strategy:
+      matrix:
+        os: ["windows-2022"]
+        compiler:
+          - { name: "visual studio", c: cl, cxx: cl }
+        vs:
+          - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14" }
+        python_version: ["3.12"]
+        architecture: ["amd64"]
+      fail-fast: false
 
-        runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / ${{ matrix.vs.name }} / python - ${{ matrix.python_version }}
+    name: ${{ matrix.os }} / ${{ matrix.vs.name }} / python - ${{ matrix.python_version }}
 
-        timeout-minutes: 360
+    timeout-minutes: 360
 
-        defaults:
-          run:
-            shell: bash -l {0}
-            working-directory: .
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: .
 
-        env:
-          build_type: Release
-          lue_source_directory: lue_source
-          lue_build_directory: lue_build
-          lue_runtime_install_directory: lue_runtime_install
-          lue_development_install_directory: lue_development_install
-          lue_consume_source_directory: lue_consume_source
-          lue_consume_build_directory: lue_consume_build
-          # TODO github.workspace contains backslashes which prevents the caching to work
-          # conan_prefix: ${{ github.workspace }}/.conan2
-          # conan_prefix: D:/a/lue/lue/.conan2
-          conan_prefix: "C:/Users/runneradmin/.conan2"
-          conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
-          # conda_prefix: "C:/Users/runneradmin/miniconda3"
-          conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
-          hpx_version: 1.10.0
-          hpx_branch: v1.10.0
-          hpx_source_directory: hpx_source
-          hpx_build_directory: hpx_build
-          hpx_install_directory: hpx_install
-          mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
-          mdspan_source_directory: mdspan_source
-          mdspan_build_directory: mdspan_build
-          mdspan_install_directory: mdspan_install
+    env:
+      build_type: Release
+      lue_source_directory: lue_source
+      lue_build_directory: lue_build
+      lue_runtime_install_directory: lue_runtime_install
+      lue_development_install_directory: lue_development_install
+      lue_consume_source_directory: lue_consume_source
+      lue_consume_build_directory: lue_consume_build
+      # TODO github.workspace contains backslashes which prevents the caching to work
+      # conan_prefix: ${{ github.workspace }}/.conan2
+      # conan_prefix: D:/a/lue/lue/.conan2
+      conan_prefix: "C:/Users/runneradmin/.conan2"
+      conan_packages: "boost cxxopts gdal glfw imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+      conda_prefix: "~/conda_pkgs_dir"
+      conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
+      hpx_version: 1.10.0
+      hpx_branch: v1.10.0
+      hpx_source_directory: hpx_source
+      hpx_build_directory: hpx_build
+      hpx_install_directory: hpx_install
+      mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
+      mdspan_source_directory: mdspan_source
+      mdspan_build_directory: mdspan_build
+      mdspan_install_directory: mdspan_install
 
-        steps:
+    steps:
 
-        - uses: actions/checkout@v4
-          with:
-            path: ${{ env.lue_source_directory }}
+    - uses: actions/checkout@v4
+      with:
+        path: ${{ env.lue_source_directory }}
 
-        - uses: ilammy/msvc-dev-cmd@v1
-          with:
-              arch: ${{ matrix.architecture }}
-              toolset: ${{ matrix.vs.msvc_toolset }}
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.architecture }}
+        toolset: ${{ matrix.vs.msvc_toolset }}
 
-        - uses: conda-incubator/setup-miniconda@v3
-          with:
-            auto-update-conda: true
-            miniforge-version: latest
-            conda-solver: "libmamba"
-            conda-remove-defaults: true
-            python-version: ${{ matrix.python_version }}
+    - name: cache conda
+      id: cache-conda
+      uses: actions/cache@v4
+      env:
+        cache-name: cache-conda
+        conda_build_nr: 1
+      with:
+        path: ${{ env.conda_prefix }}
+        key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conda_packages }}-${{ env.conda_build_nr }}
 
-        - name: install conda packages
-          run: |
-              # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
-              # settings are used when building LUE. Mixing Conda/Conan packages likely results
-              # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        miniforge-version: latest
+        conda-solver: "libmamba"
+        conda-remove-defaults: true
+        python-version: ${{ matrix.python_version }}
+        use-only-tar-bz2: true  # Required for caching to work properly
 
-              # conda-build provides the conda-develop command used below
-              conda install ${{ env.conda_packages }}
+    - name: install conda packages
+      run: |
+        # Don't install C++ libraries with Conda. Use Conan for that. The Conan compiler
+        # settings are used when building LUE. Mixing Conda/Conan packages likely results
+        # in conflicts. Make an exception for numpy. Use Conda only for Python packages.
 
-        - name: cache conan
-          id: cache-conan
-          uses: actions/cache@v4
-          env:
-            cache-name: cache-conan
-            conan_build_nr: 1
-          with:
-            path: ${{ env.conan_prefix }}
-            key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
+        # conda-build provides the conda-develop command used below
+        conda install ${{ env.conda_packages }}
 
-        - name: install conan packages
-          if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
-          run: |
-              # Install Conan packages and store the environment files besides them
-              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/host_profile
-              python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/build_profile
+    - name: cache conan
+      id: cache-conan
+      uses: actions/cache@v4
+      env:
+        cache-name: cache-conan
+        conan_build_nr: 1
+      with:
+        path: ${{ env.conan_prefix }}
+        key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
 
-              LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
-                  conan install ${{ env.lue_source_directory }} \
-                      --profile:host=${{ env.lue_source_directory }}/host_profile \
-                      --profile:build=${{ env.lue_source_directory }}/build_profile \
-                      --build=missing \
-                      --output-folder=${{ env.conan_prefix }}/environment
+    - name: install conan packages
+      if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
+      run: |
+        # Install Conan packages and store the environment files besides them
+        python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/host_profile
+        python ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/build_profile
 
-              ls -l ${{ env.conan_prefix }}
-              ls -l ${{ env.conan_prefix }}/environment
-              conan list
+        LUE_CONAN_PACKAGES="${{ env.conan_packages }}" \
+            conan install ${{ env.lue_source_directory }} \
+                --profile:host=${{ env.lue_source_directory }}/host_profile \
+                --profile:build=${{ env.lue_source_directory }}/build_profile \
+                --build=missing \
+                --output-folder=${{ env.conan_prefix }}/environment
 
-        - name: clone and patch hpx
-          run: |
-              git clone --depth 1 --branch ${{ env.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ env.hpx_source_directory }}
+        ls -l ${{ env.conan_prefix }}
+        ls -l ${{ env.conan_prefix }}/environment
+        conan list
 
-              curl --create-dirs --output ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json \
-                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
-              curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets-base.json \
-                  https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-base.json
+    - name: clone and patch hpx
+      run: |
+        git clone --depth 1 --branch ${{ env.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ env.hpx_source_directory }}
 
-              # Copy the CMake scripts generated by Conan to the HPX and LUE source directories
-              cp ${{ env.conan_prefix }}/environment/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
-              cp ${{ env.conan_prefix }}/environment/CMakePresets.json ${{ env.hpx_source_directory }}/CMakeConanPresets.json
-              cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
-              cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
+        curl --create-dirs --output ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json \
+            https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
+        curl --output ${{ env.hpx_source_directory }}/CMakeUserPresets-base.json \
+            https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-base.json
 
-              # Port HPX-1.10 to CMake 3.30 (see policy CMP0167). Otherwise it won't pick up Conan's Boost module.
-              sed -i'' '135 s/MODULE/CONFIG/' ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+        # Copy the CMake scripts generated by Conan to the HPX and LUE source directories
 
-              # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
-              sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+        cp ${{ env.conan_prefix }}/environment/* ${{ env.hpx_source_directory }}
+        # cp ${{ env.conan_prefix }}/environment/conan_toolchain.cmake ${{ env.hpx_source_directory }}/conan_toolchain.cmake
+        cp ${{ env.conan_prefix }}/environment/CMakePresets.json ${{ env.hpx_source_directory }}/CMakeConanPresets.json
 
-        - name: "install hpx"
-          uses: ./lue_source/.github/actions/install_hpx
-          env:
-              hpx_build_nr: 1
-          with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
-            c_compiler: ${{ matrix.compiler.c }}
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: ${{ env.build_type }}
-            cmake_preset: hpx_release_windows_node_conan_configuration
-            cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json
-            # Passing path for Hwloc_ROOT to prevent:
-            #     HPXConfig.cmake:160 (set):
-            #     Syntax error in cmake code at
-            #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
-            #     when parsing string
-            #       C:\Users\runneradmin\miniconda3\envs\test/Library
-            #     Invalid character escape '\U'.
-            # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
-            # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
-            hpx_branch: ${{ env.hpx_branch }}
-            source_directory: ${{ env.hpx_source_directory }}
-            build_directory: ${{ env.hpx_build_directory }}
-            install_directory: ${{ env.hpx_install_directory }}
+        cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
+        cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
+
+        # Port HPX-1.10 to CMake 3.30 (see policy CMP0167). Otherwise it won't pick up Conan's Boost module.
+        sed -i'' '135 s/MODULE/CONFIG/' ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+
+        # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
+        sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
+
+    - name: "install hpx"
+      uses: ./lue_source/.github/actions/install_hpx
+      env:
+          hpx_build_nr: 1
+      with:
+        cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
+        c_compiler: ${{ matrix.compiler.c }}
+        cxx_compiler: ${{ matrix.compiler.cxx }}
+        build_type: ${{ env.build_type }}
+        cmake_preset: hpx_release_windows_node_conan_configuration
+        cmake_preset_file: ${{ env.hpx_source_directory }}/CMakeUserPresets-Conan${{ env.build_type }}.json
+        # Passing path for Hwloc_ROOT to prevent:
+        #     HPXConfig.cmake:160 (set):
+        #     Syntax error in cmake code at
+        #       D:/a/lue/lue/hpx_install/lib/cmake/HPX/HPXConfig.cmake:160
+        #     when parsing string
+        #       C:\Users\runneradmin\miniconda3\envs\test/Library
+        #     Invalid character escape '\U'.
+        # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
+        # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+        hpx_branch: ${{ env.hpx_branch }}
+        source_directory: ${{ env.hpx_source_directory }}
+        build_directory: ${{ env.hpx_build_directory }}
+        install_directory: ${{ env.hpx_install_directory }}
 
 #         - name: "install mdspan"
 #           uses: ./lue_source/.github/actions/install_mdspan
