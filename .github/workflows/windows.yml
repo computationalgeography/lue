@@ -109,7 +109,7 @@ jobs:
                       --profile:host=${{ env.lue_source_directory }}/host_profile \
                       --profile:build=${{ env.lue_source_directory }}/build_profile \
                       --build=missing \
-                      --output-folder=${{ env.conan_prefix }/environment}
+                      --output-folder=${{ env.conan_prefix }}/environment
 
               ls -l ${{ env.conan_prefix }}
               ls -l ${{ env.conan_prefix }}/environment
