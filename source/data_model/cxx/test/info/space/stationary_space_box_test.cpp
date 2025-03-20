@@ -1,11 +1,11 @@
 #define BOOST_TEST_MODULE lue info space stationary_space_box
 #include "lue/core/tag.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/info/space/stationary_space_box.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-class Fixture: public lue::data_model::test::FileFixture
+class Fixture: public lue::hdf5::FileFixture
 {
 
     public:

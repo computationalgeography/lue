@@ -2,7 +2,7 @@
 #include <cassert>
 
 
-namespace lue::data_model::test {
+namespace lue::data_model {
 
     DatasetFixture::DatasetFixture():
 
@@ -47,4 +47,4 @@ namespace lue::data_model::test {
         _remove_dataset_upon_destruction = false;
     }
 
-}  // namespace lue::data_model::test
+}  // namespace lue::data_model

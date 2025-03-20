@@ -54,15 +54,35 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-add_library(lue_framework_partitioned_route SHARED
-    source/server/serial_route_partition.cpp
-    ${generated_source_files}
+
+add_library(lue_framework_partitioned_route SHARED)
+add_library(lue::framework_partitioned_route ALIAS lue_framework_partitioned_route)
+
+set_target_properties(lue_framework_partitioned_route
+    PROPERTIES
+        EXPORT_NAME framework_partitioned_route
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_partitioned_route
-    EXPORT_HEADER_PATHNAME include/lue/framework/partitioned_route/export.hpp
-    EXPORT_MACRO_BASENAME PARTITIONED_ROUTE
+generate_export_header(lue_framework_partitioned_route
+    EXPORT_FILE_NAME include/lue/framework_partitioned_route/export.hpp
+    EXPORT_MACRO_NAME LUE_PARTITIONED_ROUTE_EXPORT
+)
+
+target_sources(lue_framework_partitioned_route
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_partitioned_route/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
+    PRIVATE
+        source/server/serial_route_partition.cpp
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_partitioned_route
@@ -72,12 +92,16 @@ target_link_libraries(lue_framework_partitioned_route
         lue::framework_core
 )
 
-target_sources(lue_framework_partitioned_route
-    PUBLIC
-        FILE_SET
-            HEADERS
-        FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_partitioned_route
 )
 
-add_test_conditionally(test)
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_partitioned_route
+)
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

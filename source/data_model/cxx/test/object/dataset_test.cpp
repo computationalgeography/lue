@@ -1,13 +1,13 @@
 #define BOOST_TEST_MODULE lue object dataset
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/object/dataset.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
 BOOST_AUTO_TEST_CASE(create_new_dataset)
 {
     std::string const dataset_name = "create_new_dataset.lue";
-    lue::data_model::test::FileFixture f{dataset_name};
+    lue::hdf5::FileFixture f{dataset_name};
 
     auto dataset = lue::data_model::create_dataset(dataset_name);
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
 BOOST_AUTO_TEST_CASE(open_new_dataset)
 {
     std::string const dataset_name = "open_new_dataset.lue";
-    lue::data_model::test::FileFixture f{dataset_name};
+    lue::hdf5::FileFixture f{dataset_name};
 
     /* auto const dataset = */ lue::data_model::create_dataset(dataset_name);
 

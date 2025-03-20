@@ -1,4 +1,10 @@
-add_test_conditionally(test)
+add_library(lue_framework_core STATIC)
+add_library(lue::framework_core ALIAS lue_framework_core)
+
+target_compile_definitions(lue_framework_core
+    PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
+)
 
 set(generated_source_files "")
 
@@ -47,48 +53,52 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-add_library(lue_framework_core STATIC
-    ${generated_source_files}
-    source/configuration_entry.cpp
-    source/debug.cpp
-    source/framework.cpp
-    source/numa_domain.cpp
-    source/runtime.cpp
-)
-
-add_library(lue::framework_core ALIAS lue_framework_core)
-
-set_target_properties(lue_framework_core
-    PROPERTIES
-        EXPORT_NAME framework_core
-)
-
-target_compile_definitions(lue_framework_core
-    PUBLIC
-        $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
-)
-
-target_include_directories(lue_framework_core
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-)
 
 target_sources(lue_framework_core
     PUBLIC
-        FILE_SET
-            HEADERS
+        FILE_SET HEADERS
         BASE_DIRS
             include
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/configure.hpp
+    PRIVATE
+        ${generated_source_files}
+        source/configuration_entry.cpp
+        source/debug.cpp
+        source/framework.cpp
+        source/numa_domain.cpp
+        source/runtime.cpp
 )
+
+# set_target_properties(lue_framework_core
+#     PROPERTIES
+#         EXPORT_NAME framework_core
+# )
+
+# target_include_directories(lue_framework_core
+#     PUBLIC
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+# )
+
+# target_sources(lue_framework_core
+#     PUBLIC
+#         FILE_SET
+#             HEADERS
+#         BASE_DIRS
+#             include
+#             ${CMAKE_CURRENT_BINARY_DIR}/include
+#         FILES
+#             include/lue
+#             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/configure.hpp
+# )
 
 target_link_libraries(lue_framework_core
     PUBLIC
         lue::shared
+        # lue::compile_features
         HPX::hpx
         std::mdspan
 )
@@ -96,3 +106,7 @@ target_link_libraries(lue_framework_core
 lue_install_development_libraries(
     TARGETS lue_framework_core
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

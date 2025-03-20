@@ -1,4 +1,3 @@
-
 set(FloatingPointElements ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 list(TRANSFORM FloatingPointElements PREPEND "\"")
 list(TRANSFORM FloatingPointElements APPEND "\"")

@@ -1,10 +1,10 @@
 #define BOOST_TEST_MODULE lue array different_shape value
 #include "lue/array/different_shape/value.hpp"
-#include "lue/test.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-class Fixture: public lue::data_model::test::FileFixture
+class Fixture: public lue::hdf5::FileFixture
 {
 
     public:

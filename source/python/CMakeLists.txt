@@ -4,8 +4,6 @@
 # This package is called `lue`. The submodules are called `lue.data_model`
 # and `lue.framework` respectively.
 
-add_test_conditionally(test)
-
 configure_file(
     include/lue/py/configure.hpp.in
     include/lue/py/configure.hpp
@@ -134,3 +132,7 @@ install(
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

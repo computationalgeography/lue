@@ -54,29 +54,53 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-add_library(lue_framework_partitioned_array SHARED
-    source/server/array_partition.cpp
-    ${generated_source_files}
+add_library(lue_framework_partitioned_array SHARED)
+add_library(lue::framework_partitioned_array ALIAS lue_framework_partitioned_array)
+
+set_target_properties(lue_framework_partitioned_array
+    PROPERTIES
+        EXPORT_NAME framework_partitioned_array
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_partitioned_array
-    EXPORT_HEADER_PATHNAME include/lue/framework/partitioned_array/export.hpp
-    EXPORT_MACRO_BASENAME FPA
+generate_export_header(lue_framework_partitioned_array
+    EXPORT_FILE_NAME include/lue/framework_partitioned_array/export.hpp
+    EXPORT_MACRO_NAME LUE_FPA_EXPORT
 )
 
 target_sources(lue_framework_partitioned_array
     PUBLIC
-        FILE_SET
-            HEADERS
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_partitioned_array/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
+    PRIVATE
+        source/server/array_partition.cpp
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_partitioned_array
     PRIVATE
         HPX::component
     PUBLIC
-        lue::framework_core)
+        lue::framework_core
+)
 
-add_test_conditionally(test)
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_partitioned_array
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_partitioned_array
+)
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

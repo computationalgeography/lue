@@ -3,9 +3,9 @@
 #include <memory>
 
 
-namespace lue::data_model::test {
+namespace lue::data_model {
 
-    class DatasetFixture
+    class LUE_DATA_MODEL_EXPORT DatasetFixture
     {
 
         public:
@@ -37,4 +37,4 @@ namespace lue::data_model::test {
             std::unique_ptr<Dataset> _dataset;
     };
 
-}  // namespace lue::data_model::test
+}  // namespace lue::data_model

@@ -1,5 +1,6 @@
 #define BOOST_TEST_MODULE lue translate import
-#include "lue/test/print.hpp"
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/stream.hpp"
 #include "lue/stream.hpp"
 #include "lue/translate/format.hpp"
 #include "lue/validate.hpp"
