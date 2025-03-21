@@ -36,7 +36,7 @@ runs:
         key: ${{ inputs.cache_key }}
     - name: install hpx
       shell: bash -l {0}
-      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
+      if: steps.cache-hpx.outputs.cache-hit != 'true'
       run: |
         if [ ! -d "${{ inputs.source_directory }}" ]; then
             git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
@@ -68,6 +68,6 @@ runs:
 
     - name: post hpx install
       shell: bash -l {0}
-      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
+      if: steps.cache-hpx.outputs.cache-hit != 'true'
       run: |
         rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}

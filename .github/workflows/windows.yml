@@ -201,6 +201,8 @@ jobs:
           mkdir -p ${{ env.lue_build_directory }}
           curl --create-dirs --output ${{ env.lue_source_directory }}/CMakeUserPresets.json \
               https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-Conan${{ env.build_type }}.json
+          curl --output ${{ env.lue_source_directory }}/CMakeUserPresets-base.json \
+              https://raw.githubusercontent.com/kordejong/my_devenv/refs/heads/master/configuration/project/lue/CMakeUserPresets-base.json
 
           cp -r ${{ env.conan_package_prefix }}/environment/* ${{ env.lue_build_directory }}
           cp ${{ env.lue_build_directory }}/conan_toolchain.cmake ${{ env.lue_source_directory }}/conan_toolchain.cmake
