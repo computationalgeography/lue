@@ -50,7 +50,7 @@ namespace lue {
         */
         void ProgressIndicator::update_progress(size_t const task)
         {
-            // TODO(KDJ) Update to use fmt::format
+            // TODO(KDJ) Update to use std::format
             auto string = boost::str(boost::format("%s: %3i%%") % _label % ((100 * task) / _nr_tasks));
 
             update_stream(string);

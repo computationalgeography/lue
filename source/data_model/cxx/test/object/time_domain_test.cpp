@@ -1,10 +1,11 @@
 #define BOOST_TEST_MODULE lue object time_domain
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/object/time_domain.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-class Fixture: public lue::data_model::test::FileFixture
+class Fixture: public lue::hdf5::FileFixture
 {
 
     public:

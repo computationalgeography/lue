@@ -1,10 +1,3 @@
-add_test_conditionally(test)
-
-# if(LUE_FRAMEWORK_WITH_BENCHMARKS)
-#     add_subdirectory(benchmark)
-# endif()
-
-
 ### # Instantiate components -------------------------------------------------------
 ### set(generated_source_files "")
 ###
@@ -60,14 +53,33 @@ add_test_conditionally(test)
 
 # / Instantiate components -----------------------------------------------------
 
-add_library(lue_framework_algorithm SHARED
-    source/component/array_partition_io.cpp
+
+add_library(lue_framework_algorithm SHARED)
+add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
+
+set_target_properties(lue_framework_algorithm
+    PROPERTIES
+        EXPORT_NAME framework_algorithm
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_algorithm
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/export.hpp
-    EXPORT_MACRO_BASENAME FA
+generate_export_header(lue_framework_algorithm
+    EXPORT_FILE_NAME include/lue/framework/algorithm/export.hpp
+    EXPORT_MACRO_NAME LUE_FA_EXPORT
+)
+
+target_sources(lue_framework_algorithm
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/export.hpp
+    PRIVATE
+        source/component/array_partition_io.cpp
 )
 
 target_link_libraries(lue_framework_algorithm
@@ -76,6 +88,16 @@ target_link_libraries(lue_framework_algorithm
         lue::framework_partitioned_route
         lue::framework_core
         HPX::hpx
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_algorithm
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_algorithm
 )
 
 
@@ -696,14 +718,32 @@ block()
 endblock()
 # / Instantiate local operations -----------------------------------------------
 
-add_library(lue_framework_local_operation SHARED
-    ${generated_source_files}
+add_library(lue_framework_local_operation SHARED)
+add_library(lue::framework_local_operation ALIAS lue_framework_local_operation)
+
+set_target_properties(lue_framework_local_operation
+    PROPERTIES
+        EXPORT_NAME framework_local_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_local_operation
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/local_operation_export.hpp
-    EXPORT_MACRO_BASENAME LOCAL_OPERATION
+generate_export_header(lue_framework_local_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/local_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_LOCAL_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_local_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/local_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_local_operation
@@ -711,11 +751,20 @@ target_link_libraries(lue_framework_local_operation
         lue::framework_algorithm
 )
 
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_local_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_local_operation
+)
+
 
 # Instantiate focal operations -------------------------------------------------
 set(generated_source_files "")
 set(offset "source/focal_operation")
-
 
 block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
@@ -889,21 +938,50 @@ block()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
+# /Instantiate focal operations ------------------------------------------------
 
 
-add_library(lue_framework_focal_operation SHARED
-    ${generated_source_files}
+add_library(lue_framework_focal_operation SHARED)
+add_library(lue::framework_focal_operation ALIAS lue_framework_focal_operation)
+
+set_target_properties(lue_framework_focal_operation
+    PROPERTIES
+        EXPORT_NAME framework_focal_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_focal_operation
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/focal_operation_export.hpp
-    EXPORT_MACRO_BASENAME FOCAL_OPERATION
+generate_export_header(lue_framework_focal_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/focal_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_FOCAL_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_focal_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/focal_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_focal_operation
     PUBLIC
         lue::framework_algorithm
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_focal_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_focal_operation
 )
 
 
@@ -1178,20 +1256,49 @@ block()
 endblock()
 # /Instantiate zonal operations ------------------------------------------------
 
-add_library(lue_framework_zonal_operation SHARED
-    ${generated_source_files}
+
+add_library(lue_framework_zonal_operation SHARED)
+add_library(lue::framework_zonal_operation ALIAS lue_framework_zonal_operation)
+
+set_target_properties(lue_framework_zonal_operation
+    PROPERTIES
+        EXPORT_NAME framework_zonal_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_zonal_operation
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/zonal_operation_export.hpp
-    EXPORT_MACRO_BASENAME ZONAL_OPERATION
+generate_export_header(lue_framework_zonal_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/zonal_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_ZONAL_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_zonal_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/zonal_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_zonal_operation
     PUBLIC
         lue::framework_algorithm
         lue::framework_global_operation  # unique
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_zonal_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_zonal_operation
 )
 
 
@@ -1311,19 +1418,47 @@ endblock()
 # / Instantiate global operations ----------------------------------------------
 
 
-add_library(lue_framework_global_operation SHARED
-    ${generated_source_files}
+add_library(lue_framework_global_operation SHARED)
+add_library(lue::framework_global_operation ALIAS lue_framework_global_operation)
+
+set_target_properties(lue_framework_global_operation
+    PROPERTIES
+        EXPORT_NAME framework_global_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_global_operation
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/global_operation_export.hpp
-    EXPORT_MACRO_BASENAME GLOBAL_OPERATION
+generate_export_header(lue_framework_global_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/global_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_GLOBAL_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_global_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/global_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_global_operation
     PUBLIC
         lue::framework_algorithm
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_global_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_global_operation
 )
 
 
@@ -1648,23 +1783,56 @@ block()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
-
 # / Instantiate routing operations ---------------------------------------------
 
 
-add_library(lue_framework_routing_operation SHARED
-    ${generated_source_files}
-    source/routing_operation/channel.cpp
-    source/routing_operation/walk/cell_counter.cpp
+add_library(lue_framework_routing_operation SHARED)
+add_library(lue::framework_routing_operation ALIAS lue_framework_routing_operation)
+
+set_target_properties(lue_framework_routing_operation
+    PROPERTIES
+        EXPORT_NAME framework_routing_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_routing_operation
-    EXPORT_HEADER_PATHNAME include/lue/framework/algorithm/routing_operation_export.hpp
-    EXPORT_MACRO_BASENAME ROUTING_OPERATION
+generate_export_header(lue_framework_routing_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/routing_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_ROUTING_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_routing_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/routing_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
+        source/routing_operation/channel.cpp
+        source/routing_operation/walk/cell_counter.cpp
 )
 
 target_link_libraries(lue_framework_routing_operation
     PUBLIC
         lue::framework_algorithm
 )
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_routing_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_routing_operation
+)
+
+# ------------------------------------------------------------------------------
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

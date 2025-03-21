@@ -472,7 +472,7 @@ namespace lue {
                 // are partitions.
                 if (nr_partitions < nr_localities)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Not enough partitions to use all localities ({} < {})",
                         nr_partitions,
                         nr_localities));

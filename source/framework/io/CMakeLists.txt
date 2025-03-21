@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 block()
     set(Elements ${LUE_FRAMEWORK_ELEMENTS})
     list(TRANSFORM Elements PREPEND "\"")
@@ -16,15 +14,33 @@ block()
     )
 endblock()
 
-add_library(lue_framework_io SHARED
-    source/dataset.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
+add_library(lue_framework_io SHARED)
+add_library(lue::framework_io ALIAS lue_framework_io)
+
+set_target_properties(lue_framework_io
+    PROPERTIES
+        EXPORT_NAME framework_io
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-lue_configure_shared_library(
-    TARGET_BASENAME framework_io
-    EXPORT_HEADER_PATHNAME include/lue/framework/io/export.hpp
-    EXPORT_MACRO_BASENAME FRAMEWORK_IO
+generate_export_header(lue_framework_io
+    EXPORT_FILE_NAME include/lue/framework/io/export.hpp
+    EXPORT_MACRO_NAME LUE_FRAMEWORK_IO_EXPORT
+)
+
+target_sources(lue_framework_io
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/io/export.hpp
+    PRIVATE
+        source/dataset.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
 )
 
 target_link_libraries(lue_framework_io
@@ -36,3 +52,17 @@ target_link_libraries(lue_framework_io
         lue::gdal
         $<$<BOOL:${LUE_FRAMEWORK_WITH_PARALLEL_IO}>:MPI::MPI_CXX>
 )
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_io
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_io
+)
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

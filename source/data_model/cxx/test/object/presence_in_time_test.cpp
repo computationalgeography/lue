@@ -1,17 +1,18 @@
 #define BOOST_TEST_MODULE lue object presence_in_time
+#include "lue/test/algorithm.hpp"
+#include "lue/test/dataset_fixture.hpp"
 #include "lue/object/property/property_set.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::DatasetFixture)
 {
     std::string const phenomenon_name = "my_phenomenon";
     // std::string const property_set_name = "my_property_set";
     lue::data_model::Count const nr_objects = 5;
 
     std::vector<lue::data_model::ID> ids(nr_objects);
-    lue::data_model::test::generate_random_ids(ids);
+    lue::data_model::generate_random_ids(ids);
 
     // Create and write
     {
@@ -35,7 +36,7 @@ BOOST_FIXTURE_TEST_CASE(omnipresent_in_time, lue::data_model::test::DatasetFixtu
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::DatasetFixture)
 {
     // std::string const phenomenon_name = "my_phenomenon";
     // std::string const property_set_name = "my_property_set";
@@ -43,14 +44,15 @@ BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
 
     // Per location in time the number of objects in the active set
     std::vector<lue::data_model::Count> nr_active_objects(nr_locations_in_time);
-    lue::data_model::test::generate_random_counts(nr_active_objects, 5, 15);
+    lue::data_model::generate_random_counts(nr_active_objects, 5, 15);
 
     // Per location in time the IDs of the objects in the active set
     std::vector<std::vector<lue::data_model::ID>> active_ids(nr_locations_in_time);
-    lue::data_model::test::select_random_ids(active_ids, nr_active_objects);
+    lue::data_model::select_random_ids(active_ids, nr_active_objects);
 
     // Create and write
-    {}
+    {
+    }
 
     // Open and read
     {
@@ -58,10 +60,11 @@ BOOST_FIXTURE_TEST_CASE(time_points, lue::data_model::test::DatasetFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::DatasetFixture)
 {
     // Create and write
-    {}
+    {
+    }
 
     // Open and read
     {
@@ -69,10 +72,11 @@ BOOST_FIXTURE_TEST_CASE(time_boxes, lue::data_model::test::DatasetFixture)
 }
 
 
-BOOST_FIXTURE_TEST_CASE(time_grids, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(time_grids, lue::data_model::DatasetFixture)
 {
     // Create and write
-    {}
+    {
+    }
 
     // Open and read
     {

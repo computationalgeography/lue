@@ -18,8 +18,6 @@ target_compile_definitions(lue_glfw
 add_library(lue::glfw ALIAS lue_glfw)
 
 target_link_libraries(lue_glfw
-    PRIVATE
-        fmt::fmt
     PUBLIC
         glfw
         $<IF:$<BOOL:${LUE_VIEW_USE_VULKAN}>,Vulkan::Vulkan,OpenGL::GL>

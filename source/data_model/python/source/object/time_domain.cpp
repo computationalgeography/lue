@@ -13,7 +13,7 @@ namespace lue {
 
             static std::string formal_string_representation(TimeConfiguration const& configuration)
             {
-                return fmt::format(
+                return std::format(
                     "TimeConfiguration(item_type='{}')",
                     aspect_to_string(configuration.value<TimeDomainItemType>()));
             }
@@ -27,7 +27,7 @@ namespace lue {
 
             static std::string formal_string_representation(TimeDomain const& domain)
             {
-                return fmt::format("TimeDomain(pathname='{}')", domain.id().pathname());
+                return std::format("TimeDomain(pathname='{}')", domain.id().pathname());
             }
 
 

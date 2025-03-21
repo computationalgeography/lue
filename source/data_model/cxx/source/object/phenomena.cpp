@@ -32,7 +32,7 @@ namespace lue {
             if (collection_exists(parent, phenomena_tag))
             {
                 throw std::runtime_error(
-                    fmt::format("Phenomena collection already exists at {}", parent.id().pathname()));
+                    std::format("Phenomena collection already exists at {}", parent.id().pathname()));
             }
 
             return Phenomena{create_collection<Phenomenon>(parent, phenomena_tag)};

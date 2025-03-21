@@ -1,6 +1,5 @@
 #include "lue/info/property/property_group.hpp"
 #include "lue/core/aspect.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <filesystem>
 

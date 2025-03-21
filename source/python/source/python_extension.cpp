@@ -21,7 +21,7 @@
 #endif
 #endif
 #include <boost/algorithm/string/join.hpp>
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -52,10 +52,10 @@ namespace lue {
 
         for (std::string& item : automodules)
         {
-            item = fmt::format(".. automodule:: lue.{}", item);
+            item = std::format(".. automodule:: lue.{}", item);
         }
 
-        module.doc() = fmt::format(
+        module.doc() = std::format(
             R"(
     :mod:`lue` --- Scientific Database and Environmental Modelling Framework
     ========================================================================

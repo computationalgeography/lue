@@ -1,8 +1,8 @@
 #include "lue/gdal/dataset.hpp"
 #include "lue/gdal/driver.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <cmath>
+#include <format>
 #include <stdexcept>
 
 
@@ -74,7 +74,7 @@ namespace lue::gdal {
 
         if (!dataset_ptr)
         {
-            throw std::runtime_error(fmt::format("Raster {} cannot be created", dataset_name));
+            throw std::runtime_error(std::format("Raster {} cannot be created", dataset_name));
         }
 
         return dataset_ptr;
@@ -139,7 +139,7 @@ namespace lue::gdal {
 
         if (status != CE_None)
         {
-            throw std::runtime_error(fmt::format("Cannot delete dataset {}", dataset_name));
+            throw std::runtime_error(std::format("Cannot delete dataset {}", dataset_name));
         }
     }
 
@@ -168,14 +168,14 @@ namespace lue::gdal {
 
             if (band_nr < 0 || band_nr > nr_bands)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Requested raster band ({}) is outside the valid range ([{} - {}]",
                     band_nr,
                     1,
                     nr_bands));
             }
 
-            throw std::runtime_error(fmt::format("Band {} cannot be obtained", band_nr));
+            throw std::runtime_error(std::format("Band {} cannot be obtained", band_nr));
         }
 
         return band_ptr;

@@ -44,7 +44,7 @@ namespace lue {
                                     ZonesData const& zones_partition_data)
                                 {
                                     AnnotateFunction const annotation{
-                                        fmt::format("{}: partition", functor_name<Functor>)};
+                                        std::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(zones_partition);
 
@@ -131,7 +131,7 @@ namespace lue {
                                     ZonesData const& zones_partition_data)
                                 {
                                     AnnotateFunction const annotation{
-                                        fmt::format("{}: partition", functor_name<Functor>)};
+                                        std::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
                                     HPX_UNUSED(zones_partition);
@@ -209,7 +209,7 @@ namespace lue {
                         Offset const& offset, ZonesData const& zones_partition_data)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: partition: reclass", functor_name<Functor>)};
+                            std::format("{}: partition: reclass", functor_name<Functor>)};
 
                         HPX_UNUSED(zones_partition);
 
@@ -315,7 +315,7 @@ namespace lue {
                     [](hpx::future<Aggregators>&& aggregators)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: aggregate", functor_name<Functor>)};
+                            std::format("{}: aggregate", functor_name<Functor>)};
 
                         Aggregator result{};
 
@@ -413,7 +413,7 @@ namespace lue {
                         InputPartition const& input_partition, ZonesPartition const& zones_partition)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: partition: call statistic action", functor_name<Functor>)};
+                            std::format("{}: partition: call statistic action", functor_name<Functor>)};
 
                         return action(locality_id, policies, input_partition, zones_partition, functor);
                     },
@@ -434,7 +434,7 @@ namespace lue {
                     [](hpx::future<Aggregators>&& aggregators)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: array: merge", functor_name<Functor>)};
+                            std::format("{}: array: merge", functor_name<Functor>)};
 
                         Aggregator result{};
 
@@ -463,7 +463,7 @@ namespace lue {
                         hpx::shared_future<Aggregator> const& aggregator)
                     {
                         AnnotateFunction const annotation{
-                            fmt::format("{}: partition: call reclass action", functor_name<Functor>)};
+                            std::format("{}: partition: call reclass action", functor_name<Functor>)};
 
                         return action(locality_id, policies, zones_partition, aggregator.get());
                     },

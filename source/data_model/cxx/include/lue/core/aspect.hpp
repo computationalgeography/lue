@@ -4,7 +4,7 @@
 #include "lue/core/tag.hpp"
 #include "lue/core/time.hpp"
 #include "lue/hdf5/attributes.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -134,7 +134,7 @@ namespace lue {
 
             if (!map.contains(string))
             {
-                throw std::runtime_error(fmt::format("Unknown aspect: {}", string));
+                throw std::runtime_error(std::format("Unknown aspect: {}", string));
             }
 
             return map.as_value(string);

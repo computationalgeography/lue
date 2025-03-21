@@ -4,8 +4,8 @@
 #include "lue/macro.hpp"  // ArgumentType
 #include <hpx/modules/runtime_local.hpp>
 #include <boost/lexical_cast.hpp>
-#include <fmt/format.h>
 #include <filesystem>
+#include <format>
 #include <regex>
 
 
@@ -16,7 +16,7 @@ namespace lue {
         {
             static auto const program_name =
                 std::filesystem::path(hpx::get_config_entry("hpx.program_name", "")).filename().string();
-            static auto const result = fmt::format("application.{}", program_name);
+            static auto const result = std::format("application.{}", program_name);
 
             return result;
         }
@@ -25,7 +25,7 @@ namespace lue {
         std::string configuration_entry(
             std::string const& section, std::string const& key, std::string const& default_value)
         {
-            return hpx::get_config_entry(fmt::format("{}.{}", section, key), default_value);
+            return hpx::get_config_entry(std::format("{}.{}", section, key), default_value);
         }
 
 
@@ -36,7 +36,7 @@ namespace lue {
             // Trim string with list of values from the list delimiters
             if (!std::regex_match(value, match, std::regex(R"(\[([^\]]*)\])")))
             {
-                throw std::runtime_error(fmt::format("List of values not delimited by '[]' ({})", value));
+                throw std::runtime_error(std::format("List of values not delimited by '[]' ({})", value));
             }
 
             lue_hpx_assert(match.size() == 2);
@@ -65,7 +65,7 @@ namespace lue {
 
                 if (!string.empty())
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Configuration entry '{}' cannot be parsed into "
                         "a list of values of type {}",
                         value,
@@ -90,7 +90,7 @@ namespace lue {
             catch (boost::bad_lexical_cast const&)
             {
                 throw std::runtime_error(
-                    fmt::format("Cannot cast value '{}' to type {}", value, Type<T>::name()));
+                    std::format("Cannot cast value '{}' to type {}", value, Type<T>::name()));
             }
 
             return result;
@@ -128,7 +128,7 @@ namespace lue {
 
             if (values.size() != 2)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Configuration entry '{}' must contain 2 values, "
                     "but {} where found",
                     value,
@@ -149,7 +149,7 @@ namespace lue {
 
             if (values.size() != 2)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Configuration entry '{}' must contain 2 values, "
                     "but {} where found",
                     value,
@@ -173,7 +173,7 @@ namespace lue {
         if (value.empty())
         {
             throw std::runtime_error(
-                fmt::format("Required configuration entry {}.{} is missing", section, key));
+                std::format("Required configuration entry {}.{} is missing", section, key));
         }
 
         return detail::cast<T>(value);

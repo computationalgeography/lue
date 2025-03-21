@@ -1,9 +1,13 @@
 #define BOOST_TEST_MODULE lue scalar
-#include "lue/test.hpp"
+#include "lue/test/algorithm.hpp"
+#include "lue/test/dataset_fixture.hpp"
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/stream.hpp"
+#include "lue/validate.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
+BOOST_FIXTURE_TEST_CASE(create, lue::data_model::DatasetFixture)
 {
     std::string const phenomenon_name = "planets";
     std::string const property_set_name = "constants";
@@ -14,10 +18,10 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::test::DatasetFixture)
     lue::hdf5::Datatype const datatype{lue::hdf5::NativeDatatypeTraits<ValueType>::type_id()};
 
     std::vector<lue::data_model::ID> ids(nr_planets);
-    lue::data_model::test::generate_random_ids(ids);
+    lue::data_model::generate_random_ids(ids);
 
     std::vector<ValueType> values(nr_planets);
-    lue::data_model::test::generate_random_values(values, 5.0, 15.0);
+    lue::data_model::generate_random_values(values, 5.0, 15.0);
 
     // Create and write
     {

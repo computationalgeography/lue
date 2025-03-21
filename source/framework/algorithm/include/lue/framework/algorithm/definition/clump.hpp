@@ -6,7 +6,7 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
 
-#include <fmt/format.h>
+#include <format>
 
 #include <hpx/serialization.hpp>
 
@@ -686,8 +686,9 @@ namespace lue {
                 }
 
 
-                auto north_side() const -> std::
-                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
+                auto north_side() const -> std::tuple<
+                                            std::reference_wrapper<ZoneData const>,
+                                            std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::horizontal][HorizontalSide::north]),
@@ -695,8 +696,9 @@ namespace lue {
                 }
 
 
-                auto south_side() const -> std::
-                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
+                auto south_side() const -> std::tuple<
+                                            std::reference_wrapper<ZoneData const>,
+                                            std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::horizontal][HorizontalSide::south]),
@@ -704,8 +706,9 @@ namespace lue {
                 }
 
 
-                auto west_side() const -> std::
-                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
+                auto west_side() const -> std::tuple<
+                                           std::reference_wrapper<ZoneData const>,
+                                           std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::vertical][VerticalSide::west]),
@@ -713,8 +716,9 @@ namespace lue {
                 }
 
 
-                auto east_side() const -> std::
-                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
+                auto east_side() const -> std::tuple<
+                                           std::reference_wrapper<ZoneData const>,
+                                           std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::vertical][VerticalSide::east]),
@@ -801,8 +805,9 @@ namespace lue {
 
         template<typename Policies, typename Partition>
         auto clump_partition(
-            Policies const& policies, Partition const& zone_partition, Connectivity const connectivity)
-            -> LocalResultF<Partition>
+            Policies const& policies,
+            Partition const& zone_partition,
+            Connectivity const connectivity) -> LocalResultF<Partition>
         {
             lue_hpx_assert(zone_partition.is_ready());
 
