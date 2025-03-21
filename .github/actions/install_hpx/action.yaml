@@ -65,4 +65,8 @@ runs:
       run: |
         # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
         # though, so we do it here ourselves. Sigh...
-        cp ${{ inputs.build_directory }}/_deps/hwloc-src/bin/* ${{ inputs.install_directory }}/bin
+        ls -l
+        ls -l ${{ inputs.build_directory }}
+        ls -l ${{ inputs.install_directory }}/bin
+        cp ${{ inputs.build_directory }}/${{ inputs.build_type }}/*hwloc*.dll ${{ inputs.install_directory }}/bin
+        # cp ${{ inputs.build_directory }}/_deps/hwloc-src/bin/* ${{ inputs.install_directory }}/bin
