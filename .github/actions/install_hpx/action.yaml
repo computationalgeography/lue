@@ -47,15 +47,22 @@ runs:
         mkdir -p ${{ inputs.build_directory }}
 
         cmake \
-            -S ${{ inputs.source_directory }} \
-            -B ${{ inputs.build_directory }} \
-            --preset ${{ inputs.cmake_preset }} \
-            -G "Ninja" \
-            -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
-            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
-            ${{ inputs.cmake_flags }}
+          -S ${{ inputs.source_directory }} \
+          -B ${{ inputs.build_directory }} \
+          --preset ${{ inputs.cmake_preset }} \
+          -G "Ninja" \
+          -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
+          -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+          ${{ inputs.cmake_flags }}
         cmake --build ${{ inputs.build_directory }} --target all
         cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
         rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
+    - name: patch hpx install
+      shell: bash -l {0}
+      if: ${{ VisualStudioVersion != '' }}
+      run: |
+        # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
+        # though, so we do it here ourselves. Sigh...
+        cp ${{ inputs.build_directory }}/_deps/hwloc-src/bin/* ${{ inputs.install_directory }}/bin
