@@ -68,15 +68,15 @@ jobs:
         arch: ${{ matrix.architecture }}
         toolset: ${{ matrix.vs.msvc_toolset }}
 
-    - name: cache conda
-      id: cache-conda
-      uses: actions/cache@v4
-      env:
-        cache-name: cache-conda
-        conda_build_nr: 1
-      with:
-        path: ${{ env.conda_package_prefix }}
-        key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conda_packages }}-${{ env.conda_build_nr }}
+    # - name: cache conda
+    #   id: cache-conda
+    #   uses: actions/cache@v4
+    #   env:
+    #     cache-name: cache-conda
+    #     conda_build_nr: 1
+    #   with:
+    #     path: ${{ env.conda_package_prefix }}
+    #     key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conda_packages }}-${{ env.conda_build_nr }}
 
     - uses: conda-incubator/setup-miniconda@v3
       with:
@@ -85,10 +85,10 @@ jobs:
         conda-solver: "libmamba"
         conda-remove-defaults: true
         python-version: ${{ matrix.python_version }}
-        use-only-tar-bz2: true  # Required for caching to work properly
+        # use-only-tar-bz2: true  # Required for caching to work properly
 
     - name: install conda packages
-      if: ${{steps.cache-conda.outputs.cache-hit != 'true'}}
+      # if: ${{steps.cache-conda.outputs.cache-hit != 'true'}}
       run: |
         conda config --show channels
         conda install ${{ env.conda_packages }}
