@@ -81,7 +81,11 @@ if(WIN32)
     add_custom_command(
         TARGET lue_py
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:lue_py> $<TARGET_FILE_DIR:lue_py>
+        COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:lue_py>
+                $<TARGET_FILE_DIR:HPX::component_storage_component>/libhwloc-15.dll
+                $<TARGET_FILE_DIR:lue_py>
         COMMAND_EXPAND_LISTS
     )
 endif()
@@ -92,7 +96,7 @@ add_test(
     NAME
         build_lue_py
     COMMAND
-        "${CMAKE_COMMAND}" --build "${CMAKE_BINARY_DIR}" --config "$<CONFIG>" --target lue_py
+        ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}" --config "$<CONFIG>" --target lue_py
 )
 
 # Mark test to be a setup task of fixture lue_py_test_fixture

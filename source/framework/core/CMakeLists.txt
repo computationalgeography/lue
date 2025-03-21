@@ -98,7 +98,6 @@ target_sources(lue_framework_core
 target_link_libraries(lue_framework_core
     PUBLIC
         lue::shared
-        # lue::compile_features
         HPX::hpx
         std::mdspan
 )

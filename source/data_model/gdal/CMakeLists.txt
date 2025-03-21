@@ -51,7 +51,6 @@ target_link_libraries(lue_gdal
     PUBLIC
         GDAL::GDAL
         lue::shared
-        lue::compile_features
 )
 
 lue_install_runtime_libraries(

@@ -65,7 +65,7 @@ set_target_properties(lue_framework_algorithm
 )
 
 generate_export_header(lue_framework_algorithm
-    EXPORT_FILE_NAME include/lue/framework_algorithm/export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/export.hpp
     EXPORT_MACRO_NAME LUE_FA_EXPORT
 )
 
@@ -77,7 +77,7 @@ target_sources(lue_framework_algorithm
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_algorithm/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/export.hpp
     PRIVATE
         source/component/array_partition_io.cpp
 )
@@ -729,7 +729,7 @@ set_target_properties(lue_framework_local_operation
 )
 
 generate_export_header(lue_framework_local_operation
-    EXPORT_FILE_NAME include/lue/framework/local_operation_export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/local_operation_export.hpp
     EXPORT_MACRO_NAME LUE_LOCAL_OPERATION_EXPORT
 )
 
@@ -741,7 +741,7 @@ target_sources(lue_framework_local_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/local_operation_export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/local_operation_export.hpp
     PRIVATE
         ${generated_source_files}
 )
@@ -952,7 +952,7 @@ set_target_properties(lue_framework_focal_operation
 )
 
 generate_export_header(lue_framework_focal_operation
-    EXPORT_FILE_NAME include/lue/framework/focal_operation_export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/focal_operation_export.hpp
     EXPORT_MACRO_NAME LUE_FOCAL_OPERATION_EXPORT
 )
 
@@ -964,7 +964,7 @@ target_sources(lue_framework_focal_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/focal_operation_export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/focal_operation_export.hpp
     PRIVATE
         ${generated_source_files}
 )
@@ -1268,7 +1268,7 @@ set_target_properties(lue_framework_zonal_operation
 )
 
 generate_export_header(lue_framework_zonal_operation
-    EXPORT_FILE_NAME include/lue/framework/zonal_operation_export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/zonal_operation_export.hpp
     EXPORT_MACRO_NAME LUE_ZONAL_OPERATION_EXPORT
 )
 
@@ -1280,7 +1280,7 @@ target_sources(lue_framework_zonal_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/zonal_operation_export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/zonal_operation_export.hpp
     PRIVATE
         ${generated_source_files}
 )
@@ -1429,7 +1429,7 @@ set_target_properties(lue_framework_global_operation
 )
 
 generate_export_header(lue_framework_global_operation
-    EXPORT_FILE_NAME include/lue/framework/global_operation_export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/global_operation_export.hpp
     EXPORT_MACRO_NAME LUE_GLOBAL_OPERATION_EXPORT
 )
 
@@ -1441,7 +1441,7 @@ target_sources(lue_framework_global_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/global_operation_export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/global_operation_export.hpp
     PRIVATE
         ${generated_source_files}
 )
@@ -1797,7 +1797,7 @@ set_target_properties(lue_framework_routing_operation
 )
 
 generate_export_header(lue_framework_routing_operation
-    EXPORT_FILE_NAME include/lue/framework/routing_operation_export.hpp
+    EXPORT_FILE_NAME include/lue/framework/algorithm/routing_operation_export.hpp
     EXPORT_MACRO_NAME LUE_ROUTING_OPERATION_EXPORT
 )
 
@@ -1809,7 +1809,7 @@ target_sources(lue_framework_routing_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/routing_operation_export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/routing_operation_export.hpp
     PRIVATE
         ${generated_source_files}
         source/routing_operation/channel.cpp

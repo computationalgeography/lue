@@ -107,7 +107,6 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         lue::data_model_hl
         lue::shared
-        lue::compile_features
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size

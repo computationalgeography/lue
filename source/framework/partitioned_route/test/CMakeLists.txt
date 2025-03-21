@@ -13,6 +13,17 @@ add_unit_tests(
         test_names
 )
 
+set_property(
+    TEST
+        ${test_names}
+    APPEND
+    PROPERTY
+        ENVIRONMENT_MODIFICATION
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::gdal>>
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+)
+
 set(names
     serial_route
     serial_route_partition

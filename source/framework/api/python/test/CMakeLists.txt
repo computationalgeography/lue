@@ -33,6 +33,7 @@ set_property(
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
             PYTHONPATH=path_list_prepend:$<TARGET_PROPERTY:lue::py_framework,SOURCE_DIR>/test
             PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}
+            # No need to append the PATH here with locations to our DDLs. Python won't pick the up.
 )
 
 set_property(
