@@ -181,7 +181,7 @@ jobs:
         build_directory: ${{ env.hpx_build_directory }}
         install_directory: ${{ env.hpx_install_directory }}
 
-      name: "install mdspan"
+    - name: "install mdspan"
       uses: ./lue_source/.github/actions/install_mdspan
       with:
         cxx_compiler: ${{ matrix.compiler.cxx }}
