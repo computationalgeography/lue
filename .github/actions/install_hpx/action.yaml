@@ -60,7 +60,7 @@ runs:
 
     - name: patch hpx install
       shell: bash -l {0}
-      if: runner.os == 'Windows'
+      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }} && runner.os == 'Windows'
       run: |
         # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
         # though, so we do it here ourselves. Sigh...
@@ -68,5 +68,6 @@ runs:
 
     - name: post hpx install
       shell: bash -l {0}
+      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
       run: |
         rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
