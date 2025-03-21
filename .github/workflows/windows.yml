@@ -173,6 +173,9 @@ jobs:
         #     Invalid character escape '\U'.
         # HPX install logic needs to be updated, similar to how Boost_ROOT is handled
         # cmake_flags: "-D Boost_ROOT=$CONDA_PREFIX/Library -D Hwloc_ROOT=C:/Users/runneradmin/miniconda3/envs/test/Library -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib"
+        # Linking against Conan's mimalloc doesn't work. Sigh...
+        # "Cannot open input file "mimalloc.lib"
+        cmake_flags: "-D HPX_WITH_MALLOC=system"
         hpx_branch: ${{ env.hpx_branch }}
         source_directory: ${{ env.hpx_source_directory }}
         build_directory: ${{ env.hpx_build_directory }}
