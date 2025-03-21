@@ -64,6 +64,7 @@ jobs:
         path: ${{ env.lue_source_directory }}
 
     - uses: ilammy/msvc-dev-cmd@v1
+      if: runner.os == 'Windows'
       with:
         arch: ${{ matrix.architecture }}
         toolset: ${{ matrix.vs.msvc_toolset }}
