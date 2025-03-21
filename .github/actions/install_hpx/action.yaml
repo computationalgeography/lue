@@ -61,7 +61,7 @@ runs:
         rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}
     - name: patch hpx install
       shell: bash -l {0}
-      if: ${{ VisualStudioVersion != '' }}
+      if: runner.os == 'Windows'
       run: |
         # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
         # though, so we do it here ourselves. Sigh...
