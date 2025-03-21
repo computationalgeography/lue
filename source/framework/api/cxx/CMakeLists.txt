@@ -55,8 +55,8 @@ set_target_properties(lue_framework_api_cxx
 )
 
 generate_export_header(lue_framework_api_cxx
-    EXPORT_FILE_NAME include/lue/framework_api/cxx/export.hpp
-    EXPORT_MACRO_NAME LUE_FAPI_MODEL_EXPORT
+    EXPORT_FILE_NAME include/lue/framework/api/cxx/export.hpp
+    EXPORT_MACRO_NAME LUE_FAPI_EXPORT
 )
 
 target_sources(lue_framework_api_cxx

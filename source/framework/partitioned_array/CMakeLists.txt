@@ -65,7 +65,7 @@ set_target_properties(lue_framework_partitioned_array
 )
 
 generate_export_header(lue_framework_partitioned_array
-    EXPORT_FILE_NAME include/lue/framework_partitioned_array/export.hpp
+    EXPORT_FILE_NAME include/lue/framework/partitioned_array/export.hpp
     EXPORT_MACRO_NAME LUE_FPA_EXPORT
 )
 
@@ -77,7 +77,7 @@ target_sources(lue_framework_partitioned_array
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_partitioned_array/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
     PRIVATE
         source/server/array_partition.cpp

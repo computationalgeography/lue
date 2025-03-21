@@ -9,8 +9,8 @@ set_target_properties(lue_framework_api_c
 )
 
 generate_export_header(lue_framework_api_c
-    EXPORT_FILE_NAME include/lue/framework_api/c/export.hpp
-    EXPORT_MACRO_NAME LUE_FCAPI_MODEL_EXPORT
+    EXPORT_FILE_NAME include/lue/framework/api/c/export.h
+    EXPORT_MACRO_NAME LUE_FCAPI_EXPORT
 )
 
 target_sources(lue_framework_api_c
@@ -21,7 +21,7 @@ target_sources(lue_framework_api_c
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_api/c/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/api/c/export.h
     PRIVATE
         source/field.cpp
         source/future.cpp

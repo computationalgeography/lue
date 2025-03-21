@@ -2,8 +2,8 @@ add_library(lue_data_model_hl SHARED)
 add_library(lue::data_model_hl ALIAS lue_data_model_hl)
 
 generate_export_header(lue_data_model_hl
-    EXPORT_FILE_NAME include/lue/data_model_hl/export.hpp
-    EXPORT_MACRO_NAME LUE_HDF5_EXPORT
+    EXPORT_FILE_NAME include/lue/data_model/hl/export.hpp
+    EXPORT_MACRO_NAME LUE_DATA_MODEL_HL_EXPORT
 )
 
 target_sources(lue_data_model_hl
@@ -14,7 +14,7 @@ target_sources(lue_data_model_hl
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/data_model_hl/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/data_model/hl/export.hpp
     PRIVATE
         source/dataset_view.cpp
         source/raster_view.cpp

@@ -66,7 +66,7 @@ set_target_properties(lue_framework_partitioned_route
 )
 
 generate_export_header(lue_framework_partitioned_route
-    EXPORT_FILE_NAME include/lue/framework_partitioned_route/export.hpp
+    EXPORT_FILE_NAME include/lue/framework/partitioned_route/export.hpp
     EXPORT_MACRO_NAME LUE_PARTITIONED_ROUTE_EXPORT
 )
 
@@ -78,7 +78,7 @@ target_sources(lue_framework_partitioned_route
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework_partitioned_route/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
     PRIVATE
         source/server/serial_route_partition.cpp
