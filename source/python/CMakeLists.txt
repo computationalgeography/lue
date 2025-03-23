@@ -84,7 +84,7 @@ if(WIN32)
         COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                 $<TARGET_RUNTIME_DLLS:lue_py>
-                $<TARGET_FILE_DIR:HPX::component_storage_component>/libhwloc-15.dll
+                $<$<NOT:$<BOOL:CONDA_BUILD>>:$<TARGET_FILE_DIR:HPX::component_storage_component>/libhwloc-15.dll>
                 $<TARGET_FILE_DIR:lue_py>
         COMMAND_EXPAND_LISTS
     )
