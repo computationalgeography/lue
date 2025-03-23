@@ -98,7 +98,7 @@ jobs:
       uses: actions/cache@v4
       env:
         cache-name: cache-conan
-        conan_build_nr: 1
+        conan_build_nr: 2
       with:
         path: ${{ env.conan_package_prefix }}
         key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
