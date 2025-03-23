@@ -58,8 +58,10 @@ jobs:
               # install this specific version of Python. If the GDAL Python version is bumped,
               # brew will run into problems, which we can then fix by bumping our version Python.
               brew install \
+                  asio \
                   boost \
                   conan \
+                  cxxopts \
                   gdal \
                   glfw \
                   graphviz \
