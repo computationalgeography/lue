@@ -88,8 +88,10 @@ jobs:
 
         - name: "install hpx"
           uses: ./lue_source/.github/actions/install_hpx
+          env:
+            hpx_build_nr: 1
           with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}
+            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
             c_compiler: ${{ matrix.compiler.c }}
             cxx_compiler: ${{ matrix.compiler.cxx }}
             build_type: Release
