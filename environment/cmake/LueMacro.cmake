@@ -72,8 +72,6 @@ function(add_unit_tests)
             PRIVATE
                 ${ARG_LIBRARIES}
                 Boost::headers
-                # INTERFACE
-                #     lue::compile_features
         )
 
         add_test(NAME ${test_name}
@@ -524,7 +522,5 @@ function(lue_configure_static_library_for_tests)
     target_link_libraries(${target_name_static_lib}
         PUBLIC
             ${link_libraries}
-            # INTERFACE
-            #     lue::compile_features
     )
 endfunction()

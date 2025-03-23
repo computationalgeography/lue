@@ -4,6 +4,25 @@
 #include <boost/test/included/unit_test.hpp>
 
 
+BOOST_AUTO_TEST_CASE(use_moved_file)
+{
+    std::string name{"use_moved_file.h5"};
+
+    lue::hdf5::File::AccessPropertyList access_property_list = lue::hdf5::File::AccessPropertyList{};
+    access_property_list.set_library_version_bounds(H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
+
+    auto file1 = lue::hdf5::create_file(name, std::move(access_property_list));
+
+    file1.attributes().write<std::string>("attr1", "attr1");
+    file1.attributes().write<std::string>("attr2", "attr2");
+
+    auto file2 = std::move(file1);
+
+    file2.attributes().write<std::string>("attr3", "attr3");
+    file2.attributes().write<std::string>("attr4", "attr4");
+}
+
+
 BOOST_AUTO_TEST_CASE(create_new_dataset)
 {
     std::string const dataset_name = "create_new_dataset.lue";
