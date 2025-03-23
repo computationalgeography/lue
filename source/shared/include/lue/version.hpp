@@ -5,14 +5,14 @@
 
 namespace lue {
 
-    std::string version();
+    auto version() -> std::string;
 
-    std::uint32_t major_version();
+    auto major_version() -> std::uint32_t;
 
-    std::uint32_t minor_version();
+    auto minor_version() -> std::uint32_t;
 
-    std::uint32_t patch_version();
+    auto patch_version() -> std::uint32_t;
 
-    std::uint32_t tweak_version();
+    auto tweak_version() -> std::uint32_t;
 
 }  // namespace lue

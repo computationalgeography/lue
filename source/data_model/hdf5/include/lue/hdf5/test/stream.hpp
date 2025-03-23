@@ -1,5 +1,7 @@
 #pragma once
-#include "lue/hdf5.hpp"
+// #include "lue/hdf5.hpp"
+#include "lue/hdf5/datatype.hpp"
+#include "lue/hdf5/hyperslab.hpp"
 #include "lue/string.hpp"
 #include <ostream>
 
@@ -46,6 +48,10 @@ namespace lue::hdf5 {
         else if (datatype.is_standard())
         {
             stream << standard_datatype_as_string(datatype);
+        }
+        else if (datatype.is_string())
+        {
+            stream << "string";
         }
         else
         {
