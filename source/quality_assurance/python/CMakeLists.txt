@@ -55,6 +55,8 @@ install(
     COMPONENT lue_runtime
 )
 
+add_subdirectory(qa)
+
 if(LUE_BUILD_TESTS)
     add_subdirectory(test)
 endif()
