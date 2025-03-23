@@ -2,8 +2,6 @@ name: Conda packages
 
 on:
   pull_request:
-    branches-ignore:
-      - "*"
   push:
     branches:
       - "master"

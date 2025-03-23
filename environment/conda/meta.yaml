@@ -35,6 +35,7 @@ requirements:
     - docopt  # templatize.py
     - jinja2  # templatize.py
     - nlohmann_json
+    - cxxopts
 
   run:
     - docopt  # lue.qa

@@ -2,8 +2,6 @@ name: Linux CI
 
 on:
   pull_request:
-    branches-ignore:
-      - "*"
   push:
     branches:
       - "master"
