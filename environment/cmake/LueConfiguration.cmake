@@ -800,7 +800,7 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 if(LUE_HDF5_REQUIRED)
-    find_package(HDF5 REQUIRED COMPONENTS C shared)
+    find_package(HDF5 REQUIRED COMPONENTS C)
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")

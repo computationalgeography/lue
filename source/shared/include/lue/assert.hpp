@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/configure.hpp"
+#include <cstring>
 #include <format>
 #include <stdexcept>
 
