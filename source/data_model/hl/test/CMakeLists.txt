@@ -12,3 +12,13 @@ add_unit_tests(
     TARGETS
         test_names
 )
+
+set_property(
+    TEST
+        ${test_names}
+    APPEND
+    PROPERTY
+        ENVIRONMENT_MODIFICATION
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::data_model>>
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::hdf5>>
+)

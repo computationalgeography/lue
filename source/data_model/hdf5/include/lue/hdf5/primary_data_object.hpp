@@ -3,68 +3,64 @@
 #include <cassert>
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        /*!
-            @brief      This class is a base class for the HDF5 primary data objects
-                        (Dataset, Group, named datatype)
-        */
-        class LUE_HDF5_EXPORT PrimaryDataObject
-        {
+    /*!
+        @brief      This class is a base class for the HDF5 primary data objects
+                    (Dataset, Group, named datatype)
+    */
+    class LUE_HDF5_EXPORT PrimaryDataObject
+    {
 
-            public:
+        public:
 
-                PrimaryDataObject(Identifier const& location, std::string const& name);
+            PrimaryDataObject(Identifier const& location, std::string const& name);
 
-                PrimaryDataObject(PrimaryDataObject const&) = default;
+            PrimaryDataObject(PrimaryDataObject const&) = default;
 
-                PrimaryDataObject(PrimaryDataObject&&) = default;
+            PrimaryDataObject(PrimaryDataObject&&) = default;
 
-                virtual ~PrimaryDataObject() = default;
+            virtual ~PrimaryDataObject() = default;
 
-                PrimaryDataObject& operator=(PrimaryDataObject const&) = default;
+            auto operator=(PrimaryDataObject const&) -> PrimaryDataObject& = default;
 
-                PrimaryDataObject& operator=(PrimaryDataObject&&) = default;
+            auto operator=(PrimaryDataObject&&) -> PrimaryDataObject& = default;
 
-                bool operator==(PrimaryDataObject const& other) const;
+            auto operator==(PrimaryDataObject const& other) const -> bool;
 
-                bool operator!=(PrimaryDataObject const& other) const;
+            auto operator!=(PrimaryDataObject const& other) const -> bool;
 
-                Identifier const& id() const;
+            [[nodiscard]] auto id() const -> Identifier const&;
 
-                Identifier& id();
+            auto id() -> Identifier&;
 
-                Attributes const& attributes() const;
+            [[nodiscard]] auto attributes() const -> Attributes const&;
 
-                Attributes& attributes();
-
-                template<typename T>
-                T attribute(std::string const& name) const;
-
-                bool contains_attribute(std::string const& name) const;
-
-            protected:
-
-                explicit PrimaryDataObject(Identifier&& id);
-
-            private:
-
-                //! Identifier
-                Identifier _id;
-
-                //! Attributes
-                Attributes _attributes;
-        };
+            auto attributes() -> Attributes&;
 
 
-        template<typename T>
-        inline T PrimaryDataObject::attribute(std::string const& name) const
-        {
-            assert(contains_attribute(name));
+            template<typename T>
+            [[nodiscard]] auto attribute(std::string const& name) const -> T
+            {
+                assert(contains_attribute(name));
 
-            return _attributes.read<T>(name);
-        }
+                return _attributes.read<T>(name);
+            }
 
-    }  // namespace hdf5
-}  // namespace lue
+
+            [[nodiscard]] auto contains_attribute(std::string const& name) const -> bool;
+
+        protected:
+
+            explicit PrimaryDataObject(Identifier&& id);
+
+        private:
+
+            //! Identifier
+            Identifier _id;
+
+            //! Attributes
+            Attributes _attributes;
+    };
+
+}  // namespace lue::hdf5

@@ -44,4 +44,6 @@ foreach(name ${names})
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::hdf5>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
     )
+
+    append_3rd_party_runtime_lib_dirs(${test_name})
 endforeach()

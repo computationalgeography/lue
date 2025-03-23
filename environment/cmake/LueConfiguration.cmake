@@ -800,12 +800,7 @@ if(LUE_GRAPHVIZ_REQUIRED)
 endif()
 
 if(LUE_HDF5_REQUIRED)
-    # Explicitly use Module Mode, to prevent the use of HDF5's own CMake find logic. This latter
-    # logic does not provide us with the hdf5::hdf5 target, which CMake's module defines.
-    # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
-    # toolchain).
-    find_package(HDF5 MODULE REQUIRED COMPONENTS C)
-    set(CMAKE_REQUIRED_INCLUDES "${HDF5_C_INCLUDE_DIRS}")
+    find_package(HDF5 REQUIRED COMPONENTS C shared)
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")

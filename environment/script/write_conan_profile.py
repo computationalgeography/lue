@@ -335,10 +335,10 @@ def write_conan_profile(compiler_filename, profile_pathname):
     profile_options = {}
 
     if conan_os() == "Windows":
-        pass
         # profile_options["gdal/*"] = "gdal_optional_drivers=False,ogr_optional_drivers=False"
         # profile_options["gdal/*"] = "with_arrow=False"
         # profile_options["gdal/*"] = "with_parquet=False"
+        profile_options["hdf5/*"] = "shared=True"
 
     profile_buildenv = {}
 
@@ -352,7 +352,7 @@ def write_conan_profile(compiler_filename, profile_pathname):
             "\n".join([f"{key}={profile_settings[key]}" for key in profile_settings])
         )
         profile_string += "[options]\n{}\n\n".format(
-            "\n".join([f"{key}: {profile_options[key]}" for key in profile_options])
+            "\n".join([f"{key}:{profile_options[key]}" for key in profile_options])
         )
         profile_string += "[buildenv]\n{}\n\n".format(
             "\n".join([f"{key}={profile_buildenv[key]}" for key in profile_buildenv])
