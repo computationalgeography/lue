@@ -1,5 +1,6 @@
 #include "lue/glfw/library.hpp"
 #include <GLFW/glfw3.h>
+#include <cstdint>
 #include <format>
 #include <stdexcept>
 
