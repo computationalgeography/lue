@@ -2,6 +2,8 @@ name: Conda packages
 
 on:
   pull_request:
+    branches-ignore:
+      # - "*"
   push:
     branches:
       - "master"
@@ -9,7 +11,7 @@ on:
 
 jobs:
     build:
-        name: ${{ matrix.os }} / ${{ matrix.target-platform }}
+        name: conda / ${{ matrix.os }} / ${{ matrix.target-platform }}
         runs-on: ${{ matrix.os }}
         timeout-minutes: 300
         defaults:
@@ -19,7 +21,7 @@ jobs:
             fail-fast: false
             matrix:
                 include:
-                  - os: "macos-14"
+                  - os: "macos-15"
                     target-platform: arm-64
                     conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
                     conda-bld-arg: ""

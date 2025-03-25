@@ -32,7 +32,7 @@ set_property(
         ENVIRONMENT_MODIFICATION
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
             PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}  # lue_unit_test.py
-            # No need to append the PATH here with locations to our DDLs. Python won't pick the up.
+            # No need to append the PATH here with locations to our DDLs. Python won't pick them up.
 )
 
 set_property(

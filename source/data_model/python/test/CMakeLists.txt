@@ -15,7 +15,7 @@ set_property(
         # Add the path to our Python modules to PYTHONPATH.
         ENVIRONMENT_MODIFICATION
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
-            # No need to append the PATH here with locations to our DDLs. Python won't pick the up.
+            # No need to append the PATH here with locations to our DDLs. Python won't pick them up.
 )
 
 set_property(

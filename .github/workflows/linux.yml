@@ -2,220 +2,228 @@ name: Linux CI
 
 on:
   pull_request:
+    branches-ignore:
+      - "*"
   push:
     branches:
       - "master"
   workflow_dispatch:
 
 jobs:
-    build:
+  build:
 
-        strategy:
-            matrix:
-                os: ["ubuntu-24.04"]
-                python_version: ["3.10", "3.13"]
-                compiler:
-                    # To be recognized by Conan, name must be one of:
-                    #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
-                    #     'msvc', 'qcc', 'sun-cc'
-                    - { name: gcc  , version: 13, c: gcc-13  , cxx: g++-13    , package: g++-13   }
-                    - { name: clang, version: 18, c: clang-18, cxx: clang++-18, package: clang-18 }
-            fail-fast: false
+    strategy:
+      matrix:
+        os: ["ubuntu-24.04"]
+        python_version: ["3.10", "3.13"]
+        compiler:
+          # To be recognized by Conan, name must be one of:
+          #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
+          #     'msvc', 'qcc', 'sun-cc'
+          - { name: gcc  , version: 13, c: gcc-13  , cxx: g++-13    , package: g++-13   }
+          - { name: clang, version: 18, c: clang-18, cxx: clang++-18, package: clang-18 }
+      fail-fast: false
 
-        runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-        name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python_version }}
+    name: ${{ matrix.os }} / ${{ matrix.compiler.cxx }} / python - ${{ matrix.python_version }}
 
-        timeout-minutes: 300
+    timeout-minutes: 300
 
-        defaults:
-          run:
-            shell: bash -l {0}
-            working-directory: .  # This is something like /home/runner/work/lue/lue
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: .  # This is something like /home/runner/work/lue/lue
 
-        env:
-          # Directories are relative to the default working directory
-          lue_source_directory: lue_source
-          lue_build_directory: lue_build
-          lue_runtime_install_directory: lue_runtime_install
-          lue_development_install_directory: lue_development_install
-          lue_consume_source_directory: lue_consume_source
-          lue_consume_build_directory: lue_consume_build
-          hpx_version: 1.10.0
-          hpx_branch: v1.10.0
-          hpx_source_directory: hpx_source
-          hpx_build_directory: hpx_build
-          hpx_install_directory: hpx_install
-          mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
-          mdspan_source_directory: mdspan_source
-          mdspan_build_directory: mdspan_build
-          mdspan_install_directory: mdspan_install
+    env:
+      # Directories are relative to the default working directory
+      lue_source_directory: lue_source
+      lue_build_directory: lue_build
+      lue_runtime_install_directory: lue_runtime_install
+      lue_development_install_directory: lue_development_install
+      lue_consume_source_directory: lue_consume_source
+      lue_consume_build_directory: lue_consume_build
+      hpx_version: 1.10.0
+      hpx_branch: v1.10.0
+      hpx_source_directory: hpx_source
+      hpx_build_directory: hpx_build
+      hpx_install_directory: hpx_install
+      mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
+      mdspan_source_directory: mdspan_source
+      mdspan_build_directory: mdspan_build
+      mdspan_install_directory: mdspan_install
 
-        steps:
+    steps:
 
-        - uses: actions/checkout@v4
-          with:
-            path: ${{ env.lue_source_directory }}
+    - uses: actions/checkout@v4
+      with:
+        path: ${{ env.lue_source_directory }}
 
-        - uses: actions/setup-python@v5
-          with:
-            python-version: ${{ matrix.python_version }}
-            cache: "pip"
-            cache-dependency-path: "**/requirements-dev.txt"
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python_version }}
+        cache: "pip"
+        cache-dependency-path: "**/requirements-dev.txt"
 
-        - name: setup platform
-          run: |
-              sudo apt-get update
-              sudo apt-get remove libunwind-14-dev
-              sudo apt-get install \
-                  cmake \
-                  doxygen \
-                  graphviz \
-                  libhwloc-dev \
-                  lftp \
-                  libasio-dev \
-                  libboost-dev \
-                  libglfw3-dev \
-                  libgdal-dev \
-                  libgoogle-perftools-dev \
-                  libhdf5-dev \
-                  libvulkan-dev \
-                  ${{ matrix.compiler.package }} \
-                  ninja-build \
-                  nlohmann-json3-dev \
-                  pybind11-dev
-              pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
+    - name: setup platform
+      run: |
+        sudo apt-get update
+        sudo apt-get remove libunwind-14-dev
+        sudo apt-get install \
+            cmake \
+            doxygen \
+            graphviz \
+            libhwloc-dev \
+            lftp \
+            libasio-dev \
+            libboost-dev \
+            libglfw3-dev \
+            libgdal-dev \
+            libgoogle-perftools-dev \
+            libhdf5-dev \
+            libvulkan-dev \
+            ${{ matrix.compiler.package }} \
+            ninja-build \
+            nlohmann-json3-dev \
+            pybind11-dev
+        pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
 
-        - name: "install hpx"
-          uses: ./lue_source/.github/actions/install_hpx
-          env:
-            hpx_build_nr: 1
-          with:
-            cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
-            c_compiler: ${{ matrix.compiler.c }}
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: Release
-            cmake_preset: hpx_release_linux_node_configuration
-            cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            hpx_branch: ${{ env.hpx_branch }}
-            source_directory: ${{ env.hpx_source_directory }}
-            build_directory: ${{ env.hpx_build_directory }}
-            install_directory: ${{ env.hpx_install_directory }}
+    - name: "install hpx"
+      uses: ./lue_source/.github/actions/install_hpx
+      env:
+        hpx_build_nr: 1
+      with:
+        cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
+        c_compiler: ${{ matrix.compiler.c }}
+        cxx_compiler: ${{ matrix.compiler.cxx }}
+        build_type: Release
+        cmake_preset: hpx_release_linux_node_configuration
+        cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
+        hpx_branch: ${{ env.hpx_branch }}
+        source_directory: ${{ env.hpx_source_directory }}
+        build_directory: ${{ env.hpx_build_directory }}
+        install_directory: ${{ env.hpx_install_directory }}
 
-        - name: "install mdspan"
-          uses: ./lue_source/.github/actions/install_mdspan
-          with:
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: Release
-            mdspan_tag: ${{ env.mdspan_tag }}
-            source_directory: ${{ env.mdspan_source_directory }}
-            build_directory: ${{ env.mdspan_build_directory }}
-            install_directory: ${{ env.mdspan_install_directory }}
+    - name: "install mdspan"
+      uses: ./lue_source/.github/actions/install_mdspan
+      with:
+        cxx_compiler: ${{ matrix.compiler.cxx }}
+        build_type: Release
+        mdspan_tag: ${{ env.mdspan_tag }}
+        source_directory: ${{ env.mdspan_source_directory }}
+        build_directory: ${{ env.mdspan_build_directory }}
+        install_directory: ${{ env.mdspan_install_directory }}
 
-        - name: configure
-          run: |
-              mkdir ${{ env.lue_build_directory }}
+    - name: configure
+      run: |
+        mkdir ${{ env.lue_build_directory }}
 
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/host_profile
-              python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/build_profile
+        python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/host_profile
+        python3 ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/build_profile
 
-              CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
-                  conan install ${{ env.lue_source_directory }} \
-                      --profile:host=${{ env.lue_source_directory }}/host_profile \
-                      --profile:build=${{ env.lue_source_directory }}/build_profile \
-                      --build=missing \
-                      --output-folder=${{ env.lue_build_directory }}
+        CXX=${{ matrix.compiler.cxx }} LUE_CONAN_PACKAGES="imgui" \
+            conan install ${{ env.lue_source_directory }} \
+                --profile:host=${{ env.lue_source_directory }}/host_profile \
+                --profile:build=${{ env.lue_source_directory }}/build_profile \
+                --build=missing \
+                --output-folder=${{ env.lue_build_directory }}
 
-              CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-                  cmake \
-                      -S ${{ env.lue_source_directory }} \
-                      -B ${{ env.lue_build_directory }} \
-                      --preset conan-release \
-                      -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                      -D LUE_BUILD_DOCUMENTATION=TRUE \
-                      -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                      -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
-                      -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                      -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                      -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
-                      -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                      -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+        CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+            cmake \
+                -S ${{ env.lue_source_directory }} \
+                -B ${{ env.lue_build_directory }} \
+                --preset conan-release \
+                -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+                -D LUE_BUILD_DOCUMENTATION=TRUE \
+                -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+                -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+                -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+                -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+                -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
+                -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+                -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+                -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
+                -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+                -D HPX_ROOT=${{ env.hpx_install_directory }} \
+                -D mdspan_ROOT=${{ env.mdspan_install_directory }}
 
-        - name: build
-          run: |
-              cmake --build ${{ env.lue_build_directory }} --target all
+    - name: build
+      run: |
+        cmake --build ${{ env.lue_build_directory }} --target all
 
-        - name: install
-          run: |
-              cmake \
-                  --install ${{ env.lue_build_directory }} \
-                  --prefix ${{ env.lue_runtime_install_directory }} \
-                  --component lue_runtime \
-                  --strip
-              cmake \
-                  --install ${{ env.lue_build_directory }} \
-                  --prefix ${{ env.lue_development_install_directory }} \
-                  --component lue_development \
-                  --strip
+    - name: install
+      run: |
+        cmake \
+            --install ${{ env.lue_build_directory }} \
+            --prefix ${{ env.lue_runtime_install_directory }} \
+            --component lue_runtime \
+            --strip
+        cmake \
+            --install ${{ env.lue_build_directory }} \
+            --prefix ${{ env.lue_development_install_directory }} \
+            --component lue_development \
+            --strip
 
-        - name: test
-          run: |
-              # Unit tests
-              ctest \
-                  --test-dir ${{ env.lue_build_directory }} \
-                  --output-on-failure \
-                  --exclude-regex "(algorithm_decreasing_order_test|algorithm_image_land_integrate_test|algorithm_image_land_integrate_and_allocate_test|lue_py_image_land_python_test)"
+    - name: test
+      run: |
+        # Unit tests
+        ctest \
+            --test-dir ${{ env.lue_build_directory }} \
+            --output-on-failure \
+            --exclude-regex "\
+        algorithm_clump_test|\
+        algorithm_decreasing_order_test|\
+        algorithm_image_land_integrate_and_allocate_test|\
+        algorithm_image_land_integrate_test|\
+        framework_io_lue_test|\
+        py_image_land_python_test"
 
-              # Test of runtime targets
-              ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
+        # Test of runtime targets
+        ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+        ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+        ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
-              export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
-              export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$LD_LIBRARY_PATH"
+        export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
+        export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$LD_LIBRARY_PATH"
 
-              ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
-              python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+        ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
+        ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
+        python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-        - name: consume
-          run: |
-              # Test of imported CMake targets
-              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+    - name: consume
+      run: |
+        # Test of imported CMake targets
+        git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
 
-              cmake \
-                  -S ${{ env.lue_consume_source_directory }} \
-                  -B ${{ env.lue_consume_build_directory }} \
-                  -G "Ninja" \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D CMAKE_BUILD_TYPE=Release \
-                  -D lue_ROOT=${{ env.lue_development_install_directory }} \
-                  -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                  -D mdspan_ROOT=${{ env.mdspan_install_directory }}
-              cmake --build ${{ env.lue_consume_build_directory }} --target all
+        cmake \
+            -S ${{ env.lue_consume_source_directory }} \
+            -B ${{ env.lue_consume_build_directory }} \
+            -G "Ninja" \
+            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D lue_ROOT=${{ env.lue_development_install_directory }} \
+            -D HPX_ROOT=${{ env.hpx_install_directory }} \
+            -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+        cmake --build ${{ env.lue_consume_build_directory }} --target all
 
-              ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
+        ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+        ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+        ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
-        - name: documentation
-          if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
-          env:
-              ftp_server: ${{ secrets.FTP_SERVER }}
-              ftp_port: ${{ secrets.FTP_PORT }}
-              ftp_username: ${{ secrets.FTP_USERNAME }}
-              ftp_password: ${{ secrets.FTP_PASSWORD }}
-              remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
-              local_dir: "_build/html"
-          run: |
-              cmake --build ${{ env.lue_build_directory }} --target documentation
-              cd ${{ env.lue_build_directory }}/document/doc
-              lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+    - name: documentation
+      if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+      env:
+        ftp_server: ${{ secrets.FTP_SERVER }}
+        ftp_port: ${{ secrets.FTP_PORT }}
+        ftp_username: ${{ secrets.FTP_USERNAME }}
+        ftp_password: ${{ secrets.FTP_PASSWORD }}
+        remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
+        local_dir: "_build/html"
+      run: |
+        cmake --build ${{ env.lue_build_directory }} --target documentation
+        cd ${{ env.lue_build_directory }}/document/doc
+        lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
