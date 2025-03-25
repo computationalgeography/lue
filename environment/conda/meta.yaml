@@ -50,16 +50,16 @@ requirements:
 
 test:
   imports:
-    - lue                                        # [not (osx and arm64)]
-    - lue.data_model                             # [not (osx and arm64)]
-    - lue.framework                              # [not (osx and arm64)]
-    - lue.pcraster                               # [not (osx and arm64)]
-    - lue.qa.scalability                         # [not (osx and arm64)]
+    - lue
+    - lue.data_model
+    - lue.framework
+    - lue.pcraster
+    - lue.qa.scalability
   commands:
-    - lue_translate -h                           # [not (osx and arm64)]
-    - lue_validate -h                            # [not (osx and arm64)]
-    - lue_calculate.py -h                        # [not (osx and arm64)]
-    - lue_scalability.py -h                      # [not (osx and arm64)]
+    - lue_translate -h
+    - lue_validate -h
+    - lue_calculate.py -h
+    - lue_scalability.py -h
 
 
 about:

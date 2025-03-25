@@ -72,7 +72,7 @@ target_sources(lue_hdf5
 
 target_link_libraries(lue_hdf5
     PUBLIC
-        HDF5::HDF5
+        hdf5::hdf5
         lue::shared
     PRIVATE
         Boost::headers

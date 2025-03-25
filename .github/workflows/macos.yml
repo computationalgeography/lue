@@ -2,209 +2,218 @@ name: macOS CI
 
 on:
   pull_request:
+    branches-ignore:
+      # - "*"
   push:
     branches:
       - "master"
   workflow_dispatch:
 
 jobs:
-    build:
+  build:
 
-        strategy:
-            matrix:
-                macos_version: ["13", "14"]
-                compiler:
-                    - { name: clang, c: clang, cxx: clang++ }
-                python_version: ["3.13"]
-            fail-fast: false
+    strategy:
+      matrix:
+        macos_version: ["14", "15"]
+        compiler:
+          - { name: clang, c: clang, cxx: clang++ }
+        python_version: ["3.13"]
+      fail-fast: false
 
-        runs-on: macos-${{ matrix.macos_version }}
+    runs-on: macos-${{ matrix.macos_version }}
 
-        name: macos-${{ matrix.macos_version }} / ${{ matrix.compiler.cxx }}
+    name: macos-${{ matrix.macos_version }} / ${{ matrix.compiler.cxx }}
 
-        timeout-minutes: 300
+    timeout-minutes: 300
 
-        defaults:
-          run:
-            shell: bash -l {0}
-            working-directory: .
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: .
 
-        env:
-          lue_source_directory: lue_source
-          lue_build_directory: lue_build
-          lue_runtime_install_directory: lue_runtime_install
-          lue_development_install_directory: lue_development_install
-          lue_consume_source_directory: lue_consume_source
-          lue_consume_build_directory: lue_consume_build
-          hpx_version: 1.10.0
-          hpx_branch: v1.10.0
-          hpx_source_directory: hpx_source
-          hpx_build_directory: hpx_build
-          hpx_install_directory: hpx_install
-          mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
-          mdspan_source_directory: mdspan_source
-          mdspan_build_directory: mdspan_build
-          mdspan_install_directory: mdspan_install
+    env:
+      lue_source_directory: lue_source
+      lue_build_directory: lue_build
+      lue_runtime_install_directory: lue_runtime_install
+      lue_development_install_directory: lue_development_install
+      lue_consume_source_directory: lue_consume_source
+      lue_consume_build_directory: lue_consume_build
+      hpx_version: 1.10.0
+      hpx_branch: v1.10.0
+      hpx_source_directory: hpx_source
+      hpx_build_directory: hpx_build
+      hpx_install_directory: hpx_install
+      mdspan_tag: 9ceface91483775a6c74d06ebf717bbb2768452f  # 0.6.0
+      mdspan_source_directory: mdspan_source
+      mdspan_build_directory: mdspan_build
+      mdspan_install_directory: mdspan_install
 
-        steps:
+    steps:
 
-        - uses: actions/checkout@v4
-          with:
-            path: ${{ env.lue_source_directory }}
+    - uses: actions/checkout@v4
+      with:
+        path: ${{ env.lue_source_directory }}
 
-        - name: setup platform
-          run: |
-              # GDAL is built against a specific version of Python. Here, we explicitly
-              # install this specific version of Python. If the GDAL Python version is bumped,
-              # brew will run into problems, which we can then fix by bumping our version Python.
-              brew install \
-                  asio \
-                  boost \
-                  conan \
-                  cxxopts \
-                  gdal \
-                  glfw \
-                  graphviz \
-                  gperftools \
-                  hdf5 \
-                  hwloc \
-                  ninja \
-                  nlohmann-json \
-                  numpy \
-                  pybind11 \
-                  python-matplotlib \
-                  tree \
-                  vulkan-loader
-              $(brew --prefix python@${{ matrix.python_version }})/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
-              source env/bin/activate
-              pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
-              conan profile detect
+    - name: setup platform
+      run: |
+        # GDAL is built against a specific version of Python. Here, we explicitly
+        # install this specific version of Python. If the GDAL Python version is bumped,
+        # brew will run into problems, which we can then fix by bumping our version Python.
+        brew install \
+            asio \
+            boost \
+            conan \
+            cxxopts \
+            gdal \
+            glfw \
+            graphviz \
+            gperftools \
+            hdf5 \
+            hwloc \
+            ninja \
+            nlohmann-json \
+            numpy \
+            pybind11 \
+            python-matplotlib \
+            tree \
+            vulkan-loader
+        $(brew --prefix python@${{ matrix.python_version }})/bin/python${{ matrix.python_version }} -m venv --system-site-packages --upgrade-deps env
+        source env/bin/activate
+        pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
+        conan profile detect
 
-        - name: "install hpx"
-          uses: ./lue_source/.github/actions/install_hpx
-          env:
-            hpx_build_nr: 1
-          with:
-            cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
-            c_compiler: ${{ matrix.compiler.c }}
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: Release
-            cmake_flags: "-D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0"
-            cmake_preset: hpx_release_macos_node_configuration
-            cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
-            hpx_branch: ${{ env.hpx_branch }}
-            source_directory: ${{ env.hpx_source_directory }}
-            build_directory: ${{ env.hpx_build_directory }}
-            install_directory: ${{ env.hpx_install_directory }}
+    - name: "install hpx"
+      uses: ./lue_source/.github/actions/install_hpx
+      env:
+        hpx_build_nr: 1
+      with:
+        cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
+        c_compiler: ${{ matrix.compiler.c }}
+        cxx_compiler: ${{ matrix.compiler.cxx }}
+        build_type: Release
+        cmake_flags: "-D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0"
+        cmake_preset: hpx_release_macos_node_configuration
+        cmake_preset_file: ${{ env.lue_source_directory }}/CMakeHPXPresets.json
+        hpx_branch: ${{ env.hpx_branch }}
+        source_directory: ${{ env.hpx_source_directory }}
+        build_directory: ${{ env.hpx_build_directory }}
+        install_directory: ${{ env.hpx_install_directory }}
 
-        - name: "install mdspan"
-          uses: ./lue_source/.github/actions/install_mdspan
-          with:
-            cxx_compiler: ${{ matrix.compiler.cxx }}
-            build_type: Release
-            mdspan_tag: ${{ env.mdspan_tag }}
-            source_directory: ${{ env.mdspan_source_directory }}
-            build_directory: ${{ env.mdspan_build_directory }}
-            install_directory: ${{ env.mdspan_install_directory }}
+    - name: "install mdspan"
+      uses: ./lue_source/.github/actions/install_mdspan
+      with:
+        cxx_compiler: ${{ matrix.compiler.cxx }}
+        build_type: Release
+        mdspan_tag: ${{ env.mdspan_tag }}
+        source_directory: ${{ env.mdspan_source_directory }}
+        build_directory: ${{ env.mdspan_build_directory }}
+        install_directory: ${{ env.mdspan_install_directory }}
 
-        - name: configure
-          run: |
-              source env/bin/activate
-              mkdir ${{ env.lue_build_directory }}
+    - name: configure
+      run: |
+        source env/bin/activate
+        mkdir ${{ env.lue_build_directory }}
 
-              python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/host_profile
-              python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-                  ${{ matrix.compiler.cxx }} \
-                  ${{ env.lue_source_directory }}/build_profile
+        python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/host_profile
+        python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+            ${{ matrix.compiler.cxx }} \
+            ${{ env.lue_source_directory }}/build_profile
 
-              LUE_CONAN_PACKAGES="imgui" \
-                  conan install ${{ env.lue_source_directory }} \
-                    --profile:host=${{ env.lue_source_directory }}/host_profile \
-                    --profile:build=${{ env.lue_source_directory }}/build_profile \
-                    --build=missing \
-                    --output-folder=${{ env.lue_build_directory }}
+        LUE_CONAN_PACKAGES="imgui" \
+            conan install ${{ env.lue_source_directory }} \
+              --profile:host=${{ env.lue_source_directory }}/host_profile \
+              --profile:build=${{ env.lue_source_directory }}/build_profile \
+              --build=missing \
+              --output-folder=${{ env.lue_build_directory }}
 
-              # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
-              CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-              PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
-              LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
-              CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include" \
-                  cmake \
-                      -S ${{ env.lue_source_directory }} \
-                      -B ${{ env.lue_build_directory }} \
-                      --preset conan-release \
-                      -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0 \
-                      -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
-                      -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                      -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
-                      -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                      -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                      -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
-                      -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                      -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                      -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
-                      -D Python_FIND_VIRTUALENV=ONLY
+        # # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
+        # CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
+        # PATH="$(brew --prefix hdf5@1.10)/bin:$PATH" \
+        # LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
+        # CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include"
 
-        - name: build
-          run: |
-              cmake --build ${{ env.lue_build_directory }} --target all
+        cmake \
+            -S ${{ env.lue_source_directory }} \
+            -B ${{ env.lue_build_directory }} \
+            --preset conan-release \
+            -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0 \
+            -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+            -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+            -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+            -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+            -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
+            -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+            -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+            -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
+            -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+            -D HPX_ROOT=${{ env.hpx_install_directory }} \
+            -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
+            -D Python_FIND_VIRTUALENV=ONLY
 
-        - name: install
-          run: |
-              cmake \
-                  --install ${{ env.lue_build_directory }} \
-                  --prefix ${{ env.lue_runtime_install_directory }} \
-                  --component lue_runtime \
-                  --strip
-              cmake \
-                  --install ${{ env.lue_build_directory }} \
-                  --prefix ${{ env.lue_development_install_directory }} \
-                  --component lue_development \
-                  --strip
+    - name: build
+      run: |
+        cmake --build ${{ env.lue_build_directory }} --target all
 
-        - name: test
-          run: |
-              source env/bin/activate
+    - name: install
+      run: |
+        cmake \
+            --install ${{ env.lue_build_directory }} \
+            --prefix ${{ env.lue_runtime_install_directory }} \
+            --component lue_runtime \
+            --strip
+        cmake \
+            --install ${{ env.lue_build_directory }} \
+            --prefix ${{ env.lue_development_install_directory }} \
+            --component lue_development \
+            --strip
 
-              # Unit tests
-              ctest \
-                  --test-dir ${{ env.lue_build_directory }} \
-                  --output-on-failure \
-                  --exclude-regex "(algorithm_decreasing_order_test|algorithm_image_land_integrate_test|algorithm_image_land_integrate_and_allocate_test|lue_py_image_land_python_test)"
+    - name: test
+      run: |
+        source env/bin/activate
 
-              # Test of runtime targets
-              ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-              ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
+        # Unit tests
+        ctest \
+            --test-dir ${{ env.lue_build_directory }} \
+            --output-on-failure \
+            --exclude-regex "\
+        algorithm_clump_test|\
+        algorithm_decreasing_order_test|\
+        algorithm_image_land_integrate_and_allocate_test|\
+        algorithm_image_land_integrate_test|\
+        framework_io_lue_test|\
+        py_image_land_python_test"
 
-              export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
-              export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+        # Test of runtime targets
+        ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+        ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+        ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
-              python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
-              python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
-              python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+        export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
+        export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
 
-        - name: consume
-          run: |
-              # Test of imported CMake targets
-              git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+        python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
+        python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
+        python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
-              cmake \
-                  -S ${{ env.lue_consume_source_directory }} \
-                  -B ${{ env.lue_consume_build_directory }} \
-                  -G "Ninja" \
-                  -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-                  -D CMAKE_BUILD_TYPE=Release \
-                  -D Boost_USE_DEBUG_RUNTIME=OFF \
-                  -D lue_ROOT=${{ env.lue_development_install_directory }} \
-                  -D HPX_ROOT=${{ env.hpx_install_directory }} \
-                  -D mdspan_ROOT=${{ env.mdspan_install_directory }}
-              cmake --build ${{ env.lue_consume_build_directory }} --target all
+    - name: consume
+      run: |
+        # Test of imported CMake targets
+        git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
 
-              ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
-              ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
+        cmake \
+            -S ${{ env.lue_consume_source_directory }} \
+            -B ${{ env.lue_consume_build_directory }} \
+            -G "Ninja" \
+            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D Boost_USE_DEBUG_RUNTIME=OFF \
+            -D lue_ROOT=${{ env.lue_development_install_directory }} \
+            -D HPX_ROOT=${{ env.hpx_install_directory }} \
+            -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+        cmake --build ${{ env.lue_consume_build_directory }} --target all
+
+        ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+        ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+        ${{ env.lue_consume_build_directory }}/lue_consume_framework_io

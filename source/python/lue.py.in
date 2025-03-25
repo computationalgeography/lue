@@ -46,19 +46,6 @@ if sys.platform == "win32":
                 if "hpx" in path:
                     os.add_dll_directory(path)
 
-    else:
-        # LUE is not installed, but used from the build directory. Our own shared libraries and some shared
-        # libraries they depend on (not all unfortunately...) should have been copied already to the current
-        # directory by CMake logic. What remains are some paths to directories containing shared libraries our
-        # shared libraries depend on.
-        for path in os.environ["PATH"].split(";"):
-            if "hpx" in path:
-                os.add_dll_directory(path)
-            elif "release-1930" in path:
-                os.add_dll_directory(path)
-            elif "hwloc" in path:
-                os.add_dll_directory(path)
-
 
 from .lue_py import *
 from .lue_py import __version__
