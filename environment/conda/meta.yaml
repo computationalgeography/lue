@@ -14,28 +14,28 @@ build:
   number: 0
   skip: True                                     # [osx and x86_64]
 
+  ignore_run_exports_from:
+    - libboost-devel
 
 requirements:
   build:
+    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - ninja
-    - python                                     # [build_platform != target_platform]
-    - cross-python_{{ target_platform }}         # [build_platform != target_platform]
-    - numpy                                      # [build_platform != target_platform]
 
   host:
-    - python
-    - numpy
-    - libboost-devel  # Only CMake scripts (BoostConfig.cmake, etc)
-    - libboost-headers  # Only headers
+    - cxxopts
+    - docopt  # templatize.py
     - hdf5
     - hpx
-    - libgdal
-    - pybind11
-    - docopt  # templatize.py
     - jinja2  # templatize.py
+    - libboost-devel  # Only CMake scripts (BoostConfig.cmake, etc)
+    - libboost-headers  # Only headers
+    - libgdal
     - nlohmann_json
-    - cxxopts
+    - numpy
+    - pybind11
+    - python
 
   run:
     - docopt  # lue.qa
@@ -43,7 +43,6 @@ requirements:
     - hpx
     - libgdal
     - matplotlib-base  # lue.qa
-    - {{ pin_compatible('numpy') }}
     - python
     - python-dateutil  # lue.qa
 
