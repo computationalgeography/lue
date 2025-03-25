@@ -1,4 +1,4 @@
-name: macOS CI (homebrew)
+name: macOS CI (Homebrew)
 
 on:
   pull_request:
