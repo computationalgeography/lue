@@ -258,8 +258,12 @@ jobs:
         algorithm_image_land_integrate_and_allocate_test|\
         algorithm_image_land_integrate_test|\
         framework_io_lue_test|\
+        py_data_model_python_test|\
+        py_framework_api_python_test|\
         py_framework_python_test|\
-        py_image_land_python_test"
+        py_image_land_python_test|\
+        py_qa_command_test|\
+        py_qa_python_test"
 
         # Tests of runtime targets
         # Add location of shared libraries installed with Conan to the runtime environment
