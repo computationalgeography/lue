@@ -809,7 +809,25 @@ if(LUE_HDF5_REQUIRED)
     #     endif()
     # endif()
     if(NOT HDF5_FOUND)
-        message(FATAL_ERROR "HDF5 not found")
+        message(FATAL_ERROR "HDF5 not found!!!")
+    endif()
+    if(HDF5_FOUND)
+        message(STATUS "HDF5 found!!!")
+
+        include(CMakePrintHelpers)
+
+        cmake_print_properties(
+            TARGETS hdf5::hdf5
+            PROPERTIES LOCATION
+        )
+        cmake_print_properties(
+            TARGETS HDF5::HDF5
+            PROPERTIES LOCATION
+        )
+        cmake_print_properties(
+            TARGETS HDF5
+            PROPERTIES LOCATION
+        )
     endif()
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
