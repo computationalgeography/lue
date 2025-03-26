@@ -35,26 +35,30 @@
             "name": "hpx_linux_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_MALLOC": "tcmalloc",
-                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE"
+                "HPX_WITH_FETCH_ASIO": "FALSE",
+                "HPX_WITH_FETCH_HWLOC": "FALSE",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
+                "HPX_WITH_MALLOC": "tcmalloc"
             }
         },
         {
             "name": "hpx_macos_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_MALLOC": "tcmalloc",
-                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE"
+                "HPX_WITH_FETCH_ASIO": "FALSE",
+                "HPX_WITH_FETCH_HWLOC": "FALSE",
+                "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
+                "HPX_WITH_MALLOC": "tcmalloc"
             }
         },
         {
             "name": "hpx_windows_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_MALLOC": "mimalloc",
                 "HPX_WITH_FETCH_ASIO": "TRUE",
                 "HPX_WITH_FETCH_HWLOC": "TRUE",
-                "HPX_WITH_GOOGLE_PERFTOOLS": "FALSE"
+                "HPX_WITH_GOOGLE_PERFTOOLS": "FALSE",
+                "HPX_WITH_MALLOC": "mimalloc"
             }
         },
         {

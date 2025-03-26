@@ -799,35 +799,13 @@ if(LUE_GRAPHVIZ_REQUIRED)
     endif()
 endif()
 
+
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
-    # if(NOT TARGET hdf5::hdf5)
-    #     # On macOS icw homebrew packages, the hdf5::hdf5 target does not exist
-    #     if(TARGET HDF5::HDF5)
-    #         # Assume this one works as well
-    #         add_library(hdf5::hdf5 ALIAS HDF5::HDF5)
-    #     endif()
-    # endif()
     if(NOT HDF5_FOUND)
-        message(FATAL_ERROR "HDF5 not found!!!")
-    endif()
-    if(HDF5_FOUND)
-        message(STATUS "HDF5 found!!!")
-
-        include(CMakePrintHelpers)
-
-        cmake_print_properties(
-            TARGETS hdf5::hdf5
-            PROPERTIES LOCATION
-        )
-        cmake_print_properties(
-            TARGETS HDF5::HDF5
-            PROPERTIES LOCATION
-        )
-        cmake_print_properties(
-            TARGETS HDF5
-            PROPERTIES LOCATION
-        )
+        message(FATAL_ERROR "HDF5 not found")
+    else if(NOT TARGET hdf5::hdf5)
+        message(FATAL_ERROR "Target hdf5::hdf5 not available")
     endif()
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
@@ -837,6 +815,7 @@ if(LUE_HDF5_REQUIRED)
     message(STATUS "HDF5_INCLUDE_DIRS             : ${HDF5_INCLUDE_DIRS}")
     message(STATUS "HDF5_C_LIBRARIES              : ${HDF5_C_LIBRARIES}")
 endif()
+
 
 if(LUE_JUPYTER_BOOK_REQUIRED)
     find_package(JupyterBook REQUIRED)
