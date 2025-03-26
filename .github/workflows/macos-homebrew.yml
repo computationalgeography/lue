@@ -118,19 +118,19 @@ jobs:
         source env/bin/activate
         mkdir ${{ env.lue_build_directory }}
 
-        python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-            ${{ matrix.compiler.cxx }} \
-            ${{ env.lue_source_directory }}/host_profile
-        python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
-            ${{ matrix.compiler.cxx }} \
-            ${{ env.lue_source_directory }}/build_profile
+        # python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+        #     ${{ matrix.compiler.cxx }} \
+        #     ${{ env.lue_source_directory }}/host_profile
+        # python${{ matrix.python_version }} ${{ env.lue_source_directory }}/environment/script/write_conan_profile.py \
+        #     ${{ matrix.compiler.cxx }} \
+        #     ${{ env.lue_source_directory }}/build_profile
 
-        LUE_CONAN_PACKAGES="imgui" \
-            conan install ${{ env.lue_source_directory }} \
-              --profile:host=${{ env.lue_source_directory }}/host_profile \
-              --profile:build=${{ env.lue_source_directory }}/build_profile \
-              --build=missing \
-              --output-folder=${{ env.lue_build_directory }}
+        # LUE_CONAN_PACKAGES="imgui" \
+        #     conan install ${{ env.lue_source_directory }} \
+        #       --profile:host=${{ env.lue_source_directory }}/host_profile \
+        #       --profile:build=${{ env.lue_source_directory }}/build_profile \
+        #       --build=missing \
+        #       --output-folder=${{ env.lue_build_directory }}
 
         # # broken hdf5 1.14 https://github.com/Homebrew/homebrew-core/issues/159691
         # CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
@@ -138,10 +138,12 @@ jobs:
         # LDFLAGS="-L$(brew --prefix hdf5@1.10)/lib" \
         # CPPFLAGS="-I$(brew --prefix hdf5@1.10)/include"
 
+        #   --preset conan-release
+
         cmake \
             -S ${{ env.lue_source_directory }} \
             -B ${{ env.lue_build_directory }} \
-            --preset conan-release \
+            --preset lue_release_macos_node \
             -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
             -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0 \
             -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
@@ -153,6 +155,7 @@ jobs:
             -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
             -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
             -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+            -D LUE_BUILD_VIEW=FALSE \
             -D HPX_ROOT=${{ env.hpx_install_directory }} \
             -D mdspan_ROOT=${{ env.mdspan_install_directory }} \
             -D Python_FIND_VIRTUALENV=ONLY
