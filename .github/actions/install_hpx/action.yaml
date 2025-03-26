@@ -46,13 +46,14 @@ runs:
 
         mkdir -p ${{ inputs.build_directory }}
 
+        # -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} → passed in by preset
+
         cmake \
           -S ${{ inputs.source_directory }} \
           -B ${{ inputs.build_directory }} \
           --preset ${{ inputs.cmake_preset }} \
           -G "Ninja" \
           -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
-          -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
           -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
           ${{ inputs.cmake_flags }}
         cmake --build ${{ inputs.build_directory }} --target all

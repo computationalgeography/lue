@@ -3,7 +3,7 @@ name: Windows CI (Conda)
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -77,49 +77,53 @@ jobs:
 
         mkdir -p ${{ env.lue_build_directory }}
 
-        CMAKE_PREFIX_PATH=${{ env.lue_build_directory }} \
-            cmake \
-                -S ${{ env.lue_source_directory }} \
-                -B ${{ env.lue_build_directory }} \
-                --preset lue_release_windows_node \
-                -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
-                -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
-                -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
-                -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
-                -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
-                -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-                -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-                -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
-                -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-                -D LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS=std::int32_t \
-                -D LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS=std::uint8_t \
-                -D LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS=float \
-                -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
-                -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
-                -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
-                -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t
+        # CMAKE_PREFIX_PATH=${{ env.lue_build_directory }}
+
+        cmake \
+          -S ${{ env.lue_source_directory }} \
+          -B ${{ env.lue_build_directory }} \
+          --preset lue_release_windows_node \
+          -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+          -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+          -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+          -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+          -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
+          -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+          -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+          -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
+          -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+          -D LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS=std::int32_t \
+          -D LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS=std::uint8_t \
+          -D LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS=float \
+          -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
+          -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
+          -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
+          -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t \
+          -D LUE_BUILD_VIEW=FALSE \
+          -D Hwloc_ROOT=$CONDA_PREFIX/Library \
+          -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
 
     - name: build
       run: |
         cmake --build ${{ env.lue_build_directory }} \
-            --target all
+          --target all
 
     - name: install
       run: |
         cmake --install ${{ env.lue_build_directory }} \
-            --prefix ${{ env.lue_runtime_install_directory }} \
-            --component lue_runtime \
-            --strip
+          --prefix ${{ env.lue_runtime_install_directory }} \
+          --component lue_runtime \
+          --strip
         cmake --install ${{ env.lue_build_directory }} \
-            --prefix ${{ env.lue_development_install_directory }} \
-            --component lue_development \
-            --strip
+          --prefix ${{ env.lue_development_install_directory }} \
+          --component lue_development \
+          --strip
 
     - name: test
       run: |
         # Unit tests
         ctest --test-dir ${{ env.lue_build_directory }} \
-            --output-on-failure
+          --output-on-failure
 
         ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
         ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
@@ -137,14 +141,14 @@ jobs:
         git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
 
         cmake \
-            -S ${{ env.lue_consume_source_directory }} \
-            -B ${{ env.lue_consume_build_directory }} \
-            -G "Ninja" \
-            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-            -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
-            -D lue_ROOT=${{ env.lue_development_install_directory }} \
-            -D Hwloc_ROOT=$CONDA_PREFIX/Library \
-            -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
+          -S ${{ env.lue_consume_source_directory }} \
+          -B ${{ env.lue_consume_build_directory }} \
+          -G "Ninja" \
+          -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+          -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
+          -D lue_ROOT=${{ env.lue_development_install_directory }} \
+          -D Hwloc_ROOT=$CONDA_PREFIX/Library \
+          -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
         cmake --build ${{ env.lue_consume_build_directory }} --target all
 
         export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"

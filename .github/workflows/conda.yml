@@ -10,50 +10,50 @@ on:
   workflow_dispatch:
 
 jobs:
-    build:
-        name: conda / ${{ matrix.os }} / ${{ matrix.target-platform }}
-        runs-on: ${{ matrix.os }}
-        timeout-minutes: 300
-        defaults:
-            run:
-                shell: bash -l {0}
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                  - os: "macos-15"
-                    target-platform: arm-64
-                    conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
-                    conda-bld-arg: ""
-                  - os: "ubuntu-24.04"
-                    target-platform: linux-64
-                    conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
-                    conda-bld-arg: ""
-                  - os: "windows-2022"
-                    target-platform: win-64
-                    conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
-                    conda-bld-arg: ""
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Install Conda
-              uses: conda-incubator/setup-miniconda@v3
-              with:
-                  conda-remove-defaults: "true"
-                  miniforge-version: latest
-                  python-version: 3.12
-            - name: Build package
-              run: |
-                  conda install conda-build
-                  conda build environment/conda ${{ matrix.conda-bld-arg }}
-            - name: Upload
-              uses: Dylan700/sftp-upload-action@latest
-              if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
-              with:
-                  server: ${{ secrets.FTP_SERVER }}
-                  username: ${{ secrets.FTP_USERNAME }}
-                  password: ${{ secrets.FTP_PASSWORD }}
-                  port: ${{ secrets.FTP_PORT }}
-                  delete: true
-                  uploads: |
-                      ${{ matrix.conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
+  build:
+    name: conda / ${{ matrix.os }} / ${{ matrix.target-platform }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 300
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: "macos-15"
+            target-platform: arm-64
+            conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
+            conda-bld-arg: ""
+          - os: "ubuntu-24.04"
+            target-platform: linux-64
+            conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
+            conda-bld-arg: ""
+          - os: "windows-2022"
+            target-platform: win-64
+            conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
+            conda-bld-arg: ""
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          conda-remove-defaults: "true"
+          miniforge-version: latest
+          python-version: 3.12
+      - name: Build package
+        run: |
+          conda install conda-build
+          conda build environment/conda ${{ matrix.conda-bld-arg }}
+      - name: Upload
+        uses: Dylan700/sftp-upload-action@latest
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          delete: true
+          uploads: |
+            ${{ matrix.conda-bld-dir }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
