@@ -81,7 +81,7 @@ jobs:
     - name: "install hpx"
       uses: ./lue_source/.github/actions/install_hpx
       env:
-        hpx_build_nr: 1
+        hpx_build_nr: 2
       with:
         cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
         c_compiler: ${{ matrix.compiler.c }}
@@ -116,6 +116,7 @@ jobs:
           -S ${{ env.lue_source_directory }} \
           -B ${{ env.lue_build_directory }} \
           --preset lue_release_macos_node \
+          -G "Ninja" \
           -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
           -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
           -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
@@ -169,7 +170,9 @@ jobs:
         algorithm_decreasing_order_test|\
         algorithm_image_land_integrate_and_allocate_test|\
         algorithm_image_land_integrate_test|\
+        algorithm_unique_id_test|\
         framework_io_lue_test|\
+        py_framework_python_test|\
         py_image_land_python_test"
 
         # Test of runtime targets

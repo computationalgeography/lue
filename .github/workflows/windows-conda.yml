@@ -83,6 +83,7 @@ jobs:
           -S ${{ env.lue_source_directory }} \
           -B ${{ env.lue_build_directory }} \
           --preset lue_release_windows_node \
+          -G "Ninja" \
           -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
           -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
           -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \

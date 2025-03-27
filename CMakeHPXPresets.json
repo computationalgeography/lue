@@ -8,7 +8,6 @@
                 "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
                 "HPX_WITH_EXAMPLES": "FALSE",
                 "HPX_WITH_HWLOC": "TRUE",
-                "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_PKGCONFIG": "FALSE",
                 "HPX_WITH_TESTS": "FALSE"
             }
@@ -37,6 +36,7 @@
             "cacheVariables": {
                 "HPX_WITH_FETCH_ASIO": "FALSE",
                 "HPX_WITH_FETCH_HWLOC": "FALSE",
+                "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
                 "HPX_WITH_MALLOC": "tcmalloc"
             }
@@ -47,6 +47,7 @@
             "cacheVariables": {
                 "HPX_WITH_FETCH_ASIO": "FALSE",
                 "HPX_WITH_FETCH_HWLOC": "FALSE",
+                "HPX_WITH_HIDDEN_VISIBILITY": "FALSE",
                 "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",
                 "HPX_WITH_MALLOC": "tcmalloc"
             }
@@ -57,6 +58,7 @@
             "cacheVariables": {
                 "HPX_WITH_FETCH_ASIO": "TRUE",
                 "HPX_WITH_FETCH_HWLOC": "TRUE",
+                "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_GOOGLE_PERFTOOLS": "FALSE",
                 "HPX_WITH_MALLOC": "mimalloc"
             }
