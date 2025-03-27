@@ -3,7 +3,7 @@ name: Windows CI (Conan)
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -206,6 +206,7 @@ jobs:
             -S ${{ env.lue_source_directory }} \
             -B ${{ env.lue_build_directory }} \
             --preset conan-release \
+            -G "Ninja" \
             -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
