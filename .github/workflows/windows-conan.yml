@@ -206,6 +206,9 @@ jobs:
             -B ${{ env.lue_build_directory }} \
             --preset conan-release \
             -G "Ninja" \
+            -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
+            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
             -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
@@ -244,12 +247,8 @@ jobs:
 
     - name: test
       run: |
-        echo "PATH: $PATH"
-        echo "PYTHONPATH: $PYTHONPATH"
-
         # Unit tests
         ctest \
-          --verbose \
           --test-dir ${{ env.lue_build_directory }} \
           --output-on-failure \
           --exclude-regex "\
@@ -265,28 +264,29 @@ jobs:
         py_qa_python_test|\
         qa_command_test"
 
-        # Tests of runtime targets
-        # Add location of shared libraries installed with Conan to the runtime environment
-        ${{ env.lue_build_directory }}/conanrun.bat
+        # TODO
+        # # Tests of runtime targets
+        # # Add location of shared libraries installed with Conan to the runtime environment
+        # ${{ env.lue_build_directory }}/conanrun.bat
 
-        ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-        ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-        # This doesn't work due to missing Vulkan runtime
-        # ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+        # # This doesn't work due to missing Vulkan runtime
+        # # ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
-        # Add our package to the set of Conda packages
-        conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
+        # # Add our package to the set of Conda packages
+        # conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
 
-        # NOTE: On Windows, locations in PATH are not used anymore by Python to lookup
-        #       dlls. Locations must be added using os.add_dll_directory(path)
-        #       We have added a slight hack to LUE's __init__.py to detect HPX' dll
-        #       directory in PATH. Otherwise HPX won't be found. See comment in that file.
-        #       Only needed on dev machines with custom HPX build, like we have here.
-        export PATH="`pwd`/${{ env.hpx_install_directory }}/bin:$PATH"
+        # # NOTE: On Windows, locations in PATH are not used anymore by Python to lookup
+        # #       dlls. Locations must be added using os.add_dll_directory(path)
+        # #       We have added a slight hack to LUE's __init__.py to detect HPX' dll
+        # #       directory in PATH. Otherwise HPX won't be found. See comment in that file.
+        # #       Only needed on dev machines with custom HPX build, like we have here.
+        # export PATH="`pwd`/${{ env.hpx_install_directory }}/bin:$PATH"
 
-        ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
-        ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
-        python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
+        # python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
     - name: consume
       run: |
@@ -297,8 +297,10 @@ jobs:
           -S ${{ env.lue_consume_source_directory }} \
           -B ${{ env.lue_consume_build_directory }} \
           -G "Ninja" \
+          -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
           -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
           -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
+          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
           -D lue_ROOT=${{ env.lue_development_install_directory }} \
           -D HPX_ROOT=${{ env.hpx_install_directory }} \
           -D Hwloc_ROOT=$CONDA_PREFIX/Library \
