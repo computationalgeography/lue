@@ -3,7 +3,7 @@ name: Linux CI
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -22,7 +22,6 @@ jobs:
           #     'msvc', 'qcc', 'sun-cc'
           - { name: gcc  , version: 13, c: gcc-13  , cxx: g++-13    , package: g++-13   }
           - { name: clang, version: 18, c: clang-18, cxx: clang++-18, package: clang-18 }
-      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 

@@ -21,7 +21,6 @@ jobs:
           - { name: "Visual Studio Enterprise 2022", version: "17", msvc_toolset: "14" }
         python_version: ["3.12"]
         architecture: ["amd64"]
-      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 
@@ -126,10 +125,12 @@ jobs:
         ctest --test-dir ${{ env.lue_build_directory }} \
           --output-on-failure
 
-        ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-        ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+        # TODO Expand PATH for this to work
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+        # ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
 
-        # Add our package to the set of Conda packages
+        # Add our Python package to the set of Conda packages
+        ls -l ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
         conda-develop ${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}
 
         ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version

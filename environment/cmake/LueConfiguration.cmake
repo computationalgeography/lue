@@ -802,13 +802,28 @@ endif()
 
 if(LUE_HDF5_REQUIRED)
     find_package(HDF5 REQUIRED COMPONENTS C)
+
     if(NOT HDF5_FOUND)
         message(FATAL_ERROR "HDF5 not found")
     elseif(NOT TARGET hdf5::hdf5)
         message(FATAL_ERROR "Target hdf5::hdf5 not available")
     endif()
+
+    # At least on MacOS icw Conda packages, HDF5_DEFINITIONS is not set, resulting in undefined symbols at
+    # link time. If we're sure the library is shared, add a definition ourselves to make the link succeed.
+    if(APPLE AND LUE_PYTHON_FROM_CONDA)
+        if(NOT HDF5_DEFINITIONS)
+            string(FIND "${HDF5_C_LIBRARIES}" "shared" idx)
+            if(idx GREATER_EQUAL 0)
+                message(WARNING "Adding -DH5_BUILT_AS_DYNAMIC_LIB to HDF5_DEFINITIONS ourselves")
+                set(HDF5_DEFINITIONS "-DH5_BUILT_AS_DYNAMIC_LIB")
+            endif()
+        endif()
+    endif()
+
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
+
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
     message(STATUS "HDF5_IS_THREADSAFE            : ${HDF5_IS_THREADSAFE}")
     message(STATUS "HDF5_DEFINITIONS              : ${HDF5_DEFINITIONS}")
