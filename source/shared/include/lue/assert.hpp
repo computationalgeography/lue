@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/configure.hpp"
-#include <fmt/format.h>
+#include <cstring>
+#include <format>
 #include <stdexcept>
 
 
@@ -42,13 +43,13 @@ namespace lue {
                 if (detail::empty(format_string))
                 {
                     throw std::logic_error(
-                        fmt::format("{}:{}: assertion failed: {}", filename, line_nr, condition_as_string));
+                        std::format("{}:{}: assertion failed: {}", filename, line_nr, condition_as_string));
                 }
                 else
                 {
                     if constexpr (sizeof...(Arguments) == 0)
                     {
-                        throw std::logic_error(fmt::format(
+                        throw std::logic_error(std::format(
                             "{}:{}: assertion failed: {}: {}",
                             filename,
                             line_nr,
@@ -57,12 +58,12 @@ namespace lue {
                     }
                     else
                     {
-                        throw std::logic_error(fmt::format(
+                        throw std::logic_error(std::format(
                             "{}:{}: assertion failed: {}: {}",
                             filename,
                             line_nr,
                             condition_as_string,
-                            fmt::format(format_string, arguments...)));
+                            std::format(format_string, arguments...)));
                     }
                 }
             }

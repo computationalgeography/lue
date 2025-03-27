@@ -1,12 +1,15 @@
-add_library(lue_validate_lib STATIC
-    source/validate.cpp
-)
-
+add_library(lue_validate_lib STATIC)
 add_library(lue::validate ALIAS lue_validate_lib)
 
-target_include_directories(lue_validate_lib
+target_sources(lue_validate_lib
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+        FILES
+            include/lue
+    PRIVATE
+        source/validate.cpp
 )
 
 target_link_libraries(lue_validate_lib

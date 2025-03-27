@@ -16,13 +16,13 @@ namespace lue {
 
             static std::string formal_string_representation(Phenomenon const& phenomenon)
             {
-                return fmt::format("Phenomenon(pathname='{}')", phenomenon.id().pathname());
+                return std::format("Phenomenon(pathname='{}')", phenomenon.id().pathname());
             }
 
 
             static std::string informal_string_representation(Phenomenon const& phenomenon)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    collection-property-sets: [{}]\n"
                     "    property-sets: [{}]",
@@ -237,7 +237,7 @@ namespace lue {
                             // Python message:
                             // AttributeError: 'x' object has no attribute 'y'
                             // Ours is a little bit different:
-                            throw pybind11::key_error(fmt::format(
+                            throw pybind11::key_error(std::format(
                                 "Phenomenon does not contain (collection) "
                                 "property-set '{}'",
                                 property_set_name));

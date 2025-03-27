@@ -26,7 +26,7 @@ namespace lue::framework {
         template<typename Element, Rank rank>
         static auto formal_string_representation(PartitionedArray<Element, rank> const& array) -> std::string
         {
-            return fmt::format(
+            return std::format(
                 "PartitionedArray<{}, {}>{{shape={}, shape_in_partitions={}}}",
                 as_string<Element>(),
                 rank,
@@ -36,7 +36,8 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        static auto informal_string_representation(PartitionedArray<Element, rank> const& array) -> std::string
+        static auto informal_string_representation(PartitionedArray<Element, rank> const& array)
+            -> std::string
         {
             return formal_string_representation(array);
         }
@@ -57,8 +58,8 @@ namespace lue::framework {
         auto class_ =
             pybind11::class_<Array>(
                 module,
-                fmt::format("PartitionedArray<{}, {}>", as_string<Element>(), rank).c_str(),
-                fmt::format(
+                std::format("PartitionedArray<{}, {}>", as_string<Element>(), rank).c_str(),
+                std::format(
                     R"(
     Partitioned array type for arrays of rank {}, containing array
     elements of type {}
@@ -104,9 +105,13 @@ namespace lue::framework {
                             .then([](auto&&) { return hpx::make_ready_future<void>(); });
                     })
 
-                .def("__repr__", [](Array const& array) { return detail::formal_string_representation(array); })
+                .def(
+                    "__repr__",
+                    [](Array const& array) { return detail::formal_string_representation(array); })
 
-                .def("__str__", [](Array const& array) { return detail::informal_string_representation(array); })
+                .def(
+                    "__str__",
+                    [](Array const& array) { return detail::informal_string_representation(array); })
 
                 // bool(a), not a, if a, while a, ...
                 .def(
@@ -115,8 +120,7 @@ namespace lue::framework {
                     {
                         // ValueError
                         throw std::invalid_argument("The truth value of an array is ambiguous");
-                    })
-                ;
+                    });
 
         class_
             // a < b
@@ -269,8 +273,7 @@ namespace lue::framework {
                 "__rsub__",
                 [](Array const& argument2, Scalar const& argument1)
                 { return subtract(argument1, argument2); },
-                pybind11::is_operator())
-            ;
+                pybind11::is_operator());
 
         if constexpr (std::is_signed_v<Element> || std::is_floating_point_v<Element>)
         {
@@ -281,9 +284,7 @@ namespace lue::framework {
                     "__abs__", [](Array const& self) { return abs(self); }, pybind11::is_operator())
 
                 // -a
-                .def(
-                    "__neg__", [](Array const& self) { return negate(self); }, pybind11::is_operator())
-                ;
+                .def("__neg__", [](Array const& self) { return negate(self); }, pybind11::is_operator());
         }
 
         if constexpr (std::is_integral_v<Element>)
@@ -406,8 +407,7 @@ namespace lue::framework {
                     "__rmod__",
                     [](Array const& argument2, Element const argument1)
                     { return modulus(argument1, argument2); },
-                    pybind11::is_operator())
-                ;
+                    pybind11::is_operator());
         }
 
         if constexpr (std::is_floating_point_v<Element>)
@@ -490,8 +490,7 @@ namespace lue::framework {
                 .def(
                     "__rpow__",
                     [](Array const& argument2, Element const argument1) { return pow(argument1, argument2); },
-                    pybind11::is_operator())
-                ;
+                    pybind11::is_operator());
         }
     }
 

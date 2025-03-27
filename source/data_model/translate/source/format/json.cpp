@@ -11,7 +11,7 @@ namespace lue {
 
             void throw_unsupported(std::string const& message)
             {
-                throw std::runtime_error(fmt::format("Unsupported feature used: {}", message));
+                throw std::runtime_error(std::format("Unsupported feature used: {}", message));
             }
 
 
@@ -19,7 +19,7 @@ namespace lue {
                 std::string const& pathname, std::string const& location, std::string const& entry_name)
             {
                 throw std::runtime_error(
-                    fmt::format("Expected JSON entry '{}' at {} in {}", entry_name, location, pathname));
+                    std::format("Expected JSON entry '{}' at {} in {}", entry_name, location, pathname));
             }
 
 
@@ -172,7 +172,7 @@ namespace lue {
 
                         if (space_boxes.size() % nr_elements_in_object_array != 0)
                         {
-                            throw std::runtime_error(fmt::format(
+                            throw std::runtime_error(std::format(
                                 "Expected a multiple of {} coordinates, but found {} ({})",
                                 nr_elements_in_object_array,
                                 space_boxes.size(),
@@ -208,7 +208,7 @@ namespace lue {
 
                             case data_model::SpaceDomainItemType::point:
                             {
-                                throw std::runtime_error(fmt::format(
+                                throw std::runtime_error(std::format(
                                     "Importing stationary space points not supported yet ({})",
                                     property_set.space_domain().id().pathname()));
                                 // break;
@@ -234,7 +234,7 @@ namespace lue {
                     }
                     case data_model::Mobility::mobile:
                     {
-                        throw std::runtime_error(fmt::format(
+                        throw std::runtime_error(std::format(
                             "Importing mobile space items not supported yet ({})",
                             property_set.id().pathname()));
 
@@ -263,7 +263,7 @@ namespace lue {
 
                 if (values.size() % nr_elements_in_object_array != 0)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Number of values is not a multiple of the number of elements "
                         "in an object array ({} % {} != 0)",
                         values.size(),
@@ -378,7 +378,7 @@ namespace lue {
             //     std::vector<Datatype> const values = property_json.at("value");
             //
             //     if(values.size() % nr_elements_in_object_array != 0) {
-            //         throw std::runtime_error(fmt::format(
+            //         throw std::runtime_error(std::format(
             //             "Number of values is not a multiple of the number of elements "
             //             "in an object array ({} % {} != 0)",
             //             values.size(), nr_elements_in_object_array));
@@ -437,7 +437,7 @@ namespace lue {
 
                 if (values.size() % nr_elements_in_object_array != 0)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Number of values is not a multiple of the number of elements "
                         "in an object array ({} % {} != 0)",
                         values.size(),
@@ -493,7 +493,7 @@ namespace lue {
             //     // property.value().write(index_range, values.data());
             //
             //     if(values.size() % nr_elements_in_object_array != 0) {
-            //         throw std::runtime_error(fmt::format(
+            //         throw std::runtime_error(std::format(
             //             "Number of values is not a multiple of the number of elements "
             //             "in an object array ({} % {} != 0)",
             //             values.size(), nr_elements_in_object_array));
@@ -675,7 +675,7 @@ namespace lue {
                                 else
                                 {
                                     throw std::runtime_error(
-                                        fmt::format("Datatype {} not supported yet", datatype_json));
+                                        std::format("Datatype {} not supported yet", datatype_json));
                                 }
 
                                 break;
@@ -723,7 +723,7 @@ namespace lue {
                                 else
                                 {
                                     throw std::runtime_error(
-                                        fmt::format("Datatype {} not supported yet", datatype_json));
+                                        std::format("Datatype {} not supported yet", datatype_json));
                                 }
 
                                 break;
@@ -783,7 +783,7 @@ namespace lue {
                                         else
                                         {
                                             throw std::runtime_error(
-                                                fmt::format("Datatype {} not supported yet", datatype_json));
+                                                std::format("Datatype {} not supported yet", datatype_json));
                                         }
 
                                         break;
@@ -861,7 +861,7 @@ namespace lue {
                                         else
                                         {
                                             throw std::runtime_error(
-                                                fmt::format("Datatype {} not supported yet", datatype_json));
+                                                std::format("Datatype {} not supported yet", datatype_json));
                                         }
 
                                         break;
@@ -912,7 +912,7 @@ namespace lue {
             {
                 if (property_set.time_domain().configuration() != time_configuration)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Existing time configuration at {} does not match "
                         "the one in the JSON file",
                         property_set.id().pathname()));
@@ -920,7 +920,7 @@ namespace lue {
 
                 if (property_set.time_domain().clock() != clock)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Existing clock at {} does not match "
                         "the one in the JSON file",
                         property_set.id().pathname()));

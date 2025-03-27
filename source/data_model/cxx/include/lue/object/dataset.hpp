@@ -37,25 +37,26 @@ namespace lue {
 
                 ~Dataset() override = default;
 
-                Dataset& operator=(Dataset const&) = default;
+                auto operator=(Dataset const&) -> Dataset& = default;
 
-                Dataset& operator=(Dataset&&) = default;
+                auto operator=(Dataset&&) -> Dataset& = default;
 
-                std::string lue_version() const;
+                [[nodiscard]] auto lue_version() const -> std::string;
 
-                Universe& add_universe(std::string const& name);
+                auto add_universe(std::string const& name) -> Universe&;
 
-                Phenomenon& add_phenomenon(std::string const& name, std::string const& description = "");
+                auto add_phenomenon(std::string const& name, std::string const& description = "")
+                    -> Phenomenon&;
 
-                std::string const& description() const;
+                [[nodiscard]] auto description() const -> std::string const&;
 
-                Universes const& universes() const;
+                [[nodiscard]] auto universes() const -> Universes const&;
 
-                Universes& universes();
+                auto universes() -> Universes&;
 
-                Phenomena const& phenomena() const;
+                [[nodiscard]] auto phenomena() const -> Phenomena const&;
 
-                Phenomena& phenomena();
+                auto phenomena() -> Phenomena&;
 
             private:
 
@@ -67,20 +68,22 @@ namespace lue {
         };
 
 
-        LUE_DATA_MODEL_EXPORT bool dataset_exists(std::string const& name);
+        LUE_DATA_MODEL_EXPORT auto dataset_exists(std::string const& name) -> bool;
 
-        LUE_DATA_MODEL_EXPORT Dataset open_dataset(
+        LUE_DATA_MODEL_EXPORT auto open_dataset(
             std::string const& name,
             unsigned int flags = H5F_ACC_RDONLY,
-            hdf5::File::AccessPropertyList const& access_property_list = hdf5::File::AccessPropertyList{});
+            hdf5::File::AccessPropertyList const& access_property_list = hdf5::File::AccessPropertyList{})
+            -> Dataset;
 
-        LUE_DATA_MODEL_EXPORT Dataset create_dataset(
+        LUE_DATA_MODEL_EXPORT auto create_dataset(
             std::string const& name,
             std::string const& description = "",
-            hdf5::File::AccessPropertyList access_property_list = hdf5::File::AccessPropertyList{});
+            hdf5::File::AccessPropertyList access_property_list = hdf5::File::AccessPropertyList{})
+            -> Dataset;
 
-        LUE_DATA_MODEL_EXPORT Dataset
-        create_in_memory_dataset(std::string const& name, std::string const& description = "");
+        LUE_DATA_MODEL_EXPORT auto create_in_memory_dataset(
+            std::string const& name, std::string const& description = "") -> Dataset;
 
         LUE_DATA_MODEL_EXPORT void remove_dataset(std::string const& name);
 

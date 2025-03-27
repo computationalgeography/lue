@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue data_model_hl
 #include "lue/data_model/hl/raster_view.hpp"
-#include "lue/test/print.hpp"
+#include "lue/test/stream.hpp"
+#include "lue/hdf5/test/stream.hpp"
 #include "lue/validate.hpp"
 #include <boost/test/included/unit_test.hpp>
 

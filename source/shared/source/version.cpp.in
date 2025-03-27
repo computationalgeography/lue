@@ -3,31 +3,31 @@
 
 namespace lue {
 
-    std::string version()
+    auto version() -> std::string
     {
         return "${LUE_VERSION}";
     }
 
 
-    std::uint32_t major_version()
+    auto major_version() -> std::uint32_t
     {
         return ${LUE_VERSION_MAJOR};
     }
 
 
-    std::uint32_t minor_version()
+    auto minor_version() -> std::uint32_t
     {
         return ${LUE_VERSION_MINOR};
     }
 
 
-    std::uint32_t patch_version()
+    auto patch_version() -> std::uint32_t
     {
         return ${LUE_VERSION_PATCH};
     }
 
 
-    std::uint32_t tweak_version()
+    auto tweak_version() -> std::uint32_t
     {
         return ${LUE_VERSION_TWEAK} + 0;
     }

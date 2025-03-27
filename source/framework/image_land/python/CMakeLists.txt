@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 # framework/*
 foreach(module_name __init__.py)
     file(GENERATE
@@ -75,3 +73,7 @@ install(
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

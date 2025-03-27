@@ -15,7 +15,7 @@ namespace lue {
 
             static std::string formal_string_representation(Dataset const& dataset)
             {
-                return fmt::format(
+                return std::format(
                     "Dataset(name='{}', flags='{}')",
                     dataset.pathname(),
                     hdf5::intent_to_python_mode(dataset.intent()));
@@ -24,7 +24,7 @@ namespace lue {
 
             static std::string informal_string_representation(Dataset const& dataset)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "    universes: [{}]\n"
                     "    phenomena: [{}]",
@@ -145,7 +145,7 @@ namespace lue {
                             // AttributeError: 'x' object has no attribute 'y'
                             // Ours is a little bit different:
                             throw pybind11::key_error(
-                                fmt::format("Dataset does not contain universe or phenomenon '{}'", name));
+                                std::format("Dataset does not contain universe or phenomenon '{}'", name));
                         }
 
                         return result;

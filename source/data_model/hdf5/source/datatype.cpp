@@ -1,8 +1,8 @@
 #include "lue/hdf5/datatype.hpp"
 #include "lue/hdf5/datatype_traits.hpp"
 #include <boost/predef/other/endian.h>
-#include <fmt/format.h>
 #include <algorithm>
+#include <format>
 #include <optional>
 
 
@@ -452,7 +452,7 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "No memory datatype for file datatype ({})", standard_datatype_as_string(file_datatype)));
             }
 
@@ -484,7 +484,7 @@ namespace lue {
             // }
             // else
             // {
-            //     throw std::runtime_error(fmt::format(
+            //     throw std::runtime_error(std::format(
             //         "No memory datatype for file datatype ({})",
             //         standard_datatype_as_string(file_datatype))
             //     );
@@ -547,7 +547,7 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "No file datatype for memory datatype ({})", native_datatype_as_string(memory_datatype)));
             }
 
@@ -579,7 +579,7 @@ namespace lue {
             // }
             // else
             // {
-            //     throw std::runtime_error(fmt::format(
+            //     throw std::runtime_error(std::format(
             //         "No file datatype for memory datatype ({})",
             //         native_datatype_as_string(memory_datatype))
             //     );

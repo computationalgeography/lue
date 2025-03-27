@@ -42,7 +42,7 @@
 ///         Cursor const& cursor{this->cursor()};
 ///
 ///         if(partition_offset != _offset) {
-///             throw std::runtime_error(fmt::format(
+///             throw std::runtime_error(std::format(
 ///                 "Partition {} is not located at the expected offset {} "
 ///                 "in the array but at {}",
 ///                 cursor.current_cell(), _offset, partition_offset));
@@ -72,7 +72,7 @@
 ///
 ///         if(_offset[dimension_idx] != _array_shape[dimension_idx])
 ///         {
-///             throw std::runtime_error(fmt::format(
+///             throw std::runtime_error(std::format(
 ///                 "Partition {} with shape {} does not fit within the array "
 ///                 "shape {}",
 ///                 cursor.current_cell(), _partition_shape, _array_shape));

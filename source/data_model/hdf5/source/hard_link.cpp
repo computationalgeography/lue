@@ -1,6 +1,6 @@
 #include "lue/hdf5/hard_link.hpp"
 #include "lue/hdf5/group.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -29,7 +29,7 @@ namespace lue {
             if (status < 0)
             {
                 throw std::runtime_error(
-                    fmt::format("Cannot create hard link {} at {}", name, target.pathname()));
+                    std::format("Cannot create hard link {} at {}", name, target.pathname()));
             }
 
             return HardLink{group, name};

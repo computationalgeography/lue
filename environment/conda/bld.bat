@@ -6,6 +6,8 @@ if errorlevel 1 exit /b 1
 cmake -S . -B build %CMAKE_ARGS% ^
     --preset lue_release_windows_node ^
     -G Ninja ^
+    -D CMAKE_C_COMPILER=cl ^
+    -D CMAKE_CXX_COMPILER=cl ^
     -D CMAKE_POLICY_DEFAULT_CMP0167=OLD ^
     -D CMAKE_INSTALL_LIBDIR=lib ^
     -D LUE_INSTALL_PYTHON_PACKAGE_DIR="%SP_DIR%/lue" ^

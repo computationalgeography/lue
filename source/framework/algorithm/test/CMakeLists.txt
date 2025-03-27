@@ -1,4 +1,3 @@
-
 set(FloatingPointElements ${LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS})
 list(TRANSFORM FloatingPointElements PREPEND "\"")
 list(TRANSFORM FloatingPointElements APPEND "\"")
@@ -185,16 +184,17 @@ foreach(name ${names})
         APPEND
         PROPERTY
             ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_local_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_focal_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_routing_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_zonal_operation>>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::gdal>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
     )
+
+    append_3rd_party_runtime_lib_dirs(${test_name})
 endforeach()
 
 foreach(name ${local_operation_names})
@@ -246,15 +246,11 @@ add_unit_tests(
         test_names
 )
 
-foreach(test_name ${test_names})
-    set_property(
-        TEST
-            ${test_name}
-        APPEND
-        PROPERTY
-            ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
-    )
-endforeach()
+set_property(
+    TEST
+        ${test_names}
+    APPEND
+    PROPERTY
+        ENVIRONMENT_MODIFICATION
+            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+)

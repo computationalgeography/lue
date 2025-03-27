@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/hdf5/group.hpp"
-#include <fmt/format.h>
 #include <algorithm>
 #include <cassert>
+#include <format>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -95,7 +95,7 @@ namespace lue {
         {
             if (!id().is_valid())
             {
-                throw std::runtime_error(fmt::format("Collection {} cannot be opened", name));
+                throw std::runtime_error(std::format("Collection {} cannot be opened", name));
             }
 
             // Open items, if available.
@@ -198,7 +198,7 @@ namespace lue {
 
             if (iterator == _items.end())
             {
-                throw std::runtime_error(fmt::format("Item {} does not exist", name));
+                throw std::runtime_error(std::format("Item {} does not exist", name));
             }
 
             return (*iterator).second;
@@ -217,7 +217,7 @@ namespace lue {
 
             if (iterator == _items.end())
             {
-                throw std::runtime_error(fmt::format("Item {} does not exist", name));
+                throw std::runtime_error(std::format("Item {} does not exist", name));
             }
 
             return (*iterator).second;

@@ -36,24 +36,39 @@ runs:
         key: ${{ inputs.cache_key }}
     - name: install hpx
       shell: bash -l {0}
-      if: ${{ steps.cache-hpx.outputs.cache-hit != 'true' }}
+      if: steps.cache-hpx.outputs.cache-hit != 'true'
       run: |
-        git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        if [ ! -d "${{ inputs.source_directory }}" ]; then
+            git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+        fi
 
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
 
-        mkdir ${{ inputs.build_directory }}
+        mkdir -p ${{ inputs.build_directory }}
+
+        # -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} → passed in by preset
 
         cmake \
-            -S ${{ inputs.source_directory }} \
-            -B ${{ inputs.build_directory }} \
-            --preset ${{ inputs.cmake_preset }} \
-            -G "Ninja" \
-            -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
-            -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
-            ${{ inputs.cmake_flags }}
+          -S ${{ inputs.source_directory }} \
+          -B ${{ inputs.build_directory }} \
+          --preset ${{ inputs.cmake_preset }} \
+          -G "Ninja" \
+          -D CMAKE_CXX_COMPILER=${{ inputs.cxx_compiler }} \
+          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+          ${{ inputs.cmake_flags }}
         cmake --build ${{ inputs.build_directory }} --target all
         cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
 
+    - name: patch hpx install
+      shell: bash -l {0}
+      if: steps.cache-hpx.outputs.cache-hit != 'true' && runner.os == 'Windows'
+      run: |
+        # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
+        # though, so we do it here ourselves. Sigh...
+        cp ${{ inputs.build_directory }}/${{ inputs.build_type }}/bin/*hwloc*.dll ${{ inputs.install_directory }}/bin
+
+    - name: post hpx install
+      shell: bash -l {0}
+      if: steps.cache-hpx.outputs.cache-hit != 'true'
+      run: |
         rm -fr ${{ inputs.build_directory }} ${{ inputs.source_directory }}

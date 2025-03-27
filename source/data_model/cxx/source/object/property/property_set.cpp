@@ -176,7 +176,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -198,7 +198,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -216,7 +216,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -238,7 +238,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -261,7 +261,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -280,7 +280,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -305,7 +305,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -330,7 +330,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};
@@ -356,7 +356,7 @@ namespace lue {
             if (hdf5::group_exists(parent, name))
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} already exists at {}", name, parent.id().pathname()));
+                    std::format("Property-set {} already exists at {}", name, parent.id().pathname()));
             }
 
             hdf5::Group group{hdf5::create_group(parent, name)};

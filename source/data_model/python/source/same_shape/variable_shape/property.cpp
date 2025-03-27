@@ -1,7 +1,7 @@
 #include "lue/info/property/same_shape/variable_shape/property.hpp"
 #include "submodule.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -16,13 +16,13 @@ namespace lue {
 
                     static std::string formal_string_representation(Property const& property)
                     {
-                        return fmt::format("Property(pathname='{}')", property.id().pathname());
+                        return std::format("Property(pathname='{}')", property.id().pathname());
                     }
 
 
                     static std::string informal_string_representation(Property const& property)
                     {
-                        return fmt::format("{}", formal_string_representation(property));
+                        return std::format("{}", formal_string_representation(property));
                     }
 
                 }  // Anonymous namespace

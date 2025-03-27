@@ -27,7 +27,7 @@ namespace lue::hdf5 {
                     void use_mpi_communicator(::MPI_Comm const& communicator, ::MPI_Info const& info);
 #endif
 
-                    void set_library_version_bounds(::H5F_libver_t low, ::H5F_libver_t high);
+                    void set_library_version_bounds(H5F_libver_t low, H5F_libver_t high);
             };
 
             explicit File(std::string const& name);
@@ -42,34 +42,24 @@ namespace lue::hdf5 {
 
             explicit File(Group&& group);
 
-            File(File const&) = default;
+            [[nodiscard]] auto hdf5_version() const -> std::string;
 
-            File(File&&) = default;
-
-            ~File() override = default;
-
-            File& operator=(File const&) = default;
-
-            File& operator=(File&&) = default;
-
-            std::string hdf5_version() const;
-
-            std::string pathname() const;
+            [[nodiscard]] auto pathname() const -> std::string;
 
             void flush() const;
 
-            unsigned int intent() const;
+            [[nodiscard]] auto intent() const -> unsigned int;
     };
 
 
-    LUE_HDF5_EXPORT bool file_exists(std::string const& name);
+    LUE_HDF5_EXPORT auto file_exists(std::string const& name) -> bool;
 
-    LUE_HDF5_EXPORT File create_file(std::string const& name);
+    LUE_HDF5_EXPORT auto create_file(std::string const& name) -> File;
 
-    LUE_HDF5_EXPORT File
-    create_file(std::string const& name, File::AccessPropertyList const& access_property_list);
+    LUE_HDF5_EXPORT auto create_file(
+        std::string const& name, File::AccessPropertyList const& access_property_list) -> File;
 
-    LUE_HDF5_EXPORT File create_in_memory_file(std::string const& name);
+    LUE_HDF5_EXPORT auto create_in_memory_file(std::string const& name) -> File;
 
     LUE_HDF5_EXPORT void remove_file(std::string const& name);
 

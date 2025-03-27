@@ -1,6 +1,6 @@
 #pragma once
 #include <hpx/future.hpp>
-#include <fmt/format.h>
+#include <format>
 #include <string>
 
 
@@ -19,7 +19,7 @@ namespace lue {
     {
         if (idx >= *count)
         {
-            throw std::runtime_error(fmt::format("Index out of bounds ({} >= {})", idx, *count));
+            throw std::runtime_error(std::format("Index out of bounds ({} >= {})", idx, *count));
         }
     }
 
@@ -29,7 +29,7 @@ namespace lue {
     {
         if (idx >= *count)
         {
-            throw std::runtime_error(fmt::format("Index out of bounds ({} >= {})", idx, *count));
+            throw std::runtime_error(std::format("Index out of bounds ({} >= {})", idx, *count));
         }
 
         validate_idxs(++count, idxs...);
@@ -41,7 +41,7 @@ namespace lue {
     {
         if (sizeof...(idxs) != std::size(shape))
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Number of indices does not match rank of array ({} != {})",
                 sizeof...(idxs),
                 std::size(shape)));

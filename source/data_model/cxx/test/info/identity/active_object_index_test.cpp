@@ -1,11 +1,11 @@
 #define BOOST_TEST_MODULE lue info identity active_object_index
 #include "lue/core/tag.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/info/identity/active_object_index.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 
-class Fixture: public lue::data_model::test::FileFixture
+class Fixture: public lue::hdf5::FileFixture
 {
 
     public:

@@ -38,26 +38,27 @@ foreach(name ${names})
                     "$<TARGET_FILE:${test_name}>"
     )
 
-    if(WIN32)
-        # Ensure required DLLs can be found at runtime
-        set_property(
-            TEST
-                ${test_name}
-            APPEND
-            PROPERTY
-                ENVIRONMENT_MODIFICATION
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:HPX::component_storage_component>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_api_cxx>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_array>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_partitioned_route>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_local_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_focal_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_routing_operation>
-                    PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::framework_zonal_operation>
-                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-                    PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
-        )
-    endif()
+    set_property(
+        TEST
+            ${test_name}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_api_cxx>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_io>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_local_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_focal_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_routing_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_zonal_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::data_model>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::gdal>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::hdf5>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
+    )
+
+    append_3rd_party_runtime_lib_dirs(${test_name})
 endforeach()
 
 # foreach(name ${local_operation_names})

@@ -227,7 +227,7 @@ def msvc_settings(compiler_filename):
 
     return {
         "compiler": compiler,
-        "compiler.cppstd": compiler_cppstd,
+        # "compiler.cppstd": compiler_cppstd,
         "compiler.version": compiler_version,
         "compiler.runtime": compiler_runtime,
     }
@@ -334,6 +334,12 @@ def write_conan_profile(compiler_filename, profile_pathname):
 
     profile_options = {}
 
+    if conan_os() == "Windows":
+        # profile_options["gdal/*"] = "gdal_optional_drivers=False,ogr_optional_drivers=False"
+        # profile_options["gdal/*"] = "with_arrow=False"
+        # profile_options["gdal/*"] = "with_parquet=False"
+        profile_options["hdf5/*"] = "shared=True"
+
     profile_buildenv = {}
 
     profile_tool_requires = {}
@@ -342,21 +348,21 @@ def write_conan_profile(compiler_filename, profile_pathname):
 
     with open(profile_pathname, "w") as profile_file:
         profile_string = ""
-        profile_string += "[settings]:\n{}\n\n".format(
+        profile_string += "[settings]\n{}\n\n".format(
             "\n".join([f"{key}={profile_settings[key]}" for key in profile_settings])
         )
-        profile_string += "[options]:\n{}\n\n".format(
-            "\n".join([f"{key}={profile_options[key]}" for key in profile_options])
+        profile_string += "[options]\n{}\n\n".format(
+            "\n".join([f"{key}:{profile_options[key]}" for key in profile_options])
         )
-        profile_string += "[buildenv]:\n{}\n\n".format(
+        profile_string += "[buildenv]\n{}\n\n".format(
             "\n".join([f"{key}={profile_buildenv[key]}" for key in profile_buildenv])
         )
-        profile_string += "[tool_requires]:\n{}\n\n".format(
+        profile_string += "[tool_requires]\n{}\n\n".format(
             "\n".join(
                 [f"{key}={profile_tool_requires[key]}" for key in profile_tool_requires]
             )
         )
-        profile_string += "[conf]:\n{}\n\n".format(
+        profile_string += "[conf]\n{}\n\n".format(
             "\n".join([f"{key}={profile_conf[key]}" for key in profile_conf])
         )
 
