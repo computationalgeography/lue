@@ -1,7 +1,7 @@
 name: macOS CI (Homebrew)
 
 # - When using Conan icw Homebrew, HDF5 cannot be found anymore. Maybe this can be fіxed, but for now we just
-#   skip using Conan (for imgui) and dependant targets (lue_view).
+#   skip using Conan (for imgui) and dependent targets (lue_view).
 
 on:
   pull_request:
@@ -77,7 +77,6 @@ jobs:
         source env/bin/activate
         pip${{ matrix.python_version }} install --upgrade pip
         pip${{ matrix.python_version }} install docopt jinja2 ruamel.yaml  # Not part of homebrew yet
-        conan profile detect
 
     - name: "install hpx"
       uses: ./lue_source/.github/actions/install_hpx
