@@ -118,12 +118,14 @@ class Worker(object):
         return self.min_nr_cluster_nodes
 
     @property
-    def nr_localities(self):
+    def nr_localities(self) -> int:
         """
         Return number of localities to use in benchmark
 
         This assumes that the range in number of nodes to use is zero
         """
+        result = 0
+
         if self.type == "thread":
             assert self.nr_numa_nodes_range == 0
             assert self.nr_cluster_nodes_range == 0

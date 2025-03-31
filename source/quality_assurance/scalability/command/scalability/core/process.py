@@ -1,28 +1,27 @@
-import os
 import shlex
 import subprocess
 import tempfile
 
 
-def execute_command(command):
+def execute_command(command: str) -> None:
     result = subprocess.call(shlex.split(command))
 
     if result != 0:
         raise RuntimeError("Error executing {}".format(command))
 
 
-def lue_translate():
+def lue_translate() -> str:
     return "lue_translate"
 
 
-def import_lue_json(lue_json_pathname, lue_dataset_pathname):
+def import_lue_json(lue_json_pathname: str, lue_dataset_pathname: str) -> None:
     command = "{} import --add {} {}".format(
         lue_translate(), lue_dataset_pathname, lue_json_pathname
     )
     execute_command(command)
 
 
-def create_dot_graph(lue_dataset_pathname, pdf_graph_pathname):
+def create_dot_graph(lue_dataset_pathname: str, pdf_graph_pathname: str) -> None:
     """
     Create a dot graph of the LUE file containing the experiment results
     """

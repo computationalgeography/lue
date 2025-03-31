@@ -240,15 +240,15 @@ class Cluster(object):
 
         return result
 
-    def nr_localities_to_reserve(self, worker, locality_per):
+    def nr_localities_to_reserve(self, worker, locality_per) -> int:
         """
-        When scheduling jobs, the number of localities we need to ask
-        for from the scheduler
+        When scheduling jobs, the number of localities we need to ask for from the scheduler
 
-        This number might be larger than the actual number of localities
-        used by tasks. We want to prevent to compete with other jobs
-        while performing the benchmarks.
+        This number might be larger than the actual number of localities used by tasks. We want to prevent to
+        compete with other jobs while performing the benchmarks.
         """
+        result = -1
+
         if worker.type == "thread":
             # Claim a whole cluster node
             if locality_per == "cluster_node":
