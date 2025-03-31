@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import matplotlib.scale as mscale
 import matplotlib.ticker as ticker
 import matplotlib.transforms as mtransforms

@@ -28,7 +28,7 @@
             "hidden": true,
             "cacheVariables": {
                 "HPX_WITH_NETWORKING": "TRUE",
-                "HPX_WITH_PARCELPORT_TCP": "FALSE",
+                "HPX_WITH_PARCELPORT_TCP": "TRUE",
                 "HPX_WITH_PARCELPORT_MPI": "TRUE"
             }
         },

@@ -1,11 +1,16 @@
 import os.path
 
-from ...core import hpx
 from .. import dataset, job
+from ..worker import Worker
 from .configuration import Configuration
 
 
-def nr_workers(worker):
+def nr_workers(worker: Worker) -> int:
+    """
+    Return the number of individual represented by the Worker instance passed in
+    """
+    result = -1
+
     if worker.type == "thread":
         result = worker.nr_threads
     elif worker.type == "numa_node":
@@ -29,12 +34,24 @@ def generate_script_slurm(
     # executing the benchmark
     job_steps = []
 
-    nr_threads = benchmark.worker.nr_threads
     nr_localities = benchmark.worker.nr_localities
-    nr_tasks=nr_localities
-    mpirun_configuration = job.mpirun_configuration(cluster)
+    srun_configuration = job.srun_configuration(cluster)
+    jobstarter = f"srun --ntasks {nr_localities} {srun_configuration}"
 
     for array_shape in experiment.array.shapes:
+        result_workspace_pathname = os.path.join(
+            experiment.workspace_pathname(
+                result_prefix, cluster.name, benchmark.scenario_name
+            ),
+            "x".join([str(extent) for extent in array_shape]),
+        )
+
+        job_steps += [
+            # Create directory for the resulting json files. This only needs to run on one of the nodes.
+            # For this we create a sub-allocation of one node and one task.
+            f"srun --ntasks 1 mkdir -p {result_workspace_pathname}"
+        ]
+
         for partition_shape in experiment.partition.shapes:
             result_pathname = experiment.benchmark_result_pathname(
                 result_prefix,
@@ -46,20 +63,10 @@ def generate_script_slurm(
             )
 
             job_steps += [
-                # Create directory for the resulting json file. This
-                # only needs to run on one of the nodes. For this we
-                # create a sub-allocation of one node and one task.
-                "srun --nodes 1 --ntasks 1 mkdir -p {}".format(
-                    os.path.dirname(result_pathname)
-                ),
                 # Run the benchmark, resulting in a json file
-                f"mpirun --n {nr_tasks} {mpirun_configuration} {experiment.command_pathname} {experiment.command_arguments} "
-                # '--hpx:ini="hpx.parcel.mpi.enable=1" '
-                # '--hpx:ini="hpx.os_threads={nr_threads}" '
-                f'--hpx:threads="{nr_threads}" '
-                # '--hpx:bind="{thread_binding}" '
+                f"{jobstarter} {experiment.command_pathname} {experiment.command_arguments} "
+                f'--hpx:threads="{benchmark.worker.nr_threads}" '
                 "{program_configuration}".format(
-                    # thread_binding=hpx.thread_binding(nr_threads),
                     program_configuration=job.program_configuration(
                         result_prefix,
                         cluster,
@@ -80,7 +87,6 @@ def generate_script_slurm(
             benchmark.worker, benchmark.locality_per
         ),
         nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
-        # cpus_per_task=benchmark.nr_logical_cores_per_locality,
         cpus_per_task=benchmark.nr_logical_cores_per_locality,
         output_filename=experiment.result_pathname(
             result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"
@@ -146,12 +152,8 @@ def generate_script_shell(
                 "mkdir -p {}".format(os.path.dirname(result_pathname)),
                 # Run the benchmark, resulting in a json file
                 f"{experiment.command_pathname} {experiment.command_arguments} "
-                # '--hpx:ini="hpx.os_threads={nr_threads}" '
-                '--hpx:threads="{nr_threads}" '
-                # '--hpx:bind="{thread_binding}" '
+                f'--hpx:threads="{nr_threads}" '
                 "{program_configuration}".format(
-                    nr_threads=nr_threads,
-                    # thread_binding=hpx.thread_binding(nr_threads),
                     program_configuration=job.program_configuration(
                         result_prefix,
                         cluster,

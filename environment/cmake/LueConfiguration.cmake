@@ -743,19 +743,10 @@ if(LUE_HPX_REQUIRED)
         find_file(HPXRUN "hpxrun.py"
             HINTS ${HPX_PREFIX}
         )
-
-    #      if(LUE_HPX_REQUIRED AND LUE_BUILD_HPX)
-    #             set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
-    #         else()
-    #             find_file(HPXRUN "hpxrun.py")
-
-    #             if(NOT HPXRUN)
-    #                 message(FATAL_ERROR "hpxrun.py not found")
-    #             endif()
-    #         endif()
     endif()
 
     message(STATUS "HPX_WITH_NETWORKING           : ${HPX_WITH_NETWORKING}")
+    message(STATUS "HPX_WITH_PARCELPORT_TCP       : ${HPX_WITH_PARCELPORT_TCP}")
     message(STATUS "HPX_WITH_PARCELPORT_MPI       : ${HPX_WITH_PARCELPORT_MPI}")
 endif()
 
