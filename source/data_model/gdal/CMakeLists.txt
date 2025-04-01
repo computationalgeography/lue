@@ -45,8 +45,7 @@ target_sources(lue_gdal
         ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 
-# NOTE: Think twice before adding libraries here. lue::gdal is a simple, thin API around the
-# GDAL API.
+# NOTE: Think twice before adding libraries here. lue::gdal is a simple, thin API around the GDAL API.
 target_link_libraries(lue_gdal
     PUBLIC
         GDAL::GDAL

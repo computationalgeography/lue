@@ -3,7 +3,6 @@ include(CMakeFindDependencyMacro)
 
 # Imported targets the LUE targets depend on, in its headers, or at link-time
 set(LUE_BOOST_REQUIRED @LUE_BOOST_REQUIRED@)
-set(LUE_FMT_REQUIRED @LUE_FMT_REQUIRED@)
 set(LUE_GDAL_REQUIRED @LUE_GDAL_REQUIRED@)
 set(LUE_HDF5_REQUIRED @LUE_HDF5_REQUIRED@)
 set(LUE_HPX_REQUIRED @LUE_HPX_REQUIRED@)
@@ -14,16 +13,12 @@ if(LUE_BOOST_REQUIRED)
     find_dependency(Boost 1.70)
 endif()
 
-if(LUE_FMT_REQUIRED)
-    find_dependency(fmt 10)
-endif()
-
 if(LUE_GDAL_REQUIRED)
-    find_dependency(GDAL)
+    find_dependency(GDAL CONFIG)
 endif()
 
 if(LUE_HDF5_REQUIRED)
-    find_dependency(HDF5)
+    find_dependency(HDF5 COMPONENTS C CONFIG)
 endif()
 
 if(LUE_HPX_REQUIRED)

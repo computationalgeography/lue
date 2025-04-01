@@ -185,10 +185,11 @@ jobs:
 
     - name: configure
       run: |
-        # The element types for which relevant data structures and algorithms must be instantiated are
-        # passed in explicitly here. To test whether this works correct and to speed up the build on
-        # Windows, which is slow compared to the other platforms.
-        # The types used are the ones needed for compatibility with PCRaster.
+
+        # The element types for which relevant data structures and algorithms must be instantiated are passed
+        # in explicitly here. To test whether this works correct and to speed up the build on Windows, which
+        # is slow compared to the other platforms. The types used are the ones needed for compatibility with
+        # PCRaster.
 
         mkdir -p ${{ env.lue_build_directory }}
         curl --create-dirs --output ${{ env.lue_source_directory }}/CMakeUserPresets.json \
@@ -293,19 +294,23 @@ jobs:
         # Test of imported CMake targets
         git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
 
-        cmake \
-          -S ${{ env.lue_consume_source_directory }} \
-          -B ${{ env.lue_consume_build_directory }} \
-          -G "Ninja" \
-          -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
-          -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-          -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
-          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
-          -D lue_ROOT=${{ env.lue_development_install_directory }} \
-          -D HPX_ROOT=${{ env.hpx_install_directory }} \
-          -D Hwloc_ROOT=$CONDA_PREFIX/Library \
-          -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib \
-          -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+        # Copy Conan stuff so these packages can be found
+        mkdir ${{ env.lue_consume_build_directory }}
+        cp ${{ env.conan_package_prefix }}/environment/CMakePresets.json ${{ env.lue_consume_source_directory }}
+        cp -r ${{ env.conan_package_prefix }}/environment/* ${{ env.lue_consume_build_directory }}
+
+        CMAKE_PREFIX_PATH=${{ env.lue_consume_build_directory }} \
+          cmake \
+            -S ${{ env.lue_consume_source_directory }} \
+            -B ${{ env.lue_consume_build_directory }} \
+            -G "Ninja" \
+            -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
+            -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+            -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
+            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+            -D lue_ROOT=${{ env.lue_development_install_directory }} \
+            -D HPX_ROOT=${{ env.hpx_install_directory }} \
+            -D mdspan_ROOT=${{ env.mdspan_install_directory }}
         cmake --build ${{ env.lue_consume_build_directory }} --target all
 
         export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"

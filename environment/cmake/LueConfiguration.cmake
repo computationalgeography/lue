@@ -526,7 +526,7 @@ endif()
 
 
 if(LUE_BOOST_REQUIRED)
-    find_package(Boost 1.70 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    find_package(Boost 1.70 REQUIRED)
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
@@ -809,9 +809,10 @@ if(LUE_HDF5_REQUIRED)
         message(FATAL_ERROR "Target hdf5::hdf5 not available")
     endif()
 
-    # At least on MacOS icw Conda packages, HDF5_DEFINITIONS is not set, resulting in undefined symbols at
-    # link time. If we're sure the library is shared, add a definition ourselves to make the link succeed.
-    if(APPLE AND LUE_PYTHON_FROM_CONDA)
+    # At least on MacOS and Windows, icw Conda packages, HDF5_DEFINITIONS is not set, resulting in undefined
+    # symbols at link time. If we're sure the library is shared, add a definition ourselves to make the link
+    # succeed.
+    if((APPLE OR WIN32) AND LUE_PYTHON_FROM_CONDA)
         if(NOT HDF5_DEFINITIONS)
             string(FIND "${HDF5_C_LIBRARIES}" "shared" idx)
             if(idx GREATER_EQUAL 0)

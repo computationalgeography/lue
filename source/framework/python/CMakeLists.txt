@@ -208,6 +208,7 @@ target_link_libraries(lue_py_framework
         lue::framework_local_operation  # array and scalar use local operations in operators
         lue::framework_io
         lue::framework_model
+        lue::gdal
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size
