@@ -176,6 +176,85 @@ set -e
         )
 
 
+def create_slurm_script2(
+    cluster,
+    benchmark,
+    experiment,
+    job_steps,
+    result_prefix,
+):
+    """
+    Return a snippet of SLURM script configured to allocate the right amount of hardware
+    """
+    partition_name = cluster.scheduler.settings.partition_name
+
+    # A socket is a receptable on the motherboard for one physically packaged processor (each of which can
+    # contain one or more cores)
+    nr_sockets_per_node = cluster.cluster_node.nr_packages
+    nr_cores_per_socket = cluster.cluster_node.package.nr_cores
+
+    # A CPU in SLURM is either a core or a hyper-thread within a core. On eejit, a CPU is a thread.
+    nr_cpus_per_task = benchmark.nr_logical_cores_per_locality
+
+    # We group tasks per NUMA node. A socket contains one or more NUMA nodes, so the maximum number of tasks
+    # per socket equals the number of NUMA nodes in a socket.
+    max_nr_tasks_per_node = cluster.cluster_node.nr_numa_nodes
+    max_nr_tasks_per_socket = cluster.cluster_node.package.nr_numa_nodes
+
+    # This makes sure that hyper threads are not used
+    max_nr_tasks_per_core = 1  # implies --cpu-bind=cores
+
+    sbatch_options = cluster.scheduler.settings.sbatch_options
+    max_duration = experiment.max_duration
+    software_environment = cluster.software_environment.configuration
+
+    return """\
+#!/usr/bin/env bash
+
+# 1: Selection of nodes:
+#SBATCH --partition={partition_name}
+#SBATCH --sockets-per-node={nr_sockets_per_node}
+#SBATCH --cores-per-socket={nr_cores_per_socket}
+
+# 2: Allocation of CPUs from selected nodes:
+#SBATCH --cpus-per-task={nr_cpus_per_task}
+
+# 3: Distribution of tasks to selected nodes:
+#SBATCH --distribution=block:cyclic
+#SBATCH --ntasks-per-node={max_nr_tasks_per_node}
+#SBATCH --ntasks-per-socket={max_nr_tasks_per_socket}
+#SBATCH --ntasks-per-core={max_nr_tasks_per_core}
+
+#SBATCH --mem-bind=local
+#SBATCH --output={output_filename}
+
+{sbatch_options}
+{max_duration}
+
+{software_environment}
+
+{job_steps}""".format(
+        partition_name=partition_name,
+        nr_sockets_per_node=nr_sockets_per_node,
+        nr_cores_per_socket=nr_cores_per_socket,
+        nr_cpus_per_task=nr_cpus_per_task,
+        max_nr_tasks_per_node=max_nr_tasks_per_node,
+        max_nr_tasks_per_socket=max_nr_tasks_per_socket,
+        max_nr_tasks_per_core=max_nr_tasks_per_core,
+        sbatch_options="\n".join(
+            ["#SBATCH {}".format(option) for option in sbatch_options]
+        ),
+        max_duration=(
+            "#SBATCH --time={}".format(max_duration) if max_duration is not None else ""
+        ),
+        software_environment=software_environment,
+        job_steps="\n".join(job_steps),
+        output_filename=experiment.result_pathname(
+            result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"
+        ),
+    )
+
+
 def create_slurm_script(
     cluster,
     nr_cluster_nodes,  # How many nodes to reserve

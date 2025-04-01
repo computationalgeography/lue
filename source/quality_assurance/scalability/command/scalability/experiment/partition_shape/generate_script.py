@@ -21,20 +21,21 @@ def nr_workers(worker: Worker) -> int:
     return result
 
 
-def generate_script_slurm(
+def generate_script_slurm_threads(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
-    # We are not scaling workers, but testing partition sizes
-    assert benchmark.worker.nr_cluster_nodes_range == 0
-    assert benchmark.worker.nr_numa_nodes_range == 0
-    assert benchmark.worker.nr_threads_range == 0
+    # - Reserve a single NUMA node, including all its memory
+    # - Iterate over all partition shapes
+    # - Perform an experiment
 
-    # Iterate over all combinations of array shapes and partition shapes
-    # we need to benchmark and format a snippet of bash script for
-    # executing the benchmark
+    # Iterate over all combinations of array shapes and partition shapes we need to benchmark and format a
+    # snippet of bash script for executing the benchmark
+
     job_steps = []
 
     nr_localities = benchmark.worker.nr_localities
+    assert nr_localities == 1, nr_localities
+
     srun_configuration = job.srun_configuration(cluster)
     jobstarter = f"srun --ntasks {nr_localities} {srun_configuration}"
 
@@ -47,8 +48,7 @@ def generate_script_slurm(
         )
 
         job_steps += [
-            # Create directory for the resulting json files. This only needs to run on one of the nodes.
-            # For this we create a sub-allocation of one node and one task.
+            # Create directory for the resulting json files
             f"srun --ntasks 1 mkdir -p {result_workspace_pathname}"
         ]
 
@@ -80,21 +80,17 @@ def generate_script_slurm(
                 ),
             ]
 
-    slurm_script = job.create_slurm_script(
-        cluster,
-        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        nr_tasks=cluster.nr_localities_to_reserve(
-            benchmark.worker, benchmark.locality_per
-        ),
-        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
-        cpus_per_task=benchmark.nr_logical_cores_per_locality,
-        output_filename=experiment.result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"
-        ),
-        partition_name=cluster.scheduler.settings.partition_name,
-        sbatch_options=cluster.scheduler.settings.sbatch_options,
-        max_duration=experiment.max_duration,
-        job_steps=job_steps,
+    # Here:
+    # - number of SLURM tasks == number of HPX localities == number of OS processes == number of NUMA nodes
+    # - number of NUMA nodes needed == 1
+    # - number of cores per task is number of real cores per NUMA node
+    # - thread binding must be in "hardware order"
+    # - amount of memory needed is amount available in the one NUMA node
+
+    # TODO resources are not shared yet
+
+    slurm_script = job.create_slurm_script2(
+        cluster, benchmark, experiment, job_steps, result_prefix
     )
 
     job_name = "{name}-{program_name}".format(
@@ -122,6 +118,18 @@ def generate_script_slurm(
 
     job.write_script(commands, script_pathname)
     print("bash {}".format(script_pathname))
+
+
+def generate_script_slurm_numa_nodes(
+    result_prefix, cluster, benchmark, experiment, script_pathname
+):
+    assert False
+
+
+def generate_script_slurm_cluster_nodes(
+    result_prefix, cluster, benchmark, experiment, script_pathname
+):
+    assert False
 
 
 def generate_script_shell(
@@ -169,6 +177,25 @@ def generate_script_shell(
 
     job.write_script(commands, script_pathname)
     print("bash {}".format(script_pathname))
+
+
+def generate_script_slurm(
+    result_prefix, cluster, benchmark, experiment, script_pathname
+):
+    assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
+
+    if benchmark.worker.type == "cluster_node":
+        generate_script_slurm_cluster_nodes(
+            result_prefix, cluster, benchmark, experiment, script_pathname
+        )
+    elif benchmark.worker.type == "numa_node":
+        generate_script_slurm_numa_nodes(
+            result_prefix, cluster, benchmark, experiment, script_pathname
+        )
+    elif benchmark.worker.type == "thread":
+        generate_script_slurm_threads(
+            result_prefix, cluster, benchmark, experiment, script_pathname
+        )
 
 
 def generate_script(configuration_data):
