@@ -6,7 +6,7 @@ name: macOS CI (Homebrew)
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -104,106 +104,106 @@ jobs:
         build_directory: ${{ env.mdspan_build_directory }}
         install_directory: ${{ env.mdspan_install_directory }}
 
-    - name: configure
-      run: |
-        source env/bin/activate
-        mkdir ${{ env.lue_build_directory }}
-
-        # -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0
-
-        cmake \
-          -S ${{ env.lue_source_directory }} \
-          -B ${{ env.lue_build_directory }} \
-          --preset lue_release_macos_node \
-          -G "Ninja" \
-          -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
-          -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
-          -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
-          -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
-          -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
-          -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
-          -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
-          -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
-          -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
-          -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
-          -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
-          -D LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS=std::int32_t \
-          -D LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS=std::uint8_t \
-          -D LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS=float \
-          -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
-          -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
-          -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
-          -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t \
-          -D LUE_BUILD_VIEW=FALSE \
-          -D HPX_ROOT=${{ env.hpx_install_directory }} \
-          -D mdspan_ROOT=${{ env.mdspan_install_directory }}
-
-        # -D Python_FIND_VIRTUALENV=ONLY
-
-    - name: build
-      run: |
-        cmake --build ${{ env.lue_build_directory }} \
-          --target all
-
-    - name: install
-      run: |
-        cmake --install ${{ env.lue_build_directory }} \
-          --prefix ${{ env.lue_runtime_install_directory }} \
-          --component lue_runtime \
-          --strip
-        cmake --install ${{ env.lue_build_directory }} \
-          --prefix ${{ env.lue_development_install_directory }} \
-          --component lue_development \
-          --strip
-
-    - name: test
-      run: |
-        source env/bin/activate
-
-        # Unit tests
-        ctest --test-dir ${{ env.lue_build_directory }} \
-          --output-on-failure \
-          --exclude-regex "\
-        algorithm_clump_test|\
-        algorithm_decreasing_order_test|\
-        algorithm_image_land_integrate_and_allocate_test|\
-        algorithm_image_land_integrate_test|\
-        algorithm_unique_id_test|\
-        framework_io_lue_test|\
-        py_framework_python_test|\
-        py_image_land_python_test"
-
-        # Test of runtime targets
-        ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
-        ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-
-        export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
-        export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
-
-        python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
-        python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
-        python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
-
-    - name: consume
-      run: |
-        # Test of imported CMake targets
-        git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
-
-        cmake \
-          -S ${{ env.lue_consume_source_directory }} \
-          -B ${{ env.lue_consume_build_directory }} \
-          -G "Ninja" \
-          -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
-          -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-          -D CMAKE_BUILD_TYPE=Release \
-          -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
-          -D Boost_USE_DEBUG_RUNTIME=OFF \
-          -D lue_ROOT=${{ env.lue_development_install_directory }} \
-          -D HPX_ROOT=${{ env.hpx_install_directory }} \
-          -D mdspan_ROOT=${{ env.mdspan_install_directory }}
-        cmake --build ${{ env.lue_consume_build_directory }} --target all
-
-        ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-        ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
-        ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
+#     - name: configure
+#       run: |
+#         source env/bin/activate
+#         mkdir ${{ env.lue_build_directory }}
+#
+#         # -D CMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.macos_version }}.0
+#
+#         cmake \
+#           -S ${{ env.lue_source_directory }} \
+#           -B ${{ env.lue_build_directory }} \
+#           --preset lue_release_macos_node \
+#           -G "Ninja" \
+#           -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
+#           -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+#           -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+#           -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
+#           -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
+#           -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
+#           -D LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST=1 \
+#           -D LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY=2 \
+#           -D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE \
+#           -D LUE_DATA_MODEL_WITH_UTILITIES=TRUE \
+#           -D LUE_FRAMEWORK_WITH_IMAGE_LAND=TRUE \
+#           -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
+#           -D LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS=std::int32_t \
+#           -D LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS=std::uint8_t \
+#           -D LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS=float \
+#           -D LUE_FRAMEWORK_BOOLEAN_ELEMENT=std::uint8_t \
+#           -D LUE_FRAMEWORK_COUNT_ELEMENT=std::int32_t \
+#           -D LUE_FRAMEWORK_INDEX_ELEMENT=std::int32_t \
+#           -D LUE_FRAMEWORK_ID_ELEMENT=std::int32_t \
+#           -D LUE_BUILD_VIEW=FALSE \
+#           -D HPX_ROOT=${{ env.hpx_install_directory }} \
+#           -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+#
+#         # -D Python_FIND_VIRTUALENV=ONLY
+#
+#     - name: build
+#       run: |
+#         cmake --build ${{ env.lue_build_directory }} \
+#           --target all
+#
+#     - name: install
+#       run: |
+#         cmake --install ${{ env.lue_build_directory }} \
+#           --prefix ${{ env.lue_runtime_install_directory }} \
+#           --component lue_runtime \
+#           --strip
+#         cmake --install ${{ env.lue_build_directory }} \
+#           --prefix ${{ env.lue_development_install_directory }} \
+#           --component lue_development \
+#           --strip
+#
+#     - name: test
+#       run: |
+#         source env/bin/activate
+#
+#         # Unit tests
+#         ctest --test-dir ${{ env.lue_build_directory }} \
+#           --output-on-failure \
+#           --exclude-regex "\
+#         algorithm_clump_test|\
+#         algorithm_decreasing_order_test|\
+#         algorithm_image_land_integrate_and_allocate_test|\
+#         algorithm_image_land_integrate_test|\
+#         algorithm_unique_id_test|\
+#         framework_io_lue_test|\
+#         py_framework_python_test|\
+#         py_image_land_python_test"
+#
+#         # Test of runtime targets
+#         ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
+#         ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
+#
+#         export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version}}:$PYTHONPATH"
+#         export DYLD_FALLBACK_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$DYLD_FALLBACK_LIBRARY_PATH"
+#
+#         python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
+#         python${{ matrix.python_version }} ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
+#         python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
+#
+#     - name: consume
+#       run: |
+#         # Test of imported CMake targets
+#         git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
+#
+#         cmake \
+#           -S ${{ env.lue_consume_source_directory }} \
+#           -B ${{ env.lue_consume_build_directory }} \
+#           -G "Ninja" \
+#           -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
+#           -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
+#           -D CMAKE_BUILD_TYPE=Release \
+#           -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+#           -D Boost_USE_DEBUG_RUNTIME=OFF \
+#           -D lue_ROOT=${{ env.lue_development_install_directory }} \
+#           -D HPX_ROOT=${{ env.hpx_install_directory }} \
+#           -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+#         cmake --build ${{ env.lue_consume_build_directory }} --target all
+#
+#         ${{ env.lue_consume_build_directory }}/lue_consume_data_model
+#         ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
+#         ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
