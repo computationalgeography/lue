@@ -3,7 +3,10 @@ name: Windows CI (Conan)
 on:
   pull_request:
     branches-ignore:
-      # - "*"
+      # TODO
+      # Fails because CMake 4 is installed in runner and GEOS Conan packages isn't ported to CMake ≥ 3.5 yet.
+      # Revisit later.
+      - "*"
   push:
     branches:
       - "master"

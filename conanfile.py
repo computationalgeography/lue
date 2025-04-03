@@ -86,9 +86,7 @@ class LUERecipe(ConanFile):
             self.requires("vulkan-loader/[>=1.3]")
 
     def build_requirements(self):
-        # Don't use any CMake 4 found in the environment yet. Some packages haven't been ported to CMake ≥ 3.5
-        # yet. https://github.com/conan-io/conan-center-index/issues/26878
-        self.tool_requires("cmake/[>=3 <4]")
+        pass
 
     def generate(self):
         if install_conan_package("imgui"):
