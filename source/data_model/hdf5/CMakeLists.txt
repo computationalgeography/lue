@@ -2,10 +2,9 @@ add_library(lue_hdf5 SHARED)
 add_library(lue::hdf5 ALIAS lue_hdf5)
 
 target_compile_definitions(lue_hdf5
-    PRIVATE
-        ${HDF5_DEFINITIONS}
     PUBLIC
         H5_USE_110_API
+        ${HDF5_DEFINITIONS}
         # C:\Program Files\Microsoft Visual
         # Studio\2022\Enterprise\VC\Tools\MSVC\14.34.31933\include\xkeycheck.h(55,1): fatal  error
         # C1189: #error:  The C++ Standard Library forbids macroizing the keyword "bool". Enable
