@@ -97,10 +97,9 @@ if(LUE_BUILD_TESTS)
     )
 
     target_compile_definitions(lue_hdf5_static
-        PRIVATE
-            ${HDF5_DEFINITIONS}
         PUBLIC
             H5_USE_110_API
+            ${HDF5_DEFINITIONS}
             $<$<CXX_COMPILER_ID:MSVC>:_ALLOW_KEYWORD_MACROS>
     )
 
