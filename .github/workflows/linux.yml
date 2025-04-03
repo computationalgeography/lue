@@ -3,7 +3,7 @@ name: Linux CI
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -206,6 +206,7 @@ jobs:
           -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
           -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+          -D FETCHCONTENT_QUIET=FALSE \
           -D lue_ROOT=${{ env.lue_development_install_directory }} \
           -D HPX_ROOT=${{ env.hpx_install_directory }} \
           -D mdspan_ROOT=${{ env.mdspan_install_directory }}

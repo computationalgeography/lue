@@ -1,11 +1,13 @@
 name: Windows CI (Conan)
 
+# TODO
+# - Skipping because CMake 4 is installed in runner and GEOS Conan package isn't ported to CMake ≥ 3.5 yet.
+#   Revisit later.
+# - Skipping some tests. Revisit.
+
 on:
   pull_request:
     branches-ignore:
-      # TODO
-      # Fails because CMake 4 is installed in runner and GEOS Conan packages isn't ported to CMake ≥ 3.5 yet.
-      # Revisit later.
       - "*"
   push:
     branches:
@@ -311,6 +313,7 @@ jobs:
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
             -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+            -D FETCHCONTENT_QUIET=FALSE \
             -D lue_ROOT=${{ env.lue_development_install_directory }} \
             -D HPX_ROOT=${{ env.hpx_install_directory }} \
             -D mdspan_ROOT=${{ env.mdspan_install_directory }}
