@@ -1,7 +1,7 @@
 #include "lue/info/identity/active_set_index.hpp"
 #include "../python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,13 +14,13 @@ namespace lue {
 
             static std::string formal_string_representation(ActiveSetIndex const& index)
             {
-                return fmt::format("ActiveSetIndex(pathname='{}')", index.id().pathname());
+                return std::format("ActiveSetIndex(pathname='{}')", index.id().pathname());
             }
 
 
             static std::string informal_string_representation(ActiveSetIndex const& index)
             {
-                return fmt::format(
+                return std::format(
                     "{}\n"
                     "   nr_indices: {}",
                     formal_string_representation(index),

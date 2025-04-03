@@ -32,10 +32,7 @@ set_property(
         ENVIRONMENT_MODIFICATION
             PYTHONPATH=path_list_prepend:$<TARGET_FILE_DIR:lue::py>/..
             PYTHONPATH=path_list_prepend:${CMAKE_CURRENT_SOURCE_DIR}  # lue_unit_test.py
-
-            # This should not be necessary, but copying in all shared libs we depend on skips a few
-            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-            PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
+            # No need to append the PATH here with locations to our DDLs. Python won't pick them up.
 )
 
 set_property(

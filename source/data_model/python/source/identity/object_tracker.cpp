@@ -1,7 +1,7 @@
 #include "lue/object/identity/object_tracker.hpp"
 #include "../python_extension.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -14,7 +14,7 @@ namespace lue {
 
             static std::string formal_string_representation(ObjectTracker const& tracker)
             {
-                return fmt::format("ObjectTracker(pathname='{}')", tracker.id().pathname());
+                return std::format("ObjectTracker(pathname='{}')", tracker.id().pathname());
             }
 
 

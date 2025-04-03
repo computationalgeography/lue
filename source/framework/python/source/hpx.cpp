@@ -4,8 +4,8 @@
 #include "lue/py/framework/stream.hpp"
 #include <hpx/config.hpp>
 #include <hpx/future.hpp>
-#include <fmt/format.h>
 #include <pybind11/stl.h>
+#include <format>
 
 
 namespace lue::framework {
@@ -216,7 +216,7 @@ namespace lue::framework {
         auto formal_string_representation([[maybe_unused]] hpx::shared_future<Element> const& future)
             -> std::string
         {
-            return fmt::format("shared_future<{}>", as_string<Element>());
+            return std::format("shared_future<{}>", as_string<Element>());
         }
 
 
@@ -231,7 +231,7 @@ namespace lue::framework {
         void bind_future(pybind11::module& module)
         {
             pybind11::class_<hpx::future<Element>>(
-                module, fmt::format("future<{}>", as_string<Element>()).c_str())
+                module, std::format("future<{}>", as_string<Element>()).c_str())
 
                 .def("get", [](hpx::future<Element>& future) { return future.get(); })
 
@@ -243,7 +243,7 @@ namespace lue::framework {
         void bind_shared_future(pybind11::module& module)
         {
             pybind11::class_<hpx::shared_future<Element>>(
-                module, fmt::format("shared_future<{}>", as_string<Element>()).c_str())
+                module, std::format("shared_future<{}>", as_string<Element>()).c_str())
 
                 .def(
                     "__repr__",
@@ -409,7 +409,7 @@ namespace lue::framework {
 
         auto shared_future_class =
             pybind11::class_<hpx::shared_future<void>>(
-                module, fmt::format("shared_future<{}>", as_string<void>()).c_str())
+                module, std::format("shared_future<{}>", as_string<void>()).c_str())
                 .def(pybind11::init([](pybind11::none const&) { return hpx::make_ready_future<void>(); }))
 
                 .def(

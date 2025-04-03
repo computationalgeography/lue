@@ -1,5 +1,6 @@
 #include "lue/framework.hpp"
-#include <fmt/ranges.h>
+#include "lue/string.hpp"
+#include <format>
 #include <stdexcept>
 
 
@@ -13,10 +14,10 @@ namespace lue {
     {
         if (!rank_supported(rank))
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Unsupported rank: {}. This version of LUE is built with support for arrays with rank(s): {}",
                 rank,
-                fmt::join(ranks, ", ")));
+                join(ranks, ", ")));
         }
     }
 

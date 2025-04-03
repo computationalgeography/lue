@@ -292,7 +292,7 @@ BOOST_AUTO_TEST_CASE(random_input)
 
         FloatingPoint new_discharge{-1};
 
-        BOOST_TEST_INFO(fmt::format(
+        BOOST_TEST_INFO(std::format(
             "upstream_discharge: {}\n"
             "current_discharge: {}\n"
             "lateral_inflow: {}\n"

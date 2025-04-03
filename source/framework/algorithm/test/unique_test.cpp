@@ -12,7 +12,7 @@ namespace {
     template<typename IDElement, std::size_t rank>
     void test_array()
     {
-        BOOST_TEST_INFO_SCOPE(fmt::format("test_array<{}, {}>", lue::as_string<IDElement>, rank));
+        BOOST_TEST_INFO_SCOPE(std::format("test_array<{}, {}>", lue::as_string<IDElement>, rank));
 
         using Array = lue::PartitionedArray<IDElement, rank>;
 

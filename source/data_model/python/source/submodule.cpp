@@ -13,15 +13,11 @@
 #include <hdf5.h>
 
 
-namespace py = pybind11;
-
-
 namespace lue::data_model {
 
-
-    void init_submodule(py::module& module)
+    void init_submodule(pybind11::module& module)
     {
-        py::module submodule = module.def_submodule(
+        pybind11::module submodule = module.def_submodule(
             "data_model",
             R"(
     :mod:`lue.data_model` --- LUE Scientific Database

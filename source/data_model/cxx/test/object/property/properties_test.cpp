@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue object property properties
 #include "lue/object/property/properties.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 
 

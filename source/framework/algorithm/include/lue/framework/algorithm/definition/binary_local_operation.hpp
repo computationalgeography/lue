@@ -69,7 +69,7 @@ namespace lue {
                                     InputData2 const& input_partition_data2)
                                 {
                                     AnnotateFunction const annotation{
-                                        fmt::format("{}: partition", functor_name<Functor>)};
+                                        std::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition1);
                                     HPX_UNUSED(input_partition2);
@@ -196,7 +196,7 @@ namespace lue {
                                     Offset const& offset, InputData const& input_partition_data)
                                 {
                                     AnnotateFunction const annotation{
-                                        fmt::format("{}: partition", functor_name<Functor>)};
+                                        std::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
 
@@ -328,7 +328,7 @@ namespace lue {
                                     Offset const& offset, InputData const& input_partition_data)
                                 {
                                     AnnotateFunction const annotation{
-                                        fmt::format("{}: partition", functor_name<Functor>)};
+                                        std::format("{}: partition", functor_name<Functor>)};
 
                                     HPX_UNUSED(input_partition);
 
@@ -442,7 +442,7 @@ namespace lue {
         using InputPartition = ArrayPartition<policy::InputElementT<Policies, 0>, rank>;
         using OutputPartition = ArrayPartition<policy::OutputElementT<Policies, 0>, rank>;
 
-        AnnotateFunction const annotation{fmt::format("{}: partition", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: partition", functor_name<Functor>)};
 
         lue_hpx_assert(input_partition.valid());
         lue_hpx_assert(input_scalar.valid());
@@ -482,7 +482,7 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
-        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
 
         detail::verify_compatible(input_array1, input_array2);
 
@@ -534,7 +534,7 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
-        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
 
         lue_hpx_assert(all_are_valid(input_array.partitions()));
         lue_hpx_assert(input_scalar.valid());
@@ -583,7 +583,7 @@ namespace lue {
 
         using Shape = ShapeT<OutputArray>;
 
-        AnnotateFunction const annotation{fmt::format("{}: array", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
 
         lue_hpx_assert(input_scalar.valid());
         lue_hpx_assert(all_are_valid(input_array.partitions()));
@@ -624,7 +624,7 @@ namespace lue {
     {
         using OutputElement = policy::OutputElementT<Policies, 0>;
 
-        AnnotateFunction const annotation{fmt::format("{}: scalar", functor_name<Functor>)};
+        AnnotateFunction const annotation{std::format("{}: scalar", functor_name<Functor>)};
 
         return hpx::dataflow(
             hpx::launch::async,
@@ -672,7 +672,7 @@ namespace lue {
         ArrayPartition<policy::InputElementT<ArgumentType<void(Policies)>, 0>, rank> const&,                 \
         hpx::shared_future<policy::InputElementT<ArgumentType<void(Policies)>, 1>> const& input_scalar,      \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->ArrayPartition<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;
+        -> ArrayPartition<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;
 
 #define LUE_INSTANTIATE_BINARY_LOCAL_OPERATION(Policies, rank, Functor)                                      \
                                                                                                              \
@@ -682,7 +682,7 @@ namespace lue {
         hpx::shared_future<policy::InputElementT<ArgumentType<void(Policies)>, 0>> const&,                   \
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>, 1>, rank> const&,               \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                   \
+        -> PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                  \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     binary_local_operation<ArgumentType<void(Policies)>, rank, ArgumentType<void(Functor)>>(                 \
@@ -690,7 +690,7 @@ namespace lue {
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>, 0>, rank> const&,               \
         hpx::shared_future<policy::InputElementT<ArgumentType<void(Policies)>, 1>> const&,                   \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                   \
+        -> PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                  \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     binary_local_operation<ArgumentType<void(Policies)>, rank, ArgumentType<void(Functor)>>(                 \
@@ -698,7 +698,7 @@ namespace lue {
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>, 0>, rank> const&,               \
         PartitionedArray<policy::InputElementT<ArgumentType<void(Policies)>, 1>, rank> const&,               \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                   \
+        -> PartitionedArray<policy::OutputElementT<ArgumentType<void(Policies)>, 0>, rank>;                  \
                                                                                                              \
     template LUE_LOCAL_OPERATION_EXPORT auto                                                                 \
     binary_local_operation<ArgumentType<void(Policies)>, ArgumentType<void(Functor)>>(                       \
@@ -706,4 +706,4 @@ namespace lue {
         hpx::shared_future<policy::InputElementT<ArgumentType<void(Policies)>, 0>> const&,                   \
         hpx::shared_future<policy::InputElementT<ArgumentType<void(Policies)>, 1>> const&,                   \
         ArgumentType<void(Functor)> const&)                                                                  \
-        ->hpx::future<policy::OutputElementT<ArgumentType<void(Policies)>, 0>>;
+        -> hpx::future<policy::OutputElementT<ArgumentType<void(Policies)>, 0>>;

@@ -1,12 +1,14 @@
 #define BOOST_TEST_MODULE lue qa scalability instrument stopwatch
 #include "lue/qa/scalability/instrument/stopwatch.hpp"
 #include <boost/test/included/unit_test.hpp>
+#include <thread>
 
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
     lue::qa::Stopwatch stopwatch{};
     stopwatch.start();
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1000));
     stopwatch.stop();
 
     using namespace std::chrono_literals;

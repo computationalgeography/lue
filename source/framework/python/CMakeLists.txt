@@ -1,8 +1,5 @@
 add_subdirectory(script)
 
-add_test_conditionally(test)
-
-
 # framework/*
 foreach(module_name __init__.py pcraster_provider.py support.py)
     file(GENERATE
@@ -211,6 +208,7 @@ target_link_libraries(lue_py_framework
         lue::framework_local_operation  # array and scalar use local operations in operators
         lue::framework_io
         lue::framework_model
+        lue::gdal
         pybind11::module
         pybind11::thin_lto
         pybind11::opt_size
@@ -276,3 +274,7 @@ install(
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

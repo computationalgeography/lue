@@ -1,8 +1,8 @@
 #include "lue/utility/metadata.hpp"
 #include "lue/core/aspect.hpp"
-#include <fmt/format.h>
 #include <exception>
 #include <filesystem>
+#include <format>
 
 
 namespace lue {
@@ -25,7 +25,7 @@ namespace lue {
             {
                 if (!has_key(object, name))
                 {
-                    throw std::runtime_error(fmt::format("JSON object does not contain key {}", name));
+                    throw std::runtime_error(std::format("JSON object does not contain key {}", name));
                 }
             }
 
@@ -35,7 +35,7 @@ namespace lue {
                 if (!has_key(object, pointer))
                 {
                     throw std::runtime_error(
-                        fmt::format("JSON object does not contain key {}", pointer.to_string()));
+                        std::format("JSON object does not contain key {}", pointer.to_string()));
                 }
             }
 
@@ -77,7 +77,7 @@ namespace lue {
 
                 if (object_json_it == list_json.end())
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "No object whose key {} equals {} exists at {}", key, value, pointer.to_string()));
                 }
 
@@ -99,7 +99,7 @@ namespace lue {
                 if (object_json_it == object.end())
                 {
                     throw std::runtime_error(
-                        fmt::format("No object whose key {} equals {} exists", key, value));
+                        std::format("No object whose key {} equals {} exists", key, value));
                 }
 
                 return *object_json_it;
@@ -177,7 +177,7 @@ namespace lue {
             if (!std::filesystem::exists(pathname))
             {
                 throw std::runtime_error(
-                    fmt::format("File containing metadata ({}) does not exist", pathname));
+                    std::format("File containing metadata ({}) does not exist", pathname));
             }
 
             std::ifstream(pathname) >> _json;

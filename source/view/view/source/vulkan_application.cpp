@@ -3,9 +3,9 @@
 #include "lue/imgui.hpp"
 #include "lue/version.hpp"
 #include "lue/vulkan.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <cmath>
+#include <format>
 
 #include <iostream>
 
@@ -52,15 +52,19 @@
 
 
 #ifndef NDEBUG
-auto format_as(VkDebugReportObjectTypeEXT object_type)
+template<>
+struct std::formatter<VkDebugReportObjectTypeEXT>: std::formatter<std::string>
 {
-    // Use enum names if this can be querried from the Vulkan API
-    // https://docs.vulkan.org/spec/latest/chapters/debugging.html#VkDebugReportObjectTypeEXT
-    return static_cast<int>(object_type);
-}
+        auto format(VkDebugReportObjectTypeEXT object_type, format_context& ctx) const
+        {
+            // Use enum names if this can be queried from the Vulkan API
+            // https://docs.vulkan.org/spec/latest/chapters/debugging.html#VkDebugReportObjectTypeEXT
+            return formatter<std::string>::format(std::format("{}", static_cast<int>(object_type)), ctx);
+        }
+};
 
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
+static VKAPI_ATTR auto VKAPI_CALL debug_report(
     [[maybe_unused]] VkDebugReportFlagsEXT flags,
     VkDebugReportObjectTypeEXT object_type,
     [[maybe_unused]] std::uint64_t object,
@@ -68,9 +72,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(
     [[maybe_unused]] std::int32_t message_code,
     [[maybe_unused]] char const* layer_prefix,
     char const* message,
-    [[maybe_unused]] void* user_data)
+    [[maybe_unused]] void* user_data) -> VkBool32
 {
-    std::cerr << fmt::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
+    std::cerr << std::format("[vulkan] Debug report from ObjectType: {}: Message: {}", object_type, message)
               << std::endl;
 
     return VK_FALSE;

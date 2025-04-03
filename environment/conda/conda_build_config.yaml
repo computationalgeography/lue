@@ -16,6 +16,6 @@ cxx_compiler:
 hdf5:
   - 1.14.3
 libgdal:
-  - 3.9
+  - 3.10
 python:
   - 3.12

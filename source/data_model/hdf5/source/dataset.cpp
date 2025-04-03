@@ -1,8 +1,8 @@
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/link.hpp"
-#include <fmt/format.h>
 #include <cassert>
 #include <cstring>
+#include <format>
 #include <memory>
 
 
@@ -140,7 +140,7 @@ namespace lue::hdf5 {
         if (!id().is_valid())
         {
             throw std::runtime_error(
-                fmt::format("Cannot open dataset {} at {}", name, parent.id().pathname()));
+                std::format("Cannot open dataset {} at {}", name, parent.id().pathname()));
         }
 
         assert(id().is_valid());
@@ -443,7 +443,7 @@ namespace lue::hdf5 {
 
         if (!dataset_location.is_valid())
         {
-            throw std::runtime_error(fmt::format("Cannot open dataset {}", name));
+            throw std::runtime_error(std::format("Cannot open dataset {}", name));
         }
 
         return Dataset{std::move(dataset_location)};
@@ -473,7 +473,7 @@ namespace lue::hdf5 {
 
         if (dataset_exists(parent, name))
         {
-            throw std::runtime_error(fmt::format("Dataset {} already exists", name));
+            throw std::runtime_error(std::format("Dataset {} already exists", name));
         }
 
         Identifier dataset_location{
@@ -489,7 +489,7 @@ namespace lue::hdf5 {
 
         if (!dataset_location.is_valid())
         {
-            throw std::runtime_error(fmt::format("Cannot create dataset {}", name));
+            throw std::runtime_error(std::format("Cannot create dataset {}", name));
         }
 
         return Dataset{std::move(dataset_location)};

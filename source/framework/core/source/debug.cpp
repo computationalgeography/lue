@@ -1,5 +1,6 @@
 #include "lue/framework/core/debug.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/string.hpp"
 #include <hpx/include/compute.hpp>
 // #ifdef LUE_HPX_WITH_MPI
 // #include <hpx/mpi_base/mpi_environment.hpp>
@@ -8,7 +9,6 @@
 #include "hpx/runtime_distributed/get_locality_name.hpp"
 #include <hpx/include/lcos.hpp>
 #include <hpx/parallel/algorithms/transform.hpp>
-#include <fmt/ranges.h>
 #include <algorithm>
 #include <sstream>
 
@@ -31,8 +31,8 @@ namespace lue {
                         pointed to by the futures in @a collection
         */
         template<template<typename, typename...> typename Collection, typename... Args>
-        hpx::future<std::string> join(
-            Collection<hpx::future<std::string>, Args...>&& collection, std::string const& separator)
+        auto join(Collection<hpx::future<std::string>, Args...>&& collection, std::string const& separator)
+            -> hpx::future<std::string>
         {
             // Attach a continuation that grabs all strings pointed to by the
             // futures in the collection passed in, and joins them into a
@@ -50,7 +50,7 @@ namespace lue {
                             names.begin(),
                             [](auto& name_future) { return name_future.get(); });
 
-                        return fmt::format("{}", fmt::join(std::begin(names), std::end(names), separator));
+                        return lue::join(names, separator);
                     });
         }
 
@@ -84,7 +84,7 @@ namespace lue {
         //             std::ostringstream stream;
         //             stream << hpx::get_locality_id();
         //
-        //             return fmt::format(
+        //             return std::format(
         //                 "locality: {} -- rank(HPX): {}",  // -- rank(env): {}",
         //                 stream.str(),
         //                 hpx::util::mpi_environment::rank()
@@ -164,7 +164,7 @@ namespace lue {
                                   std::string const& all_locality_names,
                                   [[maybe_unused]] std::string const& all_locality_rank_mappings)
         {
-            return fmt::format(
+            return std::format(
                 "this_locality_nr     : {}\n"
                 "this_locality_name   : {}\n"
                 "root_locality_name   : {}\n"

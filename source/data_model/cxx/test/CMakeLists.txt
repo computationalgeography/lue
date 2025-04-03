@@ -51,18 +51,18 @@ add_unit_tests(
     SCOPE lue_cxx
     NAMES ${names}
     LIBRARIES
-        lue::data_model_test
+        lue_data_model_static
+    EXPORT_MACRO_BASENAME
+        DATA_MODEL
     TARGETS
         test_names
 )
 
-foreach(test_name ${test_names})
-    set_property(
-        TEST
-            ${test_name}
-        APPEND
-        PROPERTY
-            ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:hdf5::hdf5>/../bin>
-    )
-endforeach()
+set_property(
+    TEST
+        ${test_names}
+    APPEND
+    PROPERTY
+        ENVIRONMENT_MODIFICATION
+            PATH=path_list_prepend:$<TARGET_FILE_DIR:lue::hdf5>
+)

@@ -1,12 +1,12 @@
 #define BOOST_TEST_MODULE lue info time time_cell
 #include "lue/core/tag.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/info/time/time_cell.hpp"
-#include "lue/test.hpp"
 #include <boost/test/included/unit_test.hpp>
 #include <iostream>
 
 
-class Fixture: public lue::data_model::test::FileFixture
+class Fixture: public lue::hdf5::FileFixture
 {
 
     public:

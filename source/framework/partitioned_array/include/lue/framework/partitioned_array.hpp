@@ -376,32 +376,17 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    static std::string describe(Shape<Element, rank> const& shape)
+    static auto describe(Shape<Element, rank> const& shape) -> std::string
     {
-        // FIXME Requires fmt >= 6
-        // return fmt::format("({})", shape);
-
-        static_assert(rank > 0);
-
-        auto it = shape.begin();
-        std::string result = fmt::format("({}", *it);
-
-        for (++it; it < shape.end(); ++it)
-        {
-            result += fmt::format(", {}", *it);
-        }
-
-        result += ")";
-
-        return result;
+        return std::format("({})", join(shape, ", "));
     }
 
 
     // TODO Move this elsewhere
     template<typename Element, Rank rank>
-    static std::string describe(PartitionedArray<Element, rank> const& array)
+    static auto describe(PartitionedArray<Element, rank> const& array) -> std::string
     {
-        return fmt::format(
+        return std::format(
             "- PartitionedArray:\n"
             "    - array of elements  : {} ({} elements)\n"
             "    - array of partitions: {} ({} partitions)\n",

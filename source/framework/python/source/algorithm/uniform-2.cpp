@@ -116,7 +116,7 @@ namespace lue::framework {
 
             if (!result)
             {
-                throw std::runtime_error(fmt::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+                throw std::runtime_error(std::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
             }
 
             return result;
@@ -141,7 +141,7 @@ namespace lue::framework {
 
                 if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Rank of array shape and partition shape must be equal ({} != {})",
                         dynamic_array_shape.size(),
                         dynamic_partition_shape.size()));

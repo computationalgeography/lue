@@ -13,7 +13,7 @@ namespace lue::framework {
         template<typename RouteID, Rank rank>
         auto formal_string_representation(SerialRoute<RouteID, rank> const& route) -> std::string
         {
-            return fmt::format(
+            return std::format(
                 "SerialRoute<{}, {}>{{shape={}, shape_in_partitions={}}}",
                 as_string<RouteID>(),
                 rank,
@@ -39,8 +39,8 @@ namespace lue::framework {
             auto class_ =
                 pybind11::class_<Route>(
                     module,
-                    fmt::format("SerialRoute_{}_{}", as_string<RouteID>(), rank).c_str(),
-                    fmt::format(
+                    std::format("SerialRoute_{}_{}", as_string<RouteID>(), rank).c_str(),
+                    std::format(
                         R"(
     Partitioned serial route type for routes of rank {}
 )",

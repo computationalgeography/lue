@@ -2,10 +2,33 @@
 # LUE_QUALITY_ASSURANCE_WITH_TESTS options can be set to TRUE or FALSE. Depending on these settings tests are
 # build or not.
 # DIRECTORY_NAME: Name of subdirectory containing the target.
-function(add_test_conditionally
-        DIRECTORY_NAME)
-    if(LUE_BUILD_TESTS)
-        add_subdirectory(${DIRECTORY_NAME})
+# function(add_test_conditionally
+#         DIRECTORY_NAME)
+#     if(LUE_BUILD_TESTS)
+#         add_subdirectory(${DIRECTORY_NAME})
+#     endif()
+# endfunction()
+
+
+function(append_conan_runtime_lib_dirs)
+    foreach(path ${CONAN_RUNTIME_LIB_DIRS})
+        list(APPEND conan_runtime_lib_dir_tweak "PATH=path_list_prepend:${path}")
+    endforeach()
+
+    set_property(
+        TEST
+            ${ARGN}
+        APPEND
+        PROPERTY
+            ENVIRONMENT_MODIFICATION
+                ${conan_runtime_lib_dir_tweak}
+    )
+endfunction()
+
+
+function(append_3rd_party_runtime_lib_dirs)
+    if(CONAN_RUNTIME_LIB_DIRS)
+        append_conan_runtime_lib_dirs(${ARGN})
     endif()
 endfunction()
 
@@ -57,6 +80,8 @@ function(add_unit_tests)
 
         list(APPEND test_names ${test_name})
     endforeach()
+
+    append_3rd_party_runtime_lib_dirs(${test_names})
 
     set(${ARG_TARGETS} ${test_names} PARENT_SCOPE)
 endfunction()
@@ -384,72 +409,72 @@ function(generate_template_instantiation)
 endfunction()
 
 
-# Common basic CMake logic for configuring a shared library that is intended to be installed
-function(lue_configure_shared_library)
-    set(prefix ARG)
-    set(no_values "")
-    set(single_values
-        TARGET_BASENAME
-        EXPORT_HEADER_PATHNAME
-        EXPORT_MACRO_BASENAME
-    )
-    set(multi_values "")
-
-    cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
-
-    if(${prefix}_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR
-            "Function called with unrecognized arguments: "
-            "${${prefix}_UNPARSED_ARGUMENTS}")
-    endif()
-
-    set(target_basename ${ARG_TARGET_BASENAME})
-    set(export_header_pathname ${ARG_EXPORT_HEADER_PATHNAME})
-    set(export_macro_basename ${ARG_EXPORT_MACRO_BASENAME})
-
-    set(target_name "lue_${target_basename}")
-    set(export_macro_name "LUE_${export_macro_basename}_EXPORT")
-
-    add_library(lue::${target_basename} ALIAS ${target_name})
-
-    set_target_properties(${target_name}
-        PROPERTIES
-            EXPORT_NAME ${target_basename}
-            VERSION ${LUE_VERSION}
-            SOVERSION ${LUE_VERSION_MAJOR}
-    )
-
-    generate_export_header(${target_name}
-        EXPORT_FILE_NAME ${export_header_pathname}
-        EXPORT_MACRO_NAME ${export_macro_name})
-
-    target_include_directories(${target_name}
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export header
-    )
-
-    target_sources(${target_name}
-        PUBLIC
-            FILE_SET
-                HEADERS
-            BASE_DIRS
-                include
-                ${CMAKE_CURRENT_BINARY_DIR}/include
-            FILES
-                include/lue
-                ${CMAKE_CURRENT_BINARY_DIR}/${export_header_pathname}
-    )
-    lue_install_runtime_libraries(
-        TARGETS
-            ${target_name}
-    )
-
-    lue_install_development_libraries(
-        TARGETS
-            ${target_name}
-    )
-endfunction()
+# # Common basic CMake logic for configuring a shared library that is intended to be installed
+# function(lue_configure_shared_library)
+#     set(prefix ARG)
+#     set(no_values "")
+#     set(single_values
+#         TARGET_BASENAME
+#         EXPORT_HEADER_PATHNAME
+#         EXPORT_MACRO_BASENAME
+#     )
+#     set(multi_values "")
+#
+#     cmake_parse_arguments(PARSE_ARGV 0 ${prefix} "${no_values}" "${single_values}" "${multi_values}")
+#
+#     if(${prefix}_UNPARSED_ARGUMENTS)
+#         message(FATAL_ERROR
+#             "Function called with unrecognized arguments: "
+#             "${${prefix}_UNPARSED_ARGUMENTS}")
+#     endif()
+#
+#     set(target_basename ${ARG_TARGET_BASENAME})
+#     set(export_header_pathname ${ARG_EXPORT_HEADER_PATHNAME})
+#     set(export_macro_basename ${ARG_EXPORT_MACRO_BASENAME})
+#
+#     set(target_name "lue_${target_basename}")
+#     set(export_macro_name "LUE_${export_macro_basename}_EXPORT")
+#
+#     add_library(lue::${target_basename} ALIAS ${target_name})
+#
+#     set_target_properties(${target_name}
+#         PROPERTIES
+#             EXPORT_NAME ${target_basename}
+#             VERSION ${LUE_VERSION}
+#             SOVERSION ${LUE_VERSION_MAJOR}
+#     )
+#
+#     generate_export_header(${target_name}
+#         EXPORT_FILE_NAME ${export_header_pathname}
+#         EXPORT_MACRO_NAME ${export_macro_name})
+#
+#     target_include_directories(${target_name}
+#         PUBLIC
+#             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#             $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export header
+#     )
+#
+#     target_sources(${target_name}
+#         PUBLIC
+#             FILE_SET
+#                 HEADERS
+#             BASE_DIRS
+#                 include
+#                 ${CMAKE_CURRENT_BINARY_DIR}/include
+#             FILES
+#                 include/lue
+#                 ${CMAKE_CURRENT_BINARY_DIR}/${export_header_pathname}
+#     )
+#     lue_install_runtime_libraries(
+#         TARGETS
+#             ${target_name}
+#     )
+#
+#     lue_install_development_libraries(
+#         TARGETS
+#             ${target_name}
+#     )
+# endfunction()
 
 function(lue_configure_static_library_for_tests)
     # Tests need a static library to be able to access everything. Create it, given a configured shared
@@ -483,8 +508,9 @@ function(lue_configure_static_library_for_tests)
         ${sources}
     )
 
+    # NOTE Assuming PUBLIC is OK. It is convenient as targets linked to don't need to define these symbols.
     target_compile_definitions(${target_name_static_lib}
-        PRIVATE
+        PUBLIC
             LUE_${export_macro_basename}_STATIC_DEFINE
     )
 

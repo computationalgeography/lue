@@ -1,8 +1,10 @@
 #include "lue/gdal/compare_rasters.hpp"
 #include "lue/gdal/data_type.hpp"
 #include "lue/gdal/raster.hpp"
-#include <fmt/ranges.h>
+#include "lue/string.hpp"
 #include <cassert>
+#include <format>
+#include <ranges>
 
 
 namespace lue::gdal {
@@ -99,8 +101,8 @@ namespace lue::gdal {
 
             if (!shapes_equal)
             {
-                differences.emplace_back(fmt::format(
-                    "different shapes: ({}) != ({})", fmt::join(shape1, ", "), fmt::join(shape2, ", ")));
+                differences.emplace_back(
+                    std::format("different shapes: ({}) != ({})", join(shape1, ", "), join(shape2, ", ")));
             }
 
             auto const data_type1 = band1.data_type();
@@ -109,7 +111,7 @@ namespace lue::gdal {
 
             if (!data_types_equal)
             {
-                differences.emplace_back(fmt::format(
+                differences.emplace_back(std::format(
                     "different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
             }
 
@@ -124,7 +126,7 @@ namespace lue::gdal {
             if (!both_no_data_values_valid_or_invalid)
             {
                 differences.emplace_back(
-                    fmt::format("different no-data validity: {} != {}", no_data_valid1, no_data_valid2));
+                    std::format("different no-data validity: {} != {}", no_data_valid1, no_data_valid2));
             }
 
             bool const no_data_values_equal = [](Element const no_data_value1, Element const no_data_value2)
@@ -147,7 +149,7 @@ namespace lue::gdal {
             if (both_no_data_values_valid && !no_data_values_equal)
             {
                 differences.emplace_back(
-                    fmt::format("different no-data values: {} != {}", no_data_value1, no_data_value2));
+                    std::format("different no-data values: {} != {}", no_data_value1, no_data_value2));
             }
 
             bool const no_data_settings_equal = both_no_data_values_invalid || no_data_values_equal;
@@ -190,7 +192,7 @@ namespace lue::gdal {
         // Existence
         if (!dataset1 || !dataset2)
         {
-            differences.emplace_back(fmt::format(
+            differences.emplace_back(std::format(
                 "One or both datasets don't exist: {}: {} / {}: {}",
                 dataset_name1,
                 static_cast<bool>(dataset1),
@@ -208,8 +210,8 @@ namespace lue::gdal {
 
         if (!shapes_equal)
         {
-            differences.emplace_back(fmt::format(
-                "different shapes: ({}) != ({})", fmt::join(shape1, ", "), fmt::join(shape2, ", ")));
+            differences.emplace_back(
+                std::format("different shapes: ({}) != ({})", join(shape1, ", "), join(shape2, ", ")));
         }
 
         auto const data_type1 = raster1.data_type();
@@ -219,7 +221,7 @@ namespace lue::gdal {
         if (!data_types_equal)
         {
             differences.emplace_back(
-                fmt::format("different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
+                std::format("different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
         }
 
         auto const nr_bands1 = raster1.nr_bands();
@@ -229,7 +231,7 @@ namespace lue::gdal {
         if (!nr_bands_equal)
         {
             differences.emplace_back(
-                fmt::format("different number of bands: {} != {}", nr_bands1, nr_bands2));
+                std::format("different number of bands: {} != {}", nr_bands1, nr_bands2));
         }
 
         auto const geo_transform1 = raster1.geo_transform();
@@ -238,10 +240,10 @@ namespace lue::gdal {
 
         if (!geo_transforms_equal)
         {
-            differences.emplace_back(fmt::format(
+            differences.emplace_back(std::format(
                 "different geo-transformations: [{}] != [{}]",
-                fmt::join(geo_transform1, ", "),
-                fmt::join(geo_transform2, ", ")));
+                join(geo_transform1, ", "),
+                join(geo_transform2, ", ")));
         }
 
         // TODO SRS
@@ -313,7 +315,7 @@ namespace lue::gdal {
                     default:
                     {
                         differences.emplace_back(
-                            fmt::format("Unsupported GDAL data type: {}", as_string(data_type1)));
+                            std::format("Unsupported GDAL data type: {}", as_string(data_type1)));
                     }
                 }
             }

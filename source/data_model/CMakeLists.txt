@@ -48,11 +48,6 @@ if(LUE_DATA_MODEL_WITH_PYTHON_API)
     ### )
 endif()
 
-if(LUE_BUILD_TESTS)
-    add_subdirectory(test)
-    list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/test)
-endif()
-
 if(LUE_DATA_MODEL_WITH_UTILITIES OR LUE_BUILD_VIEW)
     add_subdirectory(utility)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/utility)

@@ -372,7 +372,6 @@ endif()
 # Handle external dependencies -------------------------------------------------
 if(LUE_BUILD_DATA_MODEL)
     set(LUE_HDF5_REQUIRED TRUE)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_BOOST_REQUIRED TRUE)
 
     if(LUE_BUILD_FRAMEWORK)
@@ -398,7 +397,6 @@ endif()
 
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_BOOST_REQUIRED TRUE)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
     set(LUE_MDSPAN_REQUIRED TRUE)
@@ -441,7 +439,6 @@ endif()
 
 
 if(LUE_BUILD_VIEW)
-    set(LUE_FMT_REQUIRED TRUE)
     set(LUE_GLFW_REQUIRED TRUE)
     set(LUE_IMGUI_REQUIRED TRUE)
     set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
@@ -529,7 +526,7 @@ endif()
 
 
 if(LUE_BOOST_REQUIRED)
-    find_package(Boost 1.70 REQUIRED COMPONENTS ${LUE_REQUIRED_BOOST_COMPONENTS})
+    find_package(Boost 1.70 REQUIRED)
 
     if(Boost_VERSION VERSION_EQUAL "1.75")
         message(FATAL_ERROR
@@ -802,31 +799,40 @@ if(LUE_GRAPHVIZ_REQUIRED)
     endif()
 endif()
 
-if(LUE_FMT_REQUIRED)
-    # In fmt, install rules are disabled if it's a subproject
-    set(FMT_INSTALL ON)
-    FetchContent_Declare(fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG e69e5f977d458f2650bb346dadf2ad30c5320281  # 10.2.1
-        SYSTEM
-        FIND_PACKAGE_ARGS 10
-    )
-    FetchContent_MakeAvailable(fmt)
-endif()
-
 
 if(LUE_HDF5_REQUIRED)
-    # Explicitly use Module Mode, to prevent the use of HDF5's own CMake find logic. This latter
-    # logic does not provide us with the hdf5::hdf5 target, which CMake's module defines.
-    # Note that Conan prefers Config Mode (it sets CMAKE_FIND_PACKAGE_PREFER_CONFIG in the
-    # toolchain).
-    find_package(HDF5 MODULE REQUIRED COMPONENTS C)
-    set(CMAKE_REQUIRED_INCLUDES "${HDF5_C_INCLUDE_DIRS}")
+    find_package(HDF5 REQUIRED COMPONENTS C)
+
+    if(NOT HDF5_FOUND)
+        message(FATAL_ERROR "HDF5 not found")
+    elseif(NOT TARGET hdf5::hdf5)
+        message(FATAL_ERROR "Target hdf5::hdf5 not available")
+    endif()
+
+    # At least on MacOS(?) and Windows, icw Conda packages, HDF5_DEFINITIONS is not set, resulting in undefined
+    # symbols at link time. If we're sure the library is shared, add a definition ourselves to make the link
+    # succeed.
+    # (APPLE OR WIN32)
+    if(WIN32 AND LUE_PYTHON_FROM_CONDA)
+        if(NOT HDF5_DEFINITIONS)
+            string(FIND "${HDF5_C_LIBRARIES}" "shared" idx)
+            if(idx GREATER_EQUAL 0)
+                message(WARNING "Adding -D H5_BUILT_AS_DYNAMIC_LIB to HDF5_DEFINITIONS ourselves")
+                set(HDF5_DEFINITIONS "-D H5_BUILT_AS_DYNAMIC_LIB")
+            endif()
+        endif()
+    endif()
+
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
     unset(CMAKE_REQUIRED_INCLUDED)
+
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
     message(STATUS "HDF5_IS_THREADSAFE            : ${HDF5_IS_THREADSAFE}")
+    message(STATUS "HDF5_DEFINITIONS              : ${HDF5_DEFINITIONS}")
+    message(STATUS "HDF5_INCLUDE_DIRS             : ${HDF5_INCLUDE_DIRS}")
+    message(STATUS "HDF5_C_LIBRARIES              : ${HDF5_C_LIBRARIES}")
 endif()
+
 
 if(LUE_JUPYTER_BOOK_REQUIRED)
     find_package(JupyterBook REQUIRED)

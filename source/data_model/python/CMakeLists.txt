@@ -1,5 +1,3 @@
-add_test_conditionally(test)
-
 file(GENERATE
     OUTPUT ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/data_model/__init__.py
     INPUT data_model.py.in
@@ -84,7 +82,7 @@ add_library(lue_py_data_model SHARED
     source/hl/raster_view.cpp
     source/hl/submodule.cpp
 
-    $<$<TARGET_EXISTS:lue::data_model_test>:source/test/submodule.cpp>
+    $<$<BOOL:${LUE_BUILD_TESTS}>:source/test/submodule.cpp>
 )
 
 add_library(lue::py_data_model ALIAS lue_py_data_model)
@@ -107,7 +105,6 @@ target_include_directories(lue_py_data_model
 
 target_link_libraries(lue_py_data_model
     PRIVATE
-        $<$<TARGET_EXISTS:lue::data_model_test>:lue::data_model_test>
         lue::data_model_hl
         lue::shared
         pybind11::module
@@ -144,3 +141,7 @@ install(
     DESTINATION ${LUE_INSTALL_PYTHON_PACKAGE_DIR}
     COMPONENT lue_runtime
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

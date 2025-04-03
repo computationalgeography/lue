@@ -1,5 +1,5 @@
 #include "lue/translate/stack_name.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue {
@@ -17,7 +17,7 @@ namespace lue {
 
         std::string StackName::operator[](std::size_t const idx) const
         {
-            return fmt::format("{}_{}{}", (_parent_path / _stem).generic_string(), idx, _extension.string());
+            return std::format("{}_{}{}", (_parent_path / _stem).generic_string(), idx, _extension.string());
         }
 
     }  // namespace utility

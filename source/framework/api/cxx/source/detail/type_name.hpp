@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/partitioned_array.hpp"
-#include <fmt/format.h>
+#include <format>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -55,7 +55,7 @@ namespace lue::api::detail {
     template<typename Element>
     auto type_name([[maybe_unused]] Element const& argument) -> std::string
     {
-        return fmt::format("{}", type_name<Element>());
+        return std::format("{}", type_name<Element>());
     }
 
 
@@ -68,21 +68,21 @@ namespace lue::api::detail {
     template<typename Element, std::size_t size>
     auto type_name([[maybe_unused]] std::array<Element, size> const& array) -> std::string
     {
-        return fmt::format("std::array<{}, {}>", type_name<Element>(), size);
+        return std::format("std::array<{}, {}>", type_name<Element>(), size);
     }
 
 
     template<typename Element>
     auto type_name([[maybe_unused]] lue::Scalar<Element> const& argument) -> std::string
     {
-        return fmt::format("Scalar<{}>", type_name<Element>());
+        return std::format("Scalar<{}>", type_name<Element>());
     }
 
 
     template<typename Element, Rank rank>
     auto type_name([[maybe_unused]] PartitionedArray<Element, rank> const& argument) -> std::string
     {
-        return fmt::format("Array<{}, {}>", type_name<Element>(), rank);
+        return std::format("Array<{}, {}>", type_name<Element>(), rank);
     }
 
 }  // namespace lue::api::detail

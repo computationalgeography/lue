@@ -1,5 +1,5 @@
 #include "lue/data_model/hl/raster_view.hpp"
-#include <fmt/format.h>
+#include <format>
 
 
 namespace lue::data_model {
@@ -123,7 +123,7 @@ namespace lue::data_model {
 
         if (!dataset.phenomena().contains(phenomenon_name))
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Dataset {} does not contain phenomenon {}", dataset.pathname(), phenomenon_name));
         }
 
@@ -131,7 +131,7 @@ namespace lue::data_model {
 
         if (!phenomenon.property_sets().contains(property_set_name))
         {
-            throw std::runtime_error(fmt::format(
+            throw std::runtime_error(std::format(
                 "Phenomenon {} does not contain property-set {}", phenomenon_name, property_set_name));
         }
 
@@ -269,7 +269,7 @@ namespace lue::data_model {
         {
             if (this->contains(name))
             {
-                throw std::runtime_error(fmt::format("Raster layer {} already exists", name));
+                throw std::runtime_error(std::format("Raster layer {} already exists", name));
             }
 
             // FIXME Obtain these from base class?
@@ -308,7 +308,7 @@ namespace lue::data_model {
         {
             if (!this->contains(name))
             {
-                throw std::runtime_error(fmt::format("Raster layer {} does not exist", name));
+                throw std::runtime_error(std::format("Raster layer {} does not exist", name));
             }
 
             Dataset& dataset{**this};
@@ -536,7 +536,7 @@ namespace lue::data_model {
         {
             if (this->contains(name))
             {
-                throw std::runtime_error(fmt::format("Raster layer {} already exists", name));
+                throw std::runtime_error(std::format("Raster layer {} already exists", name));
             }
 
             // FIXME Obtain these from base class?
@@ -586,7 +586,7 @@ namespace lue::data_model {
         {
             if (!this->contains(name))
             {
-                throw std::runtime_error(fmt::format("Raster layer {} does not exist", name));
+                throw std::runtime_error(std::format("Raster layer {} does not exist", name));
             }
 
             Dataset& dataset{**this};

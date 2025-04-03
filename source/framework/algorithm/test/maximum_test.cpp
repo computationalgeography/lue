@@ -13,7 +13,7 @@ namespace {
     {
         if constexpr (lue::BuildOptions::default_policies_enabled)
         {
-            BOOST_TEST_INFO_SCOPE(fmt::format("test_array<{}, {}>", lue::as_string<Element>, rank));
+            BOOST_TEST_INFO_SCOPE(std::format("test_array<{}, {}>", lue::as_string<Element>, rank));
 
             using namespace lue::default_policies;
 

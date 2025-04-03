@@ -161,7 +161,7 @@ namespace lue {
                 // Verify input is correct
                 if (lue_time_cell.nr_boxes() != 1)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Expected 1 time box containing cells, but got {}", lue_time_cell.nr_boxes()));
                 }
 
@@ -198,7 +198,7 @@ namespace lue {
 
                 if (lue_space_point.array_shape()[0] != 2)
                 {
-                    throw std::runtime_error(fmt::format(
+                    throw std::runtime_error(std::format(
                         "Expected space points of rank 2, but got points of rank {}",
                         lue_space_point.array_shape()[0]));
                 }
@@ -245,7 +245,7 @@ namespace lue {
                     lue_space_point.read(
                         data_model::IndexRange(current_set_idx, next_set_idx), space_points.data());
 
-                    layer_name = fmt::format("{}-{}", property_set_name, c + 1);
+                    layer_name = std::format("{}-{}", property_set_name, c + 1);
                     add_point_layer(*gdal_dataset, layer_name, space_points);
 
                     current_set_idx = next_set_idx;
@@ -265,14 +265,14 @@ namespace lue {
             if (!json::has_key(root_json, lue_dataset_name))
             {
                 throw std::runtime_error(
-                    fmt::format("No information for dataset {} present in metadata", lue_dataset_name));
+                    std::format("No information for dataset {} present in metadata", lue_dataset_name));
             }
 
             auto const dataset_json = json::object(root_json, lue_dataset_name);
 
             if (!json::has_key(dataset_json, "phenomena"))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "No information about phenomena present in metadata for "
                     "dataset {}",
                     lue_dataset_name));
@@ -282,7 +282,7 @@ namespace lue {
 
             if (phenomena_json.size() != 1)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Expected information about 1 phenomenon in metadata for "
                     "dataset {}, but got {}",
                     lue_dataset_name,
@@ -294,7 +294,7 @@ namespace lue {
 
             if (!json::has_key(phenomenon_json, "property_sets"))
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "No information about property-sets present in metadata for "
                     "phenomenon {} in dataset {}",
                     phenomenon_name,
@@ -305,7 +305,7 @@ namespace lue {
 
             if (property_sets_json.size() != 1)
             {
-                throw std::runtime_error(fmt::format(
+                throw std::runtime_error(std::format(
                     "Expected information about 1 property-set in metadata for "
                     "phenomenon {} in dataset {}, but got {}",
                     phenomenon_name,
@@ -323,7 +323,7 @@ namespace lue {
             if (!property_set.has_space_domain())
             {
                 throw std::runtime_error(
-                    fmt::format("Property-set {} does not have a space domain", property_set_name));
+                    std::format("Property-set {} does not have a space domain", property_set_name));
             }
 
             data_model::SpaceDomain& space_domain = property_set.space_domain();
@@ -348,7 +348,7 @@ namespace lue {
                             if (!property_set.has_time_domain())
                             {
                                 throw std::runtime_error(
-                                    fmt::format("Translating stationary space domain with "
+                                    std::format("Translating stationary space domain with "
                                                 "static properties is not supported yet"));
                             }
 
@@ -390,7 +390,7 @@ namespace lue {
                                     // }
                                     default:
                                     {
-                                        throw std::runtime_error(fmt::format(
+                                        throw std::runtime_error(std::format(
                                             "Translating time domain with item type {} "
                                             "is not supported yet",
                                             aspect_to_string(time_domain_item_type)));
@@ -426,7 +426,7 @@ namespace lue {
                             //         break;
                             //     }
                             //     default: {
-                            //         throw std::runtime_error(fmt::format(
+                            //         throw std::runtime_error(std::format(
                             //             "Translating time domain with item type {} "
                             //             "is not supported yet",
                             //                 aspect_to_string(time_domain_item_type)));
@@ -438,7 +438,7 @@ namespace lue {
                         default:
                         {
 
-                            throw std::runtime_error(fmt::format(
+                            throw std::runtime_error(std::format(
                                 "Translating space domain with item type {} is not "
                                 "supported yet",
                                 aspect_to_string(space_domain_item_type)));
@@ -489,7 +489,7 @@ namespace lue {
                                 }
                                 default:
                                 {
-                                    throw std::runtime_error(fmt::format(
+                                    throw std::runtime_error(std::format(
                                         "Translating time domain with item type {} "
                                         "is not supported yet",
                                         aspect_to_string(time_domain_item_type)));
@@ -501,7 +501,7 @@ namespace lue {
                         default:
                         {
 
-                            throw std::runtime_error(fmt::format(
+                            throw std::runtime_error(std::format(
                                 "Translating space domain with item type {} is not "
                                 "supported yet",
                                 aspect_to_string(space_domain_item_type)));

@@ -2,8 +2,8 @@
 #include "../python_extension.hpp"
 #include "lue/core/aspect.hpp"
 #include "lue/py/data_model/core/time/epoch.hpp"
-#include <fmt/format.h>
 #include <pybind11/pybind11.h>
+#include <format>
 
 
 namespace py = pybind11;
@@ -21,7 +21,7 @@ namespace lue {
 
         std::string formal_string_representation(Clock const& clock)
         {
-            return fmt::format(
+            return std::format(
                 "Clock(epoch={}, unit={}, nr_units={})",
                 formal_string_representation(clock.epoch()),
                 aspect_to_string(clock.unit()),
