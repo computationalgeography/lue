@@ -176,8 +176,63 @@ set -e
         )
 
 
+def memory_requirements(
+    cluster, benchmark, experiment, nr_tasks: int
+) -> tuple[int, str]:
+    """
+    Return number of GiB of memory required per cluster node. This amount can be less than what is available
+    in a cluster node, or it can be the total amount available per cluster node.
+    """
+    amount = 0
+    binding = ""
+
+    if benchmark.worker.type == "thread":
+        assert nr_tasks == 1, nr_tasks
+
+        if benchmark.locality_per == "numa_node":
+            amount = cluster.cluster_node.package.numa_node.memory
+            binding = "local"
+        elif benchmark.locality_per == "cluster_node":
+            amount = cluster.cluster_node.memory
+            binding = "none"
+    elif benchmark.worker.type == "numa_node":
+        assert benchmark.locality_per == "numa_node"
+        assert nr_tasks <= cluster.cluster_node.nr_numa_nodes, nr_tasks
+
+        if experiment.name == "partition_shape":
+            # All memory must be available
+            amount = cluster.cluster_node.memory
+
+            # A large problem is solved with all NUMA nodes. Each of them should only use its own memory.
+            binding = "local"
+        elif experiment.name == "strong_scalability":
+            # All memory must be available
+            amount = cluster.cluster_node.memory
+
+            # A large problem is solved with increasingly more NUMA nodes. All of them should be able to use
+            # all memory
+            binding = "none"
+        elif experiment.name == "weak_scalability":
+            # Limit memory usage to what is available in a NUMA node
+            amount = nr_tasks * cluster.cluster_node.package.numa_node.memory
+
+            # An increasingly large problem is solved with increasingly more NUMA nodes. Each of them should
+            # only use its own local memory.
+            binding = "local"
+    elif benchmark.worker.type == "cluster_node":
+        assert benchmark.locality_per == "numa_node"
+        assert nr_tasks >= cluster.cluster_node.nr_numa_nodes, nr_tasks
+
+        amount = cluster.cluster_node.memory
+        binding = "local"  # Since a process per NUMA node is used
+
+    return amount, binding
+
+
 def create_slurm_script2(
     cluster,
+    nr_cluster_nodes,
+    nr_tasks,
     benchmark,
     experiment,
     job_steps,
@@ -188,18 +243,14 @@ def create_slurm_script2(
     """
     partition_name = cluster.scheduler.settings.partition_name
 
-    # A socket is a receptable on the motherboard for one physically packaged processor (each of which can
-    # contain one or more cores)
-    nr_sockets_per_node = cluster.cluster_node.nr_packages
-    nr_cores_per_socket = cluster.cluster_node.package.nr_cores
-
-    # A CPU in SLURM is either a core or a hyper-thread within a core. On eejit, a CPU is a thread.
+    # A CPU in SLURM is either a core or a hyper-thread within a core
+    # On eejit, a CPU is a thread (hyper threading is on)
+    # On snellius, a CPU is a core (hyper threading is off)
     nr_cpus_per_task = benchmark.nr_logical_cores_per_locality
 
-    # We group tasks per NUMA node. A socket contains one or more NUMA nodes, so the maximum number of tasks
-    # per socket equals the number of NUMA nodes in a socket.
-    max_nr_tasks_per_node = cluster.cluster_node.nr_numa_nodes
-    max_nr_tasks_per_socket = cluster.cluster_node.package.nr_numa_nodes
+    memory_required_per_cluster_node, memory_binding = memory_requirements(
+        cluster, benchmark, experiment, nr_tasks
+    )
 
     # This makes sure that hyper threads are not used
     max_nr_tasks_per_core = 1  # implies --cpu-bind=cores
@@ -208,26 +259,24 @@ def create_slurm_script2(
     max_duration = experiment.max_duration
     software_environment = cluster.software_environment.configuration
 
+    exclusive = (
+        True
+        if benchmark.worker.type != "thread" and experiment.name == "strong_scalability"
+        else False
+    )
+
     return """\
 #!/usr/bin/env bash
 
-# 1: Selection of nodes:
 #SBATCH --partition={partition_name}
-#SBATCH --sockets-per-node={nr_sockets_per_node}
-#SBATCH --cores-per-socket={nr_cores_per_socket}
-
-# 2: Allocation of CPUs from selected nodes:
+#SBATCH --nodes={nr_cluster_nodes}
+{exclusive}
 #SBATCH --cpus-per-task={nr_cpus_per_task}
-
-# 3: Distribution of tasks to selected nodes:
-#SBATCH --distribution=block:cyclic
-#SBATCH --ntasks-per-node={max_nr_tasks_per_node}
-#SBATCH --ntasks-per-socket={max_nr_tasks_per_socket}
 #SBATCH --ntasks-per-core={max_nr_tasks_per_core}
-
-#SBATCH --mem-bind=local
+#SBATCH --ntasks={nr_tasks}
+#SBATCH --mem={memory}G
+#SBATCH --mem-bind={memory_binding}
 #SBATCH --output={output_filename}
-
 {sbatch_options}
 {max_duration}
 
@@ -235,12 +284,13 @@ def create_slurm_script2(
 
 {job_steps}""".format(
         partition_name=partition_name,
-        nr_sockets_per_node=nr_sockets_per_node,
-        nr_cores_per_socket=nr_cores_per_socket,
+        nr_cluster_nodes=nr_cluster_nodes,
+        exclusive=("#SBATCH --exclusive" if exclusive else ""),
         nr_cpus_per_task=nr_cpus_per_task,
-        max_nr_tasks_per_node=max_nr_tasks_per_node,
-        max_nr_tasks_per_socket=max_nr_tasks_per_socket,
         max_nr_tasks_per_core=max_nr_tasks_per_core,
+        nr_tasks=nr_tasks,
+        memory=memory_required_per_cluster_node,
+        memory_binding=memory_binding,
         sbatch_options="\n".join(
             ["#SBATCH {}".format(option) for option in sbatch_options]
         ),
@@ -250,7 +300,11 @@ def create_slurm_script2(
         software_environment=software_environment,
         job_steps="\n".join(job_steps),
         output_filename=experiment.result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"
+            result_prefix,
+            cluster.name,
+            benchmark.scenario_name,
+            "slurm",
+            f"out-{nr_tasks}",
         ),
     )
 
