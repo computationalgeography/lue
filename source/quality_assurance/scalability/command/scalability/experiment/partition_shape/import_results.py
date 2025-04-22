@@ -114,8 +114,9 @@ def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
 
     if epoch_offset < 0:
         raise RuntimeError(
-            "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch)
+            "epoch passed in is later than epoch from benchmark: {} > {}".format(
+                epoch, benchmark_epoch
+            )
         )
 
     # Benchmarks are sorted by benchmark epochs. Keep the information
@@ -141,7 +142,6 @@ def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
     active_object_id = nr_active_sets * [5]
 
     array_shape = list(benchmark_json["task"]["array_shape"])
-    rank = len(array_shape)
     partition_shape = list(benchmark_json["task"]["partition_shape"])
 
     lue_json = {

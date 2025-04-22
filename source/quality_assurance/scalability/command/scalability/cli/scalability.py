@@ -5,37 +5,14 @@ from pathlib import Path
 import docopt
 
 from lue import __version__ as lue_version
-from lue.command.scalability import perform_experiment_task
+from lue.command.scalability import (
+    export_duration,
+    perform_experiment_task,
+    summarize_experiment,
+)
 
 
-def main():
-    usage = """\
-Perform scalability experiment
-
-Usage:
-    {command}
-        (partition_shape | weak_scalability | strong_scalability)
-        (script | import | postprocess)
-        <command> <arguments>
-        <platform> (core_numa_node | core_cluster_node | numa_node | cluster_node)
-        <platform_config_prefix> <experiment_config_prefix> <result_prefix>
-    {command} -h | --help
-    {command} --version
-
-Options:
-    -h --help       Show this screen
-    --version       Show version
-    command         Command to analyse
-    arguments       Additional arguments to pass on to the command. Pass an
-                    empty string if this is not needed.
-    result_prefix   Directory to store results in
-    platform        Name of platform
-""".format(
-        command=Path(sys.argv[0]).name
-    )
-
-    arguments = docopt.docopt(usage, version=lue_version)
-
+def perform_experiment(arguments):
     if arguments["partition_shape"]:
         experiment_name = "partition_shape"
     elif arguments["weak_scalability"]:
@@ -109,8 +86,54 @@ Options:
         "experiment": f"{experiment_config_pathname}",
     }
 
-    # import pprint
-    # pprint.pprint(configuration_data)
-    # meh
-
     perform_experiment_task(experiment_name, task_name, configuration_data)
+
+
+def query_experiment(arguments):
+    path = Path(arguments["<result_pathname>"])
+
+    if arguments["summary"]:
+        summarize_experiment(dataset_path=path)
+    elif arguments["duration"]:
+        csv_path = Path(arguments["<csv_pathname>"])
+        export_duration(dataset_path=path, csv_path=csv_path)
+
+
+def main():
+    usage = """\
+Perform scalability experiment
+
+Usage:
+    {command}
+        (partition_shape | weak_scalability | strong_scalability)
+        (script | import | postprocess)
+        <command> <arguments>
+        <platform> (core_numa_node | core_cluster_node | numa_node | cluster_node)
+        <platform_config_prefix> <experiment_config_prefix> <result_prefix>
+    {command}
+        query summary <result_pathname>
+    {command}
+        query duration <result_pathname> <csv_pathname>
+    {command} -h | --help
+    {command} --version
+
+Options:
+    -h --help         Show this screen
+    --version         Show version
+    command           Command to analyse
+    arguments         Additional arguments to pass on to the command. Pass an
+                      empty string if this is not needed.
+    result_prefix     Directory to store results in
+    result_pathname   Pathname of input LUE file containing postprocessed results
+    csv_pathname      Pathname of output CSV file for storing exported durations
+    platform          Name of platform
+""".format(
+        command=Path(sys.argv[0]).name
+    )
+
+    arguments = docopt.docopt(usage, version=lue_version)
+
+    if arguments["query"]:
+        query_experiment(arguments)
+    else:
+        perform_experiment(arguments)
