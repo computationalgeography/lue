@@ -187,10 +187,20 @@ class SoftwareEnvironment(object):
     def from_json(self, data):
         self.module_names = data["modules"]
 
+        if "venv" in data:
+            self.venv = data["venv"]
+        else:
+            self.venv = None
+
     def to_json(self):
-        return {
+        result = {
             "modules": self.module_names,
         }
+
+        if self.venv:
+            result["venv"] = self.venv
+
+        return result
 
     @property
     def configuration(self):
@@ -200,6 +210,10 @@ class SoftwareEnvironment(object):
             commands = ["module purge"]
 
         commands += ["module load {}".format(name) for name in self.module_names]
+
+        if self.venv:
+            environment = self.venv["environment"]
+            commands.append(f"source {environment}/bin/activate")
 
         return "\n".join(commands)
 

@@ -24,6 +24,8 @@ def nr_workers(worker: Worker) -> int:
 def generate_script_slurm(
     result_prefix, cluster, benchmark, experiment, script_pathname
 ):
+    assert benchmark.worker.type in ["cluster_node", "numa_node", "thread"]
+
     # We are not scaling workers, but testing partition sizes
     assert benchmark.worker.nr_cluster_nodes_range == 0
     assert benchmark.worker.nr_numa_nodes_range == 0
@@ -35,6 +37,7 @@ def generate_script_slurm(
     job_steps = []
 
     nr_localities = benchmark.worker.nr_localities
+
     srun_configuration = job.srun_configuration(cluster)
     jobstarter = f"srun --ntasks {nr_localities} {srun_configuration}"
 
@@ -47,9 +50,8 @@ def generate_script_slurm(
         )
 
         job_steps += [
-            # Create directory for the resulting json files. This only needs to run on one of the nodes.
-            # For this we create a sub-allocation of one node and one task.
-            f"srun --ntasks 1 mkdir -p {result_workspace_pathname}"
+            # Create directory for the resulting json files
+            f"mkdir -p {result_workspace_pathname}"
         ]
 
         for partition_shape in experiment.partition.shapes:
@@ -80,21 +82,16 @@ def generate_script_slurm(
                 ),
             ]
 
-    slurm_script = job.create_slurm_script(
+    slurm_script = job.create_slurm_script2(
         cluster,
         nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
         nr_tasks=cluster.nr_localities_to_reserve(
             benchmark.worker, benchmark.locality_per
         ),
-        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
-        cpus_per_task=benchmark.nr_logical_cores_per_locality,
-        output_filename=experiment.result_pathname(
-            result_prefix, cluster.name, benchmark.scenario_name, "slurm", "out"
-        ),
-        partition_name=cluster.scheduler.settings.partition_name,
-        sbatch_options=cluster.scheduler.settings.sbatch_options,
-        max_duration=experiment.max_duration,
+        benchmark=benchmark,
+        experiment=experiment,
         job_steps=job_steps,
+        result_prefix=result_prefix,
     )
 
     job_name = "{name}-{program_name}".format(

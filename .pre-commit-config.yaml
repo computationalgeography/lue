@@ -1,79 +1,79 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 exclude: |
-  (?x)^(
-    environment/cmake/.*\.patch|
-    environment/cmake/UseLATEX\.cmake|
-    environment/cmake/conan-.*\.cmake|
-    source/view/imgui/include/lue/imgui/font/.*
-  )$
+    (?x)^(
+      environment/cmake/.*\.patch|
+      environment/cmake/UseLATEX\.cmake|
+      environment/cmake/conan-.*\.cmake|
+      source/view/imgui/include/lue/imgui/font/.*
+    )$
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
-  hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  # - id: check-yaml
-  - id: check-added-large-files
-- repo: https://github.com/psf/black
-  rev: 25.1.0
-  hooks:
-  - id: black
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.14.1
-  hooks:
-  - id: mypy
-    # args: [--verbose]
-    language: system  # Use interpreter in environment
-    exclude: |
-      (?x)^(
-        source/data_model/python/test/.*|
-        document/luepy/ext/.*|
-        source/framework/case_study/.*|
-        source/framework/python/test/.*|
-      )$
-- repo: https://github.com/pycqa/isort
-  rev: 6.0.0
-  hooks:
-  - id: isort
-    files: |
-      (?x)^(
-        .*\.py|
-        .*\.py.in|
-      )$
-# TODO REQUIRES RUBY - repo: https://github.com/markdownlint/markdownlint
-# TODO REQUIRES RUBY   rev: v0.12.0
-# TODO REQUIRES RUBY   hooks:
-# TODO REQUIRES RUBY   - id: markdownlint
-- repo: https://github.com/codespell-project/codespell
-  rev: v2.4.1
-  hooks:
-  - id: codespell
-    additional_dependencies:
-    - tomli
-- repo: https://github.com/crate-ci/typos
-  rev: dictgen-v0.3.1
-  hooks:
-  - id: typos
-    args: []  # Relevant: don't update files, just report
-# This one last. It is the slowest. --------------------------------------------
-- repo: https://github.com/pocc/pre-commit-hooks
-  rev: v1.3.5
-  hooks:
-  - id: clang-format
-    args: [--style=file, -i]
-  - id: clang-tidy
-    args: [--quiet]
-    exclude: |
-      (?x)^(
-        source/data_model/cxx/.*|
-        source/data_model/gdal/include/lue/gdal/library.hpp|
-        source/data_model/hl/.*|
-        source/data_model/python/.*|
-        source/data_model/test/.*|
-        source/data_model/translate/.*|
-        source/data_model/utility/.*|
-        source/data_model/validate/.*|
-        source/framework/.*|
-        source/view/.*|
-      )$
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v5.0.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          # - id: check-yaml
+          - id: check-added-large-files
+    - repo: https://github.com/psf/black
+      rev: 25.1.0
+      hooks:
+          - id: black
+    - repo: https://github.com/pre-commit/mirrors-mypy
+      rev: v1.15.0
+      hooks:
+          - id: mypy
+            # args: [--verbose]
+            language: system # Use interpreter in environment
+            exclude: |
+                (?x)^(
+                  source/data_model/python/test/.*|
+                  document/luepy/ext/.*|
+                  source/framework/case_study/.*|
+                  source/framework/python/test/.*|
+                )$
+    - repo: https://github.com/pycqa/isort
+      rev: 6.0.1
+      hooks:
+          - id: isort
+            files: |
+                (?x)^(
+                  .*\.py|
+                  .*\.py.in|
+                )$
+    # TODO REQUIRES RUBY - repo: https://github.com/markdownlint/markdownlint
+    # TODO REQUIRES RUBY   rev: v0.12.0
+    # TODO REQUIRES RUBY   hooks:
+    # TODO REQUIRES RUBY   - id: markdownlint
+    - repo: https://github.com/codespell-project/codespell
+      rev: v2.4.1
+      hooks:
+          - id: codespell
+            additional_dependencies:
+                - tomli
+    - repo: https://github.com/crate-ci/typos
+      rev: v1.13.1
+      hooks:
+          - id: typos
+            args: [] # Relevant: don't update files, just report
+    # This one last. It is the slowest. --------------------------------------------
+    - repo: https://github.com/pocc/pre-commit-hooks
+      rev: v1.3.5
+      hooks:
+          - id: clang-format
+            args: [--style=file, -i]
+          - id: clang-tidy
+            args: [--quiet]
+            exclude: |
+                (?x)^(
+                  source/data_model/cxx/.*|
+                  source/data_model/gdal/include/lue/gdal/library.hpp|
+                  source/data_model/hl/.*|
+                  source/data_model/python/.*|
+                  source/data_model/test/.*|
+                  source/data_model/translate/.*|
+                  source/data_model/utility/.*|
+                  source/data_model/validate/.*|
+                  source/framework/.*|
+                  source/view/.*|
+                )$

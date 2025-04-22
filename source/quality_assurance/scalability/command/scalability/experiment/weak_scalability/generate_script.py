@@ -70,25 +70,14 @@ def generate_script_slurm_threads(
             )
         ]
 
-    slurm_script = job.create_slurm_script(
+    slurm_script = job.create_slurm_script2(
         cluster,
-        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        nr_tasks=cluster.nr_localities_to_reserve(
-            benchmark.worker, benchmark.locality_per
-        ),
-        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
-        cpus_per_task=benchmark.nr_logical_cores_per_locality,
-        output_filename=experiment.result_pathname(
-            result_prefix,
-            cluster.name,
-            benchmark.scenario_name,
-            os.path.basename(os.path.splitext(script_pathname)[0]),
-            "out",
-        ),
-        partition_name=cluster.scheduler.settings.partition_name,
-        sbatch_options=cluster.scheduler.settings.sbatch_options,
-        max_duration=experiment.max_duration,
+        nr_cluster_nodes=1,
+        nr_tasks=1,
+        benchmark=benchmark,
+        experiment=experiment,
         job_steps=job_steps,
+        result_prefix=result_prefix,
     )
 
     job_name = "{name}-{program_name}".format(
@@ -128,7 +117,14 @@ def generate_script_slurm_numa_nodes(
     assert benchmark.worker.nr_numa_nodes_range >= 1
     assert benchmark.worker.nr_threads_range == 0
 
-    job_steps = []
+    commands = [
+        "mkdir -p {}".format(
+            experiment.workspace_pathname(
+                result_prefix, cluster.name, benchmark.scenario_name
+            )
+        ),
+    ]
+
     array_shape_per_worker = experiment.array.shape
     partition_shape = experiment.partition.shape
 
@@ -139,11 +135,9 @@ def generate_script_slurm_numa_nodes(
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
-
         jobstarter = f"srun --ntasks {nr_localities} {srun_configuration}"
 
-        job_steps += [
-            # Run the benchmark, resulting in a json file
+        job_steps = [
             f"{jobstarter} {experiment.command_pathname} {experiment.command_arguments} "
             f'--hpx:threads="{nr_threads}" '
             "{program_configuration}".format(
@@ -159,49 +153,37 @@ def generate_script_slurm_numa_nodes(
             )
         ]
 
-    slurm_script = job.create_slurm_script(
-        cluster,
-        nr_cluster_nodes=benchmark.worker.nr_cluster_nodes,
-        nr_tasks=cluster.nr_localities_to_reserve(
-            benchmark.worker, benchmark.locality_per
-        ),
-        nr_cores_per_socket=cluster.cluster_node.package.numa_node.nr_cores,
-        cpus_per_task=benchmark.nr_logical_cores_per_locality,
-        output_filename=experiment.result_pathname(
-            result_prefix,
-            cluster.name,
-            benchmark.scenario_name,
-            os.path.basename(os.path.splitext(script_pathname)[0]),
-            "out",
-        ),
-        partition_name=cluster.scheduler.settings.partition_name,
-        sbatch_options=cluster.scheduler.settings.sbatch_options,
-        max_duration=experiment.max_duration,
-        job_steps=job_steps,
-    )
+        slurm_script = job.create_slurm_script2(
+            cluster,
+            nr_cluster_nodes=1,
+            nr_tasks=nr_localities,
+            benchmark=benchmark,
+            experiment=experiment,
+            job_steps=job_steps,
+            result_prefix=result_prefix,
+        )
 
-    job_name = "{name}-{program_name}".format(
-        name=experiment.name, program_name=experiment.program_name
-    )
-    delimiter = "END_OF_SLURM_SCRIPT"
+        job_name = "{name}-{program_name}-{nr_workers}".format(
+            name=experiment.name,
+            program_name=experiment.program_name,
+            nr_workers=nr_workers,
+        )
+        delimiter = "END_OF_SLURM_SCRIPT_{}".format(nr_workers)
 
-    commands = [
-        "# Make sure SLURM can create the output file",
-        "mkdir -p {}".format(
-            experiment.workspace_pathname(
-                result_prefix, cluster.name, benchmark.scenario_name
-            )
-        ),
-        "",
-        "# Submit job to SLURM scheduler",
-        "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
-            job_name=job_name,
-            sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
-            delimiter=delimiter,
-        ),
-        slurm_script,
-        "{delimiter}".format(delimiter=delimiter),
-    ]
+        commands += [
+            "",
+            "sbatch --job-name {job_name} {sbatch_options} << {delimiter}".format(
+                job_name=job_name,
+                sbatch_options=" ".join(cluster.scheduler.settings.sbatch_options),
+                delimiter=delimiter,
+            ),
+            slurm_script,
+            "{delimiter}".format(delimiter=delimiter),
+            "",
+            # Prevent benchmarks to start at the same time point
+            "sleep 3s",
+            "",
+        ]
 
     job.write_script(commands, script_pathname)
     print("bash {}".format(script_pathname))
@@ -237,9 +219,7 @@ def generate_script_slurm_cluster_nodes(
     for benchmark_idx in range(benchmark.worker.nr_benchmarks):
         nr_workers = benchmark.worker.nr_workers(benchmark_idx)
         nr_localities = nr_workers * benchmark.worker.nr_numa_nodes
-
         array_shape = scale_array_shape(array_shape_per_worker, nr_workers)
-
         jobstarter = f"srun --ntasks {nr_localities} {srun_configuration}"
 
         result_pathname = experiment.benchmark_result_pathname(
@@ -290,7 +270,7 @@ def generate_script_slurm_cluster_nodes(
             # for this partition. Note that this has to be done at runtime
             # because there is no directory structure yet for storing
             # SLURM scripts.
-            "# Number of nodes: {}".format(nr_workers),
+            "# Number of cluster nodes: {}".format(nr_workers),
             # Create directory for storing SLURM script and benchmark
             # results
             "mkdir -p {}".format(os.path.dirname(result_pathname)),
@@ -303,7 +283,7 @@ def generate_script_slurm_cluster_nodes(
             slurm_script,
             "{delimiter}".format(delimiter=delimiter),
             "",
-            "# Prevent benchmarks to start at the same time point",
+            # Prevent benchmarks to start at the same time point
             "sleep 3s",
             "",
         ]

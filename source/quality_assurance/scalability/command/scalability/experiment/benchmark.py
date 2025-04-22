@@ -174,6 +174,6 @@ class Benchmark(object):
 
         if self.hpx:
             result["hpx"] = self.hpx.to_json()
-            assert not result["hpx"] is None
+            assert result["hpx"] is not None
 
         return result
