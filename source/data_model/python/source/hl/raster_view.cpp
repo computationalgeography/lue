@@ -1,6 +1,7 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "submodule.hpp"
 #include "lue/py/data_model/conversion.hpp"
+#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
