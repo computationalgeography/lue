@@ -38,20 +38,29 @@ def raster_exists(pathname: str) -> bool:
 
 class NormalizePathnamesVisitor(ast.NodeTransformer):
     default_extensions = ["tif", "map"]
+    default_extension = "tif"
+
+    def __init__(self, *, direction):
+        self.direction = direction
 
     def visit_Constant(self, node):
         if isinstance(node.value, str):
             pathname = os.path.expandvars(node.value)
 
             if not has_extension(pathname):
-                # Try default extensions and use the first name that points to a raster that
-                # exists. If no such raster is found, assume that the original name is correct.
-                for extension in self.default_extensions:
-                    pathname_ = f"{pathname}.{extension}"
+                if self.direction == "input":
+                    # Try default extensions and use the first name that points to a raster that
+                    # exists. If no such raster is found, assume that the original name is correct.
+                    for extension in self.default_extensions:
+                        pathname_ = f"{pathname}.{extension}"
 
-                    if raster_exists(pathname_):
-                        pathname = pathname_
-                        break
+                        if raster_exists(pathname_):
+                            pathname = pathname_
+                            break
+
+                if self.direction == "output":
+                    # Append the default extension
+                    pathname = f"{pathname}.{self.default_extension}"
 
             node.value = pathname
 
@@ -134,7 +143,10 @@ def pathnames_to_variable_names(pathnames: set[str]) -> dict[str, str]:
 
 
 def statement_to_statement_block(
-    statement: str, partition_shape: typing.Optional[tuple[int, int]]
+    statement: str,
+    *,
+    partition_shape: typing.Optional[tuple[int, int]],
+    skip_clone_on_write: bool,
 ) -> list[str]:
     """
     Parse statement and create a block of code
@@ -150,9 +162,11 @@ def statement_to_statement_block(
     lhs_tree = ast.parse(lhs)
     rhs_tree = ast.parse(rhs)
 
-    normalize_pathnames_visitor = NormalizePathnamesVisitor()
-    rhs_tree = normalize_pathnames_visitor.visit(rhs_tree)
-    lhs_tree = normalize_pathnames_visitor.visit(lhs_tree)
+    normalize_input_pathnames_visitor = NormalizePathnamesVisitor(direction="input")
+    rhs_tree = normalize_input_pathnames_visitor.visit(rhs_tree)
+
+    normalize_output_pathnames_visitor = NormalizePathnamesVisitor(direction="output")
+    lhs_tree = normalize_output_pathnames_visitor.visit(lhs_tree)
 
     # Collect all unique input strings in the rhs expression
     unique_strings_visitor = UniqueStringsVisitor()
@@ -163,10 +177,15 @@ def statement_to_statement_block(
         unique_strings_visitor.strings
     )
 
-    if len(variable_name_by_pathname) == 0:
-        raise ValueError(
-            f"The right-hand side expression must refer to at least one existing raster: {rhs}"
-        )
+    # Use the first pathname found in the rhs expression as a clone for writing output rasters. If no
+    # pathnames are found, then we will assume that we are generating rasters on the fly, using a call to
+    # uniform, for example.
+    clone_pathname = (
+        list(variable_name_by_pathname)[0] if variable_name_by_pathname else None
+    )
+
+    if not clone_pathname:
+        skip_clone_on_write = True
 
     # Prepend the original statement with from_gdal statements. Name variable after uniquified
     # basename without extension of string.
@@ -179,8 +198,6 @@ def statement_to_statement_block(
             read_statements.append(
                 f'{variable_name} = lfr.from_gdal("{pathname}", partition_shape={partition_shape})'
             )
-
-    clone_pathname = list(variable_name_by_pathname)[0]
 
     # Replace all occurrences of each string in original statement with the associated
     # variable name
@@ -208,9 +225,13 @@ def statement_to_statement_block(
     # Append original statement with to_gdal statements. Pass in the name of a clone raster.
     write_statements = []
 
+    assert clone_pathname or skip_clone_on_write
+
+    clone_name = f"{clone_pathname}" if not skip_clone_on_write else ""
+
     for pathname, variable_name in variable_name_by_pathname.items():
         write_statements.append(
-            f'lfr.to_gdal({variable_name}, "{pathname}", clone_name="{clone_pathname}")'
+            f'lfr.to_gdal({variable_name}, "{pathname}", clone_name="{clone_name}")'
         )
 
     return (
@@ -235,8 +256,17 @@ def execute_statement_block(statement_block: list[str]) -> None:
     )
 
 
-def execute(statement: str, partition_shape: typing.Optional[tuple[int, int]]) -> int:
-    statement_block = statement_to_statement_block(statement, partition_shape)
+def execute(
+    statement: str,
+    *,
+    partition_shape: typing.Optional[tuple[int, int]],
+    skip_clone_on_write: bool,
+) -> int:
+    statement_block = statement_to_statement_block(
+        statement,
+        partition_shape=partition_shape,
+        skip_clone_on_write=skip_clone_on_write,
+    )
 
     execute_statement_block(statement_block)
 
@@ -253,10 +283,13 @@ Usage:
     {command} --version
 
 Options:
-    statement            Assignment statement to evaluate
-    -h --help            Show this screen
-    --version            Show version
-    --partition=<shape>  Shape of partitions, formatted as #rows,#cols
+    statement              Assignment statement to evaluate
+    -h --help              Show this screen
+    --version              Show version
+    --partition=<shape>    Shape of partitions, formatted as #rows,#cols
+    --skip_clone_on_write  Skip using an input raster as clone when writing
+                           output rasters. This is necessary if the clone has a
+                           different resolution.
 
 The right-hand side expression of the assignment statement must be a
 valid Python expression. It is assumed that all functions and operators
@@ -285,18 +318,24 @@ Examples:
         command=os.path.basename(sys.argv[0])
     )
 
-    arguments = [arg for arg in sys.argv[1:] if not arg.startswith("--hpx:")]
-    arguments = docopt.docopt(usage, arguments, version=lue_version)
-    statement = arguments["<statement>"]  # type: ignore
+    argv = [arg for arg in sys.argv[1:] if not arg.startswith("--hpx:")]
+    arguments = docopt.docopt(usage, argv, version=lue_version)
+    statement = arguments["<statement>"]
 
-    partition_shape: typing.Optional[tuple[int, int]] = None
+    partition_shape: tuple[int, int] | None = None
 
-    if arguments["--partition"] is not None:  # type: ignore
+    if arguments["--partition"] is not None:
         partition_shape = tuple(
-            int(extent) for extent in arguments["--partition"].split(",")  # type: ignore
-        )
+            int(extent) for extent in arguments["--partition"].split(",")
+        )  # type: ignore
 
-    return execute(statement, partition_shape)
+    skip_clone_on_write: bool = arguments["--skip_clone_on_write"]
+
+    return execute(
+        statement,
+        partition_shape=partition_shape,
+        skip_clone_on_write=skip_clone_on_write,
+    )
 
 
 if __name__ == "__main__":
