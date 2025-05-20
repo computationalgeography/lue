@@ -5,122 +5,120 @@ root: index
 parts:
   - caption: User
     chapters:
+      - file: quick_start/index.md
+        sections:
+          - file: quick_start/python.md
+          - file: quick_start/cpp.md
 
-    - file: quick_start/index.md
-      sections:
-      - file: quick_start/python.md
-      - file: quick_start/cpp.md
+      - file: manual/index.md
+        sections:
+          - file: manual/install/index.md
+            sections:
+              - file: manual/install/conda.md
+              - file: manual/install/source.md
+          - file: manual/data_model/index.md
+            sections:
+              - file: manual/data_model/concept.md
+              - file: manual/data_model/format.md
+          - file: manual/framework/index.md
+            sections:
+              - file: manual/framework/python/index.md
+              - file: manual/framework/cpp/index.md
+              - file: manual/framework/execute.md
+          - file: manual/view/index.md
+          - file: manual/quality_assurance/index.md
+            sections:
+              - file: manual/quality_assurance/scalability/index.md
+              - file: manual/quality_assurance/scalability/quick_start.md
+              - file: manual/quality_assurance/scalability/experiment.md
+          - file: manual/glossary.md
 
-    - file: manual/index.md
-      sections:
-      - file: manual/install/index.md
+      - file: reference/index.md
         sections:
-        - file: manual/install/conda.md
-        - file: manual/install/source.md
-      - file: manual/data_model/index.md
-        sections:
-        - file: manual/data_model/concept.md
-        - file: manual/data_model/format.md
-      - file: manual/framework/index.md
-        sections:
-        - file: manual/framework/python/index.md
-        - file: manual/framework/cpp/index.md
-        - file: manual/framework/execute.md
-      - file: manual/view/index.md
-      - file: manual/quality_assurance/index.md
-        sections:
-        - file: manual/quality_assurance/scalability/index.md
-        - file: manual/quality_assurance/scalability/quick_start.md
-        - file: manual/quality_assurance/scalability/experiment.md
-      - file: manual/glossary.md
+          - file: reference/operation/index.md
+            sections:
+              - file: reference/operation/resample.md
+              - file: reference/operation/uniform.md
+          - file: source/framework/api/doc/index.md
+            sections:
+              - file: reference/c/index.md
+              - file: reference/cpp/index.md
+                sections:
+                  - file: source/framework/api/cxx/doc/index.md
+              # - file: reference/fortran/index.md
+              # - file: reference/java/index.md
+              # - file: reference/julia/index.md
+              - file: reference/python/index.md
+            # - file: reference/r/index.md
+            # - file: reference/rust/index.md
+          - file: reference/utility/index.md
+            sections:
+              - file: reference/utility/lue_calculate.md
+              - file: reference/utility/lue_scalability.md
+              - file: reference/utility/lue_translate.md
+              - file: reference/utility/lue_validate.md
+              - file: reference/utility/lue_view.md
+          - file: reference/algorithm/index.md
+            sections:
+              - file: reference/algorithm/clump.md
+          - file: source/quality_assurance/doc/index.md
+            sections:
+              - file: source/quality_assurance/cxx/doc/index.md
+              - file: source/quality_assurance/python/doc/index.md
 
-    - file: reference/index.md
-      sections:
-      - file: reference/operation/index.md
+      - file: pcraster/index.md
         sections:
-        - file: reference/operation/uniform.md
-      - file: source/framework/api/doc/index.md
-        sections:
-        - file: reference/c/index.md
-        - file: reference/cpp/index.md
-          sections:
-          - file: source/framework/api/cxx/doc/index.md
-        # - file: reference/fortran/index.md
-        # - file: reference/java/index.md
-        # - file: reference/julia/index.md
-        - file: reference/python/index.md
-        # - file: reference/r/index.md
-        # - file: reference/rust/index.md
-      - file: reference/utility/index.md
-        sections:
-        - file: reference/utility/lue_calculate.md
-        - file: reference/utility/lue_scalability.md
-        - file: reference/utility/lue_translate.md
-        - file: reference/utility/lue_validate.md
-        - file: reference/utility/lue_view.md
-      - file: reference/algorithm/index.md
-        sections:
-        - file: reference/algorithm/clump.md
-      - file: source/quality_assurance/doc/index.md
-        sections:
-        - file: source/quality_assurance/cxx/doc/index.md
-        - file: source/quality_assurance/python/doc/index.md
+          - file: pcraster/port.md
+          - file: pcraster/status.md
 
-    - file: pcraster/index.md
-      sections:
-      - file: pcraster/port.md
-      - file: pcraster/status.md
-
-    - file: faq.md
+      - file: faq.md
 
   - caption: Developer
     chapters:
-
-    - file: contribute/index.md
-      sections:
-      - file: contribute/documentation.md
-      - file: contribute/release.md
-
-    - file: source/doc/index.md
-      sections:
-      - file: source/data_model/doc/index.md
-      - file: source/framework/doc/index.md
+      - file: contribute/index.md
         sections:
-        - file: source/framework/core/doc/index.md
-        - file: source/framework/partitioned_array/doc/index.md
-        - file: source/framework/partitioned_route/doc/index.md
-        - file: source/framework/algorithm/doc/index.md
-          sections:
-          - file: source/framework/algorithm/doc/design.md
-          - file: source/framework/algorithm/doc/template.md
-          - file: source/framework/algorithm/doc/policy/index.md
+          - file: contribute/documentation.md
+          - file: contribute/release.md
+
+      - file: source/doc/index.md
+        sections:
+          - file: source/data_model/doc/index.md
+          - file: source/framework/doc/index.md
             sections:
-            - file: source/framework/algorithm/doc/policy/no_data.md
-            - file: source/framework/algorithm/doc/policy/domain.md
-            - file: source/framework/algorithm/doc/policy/range.md
-          - file: source/framework/algorithm/doc/grouped_operation/index.md
-            sections:
-            - file: source/framework/algorithm/doc/grouped_operation/local_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/focal_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/zonal_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/global_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/routing_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/array_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/mathematical_operation.md
-            - file: source/framework/algorithm/doc/grouped_operation/random_number_operation.md
-        - file: source/framework/doc/test/index.md
-        - file: source/framework/doc/howto/index.md
-          sections:
-          - file: source/framework/doc/howto/add_local_operation.md
-          - file: source/framework/doc/howto/trace.md
+              - file: source/framework/core/doc/index.md
+              - file: source/framework/partitioned_array/doc/index.md
+              - file: source/framework/partitioned_route/doc/index.md
+              - file: source/framework/algorithm/doc/index.md
+                sections:
+                  - file: source/framework/algorithm/doc/design.md
+                  - file: source/framework/algorithm/doc/template.md
+                  - file: source/framework/algorithm/doc/policy/index.md
+                    sections:
+                      - file: source/framework/algorithm/doc/policy/no_data.md
+                      - file: source/framework/algorithm/doc/policy/domain.md
+                      - file: source/framework/algorithm/doc/policy/range.md
+                  - file: source/framework/algorithm/doc/grouped_operation/index.md
+                    sections:
+                      - file: source/framework/algorithm/doc/grouped_operation/local_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/focal_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/zonal_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/global_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/routing_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/array_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/mathematical_operation.md
+                      - file: source/framework/algorithm/doc/grouped_operation/random_number_operation.md
+              - file: source/framework/doc/test/index.md
+              - file: source/framework/doc/howto/index.md
+                sections:
+                  - file: source/framework/doc/howto/add_local_operation.md
+                  - file: source/framework/doc/howto/trace.md
 
   - caption: About
     chapters:
-
-    - file: about/project.md
-    - file: about/release.md
-    - file: about/cite.md
-    - file: example/index.md
-    - file: about/publication.md
-    - file: about/license.md
-    - file: about/related.md
+      - file: about/project.md
+      - file: about/release.md
+      - file: about/cite.md
+      - file: example/index.md
+      - file: about/publication.md
+      - file: about/license.md
+      - file: about/related.md

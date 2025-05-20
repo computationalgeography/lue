@@ -80,6 +80,7 @@ foreach(name IN ITEMS
     # reference/java/index.md
     # reference/julia/index.md
     reference/operation/index.md
+    reference/operation/resample.md
     reference/operation/uniform.md
     # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
