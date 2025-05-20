@@ -985,6 +985,79 @@ lue_install_development_libraries(
 )
 
 
+# Instantiate miscellaneous operations -------------------------------------------------
+set(generated_source_files "")
+set(offset "source/miscellaneous_operation")
+
+block()
+    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+            string(REPLACE "::" "_" element ${Element})
+
+            # Instantiate resample
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/resample-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/resample.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endforeach()
+    endforeach()
+
+    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+endblock()
+# /Instantiate miscellaneous operations ----------------------------------------
+
+
+add_library(lue_framework_miscellaneous_operation SHARED)
+add_library(lue::framework_miscellaneous_operation ALIAS lue_framework_miscellaneous_operation)
+
+set_target_properties(lue_framework_miscellaneous_operation
+    PROPERTIES
+        EXPORT_NAME framework_miscellaneous_operation
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+)
+
+generate_export_header(lue_framework_miscellaneous_operation
+    EXPORT_FILE_NAME include/lue/framework/algorithm/miscellaneous_operation_export.hpp
+    EXPORT_MACRO_NAME LUE_MISCELLANEOUS_OPERATION_EXPORT
+)
+
+target_sources(lue_framework_miscellaneous_operation
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+            ${CMAKE_CURRENT_BINARY_DIR}/include
+        FILES
+            include/lue
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/miscellaneous_operation_export.hpp
+    PRIVATE
+        ${generated_source_files}
+)
+
+target_link_libraries(lue_framework_miscellaneous_operation
+    PUBLIC
+        lue::framework_algorithm
+)
+
+lue_install_runtime_libraries(
+    TARGETS
+        lue_framework_miscellaneous_operation
+)
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_miscellaneous_operation
+)
+
+
 # Instantiate zonal operations -------------------------------------------------
 set(generated_source_files "")
 
