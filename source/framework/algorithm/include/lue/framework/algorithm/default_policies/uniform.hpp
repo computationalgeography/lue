@@ -20,7 +20,8 @@ namespace lue {
     namespace default_policies {
 
         template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
             PartitionedArray<SomeElement, rank> const& input_array,
             hpx::shared_future<Element> const& min_value,
             hpx::shared_future<Element> const& max_value) -> PartitionedArray<Element, rank>
@@ -32,7 +33,8 @@ namespace lue {
 
 
         template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
             PartitionedArray<SomeElement, rank> const& input_array,
             Element const min_value,
             Element const max_value) -> PartitionedArray<Element, rank>
@@ -44,8 +46,31 @@ namespace lue {
         }
 
 
+        template<Arithmetic Element>
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
+            hpx::shared_future<Element> const& min_value, hpx::shared_future<Element> const& max_value)
+            -> Scalar<Element>
+        {
+            using Policies = policy::uniform::DefaultPolicies<Element>;
+
+            return uniform(Policies{}, min_value, max_value);
+        }
+
+
+        template<Arithmetic Element>
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(Element const min_value, Element const max_value) -> Scalar<Element>
+        {
+            return uniform(
+                hpx::make_ready_future<Element>(min_value).share(),
+                hpx::make_ready_future<Element>(max_value).share());
+        }
+
+
         template<Arithmetic Element, typename Count, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
             Shape<Count, rank> const& array_shape,
             Shape<Count, rank> const& partition_shape,
             Scalar<Element> const& min_value,
@@ -58,7 +83,8 @@ namespace lue {
 
 
         template<Arithmetic Element, typename Count, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
             Shape<Count, rank> const& array_shape,
             Shape<Count, rank> const& partition_shape,
             Element const min_value,
@@ -71,7 +97,8 @@ namespace lue {
 
 
         template<Arithmetic Element, typename Count, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(
             Shape<Count, rank> const& array_shape,
             Scalar<Element> const& min_value,
             Scalar<Element> const& max_value) -> PartitionedArray<Element, rank>
@@ -83,8 +110,8 @@ namespace lue {
 
 
         template<Arithmetic Element, typename Count, Rank rank>
-        requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>) auto uniform(
-            Shape<Count, rank> const& array_shape, Element const min_value, Element const max_value)
+            requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
+        auto uniform(Shape<Count, rank> const& array_shape, Element const min_value, Element const max_value)
             -> PartitionedArray<Element, rank>
         {
             using Policies = policy::uniform::DefaultPolicies<Element>;

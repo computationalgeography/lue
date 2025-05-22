@@ -7,6 +7,11 @@
 
 
 namespace lue {
+
+    // -------------------------------------------------------------------------
+    // uniform(policies, array, min_value, max_value)
+    // -------------------------------------------------------------------------
+
     namespace detail::uniform {
 
         template<typename Policies, typename InputPartition>
@@ -20,7 +25,6 @@ namespace lue {
             using Offset = OffsetT<InputPartition>;
             using Shape = ShapeT<InputPartition>;
             using Element = policy::OutputElementT<Policies, 0>;
-            // using SomeElement = policy::InputElementT<Policies, 0>;
             using OutputPartition = PartitionT<InputPartition, Element>;
             using OutputData = DataT<OutputPartition>;
 
@@ -110,7 +114,10 @@ namespace lue {
 
 
     template<typename Policies, Rank rank>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
         hpx::shared_future<policy::InputElementT<Policies, 1>> const& min_value,
@@ -169,7 +176,10 @@ namespace lue {
 
 
     template<typename Policies, Rank rank>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
         policy::InputElementT<Policies, 1> const min_value,
@@ -185,7 +195,96 @@ namespace lue {
 
 
     // -------------------------------------------------------------------------
+    // uniform(policies, min_value, max_value)
+    // -------------------------------------------------------------------------
 
+    template<typename Policies>
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
+        Policies const& policies,
+        hpx::shared_future<policy::InputElementT<Policies, 0>> const& min_value,
+        hpx::shared_future<policy::InputElementT<Policies, 1>> const& max_value)
+        -> Scalar<policy::OutputElementT<Policies, 0>>
+    {
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
+
+        using Element = policy::OutputElementT<Policies, 0>;
+
+        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
+
+        lue_hpx_assert(min_value.valid());
+        lue_hpx_assert(max_value.valid());
+
+        return hpx::dataflow(
+            hpx::launch::async,
+            hpx::unwrapping(
+                [policies](Element const& min_value, Element const& max_value) -> Element
+                {
+                    auto const& indp1 = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    Element output_element{};
+
+                    if (indp1.is_no_data(min_value) || indp2.is_no_data(max_value))
+                    {
+                        ondp.mark_no_data(output_element);
+                    }
+                    else
+                    {
+                        // Will be used to obtain a seed for the random number engine
+                        std::random_device random_device;
+
+                        // Standard mersenne_twister_engine seeded with the random_device
+                        std::mt19937 random_number_engine(random_device());
+
+                        auto distribution = [min_value, max_value]()
+                        {
+                            if constexpr (std::is_floating_point_v<Element>)
+                            {
+                                return std::uniform_real_distribution<Element>{min_value, max_value};
+                            }
+                            else if constexpr (std::is_integral_v<Element>)
+                            {
+                                // https://stackoverflow.com/questions/31460733/why-arent-stduniform-int-distributionuint8-t-and-stduniform-int-distri
+                                static_assert(!std::is_same_v<Element, std::int8_t>);
+                                static_assert(!std::is_same_v<Element, std::uint8_t>);
+                                return std::uniform_int_distribution<Element>{min_value, max_value};
+                            }
+                        }();
+
+                        output_element = distribution(random_number_engine);
+                    }
+
+                    return output_element;
+                }),
+            min_value,
+            max_value);
+    }
+
+
+    template<typename Policies>
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
+        Policies const& policies,
+        policy::InputElementT<Policies, 0> const min_value,
+        policy::InputElementT<Policies, 1> const max_value) -> Scalar<policy::OutputElementT<Policies, 0>>
+    {
+        return uniform(
+            policies,
+            hpx::make_ready_future<policy::InputElementT<Policies, 0>>(min_value).share(),
+            hpx::make_ready_future<policy::InputElementT<Policies, 1>>(max_value).share());
+    }
+
+
+    // -------------------------------------------------------------------------
+    // uniform(policies, array_shape, min_value, max_value)
+    // -------------------------------------------------------------------------
 
     namespace detail {
 
@@ -291,7 +390,8 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
                         [locality_id, policies, offset, partition_shape](
-                            Element const min_value, Element const max_value) -> Partition {
+                            Element const min_value, Element const max_value) -> Partition
+                        {
                             return hpx::async(
                                 Action{},
                                 locality_id,
@@ -315,7 +415,10 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         Shape const& array_shape,
         Shape const& partition_shape,
@@ -331,7 +434,10 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         Shape const& array_shape,
         Shape const& partition_shape,
@@ -349,7 +455,10 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         Shape const& array_shape,
         Scalar<policy::InputElementT<Policies, 0>> const& min_value,
@@ -364,7 +473,10 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-    requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> && !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>) auto uniform(
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+    auto uniform(
         Policies const& policies,
         Shape const& array_shape,
         policy::InputElementT<Policies, 0> const min_value,

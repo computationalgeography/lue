@@ -2,7 +2,6 @@
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
-// #include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
@@ -25,10 +24,11 @@ namespace lue::framework {
 
             if constexpr (arithmetic_element_supported<OutputElement>)
             {
-                result = pybind11::cast(value_policies::uniform(
-                    array,
-                    pybind11::cast<OutputElement>(min_value),
-                    pybind11::cast<OutputElement>(max_value)));
+                result = pybind11::cast(
+                    value_policies::uniform(
+                        array,
+                        pybind11::cast<OutputElement>(min_value),
+                        pybind11::cast<OutputElement>(max_value)));
             }
 
             return result;
@@ -36,7 +36,7 @@ namespace lue::framework {
 
 
         template<typename Element, Rank rank>
-        auto uniform(
+        auto uniform_array(
             PartitionedArray<Element, rank> const& array,
             pybind11::object const& dtype_args,
             pybind11::object const& min_value,
@@ -120,6 +120,105 @@ namespace lue::framework {
         }
 
 
+        template<typename Element>
+        auto uniform(pybind11::object const& min_value, pybind11::object const& max_value) -> pybind11::object
+        {
+            pybind11::object result{};
+
+            if constexpr (arithmetic_element_supported<Element>)
+            {
+                result = pybind11::cast(
+                    value_policies::uniform(
+                        pybind11::cast<Element>(min_value), pybind11::cast<Element>(max_value)));
+            }
+
+            return result;
+        }
+
+
+        template<typename Element>
+        auto uniform_scalar(
+            pybind11::object const& dtype_args,
+            pybind11::object const& min_value,
+            pybind11::object const& max_value) -> pybind11::object
+        {
+            pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
+
+            // Switch on dtype and call a function that returns a scalar of the right value type
+            auto const kind = dtype.kind();
+            auto const size = dtype.itemsize();  // bytes
+            pybind11::object result;
+
+            switch (kind)
+            {
+                case 'i':
+                {
+                    // Signed integer
+                    switch (size)
+                    {
+                        case 4:
+                        {
+                            result = uniform<std::int32_t>(min_value, max_value);
+                            break;
+                        }
+                        case 8:
+                        {
+                            result = uniform<std::int64_t>(min_value, max_value);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case 'u':
+                {
+                    // Unsigned integer
+                    switch (size)
+                    {
+                        case 4:
+                        {
+                            result = uniform<std::uint32_t>(min_value, max_value);
+                            break;
+                        }
+                        case 8:
+                        {
+                            result = uniform<std::uint64_t>(min_value, max_value);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case 'f':
+                {
+                    // Floating-point
+                    switch (size)
+                    {
+                        case 4:
+                        {
+                            result = uniform<float>(min_value, max_value);
+                            break;
+                        }
+                        case 8:
+                        {
+                            result = uniform<double>(min_value, max_value);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            }
+
+            if (!result)
+            {
+                throw std::runtime_error(std::format("Unsupported dtype (kind={}, itemsize={})", kind, size));
+            }
+
+            return result;
+        }
+
+
         class Binder
         {
 
@@ -132,7 +231,7 @@ namespace lue::framework {
 
                     module.def(
                         "uniform",
-                        uniform<Element, rank>,
+                        uniform_array<Element, rank>,
                         R"(
     Create new array, filled with uniformly distributed random values
 
@@ -147,6 +246,21 @@ namespace lue::framework {
     the type of the array elements.
 )",
                         "array"_a,
+                        "dtype"_a,
+                        "min_value"_a,
+                        "max_value"_a);
+
+                    module.def(
+                        "uniform",
+                        uniform_scalar<Element>,
+                        R"(
+    Create new scale, filled with a uniformly distributed random value
+
+    :param numpy.dtype dtype: Type of the scalar value
+    :param min_value: Minimum potentially generated value
+    :param max_value: Maximum potentially generated value
+    :rtype: Scalar specialization
+)",
                         "dtype"_a,
                         "min_value"_a,
                         "max_value"_a);
