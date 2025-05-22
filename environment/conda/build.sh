@@ -12,7 +12,7 @@ elif [[ $target_platform == osx* ]]; then
     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
-cmake -S . -B build "$CMAKE_ARGS" \
+cmake -S . -B build $CMAKE_ARGS \
     --preset "$lue_preset" \
     -G Ninja \
     -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
