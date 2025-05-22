@@ -69,7 +69,6 @@ jobs:
             gperftools \
             hdf5 \
             hwloc \
-            ninja \
             nlohmann-json \
             numpy \
             pybind11 \
