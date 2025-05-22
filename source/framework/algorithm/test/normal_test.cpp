@@ -40,6 +40,30 @@ namespace {
         }
     }
 
+
+    template<typename Element>
+    void test_scalar()
+    {
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            using namespace lue::default_policies;
+
+            using Scalar = lue::Scalar<Element>;
+
+            Element const mean{7};
+            Element const stddev{9};
+
+            // Fill scalar with value from a normal distribution and check whether
+            // - value > mean - 10 * stddev
+            // - value < mean + 10 * stddev
+
+            Scalar const scalar = normal(mean, stddev);
+
+            BOOST_CHECK((scalar > mean - (10 * stddev)).future().get());
+            BOOST_CHECK((scalar < mean + (10 * stddev)).future().get());
+        }
+    }
+
 }  // Anonymous namespace
 
 
@@ -48,6 +72,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     lue::Rank const rank{2};
 
     test_array<lue::FloatingPointElement<0>, rank>();
+    test_scalar<lue::FloatingPointElement<0>>();
 }
 
 

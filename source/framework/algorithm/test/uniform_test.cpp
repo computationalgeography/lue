@@ -84,6 +84,41 @@ namespace {
         }
     }
 
+
+    template<typename Element>
+    void test_scalar()
+    {
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            using namespace lue::default_policies;
+
+            using Scalar = lue::Scalar<Element>;
+
+            Element min_value{7};
+            Element max_value{9};
+
+            // Fill scalar with value from a uniform distribution and check whether
+            // - Value >= min_value
+            // - Value < max_value
+
+            {
+                Scalar const scalar = uniform(min_value, max_value);
+
+                // min_value <= array1 < max_value
+                BOOST_CHECK((scalar >= min_value).future().get());
+
+                if constexpr (std::is_floating_point_v<Element>)
+                {
+                    BOOST_CHECK((scalar < max_value).future().get());
+                }
+                else if constexpr (std::is_integral_v<Element>)
+                {
+                    BOOST_CHECK((scalar <= max_value).future().get());
+                }
+            }
+        }
+    }
+
 }  // Anonymous namespace
 
 
@@ -93,6 +128,9 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
     test_array<lue::LargestIntegralElement, rank>();
     test_array<lue::FloatingPointElement<0>, rank>();
+
+    test_scalar<lue::LargestIntegralElement>();
+    test_scalar<lue::FloatingPointElement<0>>();
 }
 
 

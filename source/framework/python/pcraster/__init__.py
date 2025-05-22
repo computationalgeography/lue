@@ -353,7 +353,6 @@ def non_spatial_to_spatial(fill_value, template=None):
 
 
 def harmonize_types(expression1, expression2):
-
     # If both arguments are values, fix the element type of the first one
     # TODO Could determine the largest one and use that
     if lue_is_value(expression1) and lue_is_value(expression2):
@@ -664,7 +663,6 @@ def cos(expression):
 
 
 def cover(expression1, expression2, *expressions):
-
     expression1, expression2 = harmonize_types(expression1, expression2)
 
     # TODO Should where support scalar condition?
@@ -906,7 +904,7 @@ def mapminimum(expression):
 
 
 def mapnormal():
-    raise NotImplementedError("mapnormal")
+    return lfr.normal(dtype=np.float32, mean=0, stddev=1)
 
 
 def maptotal(expression):
@@ -914,7 +912,7 @@ def maptotal(expression):
 
 
 def mapuniform():
-    raise NotImplementedError("mapuniform")
+    return lfr.uniform(dtype=np.float32, min_value=0, max_value=1)
 
 
 def markwhilesumle(*args):
