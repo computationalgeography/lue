@@ -295,6 +295,8 @@ namespace lue {
             static_assert(rank == 2);
 
             using Element = policy::InputElementT<Policies, 0>;
+            using Array = PartitionedArray<Element, rank>;
+            using Shape = ShapeT<Array>;
 
             if (count == Count{0})
             {
