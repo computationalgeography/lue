@@ -333,6 +333,8 @@ namespace lue {
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
+                [[maybe_unused]] Shape const& shape_in_partitions,
+                [[maybe_unused]] lue::Index const partition_idx_along_curve,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape) -> Partition

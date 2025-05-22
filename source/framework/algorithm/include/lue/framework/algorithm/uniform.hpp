@@ -114,9 +114,8 @@ namespace lue {
 
 
     template<typename Policies, Rank rank>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
@@ -176,9 +175,8 @@ namespace lue {
 
 
     template<typename Policies, Rank rank>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
@@ -199,9 +197,8 @@ namespace lue {
     // -------------------------------------------------------------------------
 
     template<typename Policies>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         hpx::shared_future<policy::InputElementT<Policies, 0>> const& min_value,
@@ -267,9 +264,8 @@ namespace lue {
 
 
     template<typename Policies>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         policy::InputElementT<Policies, 0> const min_value,
@@ -380,6 +376,8 @@ namespace lue {
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
+                [[maybe_unused]] Shape const& shape_in_partitions,
+                [[maybe_unused]] lue::Index const partition_idx_along_curve,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape) -> Partition
@@ -390,8 +388,7 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
                         [locality_id, policies, offset, partition_shape](
-                            Element const min_value, Element const max_value) -> Partition
-                        {
+                            Element const min_value, Element const max_value) -> Partition {
                             return hpx::async(
                                 Action{},
                                 locality_id,
@@ -415,9 +412,8 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,
@@ -434,9 +430,8 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,
@@ -455,9 +450,8 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,
@@ -473,9 +467,8 @@ namespace lue {
 
 
     template<typename Policies, typename Shape>
-        requires(
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,

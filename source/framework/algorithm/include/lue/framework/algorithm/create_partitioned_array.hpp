@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework/core/hilbert_curve.hpp"
+#include "lue/framework/core/index_util.hpp"
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
 #include "lue/framework/partitioned_array.hpp"
@@ -217,16 +218,20 @@ namespace lue {
 
                 template<typename... Idxs>
                 void operator()(
-                    Index const partition_idx,     // Along curve!
-                    Idxs const... partition_idxs)  // In array!
+                    Index const partition_idx_along_curve,  // Along curve!
+                    Idxs const... partition_idxs)           // In array!
                 {
-                    hpx::id_type const locality_id{this->locality_id(partition_idx)};
+                    Index const partition_idx = idxs_to_linear_idx(
+                        Indices<Index, rank>{partition_idxs...}, this->_partitions.shape());
+                    hpx::id_type const locality_id{this->locality_id(partition_idx_along_curve)};
                     this->_localities(partition_idxs...) = locality_id;
                     this->_partitions(partition_idxs...) = this->_partition_creator.instantiate(
                         locality_id,
                         this->_policies,
                         this->_array_shape,
-                        partition_idx,
+                        this->_partitions.shape(),
+                        partition_idx_along_curve,  // Along curve
+                        partition_idx,              // Linear
                         this->offset(partition_idxs...),
                         this->partition_shape(partition_idxs...));
                 }
@@ -560,33 +565,43 @@ namespace lue {
 
             lue_hpx_assert(hpx::find_here() == hpx::find_root_locality());
 
-            for (Index p = 0; p < nr_partitions; ++p)
+            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
             {
                 // For each partition:
                 // - Determine the locality it is located on
                 // - Spawn a task on that locality, passing in the input partition and returning
                 //   an output partition
 
-                lue_hpx_assert(input_partitions[p].valid());
+                lue_hpx_assert(input_partitions[partition_idx].valid());
 
-                input_partitions[p].get();
+                input_partitions[partition_idx].get();
 
-                output_partitions[p] = hpx::dataflow(
+                output_partitions[partition_idx] = hpx::dataflow(
                     hpx::launch::async,
                     hpx::unwrapping(
 
-                        [policies, array_shape, partition_idx = p, partition_creator](
-                            hpx::id_type const locality_id,
-                            Offset const& offset,
-                            Shape const& shape) -> OutputPartition {
+                        [policies,
+                         array_shape,
+                         shape_in_partitions,
+                         partition_idx = partition_idx,
+                         partition_creator](
+                            hpx::id_type const locality_id, Offset const& offset, Shape const& shape)
+                            -> OutputPartition
+                        {
                             return partition_creator.instantiate(
-                                locality_id, policies, array_shape, partition_idx, offset, shape);
+                                locality_id,
+                                policies,
+                                array_shape,
+                                shape_in_partitions,
+                                partition_idx,
+                                offset,
+                                shape);
                         }
 
                         ),
-                    hpx::get_colocation_id(input_partitions[p].get_id()),
-                    input_partitions[p].offset(),
-                    input_partitions[p].shape());
+                    hpx::get_colocation_id(input_partitions[partition_idx].get_id()),
+                    input_partitions[partition_idx].offset(),
+                    input_partitions[partition_idx].shape());
             }
 
             return {std::move(localities), std::move(output_partitions)};
@@ -615,6 +630,8 @@ namespace lue {
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
+                [[maybe_unused]] Shape const& shape_in_partitions,
+                [[maybe_unused]] lue::Index const partition_idx_along_curve,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape) -> Partition
@@ -659,6 +676,8 @@ namespace lue {
                 hpx::id_type const locality_id,
                 [[maybe_unused]] Policies const& policies,
                 [[maybe_unused]] Shape const& array_shape,
+                [[maybe_unused]] Shape const& shape_in_partitions,
+                [[maybe_unused]] lue::Index const partition_idx_along_curve,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape) const -> Partition
@@ -742,6 +761,8 @@ namespace lue {
                 hpx::id_type const locality_id,
                 Policies const& policies,
                 Shape const& array_shape,
+                [[maybe_unused]] Shape const& shape_in_partitions,
+                [[maybe_unused]] lue::Index const partition_idx_along_curve,
                 [[maybe_unused]] lue::Index const partition_idx,
                 Offset const& offset,
                 Shape const& partition_shape) -> Partition
