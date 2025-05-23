@@ -3,6 +3,7 @@
 Implementation of script for dumping Conan profiles that can be used to install Conan packages
 that can be used during the build of LUE.
 """
+
 import os
 import platform
 import subprocess
@@ -227,7 +228,7 @@ def msvc_settings(compiler_filename):
 
     return {
         "compiler": compiler,
-        # "compiler.cppstd": compiler_cppstd,
+        "compiler.cppstd": compiler_cppstd,
         "compiler.version": compiler_version,
         "compiler.runtime": compiler_runtime,
     }
