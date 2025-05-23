@@ -102,8 +102,6 @@ namespace lue::test {
     template<typename Partition>
     void check_partition_is_equal(Partition const& partition1, Partition const& partition2)
     {
-
-
         bool both_partitions_valid = partition1.valid() && partition2.valid();
         bool both_partitions_invalid = (!partition1.valid()) && (!partition2.valid());
 

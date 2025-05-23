@@ -99,6 +99,10 @@ set(global_operation_names
     unique
 )
 
+set(miscellaneous_operation_names
+    resample
+)
+
 set(routing_operation_names
     accu
     accu_fraction
@@ -127,6 +131,7 @@ set(names
     ${focal_operation_names}
     ${global_operation_names}
     ${local_operation_names}
+    ${miscellaneous_operation_names}
     ${routing_operation_names}
     ${zonal_operation_names}
     all
@@ -188,6 +193,7 @@ foreach(name ${names})
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_route>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_local_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_focal_operation>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_miscellaneous_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_routing_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_zonal_operation>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::gdal>>
@@ -200,34 +206,47 @@ endforeach()
 foreach(name ${local_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
-            lue::framework_local_operation)
+            lue::framework_local_operation
+    )
 endforeach()
 
 foreach(name ${focal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
-            lue::framework_focal_operation)
+            lue::framework_focal_operation
+    )
 endforeach()
 
 foreach(name ${global_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
-            lue::framework_global_operation)
+            lue::framework_global_operation
+    )
+endforeach()
+
+foreach(name ${miscellaneous_operation_names})
+    target_link_libraries(${scope}_${name}_test
+        PRIVATE
+            lue::framework_local_operation
+            lue::framework_miscellaneous_operation
+    )
 endforeach()
 
 foreach(name ${zonal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
-            lue::framework_zonal_operation)
+            lue::framework_zonal_operation
+    )
 endforeach()
 
 foreach(name ${routing_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
-            lue::framework_routing_operation)
+            lue::framework_routing_operation
+    )
 endforeach()
 
 set(names

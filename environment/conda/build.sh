@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 set -e
 
-
 mkdir build
 
 if [[ $target_platform == linux* ]]; then
     lue_preset="lue_release_linux_node"
 elif [[ $target_platform == osx* ]]; then
     lue_preset="lue_release_macos_node"
+
+    # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
+    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 fi
 
 cmake -S . -B build $CMAKE_ARGS \
-    --preset $lue_preset \
+    --preset "$lue_preset" \
     -G Ninja \
     -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
     -D LUE_INSTALL_PYTHON_PACKAGE_DIR="${SP_DIR}/lue" \
@@ -25,5 +27,5 @@ cmake -S . -B build $CMAKE_ARGS \
     -D HPX_IGNORE_COMPILER_COMPATIBILITY=TRUE \
     -D Python_EXECUTABLE="${PYTHON}"
 
-cmake --build build --config Release --target all --parallel $CPU_COUNT
+cmake --build build --config Release --target all --parallel "$CPU_COUNT"
 cmake --install build --config Release --component lue_runtime

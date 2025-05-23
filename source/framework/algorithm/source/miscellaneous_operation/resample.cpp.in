@@ -1,0 +1,10 @@
+#include "lue/framework/algorithm/default_policies/resample.hpp"
+#include "lue/framework/algorithm/definition/resample.hpp"
+#include "lue/framework/algorithm/value_policies/resample.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_DOWNSCALE(ESC(policy::downscale::{{Policies}} < {{Element}} >), 2);
+
+}  // namespace lue

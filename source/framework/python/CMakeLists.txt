@@ -53,6 +53,11 @@ add_library(lue_py_framework_local_operation SHARED
     source/algorithm/local_operation/where.cpp
 )
 
+add_library(lue_py_framework_miscellaneous_operation SHARED
+    source/algorithm/miscellaneous_operation.cpp
+    source/algorithm/miscellaneous_operation/resample.cpp
+)
+
 add_library(lue_py_framework_routing_operation SHARED
     source/algorithm/routing_operation.cpp
     source/algorithm/routing_operation/accu3.cpp
@@ -75,7 +80,7 @@ add_library(lue_py_framework_zonal_operation SHARED
     source/algorithm/zonal_operation/zonal_operation.cpp
 )
 
-foreach(name focal global local routing zonal)
+foreach(name focal global local miscellaneous routing zonal)
     add_library(lue::py_framework_${name}_operation ALIAS lue_py_framework_${name}_operation)
 
     target_compile_definitions(lue_py_framework_${name}_operation
@@ -203,6 +208,7 @@ target_link_libraries(lue_py_framework
         lue::py_framework_focal_operation
         lue::py_framework_global_operation
         lue::py_framework_local_operation
+        lue::py_framework_miscellaneous_operation
         lue::py_framework_routing_operation
         lue::py_framework_zonal_operation
         lue::framework_local_operation  # array and scalar use local operations in operators
@@ -220,6 +226,7 @@ set_target_properties(
     lue_py_framework_focal_operation
     lue_py_framework_global_operation
     lue_py_framework_local_operation
+    lue_py_framework_miscellaneous_operation
     lue_py_framework_routing_operation
     lue_py_framework_zonal_operation
     lue_py_framework
@@ -235,6 +242,7 @@ if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebIn
     pybind11_strip(lue_py_framework_focal_operation)
     pybind11_strip(lue_py_framework_global_operation)
     pybind11_strip(lue_py_framework_local_operation)
+    pybind11_strip(lue_py_framework_miscellaneous_operation)
     pybind11_strip(lue_py_framework_zonal_operation)
     pybind11_strip(lue_py_framework_routing_operation)
 endif()
@@ -245,6 +253,7 @@ lue_install_runtime_libraries(
         lue_py_framework_focal_operation
         lue_py_framework_global_operation
         lue_py_framework_local_operation
+        lue_py_framework_miscellaneous_operation
         lue_py_framework_zonal_operation
         lue_py_framework_routing_operation
 )
@@ -259,6 +268,7 @@ if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
             lue_py_framework_focal_operation
             lue_py_framework_global_operation
             lue_py_framework_local_operation
+            lue_py_framework_miscellaneous_operation
             lue_py_framework_zonal_operation
             lue_py_framework_routing_operation
         APPEND
