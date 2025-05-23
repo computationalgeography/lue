@@ -19,7 +19,7 @@ namespace lue {
             Count const count,
             Offset<Index, rank> const& target_partition_offset,
             Shape<Count, rank> const& target_partition_shape)
-            -> PartitionT<PartitionedArray<policy::InputElementT<Policies, 0>, rank>>
+            -> PartitionT<PartitionedArray<policy::OutputElementT<Policies, 0>, rank>>
 
         {
             // NOTE: There is no guarantee that the source partition in the current locality!
@@ -288,7 +288,7 @@ namespace lue {
         auto downscale_assign(
             Policies const& policies,
             PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,
-            Count const count) -> PartitionedArray<policy::InputElementT<Policies, 0>, rank>
+            Count const count) -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
         {
             static_assert(
                 std::is_same_v<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>);
@@ -334,9 +334,8 @@ namespace lue {
     auto downscale(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,
-        // CellSize const cell_size,
         Count const count,
-        DownscaleStrategy const strategy) -> PartitionedArray<policy::InputElementT<Policies, 0>, rank>
+        DownscaleStrategy const strategy) -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
         static_assert(
             std::is_same_v<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>);

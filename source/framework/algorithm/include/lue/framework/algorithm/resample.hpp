@@ -12,6 +12,6 @@ namespace lue {
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,
         Count count,
-        DownscaleStrategy strategy) -> PartitionedArray<policy::InputElementT<Policies, 0>, rank>;
+        DownscaleStrategy strategy) -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>;
 
 }  // namespace lue
