@@ -222,13 +222,19 @@ def msvc_settings(compiler_filename):
     Return a dictionary with the MSVC compiler settings
     """
     compiler = "msvc"
-    compiler_cppstd = "20"
+    # Don't set compiler.cppstd. Building gdal will fail:
+    # C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52): error C2445: result type of conditional expression is ambiguous: types 'const char [5]' and 'CPLString' can be converted to multiple common types [C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\build\src\ogr\ogrsf_frmts\elastic\ogr_Elastic.vcxproj]
+    #   C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52):
+    #   could be 'const char *'
+    #   C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52):
+    #   or       'CPLString'
+    # compiler_cppstd = "20"
     compiler_version = msvc_version(compiler_filename)
     compiler_runtime = "dynamic"
 
     return {
         "compiler": compiler,
-        "compiler.cppstd": compiler_cppstd,
+        # "compiler.cppstd": compiler_cppstd,
         "compiler.version": compiler_version,
         "compiler.runtime": compiler_runtime,
     }
