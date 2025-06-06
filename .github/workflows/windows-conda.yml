@@ -131,7 +131,7 @@ jobs:
         run: |
           # Unit tests
           ctest --test-dir ${{ env.lue_build_directory }} \
-            --output-on-failure
+            --output-on-failure \
             --exclude-regex "\
           algorithm_decreasing_order_test"
 
