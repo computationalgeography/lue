@@ -8,9 +8,35 @@
 #include "lue/assert.hpp"
 #include "lue/configure.hpp"
 #include <boost/container/vector.hpp>
+#include <vector>
 
 
 namespace lue {
+
+    namespace detail {
+
+        template<typename Element>
+        struct ElementTraits
+        {
+                // Use std::vector by default
+                using Vector = std::vector<Element>;
+        };
+
+
+        template<>
+        struct ElementTraits<bool>
+        {
+                // Use Boost vector in case of bool. Using this type in all cases started throwing "multiply
+                // defined symbols" errors with MSVC.
+                using Vector = boost::container::vector<bool>;
+        };
+
+
+        template<typename Element>
+        using ElementVectorT = ElementTraits<Element>::Vector;
+
+    }  // namespace detail
+
 
     template<typename Element, Rank rank>
     class Array
@@ -28,7 +54,7 @@ namespace lue {
 
             using Shape = lue::Shape<lue::Index, rank>;
 
-            using Elements = boost::container::vector<Element>;
+            using Elements = detail::ElementVectorT<Element>;
 
             using Iterator = typename Elements::iterator;
 
