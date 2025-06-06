@@ -99,9 +99,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
     // Read arrays
     for (ldm::Count time_step = 0; time_step <= nr_time_steps; ++time_step)
     {
-        // Once in a while this test fails (segmentation fault). Replacing the call to from_lue by
-        //     Array array_read = lue::value_policies::add(arrays_written[time_step], Element{0});
-        // solves it, so it seems the bug is in from_lue. But where...
         Array array_read = lue::from_lue<Element>(
             array_pathname, partition_shape, object_id, static_cast<lue::Index>(time_step));
 

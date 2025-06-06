@@ -8,7 +8,7 @@ name: Windows CI (Conan)
 on:
   pull_request:
     branches-ignore:
-      - "*"
+      # - "*"
   push:
     branches:
       - "master"
@@ -263,7 +263,6 @@ jobs:
         algorithm_image_land_integrate_and_allocate_test|\
         algorithm_image_land_integrate_test|\
         framework_api_python_test|\
-        framework_io_lue_test|\
         py_data_model_python_test|\
         py_framework_python_test|\
         py_image_land_python_test|\
