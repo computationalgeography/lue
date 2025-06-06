@@ -187,7 +187,6 @@ jobs:
           algorithm_decreasing_order_test|\
           algorithm_image_land_integrate_and_allocate_test|\
           algorithm_image_land_integrate_test|\
-          framework_io_lue_test|\
           py_image_land_python_test"
 
           # Test of runtime targets

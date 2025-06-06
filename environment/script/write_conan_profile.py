@@ -222,19 +222,13 @@ def msvc_settings(compiler_filename):
     Return a dictionary with the MSVC compiler settings
     """
     compiler = "msvc"
-    # Don't set compiler.cppstd. Building gdal will fail:
-    # C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52): error C2445: result type of conditional expression is ambiguous: types 'const char [5]' and 'CPLString' can be converted to multiple common types [C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\build\src\ogr\ogrsf_frmts\elastic\ogr_Elastic.vcxproj]
-    #   C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52):
-    #   could be 'const char *'
-    #   C:\Users\kdejo\.conan2\p\b\gdal1530b8b35e2ad\b\src\ogr\ogrsf_frmts\elastic\ogrelasticlayer.cpp(1144,52):
-    #   or       'CPLString'
-    # compiler_cppstd = "20"
+    compiler_cppstd = "20"
     compiler_version = msvc_version(compiler_filename)
     compiler_runtime = "dynamic"
 
     return {
         "compiler": compiler,
-        # "compiler.cppstd": compiler_cppstd,
+        "compiler.cppstd": compiler_cppstd,
         "compiler.version": compiler_version,
         "compiler.runtime": compiler_runtime,
     }
@@ -342,10 +336,13 @@ def write_conan_profile(compiler_filename, profile_pathname):
     profile_options = {}
 
     if conan_os() == "Windows":
-        # profile_options["gdal/*"] = "gdal_optional_drivers=False,ogr_optional_drivers=False"
-        # profile_options["gdal/*"] = "with_arrow=False"
-        # profile_options["gdal/*"] = "with_parquet=False"
-        profile_options["hdf5/*"] = "shared=True"
+        profile_options["gdal/*"] = {
+            "gdal_optional_drivers": False,
+            "ogr_optional_drivers": False,
+        }
+        profile_options["hdf5/*"] = {
+            "shared": True,
+        }
 
     profile_buildenv = {}
 
@@ -358,9 +355,13 @@ def write_conan_profile(compiler_filename, profile_pathname):
         profile_string += "[settings]\n{}\n\n".format(
             "\n".join([f"{key}={profile_settings[key]}" for key in profile_settings])
         )
-        profile_string += "[options]\n{}\n\n".format(
-            "\n".join([f"{key}:{profile_options[key]}" for key in profile_options])
-        )
+
+        profile_string += "[options]\n\n"
+
+        for package_key, package_value in profile_options.items():
+            for option_key, option_value in package_value.items():
+                profile_string += f"{package_key}:{option_key}={option_value}\n"
+
         profile_string += "[buildenv]\n{}\n\n".format(
             "\n".join([f"{key}={profile_buildenv[key]}" for key in profile_buildenv])
         )

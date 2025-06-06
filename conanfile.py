@@ -51,7 +51,7 @@ class LUERecipe(ConanFile):
         # 20230829 Conan package for more recent versions seem broken
         # https://github.com/conan-io/conan-center-index/issues/17830
         if install_conan_package("gdal"):
-            self.requires("gdal/[>=3.8]")
+            self.requires("gdal/[>=3.10]")
 
         if install_conan_package("glfw"):
             self.requires("glfw/[>=3.3.6]")

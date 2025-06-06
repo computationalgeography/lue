@@ -2,7 +2,6 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/dataset.hpp"
-#include "lue/framework/io/export.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
 #include "lue/configure.hpp"
@@ -68,7 +67,7 @@ namespace lue {
                      phenomenon_name,
                      property_set_name,
                      property_name,
-                     object_id](auto&& when_any_result_f)
+                     object_id](auto when_any_result_f)
                     {
                         // Open the dataset once the first partition is ready to be written
                         auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDWR);
@@ -104,29 +103,18 @@ namespace lue {
                             policies, partitions[partition_idx], create_hyperslab, object_id, property);
                         partitions.erase(partitions.begin() + partition_idx);
 
-                        // Write any other ready partition, until all partition are written, one after the
+                        // Write any other ready partition, until all partitions are written, one after the
                         // other
                         while (!partitions.empty())
                         {
-                            auto partitions_f =
-                                hpx::when_any(partitions)
-                                    .then(
-                                        [policies, create_hyperslab, object_id, property](
-                                            auto&& when_any_result_f)
-                                        {
-                                            auto [partition_idx, partitions] = when_any_result_f.get();
-                                            write_partition(
-                                                policies,
-                                                partitions[partition_idx],
-                                                create_hyperslab,
-                                                object_id,
-                                                property);
-                                            partitions.erase(partitions.begin() + partition_idx);
+                            auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
 
-                                            return partitions;
-                                        });
+                            write_partition(
+                                policies, partitions_[partition_idx], create_hyperslab, object_id, property);
 
-                            partitions = partitions_f.get();
+                            partitions_.erase(partitions_.begin() + partition_idx);
+
+                            partitions = std::move(partitions_);
                         }
                     });
         }
@@ -197,25 +185,14 @@ namespace lue {
                         // other
                         while (!partitions.empty())
                         {
-                            auto partitions_f =
-                                hpx::when_any(partitions)
-                                    .then(
-                                        [policies, create_hyperslab, object_id, time_step_idx, property](
-                                            auto&& when_any_result_f)
-                                        {
-                                            auto [partition_idx, partitions] = when_any_result_f.get();
-                                            write_partition(
-                                                policies,
-                                                partitions[partition_idx],
-                                                create_hyperslab,
-                                                object_id,
-                                                property);
-                                            partitions.erase(partitions.begin() + partition_idx);
+                            auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
 
-                                            return partitions;
-                                        });
+                            write_partition(
+                                policies, partitions_[partition_idx], create_hyperslab, object_id, property);
 
-                            partitions = partitions_f.get();
+                            partitions_.erase(partitions_.begin() + partition_idx);
+
+                            partitions = std::move(partitions_);
                         }
                     });
         }
@@ -307,28 +284,29 @@ namespace lue {
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once the partitions have been written.
             // Each next task is spawned once the previous task has finіshed writing.
-            localities_finished.push_back(hpx::dataflow(
-                hpx::launch::async,
-                [locality = locality,
-                 action,
-                 policies,
-                 array_hyperslab = detail::shape_to_hyperslab(array.shape()),
-                 array_pathname,
-                 object_id](
-                    [[maybe_unused]] auto const& previous_locality_finished,
-                    hpx::future<std::vector<Partition>>&& partitions_f)
-                {
-                    return action(
-                               locality,
-                               policies,
-                               array_hyperslab.start(),
-                               partitions_f.get(),
-                               array_pathname,
-                               object_id)
-                        .share();
-                },
-                previous_locality_finished,
-                hpx::when_all(partitions.begin(), partitions.end())));
+            localities_finished.push_back(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    [locality = locality,
+                     action,
+                     policies,
+                     array_hyperslab = detail::shape_to_hyperslab(array.shape()),
+                     array_pathname,
+                     object_id](
+                        [[maybe_unused]] auto const& previous_locality_finished,
+                        hpx::future<std::vector<Partition>> partitions_f)
+                    {
+                        return action(
+                                   locality,
+                                   std::move(policies),
+                                   array_hyperslab.start(),
+                                   partitions_f.get(),
+                                   std::move(array_pathname),
+                                   object_id)
+                            .share();
+                    },
+                    previous_locality_finished,
+                    hpx::when_all(partitions.begin(), partitions.end())));
 
             ++locality_idx;
         }
@@ -410,30 +388,31 @@ namespace lue {
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once the partitions have been written.
             // Each next task is spawned once the previous task has finіshed writing.
-            localities_finished.push_back(hpx::dataflow(
-                hpx::launch::async,
-                [locality = locality,
-                 action,
-                 policies,
-                 array_hyperslab = detail::shape_to_hyperslab(array.shape()),
-                 array_pathname,
-                 object_id,
-                 time_step_idx](
-                    [[maybe_unused]] auto const& previous_locality_finished,
-                    hpx::future<std::vector<Partition>>&& partitions_f)
-                {
-                    return action(
-                               locality,
-                               policies,
-                               array_hyperslab.start(),
-                               partitions_f.get(),
-                               array_pathname,
-                               object_id,
-                               time_step_idx)
-                        .share();
-                },
-                previous_locality_finished,
-                hpx::when_all(partitions.begin(), partitions.end())));
+            localities_finished.push_back(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    [locality = locality,
+                     action,
+                     policies,
+                     array_hyperslab = detail::shape_to_hyperslab(array.shape()),
+                     array_pathname,
+                     object_id,
+                     time_step_idx](
+                        [[maybe_unused]] auto const& previous_locality_finished,
+                        hpx::future<std::vector<Partition>> partitions_f)
+                    {
+                        return action(
+                                   locality,
+                                   policies,
+                                   array_hyperslab.start(),
+                                   partitions_f.get(),
+                                   array_pathname,
+                                   object_id,
+                                   time_step_idx)
+                            .share();
+                    },
+                    previous_locality_finished,
+                    hpx::when_all(partitions.begin(), partitions.end())));
 
             ++locality_idx;
         }
