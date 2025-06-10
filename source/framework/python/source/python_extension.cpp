@@ -1,7 +1,6 @@
 #include "lue/git.hpp"
 #include "lue/py/framework/submodule.hpp"
 #include "lue/version.hpp"
-#include <pybind11/pybind11.h>
 
 
 namespace lue::framework {
