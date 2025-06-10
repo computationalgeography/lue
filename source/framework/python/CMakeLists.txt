@@ -101,7 +101,6 @@ foreach(name focal global local miscellaneous routing zonal)
             pybind11::thin_lto
             pybind11::opt_size
             pybind11::windows_extras
-            Python::Python
     )
 endforeach()
 
@@ -219,7 +218,6 @@ target_link_libraries(lue_py_framework
         pybind11::thin_lto
         pybind11::opt_size
         pybind11::windows_extras
-        Python::Python
 )
 
 set_target_properties(
