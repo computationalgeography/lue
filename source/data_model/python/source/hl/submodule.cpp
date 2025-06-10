@@ -1,5 +1,4 @@
 #include "submodule.hpp"
-#include "lue/data_model/hl/raster_view.hpp"
 
 
 namespace lue::data_model {
