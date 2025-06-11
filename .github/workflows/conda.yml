@@ -22,8 +22,8 @@ jobs:
       matrix:
         include:
           - os: "macos-15"
-            target-platform: arm-64
-            conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/arm-64/"
+            target-platform: osx-arm64
+            conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/osx-arm64/"
             conda-bld-arg: ""
           - os: "ubuntu-24.04"
             target-platform: linux-64
