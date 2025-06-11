@@ -484,6 +484,8 @@ if(LUE_PYTHON_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
     find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development NumPy)
 
+    set(LUE_PYTHON_FROM_CONDA FALSE)
+
     if((Python_INTERPRETER_ID STREQUAL "Anaconda") OR (Python_EXECUTABLE MATCHES "^.*conda.*$"))
         set(LUE_PYTHON_FROM_CONDA TRUE)
 
@@ -809,11 +811,9 @@ if(LUE_HDF5_REQUIRED)
         message(FATAL_ERROR "Target hdf5::hdf5 not available")
     endif()
 
-    # At least on MacOS(?) and Windows, icw Conda packages, HDF5_DEFINITIONS is not set, resulting in undefined
-    # symbols at link time. If we're sure the library is shared, add a definition ourselves to make the link
-    # succeed.
-    # (APPLE OR WIN32)
-    if(WIN32 AND LUE_PYTHON_FROM_CONDA)
+    # In some cases (Windows + Conda build, ...), HDF5_DEFINITIONS is not set, resulting in undefined symbols
+    # at link time. If we're sure the library is shared, add a definition ourselves to make the link succeed.
+    if(WIN32)
         if(NOT HDF5_DEFINITIONS)
             string(FIND "${HDF5_C_LIBRARIES}" "shared" idx)
             if(idx GREATER_EQUAL 0)
