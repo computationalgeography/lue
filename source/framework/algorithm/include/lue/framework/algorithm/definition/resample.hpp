@@ -22,7 +22,7 @@ namespace lue {
             -> PartitionT<PartitionedArray<policy::OutputElementT<Policies, 0>, rank>>
 
         {
-            // NOTE: There is no guarantee that the source partition in the current locality!
+            // NOTE: There is no guarantee that the source partition is located in the current locality!
 
             // - Wait for the source partition to be ready
             // - Create the target partition
