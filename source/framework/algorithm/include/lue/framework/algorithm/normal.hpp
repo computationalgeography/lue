@@ -25,7 +25,7 @@ namespace lue {
         policy::InputElementT<Policies, 1> const stddev)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
-        return normal(
+        return normal<Policies, rank>(
             policies,
             input_array,
             Scalar<policy::InputElementT<Policies, 1>>{mean},

@@ -39,7 +39,7 @@ namespace lue {
         policy::InputElementT<Policies, 1> const max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
-        return uniform(
+        return uniform<Policies, rank>(
             policies,
             input_array,
             Scalar<policy::InputElementT<Policies, 1>>{min_value},
