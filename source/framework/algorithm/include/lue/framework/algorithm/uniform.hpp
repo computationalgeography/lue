@@ -42,8 +42,8 @@ namespace lue {
         return uniform(
             policies,
             input_array,
-            hpx::make_ready_future<policy::InputElementT<Policies, 1>>(min_value),
-            hpx::make_ready_future<policy::InputElementT<Policies, 2>>(max_value));
+            Scalar<policy::InputElementT<Policies, 1>>{min_value},
+            Scalar<policy::InputElementT<Policies, 2>>{max_value});
     }
 
 
@@ -79,8 +79,8 @@ namespace lue {
     {
         return uniform(
             policies,
-            hpx::make_ready_future<policy::InputElementT<Policies, 0>>(min_value),
-            hpx::make_ready_future<policy::InputElementT<Policies, 1>>(max_value));
+            Scalar<policy::InputElementT<Policies, 0>>{min_value},
+            Scalar<policy::InputElementT<Policies, 1>>{max_value});
     }
 
 

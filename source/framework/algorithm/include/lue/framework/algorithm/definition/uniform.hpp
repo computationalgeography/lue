@@ -33,8 +33,6 @@ namespace lue {
             using OutputPartition = PartitionT<InputPartition, Element>;
             using OutputData = DataT<OutputPartition>;
 
-            static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
-
             lue_hpx_assert(input_partition.is_ready());
 
             return hpx::dataflow(
@@ -80,8 +78,6 @@ namespace lue {
                                 }
                                 else if constexpr (std::is_integral_v<Element>)
                                 {
-                                    static_assert(!std::is_same_v<Element, std::int8_t>);
-                                    static_assert(!std::is_same_v<Element, std::uint8_t>);
                                     return std::uniform_int_distribution<Element>{min_value, max_value};
                                 }
                             }();
@@ -135,6 +131,10 @@ namespace lue {
         Scalar<policy::InputElementT<Policies, 1>> const& max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 1>, policy::InputElementT<Policies, 2>>);
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 1>>);
+
         // Reimplement as ternary local operation?
 
         // The result array will have the same shape, partitioning and
@@ -150,8 +150,6 @@ namespace lue {
 
         using OutputArray = PartitionedArray<Element, rank>;
         using OutputPartitions = PartitionsT<OutputArray>;
-
-        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
         lue_hpx_assert(all_are_valid(input_array.partitions()));
         lue_hpx_assert(min_value.future().valid());
@@ -206,12 +204,11 @@ namespace lue {
         Scalar<policy::InputElementT<Policies, 1>> const& max_value)
         -> Scalar<policy::OutputElementT<Policies, 0>>
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 0>, policy::InputElementT<Policies, 1>>);
         static_assert(
             std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
 
         using Element = policy::OutputElementT<Policies, 0>;
-
-        static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 
         lue_hpx_assert(min_value.future().valid());
         lue_hpx_assert(max_value.future().valid());
@@ -247,8 +244,6 @@ namespace lue {
                             }
                             else if constexpr (std::is_integral_v<Element>)
                             {
-                                static_assert(!std::is_same_v<Element, std::int8_t>);
-                                static_assert(!std::is_same_v<Element, std::uint8_t>);
                                 return std::uniform_int_distribution<Element>{min_value, max_value};
                             }
                         }();
@@ -299,8 +294,6 @@ namespace lue {
                 }
                 else if constexpr (std::is_integral_v<Element>)
                 {
-                    static_assert(!std::is_same_v<Element, std::int8_t>);
-                    static_assert(!std::is_same_v<Element, std::uint8_t>);
                     return std::uniform_int_distribution<Element>{min_value, max_value};
                 }
             }();
@@ -414,6 +407,10 @@ namespace lue {
         Scalar<policy::InputElementT<Policies, 1>> const& max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 0>, policy::InputElementT<Policies, 1>>);
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
+
         using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
         return create_partitioned_array(
@@ -435,6 +432,10 @@ namespace lue {
         Scalar<policy::InputElementT<Policies, 1>> const& max_value)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank<Shape>>
     {
+        static_assert(std::is_same_v<policy::InputElementT<Policies, 0>, policy::InputElementT<Policies, 1>>);
+        static_assert(
+            std::is_same_v<policy::OutputElementT<Policies, 0>, policy::InputElementT<Policies, 0>>);
+
         using Functor = InstantiateUniform<policy::OutputElementT<Policies, 0>, rank<Shape>>;
 
         return create_partitioned_array(
@@ -478,4 +479,4 @@ namespace lue {
             ArgumentType<void(Policies)> const&,                                                             \
             PartitionedArray<policy::InputElementT<Policies, 0>, rank<Shape>> const& input_array,            \
             Scalar<policy::InputElementT<Policies, 1>> const& min_value,                                     \
-            Scalar<policy::InputElementT<Policies, 2>> const& max_value);
+            Scalar<policy::InputElementT<Policies, 1>> const& max_value);
