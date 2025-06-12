@@ -35,8 +35,8 @@ namespace lue {
         template<typename SomeElement, typename Element, Rank rank>
         auto normal(
             PartitionedArray<SomeElement, rank> const& input_array,
-            hpx::shared_future<Element> const& mean,
-            hpx::shared_future<Element> const& stddev) -> PartitionedArray<Element, rank>
+            Scalar<Element> const& mean,
+            Scalar<Element> const& stddev) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::normal::DefaultValuePolicies<Element, SomeElement>;
 
@@ -49,16 +49,14 @@ namespace lue {
             PartitionedArray<SomeElement, rank> const& input_array, Element const mean, Element const stddev)
             -> PartitionedArray<Element, rank>
         {
-            return normal(
-                input_array,
-                hpx::make_ready_future<Element>(mean).share(),
-                hpx::make_ready_future<Element>(stddev).share());
+            using Policies = policy::normal::DefaultValuePolicies<Element, SomeElement>;
+
+            return lue::normal(Policies{}, input_array, mean, stddev);
         }
 
 
         template<typename Element>
-        auto normal(hpx::shared_future<Element> const& mean, hpx::shared_future<Element> const& stddev)
-            -> Scalar<Element>
+        auto normal(Scalar<Element> const& mean, Scalar<Element> const& stddev) -> Scalar<Element>
         {
             using Policies = policy::normal::DefaultValuePolicies<Element>;
 
@@ -69,9 +67,22 @@ namespace lue {
         template<typename Element>
         auto normal(Element const mean, Element const stddev) -> Scalar<Element>
         {
-            return normal(
-                hpx::make_ready_future<Element>(mean).share(),
-                hpx::make_ready_future<Element>(stddev).share());
+            using Policies = policy::normal::DefaultValuePolicies<Element>;
+
+            return lue::normal(Policies{}, mean, stddev);
+        }
+
+
+        template<typename Element, typename Count, Rank rank>
+        auto normal(
+            Shape<Count, rank> const& array_shape,
+            Shape<Count, rank> const& partition_shape,
+            Scalar<Element> const mean,
+            Scalar<Element> const stddev) -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::normal::DefaultValuePolicies<Element>;
+
+            return lue::normal(Policies{}, array_shape, partition_shape, mean, stddev);
         }
 
 
@@ -87,6 +98,26 @@ namespace lue {
             return lue::normal(Policies{}, array_shape, partition_shape, mean, stddev);
         }
 
-    }  // namespace value_policies
 
+        template<typename Element, typename Count, Rank rank>
+        auto normal(
+            Shape<Count, rank> const& array_shape, Scalar<Element> const mean, Scalar<Element> const stddev)
+            -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::normal::DefaultValuePolicies<Element>;
+
+            return lue::normal(Policies{}, array_shape, mean, stddev);
+        }
+
+
+        template<typename Element, typename Count, Rank rank>
+        auto normal(Shape<Count, rank> const& array_shape, Element const mean, Element const stddev)
+            -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::normal::DefaultValuePolicies<Element>;
+
+            return lue::normal(Policies{}, array_shape, mean, stddev);
+        }
+
+    }  // namespace value_policies
 }  // namespace lue

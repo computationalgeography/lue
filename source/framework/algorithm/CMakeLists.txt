@@ -1039,6 +1039,40 @@ block()
                 endforeach()
             endif()
         endforeach()
+
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            string(REPLACE "::" "_" element ${Element})
+
+            # Instantiate normal
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/normal-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/normal.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            foreach(SomeElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                string(REPLACE "::" "_" some_element ${SomeElement})
+
+                # Instantiate normal with template
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/normal_template-${Policies}_${element}_${some_element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/normal_template.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","SomeElement":"${SomeElement}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
+        endforeach()
     endforeach()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)

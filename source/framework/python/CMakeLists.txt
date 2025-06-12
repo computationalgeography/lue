@@ -55,6 +55,7 @@ add_library(lue_py_framework_local_operation SHARED
 
 add_library(lue_py_framework_miscellaneous_operation SHARED
     source/algorithm/miscellaneous_operation.cpp
+    source/algorithm/miscellaneous_operation/normal.cpp
     source/algorithm/miscellaneous_operation/resample.cpp
     source/algorithm/miscellaneous_operation/uniform-1.cpp
     source/algorithm/miscellaneous_operation/uniform-2.cpp
@@ -154,7 +155,6 @@ add_library(lue_py_framework SHARED
     source/algorithm/array_partition_id.cpp
     $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:source/algorithm/locality_id.cpp>
     $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:source/algorithm/timestamp.cpp>
-    source/algorithm/normal.cpp
 
     source/core/create_partitioned_array.cpp
     ${generated_source_files}

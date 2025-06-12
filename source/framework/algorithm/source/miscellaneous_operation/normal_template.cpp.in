@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/default_policies/normal.hpp"
+#include "lue/framework/algorithm/definition/normal.hpp"
+#include "lue/framework/algorithm/value_policies/normal.hpp"
+
+
+namespace lue {
+
+    using Shape_ = Shape<Count, 2>;
+
+    LUE_INSTANTIATE_NORMAL_TEMPLATE(
+        ESC(policy::normal::{{Policies}} < {{Element}}, {{SomeElement}} >), Shape_);
+
+}  // namespace lue

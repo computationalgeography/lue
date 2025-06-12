@@ -81,7 +81,6 @@ set(local_operation_names
     multiply
     modulus
     negate
-    normal
     not_equal_to
     pow
     round
@@ -99,6 +98,7 @@ set(global_operation_names
 )
 
 set(miscellaneous_operation_names
+    normal
     resample
     uniform
 )
