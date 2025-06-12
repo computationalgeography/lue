@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/uniform.hpp"
-#include "lue/concept.hpp"
 
 
 namespace lue {
@@ -23,12 +22,12 @@ namespace lue {
             requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
         auto uniform(
             PartitionedArray<SomeElement, rank> const& input_array,
-            hpx::shared_future<Element> const& min_value,
-            hpx::shared_future<Element> const& max_value) -> PartitionedArray<Element, rank>
+            Scalar<Element> const& min_value,
+            Scalar<Element> const& max_value) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::uniform::DefaultPolicies<Element, SomeElement>;
 
-            return uniform(Policies{}, input_array, min_value, max_value);
+            return lue::uniform(Policies{}, input_array, min_value, max_value);
         }
 
 
@@ -39,22 +38,19 @@ namespace lue {
             Element const min_value,
             Element const max_value) -> PartitionedArray<Element, rank>
         {
-            return uniform(
-                input_array,
-                hpx::make_ready_future<Element>(min_value).share(),
-                hpx::make_ready_future<Element>(max_value).share());
+            using Policies = policy::uniform::DefaultPolicies<Element, SomeElement>;
+
+            return lue::uniform(Policies{}, input_array, min_value, max_value);
         }
 
 
         template<Arithmetic Element>
             requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
-        auto uniform(
-            hpx::shared_future<Element> const& min_value, hpx::shared_future<Element> const& max_value)
-            -> Scalar<Element>
+        auto uniform(Scalar<Element> const& min_value, Scalar<Element> const& max_value) -> Scalar<Element>
         {
             using Policies = policy::uniform::DefaultPolicies<Element>;
 
-            return uniform(Policies{}, min_value, max_value);
+            return lue::uniform(Policies{}, min_value, max_value);
         }
 
 
@@ -62,9 +58,9 @@ namespace lue {
             requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
         auto uniform(Element const min_value, Element const max_value) -> Scalar<Element>
         {
-            return uniform(
-                hpx::make_ready_future<Element>(min_value).share(),
-                hpx::make_ready_future<Element>(max_value).share());
+            using Policies = policy::uniform::DefaultPolicies<Element>;
+
+            return lue::uniform(Policies{}, min_value, max_value);
         }
 
 

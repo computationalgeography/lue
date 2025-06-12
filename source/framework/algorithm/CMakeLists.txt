@@ -1006,6 +1006,38 @@ block()
                     '{"Policies":"${Policies}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
+
+            if(NOT Element MATCHES "std::u?int8_t")
+                # Instantiate uniform
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/uniform-${Policies}_${element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/uniform.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                foreach(SomeElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                    string(REPLACE "::" "_" some_element ${SomeElement})
+
+                    # Instantiate uniform with template
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/uniform_template-${Policies}_${element}_${some_element}.cpp")
+
+                    generate_template_instantiation(
+                        INPUT_PATHNAME
+                            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/uniform_template.cpp.in"
+                        OUTPUT_PATHNAME
+                            "${output_pathname}"
+                        DICTIONARY
+                            '{"Policies":"${Policies}","Element":"${Element}","SomeElement":"${SomeElement}"}'
+                    )
+                    list(APPEND generated_source_files "${output_pathname}")
+                endforeach()
+            endif()
         endforeach()
     endforeach()
 

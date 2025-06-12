@@ -89,7 +89,6 @@ set(local_operation_names
     sqrt
     subtract
     tan
-    uniform
     unique_id
     valid
     where
@@ -101,6 +100,7 @@ set(global_operation_names
 
 set(miscellaneous_operation_names
     resample
+    uniform
 )
 
 set(routing_operation_names
@@ -245,6 +245,7 @@ foreach(name ${routing_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_local_operation
+            lue::framework_miscellaneous_operation
             lue::framework_routing_operation
     )
 endforeach()
