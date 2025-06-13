@@ -1,6 +1,7 @@
 #include "lue/framework/algorithm/value_policies/normal.hpp"
 #include "shape.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/framework/core/domain_decomposition.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>

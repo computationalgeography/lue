@@ -992,7 +992,7 @@ set(offset "source/miscellaneous_operation")
 block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            string(REPLACE "::" "_" element ${Element})
+            string(REPLACE "std::" "" element ${Element})
 
             # Instantiate resample
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/resample-${Policies}_${element}.cpp")
@@ -1006,6 +1006,72 @@ block()
                     '{"Policies":"${Policies}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
+
+            if(NOT Element MATCHES "std::u?int8_t")
+                # Instantiate uniform
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/uniform-${Policies}_${element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/uniform.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                foreach(SomeElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                    string(REPLACE "std::" "" some_element ${SomeElement})
+
+                    # Instantiate uniform with template
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/uniform-${Policies}_${element}_${some_element}.cpp")
+
+                    generate_template_instantiation(
+                        INPUT_PATHNAME
+                            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/uniform_template.cpp.in"
+                        OUTPUT_PATHNAME
+                            "${output_pathname}"
+                        DICTIONARY
+                            '{"Policies":"${Policies}","Element":"${Element}","SomeElement":"${SomeElement}"}'
+                    )
+                    list(APPEND generated_source_files "${output_pathname}")
+                endforeach()
+            endif()
+        endforeach()
+
+        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
+            string(REPLACE "std::" "" element ${Element})
+
+            # Instantiate normal
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/normal-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/normal.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
+            foreach(SomeElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                string(REPLACE "std::" "" some_element ${SomeElement})
+
+                # Instantiate normal with template
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/normal-${Policies}_${element}_${some_element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/normal_template.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","SomeElement":"${SomeElement}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endforeach()
         endforeach()
     endforeach()
 

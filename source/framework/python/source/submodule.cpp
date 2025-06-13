@@ -80,10 +80,7 @@ namespace lue::framework {
 
     void bind_array_partition_id(pybind11::module& module);
     void bind_locality_id(pybind11::module& module);
-    void bind_normal(pybind11::module& module);
     void bind_timestamp(pybind11::module& module);
-    void bind_uniform1(pybind11::module& module);
-    void bind_uniform2(pybind11::module& module);
 
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
@@ -162,10 +159,6 @@ namespace lue::framework {
         {
             bind_timestamp(submodule);
         }
-
-        bind_normal(submodule);
-        bind_uniform1(submodule);
-        bind_uniform2(submodule);
 
         bind_model(submodule);
         bind_progressor(submodule);

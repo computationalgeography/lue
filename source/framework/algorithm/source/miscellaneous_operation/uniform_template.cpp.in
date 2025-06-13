@@ -1,0 +1,13 @@
+#include "lue/framework/algorithm/default_policies/uniform.hpp"
+#include "lue/framework/algorithm/definition/uniform.hpp"
+#include "lue/framework/algorithm/value_policies/uniform.hpp"
+
+
+namespace lue {
+
+    using Shape_ = Shape<Count, 2>;
+
+    LUE_INSTANTIATE_UNIFORM_TEMPLATE(
+        ESC(policy::uniform::{{Policies}} < {{Element}}, {{SomeElement}} >), Shape_);
+
+}  // namespace lue

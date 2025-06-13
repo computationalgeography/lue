@@ -15,6 +15,7 @@ foreach(name ${names})
             lue::framework_io
             lue::framework_test
             lue::framework_local_operation
+            lue::framework_miscellaneous_operation
             lue::data_model_hl
             Boost::headers
     )
