@@ -69,6 +69,7 @@ jobs:
             gperftools \
             hdf5 \
             hwloc \
+            lftp \
             nlohmann-json \
             numpy \
             pybind11 \
@@ -210,11 +211,11 @@ jobs:
         if: matrix.compiler.cxx == 'clang++' && matrix.python_version == '3.13'
         env:
           ftp_server: ${{ secrets.FTP_SERVER }}
-          ftp_port: ${{ secrets.FTP_PORT }}
           ftp_username: ${{ secrets.FTP_USERNAME }}
           ftp_password: ${{ secrets.FTP_PASSWORD }}
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
           cd ${{ env.lue_build_directory }}
-          lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false; put -O $remote_dir/download/build/macos-clang .ninja_log; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+          lftp -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/macos-clang .ninja_log; quit" \
+              -u $ftp_username,$ftp_password sftp://$ftp_server

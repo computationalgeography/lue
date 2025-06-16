@@ -227,7 +227,8 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
       - name: documentation
-        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        # if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         run: |
           cmake --build ${{ env.lue_build_directory }} --target documentation
 
@@ -236,13 +237,14 @@ jobs:
         if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         env:
           ftp_server: ${{ secrets.FTP_SERVER }}
-          ftp_port: ${{ secrets.FTP_PORT }}
           ftp_username: ${{ secrets.FTP_USERNAME }}
           ftp_password: ${{ secrets.FTP_PASSWORD }}
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
           cd ${{ env.lue_build_directory }}
-          lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-gcc .ninja_log; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+          lftp -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-gcc .ninja_log; quit" \
+              -u $ftp_username,$ftp_password sftp://$ftp_server
           cd document/doc
-          lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+          lftp -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" \
+              -u $ftp_username,$ftp_password sftp://$ftp_server
