@@ -37,12 +37,21 @@
             "$comment": [
                 "https://learn.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warnings-by-compiler-version?view=msvc-170"
             ],
+            "cacheVariables": {}
+        },
+        {
+            "name": "lue_any_configuration",
+            "hidden": true,
             "cacheVariables": {
+                "CMAKE_COMPILE_WARNING_AS_ERROR": "TRUE"
             }
         },
         {
             "name": "lue_debug_configuration",
             "hidden": true,
+            "inherits": [
+                "lue_any_configuration"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
@@ -50,6 +59,9 @@
         {
             "name": "lue_relwithdebinfo_configuration",
             "hidden": true,
+            "inherits": [
+                "lue_any_configuration"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
@@ -57,6 +69,9 @@
         {
             "name": "lue_release_configuration",
             "hidden": true,
+            "inherits": [
+                "lue_any_configuration"
+            ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
