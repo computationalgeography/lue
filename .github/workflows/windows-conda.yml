@@ -49,7 +49,7 @@ jobs:
       lue_consume_source_directory: lue_consume_source
       lue_consume_build_directory: lue_consume_build
       # conda-build provides the conda-develop command
-      conda_packages: "conda-build cxxopts docopt jinja2 hdf5 hpx libboost-devel lftp libboost-headers libgdal libhwloc matplotlib ninja nlohmann_json numpy pybind11 ruamel.yaml"
+      conda_packages: "conda-build cxxopts docopt jinja2 hdf5 hpx libboost-devel libboost-headers libgdal libhwloc matplotlib ninja nlohmann_json numpy pybind11 ruamel.yaml"
 
     steps:
       - uses: actions/checkout@v4
@@ -171,17 +171,3 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_data_model
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
-
-      - name: deploy
-        # if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'cl' && matrix.python_version == '3.12'
-        if: matrix.compiler.cxx == 'cl' && matrix.python_version == '3.12'
-        env:
-          ftp_server: ${{ secrets.FTP_SERVER }}
-          ftp_username: ${{ secrets.FTP_USERNAME }}
-          ftp_password: ${{ secrets.FTP_PASSWORD }}
-          remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
-          local_dir: "_build/html"
-        run: |
-          cd ${{ env.lue_build_directory }}
-          lftp -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/windows-cl .ninja_log; quit" \
-              -u $ftp_username,$ftp_password sftp://$ftp_server
