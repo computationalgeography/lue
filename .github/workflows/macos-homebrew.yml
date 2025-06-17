@@ -119,6 +119,7 @@ jobs:
             -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+            -D CMAKE_COMPILE_WARNING_AS_ERROR=TRUE \
             -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
@@ -207,8 +208,7 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
       - name: deploy
-        # if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.macos_version == '15' && matrix.compiler.cxx == 'clang++' && matrix.python_version == '3.13'
-        if: matrix.macos_version == '15' && matrix.compiler.cxx == 'clang++' && matrix.python_version == '3.13'
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.macos_version == '15' && matrix.compiler.cxx == 'clang++' && matrix.python_version == '3.13'
         env:
           ftp_server: ${{ secrets.FTP_SERVER }}
           ftp_port: ${{ secrets.FTP_PORT }}
