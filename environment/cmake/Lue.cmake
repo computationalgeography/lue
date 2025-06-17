@@ -11,6 +11,12 @@ set(LUE_MIN_CXX_STANDARD 20)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 
+find_package(LATEX)
+if(LATEX_FOUND)
+    include(UseLATEX)
+    find_package(ImageMagick)
+endif()
+
 # Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)
 
