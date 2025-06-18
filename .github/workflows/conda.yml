@@ -2,8 +2,11 @@ name: Conda packages
 
 on:
   pull_request:
-    branches-ignore:
-      # - "*"
+    # branches-ignore:
+    #   - "*"
+    paths:
+      - "!.github/workflows/*"
+      - ".github/workflows/conda.yml"
   push:
     branches:
       - "master"
