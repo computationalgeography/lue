@@ -241,7 +241,7 @@ jobs:
           ftp_server: ${{ secrets.FTP_SERVER }}
           ftp_port: ${{ secrets.FTP_PORT }}
           ftp_username: ${{ secrets.FTP_USERNAME }}
-          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          ftp_password: ${{ secrets.FTP_PASSWORD }}
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
@@ -258,6 +258,6 @@ jobs:
           lftp \
               -d \
               -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" \
-              -u $ftp_username \
+              -u $ftp_username,$ftp_password \
               -p $ftp_port \
               sftp://$ftp_server
