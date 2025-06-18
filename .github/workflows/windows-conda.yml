@@ -6,8 +6,11 @@ name: Windows CI (Conda)
 
 on:
   pull_request:
-    branches-ignore:
-      # - "*"
+    # branches-ignore:
+    #   - "*"
+    paths:
+      - "!.github/workflows/*"
+      - ".github/workflows/windows-conda.yml"
   push:
     branches:
       - "master"

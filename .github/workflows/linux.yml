@@ -6,8 +6,11 @@ name: Linux CI
 
 on:
   pull_request:
-    branches-ignore:
-      # - "*"
+    # branches-ignore:
+    #   - "*"
+    paths:
+      - "!.github/workflows/*"
+      - ".github/workflows/linux.yml"
   push:
     branches:
       - "master"
@@ -148,6 +151,7 @@ jobs:
               -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
               -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
               -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
+              -D CMAKE_COMPILE_WARNING_AS_ERROR=TRUE \
               -D LUE_BUILD_DOCUMENTATION=TRUE \
               -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
               -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
@@ -228,14 +232,32 @@ jobs:
 
       - name: documentation
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        run: |
+          cmake --build ${{ env.lue_build_directory }} --target documentation
+
+      - name: deploy
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         env:
           ftp_server: ${{ secrets.FTP_SERVER }}
           ftp_port: ${{ secrets.FTP_PORT }}
           ftp_username: ${{ secrets.FTP_USERNAME }}
-          ftp_password: ${{ secrets.FTP_PASSWORD }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
-          cmake --build ${{ env.lue_build_directory }} --target documentation
-          cd ${{ env.lue_build_directory }}/document/doc
-          lftp -e "set sftp:auto-confirm yes;set ssl:verify-certificate false;mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" -u $ftp_username,$ftp_password sftp://$ftp_server -p $ftp_port
+          # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
+          # a fork.
+          cd ${{ env.lue_build_directory }}
+          lftp \
+              -d \
+              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-g++ .ninja_log; quit" \
+              -u $ftp_username \
+              -p $ftp_port \
+              sftp://$ftp_server
+          cd document/doc
+          lftp \
+              -d \
+              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" \
+              -u $ftp_username \
+              -p $ftp_port \
+              sftp://$ftp_server

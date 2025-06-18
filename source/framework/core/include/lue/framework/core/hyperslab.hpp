@@ -35,7 +35,7 @@ namespace lue {
                     half_shape.begin(),
                     half_shape.end(),
                     half_shape.begin(),
-                    [](auto const count) { return 0.5 * (count % 2 == 1 ? count - 1 : count); });
+                    [](auto const count) { return (count % 2 == 1 ? count - 1 : count) / 2; });
 
                 // Equality in the sense that shape can be centered and not extend into areas with smaller
                 // than zero idxs

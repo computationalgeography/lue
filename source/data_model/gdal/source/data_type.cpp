@@ -60,6 +60,13 @@ namespace lue::gdal {
                 break;
             }
 #endif
+#if LUE_GDAL_SUPPORTS_16BIT_FLOATING_POINTS
+            case GDT_Float16:
+            {
+                result = "GDT_Float16";
+                break;
+            }
+#endif
             case GDT_Float32:
             {
                 result = "GDT_Float32";
@@ -80,6 +87,13 @@ namespace lue::gdal {
                 result = "GDT_CInt32";
                 break;
             }
+#if LUE_GDAL_SUPPORTS_16BIT_FLOATING_POINTS
+            case GDT_CFloat16:
+            {
+                result = "GDT_CFloat16";
+                break;
+            }
+#endif
             case GDT_CFloat32:
             {
                 result = "GDT_CFloat32";
