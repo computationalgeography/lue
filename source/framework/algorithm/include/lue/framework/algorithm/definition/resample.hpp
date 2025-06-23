@@ -58,12 +58,6 @@ namespace lue {
                                 auto const& ondp =
                                     std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                                auto const [nr_source_elements0, nr_source_elements1] =
-                                    source_partition_data.shape();
-
-                                // Upper left cell of area to copy from
-                                auto [source_idx0, source_idx1] = source_area_offset;
-
                                 // Determine whether / how many of the source cells in the previous row and
                                 // column have already been assigned to target partition cells of neighbouring
                                 // partitions. The task only needs to copy the remaining number of source
@@ -96,10 +90,18 @@ namespace lue {
                                 //     nr_target_cells_remaining0,
                                 //     nr_target_cells_remaining1);
 
+#ifndef NDEBUG
+                                auto const [nr_source_elements0, nr_source_elements1] =
+                                    source_partition_data.shape();
+
+                                // Upper left cell of area to copy from
+                                auto [source_idx0, source_idx1] = source_area_offset;
+
                                 lue_hpx_assert(
                                     count * (nr_source_elements0 - source_idx0) >= nr_target_elements0);
                                 lue_hpx_assert(
                                     count * (nr_source_elements1 - source_idx1) >= nr_target_elements1);
+#endif
 
                                 // Iterate over source cells to copy until target partition is filled
                                 Count nr_copies_to_make0 = count - nr_target_cells_remaining0;
