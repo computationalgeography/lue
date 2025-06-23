@@ -79,15 +79,6 @@ option(LUE_VALIDATE_IDXS
     "Validate array indices are within array bounds (expensive!)"
     FALSE)
 
-# Only allow the user to configure the use of parallel I/O if this is something that is supported by the
-# platform. If so, the default is to support parallel I/O.
-cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
-    "Use parallel I/O for formats that support it"
-    TRUE
-    "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
-    FALSE
-)
-
 # Options related to the availability of external packages.
 if(WIN32)
     set(LUE_HAVE_DOXYGEN_INIT FALSE)
@@ -410,9 +401,9 @@ if(LUE_BUILD_FRAMEWORK)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
 
-    if(LUE_FRAMEWORK_WITH_PARALLEL_IO)
-        set(LUE_MPI_REQUIRED TRUE)
-    endif()
+    # if(LUE_FRAMEWORK_WITH_PARALLEL_IO)
+    #     set(LUE_MPI_REQUIRED TRUE)
+    # endif()
 endif()
 
 
@@ -839,9 +830,9 @@ if(LUE_JUPYTER_BOOK_REQUIRED)
 endif()
 
 
-if(LUE_MPI_REQUIRED)
-    find_package(MPI REQUIRED)
-endif()
+# if(LUE_MPI_REQUIRED)
+#     find_package(MPI REQUIRED)
+# endif()
 
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
@@ -863,3 +854,21 @@ if(LUE_SPHINX_REQUIRED)
         message(FATAL_ERROR "sphinx not found")
     endif()
 endif()
+
+
+# Only allow the user to configure the use of parallel I/O if this is something that is supported by the
+# platform. If so, the default is to support parallel I/O.
+message(STATUS "LUE_BUILD_DATA_MODEL    : ${LUE_BUILD_DATA_MODEL}")
+message(STATUS "LUE_HDF5_REQUIRED       : ${LUE_HDF5_REQUIRED}")
+message(STATUS "HDF5_IS_PARALLEL        : ${HDF5_IS_PARALLEL}")
+message(STATUS "LUE_BUILD_FRAMEWORK     : ${LUE_BUILD_FRAMEWORK}")
+message(STATUS "LUE_HPX_REQUIRED        : ${LUE_HPX_REQUIRED}")
+message(STATUS "HPX_WITH_NETWORKING     : ${HPX_WITH_NETWORKING}")
+message(STATUS "HPX_WITH_PARCELPORT_MPI : ${HPX_WITH_PARCELPORT_MPI}")
+cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
+    "Use parallel I/O for formats that support it"
+    TRUE
+    "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
+    FALSE
+)
+
