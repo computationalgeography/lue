@@ -2,11 +2,11 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/dataset.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
-#include "lue/configure.hpp"
 
 
 /*!
