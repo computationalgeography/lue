@@ -8,7 +8,7 @@ endforeach()
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-add_library(lue_py_image_land SHARED
+pybind11_add_module(lue_py_image_land SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/integrate.cpp
     source/integrate_and_allocate.cpp
     source/python_extension.cpp
@@ -38,17 +38,7 @@ target_include_directories(lue_py_image_land
 target_link_libraries(lue_py_image_land
     PRIVATE
         lue::image_land
-        pybind11::module
-        pybind11::thin_lto
-        pybind11::opt_size
-        pybind11::windows_extras
 )
-
-# TODO pybind11_strip does not work on macOS, when building using Conda packages
-#      The resulting binary can't be imported. Results in "killed: 9".
-if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-    pybind11_strip(lue_py_image_land)
-endif()
 
 lue_install_runtime_libraries(
     TARGETS lue_py_image_land

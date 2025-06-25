@@ -23,19 +23,19 @@ file(GENERATE
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 
-add_library(lue_py_framework_focal_operation SHARED
+pybind11_add_module(lue_py_framework_focal_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/focal_operation.cpp
     source/algorithm/focal_operation/focal_operation-1.cpp
     source/algorithm/focal_operation/focal_operation-2.cpp
 )
 
-add_library(lue_py_framework_global_operation SHARED
+pybind11_add_module(lue_py_framework_global_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/global_operation.cpp
     source/algorithm/global_operation/global_operation.cpp
     source/algorithm/global_operation/reclassify.cpp
 )
 
-add_library(lue_py_framework_local_operation SHARED
+pybind11_add_module(lue_py_framework_local_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/local_operation.cpp
     source/algorithm/local_operation/abs.cpp
     source/algorithm/local_operation/all.cpp
@@ -53,7 +53,7 @@ add_library(lue_py_framework_local_operation SHARED
     source/algorithm/local_operation/where.cpp
 )
 
-add_library(lue_py_framework_miscellaneous_operation SHARED
+pybind11_add_module(lue_py_framework_miscellaneous_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/miscellaneous_operation.cpp
     source/algorithm/miscellaneous_operation/normal.cpp
     source/algorithm/miscellaneous_operation/resample.cpp
@@ -61,7 +61,7 @@ add_library(lue_py_framework_miscellaneous_operation SHARED
     source/algorithm/miscellaneous_operation/uniform-2.cpp
 )
 
-add_library(lue_py_framework_routing_operation SHARED
+pybind11_add_module(lue_py_framework_routing_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/routing_operation.cpp
     source/algorithm/routing_operation/accu3.cpp
     source/algorithm/routing_operation/accu_fraction.cpp
@@ -78,7 +78,7 @@ add_library(lue_py_framework_routing_operation SHARED
     source/algorithm/routing_operation/upstream.cpp
 )
 
-add_library(lue_py_framework_zonal_operation SHARED
+pybind11_add_module(lue_py_framework_zonal_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/zonal_operation.cpp
     source/algorithm/zonal_operation/zonal_operation.cpp
 )
@@ -100,10 +100,6 @@ foreach(name focal global local miscellaneous routing zonal)
     target_link_libraries(lue_py_framework_${name}_operation
         PRIVATE
             lue::framework_${name}_operation
-            pybind11::module
-            pybind11::thin_lto
-            pybind11::opt_size
-            pybind11::windows_extras
     )
 endforeach()
 
@@ -151,7 +147,7 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-add_library(lue_py_framework SHARED
+pybind11_add_module(lue_py_framework SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
     source/algorithm/array_partition_id.cpp
     $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:source/algorithm/locality_id.cpp>
     $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:source/algorithm/timestamp.cpp>
@@ -214,10 +210,6 @@ target_link_libraries(lue_py_framework
         lue::framework_io
         lue::framework_model
         lue::gdal
-        pybind11::module
-        pybind11::thin_lto
-        pybind11::opt_size
-        pybind11::windows_extras
 )
 
 set_target_properties(
@@ -232,18 +224,6 @@ set_target_properties(
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
 )
-
-# TODO pybind11_strip does not work on macOS, when building using Conda packages
-#      The resulting binary can't be imported. Results in "killed: 9".
-if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-    pybind11_strip(lue_py_framework)
-    pybind11_strip(lue_py_framework_focal_operation)
-    pybind11_strip(lue_py_framework_global_operation)
-    pybind11_strip(lue_py_framework_local_operation)
-    pybind11_strip(lue_py_framework_miscellaneous_operation)
-    pybind11_strip(lue_py_framework_zonal_operation)
-    pybind11_strip(lue_py_framework_routing_operation)
-endif()
 
 lue_install_runtime_libraries(
     TARGETS
