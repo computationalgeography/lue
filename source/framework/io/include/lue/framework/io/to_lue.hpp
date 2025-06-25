@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/dataset.hpp"
@@ -28,6 +29,8 @@ namespace lue {
             data_model::ID const object_id,
             Property& property)
         {
+            AnnotateFunction const annotate{"to_lue: partition"};
+
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
@@ -59,6 +62,7 @@ namespace lue {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
+            // TODO: On I/O thread
             return hpx::when_any(partitions)
                 .then(
                     [policies,
@@ -69,6 +73,8 @@ namespace lue {
                      property_name,
                      object_id](auto when_any_result_f)
                     {
+                        AnnotateFunction const annotate{"to_lue: partitions constant"};
+
                         // Open the dataset once the first partition is ready to be written
                         auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDWR);
 
@@ -132,6 +138,7 @@ namespace lue {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
+            // TODO: On I/O thread
             return hpx::when_any(partitions)
                 .then(
                     [policies,
@@ -143,6 +150,8 @@ namespace lue {
                      object_id,
                      time_step_idx](auto&& when_any_result_f)
                     {
+                        AnnotateFunction const annotate{"to_lue: partitions variable"};
+
                         // Open the dataset once the first partition is ready to be written
                         auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDWR);
 
