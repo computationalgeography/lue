@@ -26,7 +26,6 @@ namespace lue::framework {
 
             using Policies = policy::to_lue::DefaultValuePolicies<Element>;
 
-            std::cout << "write_constant_array\n" << std::flush;
             return to_lue(Policies{}, array, array_pathname, object_id);
         }
 
