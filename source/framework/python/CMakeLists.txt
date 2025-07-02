@@ -23,19 +23,19 @@ file(GENERATE
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
 
-pybind11_add_module(lue_py_framework_focal_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_focal_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/focal_operation.cpp
     source/algorithm/focal_operation/focal_operation-1.cpp
     source/algorithm/focal_operation/focal_operation-2.cpp
 )
 
-pybind11_add_module(lue_py_framework_global_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_global_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/global_operation.cpp
     source/algorithm/global_operation/global_operation.cpp
     source/algorithm/global_operation/reclassify.cpp
 )
 
-pybind11_add_module(lue_py_framework_local_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_local_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/local_operation.cpp
     source/algorithm/local_operation/abs.cpp
     source/algorithm/local_operation/all.cpp
@@ -53,7 +53,7 @@ pybind11_add_module(lue_py_framework_local_operation SHARED THIN_LTO OPT_SIZE NO
     source/algorithm/local_operation/where.cpp
 )
 
-pybind11_add_module(lue_py_framework_miscellaneous_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_miscellaneous_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/miscellaneous_operation.cpp
     source/algorithm/miscellaneous_operation/normal.cpp
     source/algorithm/miscellaneous_operation/resample.cpp
@@ -61,7 +61,7 @@ pybind11_add_module(lue_py_framework_miscellaneous_operation SHARED THIN_LTO OPT
     source/algorithm/miscellaneous_operation/uniform-2.cpp
 )
 
-pybind11_add_module(lue_py_framework_routing_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_routing_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/routing_operation.cpp
     source/algorithm/routing_operation/accu3.cpp
     source/algorithm/routing_operation/accu_fraction.cpp
@@ -78,7 +78,7 @@ pybind11_add_module(lue_py_framework_routing_operation SHARED THIN_LTO OPT_SIZE 
     source/algorithm/routing_operation/upstream.cpp
 )
 
-pybind11_add_module(lue_py_framework_zonal_operation SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_zonal_operation SHARED THIN_LTO OPT_SIZE
     source/algorithm/zonal_operation.cpp
     source/algorithm/zonal_operation/zonal_operation.cpp
 )
@@ -147,7 +147,7 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-pybind11_add_module(lue_py_framework SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework SHARED THIN_LTO OPT_SIZE
     source/algorithm/array_partition_id.cpp
     $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:source/algorithm/locality_id.cpp>
     $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:source/algorithm/timestamp.cpp>

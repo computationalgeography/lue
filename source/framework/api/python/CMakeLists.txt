@@ -6,7 +6,7 @@ foreach(module_name __init__.py)
     )
 endforeach()
 
-pybind11_add_module(lue_py_framework_x SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_framework_x SHARED THIN_LTO OPT_SIZE
     source/array.cpp
     source/extension.cpp
     source/field.cpp

@@ -10,7 +10,7 @@ file(GENERATE
 
 # A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
 # RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-pybind11_add_module(lue_py_data_model SHARED THIN_LTO OPT_SIZE NO_EXTRAS WITHOUT_SOABI
+pybind11_add_module(lue_py_data_model SHARED THIN_LTO OPT_SIZE
 
     source/submodule.cpp
 
