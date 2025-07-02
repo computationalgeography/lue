@@ -1571,8 +1571,10 @@ namespace lue {
         }
 
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
         template<
             typename Action,
             typename Policies,
@@ -1609,7 +1611,9 @@ namespace lue {
 
                         ));
         }
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 
         template<typename InputPolicies, typename Array>
