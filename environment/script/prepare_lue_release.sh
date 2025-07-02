@@ -20,17 +20,22 @@ function clone_sources() {
         --quiet \
         --depth 1 https://github.com/${lue_fork}/lue.git \
         --branch $git_branch \
-        --single-branch lue-${lue_version}
+        --single-branch $clone_pathname
 }
 
 function zip_sources() {
-    echo "Zip source directory as $tmp_prefix/lue-${lue_version}.tar.bz2 ..."
-    tar cjf lue-${lue_version}.tar.bz2 lue-${lue_version}
-    openssl sha256 lue-${lue_version}.tar.bz2
-    rm -fr lue-$lue_version
+    echo "Zip source directory as $zip_pathname ..."
+
+    tar --create --directory $tmp_prefix --bzip2 --file $zip_pathname $(basename $clone_pathname)
+    openssl sha256 $zip_pathname
+    rm -fr $clone_pathname
 }
 
-tmp_prefix="${HOME}/tmp"
 parse_command_line $@
+
+tmp_prefix="${HOME}/tmp"
+clone_pathname="$tmp_prefix/lue-$lue_version"
+zip_pathname="$tmp_prefix/lue-${lue_version}.tar.bz2"
+
 clone_sources
 zip_sources
