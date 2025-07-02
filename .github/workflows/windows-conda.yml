@@ -9,6 +9,7 @@ on:
     # branches-ignore:
     #   - "*"
     paths:
+      - "**"
       - "!.github/workflows/*"
       - ".github/workflows/windows-conda.yml"
   push:

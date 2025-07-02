@@ -11,6 +11,7 @@ on:
     # branches-ignore:
     #   - "*"
     paths:
+      - "**"
       - "!.github/workflows/*"
       - ".github/workflows/macos-homebrew.yml"
   push:
