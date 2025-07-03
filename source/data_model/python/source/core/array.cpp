@@ -8,7 +8,6 @@
 #include "lue/py/data_model/numpy.hpp"
 #include <boost/algorithm/string/trim.hpp>
 #include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <format>
 
