@@ -1,5 +1,4 @@
 #define BOOST_TEST_MODULE lue framework io lue
-// #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/io/from_lue.hpp"
 #include "lue/framework/io/to_lue.hpp"
@@ -156,10 +155,6 @@ BOOST_AUTO_TEST_CASE(constant_raster)
     lue::Count const nr_cols_partition{4};
     Shape const partition_shape{nr_rows_partition, nr_cols_partition};
 
-    // auto condition = lue::create_partitioned_array<lue::BooleanElement>(
-    //     grid_shape, partition_shape, lue::BooleanElement{1});
-    // Crashes on Windows (Release)... Use uniform instead for now.
-    // Array array_written = lue::value_policies::unique_id<Element>(condition);
     Array array_written =
         lue::value_policies::uniform<Element>(grid_shape, partition_shape, Element{0}, Element{10});
 

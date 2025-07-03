@@ -62,19 +62,22 @@ namespace lue {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
+            // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
+            // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
+            // thread it seems.
             hpx::parallel::execution::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
                     executor,
-                    [executor,
-                     policies,
-                     array_hyperslab_start,
-                     dataset_pathname,
-                     phenomenon_name,
-                     property_set_name,
-                     property_name,
-                     object_id](auto when_any_result_f)
+                    [  // executor,
+                        policies,
+                        array_hyperslab_start,
+                        dataset_pathname,
+                        phenomenon_name,
+                        property_set_name,
+                        property_name,
+                        object_id](auto when_any_result_f)
                     {
                         AnnotateFunction const annotate{"to_lue: partitions constant"};
 
@@ -116,7 +119,7 @@ namespace lue {
                             std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
 
                         hpx::async(
-                            executor,
+                            // executor,
                             write_partition,
                             std::ref(policies),
                             std::ref(partitions[partition_idx]),
@@ -134,7 +137,7 @@ namespace lue {
                             auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
 
                             hpx::async(
-                                executor,
+                                // executor,
                                 write_partition,
                                 std::ref(policies),
                                 std::ref(partitions_[partition_idx]),
@@ -167,20 +170,23 @@ namespace lue {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
+            // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
+            // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
+            // thread it seems.
             hpx::parallel::execution::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
                     executor,
-                    [executor,
-                     policies,
-                     array_hyperslab_start,
-                     dataset_pathname,
-                     phenomenon_name,
-                     property_set_name,
-                     property_name,
-                     object_id,
-                     time_step_idx](auto&& when_any_result_f)
+                    [  // executor,
+                        policies,
+                        array_hyperslab_start,
+                        dataset_pathname,
+                        phenomenon_name,
+                        property_set_name,
+                        property_name,
+                        object_id,
+                        time_step_idx](auto&& when_any_result_f)
                     {
                         AnnotateFunction const annotate{"to_lue: partitions variable"};
 
@@ -226,7 +232,7 @@ namespace lue {
                             std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
 
                         hpx::async(
-                            executor,
+                            // executor,
                             write_partition,
                             std::ref(policies),
                             std::ref(partitions[partition_idx]),
@@ -244,7 +250,7 @@ namespace lue {
                             auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
 
                             hpx::async(
-                                executor,
+                                // executor,
                                 write_partition,
                                 std::ref(policies),
                                 std::ref(partitions_[partition_idx]),
@@ -325,12 +331,13 @@ namespace lue {
 
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
+
+#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
         localities_finished.emplace_back(hpx::make_ready_future());
+#endif
 
         using Action = detail::WritePartitionsConstantAction<Policies, std::vector<Partition>>;
         Action action{};
-
-        // hpx::execution::parallel_executor high_priority_executor(hpx::threads::thread_priority::high);
 
         for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
@@ -349,7 +356,6 @@ namespace lue {
             hpx::future<void>& previous_locality_finished = localities_finished.back();
             localities_finished.push_back(previous_locality_finished.then(
                 [locality,
-                 // high_priority_executor,
                  action,
                  policies,
                  array_hyperslab = detail::shape_to_hyperslab(array.shape()),
@@ -357,8 +363,7 @@ namespace lue {
                  array_pathname,
                  object_id]([[maybe_unused]] auto const& previous_locality_finished)
                 {
-                    hpx::async(
-                        // high_priority_executor,
+                    return hpx::async(
                         action,
                         locality,
                         std::move(policies),
@@ -368,19 +373,24 @@ namespace lue {
                         object_id);
                 }));
 #else
-            localities_finished.push_back(hpx::async(
-                // high_priority_executor,
-                action,
-                locality,
-                std::move(policies),
-                detail::shape_to_hyperslab(array.shape()).start(),
-                std::move(partitions),
-                std::move(array_pathname),
-                object_id));
+            localities_finished.push_back(
+                hpx::async(
+                    action,
+                    locality,
+                    std::move(policies),
+                    detail::shape_to_hyperslab(array.shape()).start(),
+                    std::move(partitions),
+                    std::move(array_pathname),
+                    object_id));
 #endif
         }
 
+#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+        lue_hpx_assert(localities_finished.back().valid());
+        return std::move(localities_finished.back());
+#else
         return hpx::when_all(localities_finished.begin(), localities_finished.end());
+#endif
     }
 
 
@@ -433,17 +443,14 @@ namespace lue {
 
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
+
+#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
         localities_finished.emplace_back(hpx::make_ready_future());
+#endif
 
         using Action = detail::WritePartitionsVariableAction<Policies, std::vector<Partition>>;
         Action action{};
 
-        // hpx::execution::parallel_executor high_priority_executor(hpx::threads::thread_priority::high);
-
-        // Only a single locality can open the file for writing at the same time. Write partitions per
-        // locality, serialized.
-
-        // Iterate over all grouped partitions
         for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
             // Copy current partitions from input array to a new collection
@@ -461,7 +468,6 @@ namespace lue {
             hpx::future<void>& previous_locality_finished = localities_finished.back();
             localities_finished.push_back(previous_locality_finished.then(
                 [locality,
-                 // high_priority_executor,
                  action,
                  policies,
                  array_hyperslab = detail::shape_to_hyperslab(array.shape()),
@@ -470,8 +476,7 @@ namespace lue {
                  object_id,
                  time_step_idx]([[maybe_unused]] auto const& previous_locality_finished)
                 {
-                    hpx::async(
-                        // high_priority_executor,
+                    return hpx::async(
                         action,
                         locality,
                         std::move(policies),
@@ -482,20 +487,25 @@ namespace lue {
                         time_step_idx);
                 }));
 #else
-            localities_finished.push_back(hpx::async(
-                // high_priority_executor,
-                action,
-                locality,
-                std::move(policies),
-                detail::shape_to_hyperslab(array.shape()).start(),
-                std::move(partitions),
-                std::move(array_pathname),
-                object_id,
-                time_step_idx));
+            localities_finished.push_back(
+                hpx::async(
+                    action,
+                    locality,
+                    std::move(policies),
+                    detail::shape_to_hyperslab(array.shape()).start(),
+                    std::move(partitions),
+                    std::move(array_pathname),
+                    object_id,
+                    time_step_idx));
 #endif
         }
 
+#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+        lue_hpx_assert(localities_finished.back().valid());
+        return std::move(localities_finished.back());
+#else
         return hpx::when_all(localities_finished.begin(), localities_finished.end());
+#endif
     }
 
 
