@@ -9,6 +9,7 @@
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
+#include <boost/predef.h>
 #include <format>
 #include <stdexcept>
 
@@ -1571,7 +1572,7 @@ namespace lue {
         }
 
 
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
@@ -1611,7 +1612,7 @@ namespace lue {
 
                         ));
         }
-#if defined(__GNUC__)
+#if BOOST_COMP_GNUC
 #pragma GCC diagnostic pop
 #endif
 
