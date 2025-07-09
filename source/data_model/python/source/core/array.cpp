@@ -5,7 +5,6 @@
 #include "lue/hdf5/datatype_traits.hpp"
 #include "lue/hdf5/vlen_memory.hpp"
 #include "lue/py/data_model/conversion.hpp"
-#include "lue/py/data_model/numpy.hpp"
 #include <boost/algorithm/string/trim.hpp>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -17,9 +16,6 @@ using namespace pybind11::literals;
 
 namespace lue {
     namespace data_model {
-
-        DEFINE_INIT_NUMPY()
-
 
         /*
         template<
@@ -326,8 +322,11 @@ namespace lue {
 
             array.read(hyperslab, &value);
 
-            return py::reinterpret_steal<py::object>(
-                PyArray_Scalar(&value, (PyArray_Descr*)py::dtype::of<T>().ptr(), py::int_(sizeof(T)).ptr()));
+            py::array_t<T> scalar = py::array(py::dtype::of<T>(), {}, {});
+            py::buffer_info buffer_info = scalar.request();
+            static_cast<T*>(buffer_info.ptr)[0] = value;
+
+            return scalar;
         }
 
 
@@ -711,8 +710,6 @@ namespace lue {
 
         void init_array(py::module& module)
         {
-            init_numpy();
-
             {
                 py::module submodule = module.def_submodule(
                     "dtype",

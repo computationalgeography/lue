@@ -107,7 +107,6 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         lue::data_model_hl
         lue::shared
-        Python::NumPy
 )
 
 lue_install_runtime_libraries(
