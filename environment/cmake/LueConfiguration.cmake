@@ -512,9 +512,18 @@ if(LUE_PYBIND11_REQUIRED)
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
         GIT_TAG a2e59f0e7065404b44dfe92a28aca47ba1378dc4  # 2.13.6
         SYSTEM
-        FIND_PACKAGE_ARGS 2.12 CONFIG
+        FIND_PACKAGE_ARGS 2.12 CONFIG REQUIRED
     )
     FetchContent_MakeAvailable(pybind11)
+
+    message(STATUS "Found pybind11:")
+    message(STATUS "    pybind11_VERSION      : ${pybind11_VERSION}")
+    message(STATUS "    pybind11_VERSION_TYPE : ${pybind11_VERSION_TYPE}")
+    message(STATUS "    pybind11_INCLUDE_DIRS : ${pybind11_INCLUDE_DIRS}")
+    message(STATUS "    pybind11_INCLUDE_DIR  : ${pybind11_INCLUDE_DIR}")
+    message(STATUS "    pybind11_DEFINITIONS  : ${pybind11_DEFINITIONS}")
+    message(STATUS "    pybind11_LIBRARIES    : ${pybind11_LIBRARIES}")
+    message(STATUS "    pybind11_LIBRARY      : ${pybind11_LIBRARY}")
 endif()
 
 
@@ -858,17 +867,9 @@ endif()
 
 # Only allow the user to configure the use of parallel I/O if this is something that is supported by the
 # platform. If so, the default is to support parallel I/O.
-message(STATUS "LUE_BUILD_DATA_MODEL    : ${LUE_BUILD_DATA_MODEL}")
-message(STATUS "LUE_HDF5_REQUIRED       : ${LUE_HDF5_REQUIRED}")
-message(STATUS "HDF5_IS_PARALLEL        : ${HDF5_IS_PARALLEL}")
-message(STATUS "LUE_BUILD_FRAMEWORK     : ${LUE_BUILD_FRAMEWORK}")
-message(STATUS "LUE_HPX_REQUIRED        : ${LUE_HPX_REQUIRED}")
-message(STATUS "HPX_WITH_NETWORKING     : ${HPX_WITH_NETWORKING}")
-message(STATUS "HPX_WITH_PARCELPORT_MPI : ${HPX_WITH_PARCELPORT_MPI}")
 cmake_dependent_option(LUE_FRAMEWORK_WITH_PARALLEL_IO
     "Use parallel I/O for formats that support it"
     TRUE
     "LUE_BUILD_DATA_MODEL;LUE_HDF5_REQUIRED;HDF5_IS_PARALLEL;LUE_BUILD_FRAMEWORK;LUE_HPX_REQUIRED;HPX_WITH_NETWORKING;HPX_WITH_PARCELPORT_MPI"
     FALSE
 )
-
