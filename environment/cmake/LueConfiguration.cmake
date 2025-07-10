@@ -365,14 +365,6 @@ if(LUE_BUILD_DATA_MODEL)
     set(LUE_HDF5_REQUIRED TRUE)
     set(LUE_BOOST_REQUIRED TRUE)
 
-    if(LUE_BUILD_FRAMEWORK)
-        if(DEFINED ENV{CONDA_BUILD})
-            set(HDF5_PREFER_PARALLEL FALSE)
-        else()
-            set(HDF5_PREFER_PARALLEL TRUE)
-        endif()
-    endif()
-
     if(LUE_DATA_MODEL_WITH_UTILITIES)
         set(LUE_CXXOPTS_REQUIRED TRUE)
         set(LUE_GDAL_REQUIRED TRUE)
@@ -512,7 +504,7 @@ if(LUE_PYBIND11_REQUIRED)
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
         GIT_TAG a2e59f0e7065404b44dfe92a28aca47ba1378dc4  # 2.13.6
         SYSTEM
-        FIND_PACKAGE_ARGS 2.12 CONFIG REQUIRED
+        FIND_PACKAGE_ARGS 2.12 CONFIG
     )
     FetchContent_MakeAvailable(pybind11)
 
@@ -803,6 +795,18 @@ endif()
 
 
 if(LUE_HDF5_REQUIRED)
+    if(DEFINED ENV{CONDA_BUILD})
+        set(HDF5_PREFER_PARALLEL FALSE)
+
+        # HDF5's find logic may pick up an HDF5 installation outside of the Conda environment. Guide the
+        # logic towards the Conda environment prefix.
+        set(HDF5_ROOT $ENV{PREFIX})
+    else()
+        set(HDF5_PREFER_PARALLEL TRUE)
+    endif()
+
+    # set(HDF5_FIND_DEBUG TRUE)  # Uncomment to debug HDF5's find logic
+
     find_package(HDF5 REQUIRED COMPONENTS C)
 
     if(NOT HDF5_FOUND)
