@@ -21,6 +21,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
     - ninja
 
   host:
@@ -39,6 +40,7 @@ requirements:
 
   run:
     - docopt  # lue.qa
+    - gperftools  # TODO: This should be handled by HPX
     - hdf5
     - hpx
     - libgdal
