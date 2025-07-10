@@ -98,6 +98,10 @@ set_target_properties(lue_py_data_model
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
+if(DEFINED ENV{CONDA_BUILD})
+    set_target_properties(lue_py_data_model PROPERTIES SUFFIX $ENV{SHLIB_EXT})
+endif()
+
 target_include_directories(lue_py_data_model
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

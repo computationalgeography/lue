@@ -28,6 +28,10 @@ set_target_properties(lue_py_image_land
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
+if(DEFINED ENV{CONDA_BUILD})
+    set_target_properties(lue_py_image_land PROPERTIES SUFFIX $ENV{SHLIB_EXT})
+endif()
+
 target_include_directories(lue_py_image_land
     PRIVATE
         $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp

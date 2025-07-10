@@ -29,6 +29,10 @@ set_target_properties(lue_py_framework_x
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
+if(DEFINED ENV{CONDA_BUILD})
+    set_target_properties(lue_py_framework_x PROPERTIES SUFFIX $ENV{SHLIB_EXT})
+endif()
+
 # set_target_properties(lue_py_framework_x
 #     PROPERTIES
 #         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}

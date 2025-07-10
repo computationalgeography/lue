@@ -225,6 +225,20 @@ set_target_properties(
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
+if(DEFINED ENV{CONDA_BUILD})
+    set_target_properties(
+        lue_py_framework_focal_operation
+        lue_py_framework_global_operation
+        lue_py_framework_local_operation
+        lue_py_framework_miscellaneous_operation
+        lue_py_framework_routing_operation
+        lue_py_framework_zonal_operation
+        lue_py_framework
+        PROPERTIES
+            SUFFIX $ENV{SHLIB_EXT}
+    )
+endif()
+
 lue_install_runtime_libraries(
     TARGETS
         lue_py_framework
