@@ -14,8 +14,8 @@ namespace lue::framework {
 
         template<typename Element, Rank rank>
         auto write_constant_array(
-            [[maybe_unused]] PartitionedArray<Element, rank> const& array,
-            [[maybe_unused]] std::string const& array_pathname) -> hpx::future<void>
+            PartitionedArray<Element, rank> const& array,
+            std::string const& array_pathname) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
@@ -32,9 +32,9 @@ namespace lue::framework {
 
         template<typename Element, Rank rank>
         auto write_variable_array(
-            [[maybe_unused]] PartitionedArray<Element, rank> const& array,
-            [[maybe_unused]] Index const time_step_idx,
-            [[maybe_unused]] std::string const& array_pathname) -> hpx::future<void>
+            PartitionedArray<Element, rank> const& array,
+            Index const time_step_idx,
+            std::string const& array_pathname) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);

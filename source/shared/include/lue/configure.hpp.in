@@ -5,7 +5,6 @@
 #cmakedefine LUE_DATA_MODEL_WITH_PYTHON_API
 
 #cmakedefine LUE_BUILD_FRAMEWORK
-#cmakedefine01 LUE_FRAMEWORK_WITH_PARALLEL_IO
 #cmakedefine LUE_FRAMEWORK_WITH_PYTHON_API
 #cmakedefine LUE_FRAMEWORK_WITH_IMAGE_LAND
 #cmakedefine01 LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED
@@ -33,15 +32,14 @@ namespace lue {
 #endif
             };
 
-            static constexpr bool framework_with_parallel_io{LUE_FRAMEWORK_WITH_PARALLEL_IO};
-
             static constexpr bool validate_idxs{LUE_VALIDATE_IDXS};
 
             static constexpr bool assert_conditions{LUE_ASSERT_CONDITIONS};
 
             static constexpr bool default_policies_enabled{LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED};
 
-            static constexpr bool default_value_policies_enabled{LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED};
+            static constexpr bool default_value_policies_enabled{
+                LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED};
 
             static constexpr bool build_qa{
 #ifdef LUE_BUILD_QUALITY_ASSURANCE
@@ -58,7 +56,6 @@ namespace lue {
                 false
 #endif
             };
-
     };
 
 

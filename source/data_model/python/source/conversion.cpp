@@ -1,5 +1,4 @@
 #include "lue/py/data_model/conversion.hpp"
-#include <numpy/arrayobject.h>
 #include <format>
 #include <map>
 #include <optional>

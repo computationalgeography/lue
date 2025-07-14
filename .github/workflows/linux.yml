@@ -9,6 +9,7 @@ on:
     # branches-ignore:
     #   - "*"
     paths:
+      - "**"
       - "!.github/workflows/*"
       - ".github/workflows/linux.yml"
   push:

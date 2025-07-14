@@ -39,6 +39,8 @@ namespace lue {
 
                     [policies, input_partition, mean, stddev](Offset const& offset, Shape const& shape)
                     {
+                        AnnotateFunction annotation{"normal: partition"};
+
                         HPX_UNUSED(input_partition);
 
                         OutputData output_partition_data{shape};
@@ -240,6 +242,8 @@ namespace lue {
             policy::InputElementT<Policies, 1> const stddev)
             -> ArrayPartition<policy::OutputElementT<Policies, 0>, rank>
         {
+            AnnotateFunction annotation{"normal: partition"};
+
             using Element = policy::OutputElementT<Policies, 0>;
             using Partition = ArrayPartition<Element, rank>;
             using PartitionData = DataT<Partition>;
@@ -267,11 +271,11 @@ namespace lue {
 
 
         template<typename Policies, Rank rank>
-        struct UniformPartitionAction2:
+        struct NormalPartitionAction2:
             hpx::actions::make_action<
                 decltype(&normal_partition<Policies, rank>),
                 &normal_partition<Policies, rank>,
-                UniformPartitionAction2<Policies, rank>>::type
+                NormalPartitionAction2<Policies, rank>>::type
         {
         };
 
@@ -314,7 +318,7 @@ namespace lue {
                 Offset const& offset,
                 Shape const& partition_shape) -> Partition
             {
-                using Action = detail::UniformPartitionAction2<Policies, rank>;
+                using Action = detail::NormalPartitionAction2<Policies, rank>;
 
                 // return hpx::async(Action{}, locality_id, policies, offset, partition_shape, _mean,
                 // _stddev);
@@ -323,8 +327,7 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
                         [locality_id, policies, offset, partition_shape](
-                            Element const mean, Element const stddev) -> Partition
-                        {
+                            Element const mean, Element const stddev) -> Partition {
                             return hpx::async(
                                 Action{}, locality_id, policies, offset, partition_shape, mean, stddev);
                         }),

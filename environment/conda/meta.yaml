@@ -21,6 +21,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
     - ninja
 
   host:
@@ -39,6 +40,7 @@ requirements:
 
   run:
     - docopt  # lue.qa
+    - gperftools                                 # [not win] TODO: This should be installed by hpx
     - hdf5
     - hpx
     - libgdal

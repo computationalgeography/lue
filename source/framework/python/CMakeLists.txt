@@ -20,70 +20,8 @@ file(GENERATE
     INPUT pcraster/framework/__init__.py
 )
 
-# A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
-# RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-
-add_library(lue_py_framework_focal_operation SHARED
-    source/algorithm/focal_operation.cpp
-    source/algorithm/focal_operation/focal_operation-1.cpp
-    source/algorithm/focal_operation/focal_operation-2.cpp
-)
-
-add_library(lue_py_framework_global_operation SHARED
-    source/algorithm/global_operation.cpp
-    source/algorithm/global_operation/global_operation.cpp
-    source/algorithm/global_operation/reclassify.cpp
-)
-
-add_library(lue_py_framework_local_operation SHARED
-    source/algorithm/local_operation.cpp
-    source/algorithm/local_operation/abs.cpp
-    source/algorithm/local_operation/all.cpp
-    source/algorithm/local_operation/arithmetic.cpp
-    source/algorithm/local_operation/cast.cpp
-    source/algorithm/local_operation/cell_index.cpp
-    source/algorithm/local_operation/comparison.cpp
-    source/algorithm/local_operation/iterate_per_element.cpp
-    source/algorithm/local_operation/logical.cpp
-    source/algorithm/local_operation/modulus.cpp
-    source/algorithm/local_operation/nearest_integer.cpp
-    source/algorithm/local_operation/trigonometry.cpp
-    source/algorithm/local_operation/unique_id.cpp
-    source/algorithm/local_operation/valid.cpp
-    source/algorithm/local_operation/where.cpp
-)
-
-add_library(lue_py_framework_miscellaneous_operation SHARED
-    source/algorithm/miscellaneous_operation.cpp
-    source/algorithm/miscellaneous_operation/normal.cpp
-    source/algorithm/miscellaneous_operation/resample.cpp
-    source/algorithm/miscellaneous_operation/uniform-1.cpp
-    source/algorithm/miscellaneous_operation/uniform-2.cpp
-)
-
-add_library(lue_py_framework_routing_operation SHARED
-    source/algorithm/routing_operation.cpp
-    source/algorithm/routing_operation/accu3.cpp
-    source/algorithm/routing_operation/accu_fraction.cpp
-    source/algorithm/routing_operation/accu_info3.cpp
-    source/algorithm/routing_operation/accu_threshold3.cpp
-    source/algorithm/routing_operation/d8_flow_direction.cpp
-    source/algorithm/routing_operation/decreasing_order.cpp
-    source/algorithm/routing_operation/downstream.cpp
-    source/algorithm/routing_operation/downstream_distance.cpp
-    source/algorithm/routing_operation/first_n.cpp
-    source/algorithm/routing_operation/inflow_count3.cpp
-    source/algorithm/routing_operation/inter_partition_stream.cpp
-    source/algorithm/routing_operation/kinematic_wave.cpp
-    source/algorithm/routing_operation/upstream.cpp
-)
-
-add_library(lue_py_framework_zonal_operation SHARED
-    source/algorithm/zonal_operation.cpp
-    source/algorithm/zonal_operation/zonal_operation.cpp
-)
-
 foreach(name focal global local miscellaneous routing zonal)
+    add_library(lue_py_framework_${name}_operation SHARED)
     add_library(lue::py_framework_${name}_operation ALIAS lue_py_framework_${name}_operation)
 
     target_compile_definitions(lue_py_framework_${name}_operation
@@ -101,11 +39,74 @@ foreach(name focal global local miscellaneous routing zonal)
         PRIVATE
             lue::framework_${name}_operation
             pybind11::module
-            pybind11::thin_lto
-            pybind11::opt_size
-            pybind11::windows_extras
     )
 endforeach()
+
+target_sources(lue_py_framework_focal_operation
+    PRIVATE
+        source/algorithm/focal_operation.cpp
+        source/algorithm/focal_operation/focal_operation-1.cpp
+        source/algorithm/focal_operation/focal_operation-2.cpp
+)
+
+target_sources(lue_py_framework_global_operation
+    PRIVATE
+        source/algorithm/global_operation.cpp
+        source/algorithm/global_operation/global_operation.cpp
+        source/algorithm/global_operation/reclassify.cpp
+)
+
+target_sources(lue_py_framework_local_operation
+    PRIVATE
+        source/algorithm/local_operation.cpp
+        source/algorithm/local_operation/abs.cpp
+        source/algorithm/local_operation/all.cpp
+        source/algorithm/local_operation/arithmetic.cpp
+        source/algorithm/local_operation/cast.cpp
+        source/algorithm/local_operation/cell_index.cpp
+        source/algorithm/local_operation/comparison.cpp
+        source/algorithm/local_operation/iterate_per_element.cpp
+        source/algorithm/local_operation/logical.cpp
+        source/algorithm/local_operation/modulus.cpp
+        source/algorithm/local_operation/nearest_integer.cpp
+        source/algorithm/local_operation/trigonometry.cpp
+        source/algorithm/local_operation/unique_id.cpp
+        source/algorithm/local_operation/valid.cpp
+        source/algorithm/local_operation/where.cpp
+)
+
+target_sources(lue_py_framework_miscellaneous_operation
+    PRIVATE
+        source/algorithm/miscellaneous_operation.cpp
+        source/algorithm/miscellaneous_operation/normal.cpp
+        source/algorithm/miscellaneous_operation/resample.cpp
+        source/algorithm/miscellaneous_operation/uniform-1.cpp
+        source/algorithm/miscellaneous_operation/uniform-2.cpp
+)
+
+target_sources(lue_py_framework_routing_operation
+    PRIVATE
+        source/algorithm/routing_operation.cpp
+        source/algorithm/routing_operation/accu3.cpp
+        source/algorithm/routing_operation/accu_fraction.cpp
+        source/algorithm/routing_operation/accu_info3.cpp
+        source/algorithm/routing_operation/accu_threshold3.cpp
+        source/algorithm/routing_operation/d8_flow_direction.cpp
+        source/algorithm/routing_operation/decreasing_order.cpp
+        source/algorithm/routing_operation/downstream.cpp
+        source/algorithm/routing_operation/downstream_distance.cpp
+        source/algorithm/routing_operation/first_n.cpp
+        source/algorithm/routing_operation/inflow_count3.cpp
+        source/algorithm/routing_operation/inter_partition_stream.cpp
+        source/algorithm/routing_operation/kinematic_wave.cpp
+        source/algorithm/routing_operation/upstream.cpp
+)
+
+target_sources(lue_py_framework_zonal_operation
+    PRIVATE
+        source/algorithm/zonal_operation.cpp
+        source/algorithm/zonal_operation/zonal_operation.cpp
+)
 
 set(generated_source_files "")
 set(offset "source/core")
@@ -151,40 +152,7 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-add_library(lue_py_framework SHARED
-    source/algorithm/array_partition_id.cpp
-    $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:source/algorithm/locality_id.cpp>
-    $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:source/algorithm/timestamp.cpp>
-
-    source/core/create_partitioned_array.cpp
-    ${generated_source_files}
-    source/core/hyperslab.cpp
-    source/core/scalar.cpp
-
-    source/io/read_array.cpp
-    source/io/write_array.cpp
-
-    source/command_line.cpp
-
-    source/gdal/from_gdal.cpp
-    source/gdal/to_gdal.cpp
-
-    source/hpx.cpp
-    source/hpx_runtime.cpp
-
-    source/model/model.cpp
-    source/model/progressor.cpp
-    source/model/simulate.cpp
-
-    source/numpy/from_numpy.cpp
-    source/numpy/to_numpy.cpp
-
-    source/partitioned_route/serial_route.cpp
-
-    source/python_extension.cpp
-    source/submodule.cpp
-)
-
+add_library(lue_py_framework SHARED)
 add_library(lue::py_framework ALIAS lue_py_framework)
 
 target_compile_definitions(lue_py_framework
@@ -202,6 +170,41 @@ target_include_directories(lue_py_framework
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
 )
 
+target_sources(lue_py_framework
+    PRIVATE
+        source/algorithm/array_partition_id.cpp
+        $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/locality_id.cpp>
+        $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/timestamp.cpp>
+
+        source/core/create_partitioned_array.cpp
+        ${generated_source_files}
+        source/core/hyperslab.cpp
+        source/core/scalar.cpp
+
+        source/io/read_array.cpp
+        source/io/write_array.cpp
+
+        source/command_line.cpp
+
+        source/gdal/from_gdal.cpp
+        source/gdal/to_gdal.cpp
+
+        source/hpx.cpp
+        source/hpx_runtime.cpp
+
+        source/model/model.cpp
+        source/model/progressor.cpp
+        source/model/simulate.cpp
+
+        source/numpy/from_numpy.cpp
+        source/numpy/to_numpy.cpp
+
+        source/partitioned_route/serial_route.cpp
+
+        source/python_extension.cpp
+        source/submodule.cpp
+)
+
 target_link_libraries(lue_py_framework
     PRIVATE
         lue::py_framework_focal_operation
@@ -215,9 +218,6 @@ target_link_libraries(lue_py_framework
         lue::framework_model
         lue::gdal
         pybind11::module
-        pybind11::thin_lto
-        pybind11::opt_size
-        pybind11::windows_extras
 )
 
 set_target_properties(
@@ -232,18 +232,6 @@ set_target_properties(
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
 )
-
-# TODO pybind11_strip does not work on macOS, when building using Conda packages
-#      The resulting binary can't be imported. Results in "killed: 9".
-if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-    pybind11_strip(lue_py_framework)
-    pybind11_strip(lue_py_framework_focal_operation)
-    pybind11_strip(lue_py_framework_global_operation)
-    pybind11_strip(lue_py_framework_local_operation)
-    pybind11_strip(lue_py_framework_miscellaneous_operation)
-    pybind11_strip(lue_py_framework_zonal_operation)
-    pybind11_strip(lue_py_framework_routing_operation)
-endif()
 
 lue_install_runtime_libraries(
     TARGETS

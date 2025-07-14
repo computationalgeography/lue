@@ -16,7 +16,7 @@ file(GENERATE
 
 # A pybind11 MODULE library is a CMake library output artifact. Target properties to set/get are
 # LIBRARY_OUTPUT_DIRECTORY and LIBRARY_OUTPUT_NAME.
-add_library(lue_py MODULE
+pybind11_add_module(lue_py MODULE THIN_LTO OPT_SIZE
     source/python_extension.cpp
 )
 
@@ -31,20 +31,8 @@ set_target_properties(lue_py
 target_link_libraries(lue_py
     PRIVATE
         lue::shared
-        pybind11::module
-        pybind11::thin_lto
-        pybind11::opt_size
-        pybind11::windows_extras
         Boost::headers
 )
-
-pybind11_extension(lue_py)
-
-# TODO pybind11_strip does not work on macOS, when building using Conda packages
-#      The resulting binary can't be imported. Results in "killed: 9".
-if(NOT MSVC AND NOT APPLE AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
-    pybind11_strip(lue_py)
-endif()
 
 if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
     target_link_libraries(lue_py
