@@ -806,7 +806,6 @@ if(LUE_HDF5_REQUIRED)
     endif()
 
     # set(HDF5_FIND_DEBUG TRUE)  # Uncomment to debug HDF5's find logic
-
     find_package(HDF5 REQUIRED COMPONENTS C)
 
     if(NOT HDF5_FOUND)

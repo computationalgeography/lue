@@ -6,15 +6,7 @@ foreach(module_name __init__.py)
     )
 endforeach()
 
-# A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
-# RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-pybind11_add_module(lue_py_image_land SHARED THIN_LTO OPT_SIZE
-    source/integrate.cpp
-    source/integrate_and_allocate.cpp
-    source/python_extension.cpp
-    source/submodule.cpp
-)
-
+add_library(lue_py_image_land SHARED)
 add_library(lue::py_image_land ALIAS lue_py_image_land)
 
 target_compile_definitions(lue_py_image_land
@@ -28,20 +20,29 @@ set_target_properties(lue_py_image_land
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-if(DEFINED ENV{CONDA_BUILD})
-    set_target_properties(lue_py_image_land PROPERTIES SUFFIX $ENV{SHLIB_EXT})
-endif()
+target_sources(lue_py_image_land
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+        FILES
+            include/lue
+    PRIVATE
+        source/integrate.cpp
+        source/integrate_and_allocate.cpp
+        source/python_extension.cpp
+        source/submodule.cpp
+)
 
 target_include_directories(lue_py_image_land
     PRIVATE
         $<TARGET_PROPERTY:lue::py,SOURCE_DIR>/include  # bind.hpp
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
 target_link_libraries(lue_py_image_land
     PRIVATE
         lue::image_land
+        pybind11::module
 )
 
 lue_install_runtime_libraries(

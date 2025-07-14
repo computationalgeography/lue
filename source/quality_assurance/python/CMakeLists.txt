@@ -1,10 +1,4 @@
-# A pybind11 SHARED library is a CMake runtime output artifact. Target properties to set/get are
-# RUNTIME_OUTPUT_DIRECTORY and RUNTIME_OUTPUT_NAME.
-pybind11_add_module(lue_py_qa SHARED THIN_LTO OPT_SIZE
-    source/python_extension.cpp
-    source/submodule.cpp
-)
-
+add_library(lue_py_qa SHARED)
 add_library(lue::py_qa ALIAS lue_py_qa)
 
 set_target_properties(lue_py_qa
@@ -12,15 +6,25 @@ set_target_properties(lue_py_qa
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
 )
-target_include_directories(lue_py_qa
+
+target_sources(lue_py_qa
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        FILE_SET HEADERS
+        BASE_DIRS
+            include
+        FILES
+            include/lue
+    PRIVATE
+
+    source/python_extension.cpp
+    source/submodule.cpp
 )
 
 target_link_libraries(lue_py_qa
     PRIVATE
         lue::qa
         lue::shared
+        pybind11::module
 )
 
 lue_install_runtime_libraries(
