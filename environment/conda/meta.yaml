@@ -40,7 +40,7 @@ requirements:
 
   run:
     - docopt  # lue.qa
-    - gperftools  # TODO: This should be handled by HPX
+    - gperftools                                 # [not win] TODO: This should be installed by hpx
     - hdf5
     - hpx
     - libgdal
