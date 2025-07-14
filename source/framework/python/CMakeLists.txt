@@ -43,21 +43,21 @@ foreach(name focal global local miscellaneous routing zonal)
 endforeach()
 
 target_sources(lue_py_framework_focal_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/focal_operation.cpp
         source/algorithm/focal_operation/focal_operation-1.cpp
         source/algorithm/focal_operation/focal_operation-2.cpp
 )
 
 target_sources(lue_py_framework_global_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/global_operation.cpp
         source/algorithm/global_operation/global_operation.cpp
         source/algorithm/global_operation/reclassify.cpp
 )
 
 target_sources(lue_py_framework_local_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/local_operation.cpp
         source/algorithm/local_operation/abs.cpp
         source/algorithm/local_operation/all.cpp
@@ -76,7 +76,7 @@ target_sources(lue_py_framework_local_operation
 )
 
 target_sources(lue_py_framework_miscellaneous_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/miscellaneous_operation.cpp
         source/algorithm/miscellaneous_operation/normal.cpp
         source/algorithm/miscellaneous_operation/resample.cpp
@@ -85,7 +85,7 @@ target_sources(lue_py_framework_miscellaneous_operation
 )
 
 target_sources(lue_py_framework_routing_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/routing_operation.cpp
         source/algorithm/routing_operation/accu3.cpp
         source/algorithm/routing_operation/accu_fraction.cpp
@@ -103,7 +103,7 @@ target_sources(lue_py_framework_routing_operation
 )
 
 target_sources(lue_py_framework_zonal_operation
-    PUBLIC
+    PRIVATE
         source/algorithm/zonal_operation.cpp
         source/algorithm/zonal_operation/zonal_operation.cpp
 )
@@ -173,7 +173,7 @@ target_include_directories(lue_py_framework
 target_sources(lue_py_framework
     PRIVATE
         source/algorithm/array_partition_id.cpp
-         $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/locality_id.cpp>
+        $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/locality_id.cpp>
         $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/timestamp.cpp>
 
         source/core/create_partitioned_array.cpp
