@@ -798,9 +798,11 @@ if(LUE_HDF5_REQUIRED)
     if(DEFINED ENV{CONDA_BUILD})
         set(HDF5_PREFER_PARALLEL FALSE)
 
-        # HDF5's find logic may pick up an HDF5 installation outside of the Conda environment. Guide the
-        # logic towards the Conda environment prefix.
-        set(HDF5_ROOT $ENV{PREFIX})
+        if(APPLE)
+            # HDF5's find logic may pick up an HDF5 installation outside of the Conda environment. Guide the
+            # logic towards the Conda environment prefix.
+            set(HDF5_ROOT $ENV{PREFIX})
+        endif()
     else()
         set(HDF5_PREFER_PARALLEL TRUE)
     endif()
