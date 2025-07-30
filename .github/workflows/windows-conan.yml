@@ -59,8 +59,8 @@ jobs:
       conda_package_prefix: "C:/Users/runneradmin/conda_pkgs_dir"
       # conda-build provides the conda-develop command
       conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
-      hpx_version: 1.10.0
-      hpx_branch: v1.10.0
+      hpx_version: 1.11.0
+      hpx_branch: v1.11.0
       hpx_source_directory: hpx_source
       hpx_build_directory: hpx_build
       hpx_install_directory: hpx_install
@@ -160,12 +160,6 @@ jobs:
           cp ${{ env.lue_source_directory }}/CMakeHPXPresets.json ${{ env.hpx_source_directory }}
           cp ${{ env.lue_source_directory }}/CMakePresets.json ${{ env.hpx_source_directory }}
 
-          # Port HPX-1.10 to CMake 3.30 (see policy CMP0167). Otherwise it won't pick up Conan's Boost module.
-          sed -i'' '135 s/MODULE/CONFIG/' ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
-
-          # Conan's Boost::headers target can't find the Boost headers. Sigh... Hack the path to the headers into the target.
-          sed -i'' "/\${Boost_MINIMUM_VERSION} REQUIRED)/a \ \ target_include_directories(Boost::headers INTERFACE \${boost_PACKAGE_FOLDER_${build_type^^}}\/include)" ${{ env.hpx_source_directory }}/cmake/HPX_SetupBoost.cmake
-
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
@@ -221,7 +215,6 @@ jobs:
               -G "Ninja" \
               -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
               -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-              -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
               -D CMAKE_COMPILE_WARNING_AS_ERROR=TRUE \
               -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
               -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
@@ -320,7 +313,6 @@ jobs:
               -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
               -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
               -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
-              -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
               -D FETCHCONTENT_QUIET=FALSE \
               -D lue_ROOT=${{ env.lue_development_install_directory }} \
               -D HPX_ROOT=${{ env.hpx_install_directory }} \
