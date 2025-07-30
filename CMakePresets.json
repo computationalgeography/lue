@@ -1,8 +1,5 @@
 {
     "version": 10,
-    "include": [
-        "CMakeHPXPresets.json"
-    ],
     "configurePresets": [
         {
             "name": "ninja_configuration",
