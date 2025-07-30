@@ -705,10 +705,10 @@ if(LUE_HPX_REQUIRED)
             set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
         endif()
     else()
-        block(SCOPE_FOR POLICIES)
-            cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
-            find_package(HPX 1.10...<1.11 REQUIRED)
-        endblock()
+        # block(SCOPE_FOR POLICIES)
+        #     cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
+        find_package(HPX 1.11...<1.12 REQUIRED)
+        # endblock()
 
         if(HPX_FOUND)
             message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
