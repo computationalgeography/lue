@@ -65,7 +65,7 @@ namespace lue {
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
             // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
             // thread it seems.
-            hpx::parallel::execution::io_pool_executor executor;
+            hpx::execution::experimental::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
@@ -173,7 +173,7 @@ namespace lue {
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
             // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
             // thread it seems.
-            hpx::parallel::execution::io_pool_executor executor;
+            hpx::execution::experimental::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
