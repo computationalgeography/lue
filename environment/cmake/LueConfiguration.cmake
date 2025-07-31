@@ -41,6 +41,10 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
+option(LUE_WITH_EXAMPLES
+    "Include examples"
+    FALSE)
+
 option(LUE_BUILD_QUALITY_ASSURANCE
     "Include support for quality assurance"
     FALSE)
