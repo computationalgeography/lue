@@ -12,7 +12,21 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        // Step 3: Call the algorithm
+        // Step 4: Release the GIL and call the algorithm
+        template<typename Element, Rank rank>
+        auto uniform(
+            StaticShape<rank> const& array_shape,
+            StaticShape<rank> const& partition_shape,
+            Element const& min_value,
+            Element const& max_value) -> PartitionedArray<Element, rank>
+        {
+            pybind11::gil_scoped_release release{};
+
+            return value_policies::uniform(array_shape, partition_shape, min_value, max_value);
+        }
+
+
+        // Step 3: Convert between Python and C++ types
         template<typename Element, Rank rank>
         auto uniform(
             StaticShape<rank> const& array_shape,
@@ -24,12 +38,11 @@ namespace lue::framework {
 
             if constexpr (arithmetic_element_supported<Element>)
             {
-                result = pybind11::cast(
-                    value_policies::uniform(
-                        array_shape,
-                        partition_shape,
-                        pybind11::cast<Element>(min_value),
-                        pybind11::cast<Element>(max_value)));
+                result = pybind11::cast(value_policies::uniform(
+                    array_shape,
+                    partition_shape,
+                    pybind11::cast<Element>(min_value),
+                    pybind11::cast<Element>(max_value)));
             }
 
             return result;
@@ -143,11 +156,10 @@ namespace lue::framework {
 
                 if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(
-                        std::format(
-                            "Rank of array shape and partition shape must be equal ({} != {})",
-                            dynamic_array_shape.size(),
-                            dynamic_partition_shape.size()));
+                    throw std::runtime_error(std::format(
+                        "Rank of array shape and partition shape must be equal ({} != {})",
+                        dynamic_array_shape.size(),
+                        dynamic_partition_shape.size()));
                 }
             }
 
