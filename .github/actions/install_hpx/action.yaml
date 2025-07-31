@@ -46,8 +46,6 @@ runs:
 
               mkdir -p ${{ inputs.build_directory }}
 
-              # -D CMAKE_BUILD_TYPE=${{ inputs.build_type }} → passed in by preset
-
               cmake \
                 -S ${{ inputs.source_directory }} \
                 -B ${{ inputs.build_directory }} \
@@ -57,14 +55,6 @@ runs:
                 ${{ inputs.cmake_flags }}
               cmake --build ${{ inputs.build_directory }} --target all
               cmake --install ${{ inputs.build_directory }} --prefix ${{ inputs.install_directory }} --strip
-
-        - name: patch hpx install
-          shell: bash -l {0}
-          if: steps.cache-hpx.outputs.cache-hit != 'true' && runner.os == 'Windows'
-          run: |
-              # On Windows, Conan's hwloc currently can't be used, so we let HPX fetch it. The dll isn't installed
-              # though, so we do it here ourselves. Sigh...
-              cp ${{ inputs.build_directory }}/${{ inputs.build_type }}/bin/*hwloc*.dll ${{ inputs.install_directory }}/bin
 
         - name: post hpx install
           shell: bash -l {0}
