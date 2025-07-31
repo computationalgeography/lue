@@ -29,10 +29,11 @@ class LUERecipe(ConanFile):
         # Upper bound of the version ranges should be left open, or should be set to some
         # sensible value, known or likely to result in a failed build.
 
-        # Note: HPX' find logic looks for Asio package (capital A) and uses Asio::asio target. Conan uses
-        # lower casing. Sigh...
+        # Note: HPX' find logic looks for Asio package (capital A) and uses Asio::asio target.
+        # Conan packages use lower casing. Sigh...
+        # Recent Asio versions are not usable by HPX, due to API changes
         if install_conan_package("asio"):
-            self.requires("asio/[>=1.21]")
+            self.requires("asio/[>=1.21 <1.30]")
 
         # Multiple targets depend on Boost, resulting in version conflicts. Allow the version to be
         # overridden.
