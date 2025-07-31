@@ -1998,6 +1998,10 @@ lue_install_development_libraries(
 
 # ------------------------------------------------------------------------------
 
+if(LUE_WITH_EXAMPLES)
+    add_subdirectory(example)
+endif()
+
 if(LUE_BUILD_TESTS)
     add_subdirectory(test)
 endif()
