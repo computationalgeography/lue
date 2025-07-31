@@ -22,7 +22,7 @@ if(LUE_HDF5_REQUIRED)
 endif()
 
 if(LUE_HPX_REQUIRED)
-    find_dependency(HPX 1.10...<1.11)
+    find_dependency(HPX 1.11...<1.12)
 endif()
 
 if(LUE_MDSPAN_REQUIRED)

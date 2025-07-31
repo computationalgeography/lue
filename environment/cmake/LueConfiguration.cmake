@@ -20,9 +20,6 @@ option(LUE_BUILD_GDAL
 option(LUE_BUILD_FRAMEWORK
     "Build LUE simulation framework"
     TRUE)
-# option(LUE_FRAMEWORK_WITH_MPI
-#     "Include support for MPI"
-#     FALSE)
 option(LUE_FRAMEWORK_WITH_PYTHON_API
     "Include Python API for modelling framework"
     FALSE)
@@ -58,18 +55,6 @@ set(LUE_QUALITY_ASSURANCE_TEST_HPX_RUNWRAPPER
     none CACHE STRING "Which runwrapper to use (see hpxrun.py)")
 set(LUE_QUALITY_ASSURANCE_TEST_HPX_PARCELPORT
     tcp CACHE STRING "Which parcelport to use (see hpxrun.py)")
-
-# Options related to external software used by the project
-option(LUE_BUILD_HPX
-    "If HPX is required, build it instead of relying on the environment"
-    FALSE)
-option(LUE_BUILD_OTF2
-    "If OTF2 is required, build it instead of relying on the environment"
-    FALSE)
-option(LUE_OTF2_WITH_PYTHON
-    "If OTF2 is built, include the Python bindings"
-    FALSE)
-
 
 # Options tweaking the behaviour of the software
 option(LUE_ASSERT_CONDITIONS
@@ -385,17 +370,9 @@ if(LUE_BUILD_FRAMEWORK)
     set(LUE_MDSPAN_REQUIRED TRUE)
     set(LUE_PYTHON_REQUIRED TRUE)  # templatize.py
 
-    # if(LUE_BUILD_HPX AND LUE_BUILD_OTF2 AND LUE_OTF2_WITH_PYTHON)
-    #     set(LUE_PYTHON_REQUIRED TRUE)
-    # endif()
-
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
-
-    # if(LUE_FRAMEWORK_WITH_PARALLEL_IO)
-    #     set(LUE_MPI_REQUIRED TRUE)
-    # endif()
 endif()
 
 
@@ -542,197 +519,24 @@ endif()
 
 
 if(LUE_HPX_REQUIRED)
-    if(LUE_BUILD_HPX)
-        # Build HPX ourselves
-        if(HPX_WITH_APEX)
-            if(APEX_WITH_OTF2)
-                if(LUE_BUILD_OTF2)
+    find_package(HPX 1.11...<1.12 REQUIRED)
 
-                    set(OTF2_ROOT ${PROJECT_BINARY_DIR}/otf2)
+    if(HPX_FOUND)
+        message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
 
-                    set(otf2_version 2.3)
-                    set(otf2_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/otf2-${otf2_version}.patch)
-
-                    if(EXISTS ${otf2_patch_file})
-                        set(otf2_patch_command patch src/otf2_archive_int.c ${otf2_patch_file})
-                    endif()
-
-                    FetchContent_Declare(otf2
-                        URL http://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-${otf2_version}/otf2-${otf2_version}.tar.gz
-                        URL_HASH MD5=b85dd4d11e67180e2d5fe66d05112c4b
-                        PATCH_COMMAND ${otf2_patch_command}
-                        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-                        SYSTEM
-                    )
-
-                    FetchContent_GetProperties(otf2)
-
-                    if(NOT otf2_POPULATED)
-                        FetchContent_Populate(otf2)
-
-                        set(otf2_system_type
-                            "${CMAKE_HOST_SYSTEM_PROCESSOR}-pc-${CMAKE_HOST_SYSTEM_NAME}")
-                        string(TOLOWER ${otf2_system_type} otf2_system_type)
-
-                        message(STATUS "Build OTF2")
-                        message(STATUS "  otf2_SOURCE_DIR: ${otf2_SOURCE_DIR}")
-                        message(STATUS "  otf2_BINARY_DIR: ${otf2_BINARY_DIR}")
-                        message(STATUS "  OTF2_ROOT      : ${OTF2_ROOT}")
-                        message(STATUS "  system-type    : ${otf2_system_type}")
-
-                        # TODO Use LUE_OTF2_WITH_PYTHON to turn on/off the
-                        #   build of the Python bindings.
-                        # PYTHON=${Python_EXECUTABLE} PYTHON_FOR_GENERATOR=:
-                        execute_process(
-                            COMMAND
-                                ${otf2_SOURCE_DIR}/configure
-                                    --prefix ${OTF2_ROOT}
-                                    --build=${otf2_system_type}
-                                    --host=${otf2_system_type}
-                                    --target=${otf2_system_type}
-                                    CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER}
-                                    PYTHON=: PYTHON_FOR_GENERATOR=:
-                            WORKING_DIRECTORY
-                                ${otf2_BINARY_DIR}
-                        )
-
-                        include(ProcessorCount)
-                        ProcessorCount(nr_cores)
-                        math(EXPR nr_cores_to_use "${nr_cores} / 2")
-
-                        execute_process(
-                            COMMAND
-                                make -j${nr_cores_to_use}
-                            WORKING_DIRECTORY
-                                ${otf2_BINARY_DIR}
-                        )
-                        execute_process(
-                            COMMAND
-                                make install
-                            WORKING_DIRECTORY
-                                ${otf2_BINARY_DIR}
-                        )
-                    endif()
-                endif()
-            endif()
-        endif()
-
-        if(LUE_HPX_GIT_TAG)
-            # Below we use GIT_SHALLOW option of FetchContent_Declare, which speeds things up
-            # a lot. In case the GIT_TAG is a Git hash, this option cannot be used. It can be
-            # used with branch names and tag names.
-            string(LENGTH ${LUE_HPX_GIT_TAG} hpx_git_tag_length)
-
-            # TODO Improve this naive test
-            if(hpx_git_tag_length EQUAL 11 OR hpx_git_tag_length EQUAL 40)
-                set(hpx_git_tag_is_hash TRUE)
-            else()
-                set(hpx_git_tag_is_hash FALSE)
-            endif()
-
-            if(hpx_git_tag_is_hash)
-                set(hpx_git_shallow FALSE)
-            else()
-                set(hpx_git_shallow TRUE)
-            endif()
-
-            if(LUE_HPX_REPOSITORY)
-                set(hpx_repository "${LUE_HPX_REPOSITORY}")
-            else()
-                set(hpx_repository "https://github.com/STEllAR-GROUP/hpx")
-            endif()
-
-            message(STATUS "Using HPX ${LUE_HPX_GIT_TAG} from repository at ${hpx_repository}")
-
-            FetchContent_Declare(hpx
-                GIT_REPOSITORY ${hpx_repository}
-                GIT_TAG ${LUE_HPX_GIT_TAG}
-                GIT_SHALLOW ${hpx_git_shallow}
-                SYSTEM
-            )
-        else()
-            # Obtain HPX from archive. This has the advantage of being
-            # able to patch the source files.
-            if(LUE_HPX_VERSION)
-                # A specific version is requested
-                list(APPEND hpx_versions_to_try ${LUE_HPX_VERSION})
-            else()
-                # Try these versions in turn
-                list(APPEND hpx_versions_to_try v1.10.0)
-                list(APPEND hpx_versions_to_try v1.9.1)
-                list(APPEND hpx_versions_to_try v1.9.0)
-            endif()
-
-            # First see if an HPX archive is available in a local cache
-            if(LUE_REPOSITORY_CACHE AND EXISTS ${LUE_REPOSITORY_CACHE})
-                foreach(hpx_version_ ${hpx_versions_to_try})
-                    if(EXISTS "${LUE_REPOSITORY_CACHE}/${hpx_version_}.tar.gz")
-                        # Use local archive
-                        set(hpx_version ${hpx_version_})  # Loop variables are not available outside a loop
-                        set(hpx_url "file://${LUE_REPOSITORY_CACHE}/${hpx_version}.tar.gz")
-                        break()
-                    endif()
-                endforeach()
-            endif()
-
-            if(NOT hpx_url)
-                # Use remote archive
-                list(GET hpx_versions_to_try 0 hpx_version)
-                set(hpx_url "https://github.com/STEllAR-GROUP/hpx/archive/${hpx_version}.tar.gz")
-            endif()
-
-            set(hpx_patch_file ${CMAKE_CURRENT_SOURCE_DIR}/environment/cmake/hpx-${hpx_version}.patch)
-
-            message(STATUS "Using HPX version ${hpx_version} from archive at ${hpx_url}")
-
-            if(EXISTS ${hpx_patch_file})
-                # Get rid of the final warnings in HPX sources
-                set(hpx_patch_command git apply --ignore-space-change --ignore-whitespace "${hpx_patch_file}")
-                message(STATUS "    Applying patch from ${hpx_patch_file}")
-            endif()
-
-            FetchContent_Declare(hpx
-                URL ${hpx_url}
-                PATCH_COMMAND ${hpx_patch_command}
-                DOWNLOAD_EXTRACT_TIMESTAMP FALSE
-                SYSTEM
-            )
-        endif()
-
-        FetchContent_MakeAvailable(hpx)
-
-        if(LUE_HPXRUN_REQUIRED)
-            set(HPXRUN "${CMAKE_BINARY_DIR}/_deps/hpx-build/bin/hpxrun.py")
-        endif()
-    else()
-        block(SCOPE_FOR POLICIES)
-            cmake_policy(SET CMP0167 OLD)  # Not needed anymore for HPX >= 1.11
-            find_package(HPX 1.10...<1.11 REQUIRED)
-        endblock()
-
-        if(HPX_FOUND)
-            message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
-
-            # Check whether we are using the same build type as HPX
-            if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
-                message(WARNING
-                    "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
-                    "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
-                    "ABI compatibility is not guaranteed. Expect link errors.")
-            endif()
-        endif()
-
-        if(LUE_HPXRUN_REQUIRED)
-            find_file(HPXRUN "hpxrun.py"
-                HINTS ${HPX_PREFIX}/bin
-                REQUIRED
-            )
+        # Check whether we are using the same build type as HPX
+        if (NOT "${HPX_BUILD_TYPE}" STREQUAL "${CMAKE_BUILD_TYPE}")
+            message(WARNING
+                "CMAKE_BUILD_TYPE does not match HPX_BUILD_TYPE: "
+                "\"${CMAKE_BUILD_TYPE}\" != \"${HPX_BUILD_TYPE}\"\n"
+                "ABI compatibility is not guaranteed. Expect link errors.")
         endif()
     endif()
 
     if(LUE_HPXRUN_REQUIRED)
         find_file(HPXRUN "hpxrun.py"
-            HINTS ${HPX_PREFIX}
+            HINTS ${HPX_PREFIX}/bin
+            REQUIRED
         )
     endif()
 
@@ -842,11 +646,6 @@ endif()
 if(LUE_JUPYTER_BOOK_REQUIRED)
     find_package(JupyterBook REQUIRED)
 endif()
-
-
-# if(LUE_MPI_REQUIRED)
-#     find_package(MPI REQUIRED)
-# endif()
 
 
 if(LUE_NLOHMANN_JSON_REQUIRED)

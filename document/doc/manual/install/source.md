@@ -35,7 +35,6 @@ scripts](https://github.com/computationalgeography/lue/tree/master/.github/workf
 C/I actions](https://github.com/computationalgeography/lue/actions) to see how LUE can be built on various
 platforms.
 
-
 ## Targets
 
 ### Data model
@@ -47,13 +46,11 @@ Optional features:
 | `LUE_DATA_MODEL_WITH_PYTHON_API` | `FALSE` | Build data model Python API |
 | `LUE_DATA_MODEL_WITH_UTILITIES`  | `FALSE` | Build command line utilities |
 
-
 #### Dependencies
 
 - HDF5 C, Boost, fmt
 - `LUE_DATA_MODEL_WITH_PYTHON_API`: Python, pybind11, NumPy, Guidelines Support libraries
 - `LUE_DATA_MODEL_WITH_UTILITIES`: Docopt, GDAL, Nlohmann JSON
-
 
 ### Framework
 
@@ -63,12 +60,10 @@ Optional features:
 | ---                             | ---     | --- |
 | `LUE_FRAMEWORK_WITH_PYTHON_API` | `FALSE` | Build modelling framework Python API |
 
-
 #### Dependencies
 
 - Boost, Docopt, fmt, GDAL, HPX, LUE data model, Kokkos mdspan
 - `LUE_FRAMEWORK_WITH_PYTHON_API`: Python, pybind11, NumPy
-
 
 ### View
 
@@ -76,13 +71,11 @@ Optional features:
 
 - Dear ImGUI, Docopt, fmt, GLFW, Nlohmann JSON, OpenGL
 
-
 ### Documentation
 
 #### Dependencies
 
 - Breathe, Doxygen, Graphviz, Jupyter-Book, Sphinx
-
 
 ### Quality assurance
 
@@ -110,7 +103,6 @@ HPX is built with support for networking.
 - `LUE_QUALITY_ASSURANCE_WITH_TESTS`: Boost filesystem, system, unit-test framework libraries
 - `LUE_QUALITY_ASSURANCE_WITH_PYTHON_API`: pybind11, Python
 
-
 ## Dependencies
 
 There are at least three options for installing prerequisite libraries and tools:
@@ -137,12 +129,3 @@ The next variables determine what happens in each case by default.
 | `LUE_HAVE_MS_GSL`        | FALSE | FALSE | FALSE |
 | `LUE_HAVE_NLOHMANN_JSON` | FALSE | TRUE  | FALSE |
 | `LUE_HAVE_PYBIND11`      | FALSE | FALSE | FALSE |
-
-Some prerequisite libraries can optionally be built by the LUE project
-itself. The following variables are used to decide whether or not that
-is the case. By default, they are not set.
-
-| Variable         | Effect when set |
-| ---              | --- |
-| `LUE_BUILD_HPX`  | Build the HPX library |
-| `LUE_BUILD_OTF2` | Build the OTF2 library (optionally required by HPX) |

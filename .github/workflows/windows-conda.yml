@@ -94,7 +94,6 @@ jobs:
             -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
             -D LUE_BUILD_QUALITY_ASSURANCE=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE \
             -D LUE_QUALITY_ASSURANCE_WITH_TESTS=TRUE \
@@ -164,7 +163,6 @@ jobs:
             -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
-            -D CMAKE_POLICY_DEFAULT_CMP0167=OLD \
             -D FETCHCONTENT_QUIET=FALSE \
             -D lue_ROOT=${{ env.lue_development_install_directory }} \
             -D Hwloc_ROOT=$CONDA_PREFIX/Library \
