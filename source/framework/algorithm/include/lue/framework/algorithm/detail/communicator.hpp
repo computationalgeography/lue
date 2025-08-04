@@ -115,7 +115,8 @@ namespace lue::detail {
                         channels1.begin(),
                         channels1.end(),
                         channels2.begin(),
-                        [](Channel const& channel1, Channel const& channel2) {
+                        [](Channel const& channel1, Channel const& channel2)
+                        {
                             return (bool(channel1) && bool(channel2)) || (!bool(channel1) && !bool(channel2));
                         });
                 };
@@ -302,7 +303,7 @@ namespace lue::detail {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _shape& _idxs& _idx& _send_channels& _receive_channels;
+                archive & _shape & _idxs & _idx & _send_channels & _receive_channels;
             }
 
 

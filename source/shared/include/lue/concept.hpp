@@ -10,9 +10,6 @@ namespace lue {
 
 
     template<typename T>
-    concept TupleLike = requires
-    {
-        std::tuple_size<T>::value;
-    };
+    concept TupleLike = requires { std::tuple_size<T>::value; };
 
 }  // namespace lue

@@ -11,5 +11,5 @@ namespace lue {
             };
 
         }  // namespace detail
-    }      // namespace policy
+    }  // namespace policy
 }  // namespace lue

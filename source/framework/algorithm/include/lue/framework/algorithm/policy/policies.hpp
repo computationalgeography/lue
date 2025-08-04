@@ -119,7 +119,7 @@ namespace lue::policy {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _op& _ip;
+                archive & _op & _ip;
             }
 
             DomainPolicy _dp;

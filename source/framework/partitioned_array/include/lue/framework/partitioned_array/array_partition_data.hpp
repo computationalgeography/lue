@@ -148,7 +148,7 @@ namespace lue {
 
             void serialize(hpx::serialization::input_archive& archive, unsigned int const /* version */)
             {
-                archive& _shape& _elements;
+                archive & _shape & _elements;
                 _span = Span{_elements.data(), _shape};
 
                 assert_invariants();
@@ -159,7 +159,7 @@ namespace lue {
             {
                 assert_invariants();
 
-                archive& _shape& _elements;
+                archive & _shape & _elements;
             }
 
             Shape _shape;

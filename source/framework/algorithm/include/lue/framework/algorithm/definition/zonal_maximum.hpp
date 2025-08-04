@@ -72,7 +72,7 @@ namespace lue {
                         template<typename Archive>
                         void serialize(Archive& archive, unsigned int const /* version */)
                         {
-                            archive& _maximum_by_zone;
+                            archive & _maximum_by_zone;
                         }
 
 

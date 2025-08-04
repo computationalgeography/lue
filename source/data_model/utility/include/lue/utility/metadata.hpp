@@ -106,5 +106,5 @@ namespace lue {
             void from_json(utility::JSON const& object, Unit& unit);
 
         }  // namespace time
-    }      // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

@@ -68,7 +68,7 @@ namespace lue {
                 template<typename Archive>
                 void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
                 {
-                    archive& _cell_size& _cell_size_diagonal;
+                    archive & _cell_size & _cell_size_diagonal;
                 }
 
 

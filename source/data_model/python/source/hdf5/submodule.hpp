@@ -20,4 +20,4 @@ namespace lue::hdf5 {
 
     void init_validate(pybind11::module& module);
 
-} // namespace lue::hdf5
+}  // namespace lue::hdf5

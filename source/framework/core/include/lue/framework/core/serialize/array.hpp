@@ -17,7 +17,7 @@ namespace hpx {
 
             // Read array shape and make sure array has enough room for the elements
             Shape shape{};
-            archive& shape;
+            archive & shape;
             array.reshape(shape);
 
             // Read elements
@@ -31,7 +31,7 @@ namespace hpx {
         {
             // Write array to archive
 
-            archive& array.shape() & hpx::serialization::make_array(array.data(), lue::nr_elements(array));
+            archive & array.shape() & hpx::serialization::make_array(array.data(), lue::nr_elements(array));
         }
 
     }  // namespace serialization

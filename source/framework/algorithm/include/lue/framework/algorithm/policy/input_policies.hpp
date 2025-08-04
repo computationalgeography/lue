@@ -39,7 +39,7 @@ namespace lue::policy {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _indp;
+                archive & _indp;
             }
 
         private:
@@ -118,7 +118,7 @@ namespace lue::policy {
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
                 InputPolicies<InputNoDataPolicy>::serialize(archive, version);
-                archive& _hp;
+                archive & _hp;
             }
 
             HaloPolicy _hp;

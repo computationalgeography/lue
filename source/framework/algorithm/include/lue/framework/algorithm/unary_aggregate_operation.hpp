@@ -178,69 +178,70 @@ namespace lue {
         // once the partition results are ready. This continuation runs on
         // our locality.
         return hpx::when_all(partition_results.begin(), partition_results.end())
-            .then(hpx::unwrapping(
+            .then(
+                hpx::unwrapping(
 
-                [policies, functor](auto&& partition_results) -> OutputElement
-                {
-                    AnnotateFunction annotation{"unary_aggregate_operation"};
-
-                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                    std::size_t nr_results{std::size(partition_results)};
-
-                    // Initialize result for the case that no result
-                    // can be set, and no-data is not handled by the
-                    // policies
-                    OutputElement result{functor()};
-
-                    if (nr_results == 0)
+                    [policies, functor](auto&& partition_results) -> OutputElement
                     {
-                        ondp.mark_no_data(result);
-                    }
-                    else
-                    {
-                        OutputElement partition_result;
-                        std::size_t idx;
+                        AnnotateFunction annotation{"unary_aggregate_operation"};
 
-                        for (idx = 0; idx < nr_results; ++idx)
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                        std::size_t nr_results{std::size(partition_results)};
+
+                        // Initialize result for the case that no result
+                        // can be set, and no-data is not handled by the
+                        // policies
+                        OutputElement result{functor()};
+
+                        if (nr_results == 0)
                         {
-                            partition_result = functor.partition(partition_results[idx].get());
+                            ondp.mark_no_data(result);
+                        }
+                        else
+                        {
+                            OutputElement partition_result;
+                            std::size_t idx;
 
-                            // Result is output: use OutputNoDataPolicy
-                            if (!ondp.is_no_data(partition_result))
+                            for (idx = 0; idx < nr_results; ++idx)
                             {
-                                // Initialize result with first valid value
-                                result = partition_result;
+                                partition_result = functor.partition(partition_results[idx].get());
 
-                                // Aggregate subsequent valid values
-                                for (++idx; idx < nr_results; ++idx)
+                                // Result is output: use OutputNoDataPolicy
+                                if (!ondp.is_no_data(partition_result))
                                 {
-                                    partition_result = functor.partition(partition_results[idx].get());
+                                    // Initialize result with first valid value
+                                    result = partition_result;
 
-                                    if (!ondp.is_no_data(partition_result))
+                                    // Aggregate subsequent valid values
+                                    for (++idx; idx < nr_results; ++idx)
                                     {
-                                        result = functor.partition(result, partition_result);
-                                    }
-                                }
+                                        partition_result = functor.partition(partition_results[idx].get());
 
-                                lue_hpx_assert(idx == nr_results);
+                                        if (!ondp.is_no_data(partition_result))
+                                        {
+                                            result = functor.partition(result, partition_result);
+                                        }
+                                    }
+
+                                    lue_hpx_assert(idx == nr_results);
+                                }
+                            }
+
+                            lue_hpx_assert(idx == nr_results || idx == nr_results + 1);
+
+                            if (idx == nr_results)
+                            {
+                                // The inner loop was not reached. This
+                                // means that no valid data was found.
+                                ondp.mark_no_data(result);
                             }
                         }
 
-                        lue_hpx_assert(idx == nr_results || idx == nr_results + 1);
-
-                        if (idx == nr_results)
-                        {
-                            // The inner loop was not reached. This
-                            // means that no valid data was found.
-                            ondp.mark_no_data(result);
-                        }
+                        return result;
                     }
 
-                    return result;
-                }
-
-                ));
+                    ));
     }
 
 }  // namespace lue

@@ -36,4 +36,4 @@ namespace lue::hdf5 {
         init_validate(submodule);
     }
 
-} // namespace lue::hdf5
+}  // namespace lue::hdf5

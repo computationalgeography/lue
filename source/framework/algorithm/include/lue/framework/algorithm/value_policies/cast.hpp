@@ -35,10 +35,10 @@ namespace lue {
     namespace policy::cast {
 
         template<typename T>
-        constexpr bool is_signed_integral_v = std::is_integral_v<T>&& std::is_signed_v<T>;
+        constexpr bool is_signed_integral_v = std::is_integral_v<T> && std::is_signed_v<T>;
 
         template<typename T>
-        constexpr bool is_unsigned_integral_v = std::is_integral_v<T>&& std::is_unsigned_v<T>;
+        constexpr bool is_unsigned_integral_v = std::is_integral_v<T> && std::is_unsigned_v<T>;
 
 
         template<typename OutputElement, typename InputElement>

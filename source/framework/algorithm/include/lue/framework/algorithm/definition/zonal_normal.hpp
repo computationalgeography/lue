@@ -53,9 +53,8 @@ namespace lue {
                     unique_zones.end(),
                     std::inserter(zone_value_map, zone_value_map.end()),
 
-                    [random_number_engine, distribution](Zone const zone) mutable {
-                        return std::pair<Zone const, Element>{zone, distribution(random_number_engine)};
-                    }
+                    [random_number_engine, distribution](Zone const zone) mutable
+                    { return std::pair<Zone const, Element>{zone, distribution(random_number_engine)}; }
 
                 );
 
