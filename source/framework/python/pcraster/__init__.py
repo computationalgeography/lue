@@ -951,7 +951,7 @@ def min(*args):
         # TODO Support non-spatial condition(?)
         condition = expression1 <= expression2
 
-        if is_non_spatial(condition) or lue_is_value(condition):
+        if is_non_spatial(condition):
             condition = non_spatial_to_spatial(condition)
 
         return lfr.where(condition, expression1, expression2)

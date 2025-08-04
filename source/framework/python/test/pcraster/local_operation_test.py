@@ -6,7 +6,7 @@ import lue_test
 from .operation_test import OperationTest, setUpModule, tearDownModule
 
 
-# TODO Add tests for overload accepting value instead of non_spatial
+# TODO Add remaining tests for overload accepting value instead of non_spatial, similar to max/min.
 
 
 class LocalOperationTest(OperationTest):
@@ -26,28 +26,40 @@ class LocalOperationTest(OperationTest):
     @lue_test.framework_test_case
     def test_max(self):
         for expression_type in [np.uint8, np.int32, np.float32]:
-            spatial, non_spatial = (
+            spatial, non_spatial, value = (
                 self.spatial[expression_type],
                 self.non_spatial[expression_type],
+                self.value[expression_type],
             )
 
             _ = lpr.max(spatial, spatial)
             _ = lpr.max(spatial, non_spatial)
+            _ = lpr.max(spatial, value)
             _ = lpr.max(non_spatial, spatial)
             _ = lpr.max(non_spatial, non_spatial)
+            _ = lpr.max(non_spatial, value)
+            _ = lpr.max(value, spatial)
+            _ = lpr.max(value, non_spatial)
+            _ = lpr.max(value, value)
 
     @lue_test.framework_test_case
     def test_min(self):
         for expression_type in [np.uint8, np.int32, np.float32]:
-            spatial, non_spatial = (
+            spatial, non_spatial, value = (
                 self.spatial[expression_type],
                 self.non_spatial[expression_type],
+                self.value[expression_type],
             )
 
             _ = lpr.min(spatial, spatial)
             _ = lpr.min(spatial, non_spatial)
+            _ = lpr.min(spatial, value)
             _ = lpr.min(non_spatial, spatial)
             _ = lpr.min(non_spatial, non_spatial)
+            _ = lpr.min(non_spatial, value)
+            _ = lpr.min(value, spatial)
+            _ = lpr.min(value, non_spatial)
+            _ = lpr.min(value, value)
 
     @lue_test.framework_test_case
     def test_subtract(self):
