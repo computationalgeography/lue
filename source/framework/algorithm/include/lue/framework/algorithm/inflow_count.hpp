@@ -904,7 +904,7 @@ namespace lue {
             };
 
         }  // namespace inflow_count
-    }      // namespace detail
+    }  // namespace detail
 
 
     namespace policy::inflow_count {

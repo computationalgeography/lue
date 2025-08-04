@@ -60,7 +60,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array1,                            \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array2)                            \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies,                                                                                        \
@@ -76,7 +76,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,                             \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar)                                            \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies,                                                                                        \
@@ -92,7 +92,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,                             \
         policy::InputElementT<Policies, 1> const value)                                                      \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return name(policies, array, Scalar{value});                                                         \
     }                                                                                                        \
@@ -104,7 +104,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar,                                            \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array)                             \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies,                                                                                        \
@@ -120,7 +120,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value,                                                      \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array)                             \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return name(policies, Scalar{value}, array);                                                         \
     }                                                                                                        \
@@ -132,7 +132,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar1,                                           \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar2)                                           \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies,                                                                                        \
@@ -147,8 +147,7 @@ namespace lue {
     auto name(                                                                                               \
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar,                                            \
-        policy::InputElementT<Policies, 1> const value)                                                      \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        policy::InputElementT<Policies, 1> const value) -> Scalar<policy::OutputElementT<Policies, 0>>       \
     {                                                                                                        \
         return name(policies, scalar, Scalar{value});                                                        \
     }                                                                                                        \
@@ -160,7 +159,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value,                                                      \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar)                                            \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
         return name(policies, Scalar{value}, scalar);                                                        \
     }                                                                                                        \
@@ -171,8 +170,7 @@ namespace lue {
     auto name(                                                                                               \
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value1,                                                     \
-        policy::InputElementT<Policies, 1> const value2)                                                     \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        policy::InputElementT<Policies, 1> const value2) -> Scalar<policy::OutputElementT<Policies, 0>>      \
     {                                                                                                        \
         return name(policies, Scalar{value1}, Scalar{value2});                                               \
     }
@@ -187,7 +185,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array1,                            \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array2)                            \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies, array1, array2, Functor<policy::InputElementT<Policies, 0>>{});                        \
@@ -200,7 +198,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,                             \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar)                                            \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies, array, scalar.future(), Functor<policy::InputElementT<Policies, 0>>{});                \
@@ -213,7 +211,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array,                             \
         policy::InputElementT<Policies, 1> const value)                                                      \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return name(policies, array, Scalar{value});                                                         \
     }                                                                                                        \
@@ -225,7 +223,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar,                                            \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array)                             \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies, scalar.future(), array, Functor<policy::InputElementT<Policies, 0>>{});                \
@@ -238,7 +236,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value,                                                      \
         PartitionedArray<policy::InputElementT<Policies, 1>, rank> const& array)                             \
-        ->PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                        \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
     {                                                                                                        \
         return name(policies, Scalar{value}, array);                                                         \
     }                                                                                                        \
@@ -250,7 +248,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar1,                                           \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar2)                                           \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
         return binary_local_operation(                                                                       \
             policies, scalar1.future(), scalar2.future(), Functor<policy::InputElementT<Policies, 0>>{});    \
@@ -262,8 +260,7 @@ namespace lue {
     auto name(                                                                                               \
         Policies const& policies,                                                                            \
         Scalar<policy::InputElementT<Policies, 0>> const& scalar,                                            \
-        policy::InputElementT<Policies, 1> const value)                                                      \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        policy::InputElementT<Policies, 1> const value) -> Scalar<policy::OutputElementT<Policies, 0>>       \
     {                                                                                                        \
         return name(policies, scalar, Scalar{value});                                                        \
     }                                                                                                        \
@@ -275,7 +272,7 @@ namespace lue {
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value,                                                      \
         Scalar<policy::InputElementT<Policies, 1>> const& scalar)                                            \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
         return name(policies, Scalar{value}, scalar);                                                        \
     }                                                                                                        \
@@ -286,8 +283,7 @@ namespace lue {
     auto name(                                                                                               \
         Policies const& policies,                                                                            \
         policy::InputElementT<Policies, 0> const value1,                                                     \
-        policy::InputElementT<Policies, 1> const value2)                                                     \
-        ->Scalar<policy::OutputElementT<Policies, 0>>                                                        \
+        policy::InputElementT<Policies, 1> const value2) -> Scalar<policy::OutputElementT<Policies, 0>>      \
     {                                                                                                        \
         return name(policies, Scalar{value1}, Scalar{value2});                                               \
     }
@@ -300,8 +296,7 @@ namespace lue {
     template<typename OutputElement, typename InputElement, Rank rank>                                       \
     auto name(                                                                                               \
         PartitionedArray<InputElement, rank> const& array1,                                                  \
-        PartitionedArray<InputElement, rank> const& array2)                                                  \
-        ->PartitionedArray<OutputElement, rank>                                                              \
+        PartitionedArray<InputElement, rank> const& array2) -> PartitionedArray<OutputElement, rank>         \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -312,7 +307,7 @@ namespace lue {
     /* f(array, scalar) */                                                                                   \
     template<typename OutputElement, typename InputElement, Rank rank>                                       \
     auto name(PartitionedArray<InputElement, rank> const& array, Scalar<InputElement> const& scalar)         \
-        ->PartitionedArray<OutputElement, rank>                                                              \
+        -> PartitionedArray<OutputElement, rank>                                                             \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -323,7 +318,7 @@ namespace lue {
     /* f(array, value) */                                                                                    \
     template<typename OutputElement, typename InputElement, Rank rank>                                       \
     auto name(PartitionedArray<InputElement, rank> const& array, InputElement const value)                   \
-        ->PartitionedArray<OutputElement, rank>                                                              \
+        -> PartitionedArray<OutputElement, rank>                                                             \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -334,7 +329,7 @@ namespace lue {
     /* f(scalar, array) */                                                                                   \
     template<typename OutputElement, typename InputElement, Rank rank>                                       \
     auto name(Scalar<InputElement> const& scalar, PartitionedArray<InputElement, rank> const& array)         \
-        ->PartitionedArray<OutputElement, rank>                                                              \
+        -> PartitionedArray<OutputElement, rank>                                                             \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -345,7 +340,7 @@ namespace lue {
     /* f(value, array) */                                                                                    \
     template<typename OutputElement, typename InputElement, Rank rank>                                       \
     auto name(InputElement const value, PartitionedArray<InputElement, rank> const& array)                   \
-        ->PartitionedArray<OutputElement, rank>                                                              \
+        -> PartitionedArray<OutputElement, rank>                                                             \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -356,7 +351,7 @@ namespace lue {
     /* f(scalar, scalar) */                                                                                  \
     template<typename OutputElement, typename InputElement>                                                  \
     auto name(Scalar<InputElement> const& scalar1, Scalar<InputElement> const& scalar2)                      \
-        ->Scalar<OutputElement>                                                                              \
+        -> Scalar<OutputElement>                                                                             \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -366,7 +361,7 @@ namespace lue {
                                                                                                              \
     /* f(scalar, value) */                                                                                   \
     template<typename OutputElement, typename InputElement>                                                  \
-    auto name(Scalar<InputElement> const& scalar, InputElement const value)->Scalar<OutputElement>           \
+    auto name(Scalar<InputElement> const& scalar, InputElement const value) -> Scalar<OutputElement>         \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -376,7 +371,7 @@ namespace lue {
                                                                                                              \
     /* f(value, scalar) */                                                                                   \
     template<typename OutputElement, typename InputElement>                                                  \
-    auto name(InputElement const value, Scalar<InputElement> const& scalar)->Scalar<OutputElement>           \
+    auto name(InputElement const value, Scalar<InputElement> const& scalar) -> Scalar<OutputElement>         \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -386,9 +381,9 @@ namespace lue {
                                                                                                              \
     /* f(value, value) */                                                                                    \
     template<typename OutputElement, typename InputElement>                                                  \
-    requires std::is_arithmetic_v<OutputElement>&& std::is_arithmetic_v<InputElement> auto name(             \
-        InputElement const value1, InputElement const value2)                                                \
-        ->Scalar<OutputElement>                                                                              \
+        requires std::is_arithmetic_v<OutputElement> &&                                                      \
+                 std::is_arithmetic_v<InputElement>                                                          \
+                 auto name(InputElement const value1, InputElement const value2) -> Scalar<OutputElement>    \
     {                                                                                                        \
         using Policies_ = Policies<OutputElement, InputElement>;                                             \
                                                                                                              \
@@ -402,7 +397,7 @@ namespace lue {
     /* f(array, array) */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
     auto name(PartitionedArray<Element, rank> const& array1, PartitionedArray<Element, rank> const& array2)  \
-        ->PartitionedArray<Element, rank>                                                                    \
+        -> PartitionedArray<Element, rank>                                                                   \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -413,7 +408,7 @@ namespace lue {
     /* f(array, scalar) */                                                                                   \
     template<typename Element, Rank rank>                                                                    \
     auto name(PartitionedArray<Element, rank> const& array, Scalar<Element> const& scalar)                   \
-        ->PartitionedArray<Element, rank>                                                                    \
+        -> PartitionedArray<Element, rank>                                                                   \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -424,7 +419,7 @@ namespace lue {
     /* f(array, value) */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
     auto name(PartitionedArray<Element, rank> const& array, Element const value)                             \
-        ->PartitionedArray<Element, rank>                                                                    \
+        -> PartitionedArray<Element, rank>                                                                   \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -435,7 +430,7 @@ namespace lue {
     /* f(scalar, array) */                                                                                   \
     template<typename Element, Rank rank>                                                                    \
     auto name(Scalar<Element> const& scalar, PartitionedArray<Element, rank> const& array)                   \
-        ->PartitionedArray<Element, rank>                                                                    \
+        -> PartitionedArray<Element, rank>                                                                   \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -446,7 +441,7 @@ namespace lue {
     /* f(value, array) */                                                                                    \
     template<typename Element, Rank rank>                                                                    \
     auto name(Element const value, PartitionedArray<Element, rank> const& array)                             \
-        ->PartitionedArray<Element, rank>                                                                    \
+        -> PartitionedArray<Element, rank>                                                                   \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -456,7 +451,7 @@ namespace lue {
                                                                                                              \
     /* f(scalar, scalar) */                                                                                  \
     template<typename Element>                                                                               \
-    auto name(Scalar<Element> const& scalar1, Scalar<Element> const& scalar2)->Scalar<Element>               \
+    auto name(Scalar<Element> const& scalar1, Scalar<Element> const& scalar2) -> Scalar<Element>             \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -466,7 +461,7 @@ namespace lue {
                                                                                                              \
     /* f(scalar, value) */                                                                                   \
     template<typename Element>                                                                               \
-    auto name(Scalar<Element> const& scalar, Element const value)->Scalar<Element>                           \
+    auto name(Scalar<Element> const& scalar, Element const value) -> Scalar<Element>                         \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -476,7 +471,7 @@ namespace lue {
                                                                                                              \
     /* f(value, scalar) */                                                                                   \
     template<typename Element>                                                                               \
-    auto name(Element const value, Scalar<Element> const& scalar)->Scalar<Element>                           \
+    auto name(Element const value, Scalar<Element> const& scalar) -> Scalar<Element>                         \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \
@@ -486,8 +481,8 @@ namespace lue {
                                                                                                              \
     /* f(value, value) */                                                                                    \
     template<typename Element>                                                                               \
-    requires std::is_arithmetic_v<Element> auto name(Element const value1, Element const value2)             \
-        ->Scalar<Element>                                                                                    \
+        requires std::is_arithmetic_v<Element>                                                               \
+    auto name(Element const value1, Element const value2) -> Scalar<Element>                                 \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
                                                                                                              \

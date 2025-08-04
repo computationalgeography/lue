@@ -85,8 +85,7 @@ namespace lue {
     template<typename Element, Rank rank>
     std::ostream& operator<<(std::ostream& stream, Array<Element, rank> const& data)
     {
-        stream << data.shape() << ", "
-               << "[\n";
+        stream << data.shape() << ", " << "[\n";
 
         auto joiner = lue_make_ostream_joiner(stream, ", ");
 
@@ -134,8 +133,7 @@ namespace lue {
     template<typename Element, Rank rank>
     std::ostream& operator<<(std::ostream& stream, ArrayPartitionData<Element, rank> const& data)
     {
-        stream << data.shape() << ", "
-               << "[\n";
+        stream << data.shape() << ", " << "[\n";
 
         auto joiner = lue_make_ostream_joiner(stream, ", ");
 

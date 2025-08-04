@@ -67,4 +67,4 @@ namespace lue {
     template LUE_GLOBAL_OPERATION_EXPORT auto minimum<ArgumentType<void(Policies)>, rank>(                   \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const&)                                   \
-        ->Scalar<policy::OutputElementT<Policies, 0>>;
+        -> Scalar<policy::OutputElementT<Policies, 0>>;

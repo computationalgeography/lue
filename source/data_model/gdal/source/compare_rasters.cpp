@@ -1,6 +1,7 @@
 #include "lue/gdal/compare_rasters.hpp"
 #include "lue/gdal/data_type.hpp"
 #include "lue/gdal/raster.hpp"
+#include "lue/define.hpp"
 #include "lue/string.hpp"
 #include <cassert>
 #include <format>
@@ -48,6 +49,9 @@ namespace lue::gdal {
                 }
                 else
                 {
+                    LUE_UNUSED(no_data_value_valid);
+                    LUE_UNUSED(no_data_value);
+
                     return std::equal(
                         values1.begin(),
                         values1.begin() + nr_valid_cells,
@@ -111,8 +115,9 @@ namespace lue::gdal {
 
             if (!data_types_equal)
             {
-                differences.emplace_back(std::format(
-                    "different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
+                differences.emplace_back(
+                    std::format(
+                        "different data types: {} != {}", as_string(data_type1), as_string(data_type2)));
             }
 
 
@@ -192,12 +197,13 @@ namespace lue::gdal {
         // Existence
         if (!dataset1 || !dataset2)
         {
-            differences.emplace_back(std::format(
-                "One or both datasets don't exist: {}: {} / {}: {}",
-                dataset_name1,
-                static_cast<bool>(dataset1),
-                dataset_name2,
-                static_cast<bool>(dataset2)));
+            differences.emplace_back(
+                std::format(
+                    "One or both datasets don't exist: {}: {} / {}: {}",
+                    dataset_name1,
+                    static_cast<bool>(dataset1),
+                    dataset_name2,
+                    static_cast<bool>(dataset2)));
             return differences;
         }
 
@@ -240,10 +246,11 @@ namespace lue::gdal {
 
         if (!geo_transforms_equal)
         {
-            differences.emplace_back(std::format(
-                "different geo-transformations: [{}] != [{}]",
-                join(geo_transform1, ", "),
-                join(geo_transform2, ", ")));
+            differences.emplace_back(
+                std::format(
+                    "different geo-transformations: [{}] != [{}]",
+                    join(geo_transform1, ", "),
+                    join(geo_transform2, ", ")));
         }
 
         // TODO SRS

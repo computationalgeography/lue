@@ -262,17 +262,17 @@ BOOST_AUTO_TEST_CASE(continuation)
 {
     using Element = std::string;
 
-    lue::Scalar<Element> greating1{"Hello"};
-    lue::Scalar<Element> greating2 =
-        greating1.future().then([](auto const& value) -> Element { return value.get() + " " + "World!"; });
+    lue::Scalar<Element> greeting1{"Hello"};
+    lue::Scalar<Element> greeting2 =
+        greeting1.future().then([](auto const& value) -> Element { return value.get() + " " + "World!"; });
 
     // Make the layered value (a shared future) go out of scope (not necessary for the
-    // test). Shared futures can be copied. greating1's future is copied into the continuation,
-    // so the shared state will remain available for use in the lambda. greating2's value is
+    // test). Shared futures can be copied. greeting1's future is copied into the continuation,
+    // so the shared state will remain available for use in the lambda. greeting2's value is
     // a different one.
-    greating1 = lue::Scalar<Element>{};
+    greeting1 = lue::Scalar<Element>{};
 
-    BOOST_CHECK_EQUAL(greating2.future().get(), Element{"Hello World!"});
+    BOOST_CHECK_EQUAL(greeting2.future().get(), Element{"Hello World!"});
 }
 
 

@@ -49,7 +49,7 @@ namespace lue::policy {
             template<typename Archive>
             void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
             {
-                archive& _output_no_data_policy& _range_policy;
+                archive & _output_no_data_policy & _range_policy;
             }
 
 

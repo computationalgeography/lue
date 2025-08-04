@@ -176,7 +176,8 @@ namespace lue {
             Policies const& policies,
             Localities<rank> const& localities,
             PartitionsT<PartitionedArray<ConditionElement, rank>> const& condition_partitions,
-            Array<hpx::future<Count>, rank>&& partition_sizes) -> PartitionsT<PartitionedArray<IDElement, rank>>
+            Array<hpx::future<Count>, rank>&& partition_sizes)
+            -> PartitionsT<PartitionedArray<IDElement, rank>>
         {
             using IDArray = PartitionedArray<IDElement, rank>;
             using IDPartitions = PartitionsT<IDArray>;

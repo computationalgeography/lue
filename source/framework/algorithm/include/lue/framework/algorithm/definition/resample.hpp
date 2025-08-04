@@ -70,25 +70,25 @@ namespace lue {
                                 auto const [nr_target_elements0, nr_target_elements1] =
                                     target_partition_shape;
 
-                                // std::cout << std::format(
-                                //     "-------------------------------------------------------------------\n"
-                                //     "- source_area_offset       : ({}, {})\n"
-                                //     "- source_partition_shape   : ({}, {})\n"
-                                //     "- target_partition_offset  : ({}, {})\n"
-                                //     "- target_partition_shape   : ({}, {})\n"
-                                //     "- count                    : {}\n"
-                                //     "- nr_target_cells_remaining: ({}, {})\n",
-                                //     source_idx0,
-                                //     source_idx1,
-                                //     nr_source_elements0,
-                                //     nr_source_elements1,
-                                //     std::get<0>(target_partition_offset),
-                                //     std::get<1>(target_partition_offset),
-                                //     nr_target_elements0,
-                                //     nr_target_elements1,
-                                //     count,
-                                //     nr_target_cells_remaining0,
-                                //     nr_target_cells_remaining1);
+                    // std::cout << std::format(
+                    //     "-------------------------------------------------------------------\n"
+                    //     "- source_area_offset       : ({}, {})\n"
+                    //     "- source_partition_shape   : ({}, {})\n"
+                    //     "- target_partition_offset  : ({}, {})\n"
+                    //     "- target_partition_shape   : ({}, {})\n"
+                    //     "- count                    : {}\n"
+                    //     "- nr_target_cells_remaining: ({}, {})\n",
+                    //     source_idx0,
+                    //     source_idx1,
+                    //     nr_source_elements0,
+                    //     nr_source_elements1,
+                    //     std::get<0>(target_partition_offset),
+                    //     std::get<1>(target_partition_offset),
+                    //     nr_target_elements0,
+                    //     nr_target_elements1,
+                    //     count,
+                    //     nr_target_cells_remaining0,
+                    //     nr_target_cells_remaining1);
 
 #ifndef NDEBUG
                                 auto const [nr_source_elements0, nr_source_elements1] =

@@ -86,5 +86,5 @@ namespace lue {
             }
 
         }  // namespace time
-    }      // namespace data_model
+    }  // namespace data_model
 }  // namespace lue

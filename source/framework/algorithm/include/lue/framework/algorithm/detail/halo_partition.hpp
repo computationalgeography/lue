@@ -45,9 +45,8 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                [extent0 = std::get<0>(min_shape), fill_value](Shape const& shape) {
-                    return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value};
-                }
+                [extent0 = std::get<0>(min_shape), fill_value](Shape const& shape)
+                { return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value}; }
 
                 ),
             partition.shape());
@@ -74,9 +73,8 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                [extent1 = std::get<1>(min_shape), fill_value](Shape const& shape) {
-                    return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value};
-                }
+                [extent1 = std::get<1>(min_shape), fill_value](Shape const& shape)
+                { return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value}; }
 
                 ),
             partition.shape());

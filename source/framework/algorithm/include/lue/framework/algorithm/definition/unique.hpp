@@ -78,8 +78,8 @@ namespace lue {
 
 
     template<typename Policies, typename Element, Rank rank>
-    auto unique(
-        Policies const& policies, PartitionedArray<Element, rank> const& array) -> hpx::future<std::set<Element>>
+    auto unique(Policies const& policies, PartitionedArray<Element, rank> const& array)
+        -> hpx::future<std::set<Element>>
     {
         static_assert(std::is_integral_v<Element>);
 
@@ -100,24 +100,25 @@ namespace lue {
         }
 
         return hpx::when_all(output_partitions.begin(), output_partitions.end())
-            .then(hpx::unwrapping(
+            .then(
+                hpx::unwrapping(
 
-                [](auto&& partitions)
-                {
-                    std::set<Element> unique_values{};
-
-                    for (auto& unique_values_per_partition_f : partitions)
+                    [](auto&& partitions)
                     {
-                        auto const& unique_values_per_partition{unique_values_per_partition_f.get()};
+                        std::set<Element> unique_values{};
 
-                        unique_values.insert(
-                            unique_values_per_partition.begin(), unique_values_per_partition.end());
+                        for (auto& unique_values_per_partition_f : partitions)
+                        {
+                            auto const& unique_values_per_partition{unique_values_per_partition_f.get()};
+
+                            unique_values.insert(
+                                unique_values_per_partition.begin(), unique_values_per_partition.end());
+                        }
+
+                        return unique_values;
                     }
 
-                    return unique_values;
-                }
-
-                ));
+                    ));
     }
 
 }  // namespace lue

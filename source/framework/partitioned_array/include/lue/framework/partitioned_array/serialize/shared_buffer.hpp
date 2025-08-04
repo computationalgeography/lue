@@ -16,7 +16,7 @@ namespace hpx::serialization {
 
         // Read buffer size and make sure buffer has enough room for the elements
         Size size{};
-        archive& size;
+        archive & size;
         buffer.resize(size);
 
         // Read elements
@@ -30,7 +30,7 @@ namespace hpx::serialization {
     {
         // Write buffer to archive
 
-        archive& buffer.size() & hpx::serialization::make_array(buffer.data(), buffer.size());
+        archive & buffer.size() & hpx::serialization::make_array(buffer.data(), buffer.size());
     }
 
 }  // namespace hpx::serialization

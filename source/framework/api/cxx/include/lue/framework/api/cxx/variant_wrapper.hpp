@@ -50,7 +50,8 @@ namespace lue::api {
 
 
             template<typename T>
-            requires is_allowed_v<T> VariantWrapper(T&& value):
+                requires is_allowed_v<T>
+            VariantWrapper(T&& value):
 
                 _variant{std::forward<T>(value)}
 
