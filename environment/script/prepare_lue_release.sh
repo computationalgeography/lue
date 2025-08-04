@@ -6,6 +6,7 @@ function parse_command_line() {
 
     if [[ $# != 3 ]]; then
         echo $usage
+        echo Example: $(basename $0) kordejong 0.3.10 gh861
         exit 1
     fi
 
