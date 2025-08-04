@@ -49,9 +49,9 @@ the related technology.
 ## C/I builds
 
 [![Linux build status](https://github.com/computationalgeography/lue/actions/workflows/linux.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
-[![macOS build status](https://github.com/computationalgeography/lue/actions/workflows/macos.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos.yml)
-[![Windows build status](https://github.com/computationalgeography/lue/actions/workflows/windows.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows.yml)
-
+[![macOS build status](https://github.com/computationalgeography/lue/actions/workflows/macos-homebrew.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos-homebrew.yml)
+[![Windows (Conan) build status](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml)
+[![Windows (Conda) build status](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml)
 [![Conda packages build status](https://github.com/computationalgeography/lue/actions/workflows/conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/conda.yml)
 
 ## Installation
