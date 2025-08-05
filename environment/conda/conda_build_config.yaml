@@ -9,13 +9,7 @@
 
 # vs2019 results in compiler error...
 
-c_compiler:
-  - vs2022                                       # [win]
-cxx_compiler:
-  - vs2022                                       # [win]
-hdf5:
-  - 1.14.3
 libgdal:
-  - 3.10
+    - 3.11
 python:
-  - 3.12
+    - 3.12
