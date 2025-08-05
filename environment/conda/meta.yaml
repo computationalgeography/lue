@@ -29,8 +29,6 @@ requirements:
     - docopt  # templatize.py
     - hpx
     - jinja2  # templatize.py
-    - libboost-devel  # Only CMake scripts (BoostConfig.cmake, etc)
-    - libboost-headers  # Only headers
     - libgdal
     - nlohmann_json
     - numpy
