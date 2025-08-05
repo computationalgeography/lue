@@ -27,7 +27,6 @@ requirements:
   host:
     - cxxopts
     - docopt  # templatize.py
-    - hdf5
     - hpx
     - jinja2  # templatize.py
     - libboost-devel  # Only CMake scripts (BoostConfig.cmake, etc)
@@ -40,8 +39,6 @@ requirements:
 
   run:
     - docopt  # lue.qa
-    - gperftools                                 # [not win] TODO: This should be installed by hpx
-    - hdf5
     - hpx
     - libgdal
     - matplotlib-base  # lue.qa
