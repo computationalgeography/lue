@@ -9,6 +9,10 @@
 
 # vs2019 results in compiler error...
 
+c_compiler:
+    - vs2022 # [win]
+cxx_compiler:
+    - vs2022 # [win]
 libgdal:
     - 3.11
 python:
