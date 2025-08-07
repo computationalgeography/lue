@@ -19,14 +19,16 @@ namespace lue::gdal {
             (std::is_same_v<Element, std::int64_t> || std::is_same_v<Element, std::uint64_t>) &&
             !supports_64bit_integers)
         {
-            throw std::runtime_error("The GDAL library doesn't support I/O of 64-bit integrals. "
-                                     "Upgrade GDAL to version ≥ 3.5.0.");
+            throw std::runtime_error(
+                "The GDAL library doesn't support I/O of 64-bit integrals. "
+                "Upgrade GDAL to version ≥ 3.5.0.");
         }
 
         if constexpr (std::is_same_v<Element, std::int8_t> && !supports_8bit_signed_integers)
         {
-            throw std::runtime_error("The GDAL library doesn't support I/O of signed 8-bit integrals. "
-                                     "Upgrade GDAL to version ≥ 3.7.0.");
+            throw std::runtime_error(
+                "The GDAL library doesn't support I/O of signed 8-bit integrals. "
+                "Upgrade GDAL to version ≥ 3.7.0.");
         }
     }
 

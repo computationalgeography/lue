@@ -18,9 +18,8 @@ namespace lue {
 
         template<typename Element, Rank rank>
         auto downscale(
-            PartitionedArray<Element, rank> const& array,
-            Count const count,
-            DownscaleStrategy const strategy) -> PartitionedArray<Element, rank>
+            PartitionedArray<Element, rank> const& array, Count const count, DownscaleStrategy const strategy)
+            -> PartitionedArray<Element, rank>
         {
             using Policies = policy::downscale::DefaultValuePolicies<Element>;
 

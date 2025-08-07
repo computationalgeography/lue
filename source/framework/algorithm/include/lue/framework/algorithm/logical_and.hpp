@@ -21,8 +21,8 @@ namespace lue {
 
 
                 constexpr auto operator()(
-                    InputElement const& input_element1,
-                    InputElement const& input_element2) const noexcept -> OutputElement
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
+                    -> OutputElement
                 {
                     return input_element1 && input_element2;
                 }

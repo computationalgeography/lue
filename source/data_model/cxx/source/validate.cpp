@@ -1879,12 +1879,13 @@ namespace lue {
 
             if (issues.errors_found() || (fail_on_warning && issues.warnings_found()))
             {
-                throw std::runtime_error(std::format(
-                    "{}"
-                    "LUE is work in progress -- if you encounter "
-                    "false-negatives, then please open an issue here: "
-                    "https://github.com/computationalgeography/lue/issues",
-                    message(issues)));
+                throw std::runtime_error(
+                    std::format(
+                        "{}"
+                        "LUE is work in progress -- if you encounter "
+                        "false-negatives, then please open an issue here: "
+                        "https://github.com/computationalgeography/lue/issues",
+                        message(issues)));
             }
         }
 
@@ -1901,12 +1902,13 @@ namespace lue {
 
             if (issues.errors_found() || (fail_on_warning && issues.warnings_found()))
             {
-                throw std::runtime_error(std::format(
-                    "{}"
-                    "LUE is work in progress -- if you encounter "
-                    "false-negatives, then please open an issue here: "
-                    "https://github.com/computationalgeography/lue/issues",
-                    message(issues)));
+                throw std::runtime_error(
+                    std::format(
+                        "{}"
+                        "LUE is work in progress -- if you encounter "
+                        "false-negatives, then please open an issue here: "
+                        "https://github.com/computationalgeography/lue/issues",
+                        message(issues)));
             }
         }
 

@@ -39,9 +39,9 @@ namespace lue {
             // → We could maybe make a macro that results in a function (module?) like the
             //   current one, for a family of functions
             return std::visit(
-                overload{[](auto const& field1, auto const& field2) -> Field {
-                    return value_policies::add(field1, field2);
-                }},
+                overload{
+                    [](auto const& field1, auto const& field2) -> Field
+                    { return value_policies::add(field1, field2); }},
                 field1.variant(),
                 field2.variant());
         }

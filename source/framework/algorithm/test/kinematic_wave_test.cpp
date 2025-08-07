@@ -292,21 +292,22 @@ BOOST_AUTO_TEST_CASE(random_input)
 
         FloatingPoint new_discharge{-1};
 
-        BOOST_TEST_INFO(std::format(
-            "upstream_discharge: {}\n"
-            "current_discharge: {}\n"
-            "lateral_inflow: {}\n"
-            "alpha: {}\n"
-            "beta: {}\n"
-            "time_step_duration: {}\n"
-            "channel_length: {}\n",
-            upstream_discharge,
-            current_discharge,
-            lateral_inflow,
-            alpha,
-            beta,
-            time_step_duration,
-            channel_length));
+        BOOST_TEST_INFO(
+            std::format(
+                "upstream_discharge: {}\n"
+                "current_discharge: {}\n"
+                "lateral_inflow: {}\n"
+                "alpha: {}\n"
+                "beta: {}\n"
+                "time_step_duration: {}\n"
+                "channel_length: {}\n",
+                upstream_discharge,
+                current_discharge,
+                lateral_inflow,
+                alpha,
+                beta,
+                time_step_duration,
+                channel_length));
 
         // This call should not throw an exception
         new_discharge = lue::detail::iterate_to_new_discharge<FloatingPoint>(

@@ -66,20 +66,21 @@ namespace lue::detail {
         using InputPartition = ArrayPartition<Element, rank>;
 
         return hpx::when_all(partitions.begin(), partitions.end())
-            .then(hpx::unwrapping(
-                [shape = partitions.shape()](std::vector<InputPartition>&& vector_of_ready_partitions)
-                {
-                    ArrayPartitionData<InputPartition, rank> array_of_partitions{{shape}};
+            .then(
+                hpx::unwrapping(
+                    [shape = partitions.shape()](std::vector<InputPartition>&& vector_of_ready_partitions)
+                    {
+                        ArrayPartitionData<InputPartition, rank> array_of_partitions{{shape}};
 
-                    std::move(
-                        vector_of_ready_partitions.begin(),
-                        vector_of_ready_partitions.end(),
-                        array_of_partitions.begin());
+                        std::move(
+                            vector_of_ready_partitions.begin(),
+                            vector_of_ready_partitions.end(),
+                            array_of_partitions.begin());
 
-                    return array_of_partitions;
-                }
+                        return array_of_partitions;
+                    }
 
-                ));
+                    ));
     }
 
 }  // namespace lue::detail

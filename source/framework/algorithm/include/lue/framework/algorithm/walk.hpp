@@ -13,11 +13,9 @@ namespace lue {
 
 
     template<
-        template<typename, typename...>
-        typename Collection,
+        template<typename, typename...> typename Collection,
         typename... Ts,
-        template<typename>
-        typename Future,
+        template<typename> typename Future,
         typename Element>
     hpx::future<Collection<Element>> when_all_get(Collection<Future<Element>, Ts...>&& futures)
     {
@@ -25,19 +23,20 @@ namespace lue {
         // and return a collection with the elements originally pointed to by the futures.
 
         return hpx::when_all(futures.begin(), futures.end())
-            .then(hpx::unwrapping(
-                [](std::vector<Future<Element>>&& futures)
-                {
-                    Collection<Element> elements(std::size(futures));
+            .then(
+                hpx::unwrapping(
+                    [](std::vector<Future<Element>>&& futures)
+                    {
+                        Collection<Element> elements(std::size(futures));
 
-                    std::transform(
-                        futures.begin(),
-                        futures.end(),
-                        elements.begin(),
-                        [](Future<Element>& future) { return future.get(); });
+                        std::transform(
+                            futures.begin(),
+                            futures.end(),
+                            elements.begin(),
+                            [](Future<Element>& future) { return future.get(); });
 
-                    return elements;
-                }));
+                        return elements;
+                    }));
     }
 
 
@@ -45,19 +44,20 @@ namespace lue {
     hpx::future<Array<Element, rank>> when_all_get(Array<Future<Element>, rank>&& array_of_futures)
     {
         return hpx::when_all(array_of_futures.begin(), array_of_futures.end())
-            .then(hpx::unwrapping(
-                [shape = array_of_futures.shape()](std::vector<Future<Element>>&& futures)
-                {
-                    Array<Element, rank> elements{shape};
+            .then(
+                hpx::unwrapping(
+                    [shape = array_of_futures.shape()](std::vector<Future<Element>>&& futures)
+                    {
+                        Array<Element, rank> elements{shape};
 
-                    std::transform(
-                        futures.begin(),
-                        futures.end(),
-                        elements.begin(),
-                        [](Future<Element>& future) { return future.get(); });
+                        std::transform(
+                            futures.begin(),
+                            futures.end(),
+                            elements.begin(),
+                            [](Future<Element>& future) { return future.get(); });
 
-                    return elements;
-                }));
+                        return elements;
+                    }));
     }
 
 
@@ -142,19 +142,21 @@ namespace lue {
         hpx::future<std::vector<DownstreamRoutePartitionIDs>> down1{
             when_all_get(std::move(downstream_route_partitions_ids_ff))};
 
-        hpx::future<Array<std::vector<hpx::id_type>, rank>> down2{down1.then(hpx::unwrapping(
-            [shape_in_partitions = route_partitions.shape()](std::vector<DownstreamRoutePartitionIDs>&& down1)
-            {
-                Array<hpx::future<std::vector<hpx::id_type>>, rank> result{shape_in_partitions};
+        hpx::future<Array<std::vector<hpx::id_type>, rank>> down2{down1.then(
+            hpx::unwrapping(
+                [shape_in_partitions =
+                     route_partitions.shape()](std::vector<DownstreamRoutePartitionIDs>&& down1)
+                {
+                    Array<hpx::future<std::vector<hpx::id_type>>, rank> result{shape_in_partitions};
 
-                std::transform(
-                    down1.begin(),
-                    down1.end(),
-                    result.begin(),
-                    [](DownstreamRoutePartitionIDs& down) { return when_all_get(std::move(down)); });
+                    std::transform(
+                        down1.begin(),
+                        down1.end(),
+                        result.begin(),
+                        [](DownstreamRoutePartitionIDs& down) { return when_all_get(std::move(down)); });
 
-                return when_all_get(std::move(result));
-            }))};
+                    return when_all_get(std::move(result));
+                }))};
 
         hpx::future<void> components_configured{hpx::dataflow(
             hpx::launch::async,

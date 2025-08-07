@@ -81,108 +81,118 @@ namespace lue::detail {
         using Slices = SlicesT<Partition>;
 
         // North-west corner partition: get south-east corner element
-        data(0, 0) = partition_shapes(0, 0).then(hpx::unwrapping(
+        data(0, 0) = partition_shapes(0, 0).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(0, 0)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(0, 0)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(
-                    Slices{{Slice{nr_elements0 - 1, nr_elements0}, Slice{nr_elements1 - 1, nr_elements1}}});
-            }
+                    return input_partition.slice(
+                        Slices{
+                            {Slice{nr_elements0 - 1, nr_elements0}, Slice{nr_elements1 - 1, nr_elements1}}});
+                }
 
-            ));
+                ));
 
         // North partition: get south side elements
-        data(0, 1) = partition_shapes(0, 1).then(hpx::unwrapping(
+        data(0, 1) = partition_shapes(0, 1).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(0, 1)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(0, 1)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(
-                    Slices{{Slice{nr_elements0 - 1, nr_elements0}, Slice{0, nr_elements1}}});
-            }
+                    return input_partition.slice(
+                        Slices{{Slice{nr_elements0 - 1, nr_elements0}, Slice{0, nr_elements1}}});
+                }
 
-            ));
+                ));
 
         // North-east partition: get south-west corner elements
-        data(0, 2) = partition_shapes(0, 2).then(hpx::unwrapping(
+        data(0, 2) = partition_shapes(0, 2).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(0, 2)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(0, 2)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(Slices{{Slice{nr_elements0 - 1, nr_elements0}, Slice{0, 1}}});
-            }
+                    return input_partition.slice(
+                        Slices{{Slice{nr_elements0 - 1, nr_elements0}, Slice{0, 1}}});
+                }
 
-            ));
+                ));
 
         // West partition: get east side elements
-        data(1, 0) = partition_shapes(1, 0).then(hpx::unwrapping(
+        data(1, 0) = partition_shapes(1, 0).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(1, 0)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(1, 0)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(
-                    Slices{{Slice{0, nr_elements0}, Slice{nr_elements1 - 1, nr_elements1}}});
-            }
+                    return input_partition.slice(
+                        Slices{{Slice{0, nr_elements0}, Slice{nr_elements1 - 1, nr_elements1}}});
+                }
 
-            ));
+                ));
 
         // Center partition: get all elements
         data(1, 1) = partitions(1, 1).data();
 
         // East partition: get west side elements
-        data(1, 2) = partition_shapes(1, 2).then(hpx::unwrapping(
+        data(1, 2) = partition_shapes(1, 2).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(1, 2)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(1, 2)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(Slices{{Slice{0, nr_elements0}, Slice{0, 1}}});
-            }
+                    return input_partition.slice(Slices{{Slice{0, nr_elements0}, Slice{0, 1}}});
+                }
 
-            ));
+                ));
 
         // South-west partition: get north-east corner elements
-        data(2, 0) = partition_shapes(2, 0).then(hpx::unwrapping(
+        data(2, 0) = partition_shapes(2, 0).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(2, 0)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(2, 0)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(Slices{{Slice{0, 1}, Slice{nr_elements1 - 1, nr_elements1}}});
-            }
+                    return input_partition.slice(
+                        Slices{{Slice{0, 1}, Slice{nr_elements1 - 1, nr_elements1}}});
+                }
 
-            ));
+                ));
 
         // South partition: get north side elements
-        data(2, 1) = partition_shapes(2, 1).then(hpx::unwrapping(
+        data(2, 1) = partition_shapes(2, 1).then(
+            hpx::unwrapping(
 
-            [input_partition = partitions(2, 1)](Shape const& partition_shape)
-            {
-                AnnotateFunction annotation{"partition_data"};
+                [input_partition = partitions(2, 1)](Shape const& partition_shape)
+                {
+                    AnnotateFunction annotation{"partition_data"};
 
-                auto const [nr_elements0, nr_elements1] = partition_shape;
+                    auto const [nr_elements0, nr_elements1] = partition_shape;
 
-                return input_partition.slice(Slices{{Slice{0, 1}, Slice{0, nr_elements1}}});
-            }
+                    return input_partition.slice(Slices{{Slice{0, 1}, Slice{0, nr_elements1}}});
+                }
 
-            ));
+                ));
 
         // South-east partition: get north-west corner element
         data(2, 2) = partitions(2, 2).slice(Slices{{Slice{0, 1}, Slice{0, 1}}});

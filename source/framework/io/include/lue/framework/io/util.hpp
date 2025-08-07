@@ -19,8 +19,9 @@ namespace lue::detail {
     auto hyperslab_to_shape(hdf5::Hyperslab const& hyperslab) -> Shape
     {
         // Return the shape represented by the hyperslab passed in
-        lue_hpx_assert(std::all_of(
-            hyperslab.stride().begin(), hyperslab.stride().end(), [](auto const s) { return s == 1; }));
+        lue_hpx_assert(
+            std::all_of(
+                hyperslab.stride().begin(), hyperslab.stride().end(), [](auto const s) { return s == 1; }));
         auto const& count{hyperslab.count()};
         Shape shape;
 
@@ -147,9 +148,8 @@ namespace lue::detail {
 
     template<typename PartitionServer>
     auto hyperslab(
-        PartitionServer const& partition_server,
-        Index const location_in_time_idx,
-        Index const time_step_idx) -> hdf5::Hyperslab
+        PartitionServer const& partition_server, Index const location_in_time_idx, Index const time_step_idx)
+        -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition server
         // instance passed in, as an HDF5 hyperslab. The result is useful

@@ -80,8 +80,7 @@ BOOST_AUTO_TEST_CASE(modulus_2d_random_values)
             {98, 12, 20, 5},
             {-5, -10, 89, -1},
             {0, 0, 0, 0},
-            {5, 5, 5, 5}
-            // clang-format on
+            {5, 5, 5, 5}  // clang-format on
         });
 
     auto array2 = lue::test::create_partitioned_array<Array>(
@@ -92,8 +91,7 @@ BOOST_AUTO_TEST_CASE(modulus_2d_random_values)
             {2, 3, 6, 5},
             {-5, 10, -10, 8},
             {2, 2, 2, 2},
-            {5, 5, 5, 5}
-            // clang-format on
+            {5, 5, 5, 5}  // clang-format on
         });
 
     auto array_we_want = lue::test::create_partitioned_array<Array>(
@@ -104,8 +102,7 @@ BOOST_AUTO_TEST_CASE(modulus_2d_random_values)
             {98 % 2, 12 % 3, 20 % 6, 5 % 5},
             {-5 % -5, -10 % 10, 89 % -10, -1 % 8},
             {0, 0, 0, 0},
-            {0, 0, 0, 0}
-            // clang-format on
+            {0, 0, 0, 0}  // clang-format on
         });
 
     auto modulus = array1 % array2;
@@ -184,8 +181,7 @@ BOOST_AUTO_TEST_CASE(modulus_2d_no_data_values)
             {2, 3, 6, 5},
             {-5, 10, -10, 8},
             {0, 0, 0, 0},
-            {7, 8, 9, 10}
-                // clang-format on
+            {7, 8, 9, 10}  // clang-format on
             });
 
         auto array2 = lue::test::create_partitioned_array<Array>(

@@ -44,11 +44,12 @@ namespace lue {
 
                             if (shapes.shape()[1] != value.rank())
                             {
-                                throw std::runtime_error(std::format(
-                                    "Shape sizes ({}) must be equal to the rank of each "
-                                    "object array ({})",
-                                    shapes.ndim(),
-                                    value.rank()));
+                                throw std::runtime_error(
+                                    std::format(
+                                        "Shape sizes ({}) must be equal to the rank of each "
+                                        "object array ({})",
+                                        shapes.ndim(),
+                                        value.rank()));
                             }
 
                             if (ids.shape()[0] != shapes.shape()[0])

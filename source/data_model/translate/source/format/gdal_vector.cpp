@@ -161,8 +161,9 @@ namespace lue {
                 // Verify input is correct
                 if (lue_time_cell.nr_boxes() != 1)
                 {
-                    throw std::runtime_error(std::format(
-                        "Expected 1 time box containing cells, but got {}", lue_time_cell.nr_boxes()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Expected 1 time box containing cells, but got {}", lue_time_cell.nr_boxes()));
                 }
 
 
@@ -198,9 +199,10 @@ namespace lue {
 
                 if (lue_space_point.array_shape()[0] != 2)
                 {
-                    throw std::runtime_error(std::format(
-                        "Expected space points of rank 2, but got points of rank {}",
-                        lue_space_point.array_shape()[0]));
+                    throw std::runtime_error(
+                        std::format(
+                            "Expected space points of rank 2, but got points of rank {}",
+                            lue_space_point.array_shape()[0]));
                 }
 
                 assert(lue_space_point.memory_datatype() == hdf5::native_float64);
@@ -272,21 +274,23 @@ namespace lue {
 
             if (!json::has_key(dataset_json, "phenomena"))
             {
-                throw std::runtime_error(std::format(
-                    "No information about phenomena present in metadata for "
-                    "dataset {}",
-                    lue_dataset_name));
+                throw std::runtime_error(
+                    std::format(
+                        "No information about phenomena present in metadata for "
+                        "dataset {}",
+                        lue_dataset_name));
             }
 
             auto const phenomena_json = json::object(dataset_json, "phenomena");
 
             if (phenomena_json.size() != 1)
             {
-                throw std::runtime_error(std::format(
-                    "Expected information about 1 phenomenon in metadata for "
-                    "dataset {}, but got {}",
-                    lue_dataset_name,
-                    phenomena_json.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Expected information about 1 phenomenon in metadata for "
+                        "dataset {}, but got {}",
+                        lue_dataset_name,
+                        phenomena_json.size()));
             }
 
             auto const phenomenon_json = phenomena_json.front();
@@ -294,23 +298,25 @@ namespace lue {
 
             if (!json::has_key(phenomenon_json, "property_sets"))
             {
-                throw std::runtime_error(std::format(
-                    "No information about property-sets present in metadata for "
-                    "phenomenon {} in dataset {}",
-                    phenomenon_name,
-                    lue_dataset_name));
+                throw std::runtime_error(
+                    std::format(
+                        "No information about property-sets present in metadata for "
+                        "phenomenon {} in dataset {}",
+                        phenomenon_name,
+                        lue_dataset_name));
             }
 
             auto const property_sets_json = json::object(phenomenon_json, "property_sets");
 
             if (property_sets_json.size() != 1)
             {
-                throw std::runtime_error(std::format(
-                    "Expected information about 1 property-set in metadata for "
-                    "phenomenon {} in dataset {}, but got {}",
-                    phenomenon_name,
-                    lue_dataset_name,
-                    property_sets_json.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Expected information about 1 property-set in metadata for "
+                        "phenomenon {} in dataset {}, but got {}",
+                        phenomenon_name,
+                        lue_dataset_name,
+                        property_sets_json.size()));
             }
 
             auto const property_set_json = property_sets_json.front();
@@ -348,8 +354,9 @@ namespace lue {
                             if (!property_set.has_time_domain())
                             {
                                 throw std::runtime_error(
-                                    std::format("Translating stationary space domain with "
-                                                "static properties is not supported yet"));
+                                    std::format(
+                                        "Translating stationary space domain with "
+                                        "static properties is not supported yet"));
                             }
 
                             // GDAL coordinates are 64-bit floats
@@ -390,10 +397,11 @@ namespace lue {
                                     // }
                                     default:
                                     {
-                                        throw std::runtime_error(std::format(
-                                            "Translating time domain with item type {} "
-                                            "is not supported yet",
-                                            aspect_to_string(time_domain_item_type)));
+                                        throw std::runtime_error(
+                                            std::format(
+                                                "Translating time domain with item type {} "
+                                                "is not supported yet",
+                                                aspect_to_string(time_domain_item_type)));
                                     }
                                 }
                             }
@@ -438,10 +446,11 @@ namespace lue {
                         default:
                         {
 
-                            throw std::runtime_error(std::format(
-                                "Translating space domain with item type {} is not "
-                                "supported yet",
-                                aspect_to_string(space_domain_item_type)));
+                            throw std::runtime_error(
+                                std::format(
+                                    "Translating space domain with item type {} is not "
+                                    "supported yet",
+                                    aspect_to_string(space_domain_item_type)));
                         }
                     }
 
@@ -489,10 +498,11 @@ namespace lue {
                                 }
                                 default:
                                 {
-                                    throw std::runtime_error(std::format(
-                                        "Translating time domain with item type {} "
-                                        "is not supported yet",
-                                        aspect_to_string(time_domain_item_type)));
+                                    throw std::runtime_error(
+                                        std::format(
+                                            "Translating time domain with item type {} "
+                                            "is not supported yet",
+                                            aspect_to_string(time_domain_item_type)));
                                 }
                             }
 
@@ -501,10 +511,11 @@ namespace lue {
                         default:
                         {
 
-                            throw std::runtime_error(std::format(
-                                "Translating space domain with item type {} is not "
-                                "supported yet",
-                                aspect_to_string(space_domain_item_type)));
+                            throw std::runtime_error(
+                                std::format(
+                                    "Translating space domain with item type {} is not "
+                                    "supported yet",
+                                    aspect_to_string(space_domain_item_type)));
                         }
                     }
 

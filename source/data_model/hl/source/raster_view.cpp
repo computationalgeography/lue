@@ -123,16 +123,18 @@ namespace lue::data_model {
 
         if (!dataset.phenomena().contains(phenomenon_name))
         {
-            throw std::runtime_error(std::format(
-                "Dataset {} does not contain phenomenon {}", dataset.pathname(), phenomenon_name));
+            throw std::runtime_error(
+                std::format(
+                    "Dataset {} does not contain phenomenon {}", dataset.pathname(), phenomenon_name));
         }
 
         auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
         if (!phenomenon.property_sets().contains(property_set_name))
         {
-            throw std::runtime_error(std::format(
-                "Phenomenon {} does not contain property-set {}", phenomenon_name, property_set_name));
+            throw std::runtime_error(
+                std::format(
+                    "Phenomenon {} does not contain property-set {}", phenomenon_name, property_set_name));
         }
 
         if (phenomenon.object_id().nr_objects() == 1)

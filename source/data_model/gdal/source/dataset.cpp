@@ -168,11 +168,12 @@ namespace lue::gdal {
 
             if (band_nr < 0 || band_nr > nr_bands)
             {
-                throw std::runtime_error(std::format(
-                    "Requested raster band ({}) is outside the valid range ([{} - {}]",
-                    band_nr,
-                    1,
-                    nr_bands));
+                throw std::runtime_error(
+                    std::format(
+                        "Requested raster band ({}) is outside the valid range ([{} - {}]",
+                        band_nr,
+                        1,
+                        nr_bands));
             }
 
             throw std::runtime_error(std::format("Band {} cannot be obtained", band_nr));

@@ -68,10 +68,11 @@ namespace lue::framework {
 
                 if (static_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        static_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            static_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
 
                 static_partition_shape = dynamic_shape_to_static_shape<2>(dynamic_partition_shape);
@@ -105,14 +106,16 @@ namespace lue::framework {
             ReferenceCountedObject<Element> copy_buffer(std::make_shared<Element[]>(nr_elements));
             std::copy(source_buffer, source_buffer + nr_elements, copy_buffer.get());
 
-            return pybind11::cast(lue::create_partitioned_array(
-                Policies{},
-                static_array_shape,
-                static_partition_shape,
-                Functor{
-                    std::move(copy_buffer),
-                    [](ReferenceCountedObject<Element> const& buffer) -> Element* { return buffer.get(); },
-                    no_data_value}));
+            return pybind11::cast(
+                lue::create_partitioned_array(
+                    Policies{},
+                    static_array_shape,
+                    static_partition_shape,
+                    Functor{
+                        std::move(copy_buffer),
+                        [](ReferenceCountedObject<Element> const& buffer) -> Element*
+                        { return buffer.get(); },
+                        no_data_value}));
         }
 
 

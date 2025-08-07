@@ -25,16 +25,18 @@ namespace lue::detail {
     {
         if (array1.shape() != array2.shape())
         {
-            throw std::runtime_error(std::format(
-                "Shapes differ: {} vs {}", join(array1.shape(), ", "), join(array2.shape(), ", ")));
+            throw std::runtime_error(
+                std::format(
+                    "Shapes differ: {} vs {}", join(array1.shape(), ", "), join(array2.shape(), ", ")));
         }
 
         if (array1.partitions().shape() != array2.partitions().shape())
         {
-            throw std::runtime_error(std::format(
-                "Shapes in partitions differ: {} vs {}",
-                join(array1.partitions().shape(), ", "),
-                join(array2.partitions().shape(), ", ")));
+            throw std::runtime_error(
+                std::format(
+                    "Shapes in partitions differ: {} vs {}",
+                    join(array1.partitions().shape(), ", "),
+                    join(array2.partitions().shape(), ", ")));
         }
     }
 

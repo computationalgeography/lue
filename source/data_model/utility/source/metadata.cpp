@@ -77,8 +77,12 @@ namespace lue {
 
                 if (object_json_it == list_json.end())
                 {
-                    throw std::runtime_error(std::format(
-                        "No object whose key {} equals {} exists at {}", key, value, pointer.to_string()));
+                    throw std::runtime_error(
+                        std::format(
+                            "No object whose key {} equals {} exists at {}",
+                            key,
+                            value,
+                            pointer.to_string()));
                 }
 
                 return *object_json_it;

@@ -81,14 +81,16 @@ namespace lue {
                     _partition_shapes{std::move(partition_shapes)}
 
                 {
-                    lue_hpx_assert(std::none_of(
-                        _localities.begin(),
-                        _localities.end(),
-                        [](hpx::id_type const locality_id) { return bool{locality_id}; }));
-                    lue_hpx_assert(std::all_of(
-                        _localities_vector.begin(),
-                        _localities_vector.end(),
-                        [](hpx::id_type const locality_id) { return bool{locality_id}; }));
+                    lue_hpx_assert(
+                        std::none_of(
+                            _localities.begin(),
+                            _localities.end(),
+                            [](hpx::id_type const locality_id) { return bool{locality_id}; }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            _localities_vector.begin(),
+                            _localities_vector.end(),
+                            [](hpx::id_type const locality_id) { return bool{locality_id}; }));
                 }
 
 
@@ -96,10 +98,11 @@ namespace lue {
                 {
                     // Sink return. Call this method only once...
                     lue_hpx_assert(!_localities.empty());
-                    lue_hpx_assert(std::all_of(
-                        _localities.begin(),
-                        _localities.end(),
-                        [](hpx::id_type const locality_id) { return bool{locality_id}; }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            _localities.begin(),
+                            _localities.end(),
+                            [](hpx::id_type const locality_id) { return bool{locality_id}; }));
                     return std::move(_localities);
                 }
 
@@ -117,10 +120,11 @@ namespace lue {
                 {
                     lue_hpx_assert(_partitions.shape() == _localities.shape());
 
-                    lue_hpx_assert(std::all_of(
-                        _localities.begin(),
-                        _localities.end(),
-                        [](hpx::id_type const locality_id) { return bool{locality_id}; }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            _localities.begin(),
+                            _localities.end(),
+                            [](hpx::id_type const locality_id) { return bool{locality_id}; }));
                 }
 #endif
 
@@ -477,10 +481,11 @@ namespace lue {
                 // are partitions.
                 if (nr_partitions < nr_localities)
                 {
-                    throw std::runtime_error(std::format(
-                        "Not enough partitions to use all localities ({} < {})",
-                        nr_partitions,
-                        nr_localities));
+                    throw std::runtime_error(
+                        std::format(
+                            "Not enough partitions to use all localities ({} < {})",
+                            nr_partitions,
+                            nr_localities));
                 }
             }
 
@@ -930,9 +935,8 @@ namespace lue {
 
     template<typename Policies, typename RouteID, Rank rank, PartitionInstantiator Functor>
     auto create_partitioned_array(
-        Policies const& policies,
-        SerialRoute<RouteID, rank> const& route,
-        Functor const& partition_creator) -> PartitionedArray<OutputElementT<Functor>, rank>
+        Policies const& policies, SerialRoute<RouteID, rank> const& route, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         // Use the route passed in as a clone / template for creating the new array. The shape
         // of the output array and the individual partitions, and the distribution of the
@@ -955,9 +959,8 @@ namespace lue {
     */
     template<typename Policies, Rank rank, PartitionInstantiator Functor>
     auto create_partitioned_array(
-        Policies const& policies,
-        Shape<Count, rank> const& array_shape,
-        Functor const& partition_creator) -> PartitionedArray<OutputElementT<Functor>, rank>
+        Policies const& policies, Shape<Count, rank> const& array_shape, Functor const& partition_creator)
+        -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         return create_partitioned_array<Policies, rank, Functor>(
             policies, array_shape, default_partition_shape(array_shape), partition_creator);
@@ -1001,8 +1004,8 @@ namespace lue {
 
     template<typename Element, Rank rank, std::enable_if_t<std::is_arithmetic_v<Element>>* = nullptr>
     auto create_partitioned_array(
-        Shape<Count, rank> const& array_shape,
-        Shape<Count, rank> const& partition_shape) -> PartitionedArray<Element, rank>
+        Shape<Count, rank> const& array_shape, Shape<Count, rank> const& partition_shape)
+        -> PartitionedArray<Element, rank>
     {
         using Policies = policy::create_partitioned_array::DefaultPolicies<Element>;
         using Functor = InstantiateDefaultInitialized<Element, rank>;

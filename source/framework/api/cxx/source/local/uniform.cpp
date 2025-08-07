@@ -63,9 +63,9 @@ namespace lue {
             -> Field
         {
             return std::visit(
-                overload{[&array_shape](auto const& min_value, auto const& max_value) -> Field {
-                    return value_policies::uniform(array_shape, min_value, max_value);
-                }},
+                overload{
+                    [&array_shape](auto const& min_value, auto const& max_value) -> Field
+                    { return value_policies::uniform(array_shape, min_value, max_value); }},
                 min_value.variant(),
                 max_value.variant());
         }

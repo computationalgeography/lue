@@ -35,8 +35,8 @@ namespace lue {
 
 
                 constexpr auto operator()(
-                    InputElement const& input_element1,
-                    InputElement const& input_element2) const noexcept -> OutputElement
+                    InputElement const& input_element1, InputElement const& input_element2) const noexcept
+                    -> OutputElement
                 {
                     return std::abs(input_element1 - input_element2) <=
                            (_absolute_difference + _relative_difference * std::abs(input_element2));

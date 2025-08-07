@@ -395,10 +395,11 @@ namespace lue::utility {
 
             if (!raster_view.contains(property_name))
             {
-                throw std::runtime_error(std::format(
-                    "Constant raster layer named {} is not part of property_set {}",
-                    property_name,
-                    property_set_name));
+                throw std::runtime_error(
+                    std::format(
+                        "Constant raster layer named {} is not part of property_set {}",
+                        property_name,
+                        property_set_name));
             }
 
             RasterLayer layer{raster_view.layer(property_name)};
@@ -527,8 +528,9 @@ namespace lue::utility {
         }
         else
         {
-            throw std::runtime_error(std::format(
-                "No property-set named {} found in phenomenon {}", property_set_name, phenomenon_name));
+            throw std::runtime_error(
+                std::format(
+                    "No property-set named {} found in phenomenon {}", property_set_name, phenomenon_name));
         }
 
 
