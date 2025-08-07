@@ -55,9 +55,9 @@ namespace lue {
             ComponentArray(ComponentArray&& other) = default;
 
 
-            ComponentArray(Localities<rank> const& localities, Clients&& components):
+            ComponentArray(Localities<rank>&& localities, Clients&& components):
 
-                _localities{localities},
+                _localities{std::move(localities)},
                 _clients{std::move(components)}
 
             {

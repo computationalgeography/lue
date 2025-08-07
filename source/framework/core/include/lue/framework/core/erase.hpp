@@ -8,12 +8,12 @@
 namespace lue {
 
     template<typename Element, Rank rank, template<typename> typename Elements>
-    Shape<Index, rank> erase(
+    auto erase(
         Elements<Element>& elements,
         Shape<Index, rank> shape,
         Rank const dimension_idx,
         Index const hyperslab_begin_idx,
-        Index const hyperslab_end_idx)
+        Index const hyperslab_end_idx) -> Shape<Index, rank>
     {
         lue_hpx_assert(dimension_idx < rank);
         lue_hpx_assert(std::size(shape) == rank);

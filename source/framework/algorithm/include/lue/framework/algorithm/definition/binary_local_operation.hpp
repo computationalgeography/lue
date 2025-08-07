@@ -137,7 +137,8 @@ namespace lue {
 
                             [policies, functor](
                                 InputPartition1 const& input_partition1,
-                                InputPartition2 const& input_partition2) {
+                                InputPartition2 const& input_partition2)
+                            {
                                 return binary_local_operation_partition_ready(
                                     policies, input_partition1, input_partition2, functor);
                             },
@@ -269,7 +270,8 @@ namespace lue {
 
                             [policies, functor](
                                 InputPartition const& input_partition,
-                                hpx::shared_future<InputElement> const& input_scalar) {
+                                hpx::shared_future<InputElement> const& input_scalar)
+                            {
                                 return binary_local_operation_partition_ready(
                                     policies, input_partition, input_scalar.get(), functor);
                             },
@@ -401,7 +403,8 @@ namespace lue {
 
                             [policies, functor](
                                 hpx::shared_future<InputElement> const& input_scalar,
-                                InputPartition const& input_partition) {
+                                InputPartition const& input_partition)
+                            {
                                 return binary_local_operation_partition_ready(
                                     policies, input_scalar.get(), input_partition, functor);
                             },
@@ -497,7 +500,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> const& localities{input_array1.localities()};
+        Localities<rank> localities{input_array1.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -512,7 +515,7 @@ namespace lue {
                 action, localities[p], policies, input_partitions1[p], input_partitions2[p], functor);
         }
 
-        return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array1), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -547,7 +550,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -561,7 +564,7 @@ namespace lue {
                 hpx::async(action, localities[p], policies, input_partitions[p], input_scalar, functor);
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -596,7 +599,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -610,7 +613,7 @@ namespace lue {
                 hpx::async(action, localities[p], policies, input_scalar, input_partitions[p], functor);
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 

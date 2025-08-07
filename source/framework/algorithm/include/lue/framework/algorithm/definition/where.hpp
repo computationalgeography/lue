@@ -523,7 +523,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Partition> action;
 
-        Localities<rank> const& localities{condition.localities()};
+        Localities<rank> localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& true_partitions{true_array.partitions()};
         Partitions const& false_partitions{false_array.partitions()};
@@ -537,7 +537,8 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
-                    Partition const& false_partition) {
+                    Partition const& false_partition)
+                {
                     return action(
                         locality_id, policies, condition_partition, true_partition, false_partition);
                 },
@@ -547,7 +548,7 @@ namespace lue {
                 false_partitions[p]);
         }
 
-        return Array{shape(condition), localities, std::move(output_partitions)};
+        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -573,7 +574,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Element> action;
 
-        Localities<rank> const& localities{condition.localities()};
+        Localities<rank> localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& true_partitions{true_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
@@ -586,7 +587,8 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     Partition const& true_partition,
-                    hpx::shared_future<Element> const& false_value_f) {
+                    hpx::shared_future<Element> const& false_value_f)
+                {
                     return action(
                         locality_id, policies, condition_partition, true_partition, false_value_f.get());
                 },
@@ -596,7 +598,7 @@ namespace lue {
                 false_value_f);
         }
 
-        return Array{shape(condition), localities, std::move(output_partitions)};
+        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -622,7 +624,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Partition> action;
 
-        Localities<rank> const& localities{condition.localities()};
+        Localities<rank> localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& false_partitions{false_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
@@ -635,7 +637,8 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value_f,
-                    Partition const& false_partition) {
+                    Partition const& false_partition)
+                {
                     return action(
                         locality_id, policies, condition_partition, true_value_f.get(), false_partition);
                 },
@@ -645,7 +648,7 @@ namespace lue {
                 false_partitions[p]);
         }
 
-        return Array{shape(condition), localities, std::move(output_partitions)};
+        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -668,7 +671,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Element> action;
 
-        Localities<rank> const& localities{condition.localities()};
+        Localities<rank> localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
@@ -680,7 +683,8 @@ namespace lue {
                 [locality_id = localities[p], action, policies](
                     ConditionPartition const& condition_partition,
                     hpx::shared_future<Element> const& true_value_f,
-                    hpx::shared_future<Element> const& false_value_f) {
+                    hpx::shared_future<Element> const& false_value_f)
+                {
                     return action(
                         locality_id, policies, condition_partition, true_value_f.get(), false_value_f.get());
                 },
@@ -690,7 +694,7 @@ namespace lue {
                 false_value_f);
         }
 
-        return Array{shape(condition), localities, std::move(output_partitions)};
+        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
     }
 
 

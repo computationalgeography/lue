@@ -83,7 +83,8 @@ namespace lue {
 
                 [policies](
                     InputPartition const& input_partition,
-                    hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table) {
+                    hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table)
+                {
                     return reclassify_partition_ready<OutputPartition>(
                         policies, input_partition, lookup_table.get());
                 },
@@ -126,7 +127,7 @@ namespace lue {
 
         detail::ReclassifyPartitionAction<Policies, InputPartition, OutputPartition> action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -136,7 +137,7 @@ namespace lue {
                 action, localities[partition_idx], policies, input_partitions[partition_idx], lookup_table);
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 }  // namespace lue

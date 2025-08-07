@@ -255,7 +255,8 @@ namespace lue {
             condition_array.partitions(),
             std::move(partition_sizes))};
 
-        return IDArray{shape(condition_array), condition_array.localities(), std::move(id_partitions)};
+        return IDArray{
+            shape(condition_array), Localities<rank>{condition_array.localities()}, std::move(id_partitions)};
     }
 
 }  // namespace lue

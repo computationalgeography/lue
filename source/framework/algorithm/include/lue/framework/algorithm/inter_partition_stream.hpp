@@ -384,101 +384,138 @@ namespace lue {
                 detail::Accumulator<PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
 
             // Once the data from all partitions have arrived...
-            return hpx::split_future(hpx::dataflow(
-                hpx::launch::async,
-                hpx::unwrapping(
+            return hpx::split_future(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::unwrapping(
 
-                    [policies, partition_offset](
-                        Offset offset, lue::Array<FlowDirectionData, rank> const& flow_direction_data)
-                    {
-                        AnnotateFunction annotation{"inter_partition_stream"};
-
-                        // Calculate inflow_count
-
-                        // Output policy type for CountElement. Base it
-                        // on the output policy for the stream classification
-                        // passed in.
-                        using InflowCountPolicy = policy::OutputPoliciesT<Policies, 0, InflowCountElement>;
-
-                        // Input policy for FlowDirectionElement. This is
-                        // the same one as passed in.
-                        using FlowDirectionPolicy = policy::InputPoliciesT<Policies, 0>;
-
-                        using InflowCountPolicies = policy::Policies<
-                            policy::AllValuesWithinDomain<FlowDirectionElement>,
-                            policy::OutputsPolicies<InflowCountPolicy>,
-                            policy::InputsPolicies<FlowDirectionPolicy>>;
-                        InflowCountPolicies inflow_count_policies{
-                            policy::AllValuesWithinDomain<FlowDirectionElement>{},
-                            InflowCountPolicy{},
-                            std::get<0>(policies.inputs_policies())};
-
-                        auto const [inflow_count_data, input_cell_idxs] =
-                            detail::inflow_count_data<InflowCountData>(
-                                inflow_count_policies, flow_direction_data);
-                        lue_hpx_assert(std::is_sorted(input_cell_idxs.begin(), input_cell_idxs.end()));
-
-                        Shape const partition_shape{inflow_count_data.shape()};
-
-                        PartitionIOData partition_io_data{partition_shape, std::move(input_cell_idxs)};
-
-                        // Accumulate input data to output data
-                        // Input data:
-                        // - Input cell IDs, only at input cells
-                        //     - Collection can be stored and managed
-                        //         internally. No need to create a full array.
-                        // - Stream class IDs, only at input and ridge cells
-                        //     - Will (only) be set in the input for input
-                        //         and ridge cell accumulate call
-                        // - Counts, array filled with ones
-                        //     - Don't need to be provided. Can be
-                        //         handled while accumulating.
-                        //
-                        // Output data:
-                        // - Array filled with collections of input cell IDs
-                        // - Array filled with stream class IDs
-                        // - Counts
-
-                        InputMaterial input_material{input_cell_idxs};
-
-                        CellsIdxsArray cells_idxs_array{partition_shape};
-                        StreamClassData stream_class_array{partition_shape};
-
-                        // Initialize output counts with
-                        // 1. Accumulation will accumulate these counts
-                        // downstream
-                        CountArray count_array{partition_shape, 1};
-
-                        OutputMaterial output_material{cells_idxs_array, stream_class_array, count_array};
-
-                        auto inflow_count_data_copy{deep_copy(inflow_count_data)};
-
-                        Accumulator accumulator{
-                            partition_io_data, input_material, CellAccumulator{}, output_material};
-
-                        auto const& indp_inflow_count =
-                            std::get<0>(inflow_count_policies.outputs_policies()).output_no_data_policy();
-                        auto const& ondp_stream =
-                            std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        auto const [nr_elements0, nr_elements1] = partition_shape;
-
-                        for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
+                        [policies, partition_offset](
+                            Offset offset, lue::Array<FlowDirectionData, rank> const& flow_direction_data)
                         {
-                            for (Index idx1 = 0; idx1 < nr_elements1; ++idx1)
+                            AnnotateFunction annotation{"inter_partition_stream"};
+
+                            // Calculate inflow_count
+
+                            // Output policy type for CountElement. Base it
+                            // on the output policy for the stream classification
+                            // passed in.
+                            using InflowCountPolicy =
+                                policy::OutputPoliciesT<Policies, 0, InflowCountElement>;
+
+                            // Input policy for FlowDirectionElement. This is
+                            // the same one as passed in.
+                            using FlowDirectionPolicy = policy::InputPoliciesT<Policies, 0>;
+
+                            using InflowCountPolicies = policy::Policies<
+                                policy::AllValuesWithinDomain<FlowDirectionElement>,
+                                policy::OutputsPolicies<InflowCountPolicy>,
+                                policy::InputsPolicies<FlowDirectionPolicy>>;
+                            InflowCountPolicies inflow_count_policies{
+                                policy::AllValuesWithinDomain<FlowDirectionElement>{},
+                                InflowCountPolicy{},
+                                std::get<0>(policies.inputs_policies())};
+
+                            auto const [inflow_count_data, input_cell_idxs] =
+                                detail::inflow_count_data<InflowCountData>(
+                                    inflow_count_policies, flow_direction_data);
+                            lue_hpx_assert(std::is_sorted(input_cell_idxs.begin(), input_cell_idxs.end()));
+
+                            Shape const partition_shape{inflow_count_data.shape()};
+
+                            PartitionIOData partition_io_data{partition_shape, std::move(input_cell_idxs)};
+
+                            // Accumulate input data to output data
+                            // Input data:
+                            // - Input cell IDs, only at input cells
+                            //     - Collection can be stored and managed
+                            //         internally. No need to create a full array.
+                            // - Stream class IDs, only at input and ridge cells
+                            //     - Will (only) be set in the input for input
+                            //         and ridge cell accumulate call
+                            // - Counts, array filled with ones
+                            //     - Don't need to be provided. Can be
+                            //         handled while accumulating.
+                            //
+                            // Output data:
+                            // - Array filled with collections of input cell IDs
+                            // - Array filled with stream class IDs
+                            // - Counts
+
+                            InputMaterial input_material{input_cell_idxs};
+
+                            CellsIdxsArray cells_idxs_array{partition_shape};
+                            StreamClassData stream_class_array{partition_shape};
+
+                            // Initialize output counts with
+                            // 1. Accumulation will accumulate these counts
+                            // downstream
+                            CountArray count_array{partition_shape, 1};
+
+                            OutputMaterial output_material{cells_idxs_array, stream_class_array, count_array};
+
+                            auto inflow_count_data_copy{deep_copy(inflow_count_data)};
+
+                            Accumulator accumulator{
+                                partition_io_data, input_material, CellAccumulator{}, output_material};
+
+                            auto const& indp_inflow_count =
+                                std::get<0>(inflow_count_policies.outputs_policies()).output_no_data_policy();
+                            auto const& ondp_stream =
+                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                            auto const [nr_elements0, nr_elements1] = partition_shape;
+
+                            for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
                             {
-                                // Ridge cells are cells that don't receive
-                                // input from other cells
-                                if (indp_inflow_count.is_no_data(inflow_count_data, idx0, idx1))
+                                for (Index idx1 = 0; idx1 < nr_elements1; ++idx1)
                                 {
-                                    ondp_stream.mark_no_data(stream_class_array, idx0, idx1);
+                                    // Ridge cells are cells that don't receive
+                                    // input from other cells
+                                    if (indp_inflow_count.is_no_data(inflow_count_data, idx0, idx1))
+                                    {
+                                        ondp_stream.mark_no_data(stream_class_array, idx0, idx1);
+                                    }
+                                    else if (inflow_count_data(idx0, idx1) == 0)
+                                    {
+                                        // Provide input values at
+                                        // the starting points of the
+                                        // accumulation
+                                        stream_class_array(idx0, idx1) = intra_partition_stream_cell;
+
+                                        // Forward the material through the network
+                                        accumulate(
+                                            accumulator,
+                                            idx0,
+                                            idx1,
+                                            flow_direction_data(1, 1),
+                                            inflow_count_data_copy);
+                                    }
                                 }
-                                else if (inflow_count_data(idx0, idx1) == 0)
+                            }
+
+                            Count count{0};
+                            for (auto it = input_cell_idxs.begin(); it != input_cell_idxs.end(); it += count)
+                            {
+                                auto const [idx0, idx1] = *it;
+                                count = input_material.inflow_count(*it);
+                                lue_hpx_assert(count >= 1);
+
+                                lue_hpx_assert(
+                                    static_cast<Count>(inflow_count_data_copy(idx0, idx1)) >= count);
+                                inflow_count_data_copy(idx0, idx1) -= count;
+
+                                // If the remaining inflow count is
+                                // larger than zero, then there is another
+                                // stream, originating in a partition input
+                                // cell, passing through this cell. In that
+                                // case we can leave the accumulation to
+                                // the latter cell.
+                                if (inflow_count_data_copy(idx0, idx1) == 0)
                                 {
                                     // Provide input values at
                                     // the starting points of the
                                     // accumulation
-                                    stream_class_array(idx0, idx1) = intra_partition_stream_cell;
+                                    stream_class_array(idx0, idx1) = inter_partition_stream_cell;
 
                                     // Forward the material through the network
                                     accumulate(
@@ -489,60 +526,26 @@ namespace lue {
                                         inflow_count_data_copy);
                                 }
                             }
-                        }
 
-                        Count count{0};
-                        for (auto it = input_cell_idxs.begin(); it != input_cell_idxs.end(); it += count)
-                        {
-                            auto const [idx0, idx1] = *it;
-                            count = input_material.inflow_count(*it);
-                            lue_hpx_assert(count >= 1);
-
-                            lue_hpx_assert(static_cast<Count>(inflow_count_data_copy(idx0, idx1)) >= count);
-                            inflow_count_data_copy(idx0, idx1) -= count;
-
-                            // If the remaining inflow count is
-                            // larger than zero, then there is another
-                            // stream, originating in a partition input
-                            // cell, passing through this cell. In that
-                            // case we can leave the accumulation to
-                            // the latter cell.
-                            if (inflow_count_data_copy(idx0, idx1) == 0)
+                            // Done. All inflow counts must be zero now.
+                            /*
+                            // TODO assert this
                             {
-                                // Provide input values at
-                                // the starting points of the
-                                // accumulation
-                                stream_class_array(idx0, idx1) = inter_partition_stream_cell;
-
-                                // Forward the material through the network
-                                accumulate(
-                                    accumulator,
-                                    idx0,
-                                    idx1,
-                                    flow_direction_data(1, 1),
-                                    inflow_count_data_copy);
+                                equal_to_policy → base on inflow count policy
+                                all_policy → base on equal_to_policy
+                                lue_hpx_assert(all(all_policy, equal_to(equal_to_policy,
+                            inflow_count_data_copy, 0)).get());
                             }
+                            */
+
+                            return hpx::make_tuple(
+                                StreamClassPartition{hpx::find_here(), offset, std::move(stream_class_array)},
+                                PartitionIOComponent{hpx::find_here(), std::move(partition_io_data)});
                         }
 
-                        // Done. All inflow counts must be zero now.
-                        /*
-                        // TODO assert this
-                        {
-                            equal_to_policy → base on inflow count policy
-                            all_policy → base on equal_to_policy
-                            lue_hpx_assert(all(all_policy, equal_to(equal_to_policy, inflow_count_data_copy,
-                        0)).get());
-                        }
-                        */
-
-                        return hpx::make_tuple(
-                            StreamClassPartition{hpx::find_here(), offset, std::move(stream_class_array)},
-                            PartitionIOComponent{hpx::find_here(), std::move(partition_io_data)});
-                    }
-
-                    ),
-                std::move(offset),
-                when_all_get(std::move(flow_direction_data))));
+                        ),
+                    std::move(offset),
+                    when_all_get(std::move(flow_direction_data))));
         }
 
 
@@ -653,8 +656,11 @@ namespace lue {
 
 
         return std::make_tuple(
-            StreamClassArray{shape(flow_direction), localities, std::move(inter_partition_stream_partitions)},
-            PartitionIOArray{localities, std::move(partition_io_partitions)});
+            StreamClassArray{
+                shape(flow_direction),
+                Localities<rank>{localities},
+                std::move(inter_partition_stream_partitions)},
+            PartitionIOArray{Localities<rank>{localities}, std::move(partition_io_partitions)});
     }
 
 

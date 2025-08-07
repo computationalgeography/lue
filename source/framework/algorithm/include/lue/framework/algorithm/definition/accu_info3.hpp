@@ -126,8 +126,8 @@ namespace lue {
             hpx::future<CellClassData> cell_class_data_f;
             hpx::future<InflowCountData> inflow_count_data_f;
             {
-                hpx::tie(cell_class_data_f, inflow_count_data_f, output_cells_idxs_f) =
-                    hpx::split_future(hpx::dataflow(
+                hpx::tie(cell_class_data_f, inflow_count_data_f, output_cells_idxs_f) = hpx::split_future(
+                    hpx::dataflow(
                         hpx::launch::async,
 
                         [policies, cell_class_communicator](
@@ -312,16 +312,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 RowIdxConverter north_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(north_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::north),
-                                    north_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(north_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::north),
+                                        north_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -331,16 +332,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 RowIdxConverter south_idx_converter{extent0 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(south_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::south),
-                                    south_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(south_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::south),
+                                        south_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -350,16 +352,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 ColIdxConverter west_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::west),
-                                    west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::west),
+                                        west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -369,16 +372,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 ColIdxConverter east_idx_converter{extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::east),
-                                    east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::east),
+                                        east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -388,16 +392,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter north_west_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(north_west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::north_west),
-                                    north_west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(north_west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::north_west),
+                                        north_west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -407,16 +412,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(north_east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::north_east),
-                                    north_east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(north_east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::north_east),
+                                        north_east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -426,16 +432,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(south_east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::south_east),
-                                    south_east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(south_east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::south_east),
+                                        south_east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -445,16 +452,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        CellClass,
-                                        decltype(south_west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    cell_class_communicator.receive_channel(accu::Direction::south_west),
-                                    south_west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            CellClass,
+                                            decltype(south_west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        cell_class_communicator.receive_channel(accu::Direction::south_west),
+                                        south_west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -467,10 +475,11 @@ namespace lue {
                         lue_hpx_assert(all_are_ready(results));
 
                         // All output idxs must have been solved by now
-                        lue_hpx_assert(std::all_of(
-                            output_cells_idxs.begin(),
-                            output_cells_idxs.end(),
-                            [](auto const& idxs) { return idxs.empty(); }));
+                        lue_hpx_assert(
+                            std::all_of(
+                                output_cells_idxs.begin(),
+                                output_cells_idxs.end(),
+                                [](auto const& idxs) { return idxs.empty(); }));
 
                         // TODO Assert all inflow counts are zero
 
@@ -530,7 +539,7 @@ namespace lue {
         using CellClassPartitions = PartitionsT<CellClassArray>;
 
         auto const& shape_in_partitions{flow_direction.partitions().shape()};
-        Localities<rank> const& localities{flow_direction.localities()};
+        Localities<rank> localities{flow_direction.localities()};
 
 
         using InflowCountCommunicator = detail::InflowCountCommunicator<rank>;
@@ -572,7 +581,8 @@ namespace lue {
             });
 
 
-        return CellClassArray{flow_direction.shape(), localities, std::move(cell_class_partitions)};
+        return CellClassArray{
+            flow_direction.shape(), std::move(localities), std::move(cell_class_partitions)};
     }
 
 }  // namespace lue

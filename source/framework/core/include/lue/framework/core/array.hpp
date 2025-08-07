@@ -1,43 +1,21 @@
 #pragma once
+#include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/debug.hpp"
-#include "lue/framework/core/define.hpp"
-#include "lue/framework/core/erase.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/core/span.hpp"
-#include "lue/framework/core/type_traits.hpp"
-#include "lue/assert.hpp"
 #include "lue/configure.hpp"
-#include <boost/container/vector.hpp>
-#include <vector>
+#include <memory>
 
 
 namespace lue {
 
-    namespace detail {
+    /*!
+        @brief      Class template for representing arrays
+        @tparam     Element Type for representing element values
+        @tparam     rank Array rank
 
-        template<typename Element>
-        struct ElementTraits
-        {
-                // Use std::vector by default
-                using Vector = std::vector<Element>;
-        };
-
-
-        template<>
-        struct ElementTraits<bool>
-        {
-                // Use Boost vector in case of bool. Using this type in all cases started throwing "multiply
-                // defined symbols" errors with MSVC.
-                using Vector = boost::container::vector<bool>;
-        };
-
-
-        template<typename Element>
-        using ElementVectorT = ElementTraits<Element>::Vector;
-
-    }  // namespace detail
-
-
+        The array elements are represented by 1D contiguous buffer of elements, in row-major order.
+    */
     template<typename Element, Rank rank>
     class Array
     {
@@ -46,112 +24,133 @@ namespace lue {
 
             using Span = DynamicSpan<Element, rank>;
 
-            using Subspan = DynamicSubspan<Element, rank>;
-
             using Slice = std::pair<lue::Index, lue::Index>;
-
-            using Slices = std::array<Slice, rank>;
 
             using Shape = lue::Shape<lue::Index, rank>;
 
-            using Elements = detail::ElementVectorT<Element>;
+            using Elements = std::unique_ptr<Element[]>;
 
-            using Iterator = typename Elements::iterator;
+            using Iterator = Element*;
 
-            using ConstIterator = typename Elements::const_iterator;
+            using ConstIterator = Element const*;
 
 
+            /*!
+                @brief      Construct an empty array
+            */
             Array():
 
                 _shape{},
+                _nr_elements{0},
                 _elements{},
                 _span{}
 
             {
-                // The shape is filled with indeterminate values! Explicitly
-                // set things up for the default constructed instance.
+                // The shape is filled with indeterminate values! Explicitly set things up for the default
+                // constructed instance.
                 _shape.fill(0);
-                _span = Span{_elements.data(), _shape};
+                _span = Span{_elements.get(), _shape};
 
                 assert_invariants();
             }
 
 
+            /*!
+                @brief      Construct an array
+                @param      shape Shape of the array
+
+                The element values are value-initialized (zero-initialized in case Element is not a class
+                type).
+            */
             explicit Array(Shape const& shape):
 
                 _shape{shape},
-                _elements(lue::nr_elements(shape)),
-                _span{_elements.data(), _shape}
+                _nr_elements{lue::nr_elements(shape)},
+                _elements{std::make_unique<Element[]>(_nr_elements)},
+                _span{_elements.get(), _shape}
 
             {
                 assert_invariants();
             }
 
 
+            /*!
+                @brief      Construct an array
+                @param      shape Shape of the array
+                @param      value Value to initialize all element values with
+            */
             Array(Shape const& shape, Element const value):
 
-                _shape{shape},
-                _elements(lue::nr_elements(shape), value),
-                _span{_elements.data(), _shape}
+                Array{shape}
 
             {
-                assert_invariants();
+                std::fill(begin(), end(), value);
             }
 
 
+            /*!
+                @brief      Construct an array and move @values into the elements
+                @warning    The number of elements in @a values must be equal to the number of elements
+                            in @a shape
+            */
             Array(Shape const& shape, std::initializer_list<Element> values):
 
-                _shape{shape},
-                _elements(lue::nr_elements(shape)),
-                _span{_elements.data(), _shape}
+                Array{shape}
 
             {
-                lue_hpx_assert(std::distance(values.begin(), values.end()) == lue::nr_elements(_shape));
+                lue_hpx_assert(std::distance(values.begin(), values.end()) == _nr_elements);
 
-                std::move(values.begin(), values.end(), _elements.begin());
-
-                assert_invariants();
+                std::move(values.begin(), values.end(), begin());
             }
 
 
+            /*!
+                @brief      Construct an array and move values in range @a begin - @a end into the elements
+                @warning    The number of elements in the range must be equal to the number of elements
+                            in @a shape
+            */
             template<typename InputIterator>
             Array(Shape const& shape, InputIterator begin, InputIterator end):
 
-                _shape{shape},
-                _elements(lue::nr_elements(shape)),
-                _span{_elements.data(), _shape}
+                Array{shape}
 
             {
-                std::move(begin, end, _elements.begin());
+                lue_hpx_assert(std::distance(begin, end) == _nr_elements);
 
-                assert_invariants();
+                std::move(begin, end, begin());
             }
 
 
+            /*!
+                @brief      Copy-construct an array
+            */
             Array(Array const& other):
 
-                _shape{other._shape},
-                _elements{other._elements},
-                _span{_elements.data(), _shape}
+                Array{other._shape}
 
             {
-                assert_invariants();
+                std::copy(other.begin(), other.end(), begin());
             }
 
 
-            Array(Array&& other):
+            /*!
+                @brief      Move-construct an array
+            */
+            Array(Array&& other) noexcept:
 
                 _shape{std::move(other._shape)},
+                _nr_elements{other._nr_elements},
                 _elements{std::move(other._elements)},
-                _span{_elements.data(), _shape}
+                _span{_elements.get(), _shape}
 
             {
                 other._shape.fill(0);
-                other._elements.clear();
-                other._span = Span{other._elements.data(), other._shape};
-
-                other.assert_invariants();
+                other._nr_elements = 0;
+                other._elements.reset();
+                other._span = Span{other._elements.get(), other._shape};
                 lue_hpx_assert(other.empty());
+                other.assert_invariants();
+
                 assert_invariants();
             }
 
@@ -159,13 +158,15 @@ namespace lue {
             ~Array() = default;
 
 
-            Array& operator=(Array const& other)
+            /*!
+                @brief      Copy-assign @a other to this array
+            */
+            auto operator=(Array const& other) -> Array&
             {
                 if (this != &other)
                 {
-                    _shape = other._shape;
-                    _elements = other._elements;
-                    _span = Span{_elements.data(), _shape};
+                    reshape(other._shape);
+                    std::copy(other.begin(), other.end(), begin());
                 }
 
                 assert_invariants();
@@ -174,18 +175,24 @@ namespace lue {
             }
 
 
-            Array& operator=(Array&& other)
+            /*!
+                @brief      Move-assign @a other to this array
+            */
+            auto operator=(Array&& other) noexcept -> Array&
             {
                 if (this != &other)
                 {
                     _shape = std::move(other._shape);
                     other._shape.fill(0);
 
-                    _elements = std::move(other._elements);
-                    other._elements.clear();
+                    _nr_elements = other._nr_elements;
+                    other._nr_elements = 0;
 
-                    _span = Span{_elements.data(), _shape};
-                    other._span = Span{other._elements.data(), other._shape};
+                    _elements = std::move(other._elements);
+                    other._elements.reset();
+
+                    _span = Span{_elements.get(), _shape};
+                    other._span = Span{other._elements.get(), other._shape};
                 }
 
                 other.assert_invariants();
@@ -196,45 +203,78 @@ namespace lue {
             }
 
 
-            bool empty() const
+            /*!
+                @brief      Return the number of elements in the array
+            */
+            auto nr_elements() const -> Count
             {
-                return _elements.empty();
+                return _nr_elements;
             }
 
 
-            Shape const& shape() const
+            /*!
+                @brief      Return whether the array is empty
+            */
+            auto empty() const -> bool
+            {
+                return _nr_elements == 0;
+            }
+
+
+            /*!
+                @brief      Return the array shape
+            */
+            auto shape() const -> Shape const&
             {
                 return _shape;
             }
 
 
-            lue::Index extent(Rank const dimension_idx) const
+            /*!
+                @brief      Return the extent of the array along the @a dimension_idx
+                @warning    @a dimension_idx must be less than the rank
+            */
+            auto extent(Rank const dimension_idx) const -> lue::Index
             {
+                lue_hpx_assert(dimension_idx < rank);
+
                 return _shape[dimension_idx];
             }
 
 
-            Iterator begin()
+            /*!
+                @brief      Return begin iterator
+            */
+            auto begin() -> Iterator
             {
-                return _elements.begin();
+                return _elements.get();
             }
 
 
-            Iterator end()
+            /*!
+                @brief      Return end iterator
+            */
+            auto end() -> Iterator
             {
-                return _elements.end();
+                return begin() + _nr_elements;
             }
 
 
-            ConstIterator begin() const
+            /*!
+                @brief      Return begin iterator
+            */
+            auto begin() const -> ConstIterator
             {
-                return _elements.begin();
+                return _elements.get();
             }
 
 
-            ConstIterator end() const
+            /*!
+                @brief      Return end iterator
+            */
+            auto end() const -> ConstIterator
             {
-                return _elements.end();
+                return begin() + _nr_elements;
             }
 
 
@@ -242,40 +282,48 @@ namespace lue {
             {
                 if (_shape != shape)
                 {
-                    _elements.resize(lue::nr_elements(shape));
                     _shape = shape;
-                    _span = Span{_elements.data(), _shape};
+
+                    if (_nr_elements != lue::nr_elements(shape))
+                    {
+                        _nr_elements = lue::nr_elements(shape);
+                        _elements = std::make_unique<Element[]>(_nr_elements);
+                    }
+
+                    _span = Span{_elements.get(), _shape};
                 }
 
                 assert_invariants();
             }
 
 
-            void erase(
-                Rank const dimension_idx, Index const hyperslab_begin_idx, Index const hyperslab_end_idx)
+            /*!
+                @brief      Return a pointer to the start of the underlying element buffer
+            */
+            auto data() const -> Element const*
             {
-                _shape = lue::erase(_elements, _shape, dimension_idx, hyperslab_begin_idx, hyperslab_end_idx);
-                _span = Span{_elements.data(), _shape};
-
-                assert_invariants();
+                return _elements.get();
             }
 
 
-            Element const* data() const
+            /*!
+                @brief      Return a pointer to the start of the underlying element buffer
+            */
+            auto data() -> Element*
             {
-                return _elements.data();
+                return _elements.get();
             }
 
 
-            Element* data()
-            {
-                return _elements.data();
-            }
-
-
+            /*!
+                @brief      Return the element at @a idxs in the array
+                @warning    The number of indices must be equal to the rank
+            */
             template<typename... Idxs>
-            Element const& operator()(Idxs... idxs) const
+            auto operator()(Idxs... idxs) const -> Element const&
             {
+                static_assert(sizeof...(idxs) == rank);
+
                 if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
@@ -285,9 +333,15 @@ namespace lue {
             }
 
 
+            /*!
+                @brief      Return the element at @a idxs in the array
+                @warning    The number of indices must be equal to the rank
+            */
             template<typename... Idxs>
-            Element& operator()(Idxs... idxs)
+            auto operator()(Idxs... idxs) -> Element&
             {
+                static_assert(sizeof...(idxs) == rank);
+
                 if constexpr (BuildOptions::validate_idxs)
                 {
                     validate_idxs(_shape, idxs...);
@@ -297,19 +351,34 @@ namespace lue {
             }
 
 
-            Element const& operator[](std::size_t idx) const
+            /*!
+                @brief      Return the element at @a idx in the array
+                @warning    @a idx must be smaller than the number of elements
+            */
+            auto operator[](std::size_t idx) const -> Element const&
             {
+                lue_hpx_assert(static_cast<Count>(idx) < _nr_elements);
+
                 return this->data()[idx];
             }
 
 
-            Element& operator[](std::size_t idx)
+            /*!
+                @brief      Return the element at @a idx in the array
+                @warning    @a idx must be smaller than the number of elements
+            */
+            auto operator[](std::size_t idx) -> Element&
             {
+                lue_hpx_assert(static_cast<Count>(idx) < _nr_elements);
+
                 return this->data()[idx];
             }
 
 
-            Span const& span() const
+            /*!
+                @brief      Return the array span
+            */
+            auto span() const -> Span const&
             {
                 return _span;
             }
@@ -319,23 +388,22 @@ namespace lue {
 
             void assert_invariants() const
             {
-                // lue_hpx_assert(
-                //     static_cast<Size>(_elements.size()) == lue::nr_elements(_shape));
-                lue_hpx_assert(lue::nr_elements(_shape) == static_cast<Size>(_elements.size()));
-                // lue_hpx_assert(_span.size() == _elements.size());
-                // lue_hpx_assert(_span.data_handle() == _elements.data());
-                lue_hpx_assert(static_cast<Count>(_span.size()) == static_cast<Count>(_elements.size()));
-                lue_hpx_assert(_span.data_handle() == _elements.data());
+                lue_hpx_assert(lue::nr_elements(_shape) == _nr_elements);
+                lue_hpx_assert(static_cast<Count>(_span.size()) == _nr_elements);
+                lue_hpx_assert(_span.data_handle() == _elements.get());
             }
 
 
-            // Shape of array
+            //! Shape of the array
             Shape _shape;
 
-            // 1D buffer with array elements
+            //! Number of elements in the array
+            Count _nr_elements;
+
+            //! 1D buffer with array elements
             Elements _elements;
 
-            // Span for converting nD indices to linear indices
+            //! Span for converting nD indices to linear indices
             Span _span;
     };
 
@@ -358,17 +426,23 @@ namespace lue {
     }  // namespace detail
 
 
+    /*!
+        @brief      Return the shape of @a array
+    */
     template<typename Element, Rank rank>
-    inline auto const& shape(Array<Element, rank> const& array)
+    inline auto shape(Array<Element, rank> const& array) -> auto const&
     {
         return array.shape();
     }
 
 
+    /*!
+        @brief      Return the number of elements in @a array
+    */
     template<typename Element, Rank rank>
     inline auto nr_elements(Array<Element, rank> const& array)
     {
-        return nr_elements(shape(array));
+        return array.nr_elements();
     }
 
 }  // namespace lue
