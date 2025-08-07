@@ -42,7 +42,8 @@ namespace lue {
 
                 _shape{},
                 _nr_elements{0},
-                _elements{},
+                _buffer_size{0},
+                _elements{nullptr},
                 _span{}
 
             {
@@ -66,7 +67,8 @@ namespace lue {
 
                 _shape{shape},
                 _nr_elements{lue::nr_elements(shape)},
-                _elements{std::make_unique<Element[]>(_nr_elements)},
+                _buffer_size{_nr_elements},
+                _elements{_buffer_size == 0 ? nullptr : std::make_unique<Element[]>(_buffer_size)},
                 _span{_elements.get(), _shape}
 
             {
@@ -105,7 +107,7 @@ namespace lue {
 
 
             /*!
-                @brief      Construct an array and move values in range @a begin - @a end into the elements
+                @brief      Construct an array and move values in range [@a begin - @a end) into the elements
                 @warning    The number of elements in the range must be equal to the number of elements
                             in @a shape
             */
@@ -140,17 +142,13 @@ namespace lue {
 
                 _shape{std::move(other._shape)},
                 _nr_elements{other._nr_elements},
+                _buffer_size{other._buffer_size},
                 _elements{std::move(other._elements)},
                 _span{_elements.get(), _shape}
 
             {
-                other._shape.fill(0);
-                other._nr_elements = 0;
-                other._elements.reset();
-                other._span = Span{other._elements.get(), other._shape};
-                lue_hpx_assert(other.empty());
+                other.clear();
                 other.assert_invariants();
-
                 assert_invariants();
             }
 
@@ -183,16 +181,12 @@ namespace lue {
                 if (this != &other)
                 {
                     _shape = std::move(other._shape);
-                    other._shape.fill(0);
-
                     _nr_elements = other._nr_elements;
-                    other._nr_elements = 0;
-
+                    _buffer_size = other._buffer_size;
                     _elements = std::move(other._elements);
-                    other._elements.reset();
-
                     _span = Span{_elements.get(), _shape};
-                    other._span = Span{other._elements.get(), other._shape};
+
+                    other.clear();
                 }
 
                 other.assert_invariants();
@@ -245,25 +239,16 @@ namespace lue {
             /*!
                 @brief      Return begin iterator
             */
-            auto begin() -> Iterator
+            auto begin() const -> ConstIterator
             {
                 return _elements.get();
             }
 
 
             /*!
-                @brief      Return end iterator
+                @overload
             */
-            auto end() -> Iterator
-            {
-                return begin() + _nr_elements;
-            }
-
-
-            /*!
-                @brief      Return begin iterator
-            */
-            auto begin() const -> ConstIterator
+            auto begin() -> Iterator
             {
                 return _elements.get();
             }
@@ -278,6 +263,54 @@ namespace lue {
             }
 
 
+            /*!
+                @overload
+            */
+            auto end() -> Iterator
+            {
+                return begin() + _nr_elements;
+            }
+
+
+            /*!
+                @brief      Remove elements in range [@a begin - @a end)
+
+                Elements located after the range to remove are moved into range of removed elements. The
+                underlying buffer is not resized.
+            */
+            void remove(Iterator begin, Iterator end)
+            {
+                lue_hpx_assert(std::distance(begin, end) <= _nr_elements);
+
+                std::move(end, this->end(), begin);
+                _nr_elements -= std::distance(begin, end);
+            }
+
+
+            /*!
+                @brief      Clear the array
+
+                The underlying buffer is reset.
+            */
+            void clear()
+            {
+                _shape.fill(0);
+                _nr_elements = 0;
+                _buffer_size = 0;
+                _elements.reset();
+                _span = Span{_elements.get(), _shape};
+
+                lue_hpx_assert(empty());
+                assert_invariants();
+            }
+
+
+            /*!
+                @brief      Reshape the array to @a shape
+
+                If the underlying buffer is large enough to contain the elements of the new shape, then
+                this buffer is not resized.
+            */
             void reshape(Shape const& shape)
             {
                 if (_shape != shape)
@@ -287,7 +320,22 @@ namespace lue {
                     if (_nr_elements != lue::nr_elements(shape))
                     {
                         _nr_elements = lue::nr_elements(shape);
-                        _elements = std::make_unique<Element[]>(_nr_elements);
+
+                        if (_buffer_size < _nr_elements)
+                        {
+                            // Current buffer doesn't contain enough room for the elements
+                            _buffer_size = _nr_elements;
+
+                            if (_buffer_size == 0)
+                            {
+                                _elements.reset();
+                            }
+                            else
+                            {
+
+                                _elements = std::make_unique<Element[]>(_buffer_size);
+                            }
+                        }
                     }
 
                     _span = Span{_elements.get(), _shape};
@@ -307,7 +355,7 @@ namespace lue {
 
 
             /*!
-                @brief      Return a pointer to the start of the underlying element buffer
+                @overload
             */
             auto data() -> Element*
             {
@@ -334,8 +382,7 @@ namespace lue {
 
 
             /*!
-                @brief      Return the element at @a idxs in the array
-                @warning    The number of indices must be equal to the rank
+                @overload
             */
             template<typename... Idxs>
             auto operator()(Idxs... idxs) -> Element&
@@ -364,8 +411,7 @@ namespace lue {
 
 
             /*!
-                @brief      Return the element at @a idx in the array
-                @warning    @a idx must be smaller than the number of elements
+                @overload
             */
             auto operator[](std::size_t idx) -> Element&
             {
@@ -391,6 +437,9 @@ namespace lue {
                 lue_hpx_assert(lue::nr_elements(_shape) == _nr_elements);
                 lue_hpx_assert(static_cast<Count>(_span.size()) == _nr_elements);
                 lue_hpx_assert(_span.data_handle() == _elements.get());
+                lue_hpx_assert(
+                    (_nr_elements == 0 && data() == nullptr) || (_nr_elements > 0 && data() != nullptr));
+                lue_hpx_assert(_nr_elements <= _buffer_size);
             }
 
 
@@ -399,6 +448,9 @@ namespace lue {
 
             //! Number of elements in the array
             Count _nr_elements;
+
+            //! Number of elements in the underlying buffer
+            Count _buffer_size;
 
             //! 1D buffer with array elements
             Elements _elements;

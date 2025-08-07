@@ -45,7 +45,7 @@ namespace lue {
         for (auto slab_begin = elements.begin() + offset; slab_begin < elements.end();
              slab_begin += (stride - count))
         {
-            elements.erase(slab_begin, slab_begin + count);
+            elements.remove(slab_begin, slab_begin + count);
         }
 
         shape[dimension_idx] -= hyperslab_end_idx - hyperslab_begin_idx;

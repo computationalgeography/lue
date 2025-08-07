@@ -2,7 +2,6 @@
 #include "lue/framework/core/offset.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/partitioned_array/export.hpp"
-// #include <hpx/config.hpp>
 #include <hpx/include/components.hpp>
 
 

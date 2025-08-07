@@ -11,11 +11,8 @@ namespace hpx::serialization {
     {
         // Read buffer from archive
 
-        using Buffer = lue::SharedBuffer<Element>;
-        using Size = typename Buffer::Size;
-
         // Read buffer size and make sure buffer has enough room for the elements
-        Size size{};
+        lue::Size size{};
         archive & size;
         buffer.resize(size);
 
