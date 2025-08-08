@@ -126,7 +126,7 @@ namespace lue {
                 }
             }
 
-            return Array{localities, std::move(components)};
+            return Array{Localities<rank<Array>>(localities), std::move(components)};
         }
 
     }  // namespace test

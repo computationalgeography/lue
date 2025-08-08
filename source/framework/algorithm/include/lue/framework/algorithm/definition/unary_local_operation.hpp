@@ -12,9 +12,8 @@ namespace lue {
 
         template<typename Policies, typename InputPartition, typename OutputPartition, typename Functor>
         auto unary_local_operation_partition(
-            Policies const& policies,
-            InputPartition const& input_partition,
-            Functor const& functor) -> OutputPartition
+            Policies const& policies, InputPartition const& input_partition, Functor const& functor)
+            -> OutputPartition
         {
             using Offset = OffsetT<InputPartition>;
             using InputData = DataT<InputPartition>;
@@ -116,7 +115,7 @@ namespace lue {
 
         detail::UnaryLocalOperationPartitionAction<Policies, InputPartition, OutputPartition, Functor> action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -132,7 +131,7 @@ namespace lue {
                 input_partitions[partition_idx]);
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 

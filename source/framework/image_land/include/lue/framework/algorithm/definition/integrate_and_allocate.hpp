@@ -1167,23 +1167,25 @@ namespace lue {
 
                 // future<vector<partition1>>, future<map<Zone, vector<Production>>>
                 auto [crop_fractions_per_crop_partition_array_f, zonal_productions_per_crop_f] =
-                    hpx::split_future(walk_components[partition_idx].then(hpx::unwrapping(
-                        [](WalkComponentClient const& component)
-                        {
-                            return hpx::dataflow(
-                                hpx::launch::async,
-                                hpx::unwrapping(
-                                    [](auto&& results)
-                                    {
-                                        auto crop_fractions_partition{std::get<0>(results)};
-                                        auto zonal_productions_per_crop_f{std::get<1>(results).get()};
+                    hpx::split_future(
+                        walk_components[partition_idx].then(
+                            hpx::unwrapping(
+                                [](WalkComponentClient const& component)
+                                {
+                                    return hpx::dataflow(
+                                        hpx::launch::async,
+                                        hpx::unwrapping(
+                                            [](auto&& results)
+                                            {
+                                                auto crop_fractions_partition{std::get<0>(results)};
+                                                auto zonal_productions_per_crop_f{std::get<1>(results).get()};
 
-                                        return std::make_tuple(
-                                            std::move(crop_fractions_partition),
-                                            std::move(zonal_productions_per_crop_f));
-                                    }),
-                                component.results());
-                        })));
+                                                return std::make_tuple(
+                                                    std::move(crop_fractions_partition),
+                                                    std::move(zonal_productions_per_crop_f));
+                                            }),
+                                        component.results());
+                                })));
 
                 // shared_future<vector<partition1>>
                 auto crop_fractions_per_crop_partition_array_sf =
@@ -1242,9 +1244,10 @@ namespace lue {
 
             for (Index crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
             {
-                partitions_ready_fs.push_back(hpx::when_all(
-                    crop_fractions_per_crop_partitions_array[crop_idx].begin(),
-                    crop_fractions_per_crop_partitions_array[crop_idx].end()));
+                partitions_ready_fs.push_back(
+                    hpx::when_all(
+                        crop_fractions_per_crop_partitions_array[crop_idx].begin(),
+                        crop_fractions_per_crop_partitions_array[crop_idx].end()));
             }
 
             auto crop_fractions_ready_f = hpx::when_all(partitions_ready_fs);
@@ -1270,7 +1273,9 @@ namespace lue {
         for (Index crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
         {
             crop_fraction_arrays[crop_idx] = CropFractionArray{
-                routes.shape(), localities, std::move(crop_fractions_per_crop_partitions_array[crop_idx])};
+                routes.shape(),
+                Localities<rank>{localities},
+                std::move(crop_fractions_per_crop_partitions_array[crop_idx])};
         }
 
         // Once the zonal crop productions for all partitions are available, we can aggregate
@@ -1278,47 +1283,48 @@ namespace lue {
 
         auto zonal_productions_per_crop_per_partition_f =
             hpx::when_all(zonal_productions_per_crop_per_partition)
-                .then(hpx::unwrapping(
-                    [](auto&& zonal_productions_per_crop_per_partition)
-                    {
-                        std::map<ZoneElement, std::vector<ProductionElement>> result{};
-
-                        // hpx::shared_future<std::map<ZoneElement, std::vector<ProductionElement>>>
-                        for (auto const& zonal_productions_per_crop_f :
-                             zonal_productions_per_crop_per_partition)
+                .then(
+                    hpx::unwrapping(
+                        [](auto&& zonal_productions_per_crop_per_partition)
                         {
-                            std::map<ZoneElement, std::vector<ProductionElement>> const&
-                                zonal_productions_per_crop{zonal_productions_per_crop_f.get()};
+                            std::map<ZoneElement, std::vector<ProductionElement>> result{};
 
-                            for (auto const& [zone, partition_productions] : zonal_productions_per_crop)
+                            // hpx::shared_future<std::map<ZoneElement, std::vector<ProductionElement>>>
+                            for (auto const& zonal_productions_per_crop_f :
+                                 zonal_productions_per_crop_per_partition)
                             {
-                                auto it = result.find(zone);
+                                std::map<ZoneElement, std::vector<ProductionElement>> const&
+                                    zonal_productions_per_crop{zonal_productions_per_crop_f.get()};
 
-                                if (it == result.end())
+                                for (auto const& [zone, partition_productions] : zonal_productions_per_crop)
                                 {
-                                    // First time we see this zone
-                                    result[zone] = partition_productions;
-                                }
-                                else
-                                {
-                                    // Result already contains information about this zone.
-                                    auto& result_productions{it->second};
-                                    auto const nr_crops{std::size(result_productions)};
+                                    auto it = result.find(zone);
 
-                                    // We assume that for all partitions we get information about the
-                                    // production for all crops.
-                                    assert(std::size(partition_productions) == nr_crops);
-
-                                    for (std::size_t crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
+                                    if (it == result.end())
                                     {
-                                        result_productions[crop_idx] += partition_productions[crop_idx];
+                                        // First time we see this zone
+                                        result[zone] = partition_productions;
+                                    }
+                                    else
+                                    {
+                                        // Result already contains information about this zone.
+                                        auto& result_productions{it->second};
+                                        auto const nr_crops{std::size(result_productions)};
+
+                                        // We assume that for all partitions we get information about the
+                                        // production for all crops.
+                                        assert(std::size(partition_productions) == nr_crops);
+
+                                        for (std::size_t crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
+                                        {
+                                            result_productions[crop_idx] += partition_productions[crop_idx];
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        return result;
-                    }));
+                            return result;
+                        }));
 
         return std::make_tuple(
             std::move(crop_fraction_arrays), zonal_productions_per_crop_per_partition_f.share());

@@ -41,10 +41,11 @@ namespace lue {
     {
         if (sizeof...(idxs) != std::size(shape))
         {
-            throw std::runtime_error(std::format(
-                "Number of indices does not match rank of array ({} != {})",
-                sizeof...(idxs),
-                std::size(shape)));
+            throw std::runtime_error(
+                std::format(
+                    "Number of indices does not match rank of array ({} != {})",
+                    sizeof...(idxs),
+                    std::size(shape)));
         }
 
         // Verify each index is within the extent of the corresponding

@@ -126,12 +126,11 @@ namespace lue {
 
 
     template<typename FlowDirectionElement, Rank rank>
-    auto accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
-        -> std::tuple<
-            PartitionedArray<CellClass, rank>,
-            hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
-            hpx::future<std::vector<PartitionedArray<SmallestFloatingPointElement, rank>>>,
-            hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>
+    auto accu_info(PartitionedArray<FlowDirectionElement, rank> const& flow_direction) -> std::tuple<
+        PartitionedArray<CellClass, rank>,
+        hpx::future<std::vector<PartitionedArray<PartitionClass, rank>>>,
+        hpx::future<std::vector<PartitionedArray<SmallestFloatingPointElement, rank>>>,
+        hpx::future<std::vector<PartitionedArray<CountElement, rank>>>>
     {
         using Policies = policy::accu_info::DefaultPolicies<FlowDirectionElement>;
 

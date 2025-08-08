@@ -56,7 +56,7 @@ namespace lue {
 
         LocalityIDPartitionAction<InputElement, rank> action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -70,7 +70,8 @@ namespace lue {
                 output_partitions.shape());
         }
 
-        return OutputArray{shape_in_partitions(input_array), localities, std::move(output_partitions)};
+        return OutputArray{
+            shape_in_partitions(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 }  // namespace lue

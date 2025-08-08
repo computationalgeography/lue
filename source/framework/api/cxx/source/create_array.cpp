@@ -37,9 +37,9 @@ namespace lue {
             Field const& fill_value) -> Field
         {
             return std::visit(
-                overload{[&array_shape, &partition_shape](auto const& fill_value) -> Field {
-                    return create_partitioned_array(array_shape, partition_shape, fill_value);
-                }},
+                overload{
+                    [&array_shape, &partition_shape](auto const& fill_value) -> Field
+                    { return create_partitioned_array(array_shape, partition_shape, fill_value); }},
                 fill_value.variant());
         }
 
@@ -50,9 +50,9 @@ namespace lue {
         auto create_array(Shape<Count, 2> const& array_shape, Field const& fill_value) -> Field
         {
             return std::visit(
-                overload{[&array_shape](auto const& fill_value) -> Field {
-                    return create_partitioned_array(array_shape, fill_value);
-                }},
+                overload{
+                    [&array_shape](auto const& fill_value) -> Field
+                    { return create_partitioned_array(array_shape, fill_value); }},
                 fill_value.variant());
         }
 

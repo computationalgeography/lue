@@ -603,22 +603,23 @@ namespace lue {
 
                 input_cells_idxs_f =
                     hpx::when_all(received_cells_idxs)
-                        .then(hpx::unwrapping(
+                        .then(
+                            hpx::unwrapping(
 
-                            [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
-                            {
-                                std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
+                                [](std::array<hpx::future<CellsIdxs>, nr_neighbours>&& idxs_fs)
+                                {
+                                    std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
 
-                                std::transform(
-                                    idxs_fs.begin(),
-                                    idxs_fs.end(),
-                                    cells_idxs.begin(),
-                                    [](auto& idxs_f) { return idxs_f.get(); });
+                                    std::transform(
+                                        idxs_fs.begin(),
+                                        idxs_fs.end(),
+                                        cells_idxs.begin(),
+                                        [](auto& idxs_f) { return idxs_f.get(); });
 
-                                return cells_idxs;
-                            }
+                                    return cells_idxs;
+                                }
 
-                            ));
+                                ));
             }
 
             return hpx::make_tuple(std::move(input_cells_idxs_f), std::move(output_cells_idxs));
@@ -636,18 +637,20 @@ namespace lue {
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
 
-            return hpx::split_future(hpx::dataflow(
-                hpx::launch::async,
+            return hpx::split_future(
+                hpx::dataflow(
+                    hpx::launch::async,
 
-                [policies, communicator = std::move(communicator)](
-                    FlowDirectionPartition const& flow_direction_partition) mutable
-                {
-                    AnnotateFunction annotation{"connectivity"};
+                    [policies, communicator = std::move(communicator)](
+                        FlowDirectionPartition const& flow_direction_partition) mutable
+                    {
+                        AnnotateFunction annotation{"connectivity"};
 
-                    return connectivity_ready(policies, flow_direction_partition, std::move(communicator));
-                },
+                        return connectivity_ready(
+                            policies, flow_direction_partition, std::move(communicator));
+                    },
 
-                flow_direction_partition));
+                    flow_direction_partition));
         }
 
 
@@ -798,7 +801,7 @@ namespace lue {
         // (less memory accesses)
 
         using InflowCountArray = PartitionedArray<CountElement, rank>;
-        Localities<rank> const& localities{flow_direction.localities()};
+        Localities<rank> localities{flow_direction.localities()};
 
         // ---------------------------------------------------------------------
         // Create an array of communicators which will be used to communicate
@@ -820,12 +823,13 @@ namespace lue {
 
             for (Index p = 0; p < nr_partitions; ++p)
             {
-                inflow_count_partitions[p] = hpx::get<0>(hpx::split_future(hpx::async(
-                    hpx::annotated_function(action, "inflow_count"),
-                    localities[p],
-                    policies,
-                    flow_direction.partitions()[p],
-                    inflow_count_communicators[p])));
+                inflow_count_partitions[p] = hpx::get<0>(hpx::split_future(
+                    hpx::async(
+                        hpx::annotated_function(action, "inflow_count"),
+                        localities[p],
+                        policies,
+                        flow_direction.partitions()[p],
+                        inflow_count_communicators[p])));
             }
         }
 
@@ -847,7 +851,8 @@ namespace lue {
             });
 
 
-        return InflowCountArray{flow_direction.shape(), localities, std::move(inflow_count_partitions)};
+        return InflowCountArray{
+            flow_direction.shape(), std::move(localities), std::move(inflow_count_partitions)};
     }
 
 }  // namespace lue

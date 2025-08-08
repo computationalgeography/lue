@@ -1,18 +1,13 @@
 #pragma once
-#include "lue/framework/core/assert.hpp"
-#include "lue/framework/core/define.hpp"
-#include <boost/container/vector.hpp>
-#include <memory>
+#include "lue/framework/core/array.hpp"
 
 
 namespace lue {
 
     /*!
-        @brief      Class for managing a contiguous buffer of elements which
-                    can be shared between instances
+        @brief      Class for managing a contiguous buffer of elements which can be shared between instances
 
-        Instances contain a shared pointer to a, possibly empty, array
-        of elements.
+        Instances contain a shared pointer to a, possibly empty, array of elements.
     */
     template<typename Element>
     class SharedBuffer
@@ -20,15 +15,15 @@ namespace lue {
 
         public:
 
-            using Elements = boost::container::vector<Element>;
+            //! The type of the collection of elements
+            using Elements = Array<Element, 1>;  // A 1D array containing the actual buffer
 
+            //! The type of the reference counted pointer to the collection of elements
             using Pointer = std::shared_ptr<Elements>;
 
-            using Iterator = typename Elements::iterator;
+            using Iterator = Elements::Iterator;
 
-            using ConstIterator = typename Elements::const_iterator;
-
-            using Size = lue::Size;
+            using ConstIterator = Elements::ConstIterator;
 
 
             SharedBuffer():
@@ -57,10 +52,18 @@ namespace lue {
             }
 
 
-            SharedBuffer(SharedBuffer const&) = default;
+            /*!
+                @brief      Copy-construct an instance
+
+                The layered collection of elements will be shared.
+            */
+            SharedBuffer(SharedBuffer const& other) = default;
 
 
-            SharedBuffer(SharedBuffer&& other):
+            /*!
+                @brief      Move-construct an instance
+            */
+            SharedBuffer(SharedBuffer&& other) noexcept:
 
                 SharedBuffer{}
 
@@ -78,13 +81,21 @@ namespace lue {
 
             ~SharedBuffer() = default;
 
-            SharedBuffer& operator=(SharedBuffer const&) = default;
+
+            /*!
+                @brief      Copy-assign @a other to this instance
+
+                The layered collection of elements will be shared.
+            */
+            auto operator=(SharedBuffer const& other) -> SharedBuffer& = default;
 
 
-            SharedBuffer& operator=(SharedBuffer&& other)
+            /*!
+                @brief      Move-assign @a other to this instance
+            */
+            auto operator=(SharedBuffer&& other) noexcept -> SharedBuffer&
             {
-                // This class requires that a _ptr always points to a, possibly
-                // empty, container
+                // This class requires that a _ptr always points to a, possibly empty, collection of elements
 
                 std::swap(other._ptr, _ptr);
                 assert_invariants();
@@ -100,7 +111,7 @@ namespace lue {
             /*!
                 @brief      Return a pointer to the underlying array
             */
-            Element* data()
+            auto data() -> Element*
             {
                 assert_invariants();
 
@@ -111,7 +122,7 @@ namespace lue {
             /*!
                 @overload
             */
-            Element const* data() const
+            auto data() const -> Element const*
             {
                 assert_invariants();
 
@@ -122,18 +133,18 @@ namespace lue {
             /*!
                 @brief      Return the number of elements in the buffer
             */
-            Size size() const
+            auto size() const -> Size
             {
                 assert_invariants();
 
-                return (*_ptr).size();
+                return (*_ptr).nr_elements();
             }
 
 
             /*!
                 @brief      Return whether the buffer is empty
             */
-            bool empty() const
+            auto empty() const -> bool
             {
                 assert_invariants();
 
@@ -144,7 +155,7 @@ namespace lue {
             /*!
                 @brief      Return an iterator to the beginning of the buffer
             */
-            Iterator begin()
+            auto begin() -> Iterator
             {
                 assert_invariants();
 
@@ -155,7 +166,7 @@ namespace lue {
             /*!
                 @brief      Return an iterator to the end of the buffer
             */
-            Iterator end()
+            auto end() -> Iterator
             {
                 assert_invariants();
 
@@ -166,7 +177,7 @@ namespace lue {
             /*!
                 @overload
             */
-            ConstIterator begin() const
+            auto begin() const -> ConstIterator
             {
                 assert_invariants();
 
@@ -177,7 +188,7 @@ namespace lue {
             /*!
                 @overload
             */
-            ConstIterator end() const
+            auto end() const -> ConstIterator
             {
                 assert_invariants();
 
@@ -188,10 +199,10 @@ namespace lue {
             /*!
                 @brief      Access an element by index
             */
-            Element& operator[](Index const idx)
+            auto operator[](Index const idx) -> Element&
             {
                 assert_invariants();
-                lue_hpx_assert(idx < static_cast<Index>((*_ptr).size()));
+                lue_hpx_assert(idx < static_cast<Index>((*_ptr).nr_elements()));
 
                 return (*_ptr)[idx];
             }
@@ -200,10 +211,10 @@ namespace lue {
             /*!
                 @overload
             */
-            Element const& operator[](Index const idx) const
+            auto operator[](Index const idx) const -> Element const&
             {
                 assert_invariants();
-                lue_hpx_assert(idx < static_cast<Index>((*_ptr).size()));
+                lue_hpx_assert(idx < static_cast<Index>((*_ptr).nr_elements()));
 
                 return (*_ptr)[idx];
             }
@@ -214,25 +225,25 @@ namespace lue {
             */
             void resize(Size const size)
             {
-                assert_invariants();
+                (*_ptr).reshape(typename Elements::Shape{size});
 
-                (*_ptr).resize(size, boost::container::default_init_t{});
-
-                assert_invariants();
-            }
-
-
-            void clear()
-            {
-                assert_invariants();
-
-                (*_ptr).clear();
+                // (*_ptr).resize(size, boost::container::default_init_t{});
 
                 assert_invariants();
             }
 
 
-            long use_count() const
+            // void clear()
+            // {
+            //     assert_invariants();
+            //
+            //     (*_ptr).clear();
+            //
+            //     assert_invariants();
+            // }
+
+
+            auto use_count() const -> long
             {
                 return _ptr.use_count();
             }
@@ -241,10 +252,9 @@ namespace lue {
             /*!
                 @brief      Return whether or not this instance equals @a other
 
-                Returns true when both the buffer sizes are equal and the
-                elements themselves are equal.
+                Returns true when both the buffer sizes are equal and the elements themselves are equal.
             */
-            bool operator==(SharedBuffer const& other) const
+            auto operator==(SharedBuffer const& other) const -> bool
             {
                 assert_invariants();
                 other.assert_invariants();
@@ -256,20 +266,17 @@ namespace lue {
             /*!
                 @brief      Remove elements from the array
 
-                Trailing elements will be moved to the front, to take in the
-                place of the removed elements. The memory buffer will not
-                be resized.
+                Trailing elements will be moved to the front, to take in the place of the removed elements.
+                The memory buffer will not be resized.
             */
-            void erase(Iterator const begin, Iterator const end)
+            void remove(Iterator begin, Iterator end)
             {
-                assert_invariants();
-
                 auto& container{*_ptr};
 
                 lue_hpx_assert(begin >= container.begin());
                 lue_hpx_assert(end <= container.end());
 
-                container.erase(begin, end);
+                container.remove(begin, end);
 
                 assert_invariants();
             }
@@ -283,7 +290,8 @@ namespace lue {
 
                 // Default initialization of the elements. In case of
                 // numeric values, the values are indeterminate
-                _ptr = std::make_shared<Elements>(size, boost::container::default_init_t{});
+                // _ptr = std::make_shared<Elements>(size, boost::container::default_init_t{});
+                _ptr = std::make_shared<Elements>(typename Elements::Shape{size});
 
                 assert_invariants();
             }

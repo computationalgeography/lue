@@ -216,8 +216,8 @@ namespace lue::framework {
 
 
         auto read_array_py1(
-            std::string const& array_pathname,
-            std::optional<pybind11::tuple> const& partition_shape) -> pybind11::object
+            std::string const& array_pathname, std::optional<pybind11::tuple> const& partition_shape)
+            -> pybind11::object
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, layer_name] =
                 parse_array_pathname(array_pathname);
@@ -244,10 +244,11 @@ namespace lue::framework {
 
                         if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                         {
-                            throw std::runtime_error(std::format(
-                                "Rank of array shape and partition shape must be equal ({} != {})",
-                                dynamic_array_shape.size(),
-                                dynamic_partition_shape.size()));
+                            throw std::runtime_error(
+                                std::format(
+                                    "Rank of array shape and partition shape must be equal ({} != {})",
+                                    dynamic_array_shape.size(),
+                                    dynamic_partition_shape.size()));
                         }
 
                         static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
@@ -290,19 +291,22 @@ namespace lue::framework {
 
             if (center_cell_.size() != rank)
             {
-                throw std::runtime_error(std::format(
-                    "Rank of array shape and number of center cell indices passed in must be equal ({} != "
-                    "{})",
-                    rank,
-                    center_cell_.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Rank of array shape and number of center cell indices passed in must be equal ({} "
+                        "!= "
+                        "{})",
+                        rank,
+                        center_cell_.size()));
             }
 
             if (subset_shape_.size() != rank)
             {
-                throw std::runtime_error(std::format(
-                    "Rank of array shape and array shape passed in must be equal ({} != {})",
-                    rank,
-                    subset_shape_.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Rank of array shape and array shape passed in must be equal ({} != {})",
+                        rank,
+                        subset_shape_.size()));
             }
 
             if constexpr (rank_supported(2))
@@ -319,10 +323,11 @@ namespace lue::framework {
 
                         if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                         {
-                            throw std::runtime_error(std::format(
-                                "Rank of array shape and partition shape must be equal ({} != {})",
-                                dynamic_array_shape.size(),
-                                dynamic_partition_shape.size()));
+                            throw std::runtime_error(
+                                std::format(
+                                    "Rank of array shape and partition shape must be equal ({} != {})",
+                                    dynamic_array_shape.size(),
+                                    dynamic_partition_shape.size()));
                         }
 
                         static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);
@@ -380,10 +385,11 @@ namespace lue::framework {
 
                         if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                         {
-                            throw std::runtime_error(std::format(
-                                "Rank of array shape and partition shape must be equal ({} != {})",
-                                dynamic_array_shape.size(),
-                                dynamic_partition_shape.size()));
+                            throw std::runtime_error(
+                                std::format(
+                                    "Rank of array shape and partition shape must be equal ({} != {})",
+                                    dynamic_array_shape.size(),
+                                    dynamic_partition_shape.size()));
                         }
 
                         static_partition_shape = dynamic_shape_to_static_shape<rank>(dynamic_partition_shape);

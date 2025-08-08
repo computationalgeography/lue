@@ -344,10 +344,11 @@ namespace lue::detail {
                 // lue_hpx_assert(is_solved());
 
                 lue_hpx_assert(!is_drained());
-                lue_hpx_assert(std::all_of(
-                    partition_offset.begin(),
-                    partition_offset.end(),
-                    [](auto const& idx) { return idx == -1 || idx == 0 || idx == 1; }));
+                lue_hpx_assert(
+                    std::all_of(
+                        partition_offset.begin(),
+                        partition_offset.end(),
+                        [](auto const& idx) { return idx == -1 || idx == 0 || idx == 1; }));
 
                 std::vector<std::tuple<Indices, Value>> input_cells;
                 std::vector<Indices> output_cells;
@@ -362,8 +363,9 @@ namespace lue::detail {
                     {
                         // ... determine the input cell indices in the
                         // neighbouring partition, and copy the value.
-                        input_cells.push_back(std::make_tuple(
-                            input_cell(output_cell_idxs, partition_shape), value(output_cell_idxs)));
+                        input_cells.push_back(
+                            std::make_tuple(
+                                input_cell(output_cell_idxs, partition_shape), value(output_cell_idxs)));
                         output_cells.push_back(output_cell_idxs);
                     }
                 }

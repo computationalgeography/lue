@@ -14,10 +14,12 @@ namespace lue {
     {
         if (!rank_supported(rank))
         {
-            throw std::runtime_error(std::format(
-                "Unsupported rank: {}. This version of LUE is built with support for arrays with rank(s): {}",
-                rank,
-                join(ranks, ", ")));
+            throw std::runtime_error(
+                std::format(
+                    "Unsupported rank: {}. This version of LUE is built with support for arrays with "
+                    "rank(s): {}",
+                    rank,
+                    join(ranks, ", ")));
         }
     }
 

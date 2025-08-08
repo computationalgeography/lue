@@ -1846,7 +1846,7 @@ namespace lue {
             OutputPartitions output_partitions{shape_in_partitions(first_input_array)};
 
             Rank const rank = lue::rank<Kernel>;
-            Localities<rank> const& localities{first_input_array.localities()};
+            Localities<rank> localities{first_input_array.localities()};
 
             auto const [nr_partitions0, nr_partitions1] = lue::shape_in_partitions(first_input_array);
             lue_hpx_assert(nr_partitions0 > 0);
@@ -1960,7 +1960,7 @@ namespace lue {
 
             lue_hpx_assert(all_are_valid(output_partitions));
 
-            return OutputArray{shape(first_input_array), localities, std::move(output_partitions)};
+            return OutputArray{shape(first_input_array), std::move(localities), std::move(output_partitions)};
         }
 
 

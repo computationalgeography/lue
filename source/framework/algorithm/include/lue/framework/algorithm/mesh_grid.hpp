@@ -159,7 +159,8 @@ namespace lue {
 
         for (Rank r = 0; r < rank; ++r)
         {
-            result[r] = OutputArray{shape(input_array), localities, std::move(output_partitions[r])};
+            result[r] = OutputArray{
+                shape(input_array), Localities<rank>{localities}, std::move(output_partitions[r])};
         }
 
         return result;

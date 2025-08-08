@@ -65,11 +65,12 @@ namespace lue {
 
                 if (!string.empty())
                 {
-                    throw std::runtime_error(std::format(
-                        "Configuration entry '{}' cannot be parsed into "
-                        "a list of values of type {}",
-                        value,
-                        Type<T>::name()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Configuration entry '{}' cannot be parsed into "
+                            "a list of values of type {}",
+                            value,
+                            Type<T>::name()));
                 }
 
                 return result;
@@ -128,11 +129,12 @@ namespace lue {
 
             if (values.size() != 2)
             {
-                throw std::runtime_error(std::format(
-                    "Configuration entry '{}' must contain 2 values, "
-                    "but {} where found",
-                    value,
-                    values.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Configuration entry '{}' must contain 2 values, "
+                        "but {} where found",
+                        value,
+                        values.size()));
             }
 
             lue::Shape<std::uint64_t, 2> result{};
@@ -149,11 +151,12 @@ namespace lue {
 
             if (values.size() != 2)
             {
-                throw std::runtime_error(std::format(
-                    "Configuration entry '{}' must contain 2 values, "
-                    "but {} where found",
-                    value,
-                    values.size()));
+                throw std::runtime_error(
+                    std::format(
+                        "Configuration entry '{}' must contain 2 values, "
+                        "but {} where found",
+                        value,
+                        values.size()));
             }
 
             lue::Shape<std::int64_t, 2> result{};

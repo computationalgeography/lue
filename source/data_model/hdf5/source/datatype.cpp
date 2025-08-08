@@ -452,8 +452,10 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(std::format(
-                    "No memory datatype for file datatype ({})", standard_datatype_as_string(file_datatype)));
+                throw std::runtime_error(
+                    std::format(
+                        "No memory datatype for file datatype ({})",
+                        standard_datatype_as_string(file_datatype)));
             }
 
             return *result;
@@ -547,8 +549,10 @@ namespace lue {
 
             if (!result)
             {
-                throw std::runtime_error(std::format(
-                    "No file datatype for memory datatype ({})", native_datatype_as_string(memory_datatype)));
+                throw std::runtime_error(
+                    std::format(
+                        "No file datatype for memory datatype ({})",
+                        native_datatype_as_string(memory_datatype)));
             }
 
             return *result;

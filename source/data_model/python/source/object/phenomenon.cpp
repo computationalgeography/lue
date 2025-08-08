@@ -237,10 +237,11 @@ namespace lue {
                             // Python message:
                             // AttributeError: 'x' object has no attribute 'y'
                             // Ours is a little bit different:
-                            throw pybind11::key_error(std::format(
-                                "Phenomenon does not contain (collection) "
-                                "property-set '{}'",
-                                property_set_name));
+                            throw pybind11::key_error(
+                                std::format(
+                                    "Phenomenon does not contain (collection) "
+                                    "property-set '{}'",
+                                    property_set_name));
                         }
 
                         assert(property_set_found || collection_property_set_found);
@@ -447,7 +448,8 @@ namespace lue {
                        std::string const& name,
                        TimeConfiguration const& time_configuration,
                        Clock const& clock,
-                       ObjectTracker& object_tracker) -> PropertySet& {
+                       ObjectTracker& object_tracker) -> PropertySet&
+                    {
                         return add_property_set(
                             phenomenon.property_sets(), name, time_configuration, clock, object_tracker);
                     },
@@ -479,7 +481,8 @@ namespace lue {
                     [](Phenomenon& phenomenon,
                        std::string const& name,
                        TimeDomain& time_domain,
-                       ObjectTracker& object_tracker) -> PropertySet& {
+                       ObjectTracker& object_tracker) -> PropertySet&
+                    {
                         return add_property_set(
                             phenomenon.property_sets(), name, time_domain, object_tracker);
                     },

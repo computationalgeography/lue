@@ -1278,41 +1278,46 @@ namespace lue {
                 component_fs[partition_idx], route_partitions[partition_idx], max_value_fs[partition_idx]) =
                 hpx::split_future(
                     hpx::when_all(zone_partitions[partition_idx], value_partitions[partition_idx])
-                        .then(hpx::unwrapping(
+                        .then(
+                            hpx::unwrapping(
 
-                            [policies, locality = localities[partition_idx]](auto&& tuple_f)
-                            {
-                                ZonePartition zone_partition{std::get<0>(tuple_f)};
-                                ValuePartition value_partition{std::get<1>(tuple_f)};
+                                [policies, locality = localities[partition_idx]](auto&& tuple_f)
+                                {
+                                    ZonePartition zone_partition{std::get<0>(tuple_f)};
+                                    ValuePartition value_partition{std::get<1>(tuple_f)};
 
-                                return hpx::when_all(value_partition.offset(), value_partition.shape())
-                                    .then(hpx::unwrapping(
+                                    return hpx::when_all(value_partition.offset(), value_partition.shape())
+                                        .then(
+                                            hpx::unwrapping(
 
-                                        [policies, locality, zone_partition, value_partition](auto&& tuple_f)
-                                        {
-                                            auto const offset{std::get<0>(tuple_f).get()};
-                                            auto const shape{std::get<1>(tuple_f).get()};
+                                                [policies, locality, zone_partition, value_partition](
+                                                    auto&& tuple_f)
+                                                {
+                                                    auto const offset{std::get<0>(tuple_f).get()};
+                                                    auto const shape{std::get<1>(tuple_f).get()};
 
-                                            // Create a component and tell it to sort values per zone
-                                            return hpx::new_<Component>(locality, offset, shape)
-                                                .then(
+                                                    // Create a component and tell it to sort values per zone
+                                                    return hpx::new_<Component>(locality, offset, shape)
+                                                        .then(
 
-                                                    [policies, zone_partition, value_partition](
-                                                        Component&& component)
-                                                    {
-                                                        RoutePartition partition_id_f{
-                                                            component.route_partition()};
-                                                        hpx::future<MaxValueByZone> max_value_fs{
-                                                            component.sort_values(
-                                                                policies, zone_partition, value_partition)};
+                                                            [policies, zone_partition, value_partition](
+                                                                Component&& component)
+                                                            {
+                                                                RoutePartition partition_id_f{
+                                                                    component.route_partition()};
+                                                                hpx::future<MaxValueByZone> max_value_fs{
+                                                                    component.sort_values(
+                                                                        policies,
+                                                                        zone_partition,
+                                                                        value_partition)};
 
-                                                        return std::make_tuple(
-                                                            std::move(component),
-                                                            std::move(partition_id_f),
-                                                            std::move(max_value_fs));
-                                                    });
-                                        }));
-                            })));
+                                                                return std::make_tuple(
+                                                                    std::move(component),
+                                                                    std::move(partition_id_f),
+                                                                    std::move(max_value_fs));
+                                                            });
+                                                }));
+                                })));
         }
 
         // Given the information we have now, we can start recording route fragments
@@ -1322,101 +1327,103 @@ namespace lue {
 
         auto [starts, components] = hpx::split_future(
             hpx::when_all(components_ready_f, max_values_ready_f)
-                .then(hpx::unwrapping(
+                .then(
+                    hpx::unwrapping(
 
-                    [max_nr_cells](auto&& tuple_f)
-                    {
-                        auto component_fs = std::get<0>(tuple_f).get();
-                        auto max_value_fs = std::get<1>(tuple_f).get();
-
-                        // Once all maximum values per zone are ready to be used, initialize each route
-
-                        // First collect all maximum values per zone. Keep track of the component
-                        // that handles the partition containing each value.
-
-                        using DownstreamMaximaByZone = std::map<Zone, detail::DownstreamMaxima<Value>>;
-
-                        DownstreamMaximaByZone downstream_maxima_by_zone{};
-
-                        Count const nr_partitions = std::size(component_fs);
-
-                        std::vector<Component> components(nr_partitions);
-
-                        std::transform(
-                            component_fs.begin(),
-                            component_fs.end(),
-                            components.begin(),
-                            [](hpx::future<Component>& component_f)
-                            {
-                                lue_hpx_assert(component_f.is_ready());
-                                return component_f.get();
-                            });
-
-                        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+                        [max_nr_cells](auto&& tuple_f)
                         {
-                            Component const& component{components[partition_idx]};
-                            MaxValueByZone max_value{max_value_fs[partition_idx].get()};
+                            auto component_fs = std::get<0>(tuple_f).get();
+                            auto max_value_fs = std::get<1>(tuple_f).get();
 
-                            for (auto const [zone, value] : max_value)
-                            {
-                                // Add the maximum value for the current partition and zone to the collection
-                                downstream_maxima_by_zone[zone].push_back(
-                                    std::make_tuple(value, component.get_id()));
-                            }
-                        }
+                            // Once all maximum values per zone are ready to be used, initialize each route
 
-                        // Per zone, sort all maximum values, in decreasing order
-                        for (auto& [zone, downstream_maxima] : downstream_maxima_by_zone)
-                        {
-                            std::sort(
-                                downstream_maxima.begin(),
-                                downstream_maxima.end(),
-                                detail::CompareDownstreamMaxima<Value>{});
-                        }
+                            // First collect all maximum values per zone. Keep track of the component
+                            // that handles the partition containing each value.
 
-                        std::vector<Zone> zones(downstream_maxima_by_zone.size());
-                        std::vector<hpx::future<typename Route::FragmentLocation>> start_fs(
-                            downstream_maxima_by_zone.size());
+                            using DownstreamMaximaByZone = std::map<Zone, detail::DownstreamMaxima<Value>>;
 
-                        {
-                            Index idx{0};
+                            DownstreamMaximaByZone downstream_maxima_by_zone{};
 
-                            for (auto& [zone, values] : downstream_maxima_by_zone)
-                            {
-                                lue_hpx_assert(!values.empty());
+                            Count const nr_partitions = std::size(component_fs);
 
-                                Component component{std::get<1>(values.front())};
+                            std::vector<Component> components(nr_partitions);
 
-                                zones[idx] = zone;
-                                start_fs[idx] = component.record_route_fragment(
-                                    zone, std::move(values), Count{0}, max_nr_cells);
-
-                                ++idx;
-                            }
-                        }
-
-                        return hpx::when_all(start_fs.begin(), start_fs.end())
-                            .then(
-                                [zones = std::move(zones), components = std::move(components)](
-                                    hpx::future<std::vector<hpx::future<typename Route::FragmentLocation>>>&&
-                                        starts_ff)
+                            std::transform(
+                                component_fs.begin(),
+                                component_fs.end(),
+                                components.begin(),
+                                [](hpx::future<Component>& component_f)
                                 {
-                                    // Collect the route starts
-                                    RouteStarts starts{};
-                                    auto start_fs{starts_ff.get()};
-
-                                    {
-                                        Index const nr_zones{static_cast<Index>(std::size(zones))};
-
-                                        for (Index idx = 0; idx < nr_zones; ++idx)
-                                        {
-                                            starts[zones[idx]] = start_fs[idx].get();
-                                        }
-                                    }
-
-                                    return hpx::make_tuple(std::move(starts), std::move(components));
+                                    lue_hpx_assert(component_f.is_ready());
+                                    return component_f.get();
                                 });
-                    })));
+
+                            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+                            {
+                                Component const& component{components[partition_idx]};
+                                MaxValueByZone max_value{max_value_fs[partition_idx].get()};
+
+                                for (auto const [zone, value] : max_value)
+                                {
+                                    // Add the maximum value for the current partition and zone to the
+                                    // collection
+                                    downstream_maxima_by_zone[zone].push_back(
+                                        std::make_tuple(value, component.get_id()));
+                                }
+                            }
+
+                            // Per zone, sort all maximum values, in decreasing order
+                            for (auto& [zone, downstream_maxima] : downstream_maxima_by_zone)
+                            {
+                                std::sort(
+                                    downstream_maxima.begin(),
+                                    downstream_maxima.end(),
+                                    detail::CompareDownstreamMaxima<Value>{});
+                            }
+
+                            std::vector<Zone> zones(downstream_maxima_by_zone.size());
+                            std::vector<hpx::future<typename Route::FragmentLocation>> start_fs(
+                                downstream_maxima_by_zone.size());
+
+                            {
+                                Index idx{0};
+
+                                for (auto& [zone, values] : downstream_maxima_by_zone)
+                                {
+                                    lue_hpx_assert(!values.empty());
+
+                                    Component component{std::get<1>(values.front())};
+
+                                    zones[idx] = zone;
+                                    start_fs[idx] = component.record_route_fragment(
+                                        zone, std::move(values), Count{0}, max_nr_cells);
+
+                                    ++idx;
+                                }
+                            }
+
+                            return hpx::when_all(start_fs.begin(), start_fs.end())
+                                .then(
+                                    [zones = std::move(zones), components = std::move(components)](
+                                        hpx::future<std::vector<
+                                            hpx::future<typename Route::FragmentLocation>>>&& starts_ff)
+                                    {
+                                        // Collect the route starts
+                                        RouteStarts starts{};
+                                        auto start_fs{starts_ff.get()};
+
+                                        {
+                                            Index const nr_zones{static_cast<Index>(std::size(zones))};
+
+                                            for (Index idx = 0; idx < nr_zones; ++idx)
+                                            {
+                                                starts[zones[idx]] = start_fs[idx].get();
+                                            }
+                                        }
+
+                                        return hpx::make_tuple(std::move(starts), std::move(components));
+                                    });
+                        })));
 
         // As long as not all output route partitions are ready, we need to keep the components
         // alive
@@ -1499,36 +1506,39 @@ namespace lue {
                 component_fs[partition_idx], route_partitions[partition_idx], max_value_fs[partition_idx]) =
                 hpx::split_future(
                     hpx::when_all(value_partitions[partition_idx])
-                        .then(hpx::unwrapping(
+                        .then(
+                            hpx::unwrapping(
 
-                            [policies, locality = localities[partition_idx]](auto&& tuple_f)
-                            {
-                                ValuePartition value_partition{std::get<0>(tuple_f)};
+                                [policies, locality = localities[partition_idx]](auto&& tuple_f)
+                                {
+                                    ValuePartition value_partition{std::get<0>(tuple_f)};
 
-                                return hpx::when_all(value_partition.offset(), value_partition.shape())
-                                    .then(hpx::unwrapping(
+                                    return hpx::when_all(value_partition.offset(), value_partition.shape())
+                                        .then(
+                                            hpx::unwrapping(
 
-                                        [policies, locality, value_partition](auto&& tuple_f)
-                                        {
-                                            auto const offset{std::get<0>(tuple_f).get()};
-                                            auto const shape{std::get<1>(tuple_f).get()};
+                                                [policies, locality, value_partition](auto&& tuple_f)
+                                                {
+                                                    auto const offset{std::get<0>(tuple_f).get()};
+                                                    auto const shape{std::get<1>(tuple_f).get()};
 
-                                            return hpx::new_<Component>(locality, offset, shape)
-                                                .then(
-                                                    [policies, value_partition](Component&& component)
-                                                    {
-                                                        RoutePartition partition_id_f{
-                                                            component.route_partition()};
-                                                        hpx::future<MaxValue> max_value_f{
-                                                            component.sort_values(policies, value_partition)};
+                                                    return hpx::new_<Component>(locality, offset, shape)
+                                                        .then(
+                                                            [policies, value_partition](Component&& component)
+                                                            {
+                                                                RoutePartition partition_id_f{
+                                                                    component.route_partition()};
+                                                                hpx::future<MaxValue> max_value_f{
+                                                                    component.sort_values(
+                                                                        policies, value_partition)};
 
-                                                        return std::make_tuple(
-                                                            std::move(component),
-                                                            std::move(partition_id_f),
-                                                            std::move(max_value_f));
-                                                    });
-                                        }));
-                            })));
+                                                                return std::make_tuple(
+                                                                    std::move(component),
+                                                                    std::move(partition_id_f),
+                                                                    std::move(max_value_f));
+                                                            });
+                                                }));
+                                })));
         }
 
         // Given the information we have now, we can start recording route fragments
@@ -1539,68 +1549,69 @@ namespace lue {
 
         auto [starts, components] = hpx::split_future(
             hpx::when_all(components_ready_f, max_values_ready_f)
-                .then(hpx::unwrapping(
+                .then(
+                    hpx::unwrapping(
 
-                    [route_id, max_nr_cells](auto&& tuple_f)
-                    {
-                        auto component_fs = std::get<0>(tuple_f).get();
-                        auto max_value_fs = std::get<1>(tuple_f).get();
-
-                        // Once all maximum values are ready to be used, initialize the route
-
-                        // First collect all maximum values. Keep track of the component
-                        // that handles the partition containing each value.
-
-                        using DownstreamMaxima = detail::DownstreamMaxima<Value>;
-
-                        DownstreamMaxima downstream_maxima{};
-
-                        Count const nr_partitions = std::size(component_fs);
-
-                        std::vector<Component> components(nr_partitions);
-
-                        std::transform(
-                            component_fs.begin(),
-                            component_fs.end(),
-                            components.begin(),
-                            [](hpx::future<Component>& component_f) { return component_f.get(); });
-
-                        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+                        [route_id, max_nr_cells](auto&& tuple_f)
                         {
-                            Component const& component{components[partition_idx]};
-                            MaxValue max_value{max_value_fs[partition_idx].get()};
+                            auto component_fs = std::get<0>(tuple_f).get();
+                            auto max_value_fs = std::get<1>(tuple_f).get();
 
-                            if (max_value.has_value())
+                            // Once all maximum values are ready to be used, initialize the route
+
+                            // First collect all maximum values. Keep track of the component
+                            // that handles the partition containing each value.
+
+                            using DownstreamMaxima = detail::DownstreamMaxima<Value>;
+
+                            DownstreamMaxima downstream_maxima{};
+
+                            Count const nr_partitions = std::size(component_fs);
+
+                            std::vector<Component> components(nr_partitions);
+
+                            std::transform(
+                                component_fs.begin(),
+                                component_fs.end(),
+                                components.begin(),
+                                [](hpx::future<Component>& component_f) { return component_f.get(); });
+
+                            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                             {
-                                // Add the maximum value for the current partition to the collection
-                                downstream_maxima.push_back(
-                                    std::make_tuple(max_value.value(), component.get_id()));
+                                Component const& component{components[partition_idx]};
+                                MaxValue max_value{max_value_fs[partition_idx].get()};
+
+                                if (max_value.has_value())
+                                {
+                                    // Add the maximum value for the current partition to the collection
+                                    downstream_maxima.push_back(
+                                        std::make_tuple(max_value.value(), component.get_id()));
+                                }
                             }
-                        }
 
-                        // Sort all maximum values, in decreasing order
-                        std::sort(
-                            downstream_maxima.begin(),
-                            downstream_maxima.end(),
-                            detail::CompareDownstreamMaxima<Value>{});
+                            // Sort all maximum values, in decreasing order
+                            std::sort(
+                                downstream_maxima.begin(),
+                                downstream_maxima.end(),
+                                detail::CompareDownstreamMaxima<Value>{});
 
-                        Component component{std::get<1>(downstream_maxima.front())};
+                            Component component{std::get<1>(downstream_maxima.front())};
 
-                        hpx::future<typename Route::FragmentLocation> start_f =
-                            component.record_route_fragment(
-                                route_id, std::move(downstream_maxima), Count{0}, max_nr_cells);
+                            hpx::future<typename Route::FragmentLocation> start_f =
+                                component.record_route_fragment(
+                                    route_id, std::move(downstream_maxima), Count{0}, max_nr_cells);
 
-                        return start_f.then(
-                            [route_id, components = std::move(components)](
-                                hpx::future<typename Route::FragmentLocation>&& start_f)
-                            {
-                                RouteStarts starts{};
+                            return start_f.then(
+                                [route_id, components = std::move(components)](
+                                    hpx::future<typename Route::FragmentLocation>&& start_f)
+                                {
+                                    RouteStarts starts{};
 
-                                starts[route_id] = start_f.get();
+                                    starts[route_id] = start_f.get();
 
-                                return std::make_tuple(starts, components);
-                            });
-                    })));
+                                    return std::make_tuple(starts, components);
+                                });
+                        })));
 
         // As long as not all output route partitions are ready, we need to keep the components
         // alive

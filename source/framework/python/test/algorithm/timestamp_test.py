@@ -5,7 +5,7 @@ import lue_test
 from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 
 
-@unittest.skipIf(not hasattr(lfr, "locality_id"), "locality_id is not built-in")
+@unittest.skipIf(not hasattr(lfr, "timestamp"), "timestamp is not built-in")
 class TimestampTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):

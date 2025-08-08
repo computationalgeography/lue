@@ -22,9 +22,8 @@ namespace lue::framework {
 
         template<typename Element>
         auto from_gdal(
-            std::string const& name,
-            Hyperslab<2> const& hyperslab,
-            StaticShape<2> const& partition_shape) -> pybind11::object
+            std::string const& name, Hyperslab<2> const& hyperslab, StaticShape<2> const& partition_shape)
+            -> pybind11::object
         {
             return pybind11::cast(lue::from_gdal<Element>(name, hyperslab, partition_shape));
         }
@@ -46,10 +45,11 @@ namespace lue::framework {
 
                 if (static_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        static_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            static_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
 
                 static_partition_shape = dynamic_shape_to_static_shape<2>(dynamic_partition_shape);
@@ -154,10 +154,11 @@ namespace lue::framework {
 
                 if (static_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        static_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            static_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
 
                 static_partition_shape = dynamic_shape_to_static_shape<2>(dynamic_partition_shape);

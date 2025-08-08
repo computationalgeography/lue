@@ -12,8 +12,8 @@ namespace lue::framework {
         Rank const rank{2};
 
         auto unique_id(
-            PartitionedArray<BooleanElement, rank> const& condition,
-            pybind11::object const& dtype_args) -> pybind11::object
+            PartitionedArray<BooleanElement, rank> const& condition, pybind11::object const& dtype_args)
+            -> pybind11::object
         {
             pybind11::dtype const dtype{pybind11::dtype::from_args(dtype_args)};
 

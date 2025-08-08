@@ -20,10 +20,11 @@ namespace lue {
 
             if (tokens.size() != 3)
             {
-                throw std::runtime_error(std::format(
-                    "Array pathname must be formatted as "
-                    "<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
-                    array_pathname));
+                throw std::runtime_error(
+                    std::format(
+                        "Array pathname must be formatted as "
+                        "<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
+                        array_pathname));
             }
 
             phenomenon_name = tokens[0];
@@ -49,10 +50,11 @@ namespace lue {
 
             if (tokens.size() < 4)
             {
-                throw std::runtime_error(std::format(
-                    "Array pathname must be formatted as "
-                    "<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
-                    array_pathname));
+                throw std::runtime_error(
+                    std::format(
+                        "Array pathname must be formatted as "
+                        "<dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>; got {}.",
+                        array_pathname));
             }
 
             property_name = tokens.back();

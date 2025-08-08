@@ -121,8 +121,9 @@ namespace lue {
        open interval `[min_value, max_value)`.
     */
     template<typename Policies, Rank rank>
-        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& input_array,
@@ -156,7 +157,7 @@ namespace lue {
 
         detail::uniform::UniformPartitionAction<Policies, InputPartition> action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -176,7 +177,7 @@ namespace lue {
                 max_value.future());
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
     // -------------------------------------------------------------------------
@@ -191,8 +192,9 @@ namespace lue {
        open interval `[min_value, max_value)`.
     */
     template<typename Policies>
-        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Scalar<policy::InputElementT<Policies, 0>> const& min_value,
@@ -361,7 +363,8 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
                         [locality_id, policies, offset, partition_shape](
-                            Element const min_value, Element const max_value) -> Partition {
+                            Element const min_value, Element const max_value) -> Partition
+                        {
                             return hpx::async(
                                 Action{},
                                 locality_id,
@@ -392,8 +395,9 @@ namespace lue {
        open interval `[min_value, max_value)`.
     */
     template<typename Policies, typename Shape>
-        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,
@@ -417,8 +421,9 @@ namespace lue {
         @overload
     */
     template<typename Policies, typename Shape>
-        requires(!std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
-                 !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
+        requires(
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::uint8_t> &&
+            !std::is_same_v<policy::OutputElementT<Policies, 0>, std::int8_t>)
     auto uniform(
         Policies const& policies,
         Shape const& array_shape,

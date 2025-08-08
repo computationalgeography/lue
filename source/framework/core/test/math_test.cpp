@@ -23,7 +23,8 @@ namespace detail {
 
 
 #define DEFINE_CHECK_EQUAL()                                                                                 \
-    auto check_equal = [=](Input const value_to_map, Output const result_we_want) {                          \
+    auto check_equal = [=](Input const value_to_map, Output const result_we_want)                            \
+    {                                                                                                        \
         detail::check_equal<Input, Output>(                                                                  \
             from_min, from_max, to_min, to_max, value_to_map, result_we_want);                               \
     };

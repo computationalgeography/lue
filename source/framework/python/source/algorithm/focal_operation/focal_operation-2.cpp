@@ -29,7 +29,8 @@ namespace lue::framework {
                     module.def(
                         "focal_high_pass",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel) {
+                           pybind11::array_t<BooleanElement> const& kernel)
+                        {
                             return value_policies::focal_high_pass(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
                         },
@@ -39,7 +40,8 @@ namespace lue::framework {
                     module.def(
                         "focal_mean",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel) {
+                           pybind11::array_t<BooleanElement> const& kernel)
+                        {
                             return value_policies::focal_mean(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
                         },
@@ -80,7 +82,8 @@ namespace lue::framework {
                     module.def(
                         "focal_majority",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel) {
+                           pybind11::array_t<BooleanElement> const& kernel)
+                        {
                             return value_policies::focal_majority(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
                         },

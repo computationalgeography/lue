@@ -209,14 +209,15 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "same"},
-                      utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
-                      utility::Record{"array_shape", utility::to_string(value.array_shape())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "same"},
+                          utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
+                          utility::Record{"array_shape", utility::to_string(value.array_shape())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -241,13 +242,14 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "different"},
-                      utility::Record{"rank", std::to_string(value.rank())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "different"},
+                          utility::Record{"rank", std::to_string(value.rank())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -272,15 +274,16 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "same"},
-                      utility::Record{"shape_variability", "constant"},
-                      utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
-                      utility::Record{"array_shape", utility::to_string(value.array_shape())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "same"},
+                          utility::Record{"shape_variability", "constant"},
+                          utility::Record{"nr_arrays", std::to_string(value.nr_arrays())},
+                          utility::Record{"array_shape", utility::to_string(value.array_shape())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -305,15 +308,16 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "different"},
-                      utility::Record{"shape_variability", "constant"},
-                      utility::Record{"nr_objects", std::to_string(value.nr_objects())},
-                      utility::Record{"rank", std::to_string(value.rank())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "different"},
+                          utility::Record{"shape_variability", "constant"},
+                          utility::Record{"nr_objects", std::to_string(value.nr_objects())},
+                          utility::Record{"rank", std::to_string(value.rank())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -338,15 +342,17 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "same"},
-                      utility::Record{"shape_variability", "variable"},
-                      utility::Record{"nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
-                      utility::Record{"rank", std::to_string(value.rank())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "same"},
+                          utility::Record{"shape_variability", "variable"},
+                          utility::Record{
+                              "nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
+                          utility::Record{"rank", std::to_string(value.rank())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -371,15 +377,17 @@ subgraph cluster_{} {{
     {
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/value/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{value.id().name(), ""},
-                      utility::Record{"shape_per_object", "different"},
-                      utility::Record{"shape_variability", "variable"},
-                      utility::Record{"nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
-                      utility::Record{"rank", std::to_string(value.rank())},
-                      utility::Record{
-                          "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{value.id().name(), ""},
+                          utility::Record{"shape_per_object", "different"},
+                          utility::Record{"shape_variability", "variable"},
+                          utility::Record{
+                              "nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
+                          utility::Record{"rank", std::to_string(value.rank())},
+                          utility::Record{
+                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                      })
                 : value.id().name();
 
         stream << std::format(
@@ -545,12 +553,13 @@ subgraph cluster_{} {{
 
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/time_domain/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{time_domain.id().name(), ""},
-                      utility::Record{"unit", data_model::aspect_to_string(clock.unit())},
-                      utility::Record{"nr_units", std::to_string(clock.nr_units())},
-                      utility::Record{"item_type", data_model::aspect_to_string(item_type)},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{time_domain.id().name(), ""},
+                          utility::Record{"unit", data_model::aspect_to_string(clock.unit())},
+                          utility::Record{"nr_units", std::to_string(clock.nr_units())},
+                          utility::Record{"item_type", data_model::aspect_to_string(item_type)},
+                      })
                 : time_domain.id().name();
 
         stream << std::format(
@@ -607,11 +616,12 @@ subgraph cluster_{} {{
 
         std::string const label =
             metadata.boolean(utility::JSONPointer("/lue/space_domain/show_details"), false)
-                ? utility::to_dot(utility::Table{
-                      utility::Record{space_domain.id().name(), ""},
-                      utility::Record{"mobility", data_model::aspect_to_string(mobility)},
-                      utility::Record{"item_type", data_model::aspect_to_string(item_type)},
-                  })
+                ? utility::to_dot(
+                      utility::Table{
+                          utility::Record{space_domain.id().name(), ""},
+                          utility::Record{"mobility", data_model::aspect_to_string(mobility)},
+                          utility::Record{"item_type", data_model::aspect_to_string(item_type)},
+                      })
                 : space_domain.id().name();
 
         stream << std::format(

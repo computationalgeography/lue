@@ -8,12 +8,12 @@
 namespace lue {
 
     template<typename Element, Rank rank, template<typename> typename Elements>
-    Shape<Index, rank> erase(
+    auto erase(
         Elements<Element>& elements,
         Shape<Index, rank> shape,
         Rank const dimension_idx,
         Index const hyperslab_begin_idx,
-        Index const hyperslab_end_idx)
+        Index const hyperslab_end_idx) -> Shape<Index, rank>
     {
         lue_hpx_assert(dimension_idx < rank);
         lue_hpx_assert(std::size(shape) == rank);
@@ -45,7 +45,7 @@ namespace lue {
         for (auto slab_begin = elements.begin() + offset; slab_begin < elements.end();
              slab_begin += (stride - count))
         {
-            elements.erase(slab_begin, slab_begin + count);
+            elements.remove(slab_begin, slab_begin + count);
         }
 
         shape[dimension_idx] -= hyperslab_end_idx - hyperslab_begin_idx;

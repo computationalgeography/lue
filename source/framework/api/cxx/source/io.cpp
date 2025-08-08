@@ -51,9 +51,8 @@ namespace lue {
 
 
             auto from_gdal(
-                std::string const& name,
-                Shape<Count, 2> const& partition_shape,
-                GDALDataType const data_type) -> Field
+                std::string const& name, Shape<Count, 2> const& partition_shape, GDALDataType const data_type)
+                -> Field
             {
                 std::optional<Field::Variant> result{};
 
@@ -137,9 +136,9 @@ namespace lue {
             -> hpx::future<void>
         {
             return std::visit(
-                overload{[&name, &clone_name](auto const& field) -> hpx::future<void> {
-                    return write(field, name, clone_name);
-                }},
+                overload{
+                    [&name, &clone_name](auto const& field) -> hpx::future<void>
+                    { return write(field, name, clone_name); }},
                 field.variant());
         }
 

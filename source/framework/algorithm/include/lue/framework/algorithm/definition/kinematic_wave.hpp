@@ -467,8 +467,8 @@ namespace lue {
                 // that will calculate the kinematic wave for the intra-partition stream
                 // cells. Whenever discharge is known for the border of the partition, it is sent to
                 // the corresponding task managing the neighbouring partition.
-                hpx::tie(new_discharge_data_f, inflow_count_data_f, output_cells_idxs_f) =
-                    hpx::split_future(hpx::dataflow(
+                hpx::tie(new_discharge_data_f, inflow_count_data_f, output_cells_idxs_f) = hpx::split_future(
+                    hpx::dataflow(
                         hpx::launch::async,
 
                         [policies, alpha, beta, time_step_duration, discharge_communicator](
@@ -700,16 +700,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 RowIdxConverter north_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(north_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::north),
-                                    north_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(north_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::north),
+                                        north_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -719,16 +720,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 RowIdxConverter south_idx_converter{extent0 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(south_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::south),
-                                    south_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(south_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::south),
+                                        south_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -738,16 +740,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 ColIdxConverter west_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::west),
-                                    west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::west),
+                                        west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -757,16 +760,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 ColIdxConverter east_idx_converter{extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::east),
-                                    east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::east),
+                                        east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -776,16 +780,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter north_west_idx_converter{};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(north_west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::north_west),
-                                    north_west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(north_west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::north_west),
+                                        north_west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -795,16 +800,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(north_east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::north_east),
-                                    north_east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(north_east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::north_east),
+                                        north_east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -814,16 +820,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(south_east_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::south_east),
-                                    south_east_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(south_east_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::south_east),
+                                        south_east_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -833,16 +840,17 @@ namespace lue {
                             if (!cells_idxs.empty())
                             {
                                 CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
-                                results.push_back(hpx::async(
-                                    monitor_material_inputs<
-                                        MaterialElement,
-                                        decltype(south_west_idx_converter),
-                                        Accumulate,
-                                        rank>,
-                                    std::move(cells_idxs),
-                                    discharge_communicator.receive_channel(accu::Direction::south_west),
-                                    south_west_idx_converter,
-                                    accumulate));
+                                results.push_back(
+                                    hpx::async(
+                                        monitor_material_inputs<
+                                            MaterialElement,
+                                            decltype(south_west_idx_converter),
+                                            Accumulate,
+                                            rank>,
+                                        std::move(cells_idxs),
+                                        discharge_communicator.receive_channel(accu::Direction::south_west),
+                                        south_west_idx_converter,
+                                        accumulate));
                             }
                         }
 
@@ -856,10 +864,11 @@ namespace lue {
 
                         // All output idxs must have been solved by now
                         // TODO Unit test failed this test here once
-                        lue_hpx_assert(std::all_of(
-                            output_cells_idxs.begin(),
-                            output_cells_idxs.end(),
-                            [](auto const& idxs) { return idxs.empty(); }));
+                        lue_hpx_assert(
+                            std::all_of(
+                                output_cells_idxs.begin(),
+                                output_cells_idxs.end(),
+                                [](auto const& idxs) { return idxs.empty(); }));
 
                         // TODO Assert all inflow counts are zero
                         // TODO Assert all sender channels are closed
@@ -934,7 +943,7 @@ namespace lue {
         detail::verify_compatible(flow_direction, current_discharge, inflow, channel_length);
 
         auto const& shape_in_partitions{flow_direction.partitions().shape()};
-        Localities<rank> const& localities{flow_direction.localities()};
+        Localities<rank> localities{flow_direction.localities()};
 
 
         // Create communicators used in solving the kinematic wave
@@ -990,7 +999,8 @@ namespace lue {
             });
 
 
-        return MaterialArray{flow_direction.shape(), localities, std::move(new_discharge_partitions)};
+        return MaterialArray{
+            flow_direction.shape(), std::move(localities), std::move(new_discharge_partitions)};
     }
 
 }  // namespace lue

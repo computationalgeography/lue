@@ -120,11 +120,12 @@ namespace lue::data_model {
         assert(static_cast<std::size_t>(active_ids.size()) == sum_active_set_sizes);
 #endif
 
-        assert(std::all_of(
-            active_set_sizes.begin(),
-            active_set_sizes.end(),
-            [max_nr_objects](typename ActiveSetSizes::value_type const count)
-            { return count <= max_nr_objects; }));
+        assert(
+            std::all_of(
+                active_set_sizes.begin(),
+                active_set_sizes.end(),
+                [max_nr_objects](typename ActiveSetSizes::value_type const count)
+                { return count <= max_nr_objects; }));
 
         // Create a collection of unique IDs with the size of the maximum
         // number of IDs

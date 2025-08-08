@@ -208,120 +208,122 @@ namespace lue {
             // auto input_material_data = partition_data(material_partitions, partition_shapes);
 
             // Once all input data has arrived...
-            return hpx::split_future(hpx::dataflow(
-                hpx::launch::async,
-                hpx::unwrapping(
+            return hpx::split_future(
+                hpx::dataflow(
+                    hpx::launch::async,
+                    hpx::unwrapping(
 
 
-                    [policies, partition_offset](
-                        Offset offset,
-                        lue::Array<FlowDirectionData, rank<FlowDirectionData>> const& flow_direction_data)
-                    {
-                        // -------------------------------------------------
-                        // Determine inflow_count
-                        // As long as we only use flow_direction
-                        // and material to detect no-data in input,
-                        // there is no need to mark no-data in output
-                        // of inflow_count
-                        using InflowCountOutputPolicies = policy::OutputPolicies<
-                            policy::DontMarkNoData<InflowCountElement>,
-                            policy::AllValuesWithinRange<InflowCountElement, FlowDirectionElement>>;
-                        InflowCountOutputPolicies inflow_count_output_policies{};
-
-                        using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;
-                        FlowDirectionInputPolicies flow_direction_input_policies{
-                            std::get<0>(policies.inputs_policies())};
-
-                        using InflowCountPolicies = policy::Policies<
-                            policy::AllValuesWithinDomain<FlowDirectionElement>,
-                            policy::OutputsPolicies<InflowCountOutputPolicies>,
-                            policy::InputsPolicies<FlowDirectionInputPolicies>>;
-
-                        InflowCountPolicies inflow_count_policies{
-                            policy::AllValuesWithinDomain<FlowDirectionElement>{},
-                            inflow_count_output_policies,
-                            flow_direction_input_policies};
-
-                        auto [inflow_count_data, input_cell_idxs] =
-                            detail::inflow_count_data<InflowCountData>(
-                                inflow_count_policies, flow_direction_data);
-                        lue_hpx_assert(std::is_sorted(input_cell_idxs.begin(), input_cell_idxs.end()));
-
-
-                        // -------------------------------------------------
-                        // Determine PartitionIO and calculate flow
-                        // accumulation for intra-partition cells
-                        auto const& indp_flow_direction =
-                            std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        // auto const& indp_material =
-                        //     std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp_cell_class =
-                            std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        using CellAccumulator =
-                            typename Accumulator::template CellAccumulator<decltype(ondp_cell_class)>;
-
-                        using Shape = ShapeT<InflowCountData>;
-                        Shape const partition_shape{inflow_count_data.shape()};
-
-                        PartitionIOData partition_io_data{partition_shape, std::move(input_cell_idxs)};
-                        CellClassData cell_class_data{partition_shape, undefined_cell};
-
-                        using InputMaterial = typename Accumulator::InputMaterial;
-                        using OutputMaterial = typename Accumulator::template OutputMaterial<CellClassData>;
-                        using Accumulator2 = detail::
-                            Accumulator<PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
-
-                        InputMaterial input_material;  // {input_cell_idxs};
-                        OutputMaterial output_material{cell_class_data};
-                        Accumulator2 accumulator{
-                            partition_io_data,
-                            input_material,
-                            CellAccumulator{ondp_cell_class},
-                            output_material};
-
-                        auto const [nr_elements0, nr_elements1] = partition_shape;
-
-                        InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
-
-                        for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
+                        [policies, partition_offset](
+                            Offset offset,
+                            lue::Array<FlowDirectionData, rank<FlowDirectionData>> const& flow_direction_data)
                         {
-                            for (Index idx1 = 0; idx1 < nr_elements1; ++idx1)
+                            // -------------------------------------------------
+                            // Determine inflow_count
+                            // As long as we only use flow_direction
+                            // and material to detect no-data in input,
+                            // there is no need to mark no-data in output
+                            // of inflow_count
+                            using InflowCountOutputPolicies = policy::OutputPolicies<
+                                policy::DontMarkNoData<InflowCountElement>,
+                                policy::AllValuesWithinRange<InflowCountElement, FlowDirectionElement>>;
+                            InflowCountOutputPolicies inflow_count_output_policies{};
+
+                            using FlowDirectionInputPolicies = policy::InputPoliciesT<Policies, 0>;
+                            FlowDirectionInputPolicies flow_direction_input_policies{
+                                std::get<0>(policies.inputs_policies())};
+
+                            using InflowCountPolicies = policy::Policies<
+                                policy::AllValuesWithinDomain<FlowDirectionElement>,
+                                policy::OutputsPolicies<InflowCountOutputPolicies>,
+                                policy::InputsPolicies<FlowDirectionInputPolicies>>;
+
+                            InflowCountPolicies inflow_count_policies{
+                                policy::AllValuesWithinDomain<FlowDirectionElement>{},
+                                inflow_count_output_policies,
+                                flow_direction_input_policies};
+
+                            auto [inflow_count_data, input_cell_idxs] =
+                                detail::inflow_count_data<InflowCountData>(
+                                    inflow_count_policies, flow_direction_data);
+                            lue_hpx_assert(std::is_sorted(input_cell_idxs.begin(), input_cell_idxs.end()));
+
+
+                            // -------------------------------------------------
+                            // Determine PartitionIO and calculate flow
+                            // accumulation for intra-partition cells
+                            auto const& indp_flow_direction =
+                                std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                            // auto const& indp_material =
+                            //     std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                            auto const& ondp_cell_class =
+                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                            using CellAccumulator =
+                                typename Accumulator::template CellAccumulator<decltype(ondp_cell_class)>;
+
+                            using Shape = ShapeT<InflowCountData>;
+                            Shape const partition_shape{inflow_count_data.shape()};
+
+                            PartitionIOData partition_io_data{partition_shape, std::move(input_cell_idxs)};
+                            CellClassData cell_class_data{partition_shape, undefined_cell};
+
+                            using InputMaterial = typename Accumulator::InputMaterial;
+                            using OutputMaterial =
+                                typename Accumulator::template OutputMaterial<CellClassData>;
+                            using Accumulator2 = detail::
+                                Accumulator<PartitionIOData, InputMaterial, CellAccumulator, OutputMaterial>;
+
+                            InputMaterial input_material;  // {input_cell_idxs};
+                            OutputMaterial output_material{cell_class_data};
+                            Accumulator2 accumulator{
+                                partition_io_data,
+                                input_material,
+                                CellAccumulator{ondp_cell_class},
+                                output_material};
+
+                            auto const [nr_elements0, nr_elements1] = partition_shape;
+
+                            InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
+
+                            for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
                             {
-                                if (indp_flow_direction.is_no_data(flow_direction_data(1, 1), idx0, idx1))
+                                for (Index idx1 = 0; idx1 < nr_elements1; ++idx1)
                                 {
-                                    // Skip cells for which we don't have a flow-direction
-                                    ondp_cell_class.mark_no_data(cell_class_data, idx0, idx1);
-                                }
-                                else if (inflow_count_data(idx0, idx1) == 0)
-                                {
-                                    cell_class_data(idx0, idx1) = intra_partition_stream_cell;
+                                    if (indp_flow_direction.is_no_data(flow_direction_data(1, 1), idx0, idx1))
+                                    {
+                                        // Skip cells for which we don't have a flow-direction
+                                        ondp_cell_class.mark_no_data(cell_class_data, idx0, idx1);
+                                    }
+                                    else if (inflow_count_data(idx0, idx1) == 0)
+                                    {
+                                        cell_class_data(idx0, idx1) = intra_partition_stream_cell;
 
-                                    detail::accumulate(
-                                        accumulator,
-                                        idx0,
-                                        idx1,
-                                        flow_direction_data(1, 1),
-                                        inflow_count_data_copy);
+                                        detail::accumulate(
+                                            accumulator,
+                                            idx0,
+                                            idx1,
+                                            flow_direction_data(1, 1),
+                                            inflow_count_data_copy);
 
-                                    cell_class_data(idx0, idx1) = ridge_cell;
+                                        cell_class_data(idx0, idx1) = ridge_cell;
+                                    }
                                 }
                             }
+
+
+                            // -------------------------------------------------
+                            // Return all results
+                            return hpx::make_tuple(
+                                CellClassPartition{hpx::find_here(), offset, std::move(cell_class_data)},
+                                PartitionIOComponent{hpx::find_here(), std::move(partition_io_data)},
+                                InflowCountPartition{
+                                    hpx::find_here(), offset, std::move(inflow_count_data_copy)});
                         }
 
-
-                        // -------------------------------------------------
-                        // Return all results
-                        return hpx::make_tuple(
-                            CellClassPartition{hpx::find_here(), offset, std::move(cell_class_data)},
-                            PartitionIOComponent{hpx::find_here(), std::move(partition_io_data)},
-                            InflowCountPartition{
-                                hpx::find_here(), offset, std::move(inflow_count_data_copy)});
-                    }
-
-                    ),
-                std::move(offset),
-                when_all_get(std::move(flow_direction_data))));
+                        ),
+                    std::move(offset),
+                    when_all_get(std::move(flow_direction_data))));
         }
 
 
@@ -673,16 +675,17 @@ namespace lue {
                                 // Spawn action that will forward material
                                 // from surrounding partitions. This action
                                 // updates the current inflow count and flux.
-                                accu_futures.push_back(hpx::async(
-                                    action,
-                                    localities(idx0, idx1),
-                                    policies,
-                                    flow_direction_partitions(idx0, idx1),
-                                    inflow_count_partitions(idx0, idx1),
-                                    io_components,
-                                    offsets,
-                                    // material_partitions(idx0, idx1),
-                                    cell_class_partitions(idx0, idx1)));
+                                accu_futures.push_back(
+                                    hpx::async(
+                                        action,
+                                        localities(idx0, idx1),
+                                        policies,
+                                        flow_direction_partitions(idx0, idx1),
+                                        inflow_count_partitions(idx0, idx1),
+                                        io_components,
+                                        offsets,
+                                        // material_partitions(idx0, idx1),
+                                        cell_class_partitions(idx0, idx1)));
 
                                 partition_class = hot;
                                 hot_partitions_seen = true;
@@ -737,12 +740,14 @@ namespace lue {
                 lue_hpx_assert(nr_iterations <= 3 * nr_partitions);
 
                 lue_hpx_assert(all_are_valid(partition_class_partitions));
-                partition_class_arrays.push_back(PartitionClassArray{
-                    shape_in_partitions, localities, std::move(partition_class_partitions)});
+                partition_class_arrays.push_back(
+                    PartitionClassArray{
+                        shape_in_partitions, localities, std::move(partition_class_partitions)});
 
                 lue_hpx_assert(all_are_valid(solvable_fraction_partitions));
-                solvable_fraction_arrays.push_back(SolvableFractionArray{
-                    shape_in_partitions, localities, std::move(solvable_fraction_partitions)});
+                solvable_fraction_arrays.push_back(
+                    SolvableFractionArray{
+                        shape_in_partitions, localities, std::move(solvable_fraction_partitions)});
 
                 lue_hpx_assert(all_are_valid(nr_cells_to_solve_partitions));
                 nr_cells_to_solve_arrays.push_back(
@@ -765,10 +770,11 @@ namespace lue {
                     // }
                     // // ----------------------------------
 
-                    lue_hpx_assert(std::all_of(
-                        ready_partitions.begin(),
-                        ready_partitions.end(),
-                        [](bool const set) { return set; }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            ready_partitions.begin(),
+                            ready_partitions.end(),
+                            [](bool const set) { return set; }));
                     break;
                 }
 

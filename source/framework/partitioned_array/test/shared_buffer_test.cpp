@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(move_assign)
 }
 
 
-BOOST_AUTO_TEST_CASE(erase)
+BOOST_AUTO_TEST_CASE(remove_)
 {
     // +----+----+----+----+----+----+----+----+----+----+
     // | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----  +----+----+----+----+----+----+----+----+----+
     // | 10   | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 |
     // +----  +----+----+----+----+----+----+----+----+----+
-    buffer.erase(buffer.begin() + 0, buffer.begin() + 1);
+    buffer.remove(buffer.begin() + 0, buffer.begin() + 1);
     BOOST_CHECK_EQUAL(buffer.size(), 9);
     BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 9);
     BOOST_CHECK_EQUAL(buffer[0], 11);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----+----+----+----+----+----+----+----+  ----+
     // | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 |   19 |
     // +----+----+----+----+----+----+----+----+  ----+
-    buffer.erase(buffer.begin() + 8, buffer.begin() + 9);
+    buffer.remove(buffer.begin() + 8, buffer.begin() + 9);
     BOOST_CHECK_EQUAL(buffer.size(), 8);
     BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 8);
     BOOST_CHECK_EQUAL(buffer[7], 18);
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(erase)
     // +----+----+----+  ----+----  +----+----+----+
     // | 11 | 12 | 13 |   14 | 15   | 16 | 17 | 18 |
     // +----+----+----+  ----+----  +----+----+----+
-    buffer.erase(buffer.begin() + 3, buffer.begin() + 5);
+    buffer.remove(buffer.begin() + 3, buffer.begin() + 5);
     BOOST_CHECK_EQUAL(buffer.size(), 6);
     BOOST_CHECK_EQUAL(std::distance(buffer.begin(), buffer.end()), 6);
     BOOST_CHECK_EQUAL(buffer[2], 13);

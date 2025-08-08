@@ -303,7 +303,8 @@ namespace lue {
             area_shape.end(),
             partition_shape.begin(),
             result.begin(),
-            [](Index const area_extent, Index const partition_extent) {
+            [](Index const area_extent, Index const partition_extent)
+            {
                 return static_cast<Index>(std::ceil(double(area_extent) / double(partition_extent))) *
                        partition_extent;
             });

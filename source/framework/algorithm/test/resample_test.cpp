@@ -519,20 +519,21 @@ BOOST_AUTO_TEST_CASE(assign_random_input)
         // lue::to_gdal(lue::array_partition_id<std::int32_t>(target_array),
         // std::format("resample-{}-partition_id.tif", i));
 
-        BOOST_TEST_CONTEXT(std::format(
-            "i: {}\n"
-            "    - source_array_shape: {}, {}\n"
-            "    - fill_value        : {}\n"
-            "    - partition_shape   : {}, {}\n"
-            "    - count             : {}\n",
-            i,
-            std::get<0>(source_array_shape),
-            std::get<1>(source_array_shape),
-            fill_value,
-            std::get<0>(partition_shape),
-            std::get<1>(partition_shape),
-            //
-            count))
+        BOOST_TEST_CONTEXT(
+            std::format(
+                "i: {}\n"
+                "    - source_array_shape: {}, {}\n"
+                "    - fill_value        : {}\n"
+                "    - partition_shape   : {}, {}\n"
+                "    - count             : {}\n",
+                i,
+                std::get<0>(source_array_shape),
+                std::get<1>(source_array_shape),
+                fill_value,
+                std::get<0>(partition_shape),
+                std::get<1>(partition_shape),
+                //
+                count))
         {
             BOOST_CHECK(all(target_array == fill_value).future().get());
         }

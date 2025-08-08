@@ -125,7 +125,8 @@ namespace lue {
             };
 
             auto cell_is_connected =
-                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool {
+                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool
+            {
                 return !indp.is_no_data(zone_elements, row, col) &&
                        in_clump(zone_elements, row, col, zone_id);
             };
@@ -196,11 +197,12 @@ namespace lue {
                             //     Used east = west - 2 instead of east = west - 1, for the
                             //     same reason as above. west - 1 in the parent row should
                             //     already be part of the clump.
-                            requests.push(SpanRequest{
-                                .row = row - direction,
-                                .west = col,
-                                .east = west - 2,
-                                .direction = -direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row - direction,
+                                    .west = col,
+                                    .east = west - 2,
+                                    .direction = -direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -241,11 +243,12 @@ namespace lue {
                         // in the same direction.
                         if (row_available(row, direction))
                         {
-                            requests.push(SpanRequest{
-                                .row = row + direction,
-                                .west = col,
-                                .east = west - 1,
-                                .direction = direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row + direction,
+                                    .west = col,
+                                    .east = west - 1,
+                                    .direction = direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -262,11 +265,12 @@ namespace lue {
                             //     Used west = east + 2 instead of west = east + 1. The direct eastern
                             //     neighbour of the east cell in the previous scan should already
                             //     be part of the clump.
-                            requests.push(SpanRequest{
-                                .row = row - direction,
-                                .west = east + 1,
-                                .east = west - 1,
-                                .direction = -direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row - direction,
+                                    .west = east + 1,
+                                    .east = west - 1,
+                                    .direction = -direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -330,7 +334,8 @@ namespace lue {
             };
 
             auto cell_is_connected =
-                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool {
+                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool
+            {
                 return !indp.is_no_data(zone_elements, row, col) &&
                        in_clump(zone_elements, row, col, zone_id);
             };
@@ -394,11 +399,12 @@ namespace lue {
                         // direction (U-turn).
                         if (row_available(row, -direction))
                         {
-                            requests.push(SpanRequest{
-                                .row = row - direction,
-                                .west = col,
-                                .east = west - 1,
-                                .direction = -direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row - direction,
+                                    .west = col,
+                                    .east = west - 1,
+                                    .direction = -direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -439,11 +445,12 @@ namespace lue {
                         // in the same direction.
                         if (row_available(row, direction))
                         {
-                            requests.push(SpanRequest{
-                                .row = row + direction,
-                                .west = col,
-                                .east = west - 1,
-                                .direction = direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row + direction,
+                                    .west = col,
+                                    .east = west - 1,
+                                    .direction = direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -460,11 +467,12 @@ namespace lue {
                             //     Used west = east + 2 instead of west = east + 1. The direct eastern
                             //     neighbour of the east cell in the previous scan should already
                             //     be part of the clump.
-                            requests.push(SpanRequest{
-                                .row = row - direction,
-                                .west = east + 1,
-                                .east = west - 1,
-                                .direction = -direction});
+                            requests.push(
+                                SpanRequest{
+                                    .row = row - direction,
+                                    .west = east + 1,
+                                    .east = west - 1,
+                                    .direction = -direction});
                             assert_request_is_valid(requests.top(), clump_elements, clump_id);
                         }
                     }
@@ -509,21 +517,23 @@ namespace lue {
 
                     if (row_available(row, direction))
                     {
-                        requests.push(SpanRequest{
-                            .row = row + direction,
-                            .west = east + 1,
-                            .east = west - 1,
-                            .direction = direction});
+                        requests.push(
+                            SpanRequest{
+                                .row = row + direction,
+                                .west = east + 1,
+                                .east = west - 1,
+                                .direction = direction});
                         assert_request_is_valid(requests.top(), clump_elements, clump_id);
                     }
 
                     if (row_available(row, -direction))
                     {
-                        requests.push(SpanRequest{
-                            .row = row - direction,
-                            .west = east + 1,
-                            .east = west - 1,
-                            .direction = -direction});
+                        requests.push(
+                            SpanRequest{
+                                .row = row - direction,
+                                .west = east + 1,
+                                .east = west - 1,
+                                .direction = -direction});
                         assert_request_is_valid(requests.top(), clump_elements, clump_id);
                     }
                 }
@@ -686,9 +696,8 @@ namespace lue {
                 }
 
 
-                auto north_side() const -> std::tuple<
-                                            std::reference_wrapper<ZoneData const>,
-                                            std::reference_wrapper<ClumpData const>>
+                auto north_side() const -> std::
+                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::horizontal][HorizontalSide::north]),
@@ -696,9 +705,8 @@ namespace lue {
                 }
 
 
-                auto south_side() const -> std::tuple<
-                                            std::reference_wrapper<ZoneData const>,
-                                            std::reference_wrapper<ClumpData const>>
+                auto south_side() const -> std::
+                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::horizontal][HorizontalSide::south]),
@@ -706,9 +714,8 @@ namespace lue {
                 }
 
 
-                auto west_side() const -> std::tuple<
-                                           std::reference_wrapper<ZoneData const>,
-                                           std::reference_wrapper<ClumpData const>>
+                auto west_side() const -> std::
+                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::vertical][VerticalSide::west]),
@@ -716,9 +723,8 @@ namespace lue {
                 }
 
 
-                auto east_side() const -> std::tuple<
-                                           std::reference_wrapper<ZoneData const>,
-                                           std::reference_wrapper<ClumpData const>>
+                auto east_side() const -> std::
+                    tuple<std::reference_wrapper<ZoneData const>, std::reference_wrapper<ClumpData const>>
                 {
                     return {
                         std::cref(_zone_sides[Direction::vertical][VerticalSide::east]),
@@ -805,9 +811,8 @@ namespace lue {
 
         template<typename Policies, typename Partition>
         auto clump_partition(
-            Policies const& policies,
-            Partition const& zone_partition,
-            Connectivity const connectivity) -> LocalResultF<Partition>
+            Policies const& policies, Partition const& zone_partition, Connectivity const connectivity)
+            -> LocalResultF<Partition>
         {
             lue_hpx_assert(zone_partition.is_ready());
 
@@ -1221,300 +1226,78 @@ namespace lue {
             using ClumpElement = typename LocalResult<Partition>::ClumpElement;
 
             return hpx::when_all(local_result_fs.begin(), local_result_fs.end())
-                .then(hpx::unwrapping(
-                    [policies, shape_in_partitions = local_result_fs.shape(), connectivity](
-                        auto&& local_result_fs) -> LocalResults<Partition>
-                    {
-                        AnnotateFunction const annotation{"clump: array: determine_reclass_tables"};
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        LocalResults<Partition> local_results{shape_in_partitions};
-                        Count max_nr_global_ids{0};  // Actual nr is likely smaller
-                        Count const nr_partitions{nr_elements(shape_in_partitions)};
-
-                        // Initialize LUT per partition and result collection of local results
-                        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+                .then(
+                    hpx::unwrapping(
+                        [policies, shape_in_partitions = local_result_fs.shape(), connectivity](
+                            auto&& local_result_fs) -> LocalResults<Partition>
                         {
-                            local_results[partition_idx] = local_result_fs[partition_idx].get();
-                            max_nr_global_ids +=
-                                local_results[partition_idx].reclassify_global_clump_ids(max_nr_global_ids);
-                        }
+                            AnnotateFunction const annotation{"clump: array: determine_reclass_tables"};
+                            auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                            auto const& ondp =
+                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                        // Current global clump IDs from different partitions that share the
-                        // same final global clumps
-                        std::vector<std::set<ClumpElement>> global_clump_ids{};
+                            LocalResults<Partition> local_results{shape_in_partitions};
+                            Count max_nr_global_ids{0};  // Actual nr is likely smaller
+                            Count const nr_partitions{nr_elements(shape_in_partitions)};
 
-                        // Per local clump in a partition the location of the collection of
-                        // current global clump IDs that must be merged
-                        std::map<std::tuple<Index, Index, ClumpElement>, Index>
-                            global_clump_ids_by_local_clump_id{};
-
-                        // Determine clump IDs for cells in neighbouring partition borderѕ
-                        auto const [nr_rows_in_partitions, nr_cols_in_partitions] = local_results.shape();
-
-                        for (Index row_in_partitions = 0; row_in_partitions < nr_rows_in_partitions;
-                             ++row_in_partitions)
-                        {
-                            for (Index col_in_partitions = 0; col_in_partitions < nr_cols_in_partitions;
-                                 ++col_in_partitions)
+                            // Initialize LUT per partition and result collection of local results
+                            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                             {
-                                if (row_in_partitions < nr_rows_in_partitions - 1)
+                                local_results[partition_idx] = local_result_fs[partition_idx].get();
+                                max_nr_global_ids += local_results[partition_idx].reclassify_global_clump_ids(
+                                    max_nr_global_ids);
+                            }
+
+                            // Current global clump IDs from different partitions that share the
+                            // same final global clumps
+                            std::vector<std::set<ClumpElement>> global_clump_ids{};
+
+                            // Per local clump in a partition the location of the collection of
+                            // current global clump IDs that must be merged
+                            std::map<std::tuple<Index, Index, ClumpElement>, Index>
+                                global_clump_ids_by_local_clump_id{};
+
+                            // Determine clump IDs for cells in neighbouring partition borderѕ
+                            auto const [nr_rows_in_partitions, nr_cols_in_partitions] = local_results.shape();
+
+                            for (Index row_in_partitions = 0; row_in_partitions < nr_rows_in_partitions;
+                                 ++row_in_partitions)
+                            {
+                                for (Index col_in_partitions = 0; col_in_partitions < nr_cols_in_partitions;
+                                     ++col_in_partitions)
                                 {
-                                    // Horizontal border
-                                    auto& north_local_result{
-                                        local_results(row_in_partitions, col_in_partitions)};
-                                    auto& south_local_result{
-                                        local_results(row_in_partitions + 1, col_in_partitions)};
-
-                                    // Yes, the south side of the north partition is the north side
-                                    // of the array we build here, etc
-                                    auto const& [north_zone_ids, north_clump_ids] =
-                                        north_local_result.south_side();
-                                    auto const& [south_zone_ids, south_clump_ids] =
-                                        south_local_result.north_side();
-
-                                    lue_hpx_assert(north_zone_ids.get().shape()[0] == 1);
-                                    lue_hpx_assert(south_zone_ids.get().shape()[0] == 1);
-                                    lue_hpx_assert(
-                                        north_zone_ids.get().shape()[1] == south_zone_ids.get().shape()[1]);
-
-                                    ZoneData zone_data{{2, north_zone_ids.get().shape()[1]}};
-                                    auto const [nr_rows, nr_cols] = zone_data.shape();
-
-                                    std::copy(
-                                        north_zone_ids.get().begin(),
-                                        north_zone_ids.get().end(),
-                                        zone_data.begin());
-                                    std::copy(
-                                        south_zone_ids.get().begin(),
-                                        south_zone_ids.get().end(),
-                                        zone_data.begin() + nr_cols);
-
-                                    ClumpElement clump_nd{};
-                                    ondp.mark_no_data(clump_nd);
-                                    ClumpData clump_data{zone_data.shape(), clump_nd};
-
+                                    if (row_in_partitions < nr_rows_in_partitions - 1)
                                     {
-                                        ClumpElement clump_id{0};
-                                        Count const row = 0;  // No need to iterate over south row as well
-
-                                        for (Count col = 0; col < nr_cols; ++col)
-                                        {
-                                            // Skip cells that do not contain a valid zone ID, or that
-                                            // already contain a valid clump ID
-                                            if ((!indp.is_no_data(zone_data, row, col)) &&
-                                                ondp.is_no_data(clump_data, row, col))
-                                            {
-                                                flood_fill(
-                                                    indp,
-                                                    ondp,
-                                                    zone_data,
-                                                    {row, col},
-                                                    clump_data,
-                                                    clump_id,
-                                                    connectivity);
-                                                ++clump_id;
-                                            }
-                                        }
-                                    }
-
-                                    // Find indxs of cells on both sides of the partition
-                                    // boundary that belong to the same clump.
-                                    // For each of those indxs, add information about the
-                                    // partition_idx, local_clump_id, global_clump_id to a
-                                    // collection, if not already present. Aggregate information
-                                    // about the same clump.
-
-                                    std::unordered_set<ClumpElement> clump_handled{};
-
-                                    for (Index north_idx = 0; north_idx < nr_cols; ++north_idx)
-                                    {
-                                        if (!indp.is_no_data(clump_data[north_idx]) &&
-                                            !clump_handled.contains(clump_data[north_idx]))
-                                        {
-                                            auto const boundary_clump_id{clump_data[north_idx]};
-
-                                            Index const south_idx = std::distance(
-                                                clump_data.begin() + nr_cols,
-                                                std::find(
-                                                    clump_data.begin() + nr_cols,
-                                                    clump_data.end(),
-                                                    boundary_clump_id));
-
-                                            if (south_idx != nr_cols)
-                                            {
-                                                // Clump extends on both sides of the partition boundary
-                                                merge_clump(
-                                                    indp,
-                                                    {row_in_partitions, col_in_partitions},
-                                                    north_clump_ids.get(),
-                                                    north_idx,
-                                                    north_local_result,
-                                                    {row_in_partitions + 1, col_in_partitions},
-                                                    south_clump_ids.get(),
-                                                    south_idx,
-                                                    south_local_result,
-                                                    clump_data,
-                                                    global_clump_ids_by_local_clump_id,
-                                                    global_clump_ids);
-                                            }
-
-                                            clump_handled.insert(boundary_clump_id);
-                                        }
-                                    }
-                                }
-
-                                if (col_in_partitions < nr_cols_in_partitions - 1)
-                                {
-                                    // Vertical border
-                                    auto& west_local_result{
-                                        local_results(row_in_partitions, col_in_partitions)};
-                                    auto& east_local_result{
-                                        local_results(row_in_partitions, col_in_partitions + 1)};
-
-                                    // Yes, the east side of the west partition is the west side
-                                    // of the array we build here, etc
-                                    auto const& [west_zone_ids, west_clump_ids] =
-                                        west_local_result.east_side();
-                                    auto const& [east_zone_ids, east_clump_ids] =
-                                        east_local_result.west_side();
-
-                                    lue_hpx_assert(
-                                        west_zone_ids.get().shape()[0] == east_zone_ids.get().shape()[0]);
-                                    lue_hpx_assert(west_zone_ids.get().shape()[1] == 1);
-                                    lue_hpx_assert(east_zone_ids.get().shape()[1] == 1);
-
-                                    // To keep cells in the west and east columns consecutive
-                                    // in memory, we "rotate" the sides: the upper row will contain
-                                    // the west cells, the bottom row the east cells. A cell
-                                    // at index idx in these rows correspond with a cell at row
-                                    // idx in the original side array.
-
-                                    ZoneData zone_data{{2, west_zone_ids.get().shape()[0]}};
-                                    auto const [nr_rows, nr_cols] = zone_data.shape();
-
-                                    // Rotate each column 45 degrees counter-clock-wise:
-                                    // - west column becomes north row, east column becomes south row
-                                    // - first row in column becomes firs column in row
-                                    std::copy(
-                                        west_zone_ids.get().begin(),
-                                        west_zone_ids.get().end(),
-                                        zone_data.begin());
-                                    std::copy(
-                                        east_zone_ids.get().begin(),
-                                        east_zone_ids.get().end(),
-                                        zone_data.begin() + nr_cols);
-
-                                    ClumpElement clump_nd{};
-                                    ondp.mark_no_data(clump_nd);
-                                    ClumpData clump_data{zone_data.shape(), clump_nd};
-
-                                    {
-                                        ClumpElement clump_id{0};
-                                        Count const row = 0;  // No need to iterate over east row as well
-
-                                        for (Count col = 0; col < nr_cols; ++col)
-                                        {
-                                            // Skip cells that do not contain a valid zone ID, or that
-                                            // already contain a valid clump ID
-                                            if ((!indp.is_no_data(zone_data, row, col)) &&
-                                                ondp.is_no_data(clump_data, row, col))
-                                            {
-                                                flood_fill(
-                                                    indp,
-                                                    ondp,
-                                                    zone_data,
-                                                    {row, col},
-                                                    clump_data,
-                                                    clump_id,
-                                                    connectivity);
-                                                ++clump_id;
-                                            }
-                                        }
-                                    }
-
-                                    // Find indxs of cells on both sides of the partition
-                                    // boundary that belong to the same clump.
-                                    // For each of those indxs, add information about the
-                                    // partition_idx, local_clump_id, global_clump_id to a
-                                    // collection, if not already present. Aggregate information
-                                    // about the same clump.
-
-                                    std::unordered_set<ClumpElement> clump_handled{};
-
-                                    for (Index west_idx = 0; west_idx < nr_cols; ++west_idx)
-                                    {
-                                        if (!indp.is_no_data(clump_data[west_idx]) &&
-                                            !clump_handled.contains(clump_data[west_idx]))
-                                        {
-                                            auto const boundary_clump_id{clump_data[west_idx]};
-
-                                            Index const east_idx = std::distance(
-                                                clump_data.begin() + nr_cols,
-                                                std::find(
-                                                    clump_data.begin() + nr_cols,
-                                                    clump_data.end(),
-                                                    boundary_clump_id));
-
-                                            if (east_idx != nr_cols)
-                                            {
-                                                // Clump extends on both sides of the partition boundary
-                                                merge_clump(
-                                                    indp,
-                                                    {row_in_partitions, col_in_partitions},
-                                                    west_clump_ids.get(),
-                                                    west_idx,
-                                                    west_local_result,
-                                                    {row_in_partitions, col_in_partitions + 1},
-                                                    east_clump_ids.get(),
-                                                    east_idx,
-                                                    east_local_result,
-                                                    clump_data,
-                                                    global_clump_ids_by_local_clump_id,
-                                                    global_clump_ids);
-                                            }
-
-                                            clump_handled.insert(boundary_clump_id);
-                                        }
-                                    }
-                                }
-
-                                if (connectivity == Connectivity::diagonal)
-                                {
-                                    if (row_in_partitions < nr_rows_in_partitions - 1 &&
-                                        col_in_partitions < nr_cols_in_partitions - 1)
-                                    {
-                                        auto& north_west_local_result{
+                                        // Horizontal border
+                                        auto& north_local_result{
                                             local_results(row_in_partitions, col_in_partitions)};
-                                        auto& north_east_local_result{
-                                            local_results(row_in_partitions, col_in_partitions + 1)};
-                                        auto& south_west_local_result{
+                                        auto& south_local_result{
                                             local_results(row_in_partitions + 1, col_in_partitions)};
-                                        auto& south_east_local_result{
-                                            local_results(row_in_partitions + 1, col_in_partitions + 1)};
 
-                                        auto const& [north_west_zone_id, north_west_local_clump_id] =
-                                            north_west_local_result.south_east_corner();
-                                        auto const& [north_east_zone_id, north_east_local_clump_id] =
-                                            north_east_local_result.south_west_corner();
-                                        auto const& [south_west_zone_id, south_west_local_clump_id] =
-                                            south_west_local_result.north_east_corner();
-                                        auto const& [south_east_zone_id, south_east_local_clump_id] =
-                                            south_east_local_result.north_west_corner();
+                                        // Yes, the south side of the north partition is the north side
+                                        // of the array we build here, etc
+                                        auto const& [north_zone_ids, north_clump_ids] =
+                                            north_local_result.south_side();
+                                        auto const& [south_zone_ids, south_clump_ids] =
+                                            south_local_result.north_side();
 
-                                        ZoneData zone_data{{2, 2}};
+                                        lue_hpx_assert(north_zone_ids.get().shape()[0] == 1);
+                                        lue_hpx_assert(south_zone_ids.get().shape()[0] == 1);
+                                        lue_hpx_assert(
+                                            north_zone_ids.get().shape()[1] ==
+                                            south_zone_ids.get().shape()[1]);
+
+                                        ZoneData zone_data{{2, north_zone_ids.get().shape()[1]}};
                                         auto const [nr_rows, nr_cols] = zone_data.shape();
 
-                                        Index const north_west_idx{0};
-                                        Index const north_east_idx{1};
-                                        Index const south_west_idx{2};
-                                        Index const south_east_idx{3};
-
-                                        zone_data[north_west_idx] = north_west_zone_id;
-                                        zone_data[north_east_idx] = north_east_zone_id;
-                                        zone_data[south_west_idx] = south_west_zone_id;
-                                        zone_data[south_east_idx] = south_east_zone_id;
+                                        std::copy(
+                                            north_zone_ids.get().begin(),
+                                            north_zone_ids.get().end(),
+                                            zone_data.begin());
+                                        std::copy(
+                                            south_zone_ids.get().begin(),
+                                            south_zone_ids.get().end(),
+                                            zone_data.begin() + nr_cols);
 
                                         ClumpElement clump_nd{};
                                         ondp.mark_no_data(clump_nd);
@@ -1522,317 +1305,557 @@ namespace lue {
 
                                         {
                                             ClumpElement clump_id{0};
+                                            Count const row = 0;  // No need to iterate over south row as well
 
-                                            for (Count row = 0; row < nr_rows; ++row)
+                                            for (Count col = 0; col < nr_cols; ++col)
                                             {
-                                                for (Count col = 0; col < nr_cols; ++col)
+                                                // Skip cells that do not contain a valid zone ID, or that
+                                                // already contain a valid clump ID
+                                                if ((!indp.is_no_data(zone_data, row, col)) &&
+                                                    ondp.is_no_data(clump_data, row, col))
                                                 {
-                                                    // Skip cells that do not contain a valid zone ID, or
-                                                    // that already contain a valid clump ID
-                                                    if ((!indp.is_no_data(zone_data, row, col)) &&
-                                                        ondp.is_no_data(clump_data, row, col))
-                                                    {
-                                                        flood_fill(
-                                                            indp,
-                                                            ondp,
-                                                            zone_data,
-                                                            {row, col},
-                                                            clump_data,
-                                                            clump_id,
-                                                            connectivity);
-                                                        ++clump_id;
-                                                    }
+                                                    flood_fill(
+                                                        indp,
+                                                        ondp,
+                                                        zone_data,
+                                                        {row, col},
+                                                        clump_data,
+                                                        clump_id,
+                                                        connectivity);
+                                                    ++clump_id;
                                                 }
                                             }
                                         }
 
-                                        // We only need to check whether clumps extend in diagonal
-                                        // direction. Other direction is handled above already.
+                                        // Find indxs of cells on both sides of the partition
+                                        // boundary that belong to the same clump.
+                                        // For each of those indxs, add information about the
+                                        // partition_idx, local_clump_id, global_clump_id to a
+                                        // collection, if not already present. Aggregate information
+                                        // about the same clump.
 
-                                        if (!indp.is_no_data(clump_data[north_west_idx]) &&
-                                            !indp.is_no_data(clump_data[south_east_idx]) &&
-                                            clump_data[north_west_idx] == clump_data[south_east_idx])
+                                        std::unordered_set<ClumpElement> clump_handled{};
+
+                                        for (Index north_idx = 0; north_idx < nr_cols; ++north_idx)
                                         {
-                                            // Clump extends in north-west / south-east direction
-                                            auto const north_west_key = std::make_tuple(
-                                                row_in_partitions,
-                                                col_in_partitions,
-                                                north_west_local_clump_id);
-                                            auto const south_east_key = std::make_tuple(
-                                                row_in_partitions + 1,
-                                                col_in_partitions + 1,
-                                                south_east_local_clump_id);
-
-                                            auto const north_west_it =
-                                                global_clump_ids_by_local_clump_id.find(north_west_key);
-                                            auto const south_east_it =
-                                                global_clump_ids_by_local_clump_id.find(south_east_key);
-
-                                            Index north_west_global_clump_ids_idx{-1};
-                                            Index south_east_global_clump_ids_idx{-1};
-
-                                            if (north_west_it != global_clump_ids_by_local_clump_id.end())
+                                            if (!indp.is_no_data(clump_data[north_idx]) &&
+                                                !clump_handled.contains(clump_data[north_idx]))
                                             {
-                                                north_west_global_clump_ids_idx = north_west_it->second;
+                                                auto const boundary_clump_id{clump_data[north_idx]};
 
-                                                if (south_east_it == global_clump_ids_by_local_clump_id.end())
+                                                Index const south_idx = std::distance(
+                                                    clump_data.begin() + nr_cols,
+                                                    std::find(
+                                                        clump_data.begin() + nr_cols,
+                                                        clump_data.end(),
+                                                        boundary_clump_id));
+
+                                                if (south_idx != nr_cols)
                                                 {
-                                                    // north_west_it != end && south_east_it == end
+                                                    // Clump extends on both sides of the partition boundary
+                                                    merge_clump(
+                                                        indp,
+                                                        {row_in_partitions, col_in_partitions},
+                                                        north_clump_ids.get(),
+                                                        north_idx,
+                                                        north_local_result,
+                                                        {row_in_partitions + 1, col_in_partitions},
+                                                        south_clump_ids.get(),
+                                                        south_idx,
+                                                        south_local_result,
+                                                        clump_data,
+                                                        global_clump_ids_by_local_clump_id,
+                                                        global_clump_ids);
+                                                }
+
+                                                clump_handled.insert(boundary_clump_id);
+                                            }
+                                        }
+                                    }
+
+                                    if (col_in_partitions < nr_cols_in_partitions - 1)
+                                    {
+                                        // Vertical border
+                                        auto& west_local_result{
+                                            local_results(row_in_partitions, col_in_partitions)};
+                                        auto& east_local_result{
+                                            local_results(row_in_partitions, col_in_partitions + 1)};
+
+                                        // Yes, the east side of the west partition is the west side
+                                        // of the array we build here, etc
+                                        auto const& [west_zone_ids, west_clump_ids] =
+                                            west_local_result.east_side();
+                                        auto const& [east_zone_ids, east_clump_ids] =
+                                            east_local_result.west_side();
+
+                                        lue_hpx_assert(
+                                            west_zone_ids.get().shape()[0] == east_zone_ids.get().shape()[0]);
+                                        lue_hpx_assert(west_zone_ids.get().shape()[1] == 1);
+                                        lue_hpx_assert(east_zone_ids.get().shape()[1] == 1);
+
+                                        // To keep cells in the west and east columns consecutive
+                                        // in memory, we "rotate" the sides: the upper row will contain
+                                        // the west cells, the bottom row the east cells. A cell
+                                        // at index idx in these rows correspond with a cell at row
+                                        // idx in the original side array.
+
+                                        ZoneData zone_data{{2, west_zone_ids.get().shape()[0]}};
+                                        auto const [nr_rows, nr_cols] = zone_data.shape();
+
+                                        // Rotate each column 45 degrees counter-clock-wise:
+                                        // - west column becomes north row, east column becomes south row
+                                        // - first row in column becomes firs column in row
+                                        std::copy(
+                                            west_zone_ids.get().begin(),
+                                            west_zone_ids.get().end(),
+                                            zone_data.begin());
+                                        std::copy(
+                                            east_zone_ids.get().begin(),
+                                            east_zone_ids.get().end(),
+                                            zone_data.begin() + nr_cols);
+
+                                        ClumpElement clump_nd{};
+                                        ondp.mark_no_data(clump_nd);
+                                        ClumpData clump_data{zone_data.shape(), clump_nd};
+
+                                        {
+                                            ClumpElement clump_id{0};
+                                            Count const row = 0;  // No need to iterate over east row as well
+
+                                            for (Count col = 0; col < nr_cols; ++col)
+                                            {
+                                                // Skip cells that do not contain a valid zone ID, or that
+                                                // already contain a valid clump ID
+                                                if ((!indp.is_no_data(zone_data, row, col)) &&
+                                                    ondp.is_no_data(clump_data, row, col))
+                                                {
+                                                    flood_fill(
+                                                        indp,
+                                                        ondp,
+                                                        zone_data,
+                                                        {row, col},
+                                                        clump_data,
+                                                        clump_id,
+                                                        connectivity);
+                                                    ++clump_id;
+                                                }
+                                            }
+                                        }
+
+                                        // Find indxs of cells on both sides of the partition
+                                        // boundary that belong to the same clump.
+                                        // For each of those indxs, add information about the
+                                        // partition_idx, local_clump_id, global_clump_id to a
+                                        // collection, if not already present. Aggregate information
+                                        // about the same clump.
+
+                                        std::unordered_set<ClumpElement> clump_handled{};
+
+                                        for (Index west_idx = 0; west_idx < nr_cols; ++west_idx)
+                                        {
+                                            if (!indp.is_no_data(clump_data[west_idx]) &&
+                                                !clump_handled.contains(clump_data[west_idx]))
+                                            {
+                                                auto const boundary_clump_id{clump_data[west_idx]};
+
+                                                Index const east_idx = std::distance(
+                                                    clump_data.begin() + nr_cols,
+                                                    std::find(
+                                                        clump_data.begin() + nr_cols,
+                                                        clump_data.end(),
+                                                        boundary_clump_id));
+
+                                                if (east_idx != nr_cols)
+                                                {
+                                                    // Clump extends on both sides of the partition boundary
+                                                    merge_clump(
+                                                        indp,
+                                                        {row_in_partitions, col_in_partitions},
+                                                        west_clump_ids.get(),
+                                                        west_idx,
+                                                        west_local_result,
+                                                        {row_in_partitions, col_in_partitions + 1},
+                                                        east_clump_ids.get(),
+                                                        east_idx,
+                                                        east_local_result,
+                                                        clump_data,
+                                                        global_clump_ids_by_local_clump_id,
+                                                        global_clump_ids);
+                                                }
+
+                                                clump_handled.insert(boundary_clump_id);
+                                            }
+                                        }
+                                    }
+
+                                    if (connectivity == Connectivity::diagonal)
+                                    {
+                                        if (row_in_partitions < nr_rows_in_partitions - 1 &&
+                                            col_in_partitions < nr_cols_in_partitions - 1)
+                                        {
+                                            auto& north_west_local_result{
+                                                local_results(row_in_partitions, col_in_partitions)};
+                                            auto& north_east_local_result{
+                                                local_results(row_in_partitions, col_in_partitions + 1)};
+                                            auto& south_west_local_result{
+                                                local_results(row_in_partitions + 1, col_in_partitions)};
+                                            auto& south_east_local_result{
+                                                local_results(row_in_partitions + 1, col_in_partitions + 1)};
+
+                                            auto const& [north_west_zone_id, north_west_local_clump_id] =
+                                                north_west_local_result.south_east_corner();
+                                            auto const& [north_east_zone_id, north_east_local_clump_id] =
+                                                north_east_local_result.south_west_corner();
+                                            auto const& [south_west_zone_id, south_west_local_clump_id] =
+                                                south_west_local_result.north_east_corner();
+                                            auto const& [south_east_zone_id, south_east_local_clump_id] =
+                                                south_east_local_result.north_west_corner();
+
+                                            ZoneData zone_data{{2, 2}};
+                                            auto const [nr_rows, nr_cols] = zone_data.shape();
+
+                                            Index const north_west_idx{0};
+                                            Index const north_east_idx{1};
+                                            Index const south_west_idx{2};
+                                            Index const south_east_idx{3};
+
+                                            zone_data[north_west_idx] = north_west_zone_id;
+                                            zone_data[north_east_idx] = north_east_zone_id;
+                                            zone_data[south_west_idx] = south_west_zone_id;
+                                            zone_data[south_east_idx] = south_east_zone_id;
+
+                                            ClumpElement clump_nd{};
+                                            ondp.mark_no_data(clump_nd);
+                                            ClumpData clump_data{zone_data.shape(), clump_nd};
+
+                                            {
+                                                ClumpElement clump_id{0};
+
+                                                for (Count row = 0; row < nr_rows; ++row)
+                                                {
+                                                    for (Count col = 0; col < nr_cols; ++col)
+                                                    {
+                                                        // Skip cells that do not contain a valid zone ID, or
+                                                        // that already contain a valid clump ID
+                                                        if ((!indp.is_no_data(zone_data, row, col)) &&
+                                                            ondp.is_no_data(clump_data, row, col))
+                                                        {
+                                                            flood_fill(
+                                                                indp,
+                                                                ondp,
+                                                                zone_data,
+                                                                {row, col},
+                                                                clump_data,
+                                                                clump_id,
+                                                                connectivity);
+                                                            ++clump_id;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // We only need to check whether clumps extend in diagonal
+                                            // direction. Other direction is handled above already.
+
+                                            if (!indp.is_no_data(clump_data[north_west_idx]) &&
+                                                !indp.is_no_data(clump_data[south_east_idx]) &&
+                                                clump_data[north_west_idx] == clump_data[south_east_idx])
+                                            {
+                                                // Clump extends in north-west / south-east direction
+                                                auto const north_west_key = std::make_tuple(
+                                                    row_in_partitions,
+                                                    col_in_partitions,
+                                                    north_west_local_clump_id);
+                                                auto const south_east_key = std::make_tuple(
+                                                    row_in_partitions + 1,
+                                                    col_in_partitions + 1,
+                                                    south_east_local_clump_id);
+
+                                                auto const north_west_it =
+                                                    global_clump_ids_by_local_clump_id.find(north_west_key);
+                                                auto const south_east_it =
+                                                    global_clump_ids_by_local_clump_id.find(south_east_key);
+
+                                                Index north_west_global_clump_ids_idx{-1};
+                                                Index south_east_global_clump_ids_idx{-1};
+
+                                                if (north_west_it != global_clump_ids_by_local_clump_id.end())
+                                                {
+                                                    north_west_global_clump_ids_idx = north_west_it->second;
+
+                                                    if (south_east_it ==
+                                                        global_clump_ids_by_local_clump_id.end())
+                                                    {
+                                                        // north_west_it != end && south_east_it == end
+                                                        south_east_global_clump_ids_idx =
+                                                            north_west_global_clump_ids_idx;
+                                                        global_clump_ids_by_local_clump_id[south_east_key] =
+                                                            south_east_global_clump_ids_idx;
+                                                    }
+                                                    else
+                                                    {
+                                                        south_east_global_clump_ids_idx =
+                                                            south_east_it->second;
+                                                    }
+                                                }
+                                                else if (
+                                                    south_east_it != global_clump_ids_by_local_clump_id.end())
+                                                {
+                                                    // north_west_it == end && south_east_it != end
+                                                    south_east_global_clump_ids_idx = south_east_it->second;
+                                                    north_west_global_clump_ids_idx =
+                                                        south_east_global_clump_ids_idx;
+                                                    global_clump_ids_by_local_clump_id[north_west_key] =
+                                                        north_west_global_clump_ids_idx;
+                                                }
+                                                else
+                                                {
+                                                    // north_west_it == end && south_east_it == end
+                                                    global_clump_ids.push_back({});
+                                                    north_west_global_clump_ids_idx =
+                                                        global_clump_ids.size() - 1;
                                                     south_east_global_clump_ids_idx =
+                                                        north_west_global_clump_ids_idx;
+                                                    global_clump_ids_by_local_clump_id[north_west_key] =
                                                         north_west_global_clump_ids_idx;
                                                     global_clump_ids_by_local_clump_id[south_east_key] =
                                                         south_east_global_clump_ids_idx;
                                                 }
+
+                                                lue_hpx_assert(north_west_global_clump_ids_idx >= 0);
+                                                lue_hpx_assert(south_east_global_clump_ids_idx >= 0);
+
+                                                global_clump_ids[north_west_global_clump_ids_idx].insert(
+                                                    north_west_local_result.global_clump_id(
+                                                        north_west_local_clump_id));
+                                                global_clump_ids[north_west_global_clump_ids_idx].insert(
+                                                    south_east_local_result.global_clump_id(
+                                                        south_east_local_clump_id));
+
+                                                global_clump_ids[south_east_global_clump_ids_idx].insert(
+                                                    north_west_local_result.global_clump_id(
+                                                        north_west_local_clump_id));
+                                                global_clump_ids[south_east_global_clump_ids_idx].insert(
+                                                    south_east_local_result.global_clump_id(
+                                                        south_east_local_clump_id));
+
+                                                lue_hpx_assert(
+                                                    std::find(
+                                                        global_clump_ids[north_west_global_clump_ids_idx]
+                                                            .begin(),
+                                                        global_clump_ids[north_west_global_clump_ids_idx]
+                                                            .end(),
+                                                        north_west_local_result.global_clump_id(
+                                                            north_west_local_clump_id)) !=
+                                                    global_clump_ids[north_west_global_clump_ids_idx].end());
+                                                lue_hpx_assert(
+                                                    std::find(
+                                                        global_clump_ids[south_east_global_clump_ids_idx]
+                                                            .begin(),
+                                                        global_clump_ids[south_east_global_clump_ids_idx]
+                                                            .end(),
+                                                        south_east_local_result.global_clump_id(
+                                                            south_east_local_clump_id)) !=
+                                                    global_clump_ids[south_east_global_clump_ids_idx].end());
+
+                                                lue_hpx_assert(
+                                                    global_clump_ids_by_local_clump_id.find(north_west_key) !=
+                                                    global_clump_ids_by_local_clump_id.end());
+                                                lue_hpx_assert(
+                                                    global_clump_ids_by_local_clump_id.find(south_east_key) !=
+                                                    global_clump_ids_by_local_clump_id.end());
+                                            }
+
+                                            if (!indp.is_no_data(clump_data[north_east_idx]) &&
+                                                !indp.is_no_data(clump_data[south_west_idx]) &&
+                                                clump_data[north_east_idx] == clump_data[south_west_idx])
+                                            {
+                                                // Clump extends in north-west / south-east direction
+                                                auto const north_east_key = std::make_tuple(
+                                                    row_in_partitions,
+                                                    col_in_partitions + 1,
+                                                    north_east_local_clump_id);
+                                                auto const south_west_key = std::make_tuple(
+                                                    row_in_partitions + 1,
+                                                    col_in_partitions,
+                                                    south_west_local_clump_id);
+
+                                                auto const north_east_it =
+                                                    global_clump_ids_by_local_clump_id.find(north_east_key);
+                                                auto const south_west_it =
+                                                    global_clump_ids_by_local_clump_id.find(south_west_key);
+
+                                                Index north_east_global_clump_ids_idx{-1};
+                                                Index south_west_global_clump_ids_idx{-1};
+
+                                                if (north_east_it != global_clump_ids_by_local_clump_id.end())
+                                                {
+                                                    north_east_global_clump_ids_idx = north_east_it->second;
+
+                                                    if (south_west_it ==
+                                                        global_clump_ids_by_local_clump_id.end())
+                                                    {
+                                                        // north_east_it != end && south_west_it == end
+                                                        south_west_global_clump_ids_idx =
+                                                            north_east_global_clump_ids_idx;
+                                                        global_clump_ids_by_local_clump_id[south_west_key] =
+                                                            south_west_global_clump_ids_idx;
+                                                    }
+                                                    else
+                                                    {
+                                                        south_west_global_clump_ids_idx =
+                                                            south_west_it->second;
+                                                    }
+                                                }
+                                                else if (
+                                                    south_west_it != global_clump_ids_by_local_clump_id.end())
+                                                {
+                                                    // north_east_it == end && south_west_it != end
+                                                    south_west_global_clump_ids_idx = south_west_it->second;
+                                                    north_east_global_clump_ids_idx =
+                                                        south_west_global_clump_ids_idx;
+                                                    global_clump_ids_by_local_clump_id[north_east_key] =
+                                                        north_east_global_clump_ids_idx;
+                                                }
                                                 else
                                                 {
-                                                    south_east_global_clump_ids_idx = south_east_it->second;
-                                                }
-                                            }
-                                            else if (
-                                                south_east_it != global_clump_ids_by_local_clump_id.end())
-                                            {
-                                                // north_west_it == end && south_east_it != end
-                                                south_east_global_clump_ids_idx = south_east_it->second;
-                                                north_west_global_clump_ids_idx =
-                                                    south_east_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[north_west_key] =
-                                                    north_west_global_clump_ids_idx;
-                                            }
-                                            else
-                                            {
-                                                // north_west_it == end && south_east_it == end
-                                                global_clump_ids.push_back({});
-                                                north_west_global_clump_ids_idx = global_clump_ids.size() - 1;
-                                                south_east_global_clump_ids_idx =
-                                                    north_west_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[north_west_key] =
-                                                    north_west_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[south_east_key] =
-                                                    south_east_global_clump_ids_idx;
-                                            }
-
-                                            lue_hpx_assert(north_west_global_clump_ids_idx >= 0);
-                                            lue_hpx_assert(south_east_global_clump_ids_idx >= 0);
-
-                                            global_clump_ids[north_west_global_clump_ids_idx].insert(
-                                                north_west_local_result.global_clump_id(
-                                                    north_west_local_clump_id));
-                                            global_clump_ids[north_west_global_clump_ids_idx].insert(
-                                                south_east_local_result.global_clump_id(
-                                                    south_east_local_clump_id));
-
-                                            global_clump_ids[south_east_global_clump_ids_idx].insert(
-                                                north_west_local_result.global_clump_id(
-                                                    north_west_local_clump_id));
-                                            global_clump_ids[south_east_global_clump_ids_idx].insert(
-                                                south_east_local_result.global_clump_id(
-                                                    south_east_local_clump_id));
-
-                                            lue_hpx_assert(
-                                                std::find(
-                                                    global_clump_ids[north_west_global_clump_ids_idx].begin(),
-                                                    global_clump_ids[north_west_global_clump_ids_idx].end(),
-                                                    north_west_local_result.global_clump_id(
-                                                        north_west_local_clump_id)) !=
-                                                global_clump_ids[north_west_global_clump_ids_idx].end());
-                                            lue_hpx_assert(
-                                                std::find(
-                                                    global_clump_ids[south_east_global_clump_ids_idx].begin(),
-                                                    global_clump_ids[south_east_global_clump_ids_idx].end(),
-                                                    south_east_local_result.global_clump_id(
-                                                        south_east_local_clump_id)) !=
-                                                global_clump_ids[south_east_global_clump_ids_idx].end());
-
-                                            lue_hpx_assert(
-                                                global_clump_ids_by_local_clump_id.find(north_west_key) !=
-                                                global_clump_ids_by_local_clump_id.end());
-                                            lue_hpx_assert(
-                                                global_clump_ids_by_local_clump_id.find(south_east_key) !=
-                                                global_clump_ids_by_local_clump_id.end());
-                                        }
-
-                                        if (!indp.is_no_data(clump_data[north_east_idx]) &&
-                                            !indp.is_no_data(clump_data[south_west_idx]) &&
-                                            clump_data[north_east_idx] == clump_data[south_west_idx])
-                                        {
-                                            // Clump extends in north-west / south-east direction
-                                            auto const north_east_key = std::make_tuple(
-                                                row_in_partitions,
-                                                col_in_partitions + 1,
-                                                north_east_local_clump_id);
-                                            auto const south_west_key = std::make_tuple(
-                                                row_in_partitions + 1,
-                                                col_in_partitions,
-                                                south_west_local_clump_id);
-
-                                            auto const north_east_it =
-                                                global_clump_ids_by_local_clump_id.find(north_east_key);
-                                            auto const south_west_it =
-                                                global_clump_ids_by_local_clump_id.find(south_west_key);
-
-                                            Index north_east_global_clump_ids_idx{-1};
-                                            Index south_west_global_clump_ids_idx{-1};
-
-                                            if (north_east_it != global_clump_ids_by_local_clump_id.end())
-                                            {
-                                                north_east_global_clump_ids_idx = north_east_it->second;
-
-                                                if (south_west_it == global_clump_ids_by_local_clump_id.end())
-                                                {
-                                                    // north_east_it != end && south_west_it == end
+                                                    // north_east_it == end && south_west_it == end
+                                                    global_clump_ids.push_back({});
+                                                    north_east_global_clump_ids_idx =
+                                                        global_clump_ids.size() - 1;
                                                     south_west_global_clump_ids_idx =
+                                                        north_east_global_clump_ids_idx;
+                                                    global_clump_ids_by_local_clump_id[north_east_key] =
                                                         north_east_global_clump_ids_idx;
                                                     global_clump_ids_by_local_clump_id[south_west_key] =
                                                         south_west_global_clump_ids_idx;
                                                 }
-                                                else
-                                                {
-                                                    south_west_global_clump_ids_idx = south_west_it->second;
-                                                }
-                                            }
-                                            else if (
-                                                south_west_it != global_clump_ids_by_local_clump_id.end())
-                                            {
-                                                // north_east_it == end && south_west_it != end
-                                                south_west_global_clump_ids_idx = south_west_it->second;
-                                                north_east_global_clump_ids_idx =
-                                                    south_west_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[north_east_key] =
-                                                    north_east_global_clump_ids_idx;
-                                            }
-                                            else
-                                            {
-                                                // north_east_it == end && south_west_it == end
-                                                global_clump_ids.push_back({});
-                                                north_east_global_clump_ids_idx = global_clump_ids.size() - 1;
-                                                south_west_global_clump_ids_idx =
-                                                    north_east_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[north_east_key] =
-                                                    north_east_global_clump_ids_idx;
-                                                global_clump_ids_by_local_clump_id[south_west_key] =
-                                                    south_west_global_clump_ids_idx;
-                                            }
 
-                                            lue_hpx_assert(north_east_global_clump_ids_idx >= 0);
-                                            lue_hpx_assert(south_west_global_clump_ids_idx >= 0);
+                                                lue_hpx_assert(north_east_global_clump_ids_idx >= 0);
+                                                lue_hpx_assert(south_west_global_clump_ids_idx >= 0);
 
-                                            global_clump_ids[north_east_global_clump_ids_idx].insert(
-                                                north_east_local_result.global_clump_id(
-                                                    north_east_local_clump_id));
-                                            global_clump_ids[north_east_global_clump_ids_idx].insert(
-                                                south_west_local_result.global_clump_id(
-                                                    south_west_local_clump_id));
-
-                                            global_clump_ids[south_west_global_clump_ids_idx].insert(
-                                                north_east_local_result.global_clump_id(
-                                                    north_east_local_clump_id));
-                                            global_clump_ids[south_west_global_clump_ids_idx].insert(
-                                                south_west_local_result.global_clump_id(
-                                                    south_west_local_clump_id));
-
-                                            lue_hpx_assert(
-                                                std::find(
-                                                    global_clump_ids[north_east_global_clump_ids_idx].begin(),
-                                                    global_clump_ids[north_east_global_clump_ids_idx].end(),
+                                                global_clump_ids[north_east_global_clump_ids_idx].insert(
                                                     north_east_local_result.global_clump_id(
-                                                        north_east_local_clump_id)) !=
-                                                global_clump_ids[north_east_global_clump_ids_idx].end());
-                                            lue_hpx_assert(
-                                                std::find(
-                                                    global_clump_ids[south_west_global_clump_ids_idx].begin(),
-                                                    global_clump_ids[south_west_global_clump_ids_idx].end(),
+                                                        north_east_local_clump_id));
+                                                global_clump_ids[north_east_global_clump_ids_idx].insert(
                                                     south_west_local_result.global_clump_id(
-                                                        south_west_local_clump_id)) !=
-                                                global_clump_ids[south_west_global_clump_ids_idx].end());
+                                                        south_west_local_clump_id));
 
-                                            lue_hpx_assert(
-                                                global_clump_ids_by_local_clump_id.find(north_east_key) !=
-                                                global_clump_ids_by_local_clump_id.end());
-                                            lue_hpx_assert(
-                                                global_clump_ids_by_local_clump_id.find(south_west_key) !=
-                                                global_clump_ids_by_local_clump_id.end());
+                                                global_clump_ids[south_west_global_clump_ids_idx].insert(
+                                                    north_east_local_result.global_clump_id(
+                                                        north_east_local_clump_id));
+                                                global_clump_ids[south_west_global_clump_ids_idx].insert(
+                                                    south_west_local_result.global_clump_id(
+                                                        south_west_local_clump_id));
+
+                                                lue_hpx_assert(
+                                                    std::find(
+                                                        global_clump_ids[north_east_global_clump_ids_idx]
+                                                            .begin(),
+                                                        global_clump_ids[north_east_global_clump_ids_idx]
+                                                            .end(),
+                                                        north_east_local_result.global_clump_id(
+                                                            north_east_local_clump_id)) !=
+                                                    global_clump_ids[north_east_global_clump_ids_idx].end());
+                                                lue_hpx_assert(
+                                                    std::find(
+                                                        global_clump_ids[south_west_global_clump_ids_idx]
+                                                            .begin(),
+                                                        global_clump_ids[south_west_global_clump_ids_idx]
+                                                            .end(),
+                                                        south_west_local_result.global_clump_id(
+                                                            south_west_local_clump_id)) !=
+                                                    global_clump_ids[south_west_global_clump_ids_idx].end());
+
+                                                lue_hpx_assert(
+                                                    global_clump_ids_by_local_clump_id.find(north_east_key) !=
+                                                    global_clump_ids_by_local_clump_id.end());
+                                                lue_hpx_assert(
+                                                    global_clump_ids_by_local_clump_id.find(south_west_key) !=
+                                                    global_clump_ids_by_local_clump_id.end());
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
 
-                        // Update global clump IDs for those local IDs that must be merged. Use the
-                        // lowest original global clump ID as the final global clump ID. Keep track
-                        // of the global clump IDs that got removed this way. Sort this collection.
+                            // Update global clump IDs for those local IDs that must be merged. Use the
+                            // lowest original global clump ID as the final global clump ID. Keep track
+                            // of the global clump IDs that got removed this way. Sort this collection.
 
-                        // Iterate over all (partition, local clump ID) tuples and replace the associated
-                        // global clump ID with the lowest global clump ID of the current global clump IDs
-                        // that must be merged.
+                            // Iterate over all (partition, local clump ID) tuples and replace the associated
+                            // global clump ID with the lowest global clump ID of the current global clump IDs
+                            // that must be merged.
 
 
-                        // It is possible that global clump IDs have been collected in different collections
-                        // while they should be merged because they actually belong to the same global clump.
-                        // This is the case when the intersection of any two sets is not empty. If that is the
-                        // case, replace both by a single union, and update
-                        // global_clump_ids_by_local_clump_id.
+                            // It is possible that global clump IDs have been collected in different
+                            // collections while they should be merged because they actually belong to the
+                            // same global clump. This is the case when the intersection of any two sets is
+                            // not empty. If that is the case, replace both by a single union, and update
+                            // global_clump_ids_by_local_clump_id.
 
-                        {
-                            std::unordered_map<Index, Index> global_clump_ids_updates{};
-
-                            std::set<ClumpElement> global_clump_ids_union{};
-
-                            // This loop is the most expensive part of the whole algorithm and it executes on
-                            // the root locality. Not nice. Improve if possible.
-
-                            for (std::size_t idx1 = 0; idx1 < std::size(global_clump_ids); ++idx1)
                             {
-                                for (std::size_t idx2 = idx1 + 1; idx2 < std::size(global_clump_ids); ++idx2)
+                                std::unordered_map<Index, Index> global_clump_ids_updates{};
+
+                                std::set<ClumpElement> global_clump_ids_union{};
+
+                                // This loop is the most expensive part of the whole algorithm and it executes
+                                // on the root locality. Not nice. Improve if possible.
+
+                                for (std::size_t idx1 = 0; idx1 < std::size(global_clump_ids); ++idx1)
                                 {
-                                    auto& global_clump_ids1{global_clump_ids[idx1]};
-                                    auto& global_clump_ids2{global_clump_ids[idx2]};
-
-                                    if (share_element(global_clump_ids1, global_clump_ids2))
+                                    for (std::size_t idx2 = idx1 + 1; idx2 < std::size(global_clump_ids);
+                                         ++idx2)
                                     {
-                                        global_clump_ids_union.clear();
+                                        auto& global_clump_ids1{global_clump_ids[idx1]};
+                                        auto& global_clump_ids2{global_clump_ids[idx2]};
 
-                                        std::set_union(
-                                            global_clump_ids1.begin(),
-                                            global_clump_ids1.end(),
-                                            global_clump_ids2.begin(),
-                                            global_clump_ids2.end(),
-                                            std::inserter(
-                                                global_clump_ids_union, global_clump_ids_union.begin()));
+                                        if (share_element(global_clump_ids1, global_clump_ids2))
+                                        {
+                                            global_clump_ids_union.clear();
 
-                                        global_clump_ids1 = std::move(global_clump_ids_union);
-                                        global_clump_ids2.clear();
-                                        lue_hpx_assert(
-                                            global_clump_ids_updates.find(idx2) ==
-                                            global_clump_ids_updates.end());
-                                        global_clump_ids_updates[idx2] = idx1;
+                                            std::set_union(
+                                                global_clump_ids1.begin(),
+                                                global_clump_ids1.end(),
+                                                global_clump_ids2.begin(),
+                                                global_clump_ids2.end(),
+                                                std::inserter(
+                                                    global_clump_ids_union, global_clump_ids_union.begin()));
+
+                                            global_clump_ids1 = std::move(global_clump_ids_union);
+                                            global_clump_ids2.clear();
+                                            lue_hpx_assert(
+                                                global_clump_ids_updates.find(idx2) ==
+                                                global_clump_ids_updates.end());
+                                            global_clump_ids_updates[idx2] = idx1;
+                                        }
+                                    }
+                                }
+
+                                for (auto& [clump_tuple, global_clump_ids_idx] :
+                                     global_clump_ids_by_local_clump_id)
+                                {
+                                    if (auto it = global_clump_ids_updates.find(global_clump_ids_idx);
+                                        it != global_clump_ids_updates.end())
+                                    {
+                                        global_clump_ids_idx = it->second;
                                     }
                                 }
                             }
 
-                            for (auto& [clump_tuple, global_clump_ids_idx] :
+                            for (auto const& [clump_tuple, global_clump_ids_idx] :
                                  global_clump_ids_by_local_clump_id)
                             {
-                                if (auto it = global_clump_ids_updates.find(global_clump_ids_idx);
-                                    it != global_clump_ids_updates.end())
-                                {
-                                    global_clump_ids_idx = it->second;
-                                }
+                                auto const [row, col, local_clump_id] = clump_tuple;
+                                ClumpElement const new_global_clump_id =
+                                    *global_clump_ids[global_clump_ids_idx].begin();
+
+                                local_results(row, col).update_global_clump_id(
+                                    local_clump_id, new_global_clump_id);
                             }
-                        }
 
-                        for (auto const& [clump_tuple, global_clump_ids_idx] :
-                             global_clump_ids_by_local_clump_id)
-                        {
-                            auto const [row, col, local_clump_id] = clump_tuple;
-                            ClumpElement const new_global_clump_id =
-                                *global_clump_ids[global_clump_ids_idx].begin();
-
-                            local_results(row, col).update_global_clump_id(
-                                local_clump_id, new_global_clump_id);
-                        }
-
-                        return local_results;
-                    }));
+                            return local_results;
+                        }));
         }
 
 
@@ -1893,35 +1916,36 @@ namespace lue {
             using ClumpPartition = PartitionT<Partitions>;
             using LUT = typename LocalResult<ClumpPartition>::LUT;
 
-            local_results_f.then(hpx::unwrapping(
-                [policies, clump_partition_promises = std::move(clump_partition_promises), nr_partitions](
-                    auto&& local_results) mutable
-                {
-                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                    // Iterate over all partitions and asynchronously spawn a task which reclassifies the
-                    // local clump IDs into global clump IDs
-
-                    ReclassPartitionAction<decltype(ondp), ClumpPartition, LUT> action{};
-
-                    for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+            local_results_f.then(
+                hpx::unwrapping(
+                    [policies, clump_partition_promises = std::move(clump_partition_promises), nr_partitions](
+                        auto&& local_results) mutable
                     {
-                        auto& local_result{local_results[partition_idx]};
-                        auto partition{local_result.partition()};
-                        auto lut{local_result.lut()};
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                        lue_hpx_assert(partition.is_ready());
+                        // Iterate over all partitions and asynchronously spawn a task which reclassifies the
+                        // local clump IDs into global clump IDs
 
-                        clump_partition_promises[partition_idx].set_value(
-                            Partition{hpx::async(
-                                          action,
-                                          hpx::get_colocation_id(hpx::launch::sync, partition.get_id()),
-                                          ondp,
-                                          std::move(partition),
-                                          std::move(lut))}
-                                .get_id());
-                    }
-                }));
+                        ReclassPartitionAction<decltype(ondp), ClumpPartition, LUT> action{};
+
+                        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
+                        {
+                            auto& local_result{local_results[partition_idx]};
+                            auto partition{local_result.partition()};
+                            auto lut{local_result.lut()};
+
+                            lue_hpx_assert(partition.is_ready());
+
+                            clump_partition_promises[partition_idx].set_value(
+                                Partition{hpx::async(
+                                              action,
+                                              hpx::get_colocation_id(hpx::launch::sync, partition.get_id()),
+                                              ondp,
+                                              std::move(partition),
+                                              std::move(lut))}
+                                    .get_id());
+                        }
+                    }));
 
             return clump_partitions;
         }
@@ -1950,7 +1974,7 @@ namespace lue {
         auto clump_partitions = detail::clump::solve_clump_globally<Policies, ClumpPartitions>(
             policies, zone.partitions().shape(), std::move(local_results_f));
 
-        return {shape(zone), zone.localities(), std::move(clump_partitions)};
+        return {shape(zone), Localities<rank>{zone.localities()}, std::move(clump_partitions)};
     }
 
 }  // namespace lue

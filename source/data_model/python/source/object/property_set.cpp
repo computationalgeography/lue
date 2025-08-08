@@ -663,9 +663,10 @@ namespace lue {
                                 {
                                     case ShapeVariability::constant:
                                     {
-                                        throw std::runtime_error("Pass in shape of object array if "
-                                                                 "these don't differ per object and "
-                                                                 "are constant through time");
+                                        throw std::runtime_error(
+                                            "Pass in shape of object array if "
+                                            "these don't differ per object and "
+                                            "are constant through time");
                                         break;
                                     }
                                     case ShapeVariability::variable:

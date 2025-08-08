@@ -146,7 +146,7 @@ namespace lue {
 
         detail::normal::NormalPartitionAction<Policies, InputPartition> action;
 
-        Localities<rank> const& localities{input_array.localities()};
+        Localities<rank> localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -166,7 +166,7 @@ namespace lue {
                 stddev.future());
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
     }
 
 
@@ -327,7 +327,8 @@ namespace lue {
                     hpx::launch::async,
                     hpx::unwrapping(
                         [locality_id, policies, offset, partition_shape](
-                            Element const mean, Element const stddev) -> Partition {
+                            Element const mean, Element const stddev) -> Partition
+                        {
                             return hpx::async(
                                 Action{}, locality_id, policies, offset, partition_shape, mean, stddev);
                         }),

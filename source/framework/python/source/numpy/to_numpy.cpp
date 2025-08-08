@@ -16,8 +16,8 @@ namespace lue::framework {
 
         template<typename Element, Rank rank>
         auto to_numpy(
-            PartitionedArray<Element, rank> const& array,
-            std::optional<Element> const& no_data_value) -> pybind11::array_t<Element>
+            PartitionedArray<Element, rank> const& array, std::optional<Element> const& no_data_value)
+            -> pybind11::array_t<Element>
         {
             // NOTE: For now we assume
             // - All arrays have rank 2

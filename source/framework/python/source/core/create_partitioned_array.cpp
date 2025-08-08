@@ -197,10 +197,11 @@ namespace lue::framework {
 
                 if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            dynamic_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
             }
 
@@ -442,10 +443,11 @@ namespace lue::framework {
 
                 if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            dynamic_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
             }
 
