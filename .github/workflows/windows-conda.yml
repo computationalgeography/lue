@@ -23,7 +23,7 @@ jobs:
       matrix:
         os: ["windows-2022"]
         compiler:
-          - { name: "visual studio", c: cl, cxx: cl }
+          - { name: "msvc", c: cl, cxx: cl }
         vs:
           - {
               name: "Visual Studio Enterprise 2022",

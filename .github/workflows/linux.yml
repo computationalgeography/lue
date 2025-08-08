@@ -255,7 +255,6 @@ jobs:
               sftp://$ftp_server
           cd document/doc
           lftp \
-              -d \
               -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" \
               -u $ftp_username,$ftp_password \
               -p $ftp_port \

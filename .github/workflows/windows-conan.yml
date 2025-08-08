@@ -23,7 +23,7 @@ jobs:
       matrix:
         os: ["windows-2022"]
         compiler:
-          - { name: "visual studio", c: cl, cxx: cl }
+          - { name: "msvc", c: cl, cxx: cl }
         vs:
           - {
               name: "Visual Studio Enterprise 2022",
@@ -132,7 +132,7 @@ jobs:
               --build=missing \
               --output-folder=${{ env.conan_package_prefix }}/environment
 
-          # ls -la C:/Users/runneradmin"
+          # ls -la C:/Users/runneradmin
           # ls -l ${{ env.conan_package_prefix }}
           # ls -l ${{ env.conan_package_prefix }}/environment
           conan list
