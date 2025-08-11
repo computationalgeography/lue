@@ -113,6 +113,17 @@ if(LUE_BUILD_DATA_MODEL)
 endif()
 
 
+if(LUE_BUILD_GDAL)
+    set(LUE_BUILD_PROJ TRUE)
+    set(LUE_GDAL_REQUIRED TRUE)
+endif()
+
+
+if(LUE_BUILD_PROJ)
+    set(LUE_PROJ_REQUIRED TRUE)
+endif()
+
+
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_TEMPLATIZE "${PROJECT_SOURCE_DIR}/environment/script/templatize.py")
 
@@ -429,7 +440,6 @@ if(LUE_BUILD_DATA_MODEL)
 
     if(LUE_DATA_MODEL_WITH_UTILITIES)
         set(LUE_CXXOPTS_REQUIRED TRUE)
-        set(LUE_GDAL_REQUIRED TRUE)
         set(LUE_NLOHMANN_JSON_REQUIRED TRUE)
     endif()
 
@@ -442,7 +452,6 @@ endif()
 
 if(LUE_BUILD_FRAMEWORK)
     set(LUE_BOOST_REQUIRED TRUE)
-    set(LUE_GDAL_REQUIRED TRUE)
     set(LUE_HPX_REQUIRED TRUE)
     set(LUE_MDSPAN_REQUIRED TRUE)
     set(LUE_PYTHON_REQUIRED TRUE)  # templatize.py
@@ -450,6 +459,16 @@ if(LUE_BUILD_FRAMEWORK)
     if(LUE_FRAMEWORK_WITH_PYTHON_API)
         set(LUE_PYBIND11_REQUIRED TRUE)
     endif()
+endif()
+
+
+if(LUE_BUILD_GDAL)
+    set(LUE_GDAL_REQUIRED TRUE)
+endif()
+
+
+if(LUE_BUILD_PROJ)
+    set(LUE_PROJ_REQUIRED TRUE)
 endif()
 
 
@@ -764,6 +783,9 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
+if(LUE_PROJ_REQUIRED)
+    find_package(PROJ REQUIRED CONFIG)
+endif()
 
 if(LUE_LATEX_REQUIRED)
     find_package(LATEX REQUIRED)
