@@ -2,7 +2,7 @@ cmake_minimum_required(
     VERSION 3.31  # We use comments in presets files
 )
 project(LUE
-    VERSION 0.3.10
+    VERSION 0.3.11
     LANGUAGES C CXX
     DESCRIPTION "A modelling framework for simulating large geographical systems of agents and fields"
     HOMEPAGE_URL "https://github.com/computationalgeography/lue"
