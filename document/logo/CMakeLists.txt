@@ -24,4 +24,24 @@ if(LATEX_FOUND)
             VERBATIM
         )
     endif()
+
+    set(name favicon)
+
+    add_latex_document(${name}.tex
+        TARGET_NAME
+            lue.figure.${name}
+    )
+
+    if(ImageMagick_FOUND)
+        add_custom_command(
+            COMMENT "${name}.pdf → ${name}.ico"
+            TARGET lue.figure.${name}_pdf
+            POST_BUILD
+            BYPRODUCTS
+                ${name}.ico
+            COMMAND ${ImageMagick_convert_EXECUTABLE}
+                -define icon:auto-resize=16,24,32,48,64,72,96,128,256 ${name}.pdf ${name}.ico
+            VERBATIM
+        )
+    endif()
 endif()
