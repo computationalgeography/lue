@@ -111,12 +111,6 @@ endif()
 
 if(LUE_BUILD_GDAL)
     set(LUE_BUILD_PROJ TRUE)
-    set(LUE_GDAL_REQUIRED TRUE)
-endif()
-
-
-if(LUE_BUILD_PROJ)
-    set(LUE_PROJ_REQUIRED TRUE)
 endif()
 
 
@@ -678,9 +672,12 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
 
+
 if(LUE_PROJ_REQUIRED)
     find_package(PROJ REQUIRED CONFIG)
+    message(STATUS "Found PROJ version ${PROJ_VERSION} in ${PROJ_DIR}")
 endif()
+
 
 if(LUE_SPHINX_REQUIRED)
     # TODO Find Sphinx Python package.
