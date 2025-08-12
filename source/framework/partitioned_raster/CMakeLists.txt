@@ -1,6 +1,3 @@
-add_test_conditionally(test)
-
-
 # # Instantiate raster partition classes -----------------------------------------
 # set(generated_source_files "")
 #
@@ -41,11 +38,7 @@ add_test_conditionally(test)
 #     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 # endblock()
 
-add_library(lue_framework_partitioned_raster INTERFACE
-    # src/server/raster_partition.cpp
-    # ${generated_source_files}
-)
-
+add_library(lue_framework_partitioned_raster INTERFACE)
 add_library(lue::framework_partitioned_raster ALIAS lue_framework_partitioned_raster)
 
 # set_target_properties(lue_framework_partitioned_raster
@@ -57,34 +50,39 @@ add_library(lue::framework_partitioned_raster ALIAS lue_framework_partitioned_ra
 
 # generate_export_header(lue_framework_partitioned_raster
 #     EXPORT_FILE_NAME include/lue/framework/partitioned_raster/export.hpp
-#     EXPORT_MACRO_NAME LUE_PARTITIONED_RASTER_EXPORT)
-
-target_include_directories(lue_framework_partitioned_raster
-    INTERFACE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        # $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>  # export.hpp
-)
+#     EXPORT_MACRO_NAME LUE_PARTITIONED_RASTER_EXPERT
+# )
 
 target_sources(lue_framework_partitioned_raster
     PUBLIC
-        FILE_SET
-            HEADERS
+        FILE_SET HEADERS
         BASE_DIRS
             include
             # ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
             # ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_raster/export.hpp
+            # ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_raster/server/raster_partition.hpp
+    PRIVATE
+        # source/server/raster_partition.cpp
+        # ${generated_source_files}
 )
 
 target_link_libraries(lue_framework_partitioned_raster
     INTERFACE
-        lue::framework_partitioned_array)
-
-lue_install_development_libraries(
-    TARGETS lue_framework_partitioned_raster
+        lue::framework_partitioned_array
 )
 
 lue_install_runtime_libraries(
-    TARGETS lue_framework_partitioned_raster
+    TARGETS
+        lue_framework_partitioned_raster
 )
+
+lue_install_development_libraries(
+    TARGETS
+        lue_framework_partitioned_raster
+)
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
