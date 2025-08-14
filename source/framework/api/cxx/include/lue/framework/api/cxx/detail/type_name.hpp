@@ -105,4 +105,11 @@ namespace lue::api::detail {
         return std::format("Array<{}, {}>", type_name<Element>(), rank);
     }
 
+
+    template<typename Element>
+    auto type_name([[maybe_unused]] PartitionedRaster<Element> const& argument) -> std::string
+    {
+        return std::format("Raster<{}>", type_name<Element>());
+    }
+
 }  // namespace lue::api::detail
