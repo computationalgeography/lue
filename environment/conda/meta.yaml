@@ -32,13 +32,12 @@ requirements:
     - libgdal
     - nlohmann_json
     - numpy
+    - proj
     - pybind11
     - python
 
   run:
     - docopt  # lue.qa
-    - hpx
-    - libgdal
     - matplotlib-base  # lue.qa
     - python
     - python-dateutil  # lue.qa
