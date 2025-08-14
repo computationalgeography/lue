@@ -33,6 +33,7 @@ requirements:
     - libgdal
     - nlohmann_json
     - numpy
+    - proj
     - pybind11
     - python
 
