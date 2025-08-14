@@ -165,6 +165,13 @@ jobs:
               -D HPX_ROOT=${{ env.hpx_install_directory }} \
               -D mdspan_ROOT=${{ env.mdspan_install_directory }}
 
+      - name: analyse
+        if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        run: |
+          sudo apt-get install clang-tidy
+          pre-commit install
+          pre-commit run --all-files
+
       - name: build
         run: |
           cmake --build ${{ env.lue_build_directory }} \
