@@ -1,4 +1,5 @@
 #include "lue/proj/version.hpp"
+#include <proj.h>
 
 
 namespace lue::proj {
@@ -8,8 +9,7 @@ namespace lue::proj {
     */
     auto version() -> std::string
     {
-        // TODO: How to obtain proj's version?
-        return "TODO";
+        return proj_info().version;
     }
 
 }  // namespace lue::proj
