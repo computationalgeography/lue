@@ -13,6 +13,10 @@ on:
       - "master"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: conda / ${{ matrix.os }} / ${{ matrix.target-platform }}
