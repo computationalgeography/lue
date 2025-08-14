@@ -43,7 +43,7 @@ namespace lue {
             */
             BoundingBox(Limits&& limits):
 
-                _limits{std::forward<Limits>(limits)}
+                _limits{std::move(limits)}
 
             {
             }
@@ -58,6 +58,8 @@ namespace lue {
             auto operator=(BoundingBox const&) -> BoundingBox& = default;
 
             auto operator=(BoundingBox&&) noexcept -> BoundingBox& = default;
+
+            auto operator==(BoundingBox const&) const -> bool = default;
 
 
             /*!
@@ -84,6 +86,15 @@ namespace lue {
             auto extent(Index const dimension_idx) const -> Extent
             {
                 return this->max_limit(dimension_idx) - this->min_limit(dimension_idx);
+            }
+
+
+            /*!
+                @brief      Return the collection of limits
+            */
+            auto limits() const -> Limits const&
+            {
+                return _limits;
             }
 
         private:
