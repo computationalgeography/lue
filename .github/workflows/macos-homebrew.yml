@@ -78,6 +78,7 @@ jobs:
             lftp \
             nlohmann-json \
             numpy \
+            proj \
             pybind11 \
             python-matplotlib
           python${{ matrix.python_version }} -m venv --system-site-packages env

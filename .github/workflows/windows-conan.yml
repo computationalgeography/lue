@@ -59,7 +59,7 @@ jobs:
       # TODO github.workspace contains backslashes which prevents the caching to work
       # conan_package_prefix: ${{ github.workspace }}/.conan2
       conan_package_prefix: "C:/Users/runneradmin/.conan2"
-      conan_packages: "asio boost cxxopts gdal glfw hwloc imgui hdf5 mimalloc nlohmann_json pybind11 vulkan-headers vulkan-loader"
+      conan_packages: "asio boost cxxopts gdal glfw hwloc imgui hdf5 mimalloc nlohmann_json proj pybind11 vulkan-headers vulkan-loader"
       conda_package_prefix: "C:/Users/runneradmin/conda_pkgs_dir"
       # conda-build provides the conda-develop command
       conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"

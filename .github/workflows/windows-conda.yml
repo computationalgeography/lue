@@ -57,7 +57,7 @@ jobs:
       lue_consume_source_directory: lue_consume_source
       lue_consume_build_directory: lue_consume_build
       # conda-build provides the conda-develop command
-      conda_packages: "conda-build cxxopts docopt jinja2 hdf5 hpx libboost-devel libboost-headers libgdal libhwloc matplotlib ninja nlohmann_json numpy pybind11 ruamel.yaml"
+      conda_packages: "conda-build cxxopts docopt jinja2 hdf5 hpx libboost-devel libboost-headers libgdal libhwloc matplotlib ninja nlohmann_json numpy proj pybind11 ruamel.yaml"
 
     steps:
       - uses: actions/checkout@v4
