@@ -1,5 +1,8 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+# NOTE: Fix versions so everybody uses the same versions of all tools. Things become very messy otherwise.
+#       It is OK to bump versions, but do it consiously. Run `pre-commit run --all-files` afterwards and
+#       commit any updates.
 exclude: |
     (?x)^(
       environment/cmake/.*\.patch|
@@ -24,14 +27,17 @@ repos:
       hooks:
           - id: mypy
             # args: [--verbose]
-            language: system # Use interpreter in environment
+            # Skip game_of_life.py because a same-named script exists in quick_start ...
             exclude: |
                 (?x)^(
                   source/data_model/python/test/.*|
                   document/luepy/ext/.*|
+                  document/doc/manual/quality_assurance/scalability/game_of_life.py|
                   source/framework/case_study/.*|
                   source/framework/python/test/.*|
                 )$
+            additional_dependencies:
+                - types-python-dateutil==2.9.0.20250809
     - repo: https://github.com/pycqa/isort
       rev: 6.0.1
       hooks:
