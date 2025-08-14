@@ -46,8 +46,11 @@ jobs:
 
       - name: Install packages
         run: |
+          sudo apt-get install \
+              llvm
           py_interpreter="${{ steps.py.outputs.python-path }}"
           $py_interpreter -m pip install \
+            clang-format==20.1.8
             pre-commit
 
       - name: Analyse files
