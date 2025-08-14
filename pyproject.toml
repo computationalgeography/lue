@@ -21,7 +21,6 @@ default.extend-ignore-identifiers-re = [
     "InputElemenT",
     "nd",
     "ND",
+    "setp",
 ]
-default.extend-ignore-words-re = [
-    "PN",
-]
+default.extend-ignore-words-re = ["PN"]
