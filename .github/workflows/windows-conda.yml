@@ -184,6 +184,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          delete: true
           uploads: |
-            ${{ env.lue_build_directory }}/.ninja_log => ${{ secrets.FTP_REMOTE_DIR }}/download/build/windows-${{ matrix.compiler.name }}/
+            ${{ env.lue_build_directory }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/build/windows-${{ matrix.compiler.name }}/
+          ignore: |
+            !.ninja_log
