@@ -172,12 +172,13 @@ jobs:
       - name: analyse
         if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         run: |
-          cd ${{ env.lue_source_directory }}
-          sudo apt-get install clang-tidy
-          pre-commit install
           ls -l ${{ env.lue_build_directory }}
-          ln -s ${{ env.lue_build_directory }}/compile_commands.json .
-          ls -l
+          ln -s $HOME/${{ env.lue_build_directory }}/compile_commands.json ${{ env.lue_source_directory }}
+          ls -l ${{ env.lue_source_directory }}
+          sudo apt-get install clang-tidy
+
+          cd ${{ env.lue_source_directory }}
+          pre-commit install
           pre-commit run --all-files
 
       - name: build
