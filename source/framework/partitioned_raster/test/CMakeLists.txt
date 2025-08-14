@@ -1,4 +1,18 @@
 set(scope lue_framework_partitioned_raster)
+
+set(names
+    crs
+)
+
+add_unit_tests(
+    SCOPE ${scope}
+    NAMES ${names}
+    LIBRARIES
+        lue::framework_test
+    TARGETS
+        test_names
+)
+
 set(names
     partitioned_raster
 )
@@ -19,10 +33,10 @@ foreach(name ${names})
     add_test(NAME ${test_name}
         COMMAND
             ${Python_EXECUTABLE} ${HPXRUN}
-                "--runwrapper" ${LUE_QA_TEST_HPX_RUNWRAPPER}
-                "--parcelport" ${LUE_QA_TEST_HPX_PARCELPORT}
-                "--localities" ${LUE_QA_TEST_NR_LOCALITIES_PER_TEST}
-                "--thread" ${LUE_QA_TEST_NR_THREADS_PER_LOCALITY} --
+                "--runwrapper" ${LUE_QUALITY_ASSURANCE_TEST_HPX_RUNWRAPPER}
+                "--parcelport" ${LUE_QUALITY_ASSURANCE_TEST_HPX_PARCELPORT}
+                "--localities" ${LUE_QUALITY_ASSURANCE_TEST_NR_LOCALITIES_PER_TEST}
+                "--thread" ${LUE_QUALITY_ASSURANCE_TEST_NR_THREADS_PER_LOCALITY} --
                     "$<TARGET_FILE:${test_name}>"
     )
 
@@ -32,9 +46,8 @@ foreach(name ${names})
         APPEND
         PROPERTY
             ENVIRONMENT_MODIFICATION
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_raster>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::framework_partitioned_array>>
+                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:lue::gdal>>
                 PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:HPX::component_storage_component>>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:$<TARGET_FILE_DIR:GDAL::GDAL>/../bin>
-                PATH=path_list_prepend:$<$<PLATFORM_ID:Windows>:${HWLOC_ROOT}/bin>
     )
 endforeach()
