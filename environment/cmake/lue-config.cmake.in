@@ -29,5 +29,9 @@ if(LUE_MDSPAN_REQUIRED)
     find_dependency(mdspan)
 endif()
 
+if(LUE_PROJ_REQUIRED)
+    find_dependency(PROJ CONFIG)
+endif()
+
 
 include(${CMAKE_CURRENT_LIST_DIR}/lue_development.cmake)
