@@ -3,7 +3,7 @@
 #include <variant>
 
 
-namespace lue::api {
+namespace lue {
 
     namespace detail {
 
@@ -111,4 +111,4 @@ namespace lue::api {
             Variant _variant;
     };
 
-}  // namespace lue::api
+}  // namespace lue
