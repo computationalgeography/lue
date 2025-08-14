@@ -199,6 +199,9 @@ jobs:
 
       - name: test
         run: |
+          find /usr/lib -name libtcmalloc_minimal.so.4
+          export LD_PRELOAD=$(find /usr/lib -name libtcmalloc_minimal.so.4)
+
           # Unit tests
           ctest --test-dir ${{ env.lue_build_directory }} \
             --output-on-failure \

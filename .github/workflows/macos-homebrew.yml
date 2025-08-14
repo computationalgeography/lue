@@ -164,6 +164,9 @@ jobs:
 
       - name: test
         run: |
+          find ${HOMEBREW_PREFIX}/lib -name libtcmalloc_minimal.dylib
+          DYLD_INSERT_LIBRARIES=$(find ${HOMEBREW_PREFIX}/lib -name libtcmalloc_minimal.dylib)
+
           source env/bin/activate
 
           # Unit tests
