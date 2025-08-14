@@ -14,9 +14,6 @@ namespace {
     using Array = lue::PartitionedArray<Element, rank>;
     using Shape = lue::ShapeT<Array>;
 
-    Shape const array_shape{{60, 40}};
-    Shape const partition_shape{{10, 10}};
-
     using Count = lue::Count;
     using OutputArray = lue::PartitionedArray<Count, rank>;
 
@@ -27,6 +24,9 @@ BOOST_AUTO_TEST_CASE(overloads)
 {
     if constexpr (lue::BuildOptions::default_policies_enabled)
     {
+        Shape const array_shape{{60, 40}};
+        Shape const partition_shape{{10, 10}};
+
         auto array{lue::default_policies::uniform<Element>(array_shape, partition_shape, 0, 100)};
 
         if constexpr (lue::arithmetic_element_supported<lue::ClockTick>)

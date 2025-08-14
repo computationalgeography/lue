@@ -17,6 +17,10 @@ on:
       - "master"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
@@ -164,6 +168,15 @@ jobs:
               -D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE \
               -D HPX_ROOT=${{ env.hpx_install_directory }} \
               -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+
+      - name: analyse
+        if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        run: |
+          sudo apt-get install clang-tidy
+          cd ${{ env.lue_source_directory }}
+          pre-commit install
+          ln -s ../${{ env.lue_build_directory }}/compile_commands.json .
+          pre-commit run --all-files
 
       - name: build
         run: |

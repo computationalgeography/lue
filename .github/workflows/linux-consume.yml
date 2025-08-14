@@ -8,6 +8,10 @@ on:
     branches-ignore:
       - "*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
