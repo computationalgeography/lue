@@ -169,6 +169,7 @@ jobs:
         if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         run: |
           sudo apt-get install clang-tidy
+          cd ${{ env.lue_source_directory }}
           pre-commit install
           pre-commit run --all-files
 
