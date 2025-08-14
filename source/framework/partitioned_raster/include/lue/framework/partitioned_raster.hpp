@@ -135,9 +135,21 @@ namespace lue {
             }
 
 
-            auto cells() const -> Cells const&
+            /*!
+                @brief      Return a reference to the collection of cells
+            */
+            auto cells() const& -> Cells const&
             {
                 return _cells;
+            }
+
+
+            /*!
+                @brief      Return (steal) the collection of cells
+            */
+            auto cells() && -> Cells
+            {
+                return std::move(_cells);
             }
 
 
