@@ -62,12 +62,11 @@ repos:
       hooks:
           - id: typos
             args: [] # Relevant: don't update files, just report
-    - repo: https://github.com/pre-commit/mirrors-clang-format
-      rev: v20.1.8
+    - repo: https://github.com/pocc/pre-commit-hooks
+      rev: v1.3.5
       hooks:
           - id: clang-format
-            types_or: [c++, c]
-    # This one last. It is the slowest. --------------------------------------------
+            args: [-i]
     - repo: https://github.com/pocc/pre-commit-hooks
       rev: v1.3.5
       hooks:
