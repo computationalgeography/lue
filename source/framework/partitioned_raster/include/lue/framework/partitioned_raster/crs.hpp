@@ -151,23 +151,23 @@ namespace lue {
             type and value". Whether two representations with different types represent the same CRS is a
             different matter.
         */
-        auto equal([[maybe_unused]] auto const& lhs, [[maybe_unused]] auto const& rhs) -> bool
+        inline auto equal([[maybe_unused]] auto const& lhs, [[maybe_unused]] auto const& rhs) -> bool
         {
             return false;
         }
 
 
-        auto equal(EPSG const& lhs, EPSG const& rhs) -> bool
+        inline auto equal(EPSG const& lhs, EPSG const& rhs) -> bool
         {
             return lhs == rhs;
         }
 
-        auto equal(PROJ4 const& lhs, PROJ4 const& rhs) -> bool
+        inline auto equal(PROJ4 const& lhs, PROJ4 const& rhs) -> bool
         {
             return lhs == rhs;
         }
 
-        auto equal(WKT const& lhs, WKT const& rhs) -> bool
+        inline auto equal(WKT const& lhs, WKT const& rhs) -> bool
 
         {
             return lhs == rhs;
