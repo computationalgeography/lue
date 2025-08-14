@@ -208,6 +208,8 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
+      # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
+      # a fork.
       - name: deploy
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.macos_version == '15' && matrix.compiler.cxx == 'clang++' && matrix.python_version == '3.13'
         env:
@@ -218,8 +220,6 @@ jobs:
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
-          # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
-          # a fork.
           cd ${{ env.lue_build_directory }}
           lftp \
               -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/macos-${{ matrix.compiler.name }} .ninja_log; quit" \
