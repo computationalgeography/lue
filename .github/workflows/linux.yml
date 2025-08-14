@@ -234,6 +234,8 @@ jobs:
         run: |
           cmake --build ${{ env.lue_build_directory }} --target documentation
 
+      # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
+      # a fork.
       - name: deploy
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         env:
@@ -244,8 +246,6 @@ jobs:
           remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
           local_dir: "_build/html"
         run: |
-          # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
-          # a fork.
           cd ${{ env.lue_build_directory }}
           lftp \
               -d \

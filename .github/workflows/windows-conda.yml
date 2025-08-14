@@ -173,3 +173,17 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_data_model
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
+
+      # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
+      # a fork.
+      - name: deploy
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          delete: true
+          uploads: |
+            ${{ env.lue_build_directory }}/.ninja_log => ${{ secrets.FTP_REMOTE_DIR }}/download/build/windows-${{ matrix.compiler.name }}/
