@@ -29,8 +29,6 @@ namespace lue {
         hide this std::variant type from the outside world. An std::variant is an STL class template and
         libraries like pybind11 can do "smart" things with those, which we don't always want. Wrapping the
         variant in another type prevents this.
-
-        Copying is disabled.
     */
     template<typename... Ts>
     class VariantWrapper
@@ -95,16 +93,6 @@ namespace lue {
 
 
             auto variant() -> Variant&
-            {
-                return _variant;
-            }
-
-
-            // operator Variant const&() const
-            // {
-            //     return _variant;
-            // }
-
 
         private:
 
