@@ -25,9 +25,6 @@ namespace {
     using Shape = lue::ShapeT<Array>;
     using Offset = lue::OffsetT<Array>;
 
-    Shape const array_shape{{60, 40}};
-    Shape const partition_shape{{10, 10}};
-
 
     template<typename Element, lue::Rank rank>
     class NumberPartitionsIndividually
@@ -181,6 +178,9 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_individually)
 
         using Functor = NumberPartitionsIndividually<Element, rank>;
 
+        Shape const array_shape{{60, 40}};
+        Shape const partition_shape{{10, 10}};
+
         Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
         // The number of unique values per partition is 1
@@ -211,6 +211,9 @@ BOOST_AUTO_TEST_CASE(instantiate_partitions_per_locality)
             using Element = std::uint32_t;  // locality IDs are uint32_t
             using Functor = NumberPartitionsPerLocality<Element, rank>;
             using Array = lue::PartitionedArray<Element, rank>;
+
+            Shape const array_shape{{60, 40}};
+            Shape const partition_shape{{10, 10}};
 
             Array array = lue::create_partitioned_array(array_shape, partition_shape, Functor{});
 
