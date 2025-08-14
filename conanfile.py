@@ -76,6 +76,9 @@ class LUERecipe(ConanFile):
         if install_conan_package("nlohmann_json"):
             self.requires("nlohmann_json/[>=3.10]")
 
+        if install_conan_package("proj"):
+            self.requires("proj/[>=9.4]")
+
         if install_conan_package("pybind11"):
             self.requires("pybind11/[>=2.10.1]")
 
