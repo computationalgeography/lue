@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lue::api {
+namespace lue {
 
     // Inherit from each T passed in as a template parameter and add its operator() to the overload set
     template<class... Ts>
@@ -10,4 +10,9 @@ namespace lue::api {
             using Ts::operator()...;
     };
 
-}  // namespace lue::api
+    // Custom template argument deduction (CTAD) guide. Not needed since C++20.
+    // g++-10, clang++-15, AppleClang-15 still require it...
+    template<class... Ts>
+    overload(Ts...) -> overload<Ts...>;
+
+}  // namespace lue
