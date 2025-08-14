@@ -6,16 +6,20 @@
 
 namespace {
 
-    using Value = std::int32_t;
-    using PartitionedRaster = lue::PartitionedRaster<Value>;
-    // using Data = typename PartitionedRaster::Partition::Data;
+    using Element = std::int32_t;
+    using PartitionedRaster = lue::PartitionedRaster<Element>;
 
-    // using PartitionClient = lue::client::Partition<Index, Value, rank>;
+    using MBR = typename PartitionedRaster::MBR;
+    using Cells = typename PartitionedRaster::Cells;
+
+    using Data = lue::DataT<PartitionedRaster>;
+
+    // using PartitionClient = lue::client::Partition<Index, Element, rank>;
     // using PartitionServer = typename PartitionClient::Server;
     // using Data = typename PartitionClient::Data;
 
     // using Definition = typename PartitionedRaster::Definition;
-    // using Count = typename Data::Count;
+    using Count = typename Data::Count;
     // using Offset = typename PartitionedRaster::Offset;
     using Shape = typename PartitionedRaster::Shape;
     using CellShape = typename PartitionedRaster::CellShape;
@@ -27,178 +31,65 @@ BOOST_AUTO_TEST_CASE(default_construct)
 {
     // Default initialization
     {
-        PartitionedRaster raster;
+        PartitionedRaster const raster;
+
+        BOOST_CHECK_EQUAL(raster.crs(), lue::Cartesian2D);
+
+        MBR const mbr{{{{0.0, 0.0}, {0.0, 0.0}}}};
+        BOOST_CHECK_EQUAL(raster.mbr(), mbr);
 
         BOOST_CHECK_EQUAL(raster.nr_cells(), 0);
 
-        Shape shape{{0, 0}};
+        Shape const shape{{0, 0}};
         BOOST_CHECK_EQUAL(raster.shape(), shape);
 
-        CellShape cell_shape{{0, 0}};
+        CellShape const cell_shape{{0, 0}};
         BOOST_CHECK_EQUAL(raster.cell_shape(), cell_shape);
-
-        BOOST_CHECK(raster.srs() == lue::Cartesian2D);
     }
 
-    // TODO hier verder
+    // Value initialization
+    {
+        PartitionedRaster const raster{};
 
-    // // Value initialization
-    // {
-    //     PartitionedRaster raster{};
+        BOOST_CHECK_EQUAL(raster.crs(), lue::Cartesian2D);
 
-    //     BOOST_CHECK_EQUAL(raster.nr_cells(), 0);
+        MBR const mbr{{{{0.0, 0.0}, {0.0, 0.0}}}};
+        BOOST_CHECK_EQUAL(raster.mbr(), mbr);
 
-    //     Shape shape{};
-    //     BOOST_CHECK_EQUAL(raster.shape(), shape);
+        BOOST_CHECK_EQUAL(raster.nr_cells(), 0);
 
-    //     BOOST_CHECK_EQUAL(raster.nr_partitions(), 0);
-    // }
+        Shape const shape{{0, 0}};
+        BOOST_CHECK_EQUAL(raster.shape(), shape);
+
+        CellShape const cell_shape{{0, 0}};
+        BOOST_CHECK_EQUAL(raster.cell_shape(), cell_shape);
+    }
 }
 
 
-/// BOOST_AUTO_TEST_CASE(construct_with_shape)
-/// {
-///     Count nr_rows = 300;
-///     Count nr_cols = 400;
-///     Shape shape{{nr_rows, nr_cols}};
-///
-///     PartitionedRaster raster{shape};
-///
-///     BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///     BOOST_CHECK_EQUAL(raster.shape(), shape);
-///     BOOST_CHECK_EQUAL(raster.nr_partitions(), hpx::get_num_localities().get());
-/// }
+BOOST_AUTO_TEST_CASE(construct_from_cells)
+{
+    Count const nr_rows = 300;
+    Count const nr_cols = 400;
+    Shape const shape{{nr_rows, nr_cols}};
+    Element const fill_value{5};
 
+    Cells cells = lue::create_partitioned_array(shape, fill_value);
 
-/// BOOST_AUTO_TEST_CASE(construct_with_max_partition_shape)
-/// {
-///     Count nr_rows = 30;
-///     Count nr_cols = 40;
-///     Shape shape{{nr_rows, nr_cols}};
-///
-///     {
-///         // 2 x 2 partitions, without clamping
-///         Count nr_rows_partition = 15;
-///         Count nr_cols_partition = 20;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{shape, max_partition_shape};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), 4);
-///     }
-///
-///     {
-///         // 30 x 40 partitions, without clamping
-///         Count nr_rows_partition = 1;
-///         Count nr_cols_partition = 1;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{shape, max_partition_shape};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), nr_rows * nr_cols);
-///     }
-///
-///     {
-///         // 10 x 10 partitions, without clamping
-///         Count nr_rows_partition = 3;
-///         Count nr_cols_partition = 4;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{shape, max_partition_shape};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), 100);
-///     }
-///
-///     {
-///         // 1 x 1 partition, without clamping
-///         Count nr_rows_partition = 30;
-///         Count nr_cols_partition = 40;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{shape, max_partition_shape};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), 1);
-///     }
-///
-///     {
-///         // 2 x 2 partitions, with clamping
-///         Count nr_rows_partition = 20;
-///         Count nr_cols_partition = 30;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{
-///             shape, max_partition_shape, PartitionedRaster::ClampMode::shrink};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), 4);
-///
-///         auto const& partitions = raster.partitions();
-///         lue::wait_all(partitions);
-///
-///         BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), max_partition_shape);
-///         BOOST_CHECK_EQUAL(partitions(0, 1).shape().get(), Shape({20, 10}));
-///         BOOST_CHECK_EQUAL(partitions(1, 0).shape().get(), Shape({10, 30}));
-///         BOOST_CHECK_EQUAL(partitions(1, 1).shape().get(), Shape({10, 10}));
-///
-///         BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
-///         BOOST_CHECK_EQUAL((partitions(0, 1).offset().get()), Offset({ 0, 30}));
-///         BOOST_CHECK_EQUAL((partitions(1, 0).offset().get()), Offset({20,  0}));
-///         BOOST_CHECK_EQUAL((partitions(1, 1).offset().get()), Offset({20, 30}));
-///     }
-///
-///     {
-///         // 2 x 2 partitions, with clamping
-///         Count nr_rows_partition = 20;
-///         Count nr_cols_partition = 30;
-///         Shape max_partition_shape{{nr_rows_partition, nr_cols_partition}};
-///
-///         PartitionedRaster raster{
-///             shape, max_partition_shape, PartitionedRaster::ClampMode::merge};
-///
-///         BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
-///         BOOST_CHECK_EQUAL(raster.shape(), shape);
-///         BOOST_CHECK_EQUAL(raster.nr_partitions(), 1);
-///
-///         auto const& partitions = raster.partitions();
-///         lue::wait_all(partitions);
-///
-///         BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), shape);
-///
-///         BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({ 0,  0}));
-///     }
-/// }
+    PartitionedRaster const raster{std::move(cells)};
 
+    BOOST_CHECK_EQUAL(raster.crs(), lue::Cartesian2D);
 
-// BOOST_AUTO_TEST_CASE(array_with_array_partitions)
-// {
-//     using Partitions = PartitionedRaster::Partitions;
-//     using Partition = PartitionedRaster::Partition;
-//
-//     Count nr_rows = 300;
-//     Count nr_cols = 400;
-//     Shape shape_in_partitions{{nr_rows, nr_cols}};
-//
-//     Partitions partitions{};
-//     partitions = Partitions{shape_in_partitions};
-//
-//     for (auto& partition : partitions)
-//     {
-//         partition = Partition{};
-//     }
-//
-//     std::size_t const nr_partitions = partitions.nr_cells();
-//
-//     for (std::size_t i = 0; i < nr_partitions; ++i)
-//     {
-//         partitions[i] = Partition{};
-//     }
-// }
+    MBR const mbr{{{{0.0, 400.0}, {0.0, 300.0}}}};
+    BOOST_CHECK_EQUAL(raster.mbr(), mbr);
+
+    BOOST_CHECK_EQUAL(raster.nr_cells(), nr_rows * nr_cols);
+
+    BOOST_CHECK_EQUAL(raster.shape(), shape);
+
+    BOOST_CHECK_EQUAL(raster.mbr().extent(0), 400);
+    BOOST_CHECK_EQUAL(raster.mbr().extent(1), 300);
+
+    CellShape const cell_shape{{1, 1}};
+    BOOST_CHECK_EQUAL(raster.cell_shape(), cell_shape);
+}
