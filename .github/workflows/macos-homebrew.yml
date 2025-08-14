@@ -88,6 +88,7 @@ jobs:
             lftp \
             nlohmann-json \
             numpy \
+            proj \
             pybind11 \
             python-matplotlib
           python3 -m venv --system-site-packages env
