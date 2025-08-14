@@ -16,7 +16,9 @@ namespace lue::framework {
         template<typename Element>
         auto from_gdal(std::string const& name, StaticShape<2> const& partition_shape) -> pybind11::object
         {
-            return pybind11::cast(lue::from_gdal<Element>(name, partition_shape));
+            // TODO: Even though a partitioned raster is returned, here we grab the layered partitioned array.
+            // Return the raster once LUE fully supports passing around rasters.
+            return pybind11::cast(lue::from_gdal<Element>(name, partition_shape).cells());
         }
 
 
@@ -25,7 +27,9 @@ namespace lue::framework {
             std::string const& name, Hyperslab<2> const& hyperslab, StaticShape<2> const& partition_shape)
             -> pybind11::object
         {
-            return pybind11::cast(lue::from_gdal<Element>(name, hyperslab, partition_shape));
+            // TODO: Even though a partitioned raster is returned, here we grab the layered partitioned array.
+            // Return the raster once LUE fully supports passing around rasters.
+            return pybind11::cast(lue::from_gdal<Element>(name, hyperslab, partition_shape).cells());
         }
 
 
