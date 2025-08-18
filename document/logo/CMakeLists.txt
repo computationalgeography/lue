@@ -1,5 +1,3 @@
-# TODO: Upload all graphics to lue.computationalgeography.org/download/logo
-
 function(outer_circle_radius extent output)
     # Compute radius of circle around a square of extent x extent
     execute_process(
@@ -59,18 +57,16 @@ if(LATEX_FOUND)
                 style.tex
         )
 
-        if(ImageMagick_FOUND)
-            # TODO: requires potrace
-            # add_custom_command(
-            #     TARGET ${target_name}
-            #     POST_BUILD
-            #     COMMENT "${figure}-${style}.pdf → ${figure}-${style}.svg"
-            #     BYPRODUCTS "${figure}-${style}.svg"
-            #     COMMAND ${ImageMagick_convert_EXECUTABLE}
-            #         ${figure}-${style}.pdf ${figure}-${style}.svg
-            #     VERBATIM
-            # )
+        add_custom_command(
+            TARGET ${target_name}
+            POST_BUILD
+            COMMENT "${figure}-${style}.pdf → ${figure}-${style}.svg"
+            BYPRODUCTS "${figure}-${style}.svg"
+            COMMAND ${dvisvgm_EXECUTABLE} --verbosity=0 --pdf ${figure}-${style}.pdf ${figure}-${style}.svg
+            VERBATIM
+        )
 
+        if(ImageMagick_FOUND)
             foreach(outer_icon_extent IN ITEMS 400 500 750 1000)
                 # Icon to use for square spaces
                 set(output_name "${figure}-${style}-square-${outer_icon_extent}")
@@ -119,18 +115,16 @@ if(LATEX_FOUND)
                 style.tex
         )
 
-        if(ImageMagick_FOUND)
-            # TODO: requires potrace
-            # add_custom_command(
-            #     TARGET ${target_name}
-            #     POST_BUILD
-            #     COMMENT "${figure}-${style}.pdf → ${figure}-${style}.svg"
-            #     BYPRODUCTS "${figure}-${style}.svg"
-            #     COMMAND ${ImageMagick_convert_EXECUTABLE}
-            #         ${figure}-${style}.pdf ${figure}-${style}.svg
-            #     VERBATIM
-            # )
+        add_custom_command(
+            TARGET ${target_name}
+            POST_BUILD
+            COMMENT "${figure}-${style}.pdf → ${figure}-${style}.svg"
+            BYPRODUCTS "${figure}-${style}.svg"
+            COMMAND ${dvisvgm_EXECUTABLE} --verbosity=0 --pdf ${figure}-${style}.pdf ${figure}-${style}.svg
+            VERBATIM
+        )
 
+        if(ImageMagick_FOUND)
             foreach(icon_extent IN ITEMS 400 500 750 1000)
                 add_custom_command(
                     TARGET ${target_name}
