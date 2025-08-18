@@ -1,53 +1,34 @@
-\documentclass[crop, tikz]{standalone}
+\begin{tikzpicture}[line cap=round, line join=round]
+    \pgfmathsetmacro \rangex {{1.5}}
+    \pgfmathsetmacro \minx {{-\rangex}}
+    \pgfmathsetmacro \nrsamples {{100}}
+    \pgfmathsetmacro \spacing {{0.2}}
 
-\definecolor{l colour}{HTML}{5e81ac}
-\definecolor{u colour}{HTML}{a3be8c}
-\definecolor{e colour}{HTML}{bf616a}
+    \pgfmathsetmacro \letteridx {{0}}
+    \pgfmathsetmacro \offset {{0}}
+    \draw[
+        letter,
+        domain=\minx : 0.00,
+        samples=\nrsamples,
+    ] plot[smooth] ({\offset + \x}, {\x*\x}) [l colour];
 
-\tikzset{
-    letter/.style={
-        draw=black,
-        line width=2.75pt,
-    },
-    plot/.style={
-        draw=black,
-        line width=2.75pt,
-    },
-}
+    \pgfmathsetmacro \letteridx {{1}}
+    \pgfmathsetmacro \offset {{\letteridx * (\rangex + \spacing)}}
+    \draw[
+        letter,
+        domain=\minx : 0.00,
+        samples=\nrsamples,
+    ] plot[smooth] ({\offset + \x}, {\x*\x}) -- ({\offset}, {1.5 * 1.5}) [u colour];
 
-\begin{document}
-    \begin{tikzpicture}[line cap=round, line join=round]
-        \pgfmathsetmacro \rangex {{1.5}}
-        \pgfmathsetmacro \minx {{-\rangex}}
-        \pgfmathsetmacro \nrsamples {{100}}
-        \pgfmathsetmacro \spacing {{0.2}}
-
-        \pgfmathsetmacro \letteridx {{0}}
-        \pgfmathsetmacro \offset {{0}}
-        \draw[
-            letter,
-            domain=\minx : 0.00,
-            samples=\nrsamples,
-        ] plot[smooth] ({\offset + \x}, {\x*\x}) [l colour];
-
-        \pgfmathsetmacro \letteridx {{1}}
-        \pgfmathsetmacro \offset {{\letteridx * (\rangex + \spacing)}}
-        \draw[
-            letter,
-            domain=\minx : 0.00,
-            samples=\nrsamples,
-        ] plot[smooth] ({\offset + \x}, {\x*\x}) -- ({\offset}, {1.5 * 1.5}) [u colour];
-
-        \pgfmathsetmacro \letteridx {{2}}
-        \pgfmathsetmacro \offset {{\letteridx * (\rangex + \spacing)}}
-        \draw[
-            letter,
-            domain=\minx : 0.00,
-            samples=\nrsamples,
-        ] ({\offset}, {\minx * \minx}) -- plot[smooth] ({\offset + \x}, {\x*\x}) [e colour];
-        \draw[
-            letter,
-        ] ({\offset + 0.75 * \minx}, {(0.75 * \minx) * (0.75 * \minx)}) --
-        ({\offset}, {(0.75 * \minx) * (0.75 * \minx)}) [e colour];
-    \end{tikzpicture}
-\end{document}
+    \pgfmathsetmacro \letteridx {{2}}
+    \pgfmathsetmacro \offset {{\letteridx * (\rangex + \spacing)}}
+    \draw[
+        letter,
+        domain=\minx : 0.00,
+        samples=\nrsamples,
+    ] ({\offset}, {\minx * \minx}) -- plot[smooth] ({\offset + \x}, {\x*\x}) [e colour];
+    \draw[
+        letter,
+    ] ({\offset + 0.75 * \minx}, {(0.75 * \minx) * (0.75 * \minx)}) --
+    ({\offset}, {(0.75 * \minx) * (0.75 * \minx)}) [e colour];
+\end{tikzpicture}
