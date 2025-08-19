@@ -1,0 +1,8 @@
+\documentclass[crop, tikz]{standalone}
+
+\input{logo-style}
+\input{${style}}
+
+\begin{document}
+    \input{logo}
+\end{document}

@@ -89,6 +89,7 @@ jobs:
             cmake \
             doxygen \
             graphviz \
+            imagemagick \
             libhwloc-dev \
             lftp \
             libasio-dev \
@@ -101,7 +102,9 @@ jobs:
             ${{ matrix.compiler.package }} \
             ninja-build \
             nlohmann-json3-dev \
-            pybind11-dev
+            pybind11-dev \
+            texlive-latex-extra \
+            texlive-pictures
           pip3 install -r ${{ env.lue_source_directory }}/environment/configuration/requirements-dev.txt
 
       - name: "install hpx"
@@ -262,7 +265,7 @@ jobs:
           cd ${{ env.lue_build_directory }}
           lftp \
               -d \
-              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-gcc .ninja_log; quit" \
+              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-gcc .ninja_log; mput -O $remote_dir/download/logo document/logo/*.pdf document/logo/*.png document/logo/*.svg; quit" \
               -u $ftp_username,$ftp_password \
               -p $ftp_port \
               sftp://$ftp_server
