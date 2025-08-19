@@ -1,5 +1,7 @@
 # LUE
 
+<img align="right" width="200" src="https://lue.computationalgeography.org/download/logo/logo-colour.svg">
+
 LUE scientific database and environmental modelling framework
 
 LUE is software for storing and manipulating large amounts of information
