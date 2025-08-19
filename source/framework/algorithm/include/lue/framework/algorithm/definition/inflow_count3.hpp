@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
 #include "lue/framework/algorithm/inflow_count3.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
 
 

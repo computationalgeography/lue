@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/accu_info3.hpp"
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/framework.hpp"
 #include "lue/macro.hpp"
 
