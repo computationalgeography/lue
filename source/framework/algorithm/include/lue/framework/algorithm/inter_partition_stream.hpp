@@ -1,7 +1,9 @@
 #pragma once
-#include "lue/framework/algorithm/accu_info.hpp"
+#include "lue/framework/algorithm/accu_info3.hpp"
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
 #include "lue/framework/algorithm/detail/accumulate.hpp"
+#include "lue/framework/algorithm/detail/halo_partition.hpp"
+#include "lue/framework/algorithm/detail/spawn.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/policy/flow_direction_halo.hpp"
 #include "lue/framework/algorithm/policy/mark_no_data_by_value.hpp"

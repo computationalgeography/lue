@@ -1702,19 +1702,6 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            # Instantiate accu_threshold
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_threshold-${count}.cpp")
-
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_threshold.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
-
             # Instantiate accu_threshold3
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_threshold3-${count}.cpp")
 
