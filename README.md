@@ -1,6 +1,6 @@
 # LUE
 
-<img align="right" width="200" src="https://lue.computationalgeography.org/download/logo/logo-colour.svg">
+[<img align="right" width="200" src="https://lue.computationalgeography.org/download/logo/logo-colour.svg" alt="LUE logo">](https://lue.computationalgeography.org)
 
 LUE scientific database and environmental modelling framework
 
