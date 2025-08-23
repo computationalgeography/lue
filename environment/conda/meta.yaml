@@ -37,8 +37,6 @@ requirements:
 
   run:
     - docopt  # lue.qa
-    - hpx
-    - libgdal
     - matplotlib-base  # lue.qa
     - python
     - python-dateutil  # lue.qa

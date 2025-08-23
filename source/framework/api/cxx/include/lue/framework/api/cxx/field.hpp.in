@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/scalar.hpp"
-#include "lue/framework/api/cxx/variant_wrapper.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_raster.hpp"
+#include "lue/variant_wrapper.hpp"
 #include <cstdint>
 
 
@@ -12,6 +12,9 @@ namespace lue::api {
     */
     class Field:
         public VariantWrapper<
+            {% for Element in Elements %}
+                lue::PartitionedRaster<{{ Element }}>,
+            {% endfor %}
             {% for Element in Elements %}
                 lue::PartitionedArray<{{ Element }}, 2>,
             {% endfor %}

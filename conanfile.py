@@ -49,8 +49,6 @@ class LUERecipe(ConanFile):
         if install_conan_package("fmt"):
             self.requires("fmt/[>=10]")
 
-        # 20230829 Conan package for more recent versions seem broken
-        # https://github.com/conan-io/conan-center-index/issues/17830
         if install_conan_package("gdal"):
             self.requires("gdal/[>=3.10]")
 
@@ -75,6 +73,9 @@ class LUERecipe(ConanFile):
 
         if install_conan_package("nlohmann_json"):
             self.requires("nlohmann_json/[>=3.10]")
+
+        if install_conan_package("proj"):
+            self.requires("proj/[>=9.1]")
 
         if install_conan_package("pybind11"):
             self.requires("pybind11/[>=2.10.1]")

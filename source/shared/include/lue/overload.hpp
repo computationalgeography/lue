@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace lue::api {
+namespace lue {
 
     // Inherit from each T passed in as a template parameter and add its operator() to the
     // overload set
@@ -17,4 +17,4 @@ namespace lue::api {
     template<class... Ts>
     overload(Ts...) -> overload<Ts...>;
 
-}  // namespace lue::api
+}  // namespace lue
