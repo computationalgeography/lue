@@ -112,6 +112,7 @@ set(routing_operation_names
     # first_n
     inflow_count
     kinematic_wave
+    routing_algorithm
 )
 
 set(zonal_operation_names
