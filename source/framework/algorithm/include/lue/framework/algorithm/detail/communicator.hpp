@@ -11,7 +11,7 @@
 namespace lue::detail {
 
     template<Rank rank, Index dimension = rank>
-    constexpr Count nr_neighbours()
+    constexpr auto nr_neighbours() -> Count
     {
         // Given the rank of a partition, how many neighboring partitions
         // are there?
@@ -181,7 +181,7 @@ namespace lue::detail {
             }
 
 
-            bool has_neighbour(accu::Direction const& direction) const
+            auto has_neighbour(accu::Direction const& direction) const -> bool
             {
                 return bool(send_channel(direction));
             }
@@ -209,7 +209,7 @@ namespace lue::detail {
             }
 
 
-            hpx::future<T> get(accu::Direction const direction)
+            auto get(accu::Direction const direction) -> hpx::future<T>
             {
                 auto& channel{receive_channel(direction)};
                 lue_hpx_assert(channel);
@@ -218,19 +218,20 @@ namespace lue::detail {
             }
 
 
-            Channels& receive_channels()
+            auto receive_channels() -> Channels&
             {
                 return _receive_channels;
             }
 
 
-            Channel& receive_channel(accu::Direction const direction)
+            auto receive_channel(accu::Direction const direction) -> Channel&
             {
                 return _receive_channels[direction];
             }
 
 
-            hpx::future<hpx::id_type> unregister(std::string const& basename, accu::Direction const direction)
+            auto unregister(std::string const& basename, accu::Direction const direction)
+                -> hpx::future<hpx::id_type>
             {
                 // Free up AGAS resources
 
@@ -252,7 +253,7 @@ namespace lue::detail {
             }
 
 
-            hpx::future<void> unregister(std::string const& basename)
+            auto unregister(std::string const& basename) -> hpx::future<void>
             {
                 std::vector<hpx::future<hpx::id_type>> fs;
                 fs.reserve(accu::directions.size());
@@ -309,7 +310,7 @@ namespace lue::detail {
 
         private:
 
-            static std::size_t linear_idx(Shape const& shape, Indices const& idxs)
+            static auto linear_idx(Shape const& shape, Indices const& idxs) -> std::size_t
             {
                 auto const [extent0, extent1] = shape;
                 auto const [idx0, idx1] = idxs;
@@ -318,25 +319,26 @@ namespace lue::detail {
             }
 
 
-            static std::string channel_name(std::string const& basename, accu::Direction const direction)
+            static auto channel_name(std::string const& basename, accu::Direction const direction)
+                -> std::string
             {
                 return basename + "/" + std::to_string(direction) + "/";
             }
 
 
-            Channel const& send_channel(accu::Direction const direction) const
+            auto send_channel(accu::Direction const direction) const -> Channel const&
             {
                 return _send_channels[direction];
             }
 
 
-            Channel& send_channel(accu::Direction const direction)
+            auto send_channel(accu::Direction const direction) -> Channel&
             {
                 return _send_channels[direction];
             }
 
 
-            std::size_t neighbour_idx(accu::Direction const direction) const
+            auto neighbour_idx(accu::Direction const direction) const -> std::size_t
             {
                 static std::array<Offset, nr_neighbours<rank>()> const offset{
                     Offset{-1, 0},
