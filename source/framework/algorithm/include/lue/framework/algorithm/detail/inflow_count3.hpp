@@ -1,19 +1,18 @@
 #pragma once
 #include "lue/framework/algorithm/detail/communicator.hpp"
-#include <array>
 #include <tuple>
 #include <vector>
 
 
 namespace lue::detail {
 
-    inline std::tuple<accu::Direction, Index> destination_cell(
+    inline auto destination_cell(
         Count const extent0,
         Count const extent1,
         Index const idx0,
         Index const idx1,
         Index const offset0,
-        Index const offset1)
+        Index const offset1) -> std::tuple<accu::Direction, Index>
     {
         lue_hpx_assert((idx0 == 0 || idx0 == extent0 - 1) || (idx1 == 0 || idx1 == extent1 - 1));
         lue_hpx_assert(offset0 >= -1 && offset0 <= 1);
