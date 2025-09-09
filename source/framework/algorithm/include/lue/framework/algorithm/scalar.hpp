@@ -178,6 +178,17 @@ namespace lue {
 
             //! A future to state that can be created asynchronously
             hpx::shared_future<Element> _value_f;
+
+
+            friend class hpx::serialization::access;
+
+            template<typename Archive>
+            void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
+            {
+                // clang-format off
+                archive & _value_f;
+                // clang-format on
+            }
     };
 
 
