@@ -46,6 +46,23 @@ namespace lue {
                 }
 
 
+                void enter_at_partition_input(
+                    [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                {
+                }
+
+
+                void leave_at_output_cell(
+                    [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                {
+                }
+
+
+                void leave_at_sink_cell([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                {
+                }
+
+
                 void accumulate_downstream(
                     Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
                 {

@@ -156,6 +156,27 @@ namespace lue::detail {
             }
 
 
+            void enter_at_ridge(Index const idx0, Index const idx1)
+            {
+                // What to do when we enter a path (current cell is a ridge cell)
+                _cell_accumulator.enter_at_ridge(idx0, idx1);
+            }
+
+
+            void leave_intra_partition_stream(Index const ridge_idx0, Index const ridge_idx1)
+            {
+                // What to do when we leave an intra-partition stream
+                _cell_accumulator.leave_intra_partition_stream(ridge_idx0, ridge_idx1);
+            }
+
+
+            void leave_inter_partition_stream(Index const ridge_idx0, Index const ridge_idx1)
+            {
+                // What to do when we leave an inter-partition stream
+                _cell_accumulator.leave_inter_partition_stream(ridge_idx0, ridge_idx1);
+            }
+
+
             void enter_cell(Index const idx0, Index const idx1)
             {
                 // What to do when we enter a cell
@@ -163,9 +184,10 @@ namespace lue::detail {
             }
 
 
-            void leave_at_sink([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+            void leave_at_sink_cell([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
             {
                 // What to do when we leave at a sink
+                _cell_accumulator.leave_at_sink_cell(idx0, idx1);
             }
 
 
@@ -178,6 +200,7 @@ namespace lue::detail {
                 Index const offset1)
             {
                 // What to do when we leave at a partition output cell
+                _cell_accumulator.leave_at_output_cell(idx0, idx1);
                 this->leave_partition(extent0, extent1, idx0, idx1, offset0, offset1);
             }
 
@@ -193,7 +216,17 @@ namespace lue::detail {
             void enter_at_partition_input(
                 MaterialElement const& value, Index const idx0_to, Index const idx1_to)
             {
+                // Propagate material passed in downstream
                 _cell_accumulator.accumulate_downstream(value, idx0_to, idx1_to);
+
+                // Post-process (optional)
+                _cell_accumulator.enter_at_partition_input(idx0_to, idx1_to);
+            }
+
+
+            void mark_no_data(Index const idx0, Index const idx1)
+            {
+                _cell_accumulator.mark_no_data(idx0, idx1);
             }
 
 
@@ -279,17 +312,20 @@ namespace lue::detail {
 
 
     template<typename Accumulator, typename Index, typename FlowDirectionData, typename InflowCountData>
-    std::tuple<std::array<Index, 2>, AccumulationExitCellClass> accumulate3(
+    auto accumulate3(
         Accumulator& accumulator,
-        Index idx0,
-        Index idx1,
+        Index const ridge_idx0,
+        Index const ridge_idx1,
         FlowDirectionData const& flow_direction_data,
-        InflowCountData& inflow_count_data)
+        InflowCountData& inflow_count_data) -> std::tuple<std::array<Index, 2>, AccumulationExitCellClass>
     {
+        Index idx0{ridge_idx0};
+        Index idx1{ridge_idx1};
         auto const [nr_elements0, nr_elements1] = flow_direction_data.shape();
-        Index offset0, offset1;
-        bool is_within_partition;
-        AccumulationExitCellClass cell_class;
+        Index offset0{};
+        Index offset1{};
+        bool is_within_partition{};
+        AccumulationExitCellClass cell_class{};
 
         while (true)
         {
@@ -309,7 +345,7 @@ namespace lue::detail {
             {
                 // Current cell is a sink. This is the end of this
                 // stream.
-                accumulator.leave_at_sink(idx0, idx1);
+                accumulator.leave_at_sink_cell(idx0, idx1);
                 cell_class = AccumulationExitCellClass::sink;
                 break;
             }
