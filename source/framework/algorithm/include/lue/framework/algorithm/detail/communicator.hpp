@@ -25,7 +25,7 @@ namespace lue::detail {
 
         if constexpr (dimension > 0)
         {
-            return dimension * 2 * (rank - (dimension - 1)) + nr_neighbours<rank, dimension - 1>();
+            return (dimension * 2 * (rank - (dimension - 1))) + nr_neighbours<rank, dimension - 1>();
         }
         else
         {
@@ -241,7 +241,7 @@ namespace lue::detail {
                     hpx::unregister_with_basename(channel_name(basename, direction), _idx)};
 
 #ifndef NDEBUG
-                result.then([](hpx::future<hpx::id_type>&& result)
+                result.then([](hpx::future<hpx::id_type> const& result)
                             { lue_hpx_assert(!result.has_exception()); });
 #endif
 
@@ -255,19 +255,19 @@ namespace lue::detail {
 
             auto unregister(std::string const& basename) -> hpx::future<void>
             {
-                std::vector<hpx::future<hpx::id_type>> fs;
-                fs.reserve(accu::directions.size());
+                std::vector<hpx::future<hpx::id_type>> futures;
+                futures.reserve(accu::directions.size());
 
                 for (accu::Direction const direction : accu::directions)
                 {
                     if (has_neighbour(direction))
                     {
-                        fs.push_back(unregister(basename, direction));
+                        futures.push_back(unregister(basename, direction));
                     }
                 }
 
-                return hpx::when_all(fs).then([]([[maybe_unused]] auto&& fs)
-                                              { return hpx::make_ready_future(); });
+                return hpx::when_all(futures).then([]([[maybe_unused]] auto&& futures)
+                                                   { return hpx::make_ready_future(); });
             }
 
 
