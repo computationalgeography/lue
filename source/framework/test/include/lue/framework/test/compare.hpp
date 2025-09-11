@@ -69,8 +69,27 @@ namespace lue::test {
                 }
             }
         }
+        else if constexpr (
+            std::is_same_v<ElementT<PartitionData>, std::uint8_t> ||
+            std::is_same_v<ElementT<PartitionData>, std::int8_t>)
+        {
+            for (int i = 0; i < partition_data1.nr_elements(); ++i)
+            {
+                BOOST_TEST_CONTEXT("index " << i)
+                {
+                    BOOST_CHECK_MESSAGE(
+                        partition_data1[i] == partition_data2[i],
+                        std::format(
+                            "{} != {}",
+                            static_cast<std::int32_t>(partition_data1[i]),
+                            static_cast<std::int32_t>(partition_data2[i])));
+                }
+            }
+        }
         else
         {
+
+
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 partition_data1.begin(),
                 partition_data1.end(),
