@@ -194,7 +194,7 @@ namespace lue {
         };
 
 
-        template<typename Element, Rank rank>
+        template<Arithmetic Element, Rank rank>
         class ArgumentTraits<PartitionedArray<Element, rank>>
         {
             public:
@@ -370,7 +370,6 @@ namespace lue {
                                 {
                                     accumulator.enter_at_ridge(idx0, idx1);
 
-                                    // hier verder, BOOM
                                     accumulate3(
                                         accumulator, idx0, idx1, flow_direction_data, inflow_count_data_copy);
                                     accumulator.leave_intra_partition_stream(idx0, idx1);
@@ -1096,12 +1095,12 @@ namespace lue {
     };
 
 
-    template<typename Policies, typename FlowDirectionElement>
+    template<typename Policies, std::integral FlowDirectionElement>
     auto accu_info4(Policies const& policies, PartitionedArray<FlowDirectionElement, 2> const& flow_direction)
         -> PartitionedArray<CellClass, 2>;
 
 
-    template<typename Policies, typename FlowDirectionElement>
+    template<typename Policies, std::integral FlowDirectionElement>
     auto accu_info4(Policies const& policies, PartitionedArray<FlowDirectionElement, 2> const& flow_direction)
         -> PartitionedArray<CellClass, 2>
     {
@@ -1312,14 +1311,14 @@ namespace lue {
 
 
     // raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
         PartitionedArray<MaterialElement, 2> const& inflow) -> PartitionedArray<MaterialElement, 2>;
 
     // scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1327,7 +1326,7 @@ namespace lue {
 
 
     // value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1335,7 +1334,7 @@ namespace lue {
 
 
     // raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1346,7 +1345,7 @@ namespace lue {
 
 
     // scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1357,7 +1356,7 @@ namespace lue {
 
 
     // value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1636,7 +1635,7 @@ namespace lue {
 
 
     // raster, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1646,7 +1645,7 @@ namespace lue {
 
 
     // raster, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1656,7 +1655,7 @@ namespace lue {
 
 
     // raster, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1666,7 +1665,7 @@ namespace lue {
 
 
     // scalar, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1676,7 +1675,7 @@ namespace lue {
 
 
     // scalar, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1686,7 +1685,7 @@ namespace lue {
 
 
     // scalar, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1696,7 +1695,7 @@ namespace lue {
 
 
     // value, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1706,7 +1705,7 @@ namespace lue {
 
 
     // value, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1716,7 +1715,7 @@ namespace lue {
 
 
     // value, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1726,7 +1725,7 @@ namespace lue {
 
 
     // raster, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1739,7 +1738,7 @@ namespace lue {
 
 
     // raster, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1752,7 +1751,7 @@ namespace lue {
 
 
     // raster, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1770,7 +1769,7 @@ namespace lue {
 
 
     // scalar, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1783,7 +1782,7 @@ namespace lue {
 
 
     // scalar, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1796,7 +1795,7 @@ namespace lue {
 
 
     // scalar, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1814,7 +1813,7 @@ namespace lue {
 
 
     // value, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1829,7 +1828,7 @@ namespace lue {
 
 
     // value, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -1842,7 +1841,7 @@ namespace lue {
 
 
     // value, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_threshold4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2115,7 +2114,7 @@ namespace lue {
 
 
     // raster, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2125,7 +2124,7 @@ namespace lue {
 
 
     // raster, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2135,7 +2134,7 @@ namespace lue {
 
 
     // raster, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2145,7 +2144,7 @@ namespace lue {
 
 
     // scalar, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2155,7 +2154,7 @@ namespace lue {
 
 
     // scalar, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2165,7 +2164,7 @@ namespace lue {
 
 
     // scalar, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2175,7 +2174,7 @@ namespace lue {
 
 
     // value, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2185,7 +2184,7 @@ namespace lue {
 
 
     // value, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2195,7 +2194,7 @@ namespace lue {
 
 
     // value, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2205,7 +2204,7 @@ namespace lue {
 
 
     // raster, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2218,7 +2217,7 @@ namespace lue {
 
 
     // raster, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2231,7 +2230,7 @@ namespace lue {
 
 
     // raster, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2245,7 +2244,7 @@ namespace lue {
 
 
     // scalar, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2258,7 +2257,7 @@ namespace lue {
 
 
     // scalar, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2271,7 +2270,7 @@ namespace lue {
 
 
     // scalar, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2285,7 +2284,7 @@ namespace lue {
 
 
     // value, value
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2300,7 +2299,7 @@ namespace lue {
 
 
     // value, raster
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2313,7 +2312,7 @@ namespace lue {
 
 
     // value, scalar
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement>
+    template<typename Policies, std::integral FlowDirectionElement, std::floating_point MaterialElement>
     auto accu_fraction4(
         Policies const& policies,
         PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -2423,6 +2422,10 @@ namespace lue {
     // };
 
 
+    // TODO: Hier verder
+    // TODO: Add overloads of kinematic_wave4 below here and implement functor above here
+
+
     namespace policy::accu_info4 {
 
         /*!
@@ -2440,7 +2443,7 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename FlowDirectionElement>
+        template<std::integral FlowDirectionElement>
         auto accu_info4(PartitionedArray<FlowDirectionElement, 2> const& flow_direction)
             -> PartitionedArray<CellClass, 2>
         {
@@ -2479,7 +2482,7 @@ namespace lue {
     namespace value_policies {
 
         // raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow) -> PartitionedArray<MaterialElement, 2>
@@ -2491,7 +2494,7 @@ namespace lue {
 
 
         // scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow) -> PartitionedArray<MaterialElement, 2>
@@ -2503,7 +2506,7 @@ namespace lue {
 
 
         // value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction, MaterialElement const& inflow)
             -> PartitionedArray<MaterialElement, 2>
@@ -2543,7 +2546,7 @@ namespace lue {
     namespace value_policies {
 
         // raster, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2558,7 +2561,7 @@ namespace lue {
 
 
         // raster, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2573,7 +2576,7 @@ namespace lue {
 
 
         // raster, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2588,7 +2591,7 @@ namespace lue {
 
 
         // scalar, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2603,7 +2606,7 @@ namespace lue {
 
 
         // scalar, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2618,7 +2621,7 @@ namespace lue {
 
 
         // scalar, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2633,7 +2636,7 @@ namespace lue {
 
 
         // value, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2647,7 +2650,7 @@ namespace lue {
         }
 
         // value, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2662,7 +2665,7 @@ namespace lue {
 
 
         // value, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_threshold4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2706,7 +2709,7 @@ namespace lue {
     namespace value_policies {
 
         // raster, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2721,7 +2724,7 @@ namespace lue {
 
 
         // raster, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2736,7 +2739,7 @@ namespace lue {
 
 
         // raster, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<MaterialElement, 2> const& inflow,
@@ -2751,7 +2754,7 @@ namespace lue {
 
 
         // scalar, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2766,7 +2769,7 @@ namespace lue {
 
 
         // scalar, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2781,7 +2784,7 @@ namespace lue {
 
 
         // scalar, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<MaterialElement> const& inflow,
@@ -2796,7 +2799,7 @@ namespace lue {
 
 
         // value, value
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2810,7 +2813,7 @@ namespace lue {
         }
 
         // value, raster
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2825,7 +2828,7 @@ namespace lue {
 
 
         // value, scalar
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         auto accu_fraction4(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             MaterialElement const& inflow,
@@ -2865,35 +2868,94 @@ namespace lue {
     }  // namespace policy::accu_trigger
 
 
-    namespace policy::kinematic_wave {
+    namespace policy::kinematic_wave4 {
 
-        // TODO: Check policies
-        template<
-            std::integral FlowDirection,
-            std::floating_point FloatingPointElement,
-            std::unsigned_integral CountElement>
+        template<std::floating_point Element>
+        class DomainPolicy
+        {
+
+            public:
+
+                static constexpr auto within_domain(
+                    Element const current_outflow,
+                    Element const inflow,
+                    Element const channel_length) noexcept -> bool
+                {
+                    return current_outflow >= 0 && inflow >= 0 && channel_length > 0;
+                }
+        };
+
+
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
-            AllValuesWithinDomain<
-                FlowDirection,
-                FloatingPointElement,
-                FloatingPointElement,
-                FloatingPointElement,
-                FloatingPointElement,
-                CountElement,
-                CountElement,
-                FloatingPointElement>,
-            OutputElements<FloatingPointElement, FloatingPointElement>,
+            DomainPolicy<MaterialElement>,
+            OutputElements<MaterialElement, MaterialElement>,
             InputElements<
-                FlowDirection,
-                FloatingPointElement,
-                FloatingPointElement,
-                FloatingPointElement,
-                FloatingPointElement,
-                CountElement,
-                CountElement,
-                FloatingPointElement>>;
+                FlowDirectionElement,
+                MaterialElement,
+                MaterialElement,
+                MaterialElement,
+                MaterialElement,
+                MaterialElement,
+                MaterialElement>>;
 
-    }  // namespace policy::kinematic_wave
+    }  // namespace policy::kinematic_wave4
+
+
+    namespace value_policies {
+
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        auto kinematic_wave4(
+            PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
+            PartitionedArray<MaterialElement, 2> const& current_outflow,
+            PartitionedArray<MaterialElement, 2> const& inflow,
+            PartitionedArray<MaterialElement, 2> const& alpha,
+            PartitionedArray<MaterialElement, 2> const& beta,
+            MaterialElement const& time_step_duration,
+            PartitionedArray<MaterialElement, 2> const& channel_length)
+            -> std::tuple<PartitionedArray<MaterialElement, 2>, PartitionedArray<MaterialElement, 2>>
+        {
+            using Policies =
+                lue::policy::kinematic_wave4::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+
+            return kinematic_wave4(
+                Policies{},
+                flow_direction,
+                current_outflow,
+                inflow,
+                alpha,
+                beta,
+                time_step_duration,
+                channel_length);
+        }
+
+
+        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        auto kinematic_wave4(
+            PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
+            PartitionedArray<MaterialElement, 2> const& current_outflow,
+            MaterialElement const& inflow,
+            MaterialElement const& alpha,
+            MaterialElement const& beta,
+            MaterialElement const& time_step_duration,
+            MaterialElement const& channel_length)
+            -> std::tuple<PartitionedArray<MaterialElement, 2>, PartitionedArray<MaterialElement, 2>>
+        {
+            using Policies =
+                lue::policy::kinematic_wave4::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+
+            return kinematic_wave4(
+                Policies{},
+                flow_direction,
+                current_outflow,
+                inflow,
+                alpha,
+                beta,
+                time_step_duration,
+                channel_length);
+        }
+
+    }  // namespace value_policies
 
 }  // namespace lue
 
@@ -4698,7 +4760,351 @@ BOOST_AUTO_TEST_CASE(accu_fraction4_overloads)
 }
 
 
-// TODO: hier verder, zet unit tests over naar hier
+BOOST_AUTO_TEST_CASE(accu_fraction4_spiral_in_case)
+{
+    // accu_fraction(flow_direction, material, ones) == accu(flow_direction, material)
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::test::spiral_in();
+    auto const inflow = lue::test::ones<MaterialElement>();
+    auto const fraction = lue::test::ones<MaterialElement>();
+
+    auto const [outflow_we_got, residue_we_got] =
+        lue::value_policies::accu_fraction4(flow_direction, inflow, fraction);
+
+    auto outflow_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        lue::test::array_shape,
+        lue::test::partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                1, 2, 3,
+                32, 33, 34,
+                31, 56, 57,
+            },
+            {
+                4, 5, 6,
+                35, 36, 37,
+                58, 59, 60,
+            },
+            {
+                7, 8, 9,
+                38, 39, 10,
+                61, 40, 11,
+            },
+            {
+                30, 55, 72,
+                29, 54, 71,
+                28, 53, 70,
+            },
+            {
+                73, 74, 75,
+                80, 81, 76,
+                79, 78, 77,
+            },
+            {
+                62, 41, 12,
+                63, 42, 13,
+                64, 43, 14,
+            },
+            {
+                27, 52, 69,
+                26, 51, 50,
+                25, 24, 23,
+            },
+            {
+                68, 67, 66,
+                49, 48, 47,
+                22, 21, 20,
+            },
+            {
+                65, 44, 15,
+                46, 45, 16,
+                19, 18, 17,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+    auto const residue_we_want = lue::test::zeros<MaterialElement>();
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
+    lue::test::check_arrays_are_equal(residue_we_got, residue_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(accu_fraction4_merging_streams_case_01)
+{
+    // No-data material in ridge cell. From there on, it must propagate down to all downstream cells, in all
+    // downstream partitions. Similar for a no-data fraction in ridge cell.
+
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::test::merging_streams();
+
+    auto const x{lue::policy::no_data_value<MaterialElement>};
+    auto const inflow = lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        lue::test::array_shape,
+        lue::test::partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                // 0, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 0, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 0, 2
+                1, x, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 1, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 1, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 1, 2
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 2, 0
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 2, 1
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            },
+            {
+                // 2, 2
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
+            }
+            // clang-format on
+            // NOLINTEND
+        });
+    auto const fraction = lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        lue::test::array_shape,
+        lue::test::partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                // 0, 0
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 0, 1
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 0, 2
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 1, 0
+                0.5, 0.5, 0.5,
+                0.5, 0.5, x,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 1, 1
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 1, 2
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 2, 0
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 2, 1
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            {
+                // 2, 2
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+                0.5, 0.5, 0.5,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+
+    auto const [outflow_we_got, residue_we_got] =
+        lue::value_policies::accu_fraction4(flow_direction, inflow, fraction);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
+            {
+                // NOLINTBEGIN
+                // clang-format off
+                {
+                    // 0, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, 0.50,
+                },
+                {
+                    // 0, 1
+                    x, 0.50, 0.50,
+                    x, 0.50, 0.50,
+                    x, 0.75, x,
+                },
+                {
+                    // 0, 2
+                    x, x, 0.50,
+                    1.00, x, 0.50,
+                    x, x, 0.50,
+                },
+                {
+                    // 1, 0
+                    x, x, 0.50,
+                    x, x, x,
+                    x, x, 0.50,
+                },
+                {
+                    // 1, 1
+                    x, x, x,
+                    x, x, 0.75,
+                    0.75, x, 1,
+                },
+                {
+                    // 1, 2
+                    x, x, x,
+                    0.50, x, x,
+                    0.50, x, x,
+                },
+                {
+                    // 2, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, x,
+                },
+                {
+                    // 2, 1
+                    x, x, x,
+                    x, x, 0.75,
+                    0.9375, 0.875, 0.75,
+                },
+                {
+                    // 2, 2
+                    0.50, x, x,
+                    0.50, x, x,
+                    0.50, x, x,
+                }
+                // clang-format on
+                // NOLINTEND
+            });
+    auto const residue_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
+            {
+                // NOLINTBEGIN
+                // clang-format off
+                {
+                    // 0, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, 0.5,
+                },
+                {
+                    // 0, 1
+                    x, 0.50, 0.50,
+                    x, 0.50, 0.50,
+                    x, 0.75, x,
+                },
+                {
+                    // 0, 2
+                    x, x, 0.50,
+                    1.00, x, 0.50,
+                    x, x, 0.50,
+                },
+                {
+                    // 1, 0
+                    x, x, 0.50,
+                    x, x, x,
+                    x, x, 0.50,
+                },
+                {
+                    // 1, 1
+                    x, x, x,
+                    x, x, 0.75,
+                    0.75, x, 1,
+                },
+                {
+                    // 1, 2
+                    x, x, x,
+                    0.50, x, x,
+                    0.50, x, x,
+                },
+                {
+                    // 2, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, x,
+                },
+                {
+                    // 2, 1
+                    x, x, x,
+                    x, x, 0.75,
+                    0.9375, 0.875, 0.75,
+                },
+                {
+                    // 2, 2
+                    0.50, x, x,
+                    0.50, x, x,
+                    0.50, x, x,
+                },
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
+    lue::test::check_arrays_are_equal(residue_we_got, residue_we_want);
+}
 
 
 // BOOST_AUTO_TEST_CASE(accu_capacity)
@@ -4759,60 +5165,365 @@ BOOST_AUTO_TEST_CASE(accu_fraction4_overloads)
 //             accumulating_router(Policies{}, Functor{}, flow_direction, material, trigger);
 //     }
 // }
-//
-//
-// TODO: implement
-// BOOST_AUTO_TEST_CASE(kinematic_wave)
+
+
+// BOOST_AUTO_TEST_CASE(kinematic_wave4_overloads)
 // {
-//     using FlowDirectionElement = std::uint8_t;
-//     using FloatingPointElement = float;
-//     using CountElement = std::uint32_t;
-//     using Policies = lue::policy::kinematic_wave::
-//         DefaultValuePolicies<FlowDirectionElement, FloatingPointElement, CountElement>;
-//     using Functor = lue::KinematicWave<Policies>;
+//     using FlowDirectionElement = lue::FlowDirectionElement;
+//     using MaterialElement = lue::FloatingPointElement<0>;
 //
 //     lue::PartitionedArray<FlowDirectionElement, 2> const flow_direction{};
-//     lue::PartitionedArray<FloatingPointElement, 2> const current_state{};
-//     lue::PartitionedArray<FloatingPointElement, 2> const lateral_inflow{};
-//     CountElement const nr_time_slices{};
-//     CountElement const time_step_duration{};
+//     [[maybe_unused]] lue::PartitionedArray<MaterialElement, 2> outflow{};
+//     [[maybe_unused]] lue::PartitionedArray<MaterialElement, 2> residue{};
 //
-//     [[maybe_unused]] lue::PartitionedArray<FloatingPointElement, 2> outflow{};
-//     [[maybe_unused]] lue::PartitionedArray<FloatingPointElement, 2> residue{};
+//     // TODO: Which combinations make sense and which don't?
+//     // TODO: Revisit all routing overloads: supporting scalars only makes sense if these arguments are
+//     //       typically computed. Don't support them if that does not make sense.
+//     lue::PartitionedArray<MaterialElement, 2> const current_outflow_raster{};
+//     lue::PartitionedArray<MaterialElement, 2> const inflow_raster{};
+//     lue::PartitionedArray<MaterialElement, 2> const alpha_raster{};
+//     lue::PartitionedArray<MaterialElement, 2> const beta_raster{};
+//     lue::PartitionedArray<MaterialElement, 2> const channel_length_raster{};
+//
+//     MaterialElement const inflow_value{};
+//     MaterialElement const alpha_value{};
+//     MaterialElement const beta_value{};
+//     MaterialElement const time_step_duration_value{};
+//     MaterialElement const channel_length_value{};
+//
+//     std::tie(outflow, residue) = lue::value_policies::kinematic_wave4(
+//         flow_direction,
+//         current_outflow_raster,
+//         inflow_raster,
+//         alpha_raster,
+//         beta_raster,
+//         time_step_duration_value,
+//         channel_length_raster);
+//
+//     std::tie(outflow, residue) = lue::value_policies::kinematic_wave4(
+//         flow_direction,
+//         current_outflow_raster,
+//         inflow_value,
+//         alpha_value,
+//         beta_value,
+//         time_step_duration_value,
+//         channel_length_value);
+// }
+
+
+// TODO: Make the tests below work
+
+
+// namespace tt = boost::test_tools;
+//
+//
+// BOOST_AUTO_TEST_CASE(pcraster_manual_example)
+// {
+//     // https://pcraster.geo.uu.nl/pcraster/4.4.1/documentation/pcraster_manual/sphinx/op_kinematic.html
+//     auto flow_direction = lue::test::pcraster_example_flow_direction();
+//
+//     auto const array_shape{flow_direction.shape()};
+//     auto const partition_shape{array_shape};
+//
+//     using Element = lue::FloatingPointElement<0>;
+//
+//     auto const current_discharge = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
+//         array_shape,
+//         partition_shape,
+//         // clang-format off
+//         {{
+//             10, 10, 10, 10, 10,
+//             10, 10, 10, 10, 10,
+//             10, 10, 10, 10, 10,
+//             10, 10, 10, 10, 50,
+//             50, 50, 50, 50, 49,
+//         }}  // clang-format on
+//     );
+//
+//     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//
+//     Element const alpha = 1.5;
+//     Element const beta = 0.6;
+//     Element const time_step_duration = 15;
+//
+//     auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+//
+//     auto const discharge_we_want = lue::test::create_partitioned_array<lue::PartitionedArray<Element, 2>>(
+//         array_shape,
+//         partition_shape,
+//         // clang-format off
+//         {{
+//             2.32293,  2.32293,  2.32293,  2.32293, 2.32293,
+//             4.00491,  4.00491,  5.76591,  4.00491, 2.32293,
+//             5.27401,  9.81514,  8.40418,  4.00491, 2.32293,
+//             2.32293, 21.22170,  9.68365,  9.60760, 7.19019,
+//             7.19019, 57.27763, 17.74742, 12.90772, 7.09124,
+//         }}  // clang-format on
+//     );
+//
+//     auto const new_discharge = lue::value_policies::kinematic_wave(
+//         flow_direction, current_discharge, inflow, alpha, beta, time_step_duration, channel_length);
+//
+//     lue::test::check_arrays_are_close(new_discharge, discharge_we_want);
+// }
+//
+//
+// BOOST_AUTO_TEST_CASE(zero_discharge_and_inflow)
+// {
+//     auto flow_direction = lue::test::pcraster_example_flow_direction();
+//
+//     auto const array_shape{flow_direction.shape()};
+//     auto const partition_shape{array_shape};
+//
+//     using Element = lue::FloatingPointElement<0>;
+//
+//     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//
+//     Element const alpha = 1.5;
+//     Element const beta = 0.6;
+//     Element const time_step_duration = 15;
+//
+//     auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+//
+//     auto const discharge_we_want = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//
+//     auto const new_discharge = lue::value_policies::kinematic_wave(
+//         flow_direction, current_discharge, inflow, alpha, beta, time_step_duration, channel_length);
+//
+//     lue::test::check_arrays_are_close(new_discharge, discharge_we_want);
+// }
+//
+//
+// BOOST_AUTO_TEST_CASE(non_zero_discharge_and_zero_inflow)
+// {
+//     auto flow_direction = lue::test::pcraster_example_flow_direction();
+//
+//     auto const array_shape{flow_direction.shape()};
+//     auto const partition_shape{array_shape};
+//
+//     using Element = lue::FloatingPointElement<0>;
+//
+//     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
+//     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//
+//     Element const alpha = 1.5;
+//     Element const beta = 0.6;
+//     Element const time_step_duration = 15;
+//
+//     auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+//
+//     auto const new_discharge = lue::value_policies::kinematic_wave(
+//         flow_direction, current_discharge, inflow, alpha, beta, time_step_duration, channel_length);
+//
+//     using namespace lue::value_policies;
+//
+//     BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).future().get());
+// }
+//
+//
+// BOOST_AUTO_TEST_CASE(zero_discharge_and_non_zero_inflow)
+// {
+//     auto flow_direction = lue::test::pcraster_example_flow_direction();
+//
+//     auto const array_shape{flow_direction.shape()};
+//     auto const partition_shape{array_shape};
+//
+//     using Element = lue::FloatingPointElement<0>;
+//
+//     auto const current_discharge = lue::create_partitioned_array<Element>(array_shape, partition_shape, 0);
+//     auto const inflow = lue::create_partitioned_array<Element>(array_shape, partition_shape, 1);
+//
+//     Element const alpha = 1.5;
+//     Element const beta = 0.6;
+//     Element const time_step_duration = 15;
+//
+//     auto const channel_length = lue::create_partitioned_array<Element>(array_shape, partition_shape, 10);
+//
+//     auto const new_discharge = lue::value_policies::kinematic_wave(
+//         flow_direction, current_discharge, inflow, alpha, beta, time_step_duration, channel_length);
+//
+//     using namespace lue::value_policies;
+//
+//     BOOST_CHECK(lue::value_policies::all(new_discharge > Element{0}).future().get());
+// }
+//
+//
+// // TODO Add tests for extreme inputs:
+// // - What about "wrong" values for alpha, beta, time_step_duration?
+//
+//
+// BOOST_AUTO_TEST_CASE(dry_cell)
+// {
+//     using FloatingPoint = lue::FloatingPointElement<0>;
 //
 //     {
-//         lue::PartitionedArray<FloatingPointElement, 2> const alpha{};
-//         lue::PartitionedArray<FloatingPointElement, 2> const beta{};
-//         lue::PartitionedArray<FloatingPointElement, 2> const channel_length{};
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             0,     // upstream_discharge
+//             0,     // current_discharge
+//             0,     // lateral_inflow
+//             1.5,   // alpha
+//             0.6,   // beta
+//             15,    // time_step_duration
+//             10)};  // channel_length
+//         FloatingPoint const discharge_we_want{0};
 //
-//         std::tie(outflow, residue) = accumulating_router(
-//             Policies{},
-//             Functor{},
-//             flow_direction,
-//             current_state,
-//             lateral_inflow,
-//             alpha,
-//             beta,
-//             nr_time_slices,
-//             time_step_duration,
-//             channel_length);
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
 //     }
 //
 //     {
-//         FloatingPointElement const alpha{};
-//         FloatingPointElement const beta{};
-//         FloatingPointElement const channel_length{};
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             1,     // upstream_discharge
+//             0,     // current_discharge
+//             -1,    // lateral_inflow
+//             1.5,   // alpha
+//             0.6,   // beta
+//             15,    // time_step_duration
+//             10)};  // channel_length
+//         FloatingPoint const discharge_we_want{0};
 //
-//         std::tie(outflow, residue) = accumulating_router(
-//             Policies{},
-//             Functor{},
-//             flow_direction,
-//             current_state,
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+//     }
+//
+//     {
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             1,     // upstream_discharge
+//             1,     // current_discharge
+//             -2,    // lateral_inflow
+//             1.5,   // alpha
+//             0.6,   // beta
+//             15,    // time_step_duration
+//             10)};  // channel_length
+//         FloatingPoint const discharge_we_want{0};
+//
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+//     }
+//
+//     {
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             0,     // upstream_discharge
+//             1,     // current_discharge
+//             -1,    // lateral_inflow
+//             1.5,   // alpha
+//             0.6,   // beta
+//             15,    // time_step_duration
+//             10)};  // channel_length
+//         FloatingPoint const discharge_we_want{0};
+//
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+//     }
+//
+//     {
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             0,     // upstream_discharge
+//             0,     // current_discharge
+//             -1,    // lateral_inflow
+//             1.5,   // alpha
+//             0.6,   // beta
+//             15,    // time_step_duration
+//             10)};  // channel_length
+//         FloatingPoint const discharge_we_want{0};
+//
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+//     }
+// }
+//
+//
+// // BOOST_AUTO_TEST_CASE(crashed_in_pcraster1)
+// // {
+// //     double const new_discharge{lue::detail::iterate_to_new_discharge<double>(
+// //         0.000201343,   // upstream_discharge
+// //         0.000115866,   // current_discharge
+// //         -0.000290263,  // lateral_inflow
+// //         1.73684,       // alpha
+// //         0.6,           // beta
+// //         15,            // time_step_duration
+// //         10)};          // channel_length
+// //     // /* epsilon */ 1E-12);  // epsilon
+// //     double const discharge_we_want{0.000031450866300937};
+// //
+// //     BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+// // }
+//
+//
+// BOOST_AUTO_TEST_CASE(crashed_in_pcraster2)
+// {
+//     if constexpr (lue::arithmetic_element_supported<double>)
+//     {
+//         // TODO Port to all float types
+//         using FloatingPoint = double;
+//
+//         FloatingPoint const new_discharge{lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             0,             // upstream_discharge
+//             1.11659e-07,   // current_discharge
+//             -1.32678e-05,  // lateral_inflow
+//             1.6808,        // alpha
+//             0.6,           // beta
+//             15,            // time_step_duration
+//             10)};          // channel_length
+//
+//         FloatingPoint const discharge_we_want{std::numeric_limits<FloatingPoint>::min()};
+//
+//         BOOST_TEST(new_discharge == discharge_we_want, tt::tolerance(1e-6));
+//     }
+// }
+//
+//
+// BOOST_AUTO_TEST_CASE(random_input)
+// {
+//     using FloatingPoint = lue::FloatingPointElement<0>;
+//
+//     std::random_device random_device{};
+//     std::default_random_engine random_number_engine(random_device());
+//
+//     std::uniform_real_distribution<FloatingPoint> discharge_distribution{0, 1000};
+//     std::uniform_real_distribution<FloatingPoint> lateral_inflow_distribution{-1000, 1000};
+//     std::uniform_real_distribution<FloatingPoint> alpha_distribution{0.5, 6.0};
+//     std::uniform_real_distribution<FloatingPoint> beta_distribution{0.5, 2.0};
+//     std::uniform_real_distribution<FloatingPoint> time_step_duration_distribution{1, 100};
+//     std::uniform_real_distribution<FloatingPoint> channel_length_distribution{1, 100};
+//
+//     for (std::size_t i = 0; i < 10000; ++i)
+//     {
+//         FloatingPoint const upstream_discharge{discharge_distribution(random_number_engine)};
+//         FloatingPoint const current_discharge{discharge_distribution(random_number_engine)};
+//         FloatingPoint const alpha{alpha_distribution(random_number_engine)};
+//         FloatingPoint const beta{beta_distribution(random_number_engine)};
+//         FloatingPoint const time_step_duration{time_step_duration_distribution(random_number_engine)};
+//         FloatingPoint const channel_length{channel_length_distribution(random_number_engine)};
+//
+//         FloatingPoint const lateral_inflow{
+//             lateral_inflow_distribution(random_number_engine) / channel_length};
+//
+//         FloatingPoint new_discharge{-1};
+//
+//         BOOST_TEST_INFO(
+//             std::format(
+//                 "upstream_discharge: {}\n"
+//                 "current_discharge: {}\n"
+//                 "lateral_inflow: {}\n"
+//                 "alpha: {}\n"
+//                 "beta: {}\n"
+//                 "time_step_duration: {}\n"
+//                 "channel_length: {}\n",
+//                 upstream_discharge,
+//                 current_discharge,
+//                 lateral_inflow,
+//                 alpha,
+//                 beta,
+//                 time_step_duration,
+//                 channel_length));
+//
+//         // This call should not throw an exception
+//         new_discharge = lue::detail::iterate_to_new_discharge<FloatingPoint>(
+//             upstream_discharge,
+//             current_discharge,
 //             lateral_inflow,
 //             alpha,
 //             beta,
-//             nr_time_slices,
 //             time_step_duration,
 //             channel_length);
+//
+//         BOOST_CHECK(new_discharge >= 0);
 //     }
 // }
