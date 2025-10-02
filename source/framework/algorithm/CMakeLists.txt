@@ -1656,23 +1656,20 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            math(EXPR count "${count} + 1")
-            string(REPLACE "::" "_" name ${Element})
+            string(REPLACE "::" "_" element ${Element})
 
-            # Instantiate accu3
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu3-${count}.cpp")
+            # Instantiate accu
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu3.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
         endforeach()
