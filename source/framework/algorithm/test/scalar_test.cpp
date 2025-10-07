@@ -258,6 +258,40 @@ BOOST_AUTO_TEST_CASE(move_assign)
 }
 
 
+BOOST_AUTO_TEST_CASE(convert_assign)
+{
+    {
+        using Element = std::uint8_t;
+
+        lue::Scalar<Element> scalar = Element{5};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), Element{5});
+    }
+
+    {
+        using Element = float;
+
+        lue::Scalar<Element> scalar = Element{5};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), Element{5});
+    }
+
+    {
+        using Element = std::string;
+
+        lue::Scalar<Element> scalar = Element{"5"};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), "5");
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(continuation)
 {
     using Element = std::string;

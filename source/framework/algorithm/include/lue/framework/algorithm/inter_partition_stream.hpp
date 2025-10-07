@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/accu_info3.hpp"
+#include "lue/framework/algorithm/accu_info.hpp"
 #include "lue/framework/algorithm/component/array_partition_io.hpp"
 #include "lue/framework/algorithm/detail/accumulate.hpp"
 #include "lue/framework/algorithm/detail/halo_partition.hpp"

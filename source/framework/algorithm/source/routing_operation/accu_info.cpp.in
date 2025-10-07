@@ -1,0 +1,20 @@
+#include "lue/framework/algorithm/default_policies/accu_info.hpp"
+#include "lue/framework/algorithm/definition/accu_info.hpp"
+#include "lue/framework/algorithm/value_policies/accu_info.hpp"
+
+
+// TODO: revisit
+using lue_CellsIdxs = std::vector<lue::Index>;
+using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ FlowDirectionElement }}, 2>;
+
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ACCU_INFO(
+            ESC(policy::accu_info::{{ Policies }}<{{ FlowDirectionElement }}>)
+        );
+
+}  // namespace lue

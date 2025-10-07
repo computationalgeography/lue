@@ -3,17 +3,18 @@
 #include "lue/py/bind.hpp"
 
 
+using namespace pybind11::literals;
+
+
 namespace lue::framework {
     namespace {
-
-        using namespace pybind11::literals;
 
         class Binder
         {
 
             public:
 
-                template<Arithmetic MaterialElement>
+                template<std::floating_point FloatingPointElement>
                 static void bind(pybind11::module& module)
                 {
                     Rank const rank{2};
@@ -21,24 +22,24 @@ namespace lue::framework {
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           PartitionedArray<MaterialElement, rank> const& material)
-                        { return value_policies::accu(flow_direction, material); },
+                           PartitionedArray<FloatingPointElement, rank> const& inflow)
+                        { return value_policies::accu(flow_direction, inflow); },
                         "flow_direction"_a,
-                        "material"_a);
+                        "inflow"_a);
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           Scalar<MaterialElement> const& material)
-                        { return value_policies::accu(flow_direction, material); },
+                           Scalar<FloatingPointElement> const& inflow)
+                        { return value_policies::accu(flow_direction, inflow); },
                         "flow_direction"_a,
-                        "material"_a);
+                        "inflow"_a);
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           MaterialElement const& material)
-                        { return value_policies::accu(flow_direction, material); },
+                           FloatingPointElement const& inflow)
+                        { return value_policies::accu(flow_direction, lue::Scalar{inflow}); },
                         "flow_direction"_a,
-                        "material"_a);
+                        "inflow"_a);
                 }
         };
 

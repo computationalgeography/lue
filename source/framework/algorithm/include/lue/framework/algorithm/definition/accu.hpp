@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/accu.hpp"
 #include "lue/framework/algorithm/definition/accumulating_router.hpp"
-// TODO: #include "lue/framework/algorithm/detail/verify_compatible.hpp"  <-- Add this to code below again
+#include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
 
@@ -47,13 +47,13 @@ namespace lue {
 
 
                         CellAccumulator(
-                            Policies const& policies, Material const& inflow, MaterialData& outflow):
+                            Policies const& policies, Material const& external_inflow, MaterialData& outflow):
 
                             _dp{policies.domain_policy()},
                             _indp_inflow{std::get<1>(policies.inputs_policies()).input_no_data_policy()},
                             _ondp_outflow{std::get<0>(policies.outputs_policies()).output_no_data_policy()},
 
-                            _inflow{inflow},
+                            _external_inflow{external_inflow},
                             _outflow{outflow}
 
                         {
@@ -98,13 +98,14 @@ namespace lue {
 
                         void accumulate_external_inflow(Index const idx0, Index const idx1)
                         {
-                            MaterialElement const& inflow{detail::to_value(_inflow, idx0, idx1)};
+                            MaterialElement const& external_inflow{to_value(_external_inflow, idx0, idx1)};
 
                             MaterialElement& outflow{_outflow(idx0, idx1)};
 
                             if (!_ondp_outflow.is_no_data(outflow))
                             {
-                                if (_indp_inflow.is_no_data(inflow) || !_dp.within_domain(inflow))
+                                if (_indp_inflow.is_no_data(external_inflow) ||
+                                    !_dp.within_domain(external_inflow))
                                 {
                                     _ondp_outflow.mark_no_data(outflow);
                                 }
@@ -112,7 +113,7 @@ namespace lue {
                                 {
                                     // Now we know the final, total amount
                                     // of inflow that enters this cell
-                                    outflow += inflow;
+                                    outflow += external_inflow;
                                 }
                             }
                         }
@@ -190,7 +191,7 @@ namespace lue {
 
                         OutflowNoDataPolicy _ondp_outflow;
 
-                        Material const _inflow;  // External inflow
+                        Material const _external_inflow;  // External inflow
 
                         MaterialData& _outflow;  // Upstream inflow, outflow
                 };
@@ -223,6 +224,8 @@ namespace lue {
         PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& inflow)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
+        detail::verify_compatible(flow_direction, inflow);
+
         return std::get<0>(accumulating_router(policies, detail::Accu<Policies>{}, flow_direction, inflow));
     }
 

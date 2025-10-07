@@ -89,8 +89,8 @@ target_sources(lue_py_framework_routing_operation
         source/algorithm/routing_operation.cpp
         source/algorithm/routing_operation/accu.cpp
         source/algorithm/routing_operation/accu_fraction.cpp
-        source/algorithm/routing_operation/accu_info3.cpp
-        source/algorithm/routing_operation/accu_threshold3.cpp
+        source/algorithm/routing_operation/accu_info.cpp
+        source/algorithm/routing_operation/accu_threshold.cpp
         source/algorithm/routing_operation/d8_flow_direction.cpp
         source/algorithm/routing_operation/decreasing_order.cpp
         source/algorithm/routing_operation/downstream.cpp

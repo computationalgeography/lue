@@ -378,9 +378,9 @@ def harmonize_types(expression1, expression2):
 
     assert not lue_is_value(expression1), expression1
     assert not lue_is_value(expression2), expression2
-    assert (
-        expression1.dtype == expression2.dtype
-    ), f"{expression1.dtype} != {expression2.dtype}"
+    assert expression1.dtype == expression2.dtype, (
+        f"{expression1.dtype} != {expression2.dtype}"
+    )
 
     return expression1, expression2
 
@@ -444,64 +444,43 @@ def accucapacitystate(flow_direction, material, transportcapacity):
     raise NotImplementedError("accucapacitystate")
 
 
-def accuflux(flow_direction, material):
-    return accuthreshold(flow_direction, material, 0)[0]
-
-
-def accufraction(flow_direction, material, transportcapacity):
+def accuflux(flow_direction, inflow):
     flow_direction = ldd(flow_direction)
-    material = scalar(material)
-    transportcapacity = scalar(transportcapacity)
+    inflow = scalar(inflow)
 
-    assert is_spatial(flow_direction), type(flow_direction)
-
-    if is_non_spatial(material):
-        # TODO Support non-spatial material
-        material = non_spatial_to_spatial(fill_value=material, template=flow_direction)
-
-    if is_non_spatial(transportcapacity):
-        # TODO Support non-spatial transportcapacity
-        transportcapacity = non_spatial_to_spatial(
-            fill_value=transportcapacity, template=flow_direction
-        )
-
-    return lfr.accu_fraction(flow_direction, material, transportcapacity)
+    return lfr.accu(flow_direction, inflow)
 
 
-def accufractionflux(flow_direction, material, transportcapacity):
-    return accufraction(flow_direction, material, transportcapacity)[0]
-
-
-def accufractionstate(flow_direction, material, transportcapacity):
-    return accufraction(flow_direction, material, transportcapacity)[1]
-
-
-def accuthreshold(flow_direction, material, threshold):
+def accufraction(flow_direction, inflow, fraction):
     flow_direction = ldd(flow_direction)
-    material = scalar(material)
+    inflow = scalar(inflow)
+    threshold = scalar(fraction)
+
+    return lfr.accu_fraction(flow_direction, inflow, fraction)
+
+
+def accufractionflux(flow_direction, inflow, fraction):
+    return accufraction(flow_direction, inflow, fraction)[0]
+
+
+def accufractionstate(flow_direction, inflow, fraction):
+    return accufraction(flow_direction, inflow, fraction)[1]
+
+
+def accuthreshold(flow_direction, inflow, threshold):
+    flow_direction = ldd(flow_direction)
+    inflow = scalar(inflow)
     threshold = scalar(threshold)
 
-    assert is_spatial(flow_direction), type(flow_direction)
-
-    if is_non_spatial(material):
-        # TODO Support non-spatial material
-        material = non_spatial_to_spatial(fill_value=material, template=flow_direction)
-
-    if is_non_spatial(threshold):
-        # TODO Support non-spatial threshold
-        threshold = non_spatial_to_spatial(
-            fill_value=threshold, template=flow_direction
-        )
-
-    return lfr.accu_threshold3(flow_direction, material, threshold)
+    return lfr.accu_threshold(flow_direction, inflow, threshold)
 
 
-def accuthresholdflux(flow_direction, material, threshold):
-    return accuthreshold(flow_direction, material, threshold)[0]
+def accuthresholdflux(flow_direction, inflow, threshold):
+    return accuthreshold(flow_direction, inflow, threshold)[0]
 
 
-def accuthresholdstate(flow_direction, material, threshold):
-    return accuthreshold(flow_direction, material, threshold)[1]
+def accuthresholdstate(flow_direction, inflow, threshold):
+    return accuthreshold(flow_direction, inflow, threshold)[1]
 
 
 def accutriggerflux(flow_direction, material, transporttrigger):
@@ -803,19 +782,34 @@ def inversedistance(*args):
     raise NotImplementedError("inversedistance")
 
 
-def kinematic(flow_direction, Qold, q, alpha, beta, nrTimeSlices, dT, dX):
-    # TODO kinematic wave should also support Scalar values
+def kinematic(
+    flow_direction,
+    current_outflow,
+    inflow,
+    alpha,
+    beta,
+    nr_time_slices,
+    time_step_duration,
+    channel_length,
+):
+    flow_direction = ldd(flow_direction)
+    current_outflow = scalar(current_outflow)
+    inflow = scalar(inflow)
+    alpha = scalar(alpha)
+    beta = scalar(beta)
+    del nr_time_slices
+    time_step_duration = scalar(time_step_duration)
+    channel_length = scalar(channel_length)
 
-    # flow_direction = ldd(flow_direction)
-    # Qold = scalar(Qold)
-    # q = scalar(q)
-    # alpha = scalar(alpha)
-    # beta = scalar(beta)
-    # nrTimeSlices = scalar(nrTimeSlices)
-    # dT = scalar(dT)
-    # dX = scalar(dX)
-
-    return lfr.kinematic_wave(flow_direction, Qold, q, alpha, beta, dT, dX)
+    return lfr.kinematic_wave(
+        flow_direction,
+        current_outflow,
+        inflow,
+        alpha,
+        beta,
+        time_step_duration,
+        channel_length,
+    )
 
 
 def kinwavestate(*args):

@@ -1,34 +1,29 @@
 #pragma once
-#include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/accu_threshold.hpp"
+#include "lue/framework/algorithm/definition/accumulating_router.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
-#include "lue/framework/algorithm/kinematic_wave.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework.hpp"
 #include "lue/macro.hpp"
-#include <limits>
-// #define BOOST_MATH_INSTRUMENT
 #include <boost/math/tools/roots.hpp>
-#include <cmath>
-#include <format>
 
 
 namespace lue {
     namespace detail {
 
-        template<typename Float>
+        template<std::floating_point FloatingPoint>
         class NonLinearKinematicWave
         {
 
             public:
 
                 NonLinearKinematicWave(
-                    Float const upstream_discharge,
-                    Float const current_discharge,
-                    Float const lateral_inflow,
-                    Float const alpha,
-                    Float const beta,
-                    Float const time_step_duration,
-                    Float const channel_length):
+                    FloatingPoint const upstream_discharge,
+                    FloatingPoint const current_discharge,
+                    FloatingPoint const lateral_inflow,
+                    FloatingPoint const alpha,
+                    FloatingPoint const beta,
+                    FloatingPoint const time_step_duration,
+                    FloatingPoint const channel_length):
 
                     _upstream_discharge{upstream_discharge},
                     _current_discharge{current_discharge},
@@ -39,20 +34,21 @@ namespace lue {
                     _time_step_duration{time_step_duration}
 
                 {
-                    lue_hpx_assert(_upstream_discharge >= Float{0});
-                    lue_hpx_assert(_current_discharge >= Float{0});
-                    lue_hpx_assert(_upstream_discharge + _current_discharge + _lateral_inflow > Float{0});
-                    lue_hpx_assert(_alpha > Float{0});
-                    lue_hpx_assert(_beta > Float{0});
-                    lue_hpx_assert(_time_step_duration > Float{0});
-                    lue_hpx_assert(channel_length > Float{0});
+                    lue_hpx_assert(_upstream_discharge >= FloatingPoint{0});
+                    lue_hpx_assert(_current_discharge >= FloatingPoint{0});
+                    lue_hpx_assert(
+                        _upstream_discharge + _current_discharge + _lateral_inflow > FloatingPoint{0});
+                    lue_hpx_assert(_alpha > FloatingPoint{0});
+                    lue_hpx_assert(_beta > FloatingPoint{0});
+                    lue_hpx_assert(_time_step_duration > FloatingPoint{0});
+                    lue_hpx_assert(channel_length > FloatingPoint{0});
 
                     // Known terms, independent of new discharge
                     _time_step_duration_over_channel_length = _time_step_duration / channel_length;
 
-                    _known_terms = _time_step_duration_over_channel_length * _upstream_discharge +
-                                   _alpha * std::pow(_current_discharge, _beta) +
-                                   _time_step_duration * _lateral_inflow;
+                    _known_terms = (_time_step_duration_over_channel_length * _upstream_discharge) +
+                                   (_alpha * std::pow(_current_discharge, _beta)) +
+                                   (_time_step_duration * _lateral_inflow);
                 }
 
 
@@ -62,18 +58,20 @@ namespace lue {
                     Note that fq is only defined for discharges larger than zero. In case the initial guess
                     ends up being zero or negative, a small positive value is returned.
                 */
-                auto guess() const -> Float
+                auto guess() const -> FloatingPoint
                 {
                     // Small, but not zero!
-                    static Float const min_discharge{std::numeric_limits<Float>::min()};
-                    Float discharge_guess{min_discharge};
+                    static FloatingPoint const min_discharge{std::numeric_limits<FloatingPoint>::min()};
+                    FloatingPoint discharge_guess{min_discharge};
 
                     // pow(0, -) is not defined
-                    if ((_current_discharge + _upstream_discharge != Float{0}) || _beta >= Float{1})
+                    if ((_current_discharge + _upstream_discharge != FloatingPoint{0}) ||
+                        _beta >= FloatingPoint{1})
                     {
-                        Float const a_b_pq =
-                            _alpha_beta *
-                            std::pow((_current_discharge + _upstream_discharge) / Float{2}, _beta - Float{1});
+                        FloatingPoint const a_b_pq =
+                            _alpha_beta * std::pow(
+                                              (_current_discharge + _upstream_discharge) / FloatingPoint{2},
+                                              _beta - FloatingPoint{1});
 
                         lue_hpx_assert(!std::isnan(a_b_pq));
 
@@ -84,81 +82,82 @@ namespace lue {
 
                         lue_hpx_assert(!std::isnan(discharge_guess));
 
-                        discharge_guess = std::max<Float>(discharge_guess, min_discharge);
+                        discharge_guess = std::max<FloatingPoint>(discharge_guess, min_discharge);
                     }
 
-                    lue_hpx_assert(discharge_guess > Float{0});
+                    lue_hpx_assert(discharge_guess > FloatingPoint{0});
 
                     return discharge_guess;
                 }
 
 
-                auto operator()(Float const new_discharge) const -> std::pair<Float, Float>
+                auto operator()(FloatingPoint const new_discharge) const
+                    -> std::pair<FloatingPoint, FloatingPoint>
                 {
                     return std::make_pair(fq(new_discharge), dfq(new_discharge));
                 }
 
 
-                auto fq(Float const new_discharge) const -> Float
+                auto fq(FloatingPoint const new_discharge) const -> FloatingPoint
                 {
-                    lue_hpx_assert(new_discharge > Float{0});  // pow(0, -) is not defined
+                    lue_hpx_assert(new_discharge > FloatingPoint{0});  // pow(0, -) is not defined
 
-                    return _time_step_duration_over_channel_length * new_discharge +
-                           _alpha * std::pow(new_discharge, _beta) - _known_terms;
+                    return (_time_step_duration_over_channel_length * new_discharge) +
+                           (_alpha * std::pow(new_discharge, _beta)) - _known_terms;
                 }
 
 
-                auto dfq(Float const new_discharge) const -> Float
+                auto dfq(FloatingPoint const new_discharge) const -> FloatingPoint
                 {
-                    lue_hpx_assert(new_discharge > Float{0});  // pow(0, -) is not defined
+                    lue_hpx_assert(new_discharge > FloatingPoint{0});  // pow(0, -) is not defined
 
                     return _time_step_duration_over_channel_length +
-                           _alpha_beta * std::pow(new_discharge, _beta - Float{1});
+                           (_alpha_beta * std::pow(new_discharge, _beta - FloatingPoint{1}));
                 }
 
 
             private:
 
                 //! Updated / new discharge in the upstream cell
-                Float _upstream_discharge;
+                FloatingPoint _upstream_discharge;
 
                 //! Current / previous discharge in the current cell
-                Float _current_discharge;
+                FloatingPoint _current_discharge;
 
                 //! Lateral inflow
-                Float _lateral_inflow;
+                FloatingPoint _lateral_inflow;
 
-                Float _alpha;
+                FloatingPoint _alpha;
 
                 //! Momentum coefficient / Boussinesq coefficient [1.01, 1.33] (Chow, p278)
-                Float _beta;
+                FloatingPoint _beta;
 
-                Float _alpha_beta;
+                FloatingPoint _alpha_beta;
 
-                Float _time_step_duration;
+                FloatingPoint _time_step_duration;
 
-                Float _time_step_duration_over_channel_length;
+                FloatingPoint _time_step_duration_over_channel_length;
 
-                Float _known_terms;
+                FloatingPoint _known_terms;
         };
 
 
-        template<typename Float>
-        Float iterate_to_new_discharge(
-            Float const upstream_discharge,  // Summed discharge for cells draining into current cell
-            Float const current_discharge,
-            Float const lateral_inflow,
-            Float const alpha,
-            Float const beta,
-            Float const time_step_duration,
-            Float const channel_length)
+        template<std::floating_point FloatingPoint>
+        auto iterate_to_new_discharge(
+            FloatingPoint const upstream_discharge,  // Summed discharge for cells draining into current cell
+            FloatingPoint const current_discharge,
+            FloatingPoint const lateral_inflow,
+            FloatingPoint const alpha,
+            FloatingPoint const beta,
+            FloatingPoint const time_step_duration,
+            FloatingPoint const channel_length) -> FloatingPoint
         {
-            lue_hpx_assert(upstream_discharge >= Float{0});
-            lue_hpx_assert(current_discharge >= Float{0});
-            lue_hpx_assert(alpha >= Float{0});
-            lue_hpx_assert(beta >= Float{0});
-            lue_hpx_assert(time_step_duration > Float{0});
-            lue_hpx_assert(channel_length > Float{0});
+            lue_hpx_assert(upstream_discharge >= FloatingPoint{0});
+            lue_hpx_assert(current_discharge >= FloatingPoint{0});
+            lue_hpx_assert(alpha >= FloatingPoint{0});
+            lue_hpx_assert(beta >= FloatingPoint{0});
+            lue_hpx_assert(time_step_duration > FloatingPoint{0});
+            lue_hpx_assert(channel_length > FloatingPoint{0});
 
             // Lateral inflow can represent two things:
             // - Actual inflow from an external source (positive value): e.g.: precepitation
@@ -173,14 +172,14 @@ namespace lue {
             // the difference between the discharge computed and the potential extraction passed in.
             // https://github.com/computationalgeography/lue/issues/527
 
-            Float new_discharge{0};
+            FloatingPoint new_discharge{0};
 
             if (upstream_discharge + current_discharge > 0 || lateral_inflow > 0)
             {
                 // The cell receives water, from upstream and/or from an external source
-                Float const inflow = lateral_inflow >= 0 ? lateral_inflow : Float{0};
+                FloatingPoint const inflow = lateral_inflow >= 0 ? lateral_inflow : FloatingPoint{0};
 
-                NonLinearKinematicWave<Float> kinematic_wave{
+                NonLinearKinematicWave<FloatingPoint> kinematic_wave{
                     upstream_discharge,
                     current_discharge,
                     inflow,
@@ -189,13 +188,13 @@ namespace lue {
                     time_step_duration,
                     channel_length};
 
-                Float const discharge_guess{kinematic_wave.guess()};
+                FloatingPoint const discharge_guess{kinematic_wave.guess()};
 
                 // "If the function is 'Really Well Behaved' (is monotonic and has only one root) the bracket
                 // bounds min and max may as well be set to the widest limits"
-                Float const min_discharge{0};
-                Float const max_discharge{std::numeric_limits<Float>::max()};
-                int const digits = static_cast<int>(std::numeric_limits<Float>::digits * 0.6);
+                FloatingPoint const min_discharge{0};
+                FloatingPoint const max_discharge{std::numeric_limits<FloatingPoint>::max()};
+                int const digits = static_cast<int>(std::numeric_limits<FloatingPoint>::digits * 0.6);
 
                 // In general, 2-3 iterations are enough. In rare cases more are needed. The unit tests don't
                 // seem to reach 8, so max 10 should be enough. This max is used in special cases:
@@ -204,7 +203,7 @@ namespace lue {
                 std::uintmax_t actual_nr_iterations{max_nr_iterations};
 
                 // https://www.boost.org/doc/libs/1_85_0/libs/math/doc/html/math_toolkit/roots_deriv.html
-                // std::cout.precision(std::numeric_limits<Float>::digits10);
+                // std::cout.precision(std::numeric_limits<FloatingPoint>::digits10);
                 new_discharge = boost::math::tools::newton_raphson_iterate(
                     kinematic_wave,
                     discharge_guess,
@@ -240,798 +239,411 @@ namespace lue {
                 // }
             }
 
-            if (lateral_inflow < Float{0})
+            if (lateral_inflow < FloatingPoint{0})
             {
                 // Convert units: m³ / m / s → m³ / s
-                Float const extraction{std::min(channel_length * std::abs(lateral_inflow), new_discharge)};
+                FloatingPoint const extraction{
+                    std::min(channel_length * std::abs(lateral_inflow), new_discharge)};
 
                 new_discharge -= extraction;
             }
 
-            lue_hpx_assert(new_discharge >= Float{0});
+            lue_hpx_assert(new_discharge >= FloatingPoint{0});
 
             return new_discharge;
         }
 
 
-        template<typename Policies, Rank rank>
-        class KinematicWaveCellAccumulator
+        template<typename Policies>
+        class KinematicWave:
+            public AccumulatingRouterFunctor<
+                policy::detail::TypeList<
+                    policy::InputElementT<Policies, 1>,
+                    policy::InputElementT<Policies, 2>,
+                    policy::InputElementT<Policies, 3>,
+                    policy::InputElementT<Policies, 4>,
+                    policy::InputElementT<Policies, 5>,
+                    policy::InputElementT<Policies, 6>>,
+                policy::detail::TypeList<policy::OutputElementT<Policies, 0>>>
         {
-
-            public:
-
-                using DomainPolicy = policy::DomainPolicyT<Policies>;
-                using CurrentDischargeNoDataPolicy =
-                    policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 1>>;
-                using InflowNoDataPolicy = policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 2>>;
-                using ChannelLengthNoDataPolicy =
-                    policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 3>>;
-                using NewDischargeNoDataPolicy =
-                    policy::OutputNoDataPolicy2T<policy::OutputPoliciesT<Policies, 0>>;
-
-                using MaterialElement = policy::ElementT<CurrentDischargeNoDataPolicy>;
-                static_assert(std::is_same_v<policy::ElementT<InflowNoDataPolicy>, MaterialElement>);
-                static_assert(std::is_same_v<policy::ElementT<ChannelLengthNoDataPolicy>, MaterialElement>);
-                static_assert(std::is_same_v<policy::ElementT<NewDischargeNoDataPolicy>, MaterialElement>);
-
-                using MaterialData = DataT<PartitionedArray<MaterialElement, rank>>;
-
-                using Float = MaterialElement;
-
-                static_assert(std::is_floating_point_v<Float>);
-
-
-                KinematicWaveCellAccumulator(
-                    Policies const& policies,
-                    MaterialData const& current_discharge,
-                    MaterialData const& inflow,
-                    Float const alpha,
-                    Float const beta,
-                    Float const time_step_duration,
-                    MaterialData const& channel_length,
-                    MaterialData& new_discharge):
-
-                    _dp{policies.domain_policy()},
-                    _indp_current_discharge{std::get<1>(policies.inputs_policies()).input_no_data_policy()},
-                    _indp_inflow{std::get<2>(policies.inputs_policies()).input_no_data_policy()},
-                    _indp_channel_length{std::get<3>(policies.inputs_policies()).input_no_data_policy()},
-                    _ondp_new_discharge{std::get<0>(policies.outputs_policies()).output_no_data_policy()},
-
-                    _current_discharge{current_discharge},
-                    _inflow{inflow},
-                    _alpha{alpha},
-                    _beta{beta},
-                    _time_step_duration{time_step_duration},
-                    _channel_length{channel_length},
-                    _new_discharge{new_discharge}
-
-                {
-                }
-
-
-                void enter_at_partition_input(
-                    [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                {
-                }
-
-
-                void leave_at_output_cell(
-                    [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                {
-                }
-
-
-                void leave_at_sink_cell([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                {
-                }
-
-
-                void accumulate_external_inflow(Index const idx0, Index const idx1)
-                {
-                    MaterialElement const current_discharge{_current_discharge(idx0, idx1)};
-                    MaterialElement const inflow{_inflow(idx0, idx1)};
-                    MaterialElement const channel_length{_channel_length(idx0, idx1)};
-
-                    MaterialElement& new_discharge{_new_discharge(idx0, idx1)};
-
-                    if (!_ondp_new_discharge.is_no_data(new_discharge))
-                    {
-                        if (_indp_current_discharge.is_no_data(current_discharge) ||
-                            _indp_inflow.is_no_data(inflow) ||
-                            _indp_channel_length.is_no_data(channel_length) ||
-                            !_dp.within_domain(current_discharge, inflow, channel_length))
-                        {
-                            _ondp_new_discharge.mark_no_data(new_discharge);
-                        }
-                        else
-                        {
-                            // All information is available now to calculate the new discharge
-                            // for the current cell
-                            new_discharge = iterate_to_new_discharge(
-                                new_discharge,
-                                current_discharge,
-                                inflow,
-                                _alpha,
-                                _beta,
-                                _time_step_duration,
-                                channel_length);
-                        }
-                    }
-                }
-
-
-                void accumulate_downstream(
-                    Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
-                {
-                    // The discharge for an upstream cell is ready. Accumulate it in the new discharge
-                    // of the downstream cell.
-                    MaterialElement const new_discharge_from{_new_discharge(idx0_from, idx1_from)};
-
-                    MaterialElement& new_discharge_to{_new_discharge(idx0_to, idx1_to)};
-
-                    if (!_ondp_new_discharge.is_no_data(new_discharge_to))
-                    {
-                        if (_ondp_new_discharge.is_no_data(new_discharge_from))
-                        {
-                            _ondp_new_discharge.mark_no_data(new_discharge_to);
-                        }
-                        else
-                        {
-                            lue_hpx_assert(new_discharge_from >= 0);
-
-                            new_discharge_to += new_discharge_from;
-                        }
-                    }
-                }
-
-
-                void accumulate_downstream(
-                    MaterialElement const& new_discharge_from, Index const idx0_to, Index const idx1_to)
-                {
-                    // The result for the upstream cell is ready
-                    MaterialElement& new_discharge_to{_new_discharge(idx0_to, idx1_to)};
-
-                    if (!_ondp_new_discharge.is_no_data(new_discharge_to))
-                    {
-                        if (_ondp_new_discharge.is_no_data(new_discharge_from))
-                        {
-                            _ondp_new_discharge.mark_no_data(new_discharge_to);
-                        }
-                        else
-                        {
-                            new_discharge_to += new_discharge_from;
-                        }
-                    }
-                }
-
-
-                MaterialElement const& outflow(Index const idx0, Index const idx1) const
-                {
-                    return _new_discharge(idx0, idx1);
-                }
-
 
             private:
 
-                DomainPolicy _dp;
+                using Base = AccumulatingRouterFunctor<
+                    policy::detail::TypeList<
+                        policy::InputElementT<Policies, 1>,
+                        policy::InputElementT<Policies, 2>,
+                        policy::InputElementT<Policies, 3>,
+                        policy::InputElementT<Policies, 4>,
+                        policy::InputElementT<Policies, 5>,
+                        policy::InputElementT<Policies, 6>>,
+                    policy::detail::TypeList<policy::OutputElementT<Policies, 0>>>;
 
-                CurrentDischargeNoDataPolicy _indp_current_discharge;
+            public:
 
-                InflowNoDataPolicy _indp_inflow;
+                template<
+                    typename CurrentOutflow,
+                    typename Inflow,
+                    typename Alpha,
+                    typename Beta,
+                    typename TimeStepDuration,
+                    typename ChannelLength>
+                class CellAccumulator
+                {
 
-                ChannelLengthNoDataPolicy _indp_channel_length;
+                    public:
 
-                NewDischargeNoDataPolicy _ondp_new_discharge;
+                        using DomainPolicy = policy::DomainPolicyT<Policies>;
 
-                MaterialData const& _current_discharge;
+                        using CurrentOutflowNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 1>>;
+                        using InflowNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 2>>;
+                        using AlphaNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 3>>;
+                        using BetaNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 4>>;
+                        using TimeStepDurationNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 5>>;
+                        using ChannelLengthNoDataPolicy =
+                            policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 6>>;
 
-                MaterialData const& _inflow;
+                        using OutflowNoDataPolicy =
+                            policy::OutputNoDataPolicy2T<policy::OutputPoliciesT<Policies, 0>>;
 
-                Float _alpha;
+                        static_assert(
+                            std::is_same_v<ElementT<CurrentOutflow>, policy::InputElementT<Policies, 1>>);
+                        static_assert(std::is_same_v<ElementT<Inflow>, policy::InputElementT<Policies, 2>>);
+                        static_assert(std::is_same_v<ElementT<Alpha>, policy::InputElementT<Policies, 3>>);
+                        static_assert(std::is_same_v<ElementT<Beta>, policy::InputElementT<Policies, 4>>);
+                        static_assert(
+                            std::is_same_v<ElementT<TimeStepDuration>, policy::InputElementT<Policies, 5>>);
+                        static_assert(
+                            std::is_same_v<ElementT<ChannelLength>, policy::InputElementT<Policies, 6>>);
 
-                Float _beta;
+                        using MaterialElement = policy::ElementT<InflowNoDataPolicy>;
 
-                Float _time_step_duration;
+                        static_assert(
+                            std::is_same_v<policy::ElementT<CurrentOutflowNoDataPolicy>, MaterialElement>);
+                        static_assert(std::is_same_v<policy::ElementT<InflowNoDataPolicy>, MaterialElement>);
+                        static_assert(std::is_same_v<policy::ElementT<AlphaNoDataPolicy>, MaterialElement>);
+                        static_assert(std::is_same_v<policy::ElementT<BetaNoDataPolicy>, MaterialElement>);
+                        static_assert(
+                            std::is_same_v<policy::ElementT<TimeStepDurationNoDataPolicy>, MaterialElement>);
+                        static_assert(
+                            std::is_same_v<policy::ElementT<ChannelLengthNoDataPolicy>, MaterialElement>);
+                        static_assert(std::is_same_v<policy::ElementT<OutflowNoDataPolicy>, MaterialElement>);
 
-                MaterialData const& _channel_length;
-
-                MaterialData& _new_discharge;
-        };
-
-
-        template<typename Policies, typename FlowDirectionElement, typename Element, Rank rank>
-        ArrayPartition<Element, rank> kinematic_wave_partition(
-            Policies const& policies,
-            ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
-            ArrayPartition<Element, rank> const& discharge_partition,
-            ArrayPartition<Element, rank> const& inflow_partition,
-            Element const alpha,
-            Element const beta,
-            Element const time_step_duration,
-            ArrayPartition<Element, rank> const& channel_length_partition,
-            InflowCountCommunicator<rank> inflow_count_communicator,
-            MaterialCommunicator<Element, rank> discharge_communicator)
-        {
-            using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
-            using FlowDirectionData = DataT<FlowDirectionPartition>;
-
-            using Offset = OffsetT<FlowDirectionPartition>;
-
-            using MaterialElement = Element;
-            using MaterialPartition = ArrayPartition<MaterialElement, rank>;
-            using MaterialData = DataT<MaterialPartition>;
-
-            using LengthElement = Element;
-            using LengthPartition = ArrayPartition<LengthElement, rank>;
-            using LengthData = DataT<LengthPartition>;
-
-            using CountElement = SmallestIntegralElement;
-            using InflowCountPartition = ArrayPartition<CountElement, rank>;
-            using InflowCountData = DataT<InflowCountPartition>;
-
-            using CellsIdxs = std::vector<std::array<Index, rank>>;
-
-
-            auto [inflow_count_partition, input_cells_idxs_f, output_cells_idxs_f] = inflow_count3<Policies>(
-                policies, flow_direction_partition, std::move(inflow_count_communicator));
+                        using MaterialData = DataT<PartitionedArray<MaterialElement, 2>>;
 
 
-            // Solve intra-partition stream cells
-            hpx::future<MaterialData> new_discharge_data_f;
-            hpx::future<InflowCountData> inflow_count_data_f;
-            {
-                // Once the input partitions and inflow_count_data are ready, spawn a task
-                // that will calculate the kinematic wave for the intra-partition stream
-                // cells. Whenever discharge is known for the border of the partition, it is sent to
-                // the corresponding task managing the neighbouring partition.
-                hpx::tie(new_discharge_data_f, inflow_count_data_f, output_cells_idxs_f) = hpx::split_future(
-                    hpx::dataflow(
-                        hpx::launch::async,
+                        CellAccumulator(
+                            Policies const& policies,
 
-                        [policies, alpha, beta, time_step_duration, discharge_communicator](
-                            FlowDirectionPartition const& flow_direction_partition,
-                            MaterialPartition const& discharge_partition,
-                            MaterialPartition const& inflow_partition,
-                            LengthPartition const& channel_length_partition,
-                            InflowCountPartition const& inflow_count_partition,
-                            hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>>&&
-                                output_cells_idxs_f) mutable
+                            CurrentOutflow const& current_outflow,
+                            Inflow const& inflow,
+                            Alpha const& alpha,
+                            Beta const& beta,
+                            TimeStepDuration const& time_step_duration,
+                            ChannelLength const& channel_length,
+                            MaterialData& outflow):
+
+                            _dp{policies.domain_policy()},
+
+                            _indp_current_outflow{
+                                std::get<1>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_inflow{std::get<2>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_alpha{std::get<3>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_beta{std::get<4>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_time_step_duration{
+                                std::get<5>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_channel_length{
+                                std::get<6>(policies.inputs_policies()).input_no_data_policy()},
+
+                            _ondp_outflow{std::get<0>(policies.outputs_policies()).output_no_data_policy()},
+
+                            _current_outflow{current_outflow},
+                            _inflow{inflow},
+                            _alpha{alpha},
+                            _beta{beta},
+                            _time_step_duration{time_step_duration},
+                            _channel_length{channel_length},
+                            _outflow{outflow}
+
                         {
-                            AnnotateFunction annotation{"intra_partition_stream_kinematic_wave"};
+                        }
 
-                            auto const flow_direction_partition_ptr{
-                                ready_component_ptr(flow_direction_partition)};
-                            FlowDirectionData const& flow_direction_data{
-                                flow_direction_partition_ptr->data()};
 
-                            auto const discharge_partition_ptr{ready_component_ptr(discharge_partition)};
-                            MaterialData const& current_discharge_data{discharge_partition_ptr->data()};
+                        void enter_at_ridge(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            auto const inflow_partition_ptr{ready_component_ptr(inflow_partition)};
-                            MaterialData const& inflow_data{inflow_partition_ptr->data()};
 
-                            auto const channel_length_partition_ptr{
-                                ready_component_ptr(channel_length_partition)};
-                            LengthData const& channel_length_data{channel_length_partition_ptr->data()};
+                        void enter_at_partition_input(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            auto const inflow_count_partition_ptr{
-                                ready_component_ptr(inflow_count_partition)};
-                            InflowCountData const& inflow_count_data{inflow_count_partition_ptr->data()};
 
-                            auto const& partition_shape{inflow_count_data.shape()};
+                        void leave_at_output_cell(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            DataT<MaterialPartition> new_discharge_data{partition_shape, 0};
 
-                            auto const [nr_elements0, nr_elements1] = partition_shape;
+                        void leave_at_sink_cell(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            auto const& indp_flow_direction =
-                                std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                            auto const& ondp_new_discharge =
-                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
 
-                            // We need to copy inflow counts:
-                            // - inflow counts are used to select ridge cells
-                            // - downstream processing updates inflow counts
-                            InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
+                        void leave_intra_partition_stream(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            using CellAccumulator = KinematicWaveCellAccumulator<Policies, rank>;
-                            using Communicator = MaterialCommunicator<MaterialElement, rank>;
 
-                            CellAccumulator cell_accumulator{
-                                policies,
-                                current_discharge_data,
-                                inflow_data,
-                                alpha,
-                                beta,
-                                time_step_duration,
-                                channel_length_data,
-                                new_discharge_data};
-                            auto output_cells_idxs{output_cells_idxs_f.get()};
-                            Accumulator3<CellAccumulator, Communicator> accumulator{
-                                std::move(cell_accumulator), discharge_communicator, output_cells_idxs};
+                        void leave_inter_partition_stream(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
 
-                            for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
+
+                        void accumulate_external_inflow(Index const idx0, Index const idx1)
+                        {
+                            MaterialElement const& current_outflow{to_value(_current_outflow, idx0, idx1)};
+                            MaterialElement const& inflow{to_value(_inflow, idx0, idx1)};
+                            MaterialElement const& alpha{to_value(_alpha, idx0, idx1)};
+                            MaterialElement const& beta{to_value(_beta, idx0, idx1)};
+                            MaterialElement const& time_step_duration{
+                                to_value(_time_step_duration, idx0, idx1)};
+                            MaterialElement const& channel_length{to_value(_channel_length, idx0, idx1)};
+
+                            MaterialElement& outflow{_outflow(idx0, idx1)};
+
+                            // TODO: what about domain of alpha and beta? time step duration?
+
+                            if (!_ondp_outflow.is_no_data(outflow))
                             {
-                                for (Index idx1 = 0; idx1 < nr_elements1; ++idx1)
+                                if (_indp_current_outflow.is_no_data(current_outflow) ||
+                                    _indp_inflow.is_no_data(inflow) || _indp_alpha.is_no_data(alpha) ||
+                                    _indp_beta.is_no_data(beta) ||
+                                    _indp_time_step_duration.is_no_data(time_step_duration) ||
+                                    _indp_channel_length.is_no_data(channel_length) ||
+                                    !_dp.within_domain(current_outflow, inflow, channel_length))
                                 {
-                                    if (indp_flow_direction.is_no_data(flow_direction_data, idx0, idx1))
-                                    {
-                                        // Skip cells for which we don't have a flow-direction
-                                        ondp_new_discharge.mark_no_data(new_discharge_data, idx0, idx1);
-                                    }
-                                    else if (inflow_count_data(idx0, idx1) == 0)
-                                    {
-                                        accumulate3(
-                                            accumulator,
-                                            idx0,
-                                            idx1,
-                                            flow_direction_data,
-                                            inflow_count_data_copy);
-                                    }
+                                    _ondp_outflow.mark_no_data(outflow);
+                                }
+                                else
+                                {
+                                    lue_hpx_assert(outflow >= 0);
+                                    lue_hpx_assert(inflow >= 0);
+
+                                    outflow = iterate_to_new_discharge(
+                                        outflow,
+                                        current_outflow,
+                                        inflow,
+                                        alpha,
+                                        beta,
+                                        time_step_duration,
+                                        channel_length);
                                 }
                             }
+                        }
 
-                            return hpx::make_tuple(
-                                std::move(new_discharge_data),
-                                std::move(inflow_count_data_copy),
-                                std::move(output_cells_idxs));
-                        },
 
-                        flow_direction_partition,
-                        discharge_partition,
-                        inflow_partition,
-                        channel_length_partition,
-                        inflow_count_partition,
-                        std::move(output_cells_idxs_f)));
-            }
-
-            // Solve inter-partition stream cells
-            {
-                // Once the futures of the results of the intra-partition stream calculations
-                // have become ready, spawn a task per neighbouring receive channel, each of which
-                // must monitor incoming discharge values and perform the kinematic wave calculation
-                // once they do. Each of these tasks must stop once all relevant partition input
-                // cells (given the direction of the neighbour), have been received.
-                new_discharge_data_f = hpx::dataflow(
-                    hpx::launch::async,
-
-                    [policies,
-                     alpha,
-                     beta,
-                     time_step_duration,
-                     discharge_communicator = std::move(discharge_communicator)](
-                        FlowDirectionPartition const& flow_direction_partition,
-                        MaterialPartition const& current_discharge_partition,
-                        MaterialPartition const& inflow_partition,
-                        LengthPartition const& channel_length_partition,
-                        hpx::future<InflowCountData>&& inflow_count_data_f,
-                        hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const&
-                            input_cells_idxs_f,
-                        hpx::future<std::array<CellsIdxs, nr_neighbours<rank>()>>&& output_cells_idxs_f,
-                        hpx::future<MaterialData>&& new_discharge_data_f) mutable
-                    {
-                        AnnotateFunction annotation{"inter_partition_stream_kinematic_wave"};
-
-                        std::vector<accu::Direction> const directions{
-                            accu::Direction::north,
-                            accu::Direction::north_east,
-                            accu::Direction::east,
-                            accu::Direction::south_east,
-                            accu::Direction::south,
-                            accu::Direction::south_west,
-                            accu::Direction::west,
-                            accu::Direction::north_west,
-                        };
-
-                        // The accumulate function must wrap this call:
-                        //     accumulate(
-                        //         accumulator, idx0, idx1, flow_direction_data,
-                        //         inflow_count_data_copy);
-                        // It must also synchronize access
-                        // to the accumulate call so no two
-                        // threads call it at the same time
-                        //
-                        // Calling the function must
-                        // - lock access to the data
-                        // - accumulate material
-                        // - release the lock
-
-                        auto const flow_direction_partition_ptr{
-                            ready_component_ptr(flow_direction_partition)};
-                        FlowDirectionData const& flow_direction_data{flow_direction_partition_ptr->data()};
-                        auto const& partition_shape{flow_direction_data.shape()};
-
-                        auto const current_discharge_partition_ptr{
-                            ready_component_ptr(current_discharge_partition)};
-                        MaterialData const& current_discharge_data{current_discharge_partition_ptr->data()};
-
-                        auto const inflow_partition_ptr{ready_component_ptr(inflow_partition)};
-                        MaterialData const& inflow_data{inflow_partition_ptr->data()};
-
-                        auto const channel_length_partition_ptr{
-                            ready_component_ptr(channel_length_partition)};
-                        MaterialData const& channel_length_data{channel_length_partition_ptr->data()};
-
-                        InflowCountData inflow_count_data{inflow_count_data_f.get()};
-                        MaterialData new_discharge_data{new_discharge_data_f.get()};
-
-                        using CellAccumulator = KinematicWaveCellAccumulator<Policies, rank>;
-                        using Communicator = MaterialCommunicator<MaterialElement, rank>;
-
-                        CellAccumulator cell_accumulator{
-                            policies,
-                            current_discharge_data,
-                            inflow_data,
-                            alpha,
-                            beta,
-                            time_step_duration,
-                            channel_length_data,
-                            new_discharge_data};
-                        auto output_cells_idxs{output_cells_idxs_f.get()};
-                        Accumulator3<CellAccumulator, Communicator> accumulator{
-                            std::move(cell_accumulator), discharge_communicator, output_cells_idxs};
-
-                        hpx::mutex accu_mutex;
-
-                        auto accumulate =
-                            [&accu_mutex, &accumulator, &flow_direction_data, &inflow_count_data](
-                                std::array<Index, rank> const& cell_idxs, MaterialElement const value) mutable
+                        void accumulate_downstream(
+                            Index const idx0_from,
+                            Index const idx1_from,
+                            Index const idx0_to,
+                            Index const idx1_to)
                         {
-                            auto [idx0, idx1] = cell_idxs;
+                            // The results for the upstream cell are ready. Use its outflow as inflow for the
+                            // downstream cell.
+                            MaterialElement const& outflow{_outflow(idx0_from, idx1_from)};
 
-                            // Prevent multiple threads
-                            // from touching this data at the
-                            // same time
-                            std::scoped_lock lock{accu_mutex};
+                            MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
 
-                            lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
-
-                            accumulator.enter_at_partition_input(value, idx0, idx1);
-
-                            --inflow_count_data(idx0, idx1);
-
-                            // Note that multiple streams
-                            // from other partitions can join
-                            // in a single partition input cell. Only
-                            // start an accumulation if this is
-                            // the last one.
-                            if (inflow_count_data(idx0, idx1) == 0)
+                            if (!_ondp_outflow.is_no_data(inflow))
                             {
-                                detail::accumulate3(
-                                    accumulator, idx0, idx1, flow_direction_data, inflow_count_data);
-                            }
-                        };
-                        using Accumulate = decltype(accumulate);
+                                if (_ondp_outflow.is_no_data(outflow))
+                                {
+                                    _ondp_outflow.mark_no_data(inflow);
+                                }
+                                else
+                                {
+                                    lue_hpx_assert(outflow >= 0);
 
-                        std::array<CellsIdxs, nr_neighbours<rank>()> input_cells_idxs{
-                            input_cells_idxs_f.get()};
-
-                        std::vector<hpx::future<void>> results{};
-                        results.reserve(nr_neighbours<rank>());
-
-                        auto const [extent0, extent1] = partition_shape;
-
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north]};
-
-                            if (!cells_idxs.empty())
-                            {
-                                RowIdxConverter north_idx_converter{};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(north_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::north),
-                                        north_idx_converter,
-                                        accumulate));
+                                    // Just add the outflow from upstream to the inflow of the downstream cell
+                                    inflow += outflow;
+                                }
                             }
                         }
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south]};
 
-                            if (!cells_idxs.empty())
+                        void accumulate_downstream(
+                            MaterialElement const& outflow, Index const idx0_to, Index const idx1_to)
+                        {
+                            // The results for the upstream cell are ready
+                            MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
+
+                            if (!_ondp_outflow.is_no_data(inflow))
                             {
-                                RowIdxConverter south_idx_converter{extent0 - 1};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(south_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::south),
-                                        south_idx_converter,
-                                        accumulate));
+                                if (_ondp_outflow.is_no_data(outflow))
+                                {
+                                    _ondp_outflow.mark_no_data(inflow);
+                                }
+                                else
+                                {
+                                    // Just add the outflow from upstream to the inflow of the downstream cell
+                                    inflow += outflow;
+                                }
                             }
                         }
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::west]};
 
-                            if (!cells_idxs.empty())
-                            {
-                                ColIdxConverter west_idx_converter{};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(west_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::west),
-                                        west_idx_converter,
-                                        accumulate));
-                            }
+                        auto outflow(Index const idx0, Index const idx1) const -> MaterialElement const&
+                        {
+                            return _outflow(idx0, idx1);
                         }
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::east]};
 
-                            if (!cells_idxs.empty())
-                            {
-                                ColIdxConverter east_idx_converter{extent1 - 1};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(east_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::east),
-                                        east_idx_converter,
-                                        accumulate));
-                            }
+                        void mark_no_data(Index const idx0, Index const idx1)
+                        {
+                            _ondp_outflow.mark_no_data(_outflow, idx0, idx1);
                         }
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north_west]};
 
-                            if (!cells_idxs.empty())
-                            {
-                                CornerIdxConverter north_west_idx_converter{};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(north_west_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::north_west),
-                                        north_west_idx_converter,
-                                        accumulate));
-                            }
-                        }
+                    private:
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north_east]};
+                        DomainPolicy _dp;
 
-                            if (!cells_idxs.empty())
-                            {
-                                CornerIdxConverter north_east_idx_converter{0, extent1 - 1};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(north_east_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::north_east),
-                                        north_east_idx_converter,
-                                        accumulate));
-                            }
-                        }
+                        CurrentOutflowNoDataPolicy _indp_current_outflow;
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south_east]};
+                        InflowNoDataPolicy _indp_inflow;
 
-                            if (!cells_idxs.empty())
-                            {
-                                CornerIdxConverter south_east_idx_converter{extent0 - 1, extent1 - 1};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(south_east_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::south_east),
-                                        south_east_idx_converter,
-                                        accumulate));
-                            }
-                        }
+                        AlphaNoDataPolicy _indp_alpha;
 
-                        {
-                            CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::south_west]};
+                        BetaNoDataPolicy _indp_beta;
 
-                            if (!cells_idxs.empty())
-                            {
-                                CornerIdxConverter south_west_idx_converter{extent0 - 1, 0};
-                                results.push_back(
-                                    hpx::async(
-                                        monitor_material_inputs<
-                                            MaterialElement,
-                                            decltype(south_west_idx_converter),
-                                            Accumulate,
-                                            rank>,
-                                        std::move(cells_idxs),
-                                        discharge_communicator.receive_channel(accu::Direction::south_west),
-                                        south_west_idx_converter,
-                                        accumulate));
-                            }
-                        }
+                        TimeStepDurationNoDataPolicy _indp_time_step_duration;
 
-                        // As a side effect of this wait,
-                        // the partitions whose data is used in
-                        // the above monitor_material threads
-                        // do not go out of scope
-                        hpx::wait_all(results);
-                        lue_hpx_assert(all_are_valid(results));
-                        lue_hpx_assert(all_are_ready(results));
+                        ChannelLengthNoDataPolicy _indp_channel_length;
 
-                        // All output idxs must have been solved by now
-                        // TODO Unit test failed this test here once
-                        lue_hpx_assert(
-                            std::all_of(
-                                output_cells_idxs.begin(),
-                                output_cells_idxs.end(),
-                                [](auto const& idxs) { return idxs.empty(); }));
+                        OutflowNoDataPolicy _ondp_outflow;
 
-                        // TODO Assert all inflow counts are zero
-                        // TODO Assert all sender channels are closed
+                        CurrentOutflow const _current_outflow;
 
-                        return new_discharge_data;
-                    },
+                        Inflow const _inflow;
+
+                        Alpha const _alpha;
+
+                        Beta const _beta;
+
+                        TimeStepDuration const _time_step_duration;
+
+                        ChannelLength const _channel_length;
+
+                        MaterialData& _outflow;
+                };
 
 
-                    flow_direction_partition,
-                    discharge_partition,
-                    inflow_partition,
-                    channel_length_partition,
-                    inflow_count_data_f,
-                    std::move(input_cells_idxs_f),
-                    std::move(output_cells_idxs_f),
-                    new_discharge_data_f);
-            }
+                static constexpr char const* name{"kinematic_wave4"};
 
-            // Once the futures of the results of the
-            // inter-partition stream calculations have become ready,
-            // return the result partitions.
-            hpx::future<MaterialPartition> new_discharge_partition_f = hpx::dataflow(
-                hpx::launch::async,
+                using Material = policy::InputElementT<Policies, 1>;
 
-                [](FlowDirectionPartition const& flow_direction_partition,
-                   hpx::future<MaterialData>&& new_discharge_data_f)
-                {
-                    AnnotateFunction annotation{"create_result_partitions_kinematic_wave"};
+                using MaterialPartitions = typename PartitionedArray<Material, 2>::Partitions;
+                using MaterialPartition = ArrayPartition<Material, 2>;
+                using MaterialData = DataT<MaterialPartition>;
 
-                    using Server = typename MaterialPartition::Server;
+                using IntraPartitionStreamCellsResult = std::tuple<
+                    hpx::future<MaterialData>,
+                    hpx::future<typename Base::InflowCountData>,
+                    hpx::future<std::array<typename Base::CellsIdxs, nr_neighbours<2>()>>>;
 
-                    Offset const partition_offset{ready_component_ptr(flow_direction_partition)->offset()};
-
-                    return MaterialPartition{
-                        hpx::new_<Server>(hpx::find_here(), partition_offset, new_discharge_data_f.get())};
-                },
-
-                flow_direction_partition,
-                std::move(new_discharge_data_f));
-
-            return MaterialPartition{std::move(new_discharge_partition_f)};
-        }
-
-
-        template<typename Policies, typename FlowDirectionElement, typename Element, Rank rank>
-        struct KinematicWaveAction:
-            hpx::actions::make_action<
-                decltype(&kinematic_wave_partition<Policies, FlowDirectionElement, Element, rank>),
-                &kinematic_wave_partition<Policies, FlowDirectionElement, Element, rank>,
-                KinematicWaveAction<Policies, FlowDirectionElement, Element, rank>>::type
-        {
+                using InterPartitionStreamCellsResult = std::tuple<hpx::future<MaterialData>>;
         };
 
     }  // namespace detail
 
 
-    template<typename Policies, typename FlowDirectionElement, typename Element, Rank rank>
+    template<typename Policies>
     auto kinematic_wave(
         Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        PartitionedArray<Element, rank> const& current_discharge,
-        PartitionedArray<Element, rank> const& inflow,
-        Element const alpha,
-        Element const beta,
-        Element const time_step_duration,
-        PartitionedArray<Element, rank> const& channel_length) -> PartitionedArray<Element, rank>
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& current_outflow,
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& inflow,
+        PartitionedArray<policy::InputElementT<Policies, 3>, 2> const& alpha,
+        PartitionedArray<policy::InputElementT<Policies, 4>, 2> const& beta,
+        Scalar<policy::InputElementT<Policies, 5>> const& time_step_duration,
+        PartitionedArray<policy::InputElementT<Policies, 6>, 2> const& channel_length)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
-        using Material = Element;
-        using MaterialArray = PartitionedArray<Material, rank>;
-        using MaterialPartitions = PartitionsT<MaterialArray>;
+        detail::verify_compatible(flow_direction, current_outflow, inflow, alpha, beta, channel_length);
 
-        detail::verify_compatible(flow_direction, current_discharge, inflow, channel_length);
-
-        auto const& shape_in_partitions{flow_direction.partitions().shape()};
-        Localities<rank> localities{flow_direction.localities()};
-
-
-        // Create communicators used in solving the kinematic wave
-        using InflowCountCommunicator = detail::InflowCountCommunicator<rank>;
-        using InflowCountCommunicatorArray = detail::CommunicatorArray<InflowCountCommunicator, rank>;
-        using MaterialCommunicator = detail::MaterialCommunicator<Material, rank>;
-        using MaterialCommunicatorArray = detail::CommunicatorArray<MaterialCommunicator, rank>;
-
-        InflowCountCommunicatorArray inflow_count_communicators{
-            "/lue/kinematic_wave/inflow_count/", localities};
-        MaterialCommunicatorArray discharge_communicators{
-            std::format("/lue/kinematic_wave/{}/", as_string<Material>), localities};
+        return std::get<0>(accumulating_router(
+            policies,
+            detail::KinematicWave<Policies>{},
+            flow_direction,
+            current_outflow,
+            inflow,
+            alpha,
+            beta,
+            time_step_duration,
+            channel_length));
+    }
 
 
-        // For each partition, spawn a task that will solve the kinematic wave equation for the partition
-        MaterialPartitions new_discharge_partitions{shape_in_partitions};
-        detail::KinematicWaveAction<Policies, FlowDirectionElement, Element, rank> action{};
-        Count const nr_partitions{nr_elements(shape_in_partitions)};
+    template<typename Policies>
+    auto kinematic_wave(
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& current_outflow,
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& inflow,
+        Scalar<policy::InputElementT<Policies, 3>> const& alpha,
+        Scalar<policy::InputElementT<Policies, 4>> const& beta,
+        Scalar<policy::InputElementT<Policies, 5>> const& time_step_duration,
+        Scalar<policy::InputElementT<Policies, 6>> const& channel_length)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
+    {
+        detail::verify_compatible(flow_direction, current_outflow, inflow);
 
-        for (Index p = 0; p < nr_partitions; ++p)
-        {
-            new_discharge_partitions[p] = hpx::async(
-                action,
-                localities[p],
-                policies,
-                flow_direction.partitions()[p],
-                current_discharge.partitions()[p],
-                inflow.partitions()[p],
-                alpha,
-                beta,
-                time_step_duration,
-                channel_length.partitions()[p],
-                inflow_count_communicators[p],
-                discharge_communicators[p]);
-        }
-
-
-        // The communicators used by the tasks calculating the kinematic wave result must be kept
-        // alive until these results are ready. We do this by attaching a continuation, passing in
-        // the communicators. Once the results are ready, these communicators go out of scope. Once
-        // they do, free up AGAS resources. Note that component clients are reference-counted.
-        hpx::when_all(
-            new_discharge_partitions.begin(),
-            new_discharge_partitions.end(),
-            [inflow_count_communicators = std::move(inflow_count_communicators),
-             discharge_communicators =
-                 std::move(discharge_communicators)]([[maybe_unused]] auto&& partitions) mutable
-            {
-                auto f1{inflow_count_communicators.unregister()};
-                auto f2{discharge_communicators.unregister()};
-
-                hpx::wait_all(f1, f2);
-            });
-
-
-        return MaterialArray{
-            flow_direction.shape(), std::move(localities), std::move(new_discharge_partitions)};
+        return std::get<0>(accumulating_router(
+            policies,
+            detail::KinematicWave<Policies>{},
+            flow_direction,
+            current_outflow,
+            inflow,
+            alpha,
+            beta,
+            time_step_duration,
+            channel_length));
     }
 
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_KINEMATIC_WAVE(Policies, FlowDirectionElement, Element)                              \
+#define LUE_INSTANTIATE_KINEMATIC_WAVE(Policies)                                                             \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<Element, 2>                                       \
-    kinematic_wave<ArgumentType<void(Policies)>, FlowDirectionElement, Element, 2>(                          \
+    template LUE_ROUTING_OPERATION_EXPORT auto kinematic_wave<ArgumentType<void(Policies)>>(                 \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<FlowDirectionElement, 2> const&,                                                    \
-        PartitionedArray<Element, 2> const&,                                                                 \
-        PartitionedArray<Element, 2> const&,                                                                 \
-        Element const,                                                                                       \
-        Element const,                                                                                       \
-        Element const,                                                                                       \
-        PartitionedArray<Element, 2> const&);
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 3>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 4>, 2> const&,                                      \
+        Scalar<policy::InputElementT<Policies, 5>> const&,                                                   \
+        PartitionedArray<policy::InputElementT<Policies, 6>, 2> const&)                                      \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;                                         \
+                                                                                                             \
+    template LUE_ROUTING_OPERATION_EXPORT auto kinematic_wave<ArgumentType<void(Policies)>>(                 \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const&,                                      \
+        Scalar<policy::InputElementT<Policies, 3>> const&,                                                   \
+        Scalar<policy::InputElementT<Policies, 4>> const&,                                                   \
+        Scalar<policy::InputElementT<Policies, 5>> const&,                                                   \
+        Scalar<policy::InputElementT<Policies, 6>> const&)                                                   \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
