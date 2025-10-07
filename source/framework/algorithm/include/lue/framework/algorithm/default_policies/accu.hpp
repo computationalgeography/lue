@@ -6,11 +6,11 @@
 namespace lue {
     namespace policy::accu {
 
-        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         using DefaultPolicies = policy::DefaultPolicies<
-            AllValuesWithinDomain<MaterialElement>,
-            OutputElements<MaterialElement>,
-            InputElements<FlowDirectionElement, MaterialElement>>;
+            AllValuesWithinDomain<FloatingPointElement>,
+            OutputElements<FloatingPointElement>,
+            InputElements<FlowDirectionElement, FloatingPointElement>>;
 
     }  // namespace policy::accu
 
@@ -18,36 +18,37 @@ namespace lue {
     namespace default_policies {
 
         // raster
-        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
-            PartitionedArray<MaterialElement, 2> const& inflow) -> PartitionedArray<MaterialElement, 2>
+            PartitionedArray<FloatingPointElement, 2> const& inflow)
+            -> PartitionedArray<FloatingPointElement, 2>
         {
-            using Policies = lue::policy::accu::DefaultPolicies<FlowDirectionElement, MaterialElement>;
+            using Policies = policy::accu::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
 
             return accu(Policies{}, flow_direction, inflow);
         }
 
 
         // scalar
-        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
-            Scalar<MaterialElement> const& inflow) -> PartitionedArray<MaterialElement, 2>
+            Scalar<FloatingPointElement> const& inflow) -> PartitionedArray<FloatingPointElement, 2>
         {
-            using Policies = lue::policy::accu::DefaultPolicies<FlowDirectionElement, MaterialElement>;
+            using Policies = policy::accu::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
 
             return accu(Policies{}, flow_direction, inflow);
         }
 
 
         // value
-        template<std::integral FlowDirectionElement, std::floating_point MaterialElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
-            PartitionedArray<FlowDirectionElement, 2> const& flow_direction, MaterialElement const& inflow)
-            -> PartitionedArray<MaterialElement, 2>
+            PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
+            FloatingPointElement const& inflow) -> PartitionedArray<FloatingPointElement, 2>
         {
-            using Policies = lue::policy::accu::DefaultPolicies<FlowDirectionElement, MaterialElement>;
+            using Policies = policy::accu::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
 
             return accu(Policies{}, flow_direction, inflow);
         }

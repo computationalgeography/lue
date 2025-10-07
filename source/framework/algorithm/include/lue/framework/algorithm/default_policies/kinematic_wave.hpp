@@ -6,25 +6,9 @@
 namespace lue {
     namespace policy::kinematic_wave {
 
-        template<std::floating_point FloatingPointElement>
-        class DomainPolicy
-        {
-
-            public:
-
-                static constexpr auto within_domain(
-                    FloatingPointElement const current_outflow,
-                    FloatingPointElement const inflow,
-                    FloatingPointElement const channel_length) noexcept -> bool
-                {
-                    return current_outflow >= 0 && inflow >= 0 && channel_length > 0;
-                }
-        };
-
-
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
-        using DefaultValuePolicies = policy::DefaultValuePolicies<
-            DomainPolicy<FloatingPointElement>,
+        using DefaultPolicies = policy::DefaultPolicies<
+            AllValuesWithinDomain<FloatingPointElement, FloatingPointElement, FloatingPointElement>,
             OutputElements<FloatingPointElement>,
             InputElements<
                 FlowDirectionElement,
@@ -38,7 +22,7 @@ namespace lue {
     }  // namespace policy::kinematic_wave
 
 
-    namespace value_policies {
+    namespace default_policies {
 
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto kinematic_wave(
@@ -52,7 +36,7 @@ namespace lue {
             -> PartitionedArray<FloatingPointElement, 2>
         {
             using Policies =
-                policy::kinematic_wave::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
+                policy::kinematic_wave::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
 
             return kinematic_wave(
                 Policies{},
@@ -77,7 +61,7 @@ namespace lue {
             Scalar<FloatingPointElement> const& channel_length) -> PartitionedArray<FloatingPointElement, 2>
         {
             using Policies =
-                policy::kinematic_wave::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
+                policy::kinematic_wave::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
 
             return kinematic_wave(
                 Policies{},
@@ -90,5 +74,5 @@ namespace lue {
                 channel_length);
         }
 
-    }  // namespace value_policies
+    }  // namespace default_policies
 }  // namespace lue

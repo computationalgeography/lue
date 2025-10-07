@@ -1607,18 +1607,15 @@ set(offset "source/routing_operation")
 
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        math(EXPR count "${count} + 1")
 
-        # Instantiate accu_info3
+        # Instantiate accu_info
         string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info3-${count}.cpp")
+        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info-${Policies}.cpp")
 
         generate_template_instantiation(
             INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info3.cpp.in"
+                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info.cpp.in"
             OUTPUT_PATHNAME
                 "${output_pathname}"
             DICTIONARY
@@ -1679,15 +1676,12 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            math(EXPR count "${count} + 1")
-            string(REPLACE "::" "_" name ${Element})
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate accu_fraction
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_fraction-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_fraction-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1699,21 +1693,21 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            # Instantiate accu_threshold3
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_threshold3-${count}.cpp")
+            # Instantiate accu_threshold
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_threshold-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_threshold3.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_threshold.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate d8_flow_direction
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/d8_flow_direction-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/d8_flow_direction-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1726,7 +1720,7 @@ block()
             list(APPEND generated_source_files "${output_pathname}")
 
             # Instantiate kinematic_wave
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/kinematic_wave-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/kinematic_wave-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1734,7 +1728,7 @@ block()
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                    '{"name":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
         endforeach()

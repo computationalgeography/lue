@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/value_policies/accu_fraction.hpp"
+#include "lue/framework/algorithm/value_policies/accu_threshold.hpp"
 #include "lue/framework/configure.hpp"
 #include "lue/py/bind.hpp"
 
@@ -20,48 +20,48 @@ namespace lue::framework {
                     Rank const rank{2};
 
                     module.def(
-                        "accu_fraction",
+                        "accu_threshold",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
                            PartitionedArray<FloatingPointElement, rank> const& inflow,
-                           PartitionedArray<FloatingPointElement, rank> const& fraction)
-                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                           PartitionedArray<FloatingPointElement, rank> const& threshold)
+                        { return value_policies::accu_threshold(flow_direction, inflow, threshold); },
                         "flow_direction"_a,
                         "inflow"_a,
-                        "fraction"_a);
+                        "threshold"_a);
                     module.def(
-                        "accu_fraction",
+                        "accu_threshold",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
                            PartitionedArray<FloatingPointElement, rank> const& inflow,
-                           Scalar<FloatingPointElement> const& fraction)
-                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                           Scalar<FloatingPointElement> const& threshold)
+                        { return value_policies::accu_threshold(flow_direction, inflow, threshold); },
                         "flow_direction"_a,
                         "inflow"_a,
-                        "fraction"_a);
+                        "threshold"_a);
                     module.def(
-                        "accu_fraction",
+                        "accu_threshold",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
                            Scalar<FloatingPointElement> const& inflow,
-                           Scalar<FloatingPointElement> const& fraction)
-                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                           Scalar<FloatingPointElement> const& threshold)
+                        { return value_policies::accu_threshold(flow_direction, inflow, threshold); },
                         "flow_direction"_a,
                         "inflow"_a,
-                        "fraction"_a);
+                        "threshold"_a);
                     module.def(
-                        "accu_fraction",
+                        "accu_threshold",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
                            Scalar<FloatingPointElement> const& inflow,
-                           PartitionedArray<FloatingPointElement, rank> const& fraction)
-                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                           PartitionedArray<FloatingPointElement, rank> const& threshold)
+                        { return value_policies::accu_threshold(flow_direction, inflow, threshold); },
                         "flow_direction"_a,
                         "inflow"_a,
-                        "fraction"_a);
+                        "threshold"_a);
                 }
         };
 
     }  // Anonymous namespace
 
 
-    void bind_accu_fraction(pybind11::module& module)
+    void bind_accu_threshold(pybind11::module& module)
     {
         bind<Binder, FloatingPointElements>(module);
     }

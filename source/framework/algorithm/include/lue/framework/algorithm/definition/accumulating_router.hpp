@@ -8,6 +8,16 @@
 #include <concepts>
 
 
+// Policies determine how to check argument and return element types. Therefore:
+// - Argument types can be expressed in terms of element types obtained from the policies. Argument types of
+//   algorithms and of functors.
+
+// Functors determine what gets calculated. Therefore:
+// - Functors define return types. They can be queried for this information. ReturnTypes<Functor>...
+// - It must implement the call operator(s) that eventually get called by accumulating_router. This operator
+//   must return results for the same number of values as the overall number of return types.
+
+
 namespace lue {
 
     template<typename Functor>
@@ -193,6 +203,15 @@ namespace lue {
         };
 
 
+        template<Arithmetic Element>
+        class ArgumentTraits<Element>
+        {
+            public:
+
+                using PassedArgument = Element;
+        };
+
+
         template<typename Argument>
         using PassedArgumentT = ArgumentTraits<Argument>::PassedArgument;
 
@@ -219,6 +238,13 @@ namespace lue {
         }
 
 
+        template<Arithmetic Element>
+        auto pass_argument(Element const value, [[maybe_unused]] Index const partition_idx) -> Element
+        {
+            return value;
+        }
+
+
         template<Arithmetic Element, Rank rank>
         auto get_data(ArrayPartition<Element, rank> const& partition) -> DataT<ArrayPartition<Element, rank>>
         {
@@ -231,6 +257,13 @@ namespace lue {
         auto get_data(Scalar<Element> const& scalar) -> Element
         {
             return scalar.future().get();
+        }
+
+
+        template<Arithmetic Element>
+        auto get_data(Element const scalar) -> Element
+        {
+            return scalar;
         }
 
 

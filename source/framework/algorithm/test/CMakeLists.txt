@@ -106,13 +106,13 @@ set(miscellaneous_operation_names
 set(routing_operation_names
     accu
     accu_fraction
+    accu_info
     accu_threshold
     decreasing_order
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
     inflow_count
     kinematic_wave
-    routing_algorithm
 )
 
 set(zonal_operation_names

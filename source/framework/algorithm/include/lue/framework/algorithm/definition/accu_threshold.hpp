@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/algorithm/accu_fraction.hpp"
+#include "lue/framework/algorithm/accu_threshold.hpp"
 #include "lue/framework/algorithm/definition/accumulating_router.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
@@ -10,7 +10,7 @@ namespace lue {
     namespace detail {
 
         template<typename Policies>
-        class AccuFraction:
+        class AccuThreshold:
             public AccumulatingRouterFunctor<
                 policy::detail::
                     TypeList<policy::InputElementT<Policies, 1>, policy::InputElementT<Policies, 2>>,
@@ -28,7 +28,7 @@ namespace lue {
 
             public:
 
-                template<typename Material, typename Fraction>
+                template<typename Material, typename Threshold>
                 class CellAccumulator
                 {
 
@@ -37,7 +37,7 @@ namespace lue {
                         using DomainPolicy = policy::DomainPolicyT<Policies>;
                         using InflowNoDataPolicy =
                             policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 1>>;
-                        using FractionNoDataPolicy =
+                        using ThresholdNoDataPolicy =
                             policy::InputNoDataPolicy2T<policy::InputPoliciesT<Policies, 2>>;
                         using OutflowNoDataPolicy =
                             policy::OutputNoDataPolicy2T<policy::OutputPoliciesT<Policies, 0>>;
@@ -45,13 +45,14 @@ namespace lue {
                             policy::OutputNoDataPolicy2T<policy::OutputPoliciesT<Policies, 1>>;
 
                         static_assert(std::is_same_v<ElementT<Material>, policy::InputElementT<Policies, 1>>);
-                        static_assert(std::is_same_v<ElementT<Fraction>, policy::InputElementT<Policies, 2>>);
+                        static_assert(
+                            std::is_same_v<ElementT<Threshold>, policy::InputElementT<Policies, 2>>);
 
                         using MaterialElement = policy::ElementT<InflowNoDataPolicy>;
 
                         static_assert(std::is_same_v<policy::ElementT<InflowNoDataPolicy>, MaterialElement>);
                         static_assert(
-                            std::is_same_v<policy::ElementT<FractionNoDataPolicy>, MaterialElement>);
+                            std::is_same_v<policy::ElementT<ThresholdNoDataPolicy>, MaterialElement>);
                         static_assert(std::is_same_v<policy::ElementT<OutflowNoDataPolicy>, MaterialElement>);
                         static_assert(
                             std::is_same_v<policy::ElementT<RemainderNoDataPolicy>, MaterialElement>);
@@ -62,18 +63,18 @@ namespace lue {
                         CellAccumulator(
                             Policies const& policies,
                             Material const& external_inflow,
-                            Fraction const& fraction,
+                            Threshold const& threshold,
                             MaterialData& outflow,
                             MaterialData& remainder):
 
                             _dp{policies.domain_policy()},
                             _indp_inflow{std::get<1>(policies.inputs_policies()).input_no_data_policy()},
-                            _indp_fraction{std::get<2>(policies.inputs_policies()).input_no_data_policy()},
+                            _indp_threshold{std::get<2>(policies.inputs_policies()).input_no_data_policy()},
                             _ondp_outflow{std::get<0>(policies.outputs_policies()).output_no_data_policy()},
                             _ondp_remainder{std::get<1>(policies.outputs_policies()).output_no_data_policy()},
 
                             _external_inflow{external_inflow},
-                            _fraction{fraction},
+                            _threshold{threshold},
                             _outflow{outflow},
                             _remainder{remainder}
 
@@ -120,7 +121,7 @@ namespace lue {
                         void accumulate_external_inflow(Index const idx0, Index const idx1)
                         {
                             MaterialElement const& external_inflow{to_value(_external_inflow, idx0, idx1)};
-                            MaterialElement const& fraction{to_value(_fraction, idx0, idx1)};
+                            MaterialElement const& threshold{to_value(_threshold, idx0, idx1)};
 
                             MaterialElement& outflow{_outflow(idx0, idx1)};
                             MaterialElement& remainder{_remainder(idx0, idx1)};
@@ -134,8 +135,8 @@ namespace lue {
                             if (!_ondp_outflow.is_no_data(outflow))
                             {
                                 if (_indp_inflow.is_no_data(external_inflow) ||
-                                    _indp_fraction.is_no_data(fraction) ||
-                                    !_dp.within_domain(external_inflow, fraction))
+                                    _indp_threshold.is_no_data(threshold) ||
+                                    !_dp.within_domain(external_inflow, threshold))
                                 {
                                     _ondp_outflow.mark_no_data(outflow);
                                     _ondp_remainder.mark_no_data(remainder);
@@ -143,17 +144,24 @@ namespace lue {
                                 else
                                 {
                                     lue_hpx_assert(external_inflow >= 0);
-                                    lue_hpx_assert(fraction >= 0 && fraction <= 1);
+                                    lue_hpx_assert(threshold >= 0);
 
                                     // Now we know the final, total amount
                                     // of inflow that enters this cell
                                     outflow += external_inflow;
 
                                     // Split this amount into outflow and remainder,
-                                    // based on the fraction passed in
-                                    MaterialElement delta_flux{fraction * outflow};
-                                    remainder = outflow - delta_flux;
-                                    outflow = delta_flux;
+                                    // based on the threshold passed in
+                                    if (outflow > threshold)
+                                    {
+                                        remainder = threshold;
+                                        outflow -= threshold;
+                                    }
+                                    else
+                                    {
+                                        remainder = outflow;
+                                        outflow = 0;
+                                    }
                                 }
                             }
                         }
@@ -241,7 +249,7 @@ namespace lue {
 
                         InflowNoDataPolicy _indp_inflow;
 
-                        FractionNoDataPolicy _indp_fraction;
+                        ThresholdNoDataPolicy _indp_threshold;
 
                         OutflowNoDataPolicy _ondp_outflow;
 
@@ -249,7 +257,7 @@ namespace lue {
 
                         Material const _external_inflow;  // External inflow
 
-                        Fraction const _fraction;
+                        Threshold const _threshold;
 
                         MaterialData& _outflow;  // Upstream inflow, outflow
 
@@ -257,7 +265,7 @@ namespace lue {
                 };
 
 
-                static constexpr char const* name{"accu_fraction4"};
+                static constexpr char const* name{"accu_threshold"};
 
                 using Material = policy::InputElementT<Policies, 1>;
 
@@ -280,29 +288,29 @@ namespace lue {
 
     // raster, raster
     template<typename Policies>
-    auto accu_fraction(
+    auto accu_threshold(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
         PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& inflow,
-        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& fraction)
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& threshold)
         -> std::tuple<
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>
     {
-        detail::verify_compatible(flow_direction, inflow, fraction);
+        detail::verify_compatible(flow_direction, inflow, threshold);
 
         return accumulating_router(
-            policies, detail::AccuFraction<Policies>{}, flow_direction, inflow, fraction);
+            policies, detail::AccuThreshold<Policies>{}, flow_direction, inflow, threshold);
     }
 
 
     // raster, scalar
     template<typename Policies>
-    auto accu_fraction(
+    auto accu_threshold(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
         PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& inflow,
-        Scalar<policy::InputElementT<Policies, 2>> const& fraction)
+        Scalar<policy::InputElementT<Policies, 2>> const& threshold)
         -> std::tuple<
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>
@@ -310,49 +318,49 @@ namespace lue {
         detail::verify_compatible(flow_direction, inflow);
 
         return accumulating_router(
-            policies, detail::AccuFraction<Policies>{}, flow_direction, inflow, fraction);
+            policies, detail::AccuThreshold<Policies>{}, flow_direction, inflow, threshold);
     }
 
 
     // scalar, scalar
     template<typename Policies>
-    auto accu_fraction(
+    auto accu_threshold(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
         Scalar<policy::InputElementT<Policies, 1>> const& inflow,
-        Scalar<policy::InputElementT<Policies, 2>> const& fraction)
+        Scalar<policy::InputElementT<Policies, 2>> const& threshold)
         -> std::tuple<
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>
     {
         return accumulating_router(
-            policies, detail::AccuFraction<Policies>{}, flow_direction, inflow, fraction);
+            policies, detail::AccuThreshold<Policies>{}, flow_direction, inflow, threshold);
     }
 
 
     // scalar, raster
     template<typename Policies>
-    auto accu_fraction(
+    auto accu_threshold(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
         Scalar<policy::InputElementT<Policies, 1>> const& inflow,
-        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& fraction)
+        PartitionedArray<policy::InputElementT<Policies, 2>, 2> const& threshold)
         -> std::tuple<
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>
     {
-        detail::verify_compatible(flow_direction, fraction);
+        detail::verify_compatible(flow_direction, threshold);
 
         return accumulating_router(
-            policies, detail::AccuFraction<Policies>{}, flow_direction, inflow, fraction);
+            policies, detail::AccuThreshold<Policies>{}, flow_direction, inflow, threshold);
     }
 
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ACCU_FRACTION(Policies)                                                              \
+#define LUE_INSTANTIATE_ACCU_THRESHOLD(Policies)                                                             \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu_fraction<ArgumentType<void(Policies)>>(                  \
+    template LUE_ROUTING_OPERATION_EXPORT auto accu_threshold<ArgumentType<void(Policies)>>(                 \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
         PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&,                                      \
@@ -361,7 +369,7 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,                                        \
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;                                       \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu_fraction<ArgumentType<void(Policies)>>(                  \
+    template LUE_ROUTING_OPERATION_EXPORT auto accu_threshold<ArgumentType<void(Policies)>>(                 \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
         PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&,                                      \
@@ -370,7 +378,7 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,                                        \
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;                                       \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu_fraction<ArgumentType<void(Policies)>>(                  \
+    template LUE_ROUTING_OPERATION_EXPORT auto accu_threshold<ArgumentType<void(Policies)>>(                 \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
         Scalar<policy::InputElementT<Policies, 1>> const&,                                                   \
@@ -379,7 +387,7 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 0>, 2>,                                        \
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;                                       \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu_fraction<ArgumentType<void(Policies)>>(                  \
+    template LUE_ROUTING_OPERATION_EXPORT auto accu_threshold<ArgumentType<void(Policies)>>(                 \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
         Scalar<policy::InputElementT<Policies, 1>> const&,                                                   \

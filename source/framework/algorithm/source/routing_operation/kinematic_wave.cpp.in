@@ -1,7 +1,9 @@
+#include "lue/framework/algorithm/default_policies/kinematic_wave.hpp"
 #include "lue/framework/algorithm/definition/kinematic_wave.hpp"
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
 
 
+// TODO: revisit
 using lue_CellsIdxs = std::vector<lue::Index>;
 using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
 
@@ -12,9 +14,7 @@ HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
 namespace lue {
 
     LUE_INSTANTIATE_KINEMATIC_WAVE(
-            ESC(policy::kinematic_wave::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
-            {{ FlowDirectionElement }},
-            {{ Element }}
+            ESC(policy::kinematic_wave::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>)
         );
 
 }  // namespace lue

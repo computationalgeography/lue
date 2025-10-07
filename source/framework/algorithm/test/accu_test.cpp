@@ -1,6 +1,5 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/default_policies/accu.hpp"
 #include "lue/framework/algorithm/value_policies/accu.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
@@ -14,18 +13,18 @@ BOOST_AUTO_TEST_CASE(overloads)
     lue::PartitionedArray<FlowDirectionElement, 2> const flow_direction{};
     lue::PartitionedArray<MaterialElement, 2> outflow{};
 
-    lue::PartitionedArray<MaterialElement, 2> const material_raster{};
-    lue::Scalar<MaterialElement> const material_scalar{};
-    MaterialElement const material_value{};
+    lue::PartitionedArray<MaterialElement, 2> const inflow_raster{};
+    lue::Scalar<MaterialElement> const inflow_scalar{};
+    MaterialElement const inflow_value{};
 
     // raster
-    outflow = lue::value_policies::accu(flow_direction, material_raster);
+    outflow = lue::value_policies::accu(flow_direction, inflow_raster);
 
     // scalar
-    outflow = lue::value_policies::accu(flow_direction, material_scalar);
+    outflow = lue::value_policies::accu(flow_direction, inflow_scalar);
 
     // value
-    outflow = lue::value_policies::accu(flow_direction, material_value);
+    outflow = lue::value_policies::accu(flow_direction, inflow_value);
 }
 
 

@@ -5,8 +5,8 @@ namespace lue::framework {
 
     void bind_accu(pybind11::module& module);
     void bind_accu_fraction(pybind11::module& module);
-    void bind_accu_info3(pybind11::module& module);
-    void bind_accu_threshold3(pybind11::module& module);
+    void bind_accu_info(pybind11::module& module);
+    void bind_accu_threshold(pybind11::module& module);
     void bind_d8_flow_direction(pybind11::module& module);
     void bind_decreasing_order(pybind11::module& module);
     void bind_downstream(pybind11::module& module);
@@ -22,8 +22,8 @@ namespace lue::framework {
     {
         bind_accu(module);
         bind_accu_fraction(module);
-        bind_accu_info3(module);
-        bind_accu_threshold3(module);
+        bind_accu_info(module);
+        bind_accu_threshold(module);
         bind_d8_flow_direction(module);
         bind_decreasing_order(module);
         bind_downstream(module);

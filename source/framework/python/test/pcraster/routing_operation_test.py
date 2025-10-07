@@ -79,18 +79,28 @@ class RoutingOperationTest(OperationTest):
         for type_ in [np.float32]:
             spatial, non_spatial = (
                 self.spatial[type_],
-                self.value[type_],  # TODO non_spatial (Scalar) is not supported yet
+                self.non_spatial[type_],
             )
 
             _ = lpr.kinematic(
                 ldd,
                 spatial,
                 spatial,
-                non_spatial,
-                non_spatial,
-                non_spatial,
+                spatial,
+                spatial,
+                non_spatial,  # <-- nr_time_slices, which is unused by LUE
                 non_spatial,
                 spatial,
+            )
+            _ = lpr.kinematic(
+                ldd,
+                spatial,
+                spatial,
+                non_spatial,
+                non_spatial,
+                non_spatial,  # <-- nr_time_slices, which is unused by LUE
+                non_spatial,
+                non_spatial,
             )
 
     @lue_test.framework_test_case
