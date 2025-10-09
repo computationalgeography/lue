@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(overloads)
     outflow = lue::value_policies::accu(flow_direction, inflow_scalar);
 
     // value
-    outflow = lue::value_policies::accu(flow_direction, inflow_value);
+    outflow = lue::value_policies::accu<FlowDirectionElement, MaterialElement>(flow_direction, inflow_value);
 }
 
 
@@ -1279,7 +1279,7 @@ BOOST_AUTO_TEST_CASE(back_and_forth)
                 },
                 // clang-format on
             });
-    MaterialElement const inflow = 1;
+    lue::Scalar<MaterialElement> const inflow{1};
 
     auto outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
 

@@ -6,7 +6,6 @@
 
 namespace lue {
 
-    // raster, raster
     template<typename Policies>
     auto accu_fraction(
         Policies const& policies,
@@ -18,7 +17,6 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;
 
 
-    // raster, scalar
     template<typename Policies>
     auto accu_fraction(
         Policies const& policies,
@@ -30,7 +28,6 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;
 
 
-    // scalar, scalar
     template<typename Policies>
     auto accu_fraction(
         Policies const& policies,
@@ -42,7 +39,6 @@ namespace lue {
             PartitionedArray<policy::OutputElementT<Policies, 1>, 2>>;
 
 
-    // scalar, raster
     template<typename Policies>
     auto accu_fraction(
         Policies const& policies,

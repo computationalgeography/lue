@@ -43,11 +43,13 @@ namespace lue::policy {
                     {
                         return std::numeric_limits<Element>::min();
                     }
-                    else if constexpr (std::is_integral_v<Element> && std::is_unsigned_v<Element>)
+
+                    if constexpr (std::is_integral_v<Element> && std::is_unsigned_v<Element>)
                     {
                         return std::numeric_limits<Element>::max();
                     }
-                    else if constexpr (std::is_floating_point_v<Element>)
+
+                    if constexpr (std::is_floating_point_v<Element>)
                     {
                         return std::numeric_limits<Element>::lowest();
                     }
