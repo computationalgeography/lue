@@ -162,13 +162,14 @@ jobs:
             -S ${{ env.lue_consume_source_directory }} \
             -B ${{ env.lue_consume_build_directory }} \
             -G "Ninja" \
-            -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
             -D FETCHCONTENT_QUIET=FALSE \
-            -D lue_ROOT=${{ env.lue_development_install_directory }} \
             -D Hwloc_ROOT=$CONDA_PREFIX/Library \
-            -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib
+            -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib \
+            -D lue_ROOT=${{ env.lue_development_install_directory }} \
+            -D HPX_ROOT=${{ env.hpx_install_directory }} \
+            -D mdspan_ROOT=${{ env.mdspan_install_directory }}
           cmake --build ${{ env.lue_consume_build_directory }} --target all
 
           export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"

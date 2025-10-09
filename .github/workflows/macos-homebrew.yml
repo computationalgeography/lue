@@ -197,7 +197,6 @@ jobs:
             -S ${{ env.lue_consume_source_directory }} \
             -B ${{ env.lue_consume_build_directory }} \
             -G "Ninja" \
-            -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=Release \
             -D Boost_USE_DEBUG_RUNTIME=OFF \
