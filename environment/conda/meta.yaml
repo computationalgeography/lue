@@ -29,6 +29,7 @@ requirements:
     - docopt  # templatize.py
     - hpx
     - jinja2  # templatize.py
+    - libboost-devel
     - libgdal
     - nlohmann_json
     - numpy
@@ -37,8 +38,6 @@ requirements:
 
   run:
     - docopt  # lue.qa
-    - hpx
-    - libgdal
     - matplotlib-base  # lue.qa
     - python
     - python-dateutil  # lue.qa
