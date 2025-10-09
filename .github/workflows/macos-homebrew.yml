@@ -1,7 +1,6 @@
 name: macOS CI (Homebrew)
 
 # TODO
-# - Skipping consume for now. HDF5 isn't found, for some reason.
 # - When using Conan icw Homebrew, HDF5 cannot be found anymore. Maybe this can be fіxed, but for now we just
 #   skip using Conan (for imgui) and dependent targets (lue_view).
 # - Bash shell doesn't seem to exit with an error if a command fails
@@ -190,7 +189,6 @@ jobs:
           python${{ matrix.python_version }} -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
       - name: consume
-        if: "false"
         run: |
           # Test of imported CMake targets
           git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
