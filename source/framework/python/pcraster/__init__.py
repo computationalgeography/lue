@@ -447,7 +447,7 @@ def accucapacitystate(flow_direction, material, transportcapacity):
 
 
 def accuflux(flow_direction, material):
-    return accuthreshold(flow_direction, material, 0)[1]
+    return accuthreshold(flow_direction, material, 0)[0]
 
 
 def accufraction(flow_direction, material, transportcapacity):
