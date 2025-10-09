@@ -1,6 +1,7 @@
 name: Windows CI (Conda)
 
 # TODO
+# - Re-add lue_consume build, once mdspan is not needed anymore
 # - Excluded some tests. Revisit.
 
 on:
@@ -154,6 +155,7 @@ jobs:
           python -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
       - name: consume
+        if: "false"
         run: |
           # Test of imported CMake targets
           git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
@@ -167,9 +169,7 @@ jobs:
             -D FETCHCONTENT_QUIET=FALSE \
             -D Hwloc_ROOT=$CONDA_PREFIX/Library \
             -D Hwloc_LIBRARY=$CONDA_PREFIX/Library/lib/hwloc.lib \
-            -D lue_ROOT=${{ env.lue_development_install_directory }} \
-            -D HPX_ROOT=${{ env.hpx_install_directory }} \
-            -D mdspan_ROOT=${{ env.mdspan_install_directory }}
+            -D lue_ROOT=${{ env.lue_development_install_directory }}
           cmake --build ${{ env.lue_consume_build_directory }} --target all
 
           export PATH="${{ env.lue_development_install_directory }}/bin:${{ env.hpx_install_directory }}/bin:$PATH"
