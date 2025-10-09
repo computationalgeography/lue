@@ -17,7 +17,6 @@ namespace lue {
 
     namespace default_policies {
 
-        // raster, scalar
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_fraction(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -32,7 +31,6 @@ namespace lue {
         }
 
 
-        // scalar, scalar
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_fraction(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -47,7 +45,6 @@ namespace lue {
         }
 
 
-        // scalar, raster
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_fraction(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,

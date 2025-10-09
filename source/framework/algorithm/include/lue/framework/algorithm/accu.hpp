@@ -6,7 +6,9 @@
 
 namespace lue {
 
-    // raster
+    /*!
+        @brief      Accumulate @a inflow through @a flow_direction field and return result
+    */
     template<typename Policies>
     auto accu(
         Policies const& policies,
@@ -15,21 +17,14 @@ namespace lue {
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
 
 
-    // scalar
+    /*!
+        @overload
+    */
     template<typename Policies>
     auto accu(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
         Scalar<policy::InputElementT<Policies, 1>> const& inflow)
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
-
-
-    // value
-    template<typename Policies>
-    auto accu(
-        Policies const& policies,
-        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
-        policy::InputElementT<Policies, 1> const& inflow)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
 
 }  // namespace lue

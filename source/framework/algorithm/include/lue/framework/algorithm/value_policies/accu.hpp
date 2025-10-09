@@ -30,7 +30,6 @@ namespace lue {
 
     namespace value_policies {
 
-        // raster
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -44,24 +43,10 @@ namespace lue {
         }
 
 
-        // scalar
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow) -> PartitionedArray<FloatingPointElement, 2>
-        {
-            using Policies =
-                lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
-
-            return accu(Policies{}, flow_direction, inflow);
-        }
-
-
-        // value
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
-        auto accu(
-            PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
-            FloatingPointElement const& inflow) -> PartitionedArray<FloatingPointElement, 2>
         {
             using Policies =
                 lue::policy::accu::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;

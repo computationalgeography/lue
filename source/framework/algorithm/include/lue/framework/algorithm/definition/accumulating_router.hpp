@@ -18,6 +18,9 @@
 //   must return results for the same number of values as the overall number of return types.
 
 
+// TODO: Refactor, document the accumulate process
+
+
 namespace lue {
 
     template<typename Functor>
@@ -203,15 +206,6 @@ namespace lue {
         };
 
 
-        template<Arithmetic Element>
-        class ArgumentTraits<Element>
-        {
-            public:
-
-                using PassedArgument = Element;
-        };
-
-
         template<typename Argument>
         using PassedArgumentT = ArgumentTraits<Argument>::PassedArgument;
 
@@ -238,13 +232,6 @@ namespace lue {
         }
 
 
-        template<Arithmetic Element>
-        auto pass_argument(Element const value, [[maybe_unused]] Index const partition_idx) -> Element
-        {
-            return value;
-        }
-
-
         template<Arithmetic Element, Rank rank>
         auto get_data(ArrayPartition<Element, rank> const& partition) -> DataT<ArrayPartition<Element, rank>>
         {
@@ -257,13 +244,6 @@ namespace lue {
         auto get_data(Scalar<Element> const& scalar) -> Element
         {
             return scalar.future().get();
-        }
-
-
-        template<Arithmetic Element>
-        auto get_data(Element const scalar) -> Element
-        {
-            return scalar;
         }
 
 
@@ -839,8 +819,11 @@ namespace lue {
         using Action = detail::AccumulateAction<Policies, Functor, detail::PassedArgumentT<Arguments>...>;
         Action action{};
 
+        // For each result array a collection to store the final partitions in
         auto results_partitions = Functor::initialize_results_partitions(shape_in_partitions);
 
+        // For each partition, create a task that will return one or more result partitions and store these
+        // in the collections of partitions just created
         for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
             partition_references(results_partitions, partition_idx) = hpx::split_future(
@@ -860,17 +843,27 @@ namespace lue {
             std::move(inflow_count_communicators),
             std::move(material_communicators));
 
+        // Return partitioned arrays containing the collections of partitions just created
         return results_partitions_to_arrays(results_partitions, flow_direction.shape(), localities);
     }
 
 
+    /*!
+        @brief      Base class for accumulating router functors
+        @tparam     ArgumentElements_ Element types of all arguments
+        @tparam     ResultElements_ Element types of all results
+
+        An accumulating router functor encapsulates the computation that needs to be done while visiting cells
+        from upstream to downstream. Normally, this computation is about computing how mucht material is
+        transported downstream, but this is not required.
+
+        This is the primary template. There is a specialization that allows using type lists for passing
+        element types.
+    */
     template<typename ArgumentElements, typename ResultElements>
     class AccumulatingRouterFunctor;  // Not defined
 
 
-    /*!
-        @brief      Base class for accumulating router functors
-    */
     template<Arithmetic... ArgumentElements_, Arithmetic... ResultElements_>
     class AccumulatingRouterFunctor<
         policy::detail::TypeList<ArgumentElements_...>,
@@ -895,6 +888,14 @@ namespace lue {
             using CellsIdxs = std::vector<std::array<Index, 2>>;
 
 
+            /*!
+                @brief      Return a tuple of one or more collections of partitions to use for the
+                            algorithm's resulting array(s)
+                @param      shape_in_partitions Shape of each collection, in partitions
+
+                The collections returned don't include final partitions themselves, just default constructed
+                partitions. Each of these partitions will be overwritten later.
+            */
             static auto initialize_results_partitions(auto const& shape_in_partitions)
                 -> std::tuple<PartitionsT<PartitionedArray<ResultElements_, 2>>...>
             {

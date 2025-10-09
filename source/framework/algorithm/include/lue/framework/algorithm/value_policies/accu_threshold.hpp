@@ -31,7 +31,6 @@ namespace lue {
 
     namespace value_policies {
 
-        // raster, raster
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -46,7 +45,6 @@ namespace lue {
         }
 
 
-        // raster, scalar
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -61,7 +59,6 @@ namespace lue {
         }
 
 
-        // scalar, scalar
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
@@ -76,7 +73,6 @@ namespace lue {
         }
 
 
-        // scalar, raster
         template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,

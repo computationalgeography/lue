@@ -310,6 +310,32 @@ BOOST_AUTO_TEST_CASE(continuation)
 }
 
 
-// BOOST_AUTO_TEST_CASE(conversion)
-// {
-// }
+template<std::integral Element>
+auto mah(lue::Scalar<Element> const& scalar) -> Element
+{
+    return scalar.future().get();
+}
+
+
+BOOST_AUTO_TEST_CASE(implicit_conversion)
+{
+    {
+        using Element = std::int32_t;
+
+        Element const value = 5;
+
+        auto meh = [value]([[maybe_unused]] lue::Scalar<Element> const& scalar) -> void
+        { BOOST_CHECK_EQUAL(value, scalar.future().get()); };
+
+        meh(value);
+    }
+
+    {
+        using Element = std::int32_t;
+
+        Element const value = 5;
+
+        // Explicitly passing Element as a parameter is required. Otherwise Element cannot be deduced.
+        BOOST_CHECK_EQUAL(mah<Element>(value), value);
+    }
+}
