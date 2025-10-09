@@ -566,13 +566,11 @@ endif()
 if(LUE_DOXYGEN_AWESOME_CSS_REQUIRED)
     FetchContent_Declare(doxygen-awesome-css
         GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
-        GIT_TAG 568f56cde6ac78b6dfcc14acd380b2e745c301ea  # v2.3.4
-        # URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip
+        GIT_TAG d83219b30fb3778033e24dcf750c075ae29a0271  # v2.4.0
     )
     FetchContent_MakeAvailable(doxygen-awesome-css)
 
-    # Save the location the files were cloned into
-    # This allows us to get the path to doxygen-awesome.css
+    # Save the location the files were cloned into. This allows us to get the path to doxygen-awesome.css.
     FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
 
     # # Generate the Doxyfile
