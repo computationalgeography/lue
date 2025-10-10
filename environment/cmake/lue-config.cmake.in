@@ -18,7 +18,7 @@ if(LUE_GDAL_REQUIRED)
 endif()
 
 if(LUE_HDF5_REQUIRED)
-    find_dependency(HDF5 COMPONENTS C CONFIG)
+    find_dependency(HDF5 COMPONENTS C)
 endif()
 
 if(LUE_HPX_REQUIRED)

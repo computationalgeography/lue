@@ -1,7 +1,6 @@
 name: Linux CI
 
 # TODO
-# - Skipping consume for now. LUE installation isn't used for some reason.
 # - Excluded some tests. Revisit.
 
 on:
@@ -222,7 +221,6 @@ jobs:
           python3 -c "import lue, lue.data_model, lue.framework, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
       - name: consume
-        if: "false"
         run: |
           # Test of imported CMake targets
           git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
@@ -231,15 +229,13 @@ jobs:
             -S ${{ env.lue_consume_source_directory }} \
             -B ${{ env.lue_consume_build_directory }} \
             -G "Ninja" \
-            -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
             -D CMAKE_BUILD_TYPE=Release \
             -D FETCHCONTENT_QUIET=FALSE \
             -D lue_ROOT=${{ env.lue_development_install_directory }} \
             -D HPX_ROOT=${{ env.hpx_install_directory }} \
             -D mdspan_ROOT=${{ env.mdspan_install_directory }}
-          cmake --build ${{ env.lue_consume_build_directory }} \
-            --target all
+          cmake --build ${{ env.lue_consume_build_directory }} --target all
 
           ${{ env.lue_consume_build_directory }}/lue_consume_data_model
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
