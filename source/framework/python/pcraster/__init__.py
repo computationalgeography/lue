@@ -1159,7 +1159,10 @@ def timeinputscalar(timeseries_pathname: str, id_expression, timestep: int):
         lines = configuration.timeseries_files[timeseries_pathname]
     else:
         with open(timeseries_pathname) as tss:
-            lines = tss.readlines()
+            # Remove trailing characters
+            lines = [line.rstrip() for line in tss]
+            # Remove empty lines caused by ^M
+            lines = [line for line in lines if line]
             nr_rows_to_skip = int(lines[1]) + 2
             lines = lines[nr_rows_to_skip:]
             configuration.timeseries_files[timeseries_pathname] = lines
