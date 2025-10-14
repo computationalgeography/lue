@@ -44,7 +44,7 @@ namespace lue {
     }
 
 
-    template<Arithmetic... Element, typename... Arguments>
+    template<Arithmetic... Element>
     auto tied_references(
         std::tuple<hpx::future<ArrayPartitionData<Element, 2>>...>& results_partition_data_fs)
         -> std::tuple<hpx::future<ArrayPartitionData<Element, 2>>&...>
@@ -342,7 +342,8 @@ namespace lue {
                         auto result_data = Functor::initialize_result_data(partition_shape);
 
                         auto cell_accumulator{std::apply(
-                            [&policies, &arguments...](auto&... result_data)
+                            // MSVC doesn't like this: [&policies, &arguments...](auto&... result_data)
+                            [&](auto&... result_data) -> auto
                             {
                                 return typename Functor::template CellAccumulator<decltype(get_data(
                                     arguments))...>{policies, get_data(arguments)..., result_data...};
@@ -457,7 +458,8 @@ namespace lue {
                     // We need to pass references to the resulting data collections (sink arguments). This
                     // code passes the references to the values in the local variable (result_data).
                     auto cell_accumulator = std::apply(
-                        [&policies, &arguments...](auto&... result_data)
+                        // MSVC doesn't like this: [&policies, &arguments...](auto&... result_data)
+                        [&](auto&... result_data) -> auto
                         {
                             return
                                 typename Functor::template CellAccumulator<decltype(get_data(arguments))...>{
@@ -702,89 +704,110 @@ namespace lue {
 
 
         template<typename Policies, typename Functor, typename... Arguments>
-        auto accumulate_partition(
-            Policies const& policies,
-            Functor const& functor,
-            ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
-            Arguments const&... arguments,
-            InflowCountCommunicator<2> inflow_count_communicator,
-            MaterialCommunicator<MaterialT<Functor>, 2> material_communicator) -> ActionResultT<Functor>
+        class OverloadPicker
         {
-            auto [inflow_count_partition, input_cells_idxs_f, output_cells_idxs_f] = inflow_count3<Policies>(
-                policies, flow_direction_partition, std::move(inflow_count_communicator));
+            public:
 
-            using FlowDirectionElement = policy::InputElementT<Policies, 0>;
-            using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, 2>;
+                static auto accumulate_partition(
+                    Policies const& policies,
+                    Functor const& functor,
+                    ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
+                    Arguments const&... arguments,
+                    InflowCountCommunicator<2> inflow_count_communicator,
+                    MaterialCommunicator<MaterialT<Functor>, 2> material_communicator)
+                    -> ActionResultT<Functor>
+                {
+                    auto [inflow_count_partition, input_cells_idxs_f, output_cells_idxs_f] =
+                        inflow_count3<Policies>(
+                            policies, flow_direction_partition, std::move(inflow_count_communicator));
 
-            hpx::future<typename Functor::InflowCountData> inflow_count_data_f;
-            auto results_partition_data_fs = Functor::initialize_results_partition_data_fs();
+                    using FlowDirectionElement = policy::InputElementT<Policies, 0>;
+                    using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, 2>;
 
-            // TODO: Fix the tied_references variants
-            tied_references2(results_partition_data_fs, inflow_count_data_f, output_cells_idxs_f) =
-                solve_intra_partition_stream_cells<Policies, Functor, Arguments...>(
-                    policies,
-                    functor,
-                    flow_direction_partition,
-                    arguments...,
-                    inflow_count_partition,
-                    material_communicator,
-                    std::move(output_cells_idxs_f));
-            tied_references(results_partition_data_fs) =
-                solve_inter_partition_stream_cells<Policies, Functor, Arguments...>(
-                    policies,
-                    functor,
-                    flow_direction_partition,
-                    arguments...,
-                    std::move(inflow_count_data_f),
-                    std::move(material_communicator),
-                    std::move(input_cells_idxs_f),
-                    std::move(output_cells_idxs_f),
-                    std::move(results_partition_data_fs));
+                    hpx::future<typename Functor::InflowCountData> inflow_count_data_f;
+                    auto results_partition_data_fs = Functor::initialize_results_partition_data_fs();
 
-            // std::tuple<hpx::future<ArrayPartition>...>
-            auto results_partition_fs = hpx::split_future(
-                hpx::dataflow(
-                    hpx::launch::async,
+                    // TODO: Fix the tied_references variants
+                    tied_references2(results_partition_data_fs, inflow_count_data_f, output_cells_idxs_f) =
+                        solve_intra_partition_stream_cells<Policies, Functor, Arguments...>(
+                            policies,
+                            functor,
+                            flow_direction_partition,
+                            arguments...,
+                            inflow_count_partition,
+                            material_communicator,
+                            std::move(output_cells_idxs_f));
+                    tied_references(results_partition_data_fs) =
+                        solve_inter_partition_stream_cells<Policies, Functor, Arguments...>(
+                            policies,
+                            functor,
+                            flow_direction_partition,
+                            arguments...,
+                            std::move(inflow_count_data_f),
+                            std::move(material_communicator),
+                            std::move(input_cells_idxs_f),
+                            std::move(output_cells_idxs_f),
+                            std::move(results_partition_data_fs));
 
-                    [](FlowDirectionPartition const& flow_direction_partition,
-                       // hpx::future<hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > > >
-                       auto&& results_partition_data_fs_f)
-                    {
-                        AnnotateFunction const annotation{"accumulate: partition: create_result_partitions"};
+                    // std::tuple<hpx::future<ArrayPartition>...>
+                    auto results_partition_fs = hpx::split_future(
+                        hpx::dataflow(
+                            hpx::launch::async,
 
-                        // hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > >
-                        auto results_partition_data_fs = results_partition_data_fs_f.get();
-
-                        auto const partition_offset{ready_component_ptr(flow_direction_partition)->offset()};
-
-                        // std::apply icw hpx::tuple doesn't work
-                        return std::apply(
-                            [&partition_offset](auto&&... partition_data_fs)
+                            [](FlowDirectionPartition const& flow_direction_partition,
+                               // hpx::future<hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2>
+                               // > > >
+                               auto&& results_partition_data_fs_f)
                             {
-                                return std::make_tuple(partition_data_to_partition(
-                                    hpx::find_here(), partition_offset, partition_data_fs.get())...);
+                                AnnotateFunction const annotation{
+                                    "accumulate: partition: create_result_partitions"};
+
+                                // hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > >
+                                auto results_partition_data_fs = results_partition_data_fs_f.get();
+
+                                auto const partition_offset{
+                                    ready_component_ptr(flow_direction_partition)->offset()};
+
+                                // std::apply icw hpx::tuple doesn't work
+                                return std::apply(
+                                    [&partition_offset](auto&&... partition_data_fs)
+                                    {
+                                        return std::make_tuple(partition_data_to_partition(
+                                            hpx::find_here(), partition_offset, partition_data_fs.get())...);
+                                    },
+                                    hpx_tuple_to_std_tuple(std::move(results_partition_data_fs)));
                             },
-                            hpx_tuple_to_std_tuple(std::move(results_partition_data_fs)));
-                    },
 
-                    flow_direction_partition,
-                    when_all(std::move(results_partition_data_fs))));
+                            flow_direction_partition,
+                            when_all(std::move(results_partition_data_fs))));
 
-            return std::apply(
-                [](auto&&... partition_fs)
-                { return std::make_tuple(partition_f_to_partition(std::move(partition_fs))...); },
-                results_partition_fs);
-        }
+                    return std::apply(
+                        [](auto&&... partition_fs)
+                        { return std::make_tuple(partition_f_to_partition(std::move(partition_fs))...); },
+                        results_partition_fs);
+                }
+
+
+                struct Action:
+                    hpx::actions::
+                        make_action<decltype(&accumulate_partition), &accumulate_partition, Action>::type
+                {
+                };
+        };
 
 
         template<typename Policies, typename Functor, typename... Arguments>
-        struct AccumulateAction:
-            hpx::actions::make_action<
-                decltype(&accumulate_partition<Policies, Functor, Arguments...>),
-                &accumulate_partition<Policies, Functor, Arguments...>,
-                AccumulateAction<Policies, Functor, Arguments...>>::type
-        {
-        };
+        using AccumulateAction = OverloadPicker<Policies, Functor, Arguments...>::Action;
+
+        // MSVC doesn't like this
+        // template<typename Policies, typename Functor, typename... Arguments>
+        // struct AccumulateAction:
+        //     hpx::actions::make_action<
+        //         decltype(&accumulate_partition<Policies, Functor, Arguments...>),
+        //         &accumulate_partition<Policies, Functor, Arguments...>,
+        //         AccumulateAction<Policies, Functor, Arguments...>>::type
+        // {
+        // };
 
     }  // namespace detail
 
