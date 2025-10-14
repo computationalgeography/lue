@@ -174,7 +174,7 @@ namespace lue {
                             lue_hpx_assert(rk < std::get<0>(kernel_shape));
                             lue_hpx_assert(ck < std::get<1>(kernel_shape));
 
-                            array(rk, ck) = window(r, c);
+                            array(rk, ck) = window[r, c];
                         }
 
                         ck -= window.extent(1);  // Carriage return

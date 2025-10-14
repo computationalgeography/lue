@@ -46,7 +46,7 @@ namespace lue {
                     {
                         for (Index c = 0; c < window.extent(1); ++c)
                         {
-                            InputElement const value{window(r, c)};
+                            InputElement const value{window[r, c]};
 
                             if (indp.is_no_data(value))
                             {

@@ -171,7 +171,7 @@ def gcc_settings(compiler_filename):
     Return a dictionary with the GCC compiler settings
     """
     compiler = "gcc"
-    compiler_cppstd = "20"
+    compiler_cppstd = "23"
     compiler_libcxx = "libstdc++11"
     compiler_version = gcc_version(compiler_filename)
 
@@ -188,7 +188,7 @@ def apple_clang_settings(compiler_filename):
     Return a dictionary with the Apple Clang compiler settings
     """
     compiler = "apple-clang"
-    compiler_cppstd = "20"
+    compiler_cppstd = "23"
     compiler_libcxx = "libc++"
     compiler_version = clang_version(compiler_filename)
 
@@ -205,7 +205,7 @@ def clang_settings(compiler_filename):
     Return a dictionary with the Clang compiler settings
     """
     compiler = "clang"
-    compiler_cppstd = "20"
+    compiler_cppstd = "23"
     compiler_libcxx = "libstdc++11"
     compiler_version = clang_version(compiler_filename)
 
@@ -222,7 +222,7 @@ def msvc_settings(compiler_filename):
     Return a dictionary with the MSVC compiler settings
     """
     compiler = "msvc"
-    compiler_cppstd = "20"
+    compiler_cppstd = "23"
     compiler_version = msvc_version(compiler_filename)
     compiler_runtime = "dynamic"
 

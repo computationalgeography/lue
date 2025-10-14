@@ -8,19 +8,6 @@
 namespace lue {
     namespace detail {
 
-        // Since C++20
-        template<typename T>
-        struct remove_cvref
-        {
-                using type = std::remove_cv_t<std::remove_reference_t<T>>;
-        };
-
-
-        // Since C++20
-        template<typename T>
-        using remove_cvref_t = typename remove_cvref<T>::type;
-
-
         /*!
             @brief      Primary template for traits of an array-like type
             @tparam     Array-like type
@@ -70,11 +57,11 @@ namespace lue {
         element type.
     */
     template<typename Array>
-    using ElementT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Element;
+    using ElementT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Element;
 
 
     template<typename Array>
-    using ElementsT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Elements;
+    using ElementsT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Elements;
 
 
     namespace detail {
@@ -82,7 +69,7 @@ namespace lue {
         template<typename Shaped>
         struct ShapedTraits
         {
-                static constexpr Rank rank = detail::ArrayTraits<detail::remove_cvref_t<Shaped>>::rank;
+                static constexpr Rank rank = detail::ArrayTraits<std::remove_cvref_t<Shaped>>::rank;
         };
 
 
@@ -104,7 +91,7 @@ namespace lue {
 
 
     template<typename Array>
-    using OffsetT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Offset;
+    using OffsetT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Offset;
 
 
     /*!
@@ -115,15 +102,15 @@ namespace lue {
         shape type.
     */
     template<typename Array>
-    using ShapeT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Shape;
+    using ShapeT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Shape;
 
 
     template<typename Array>
-    using SlicesT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Slices;
+    using SlicesT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Slices;
 
 
     template<typename Array>
-    using SliceT = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::Slice;
+    using SliceT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Slice;
 
 
     /*!
@@ -139,7 +126,7 @@ namespace lue {
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using DataT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template Data<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template Data<std::remove_cvref_t<Element>, rank>;
 
 
     /*!
@@ -154,11 +141,11 @@ namespace lue {
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using PartitionT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template Partition<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template Partition<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, Rank rank = rank<Array>>
-    using PartitionT2 = typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template Partition<rank>;
+    using PartitionT2 = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partition<rank>;
 
 
     /*!
@@ -173,22 +160,21 @@ namespace lue {
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using PartitionsT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template Partitions<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template Partitions<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, Rank rank = rank<Array>>
-    using PartitionsT2 =
-        typename detail::ArrayTraits<detail::remove_cvref_t<Array>>::template Partitions<rank>;
+    using PartitionsT2 = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partitions<rank>;
 
 
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using ComponentT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template Component<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template Component<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using ComponentsT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template Components<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template Components<std::remove_cvref_t<Element>, rank>;
 
 
     /*!
@@ -203,7 +189,7 @@ namespace lue {
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
     using PartitionedArrayT = typename detail::ArrayTraits<
-        detail::remove_cvref_t<Array>>::template PartitionedArray<detail::remove_cvref_t<Element>, rank>;
+        std::remove_cvref_t<Array>>::template PartitionedArray<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array>

@@ -48,11 +48,9 @@ namespace lue::data_model {
     }
 
 
-    template<
-        typename Collection,
-        typename Count,
-        typename = std::enable_if_t<std::is_arithmetic<Count>::value>>
+    template<typename Collection, typename Count>
     inline void select_random_ids(Collection& id_collection, Count const max_count)
+        requires std::is_arithmetic_v<Count>
     {
         // IDs are numbered [0, max_count), so the number of IDs to select
         // must be smaller than the maximum number of IDs to select from.
@@ -67,11 +65,9 @@ namespace lue::data_model {
     }
 
 
-    template<
-        typename Collections,
-        typename Counts,
-        typename = std::enable_if_t<!std::is_arithmetic<Counts>::value>>
+    template<typename Collections, typename Counts>
     inline void select_random_ids(Collections& id_collections, Counts const& id_counts)
+        requires(!std::is_arithmetic_v<Counts>)
     {
         assert(id_collections.size() == id_counts.size());
         assert(!id_counts.empty());
@@ -98,7 +94,7 @@ namespace lue::data_model {
             std::generate(
                 id_collection.begin(),
                 id_collection.end(),
-                [&all_ids, &random_number_engine, &distribution]()
+                [&all_ids, &random_number_engine, &distribution]() -> auto
                 { return all_ids[distribution(random_number_engine)]; });
         }
     }
@@ -124,7 +120,7 @@ namespace lue::data_model {
             std::all_of(
                 active_set_sizes.begin(),
                 active_set_sizes.end(),
-                [max_nr_objects](typename ActiveSetSizes::value_type const count)
+                [max_nr_objects](typename ActiveSetSizes::value_type const count) -> auto
                 { return count <= max_nr_objects; }));
 
         // Create a collection of unique IDs with the size of the maximum
@@ -136,11 +132,11 @@ namespace lue::data_model {
         {
             typename ActiveSetIdxs::value_type active_set_idx = 0;
 
-            for (typename std::decay<decltype(nr_active_sets)>::type s = 0; s < nr_active_sets; ++s)
+            for (std::decay_t<decltype(nr_active_sets)> set_idx = 0; set_idx < nr_active_sets; ++set_idx)
             {
-                active_set_idxs[s] = active_set_idx;
+                active_set_idxs[set_idx] = active_set_idx;
 
-                auto const size_of_active_set = active_set_sizes[s];
+                auto const size_of_active_set = active_set_sizes[set_idx];
 
                 // Shuffle collection of IDs and select from the front of
                 // the collection. This guarantees that no ID occurs more
@@ -175,7 +171,7 @@ namespace lue::data_model {
         std::generate(
             values.begin(),
             values.end(),
-            [&distribution, &random_number_engine]() { return distribution(random_number_engine); });
+            [&distribution, &random_number_engine]() -> auto { return distribution(random_number_engine); });
     }
 
 
@@ -244,37 +240,34 @@ namespace lue::data_model {
     }
 
 
-    template<
-        typename Collection,
-        std::enable_if_t<std::is_integral<typename Collection::value_type>::value, int> = 0>
+    template<typename Collection>
     inline void generate_random_values(
         Collection& values,
         typename Collection::value_type const min,
         typename Collection::value_type const max)
+        requires std::is_integral_v<typename Collection::value_type>
     {
         generate_random_integral_values(values, min, max);
     }
 
 
-    template<
-        typename Collection,
-        std::enable_if_t<std::is_floating_point<typename Collection::value_type>::value, int> = 0>
+    template<typename Collection>
     inline void generate_random_values(
         Collection& values,
         typename Collection::value_type const min,
         typename Collection::value_type const max)
+        requires std::is_floating_point_v<typename Collection::value_type>
     {
         generate_random_real_values(values, min, max);
     }
 
 
-    template<
-        typename Collection,
-        std::enable_if_t<!std::is_arithmetic<typename Collection::value_type>::value, int> = 0>
+    template<typename Collection>
     inline void generate_random_values(
         Collection& collection,
         typename Collection::value_type::value_type const min,
         typename Collection::value_type::value_type const max)
+        requires(!std::is_arithmetic_v<typename Collection::value_type>)
     {
         for (auto& element : collection)
         {
@@ -283,35 +276,15 @@ namespace lue::data_model {
     }
 
 
-    template<
-        typename Collection,
-        std::enable_if_t<std::is_integral<typename Collection::value_type>::value, int> = 0>
+    template<typename Collection>
     inline void generate_random_strictly_increasing_values(
         Collection& values,
         typename Collection::value_type const min,
         typename Collection::value_type const max)
+        requires std::is_integral_v<typename Collection::value_type>
     {
         generate_random_strictly_increasing_integral_values(values, min, max);
     }
-
-
-    // C++17:
-    // template<
-    //     typename Collection>
-    // inline void generate_random_values(
-    //     Collection& values,
-    //     typename Collection::value_type const min,
-    //     typename Collection::value_type const max)
-    // {
-    //     using ValueType = typename Collection::value_type;
-    //
-    //     if constexpr(std::is_integral<ValueType>()) {
-    //         generate_random_integral_values(values, min, max);
-    //     }
-    //     else {
-    //         generate_random_real_values(values, min, max);
-    //     }
-    // }
 
 
     template<typename Collection>

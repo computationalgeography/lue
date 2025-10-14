@@ -50,8 +50,8 @@ namespace lue {
                     // If input flow direction or material contain a
                     // no-data in the focal cell, then the result will be
                     // marked as no-data
-                    if (indp1.is_no_data(flow_direction_window(1, 1)) ||
-                        indp2.is_no_data(material_window(1, 1)))
+                    if (indp1.is_no_data(flow_direction_window[1, 1]) ||
+                        indp2.is_no_data(material_window[1, 1]))
                     {
                         ondp.mark_no_data(material);
                     }
@@ -59,98 +59,98 @@ namespace lue {
                     {
                         // If a downstream material contains no-data,
                         // then the result will be marked as no-data
-                        if (flow_direction_window(1, 1) == north_west<FlowDirectionElement>)
+                        if (flow_direction_window[1, 1] == north_west<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(0, 0)))
+                            if (indp2.is_no_data(material_window[0, 0]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(0, 0);
+                                material = material_window[0, 0];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == north<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == north<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(0, 1)))
+                            if (indp2.is_no_data(material_window[0, 1]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(0, 1);
+                                material = material_window[0, 1];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == north_east<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == north_east<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(0, 2)))
+                            if (indp2.is_no_data(material_window[0, 2]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(0, 2);
+                                material = material_window[0, 2];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == west<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == west<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(1, 0)))
+                            if (indp2.is_no_data(material_window[1, 0]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(1, 0);
+                                material = material_window[1, 0];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == east<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == east<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(1, 2)))
+                            if (indp2.is_no_data(material_window[1, 2]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(1, 2);
+                                material = material_window[1, 2];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == south_west<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == south_west<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(2, 0)))
+                            if (indp2.is_no_data(material_window[2, 0]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(2, 0);
+                                material = material_window[2, 0];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == south<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == south<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(2, 1)))
+                            if (indp2.is_no_data(material_window[2, 1]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(2, 1);
+                                material = material_window[2, 1];
                             }
                         }
-                        else if (flow_direction_window(1, 1) == south_east<FlowDirectionElement>)
+                        else if (flow_direction_window[1, 1] == south_east<FlowDirectionElement>)
                         {
-                            if (indp2.is_no_data(material_window(2, 2)))
+                            if (indp2.is_no_data(material_window[2, 2]))
                             {
                                 ondp.mark_no_data(material);
                             }
                             else
                             {
-                                material = material_window(2, 2);
+                                material = material_window[2, 2];
                             }
                         }
                         else
                         {
-                            lue_hpx_assert(flow_direction_window(1, 1) == sink<FlowDirectionElement>);
-                            material = material_window(1, 1);
+                            lue_hpx_assert((flow_direction_window[1, 1] == sink<FlowDirectionElement>));
+                            material = material_window[1, 1];
                         }
                     }
 

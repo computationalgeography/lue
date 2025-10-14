@@ -74,36 +74,24 @@ namespace lue {
         };
 
 
-        // static auto compare_datatypes = [](
-        //     hdf5::Datatype const& lhs,
-        //     hdf5::Datatype const& rhs)
-        // {
-        //     return lhs.id().info().addr() < rhs.id().info().addr();
-        // };
-
-        // C++20 makes lambda closures default constructable
-        // using CompareDatatypes = decltype(compare_datatypes);
-
-
-        struct CompareDatatypes
+        static auto const compare_datatypes = [](hdf5::Datatype const& lhs, hdf5::Datatype const& rhs) -> bool
         {
-                bool operator()(Datatype const& lhs, Datatype const& rhs) const
-                {
-                    // How to determine whether some data type is less than another one?
-                    // Potentially, datatype with different addresses represent the
-                    // same logical type (e.g. when a datatype is copied with H5Tcopy).
+            // How to determine whether some data type is less than another one?
+            // Potentially, datatype with different addresses represent the
+            // same logical type (e.g. when a datatype is copied with H5Tcopy).
 
-                    // For now, assume this does not happen. Also, datatype equality
-                    // is tested using H5Tequal, which 'determines whether two
-                    // datatype identifiers refer to the same datatype'. Let's use
-                    // the same semantics.
-                    // return lhs.id().info().addr() < rhs.id().info().addr();
+            // For now, assume this does not happen. Also, datatype equality
+            // is tested using H5Tequal, which 'determines whether two
+            // datatype identifiers refer to the same datatype'. Let's use
+            // the same semantics.
+            // return lhs.id().info().addr() < rhs.id().info().addr();
 
-                    // FIXME The same datatype can have different IDs pointing to it.
-                    //     Equality is the only thing we can trust.
-                    return lhs != rhs && lhs.id() < rhs.id();
-                }
+            // FIXME The same datatype can have different IDs pointing to it.
+            //     Equality is the only thing we can trust.
+            return lhs != rhs && lhs.id() < rhs.id();
         };
+
+        using CompareDatatypes = decltype(compare_datatypes);
 
 
         LUE_HDF5_EXPORT std::vector<unsigned char> encode_datatype(Datatype const& datatype);
