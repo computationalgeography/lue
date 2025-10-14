@@ -755,8 +755,7 @@ namespace lue {
                         // hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > >
                         auto results_partition_data_fs = results_partition_data_fs_f.get();
 
-                        Offset const partition_offset{
-                            ready_component_ptr(flow_direction_partition)->offset()};
+                        auto const partition_offset{ready_component_ptr(flow_direction_partition)->offset()};
 
                         // std::apply icw hpx::tuple doesn't work
                         return std::apply(
