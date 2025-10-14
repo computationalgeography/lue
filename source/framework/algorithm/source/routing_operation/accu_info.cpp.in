@@ -3,7 +3,6 @@
 #include "lue/framework/algorithm/value_policies/accu_info.hpp"
 
 
-// TODO: revisit
 using lue_CellsIdxs = std::vector<lue::Index>;
 using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ FlowDirectionElement }}, 2>;
 

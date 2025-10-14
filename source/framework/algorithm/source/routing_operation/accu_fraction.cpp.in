@@ -3,12 +3,11 @@
 #include "lue/framework/algorithm/value_policies/accu_fraction.hpp"
 
 
-// TODO: revisit
-// using lue_CellsIdxs = std::vector<lue::Index>;
-// using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
+using lue_CellsIdxs = std::vector<lue::Index>;
+using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
 
-// HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
-// HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
 
 
 namespace lue {
