@@ -48,7 +48,7 @@ namespace lue {
                         for (Index c = 0; c < window.extent(1); ++c)
                         {
                             Weight const weight{kernel(r, c)};
-                            InputElement const value{window(r, c)};
+                            InputElement const value{window[r, c]};
 
                             if constexpr (std::is_same_v<Weight, bool>)
                             {

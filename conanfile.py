@@ -79,9 +79,6 @@ class LUERecipe(ConanFile):
         if install_conan_package("pybind11"):
             self.requires("pybind11/[>=2.10.1]")
 
-        if install_conan_package("span-lite"):
-            self.requires("span-lite/[~0.10]")
-
         # Depends on vulkan-headers and xorg/system
         if install_conan_package("vulkan-loader"):
             self.requires("vulkan-loader/[>=1.3]")

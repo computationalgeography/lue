@@ -30,7 +30,7 @@ class Functor
             // Just return the center value in window1
             lue::Radius const radius{kernel.radius()};
 
-            return window1(radius, radius);
+            return window1[radius, radius];
         }
 
         template<
@@ -51,7 +51,7 @@ class Functor
             // Just return the center value in window2
             lue::Radius const radius{kernel.radius()};
 
-            return window2(radius, radius);
+            return window2[radius, radius];
         }
 };
 

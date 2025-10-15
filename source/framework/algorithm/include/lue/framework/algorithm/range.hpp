@@ -156,7 +156,7 @@ namespace lue {
                         for (Index idx0 = 0; idx0 < nr_partitions0; ++idx0)
                         {
                             auto const [partition_nr_elements0, partition_nr_elements1] =
-                                partition_shapes_span(idx0, 0);
+                                partition_shapes_span[idx0, 0];
 
                             for (Index idx1 = 0; idx1 < nr_partitions1; ++idx1)
                             {
@@ -164,7 +164,7 @@ namespace lue {
 
                                 lue_hpx_assert(input_partition.is_ready());
 
-                                range_partitions_span(idx0, idx1) = hpx::async(
+                                range_partitions_span[idx0, idx1] = hpx::async(
                                     action, localities(idx0, idx1), input_partition, start_value, stride);
 
                                 start_value += partition_nr_elements1;

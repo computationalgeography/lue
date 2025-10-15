@@ -102,7 +102,7 @@ namespace lue {
                     validate_idxs(_shape, idxs...);
                 }
 
-                return _span(idxs...);
+                return _span[idxs...];
             }
 
             template<typename... Idxs>
@@ -113,7 +113,7 @@ namespace lue {
                     validate_idxs(_shape, idxs...);
                 }
 
-                return _span(idxs...);
+                return _span[idxs...];
             }
 
             // template<

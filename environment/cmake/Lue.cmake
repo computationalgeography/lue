@@ -7,7 +7,7 @@ useCompilerCache()
 include(FetchContent)
 include(GenerateExportHeader)
 
-set(LUE_MIN_CXX_STANDARD 20)
+set(LUE_MIN_CXX_STANDARD 23)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 

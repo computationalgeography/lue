@@ -149,12 +149,11 @@ namespace lue::policy {
 
 
     template<typename T>
-    using ElementT = typename detail::TypeTraits<lue::detail::remove_cvref_t<T>>::Element;
+    using ElementT = typename detail::TypeTraits<std::remove_cvref_t<T>>::Element;
 
 
     template<typename Policies, std::size_t idx>
-    using PoliciesT =
-        typename detail::TypeTraits<lue::detail::remove_cvref_t<Policies>>::template Policies<idx>;
+    using PoliciesT = typename detail::TypeTraits<std::remove_cvref_t<Policies>>::template Policies<idx>;
 
 
     template<
@@ -199,12 +198,12 @@ namespace lue::policy {
 
     template<typename OutputPolicies>
     using OutputNoDataPolicy2T =
-        typename detail::TypeTraits<lue::detail::remove_cvref_t<OutputPolicies>>::OutputNoDataPolicy;
+        typename detail::TypeTraits<std::remove_cvref_t<OutputPolicies>>::OutputNoDataPolicy;
 
 
     template<typename OutputNoDataPolicy, typename Element>
-    using OutputNoDataPolicyT = typename detail::TypeTraits<
-        lue::detail::remove_cvref_t<OutputNoDataPolicy>>::template Policy<Element>;
+    using OutputNoDataPolicyT =
+        typename detail::TypeTraits<std::remove_cvref_t<OutputNoDataPolicy>>::template Policy<Element>;
 
 
     template<
@@ -224,27 +223,27 @@ namespace lue::policy {
     //     typename Element>
     // using RangePolicyT =
     //     typename detail::TypeTraits<
-    //             lue::detail::remove_cvref_t<RangePolicy>
+    //             std::remove_cvref_t<RangePolicy>
     //         >::template Policy<Element>;
 
 
     template<typename InputPolicies>
     using InputNoDataPolicy2T =
-        typename detail::TypeTraits<lue::detail::remove_cvref_t<InputPolicies>>::InputNoDataPolicy;
+        typename detail::TypeTraits<std::remove_cvref_t<InputPolicies>>::InputNoDataPolicy;
 
 
     template<typename InputNoDataPolicy, typename Element>
     using InputNoDataPolicyT =
-        typename detail::TypeTraits<lue::detail::remove_cvref_t<InputNoDataPolicy>>::template Policy<Element>;
+        typename detail::TypeTraits<std::remove_cvref_t<InputNoDataPolicy>>::template Policy<Element>;
 
 
     template<typename HaloPolicy, typename Element>
     using HaloPolicyT =
-        typename detail::TypeTraits<lue::detail::remove_cvref_t<HaloPolicy>>::template Policy<Element>;
+        typename detail::TypeTraits<std::remove_cvref_t<HaloPolicy>>::template Policy<Element>;
 
 
     template<typename Element>
     inline constexpr Element no_data_value =
-        detail::TypeTraits<lue::detail::remove_cvref_t<Element>>::no_data_value();
+        detail::TypeTraits<std::remove_cvref_t<Element>>::no_data_value();
 
 }  //  namespace lue::policy

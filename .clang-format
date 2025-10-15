@@ -199,7 +199,7 @@ SpacesBeforeTrailingComments: 2
 ### SpacesInSquareBrackets: false
 ### SpaceBeforeSquareBrackets: false
 ### BitFieldColonSpacing: Both
-Standard: c++20
+Standard: Auto
 ### StatementAttributeLikeMacros:
 ###   - Q_EMIT
 ### StatementMacros:

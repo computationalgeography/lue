@@ -50,7 +50,7 @@ namespace lue {
 
                     FlowDirectionElement direction;
 
-                    if (indp.is_no_data(window(1, 1)))
+                    if (indp.is_no_data(window[1, 1]))
                     {
                         ondp.mark_no_data(direction);
                     }
@@ -63,9 +63,9 @@ namespace lue {
 
                         // First try the nearest cells -----------------------------------------
                         // North
-                        if (!indp.is_no_data(window(0, 1)))
+                        if (!indp.is_no_data(window[0, 1]))
                         {
-                            other_drop = window(1, 1) - window(0, 1);
+                            other_drop = window[1, 1] - window[0, 1];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -74,9 +74,9 @@ namespace lue {
                         }
 
                         // West
-                        if (!indp.is_no_data(window(1, 0)))
+                        if (!indp.is_no_data(window[1, 0]))
                         {
-                            other_drop = window(1, 1) - window(1, 0);
+                            other_drop = window[1, 1] - window[1, 0];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -85,9 +85,9 @@ namespace lue {
                         }
 
                         // East
-                        if (!indp.is_no_data(window(1, 2)))
+                        if (!indp.is_no_data(window[1, 2]))
                         {
-                            other_drop = window(1, 1) - window(1, 2);
+                            other_drop = window[1, 1] - window[1, 2];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -96,9 +96,9 @@ namespace lue {
                         }
 
                         // South
-                        if (!indp.is_no_data(window(2, 1)))
+                        if (!indp.is_no_data(window[2, 1]))
                         {
-                            other_drop = window(1, 1) - window(2, 1);
+                            other_drop = window[1, 1] - window[2, 1];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -108,9 +108,9 @@ namespace lue {
 
                         // Move on the diagonal cells ------------------------------------------
                         // North-west
-                        if (!indp.is_no_data(window(0, 0)))
+                        if (!indp.is_no_data(window[0, 0]))
                         {
-                            other_drop = window(1, 1) - window(0, 0);
+                            other_drop = window[1, 1] - window[0, 0];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -119,9 +119,9 @@ namespace lue {
                         }
 
                         // North-east
-                        if (!indp.is_no_data(window(0, 2)))
+                        if (!indp.is_no_data(window[0, 2]))
                         {
-                            other_drop = window(1, 1) - window(0, 2);
+                            other_drop = window[1, 1] - window[0, 2];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -130,9 +130,9 @@ namespace lue {
                         }
 
                         // South-west
-                        if (!indp.is_no_data(window(2, 0)))
+                        if (!indp.is_no_data(window[2, 0]))
                         {
-                            other_drop = window(1, 1) - window(2, 0);
+                            other_drop = window[1, 1] - window[2, 0];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;
@@ -141,9 +141,9 @@ namespace lue {
                         }
 
                         // South-east
-                        if (!indp.is_no_data(window(2, 2)))
+                        if (!indp.is_no_data(window[2, 2]))
                         {
-                            other_drop = window(1, 1) - window(2, 2);
+                            other_drop = window[1, 1] - window[2, 2];
                             if (other_drop > drop)
                             {
                                 drop = other_drop;

@@ -377,7 +377,7 @@ namespace lue {
                     validate_idxs(_shape, idxs...);
                 }
 
-                return _span(idxs...);
+                return _span[idxs...];
             }
 
 
@@ -394,7 +394,7 @@ namespace lue {
                     validate_idxs(_shape, idxs...);
                 }
 
-                return _span(idxs...);
+                return _span[idxs...];
             }
 
 
