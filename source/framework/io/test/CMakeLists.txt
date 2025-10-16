@@ -2,6 +2,7 @@ set(scope lue_framework_io)
 set(names
     gdal
     lue
+    serializer
 )
 
 foreach(name ${names})
