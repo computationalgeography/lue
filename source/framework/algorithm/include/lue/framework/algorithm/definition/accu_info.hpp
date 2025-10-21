@@ -50,23 +50,24 @@ namespace lue {
                     }
 
 
-                    void enter_at_ridge(Index const idx0, Index const idx1)
+                    void enter_intra_partition_stream(Index const idx0, Index const idx1)
                     {
                         // Initialize the contents of the cell to propagate downstream
                         _cell_class_data(idx0, idx1) = intra_partition_stream_cell;
                     }
 
 
-                    void enter_at_partition_input(Index const idx0, Index const idx1)
-                    {
-                        // Overwrite the contents of the cell to propagate downstream
-                        _cell_class_data(idx0, idx1) = inter_partition_stream_cell;
-                    }
-
-
                     void leave_intra_partition_stream(Index const idx0, Index const idx1)
                     {
                         _cell_class_data(idx0, idx1) = ridge_cell;
+                    }
+
+
+                    void enter_inter_partition_stream(
+                        [[maybe_unused]] CellClass const& cell_class, Index const idx0, Index const idx1)
+                    {
+                        // Overwrite the contents of the cell to propagate downstream
+                        _cell_class_data(idx0, idx1) = inter_partition_stream_cell;
                     }
 
 
@@ -85,25 +86,12 @@ namespace lue {
                     }
 
 
-                    void leave_at_output_cell(Index const idx0, Index const idx1)
-                    {
-                        _cell_class_data(idx0, idx1) = partition_output_cell;
-                    }
-
-
-                    void leave_at_sink_cell(Index const idx0, Index const idx1)
-                    {
-                        _cell_class_data(idx0, idx1) = sink_cell;
-                    }
-
-
-                    void accumulate_external_inflow(
-                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                    void enter_cell([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
                     }
 
 
-                    void accumulate_downstream(
+                    void leave_cell(
                         Index const idx0_from,
                         Index const idx1_from,
                         Index const idx0_to,
@@ -127,22 +115,15 @@ namespace lue {
                     }
 
 
-                    void accumulate_downstream(
-                        CellClass const& cell_class, Index const idx0_to, Index const idx1_to)
+                    void leave_at_sink_cell(Index const idx0, Index const idx1)
                     {
-                        CellClass& downstream_cell_class{_cell_class_data(idx0_to, idx1_to)};
+                        _cell_class_data(idx0, idx1) = sink_cell;
+                    }
 
-                        if (!_ondp_cell_class.is_no_data(downstream_cell_class))
-                        {
-                            if (_ondp_cell_class.is_no_data(cell_class))
-                            {
-                                _ondp_cell_class.mark_no_data(downstream_cell_class);
-                            }
-                            else
-                            {
-                                downstream_cell_class = cell_class;
-                            }
-                        }
+
+                    void leave_at_partition_output_cell(Index const idx0, Index const idx1)
+                    {
+                        _cell_class_data(idx0, idx1) = partition_output_cell;
                     }
 
 

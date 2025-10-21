@@ -59,24 +59,7 @@ namespace lue {
                     }
 
 
-                    void enter_at_ridge([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                    {
-                    }
-
-
-                    void enter_at_partition_input(
-                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                    {
-                    }
-
-
-                    void leave_at_output_cell(
-                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
-                    {
-                    }
-
-
-                    void leave_at_sink_cell(
+                    void enter_intra_partition_stream(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
                     }
@@ -88,13 +71,35 @@ namespace lue {
                     }
 
 
+                    void enter_inter_partition_stream(
+                        MaterialElement const& outflow, Index const idx0, Index const idx1)
+                    {
+                        // The results for the upstream cell are ready
+                        MaterialElement& inflow{_outflow(idx0, idx1)};
+
+                        if (!_ondp_outflow.is_no_data(inflow))
+                        {
+                            if (_ondp_outflow.is_no_data(outflow))
+                            {
+                                _ondp_outflow.mark_no_data(inflow);
+                            }
+                            else
+                            {
+                                // Just add the outflow from upstream to
+                                // the inflow of the downstream cell
+                                inflow += outflow;
+                            }
+                        }
+                    }
+
+
                     void leave_inter_partition_stream(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
                     }
 
 
-                    void accumulate_external_inflow(Index const idx0, Index const idx1)
+                    void enter_cell(Index const idx0, Index const idx1)
                     {
                         MaterialElement const& external_inflow{
                             detail::to_value(_external_inflow, idx0, idx1)};
@@ -118,7 +123,7 @@ namespace lue {
                     }
 
 
-                    void accumulate_downstream(
+                    void leave_cell(
                         Index const idx0_from,
                         Index const idx1_from,
                         Index const idx0_to,
@@ -148,25 +153,15 @@ namespace lue {
                     }
 
 
-                    void accumulate_downstream(
-                        MaterialElement const& outflow, Index const idx0_to, Index const idx1_to)
+                    void leave_at_sink_cell(
+                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
-                        // The results for the upstream cell are ready
-                        MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
+                    }
 
-                        if (!_ondp_outflow.is_no_data(inflow))
-                        {
-                            if (_ondp_outflow.is_no_data(outflow))
-                            {
-                                _ondp_outflow.mark_no_data(inflow);
-                            }
-                            else
-                            {
-                                // Just add the outflow from upstream to
-                                // the inflow of the downstream cell
-                                inflow += outflow;
-                            }
-                        }
+
+                    void leave_at_partition_output_cell(
+                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                    {
                     }
 
 

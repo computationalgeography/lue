@@ -144,7 +144,6 @@ set(names
     downstream
     downstream_distance
     focal_operation
-    inter_partition_stream
     locality_id
     mesh_grid
     maximum

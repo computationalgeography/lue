@@ -97,7 +97,6 @@ target_sources(lue_py_framework_routing_operation
         source/algorithm/routing_operation/downstream_distance.cpp
         source/algorithm/routing_operation/first_n.cpp
         source/algorithm/routing_operation/inflow_count3.cpp
-        source/algorithm/routing_operation/inter_partition_stream.cpp
         source/algorithm/routing_operation/kinematic_wave.cpp
         source/algorithm/routing_operation/upstream.cpp
 )

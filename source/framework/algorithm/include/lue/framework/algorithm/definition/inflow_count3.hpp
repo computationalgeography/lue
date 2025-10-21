@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
-#include "lue/framework/algorithm/detail/inflow_count3.hpp"
+#include "lue/framework/algorithm/detail/idx_converter.hpp"
 #include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
 #include "lue/framework/algorithm/inflow_count3.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
@@ -11,171 +11,40 @@
 namespace lue {
     namespace detail {
 
-        // Rules to convert 1D indices received on the various
-        // channels, to 2D cell indices:
-
-        // north
-        // - row = 0
-        // - get col from channel
-        // RowIdxConverter{0};
-
-        // south
-        // - row = extent0 - 1
-        // - get col from channel
-        // RowIdxConverter{extent0 - 1};
-
-        // The row is fixed, get the column from the channels
-        inline std::array<Index, 2> row_idx_converter(Index const row, Index const idx)
-        {
-            return std::array<Index, 2>{row, idx};
-        };
-
-        // west
-        // - col = 0
-        // - get row from channel
-        // ColIdxConverter{0};
-
-        // east
-        // - col = extent1 - 1
-        // - get row from channel
-        // ColIdxConverter{extent1 - 1};
-
-        // The col is fixed, get the row from the channels
-        inline std::array<Index, 2> col_idx_converter(Index const idx, Index const col)
-        {
-            return std::array<Index, 2>{idx, col};
-        };
-
-        // north west
-        // - row = 0
-        // - col = 0
-        // - get at most one 'sentinel' idx from channel
-        // CornerIdxConverter{0, 0};
-
-        // north east
-        // - row = 0
-        // - col = extent1 - 1
-        // - get at most one 'sentinel' idx from channel
-        // CornerIdxConverter{0, extent1 - 1};
-
-        // south east
-        // - row = extent0 - 1
-        // - col = extent1 - 1
-        // - get at most one 'sentinel' idx from channel
-        // CornerIdxConverter{extent0 - 1, extent1 - 1};
-
-        // south west
-        // - row = extent0 - 1
-        // - col = 0
-        // - get at most one 'sentinel' idx from channel
-        // CornerIdxConverter{extent0 - 1, 0};
-
-        // The row and col are fixed, discard the value from the channel
-        inline std::array<Index, 2> corner_idx_converter(Index const row, Index const col)
-        {
-            return std::array<Index, 2>{row, col};
-        };
-
-
-        class RowIdxConverter
+        template<Rank rank>
+        class InflowCountCommunicator: public Communicator<std::vector<Index>, rank>
         {
 
             public:
 
-                RowIdxConverter():
+                using Base = Communicator<std::vector<Index>, rank>;
 
-                    RowIdxConverter{0}
+
+                InflowCountCommunicator() = default;
+
+
+                InflowCountCommunicator(
+                    hpx::id_type const locality_id,
+                    std::string const& basename,
+                    lue::Shape<Count, rank> const& shape_in_partitions,
+                    lue::Indices<Index, rank> const& partition_idxs):
+
+                    Base{locality_id, basename, shape_in_partitions, partition_idxs}
 
                 {
-                }
-
-
-                RowIdxConverter(Index const row):
-
-                    _row{row}
-
-                {
-                }
-
-
-                std::array<Index, 2> operator()(Index const idx)
-                {
-                    return row_idx_converter(_row, idx);
                 }
 
 
             private:
 
-                Index _row;
-        };
+                friend class hpx::serialization::access;
 
 
-        class ColIdxConverter
-        {
-
-            public:
-
-                ColIdxConverter():
-
-                    ColIdxConverter{0}
-
+                template<typename Archive>
+                void serialize(Archive& archive, unsigned int const version)
                 {
+                    Base::serialize(archive, version);
                 }
-
-
-                ColIdxConverter(Index const col):
-
-                    _col{col}
-
-                {
-                }
-
-
-                std::array<Index, 2> operator()(Index const idx)
-                {
-                    return row_idx_converter(idx, _col);
-                }
-
-
-            private:
-
-                Index _col;
-        };
-
-
-        class CornerIdxConverter
-        {
-
-            public:
-
-                CornerIdxConverter():
-
-                    CornerIdxConverter{0, 0}
-
-                {
-                }
-
-
-                CornerIdxConverter(Index const row, Index const col):
-
-                    _row{row},
-                    _col{col}
-
-                {
-                }
-
-
-                std::array<Index, 2> operator()([[maybe_unused]] Index const idx)
-                {
-                    return row_idx_converter(_row, _col);
-                }
-
-
-            private:
-
-                Index _row;
-
-                Index _col;
         };
 
 
