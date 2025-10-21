@@ -13,7 +13,6 @@ namespace lue::framework {
     void bind_downstream_distance(pybind11::module& module);
     void bind_first_n(pybind11::module& module);
     void bind_inflow_count3(pybind11::module& module);
-    void bind_inter_partition_stream(pybind11::module& module);
     void bind_kinematic_wave(pybind11::module& module);
     void bind_upstream(pybind11::module& module);
 
@@ -30,7 +29,6 @@ namespace lue::framework {
         bind_downstream_distance(module);
         bind_first_n(module);
         bind_inflow_count3(module);
-        bind_inter_partition_stream(module);
         bind_kinematic_wave(module);
         bind_upstream(module);
     }

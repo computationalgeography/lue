@@ -78,8 +78,6 @@ target_sources(lue_framework_algorithm
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/export.hpp
-    PRIVATE
-        source/component/array_partition_io.cpp
 )
 
 target_link_libraries(lue_framework_algorithm

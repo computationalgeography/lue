@@ -1,8 +1,14 @@
 #pragma once
 #include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/detail/communicator.hpp"
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
+#include "lue/framework/algorithm/detail/idx_converter.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
+#include "lue/framework/algorithm/policy/detail/type_list.hpp"
+#include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
+#include "lue/framework/core/annotate.hpp"
+#include "lue/framework/core/component.hpp"
 #include "lue/framework/core/type_traits.hpp"
 #include "lue/framework.hpp"
 #include <concepts>
@@ -17,8 +23,63 @@
 // - It must implement the call operator(s) that eventually get called by accumulating_router. This operator
 //   must return results for the same number of values as the overall number of return types.
 
+/*
+    Core of the routing algorithm
+    Intra-partition stream cells
 
-// TODO: Refactor, document the accumulate process
+        Iterate over all ridge cells:
+        - accumulator.enter_intra_partition_stream
+            - -> Enter a path, current cell is a ridge cell
+            - cell_accumulator.enter_intra_partition_stream
+        - accumulate
+        - accumulator.leave_intra_partition_stream
+            - cell_accumulator.leave_intra_partition_stream
+
+    Inter-partition stream cells
+
+        Iterate over all partition input cells:
+        - Once material is received from a partition output cell of a neighbouring partition:
+            - accumulator.enter_inter_partition_stream
+                - cell_accumulator.enter_inter_partition_stream
+            - Decrement inflow count of current cell
+            - If inflow count == zero:
+                - accumulate
+                - accumulator.leave_inter_partition_stream
+                    - cell_accumulator.leave_inter_partition_stream
+
+    accumulate:
+    - while(true)
+        - -> About to leave the current cell. All material from upstream (if any) has been
+          accumulated in the cell already. We still need to add the external input.
+        - accumulator.enter_cell
+            - cell_accumulator.enter_cell
+        - Determine kind of downstream cell (sink, !within_partition, within_partition)
+            - sink:
+                - accumulator.leave_at_sink_cell
+                    - cell_accumulator.leave_at_sink_cell
+                - cell_class = AccumulationExitCellClass::sink
+                - break
+            - !within_partition:
+                - -> Current cell is partition output cell. This is the end of this stream in the
+                  current partition. Finish calculation and exit.
+                - accumulator.leave_at_partition_output_cell
+                    - cell_accumulator.leave_at_partition_output_cell
+                    - -> Remove the partition output cell from the collection. Once all output
+                        cells are solved / handle, the sending channel can be closed. This will
+                        then end the reading for loop on the other side of the channel.
+                    - Send accumulated material to neighbouring partition
+                    - Close sending channel if this was the last partition output cell to handle
+                - cell_class = AccumulationExitCellClass::partition_output
+                - break
+            (within_partition)
+            - accumulator.leave_cell
+                - cell_accumulator.leave_cell
+            - Decrement inflow count of downstream cell
+            - If inflow count downstream cell > 0:
+                - cell_class = AccumulationExitCellClass::junction
+                - break
+    - return indxs of cell at which accumulation stopped and the associated cell class
+*/
 
 
 namespace lue {
@@ -44,25 +105,25 @@ namespace lue {
     }
 
 
-    template<Arithmetic... Element>
-    auto tied_references(
-        std::tuple<hpx::future<ArrayPartitionData<Element, 2>>...>& results_partition_data_fs)
-        -> std::tuple<hpx::future<ArrayPartitionData<Element, 2>>&...>
-    {
-        return std::apply(
-            [](auto&... results_partition_data_fs) { return std::tie(results_partition_data_fs...); },
-            results_partition_data_fs);
-    }
-
-
     template<Arithmetic... Element, typename... Arguments>
-    auto tied_references2(
+    auto tied_references1(
         std::tuple<hpx::future<ArrayPartitionData<Element, 2>>...>& results_partition_data_fs,
         Arguments&... arguments) -> std::tuple<hpx::future<ArrayPartitionData<Element, 2>>&..., Arguments&...>
     {
         return std::apply(
-            [&arguments...](auto&... results_partition_data_fs)
+            [&arguments...](auto&... results_partition_data_fs) -> auto
             { return std::tie(results_partition_data_fs..., arguments...); },
+            results_partition_data_fs);
+    }
+
+
+    template<Arithmetic... Element>
+    auto tied_references2(
+        std::tuple<hpx::future<ArrayPartitionData<Element, 2>>...>& results_partition_data_fs)
+        -> std::tuple<hpx::future<ArrayPartitionData<Element, 2>>&...>
+    {
+        return std::apply(
+            [](auto&... results_partition_data_fs) -> auto { return std::tie(results_partition_data_fs...); },
             results_partition_data_fs);
     }
 
@@ -134,6 +195,507 @@ namespace lue {
 
     namespace detail {
 
+        enum class AccumulationExitCellClass : std::uint8_t {
+            sink,
+            partition_output,
+            junction,
+        };
+
+
+        inline auto destination_cell(
+            Count const extent0,
+            Count const extent1,
+            Index const idx0,
+            Index const idx1,
+            Index const offset0,
+            Index const offset1) -> std::tuple<accu::Direction, Index>
+        {
+            lue_hpx_assert((idx0 == 0 || idx0 == extent0 - 1) || (idx1 == 0 || idx1 == extent1 - 1));
+            lue_hpx_assert(offset0 >= -1 && offset0 <= 1);
+            lue_hpx_assert(offset1 >= -1 && offset1 <= 1);
+
+            // Which neighbouring partition to send a message to
+            accu::Direction direction{};
+
+            // Idx of cell in the neighbouring partition
+            Index idx{-1};
+
+            if (idx0 == 0)
+            {
+                // north border
+                if (idx1 == 0)
+                {
+                    // north-west source cell → determine destination
+                    if (offset0 >= 0)
+                    {
+                        lue_hpx_assert(offset1 == -1);
+                        direction = accu::Direction::west;
+                        idx = idx0 + offset0;
+                    }
+                    else if (offset1 >= 0)
+                    {
+                        lue_hpx_assert(offset0 == -1);
+                        direction = accu::Direction::north;
+                        idx = idx1 + offset1;
+                    }
+                    else
+                    {
+                        lue_hpx_assert(offset0 == -1);
+                        lue_hpx_assert(offset1 == -1);
+                        direction = accu::Direction::north_west;
+                        idx = -1;  // Whatever
+                    }
+                }
+                else if (idx1 == extent1 - 1)
+                {
+                    // north-east source cell → determine destination
+                    if (offset0 >= 0)
+                    {
+                        lue_hpx_assert(offset1 == 1);
+                        direction = accu::Direction::east;
+                        idx = idx0 + offset0;
+                    }
+                    else if (offset1 <= 0)
+                    {
+                        lue_hpx_assert(offset0 == -1);
+                        direction = accu::Direction::north;
+                        idx = idx1 + offset1;
+                    }
+                    else
+                    {
+                        lue_hpx_assert(offset0 == -1);
+                        lue_hpx_assert(offset1 == 1);
+                        direction = accu::Direction::north_east;
+                        idx = 0;  // Whatever
+                    }
+                }
+                else
+                {
+                    // north source cell → determine destination
+                    lue_hpx_assert(offset0 == -1);
+                    direction = accu::Direction::north;
+                    idx = idx1 + offset1;
+                }
+            }
+            else if (idx0 == extent0 - 1)
+            {
+                // south border
+                if (idx1 == 0)
+                {
+                    // south-west source cell → determine destination
+                    if (offset0 <= 0)
+                    {
+                        lue_hpx_assert(offset1 == -1);
+                        direction = accu::Direction::west;
+                        idx = idx0 + offset0;
+                    }
+                    else if (offset1 >= 0)
+                    {
+                        lue_hpx_assert(offset0 == 1);
+                        direction = accu::Direction::south;
+                        idx = idx1 + offset1;
+                    }
+                    else
+                    {
+                        lue_hpx_assert(offset0 == 1);
+                        lue_hpx_assert(offset1 == -1);
+                        direction = accu::Direction::south_west;
+                        idx = -1;  // Whatever
+                    }
+                }
+                else if (idx1 == extent1 - 1)
+                {
+                    // south-east source cell → determine destination
+                    if (offset0 <= 0)
+                    {
+                        lue_hpx_assert(offset1 == 1);
+                        direction = accu::Direction::east;
+                        idx = idx0 + offset0;
+                    }
+                    else if (offset1 <= 0)
+                    {
+                        lue_hpx_assert(offset0 == 1);
+                        direction = accu::Direction::south;
+                        idx = idx1 + offset1;
+                    }
+                    else
+                    {
+                        lue_hpx_assert(offset0 == 1);
+                        lue_hpx_assert(offset1 == 1);
+                        direction = accu::Direction::south_east;
+                        idx = -1;  // Whatever
+                    }
+                }
+                else
+                {
+                    // south source cell → determine destination
+                    lue_hpx_assert(offset0 == 1);
+                    direction = accu::Direction::south;
+                    idx = idx1 + offset1;
+                }
+            }
+            else if (idx1 == 0)
+            {
+                // west source cell → determine destination
+                lue_hpx_assert(offset1 == -1);
+                direction = accu::Direction::west;
+                idx = idx0 + offset0;
+            }
+            else if (idx1 == extent1 - 1)
+            {
+                // east source cell → determine destination
+                lue_hpx_assert(offset1 == 1);
+                direction = accu::Direction::east;
+                idx = idx0 + offset0;
+            }
+
+            return std::make_tuple(direction, idx);
+        }
+
+
+        template<
+            typename MaterialElement,
+            Rank rank>  // Remove parameter
+        class ChannelMaterial
+        {
+
+            public:
+
+                ChannelMaterial() = default;
+
+
+                ChannelMaterial(Index const& idx, MaterialElement const& value):
+
+                    _cell_idx{idx},
+                    _value{value}
+
+                {
+                }
+
+
+                [[nodiscard]] auto cell_idx() const -> Index const&
+                {
+                    return _cell_idx;
+                }
+
+
+                auto value() const -> MaterialElement const&
+                {
+                    return _value;
+                }
+
+
+            private:
+
+                friend class hpx::serialization::access;
+
+
+                template<typename Archive>
+                void serialize(Archive& archive, [[maybe_unused]] unsigned int const version)
+                {
+                    archive & _cell_idx & _value;
+                }
+
+
+                Index _cell_idx;
+
+                MaterialElement _value;
+        };
+
+
+        template<typename MaterialElement, Rank rank>
+        class MaterialCommunicator: public Communicator<ChannelMaterial<MaterialElement, rank>, rank>
+        {
+
+            public:
+
+                using Base = Communicator<ChannelMaterial<MaterialElement, rank>, rank>;
+
+
+                MaterialCommunicator() = default;
+
+
+                MaterialCommunicator(
+                    hpx::id_type const locality_id,
+                    std::string const& basename,
+                    lue::Shape<Count, rank> const& shape_in_partitions,
+                    lue::Indices<Index, rank> const& partition_idxs):
+
+                    Base{locality_id, basename, shape_in_partitions, partition_idxs}
+
+                {
+                }
+
+
+            private:
+
+                friend class hpx::serialization::access;
+
+
+                template<typename Archive>
+                void serialize(Archive& archive, unsigned int const version)
+                {
+                    Base::serialize(archive, version);
+                }
+        };
+
+
+        template<typename CellAccumulator, typename Communicator>
+        class Accumulator
+        {
+
+            public:
+
+                using MaterialElement = typename CellAccumulator::MaterialElement;
+
+
+                Accumulator(
+                    CellAccumulator&& cell_accumulator,
+                    Communicator& communicator,
+                    std::array<std::vector<std::array<Index, 2>>, 8>& output_cells_idxs):
+
+                    _cell_accumulator{std::forward<CellAccumulator>(cell_accumulator)},
+                    _communicator{communicator},
+                    _output_cells_idxs{output_cells_idxs}
+
+                {
+                }
+
+
+                void enter_intra_partition_stream(Index const idx0, Index const idx1)
+                {
+                    // What to do when we enter an intra-partition stream. The current cell is a ridge cell.
+                    _cell_accumulator.enter_intra_partition_stream(idx0, idx1);
+                }
+
+
+                void leave_intra_partition_stream(Index const ridge_idx0, Index const ridge_idx1)
+                {
+                    // What to do when we leave an intra-partition stream
+                    _cell_accumulator.leave_intra_partition_stream(ridge_idx0, ridge_idx1);
+                }
+
+
+                void enter_inter_partition_stream(
+                    MaterialElement const& value, Index const idx0_to, Index const idx1_to)
+                {
+                    // What to do when we enter an inter-partition stream. The current cell is a partition
+                    // input cell.
+                    _cell_accumulator.enter_inter_partition_stream(value, idx0_to, idx1_to);
+                }
+
+
+                void leave_inter_partition_stream(Index const ridge_idx0, Index const ridge_idx1)
+                {
+                    // What to do when we leave an inter-partition stream
+                    _cell_accumulator.leave_inter_partition_stream(ridge_idx0, ridge_idx1);
+                }
+
+
+                void enter_cell(Index const idx0, Index const idx1)
+                {
+                    // What to do when we enter a cell
+                    // We are entering a cell. Material from upstream is already present.
+                    _cell_accumulator.enter_cell(idx0, idx1);
+                }
+
+
+                void leave_cell(
+                    Index const idx0_from, Index const idx1_from, Index const idx0_to, Index const idx1_to)
+                {
+                    // What to do when we leave a cell
+                    // We are about the leave the current cell. This is the final step.
+                    _cell_accumulator.leave_cell(idx0_from, idx1_from, idx0_to, idx1_to);
+                }
+
+
+                void leave_at_sink_cell(Index const idx0, Index const idx1)
+                {
+                    // What to do when we leave at a sink
+                    _cell_accumulator.leave_at_sink_cell(idx0, idx1);
+                }
+
+
+                void leave_at_partition_output_cell(
+                    Count const extent0,
+                    Count const extent1,
+                    Index const idx0,
+                    Index const idx1,
+                    Index const offset0,
+                    Index const offset1)
+                {
+                    // What to do when we leave at a partition output cell
+                    _cell_accumulator.leave_at_partition_output_cell(idx0, idx1);
+
+                    // Remove the partition output cell from the collection. Once all output cells
+                    // are solved / handled, the sending channel can be closed. This will end
+                    // the reading for loop on the other side of the channel.
+                    auto [direction, idx] = destination_cell(extent0, extent1, idx0, idx1, offset0, offset1);
+
+                    auto& output_cells_idxs{_output_cells_idxs[direction]};
+                    auto iterator = std::find_if(
+                        output_cells_idxs.begin(),
+                        output_cells_idxs.end(),
+                        [idx0, idx1](std::array<Index, 2> const& cell_idxs2) -> auto
+                        { return idx0 == cell_idxs2[0] && idx1 == cell_idxs2[1]; });
+                    lue_hpx_assert(iterator != output_cells_idxs.end());
+                    output_cells_idxs.erase(iterator);
+
+                    // Send material to cell in neighbouring partition
+                    if (_communicator.has_neighbour(direction))
+                    {
+                        // We are not at the border of the array
+                        using Value = typename Communicator::Value;
+
+                        _communicator.send(direction, Value{idx, _cell_accumulator.outflow(idx0, idx1)});
+
+                        // The sending channel can be closed
+                        if (output_cells_idxs.empty())
+                        {
+                            _communicator.close(direction);
+                        }
+                    }
+                }
+
+
+                void mark_no_data(Index const idx0, Index const idx1)
+                {
+                    _cell_accumulator.mark_no_data(idx0, idx1);
+                }
+
+
+            private:
+
+                CellAccumulator _cell_accumulator;
+
+                Communicator& _communicator;
+
+                std::array<std::vector<std::array<Index, 2>>, 8>& _output_cells_idxs;
+        };
+
+
+        template<typename Accumulator, typename Index, typename FlowDirectionData, typename InflowCountData>
+        auto accumulate(
+            Accumulator& accumulator,
+            Index const ridge_idx0,
+            Index const ridge_idx1,
+            FlowDirectionData const& flow_direction_data,
+            InflowCountData& inflow_count_data) -> std::tuple<std::array<Index, 2>, AccumulationExitCellClass>
+        {
+            Index idx0{ridge_idx0};
+            Index idx1{ridge_idx1};
+            auto const [nr_elements0, nr_elements1] = flow_direction_data.shape();
+            Index offset0{};
+            Index offset1{};
+            bool is_within_partition{};
+            AccumulationExitCellClass cell_class{};
+
+            while (true)
+            {
+                lue_hpx_assert(inflow_count_data(idx0, idx1) == 0);
+
+                // We are about to leave the current cell. All material from
+                // upstream (if any) has been accumulated in the cell already.
+                // We still need to add the external input.
+                accumulator.enter_cell(idx0, idx1);
+
+                // Determine what to do next
+                is_within_partition = downstream_cell(
+                    flow_direction_data, nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
+
+                // First check conditions that will end the current stream ---------
+                if (offset0 == 0 && offset1 == 0)
+                {
+                    // Current cell is a sink. This is the end of this
+                    // stream.
+                    accumulator.leave_at_sink_cell(idx0, idx1);
+                    cell_class = AccumulationExitCellClass::sink;
+                    break;
+                }
+
+                // Downstream cell is pointed to by idx0 + offset0 and idx1 + offset1
+                if (!is_within_partition)
+                {
+                    // Current cell is partition output cell. This is the
+                    // end of this stream in the current partition. Finish
+                    // calculations an exit.
+                    accumulator.leave_at_partition_output_cell(
+                        nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
+                    cell_class = AccumulationExitCellClass::partition_output;
+                    break;
+                }
+
+                // Stream continues within this partition --------------------------
+
+                // Push material to the downstream cell
+                accumulator.leave_cell(idx0, idx1, idx0 + offset0, idx1 + offset1);
+
+                // Prepare for next iteration
+                idx0 += offset0;
+                idx1 += offset1;
+
+                // Update the inflow count of the downstream cell
+                lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
+                --inflow_count_data(idx0, idx1);
+
+                if (inflow_count_data(idx0, idx1) > 0)
+                {
+                    // There are other streams flowing into the new / downstream cell → stop
+                    cell_class = AccumulationExitCellClass::junction;
+                    break;
+                }
+            }
+
+            return std::make_tuple(std::array<Index, 2>{idx0, idx1}, cell_class);
+        }
+
+
+        template<typename MaterialElement, typename IdxConverter, typename Accumulate, Rank rank>
+        void monitor_material_inputs(
+            std::vector<std::array<Index, rank>>&& input_cells_idxs,
+            typename MaterialCommunicator<MaterialElement, rank>::Channel&& channel,
+            IdxConverter&& idx_to_idxs,
+            Accumulate accumulate)
+        {
+            AnnotateFunction annotation{"inter_partition_stream"};
+            lue_hpx_assert(channel);
+            lue_hpx_assert(!input_cells_idxs.empty());
+
+            // Whenever material arrives in the channel, call the
+            // accumulator to accumulate it through the partition
+
+            // The number of times material should arrive in the channel
+            // is equal to the number of input cells at the specific side
+            // of the partition.
+
+            for (auto const& material : channel)
+            {
+                lue_hpx_assert(!input_cells_idxs.empty());
+
+                auto const cell_idxs{idx_to_idxs(material.cell_idx())};
+
+                auto it = std::find_if(
+                    input_cells_idxs.begin(),
+                    input_cells_idxs.end(),
+                    [cell_idxs1 = cell_idxs](std::array<Index, rank> const& cell_idxs2) -> auto
+                    { return cell_idxs1 == cell_idxs2; });
+                lue_hpx_assert(it != input_cells_idxs.end());
+                input_cells_idxs.erase(it);
+
+                accumulate(cell_idxs, material.value());
+
+                if (input_cells_idxs.empty())
+                {
+                    // No material should be sent trough this channel
+                    // again. We don't need it. It would be a bug.
+                    break;
+                }
+            }
+
+            lue_hpx_assert(input_cells_idxs.empty());
+        }
+
+
         /*!
             @brief      Create communicators used to exchange information about inflow counts and accumulated
                         material between localities
@@ -171,8 +733,7 @@ namespace lue {
                 partitions.begin(),
                 partitions.end(),
                 [inflow_count_communicators = std::move(inflow_count_communicators),
-                 material_communicators =
-                     std::move(material_communicators)]([[maybe_unused]] auto&& partitions) mutable
+                 material_communicators = std::move(material_communicators)](auto&& partitions) mutable
                 {
                     auto f1{inflow_count_communicators.unregister()};
                     auto f2{material_communicators.unregister()};
@@ -226,7 +787,7 @@ namespace lue {
         */
         template<Arithmetic Element>
         auto pass_argument(Scalar<Element> const& scalar, [[maybe_unused]] Index const partition_idx)
-            -> Scalar<Element> const&
+            -> Scalar<Element>
         {
             return scalar;
         }
@@ -277,15 +838,14 @@ namespace lue {
 
         template<typename Policies, typename Functor, typename... Arguments>
         auto solve_intra_partition_stream_cells(
-            [[maybe_unused]] Policies const& policies,
+            Policies const& policies,
             [[maybe_unused]] Functor const& functor,
-            [[maybe_unused]] ArrayPartition<policy::InputElementT<Policies, 0>, 2> const&
-                flow_direction_partition,
-            [[maybe_unused]] Arguments const&... arguments,
-            [[maybe_unused]] typename Functor::InflowCountPartition const& inflow_count_partition,
-            [[maybe_unused]] MaterialCommunicator<MaterialT<Functor>, 2>& material_communicator,
-            [[maybe_unused]] hpx::future<std::array<typename Functor::CellsIdxs, nr_neighbours<2>()>>&&
-                output_cells_idxs_f) -> IntraPartitionStreamCellsResult<Functor>
+            ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
+            Arguments const&... arguments,
+            typename Functor::InflowCountPartition const& inflow_count_partition,
+            MaterialCommunicator<MaterialT<Functor>, 2>& material_communicator,
+            hpx::future<std::array<typename Functor::CellsIdxs, nr_neighbours<2>()>>&& output_cells_idxs_f)
+            -> IntraPartitionStreamCellsResult<Functor>
         {
             /*
                 - Once the flow direction partition is ready:
@@ -310,10 +870,10 @@ namespace lue {
 
                     [policies, material_communicator](
                         FlowDirectionPartition const& flow_direction_partition,
-                        [[maybe_unused]] Arguments const&... arguments,
+                        Arguments const&... arguments,
                         typename Functor::InflowCountPartition const& inflow_count_partition,
                         hpx::future<std::array<typename Functor::CellsIdxs, nr_neighbours<2>()>>&&
-                            output_cells_idxs_f) mutable
+                            output_cells_idxs_f) mutable -> auto
                     {
                         AnnotateFunction const annotation{
                             "accumulating_router: partition: intra_partition_stream"};
@@ -326,14 +886,14 @@ namespace lue {
                         InflowCountData const& inflow_count_data{inflow_count_partition_ptr->data()};
 
                         auto const& partition_shape{inflow_count_data.shape()};
-                        [[maybe_unused]] auto const [nr_elements0, nr_elements1] = partition_shape;
+                        auto const [nr_elements0, nr_elements1] = partition_shape;
 
                         // We need to copy inflow counts:
                         // - inflow counts are used to select ridge cells
                         // - downstream accumulation updates inflow counts
                         InflowCountData inflow_count_data_copy{deep_copy(inflow_count_data)};
 
-                        [[maybe_unused]] auto const& indp_flow_direction =
+                        auto const& indp_flow_direction =
                             std::get<0>(policies.inputs_policies()).input_no_data_policy();
 
                         auto output_cells_idxs{output_cells_idxs_f.get()};
@@ -350,7 +910,7 @@ namespace lue {
                             },
                             result_data)};
 
-                        Accumulator3 accumulator{
+                        Accumulator accumulator{
                             std::move(cell_accumulator), material_communicator, output_cells_idxs};
 
                         for (Index idx0 = 0; idx0 < nr_elements0; ++idx0)
@@ -363,9 +923,9 @@ namespace lue {
                                 }
                                 else if (inflow_count_data(idx0, idx1) == 0)
                                 {
-                                    accumulator.enter_at_ridge(idx0, idx1);
+                                    accumulator.enter_intra_partition_stream(idx0, idx1);
 
-                                    accumulate3(
+                                    accumulate(
                                         accumulator, idx0, idx1, flow_direction_data, inflow_count_data_copy);
                                     accumulator.leave_intra_partition_stream(idx0, idx1);
                                 }
@@ -419,7 +979,7 @@ namespace lue {
                         input_cells_idxs_f,
                     hpx::future<std::array<typename Functor::CellsIdxs, nr_neighbours<2>()>>&&
                         output_cells_idxs_f,
-                    std::tuple<hpx::future<ArrayPartitionData<Results, 2>>...>&& results) mutable
+                    std::tuple<hpx::future<ArrayPartitionData<Results, 2>>...>&& results) mutable -> auto
                 {
                     AnnotateFunction const annotation{
                         "accumulating_router: partition: inter_partition_stream"};
@@ -468,15 +1028,15 @@ namespace lue {
                         result_data);
 
                     auto output_cells_idxs{output_cells_idxs_f.get()};
-                    Accumulator3 accumulator{
+                    Accumulator accumulator{
                         std::move(cell_accumulator), material_communicator, output_cells_idxs};
 
                     hpx::mutex accu_mutex{};
                     using MaterialElement = policy::OutputElementT<Policies, 0>;
 
-                    auto accumulate =
-                        [&accu_mutex, &accumulator, &flow_direction_data, &inflow_count_data](
-                            std::array<Index, 2> const& cell_idxs, MaterialElement const value) mutable
+                    auto accumulate = [&accu_mutex, &accumulator, &flow_direction_data, &inflow_count_data](
+                                          std::array<Index, 2> const& cell_idxs,
+                                          MaterialElement const value) mutable -> auto
                     {
                         auto [idx0, idx1] = cell_idxs;
 
@@ -485,7 +1045,7 @@ namespace lue {
 
                         lue_hpx_assert(inflow_count_data(idx0, idx1) >= 1);
 
-                        accumulator.enter_at_partition_input(value, idx0, idx1);
+                        accumulator.enter_inter_partition_stream(value, idx0, idx1);
 
                         --inflow_count_data(idx0, idx1);
 
@@ -493,7 +1053,8 @@ namespace lue {
                         // input cell. Only start an accumulation if this is the last one.
                         if (inflow_count_data(idx0, idx1) == 0)
                         {
-                            accumulate3(accumulator, idx0, idx1, flow_direction_data, inflow_count_data);
+                            detail::accumulate(
+                                accumulator, idx0, idx1, flow_direction_data, inflow_count_data);
                             accumulator.leave_inter_partition_stream(idx0, idx1);
                         }
                     };
@@ -506,7 +1067,6 @@ namespace lue {
                     result_fs.reserve(nr_neighbours<2>());
 
                     auto const [extent0, extent1] = flow_direction_data.shape();
-
 
                     {
                         typename Functor::CellsIdxs cells_idxs{input_cells_idxs[accu::Direction::north]};
@@ -727,8 +1287,8 @@ namespace lue {
                     hpx::future<typename Functor::InflowCountData> inflow_count_data_f;
                     auto results_partition_data_fs = Functor::initialize_results_partition_data_fs();
 
-                    // TODO: Fix the tied_references variants
-                    tied_references2(results_partition_data_fs, inflow_count_data_f, output_cells_idxs_f) =
+                    // TODO: Merge the tied_references overloads
+                    tied_references1(results_partition_data_fs, inflow_count_data_f, output_cells_idxs_f) =
                         solve_intra_partition_stream_cells<Policies, Functor, Arguments...>(
                             policies,
                             functor,
@@ -737,7 +1297,7 @@ namespace lue {
                             inflow_count_partition,
                             material_communicator,
                             std::move(output_cells_idxs_f));
-                    tied_references(results_partition_data_fs) =
+                    tied_references2(results_partition_data_fs) =
                         solve_inter_partition_stream_cells<Policies, Functor, Arguments...>(
                             policies,
                             functor,
@@ -757,7 +1317,7 @@ namespace lue {
                             [](FlowDirectionPartition const& flow_direction_partition,
                                // hpx::future<hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2>
                                // > > >
-                               auto&& results_partition_data_fs_f)
+                               auto&& results_partition_data_fs_f) -> auto
                             {
                                 AnnotateFunction const annotation{
                                     "accumulate: partition: create_result_partitions"};
@@ -770,7 +1330,7 @@ namespace lue {
 
                                 // std::apply icw hpx::tuple doesn't work
                                 return std::apply(
-                                    [&partition_offset](auto&&... partition_data_fs)
+                                    [&partition_offset](auto&&... partition_data_fs) -> auto
                                     {
                                         return std::make_tuple(partition_data_to_partition(
                                             hpx::find_here(), partition_offset, partition_data_fs.get())...);
@@ -782,7 +1342,7 @@ namespace lue {
                             when_all(std::move(results_partition_data_fs))));
 
                     return std::apply(
-                        [](auto&&... partition_fs)
+                        [](auto&&... partition_fs) -> auto
                         { return std::make_tuple(partition_f_to_partition(std::move(partition_fs))...); },
                         results_partition_fs);
                 }
