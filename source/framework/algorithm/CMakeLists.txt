@@ -54,7 +54,7 @@
 # / Instantiate components -----------------------------------------------------
 
 
-add_library(lue_framework_algorithm SHARED)
+add_library(lue_framework_algorithm INTERFACE)
 add_library(lue::framework_algorithm ALIAS lue_framework_algorithm)
 
 set_target_properties(lue_framework_algorithm
@@ -62,11 +62,6 @@ set_target_properties(lue_framework_algorithm
         EXPORT_NAME framework_algorithm
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
-)
-
-generate_export_header(lue_framework_algorithm
-    EXPORT_FILE_NAME include/lue/framework/algorithm/export.hpp
-    EXPORT_MACRO_NAME LUE_FA_EXPORT
 )
 
 target_sources(lue_framework_algorithm
@@ -77,11 +72,10 @@ target_sources(lue_framework_algorithm
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/export.hpp
 )
 
 target_link_libraries(lue_framework_algorithm
-    PUBLIC
+    INTERFACE
         lue::framework_partitioned_array
         lue::framework_partitioned_route
         lue::framework_core
