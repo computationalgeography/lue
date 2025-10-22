@@ -419,10 +419,8 @@ def readmap(pathname):
 
 
 def report(expression, pathname):
-    # TODO Right? Otherwise, don't create spatials here. Use another format to write scalars to.
-    assert is_spatial(expression)
-    # if is_non_spatial(expression):
-    #     expression = non_spatial_to_spatial(fill_value=expression)
+    if is_non_spatial(expression):
+        expression = non_spatial_to_spatial(fill_value=expression)
 
     lfr.to_gdal(expression, pathname, configuration.pathname)
 
