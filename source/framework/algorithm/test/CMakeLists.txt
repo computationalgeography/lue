@@ -106,6 +106,7 @@ set(miscellaneous_operation_names
 set(routing_operation_names
     accu
     accu_fraction
+    accu_info
     accu_threshold
     decreasing_order
     # TODO https://github.com/computationalgeography/lue/issues/629
@@ -143,7 +144,6 @@ set(names
     downstream
     downstream_distance
     focal_operation
-    inter_partition_stream
     locality_id
     mesh_grid
     maximum

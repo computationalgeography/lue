@@ -6,28 +6,36 @@ from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 class KinematicWaveTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
-        array_shape = (60, 40)
-        direction = 3
-        alpha = 1.5
-        beta = 0.6
-        time_step_duration = 15
-
-        flow_direction = lfr.create_array(
-            array_shape, lfr.flow_direction_element_type, direction
-        )
+        flow_direction = self.array[lfr.flow_direction_element_type]
 
         for element_type in lfr.floating_point_element_types:
-            discharge = lfr.create_array(array_shape, element_type, 5)
-            inflow = lfr.create_array(array_shape, element_type, 1)
-            channel_length = lfr.create_array(array_shape, element_type, 10)
+            current_outflow = self.array[element_type]
+            inflow = self.array[element_type]
+            alpha_array = self.array[element_type]
+            alpha_scalar = self.scalar[element_type]
+            beta_array = self.array[element_type]
+            beta_scalar = self.scalar[element_type]
+            time_step_duration_scalar = self.scalar[element_type]
+            channel_length_array = self.array[element_type]
+            channel_length_scalar = self.scalar[element_type]
 
             self.assert_overload(
                 lfr.kinematic_wave,
                 flow_direction,
-                discharge,
+                current_outflow,
                 inflow,
-                alpha,
-                beta,
-                time_step_duration,
-                channel_length,
+                alpha_array,
+                beta_array,
+                time_step_duration_scalar,
+                channel_length_array,
+            )
+            self.assert_overload(
+                lfr.kinematic_wave,
+                flow_direction,
+                current_outflow,
+                inflow,
+                alpha_scalar,
+                beta_scalar,
+                time_step_duration_scalar,
+                channel_length_scalar,
             )

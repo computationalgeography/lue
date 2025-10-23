@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/definition/flow_accumulation3.hpp"
+#include "lue/framework/algorithm/definition/accumulating_router.hpp"
 
 
 using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;

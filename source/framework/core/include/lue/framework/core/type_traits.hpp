@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
 #include "lue/concept.hpp"
-#include <string>
 #include <type_traits>
 
 
@@ -27,7 +26,17 @@ namespace lue {
         };
 
 
-        template<typename T>
+        template<Arithmetic T>
+        class ArrayTraits<T>
+        {
+
+            public:
+
+                using Element = T;
+        };
+
+
+        template<Arithmetic T>
         class ArrayTraits<T*>
         {
 

@@ -61,6 +61,7 @@ parts:
           - file: reference/algorithm/index.md
             sections:
               - file: reference/algorithm/clump.md
+              - file: reference/algorithm/flow_accumulation.md
           - file: source/quality_assurance/doc/index.md
             sections:
               - file: source/quality_assurance/cxx/doc/index.md

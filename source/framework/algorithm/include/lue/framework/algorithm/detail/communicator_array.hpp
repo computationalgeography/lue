@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/detail/communicator.hpp"
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array.hpp"  // Localities
 
 
 namespace lue::detail {
@@ -10,14 +10,21 @@ namespace lue::detail {
     class CommunicatorArray: public Array<Communicator, rank>
     {
 
-        public:
-
             static_assert(rank == 2);
 
+        private:
+
             using Base = Array<Communicator, rank>;
+
+        public:
+
             using Shape = typename Base::Shape;
 
 
+            /*!
+                @brief      Construct an instance, creating a communicator per cell
+                @param      .
+            */
             CommunicatorArray(std::string const& basename, Localities<rank> const& localities):
 
                 Base{localities.shape()},
@@ -44,22 +51,22 @@ namespace lue::detail {
             // }
 
 
-            hpx::future<void> unregister()
+            auto unregister() -> hpx::future<void>
             {
                 auto [extent0, extent1] = this->shape();
 
-                std::vector<hpx::future<void>> fs{};
-                fs.reserve(nr_elements(this->shape()));
+                std::vector<hpx::future<void>> futures{};
+                futures.reserve(nr_elements(this->shape()));
 
                 for (Index idx0 = 0; idx0 < extent0; ++idx0)
                 {
                     for (Index idx1 = 0; idx1 < extent1; ++idx1)
                     {
-                        fs.push_back((*this)(idx0, idx1).unregister(_basename));
+                        futures.push_back((*this)(idx0, idx1).unregister(_basename));
                     }
                 }
 
-                return hpx::when_all(fs).then([]([[maybe_unused]] auto&& fs) { return; });
+                return hpx::when_all(futures).then([]([[maybe_unused]] auto&& futures) { return; });
             }
 
 
