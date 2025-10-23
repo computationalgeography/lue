@@ -497,13 +497,13 @@ namespace lue {
 
 
         template<typename Policies, typename FlowDirectionElement, Rank rank>
-        hpx::tuple<
-            hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
-            hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
-        connectivity(
+        auto connectivity(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank>&& communicator)
+            -> hpx::tuple<
+                hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
+                hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
 
@@ -577,11 +577,11 @@ namespace lue {
 
 
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-        ArrayPartition<CountElement, rank> inflow_count3(
+        auto inflow_count3(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>
-                input_cells_idxs_f)
+                input_cells_idxs_f) -> ArrayPartition<CountElement, rank>
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
             using CellsIdxs = std::vector<std::array<Index, rank>>;
@@ -616,14 +616,14 @@ namespace lue {
 
 
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-        hpx::tuple<
-            ArrayPartition<CountElement, rank>,
-            hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
-            hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
-        inflow_count3_action(
+        auto inflow_count3_action(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank> inflow_count_communicator)
+            -> hpx::tuple<
+                ArrayPartition<CountElement, rank>,
+                hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
+                hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
         {
             AnnotateFunction annotation{"inflow_count"};
 

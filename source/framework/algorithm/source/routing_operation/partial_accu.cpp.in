@@ -1,0 +1,17 @@
+#include "lue/framework/algorithm/default_policies/partial_accu.hpp"
+#include "lue/framework/algorithm/definition/partial_accu.hpp"
+#include "lue/framework/algorithm/value_policies/partial_accu.hpp"
+
+
+using lue_CellsIdxs = std::vector<lue::Index>;
+using ChannelMaterial_{{name}} = lue::detail::ChannelMaterial<{{Element}}, 2>;
+
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{name}});
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_PARTIAL_ACCU(ESC(policy::partial_accu::{{Policies}} < {{FlowDirectionElement}}, {{Element}} >));
+
+}  // namespace lue

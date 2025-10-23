@@ -14,6 +14,7 @@ namespace lue::framework {
     void bind_first_n(pybind11::module& module);
     void bind_inflow_count3(pybind11::module& module);
     void bind_kinematic_wave(pybind11::module& module);
+    void bind_partial_accu(pybind11::module& module);
     void bind_upstream(pybind11::module& module);
 
 
@@ -30,6 +31,7 @@ namespace lue::framework {
         bind_first_n(module);
         bind_inflow_count3(module);
         bind_kinematic_wave(module);
+        bind_partial_accu(module);
         bind_upstream(module);
     }
 

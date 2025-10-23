@@ -58,6 +58,12 @@ namespace lue {
 
 
     /*!
+        @brief      Cell with multiple upstream neighbours
+    */
+    static constexpr CellClass confluence_cell = 18;
+
+
+    /*!
         @brief      Classify cells according to their position within the @a flow_direction field and within
                     array partitions
         @return     Array with for each valid input cell a class of type CellClass

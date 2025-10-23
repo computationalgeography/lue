@@ -1661,6 +1661,19 @@ block()
                     '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
+
+            # Instantiate partial_accu
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partial_accu-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partial_accu.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
         endforeach()
     endforeach()
 
