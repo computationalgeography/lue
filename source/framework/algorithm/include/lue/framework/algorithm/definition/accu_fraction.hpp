@@ -171,7 +171,8 @@ namespace lue {
                         // The results for the upstream cell are ready. Use
                         // its outflow as inflow for the downstream cell.
                         MaterialElement const& outflow{_outflow(idx0_from, idx1_from)};
-                        MaterialElement const& upstream_remainder{_remainder(idx0_from, idx1_from)};
+                        [[maybe_unused]] MaterialElement const& upstream_remainder{
+                            _remainder(idx0_from, idx1_from)};
 
                         MaterialElement& inflow{_outflow(idx0_to, idx1_to)};
                         MaterialElement& remainder{_remainder(idx0_to, idx1_to)};
@@ -199,13 +200,19 @@ namespace lue {
                     }
 
 
-                    void leave_at_sink_cell(
+                    void stop_at_sink_cell(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
                     }
 
 
-                    void leave_at_partition_output_cell(
+                    void stop_at_confluence_cell(
+                        [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                    {
+                    }
+
+
+                    void stop_at_partition_output_cell(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
                     }
@@ -262,6 +269,18 @@ namespace lue {
 
             using InterPartitionStreamCellsResult =
                 std::tuple<hpx::future<MaterialData>, hpx::future<MaterialData>>;
+
+            template<typename Material, typename Fraction>
+            auto cell_accumulator(
+                Policies const& policies,
+                Material const& external_inflow,
+                Fraction const& fraction,
+                MaterialData& outflow,
+                MaterialData& remainder) const -> CellAccumulator<Material, Fraction>
+            {
+                return CellAccumulator<Material, Fraction>{
+                    policies, external_inflow, fraction, outflow, remainder};
+            }
     };
 
 

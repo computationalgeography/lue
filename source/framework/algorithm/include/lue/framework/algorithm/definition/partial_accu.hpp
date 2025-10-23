@@ -1,15 +1,18 @@
 #pragma once
-#include "lue/framework/algorithm/accu.hpp"
 #include "lue/framework/algorithm/definition/accumulating_router.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
+#include "lue/framework/algorithm/partial_accu.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/macro.hpp"
+
+
+// TODO: Get rid of inflow argument
 
 
 namespace lue {
 
     template<typename Policies>
-    class Accu:
+    class PartialAccu:
         public AccumulatingRouterFunctor<
             policy::detail::TypeList<policy::InputElementT<Policies, 1>>,
             policy::detail::TypeList<policy::OutputElementT<Policies, 0>>>
@@ -46,14 +49,20 @@ namespace lue {
 
 
                     CellAccumulator(
-                        Policies const& policies, Material const& external_inflow, MaterialData& outflow):
+                        Policies const& policies,
+                        Material const& external_inflow,
+                        MaterialData& outflow,
+                        Count const nr_steps):
 
                         _dp{policies.domain_policy()},
                         _indp_inflow{std::get<1>(policies.inputs_policies()).input_no_data_policy()},
                         _ondp_outflow{std::get<0>(policies.outputs_policies()).output_no_data_policy()},
 
                         _external_inflow{external_inflow},
-                        _outflow{outflow}
+                        _outflow{outflow},
+
+                        _nr_steps{std::max<Count>(nr_steps, 0)},
+                        _step{0}
 
                     {
                     }
@@ -62,12 +71,16 @@ namespace lue {
                     void enter_intra_partition_stream(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
+                        // All intra-partition stream cells will be filled with this one as they are all
+                        // solved in the first phase
+                        _outflow(idx0, idx1) = _step;
                     }
 
 
                     void leave_intra_partition_stream(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
+                        ++_step;
                     }
 
 
@@ -85,9 +98,14 @@ namespace lue {
                             }
                             else
                             {
-                                // Just add the outflow from upstream to
-                                // the inflow of the downstream cell
-                                inflow += outflow;
+                                // Multiple upstream streams can join at this cell. Pick the max step.
+                                inflow = std::max(inflow, outflow);
+                            }
+
+                            if (inflow > _nr_steps)
+                            {
+                                // Stop accumulating
+                                _ondp_outflow.mark_no_data(inflow);
                             }
                         }
                     }
@@ -96,30 +114,18 @@ namespace lue {
                     void leave_inter_partition_stream(
                         [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                     {
-                    }
-
-
-                    void enter_cell(Index const idx0, Index const idx1)
-                    {
-                        MaterialElement const& external_inflow{
-                            detail::to_value(_external_inflow, idx0, idx1)};
-
                         MaterialElement& outflow{_outflow(idx0, idx1)};
 
                         if (!_ondp_outflow.is_no_data(outflow))
                         {
-                            if (_indp_inflow.is_no_data(external_inflow) ||
-                                !_dp.within_domain(external_inflow))
-                            {
-                                _ondp_outflow.mark_no_data(outflow);
-                            }
-                            else
-                            {
-                                // Now we know the final, total amount
-                                // of inflow that enters this cell
-                                outflow += external_inflow;
-                            }
+                            ++_outflow(idx0, idx1);
                         }
+                    }
+
+
+                    void enter_cell([[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                    {
+                        // TODO: Doc this: this function handles arguments (e.g. external inflow)
                     }
 
 
@@ -147,8 +153,16 @@ namespace lue {
 
                                 // Just add the outflow from upstream to
                                 // the inflow of the downstream cell
-                                inflow += outflow;
+                                // inflow += outflow;
+
+                                inflow = outflow;
                             }
+                        }
+
+                        if (inflow > _nr_steps)
+                        {
+                            // Stop accumulating
+                            _ondp_outflow.mark_no_data(inflow);
                         }
                     }
 
@@ -194,10 +208,14 @@ namespace lue {
                     Material const _external_inflow;  // External inflow
 
                     MaterialData& _outflow;  // Upstream inflow, outflow
+
+                    Count const _nr_steps;
+
+                    Count _step;
             };
 
 
-            static constexpr char const* name{"accu"};
+            static constexpr char const* name{"partial_accu"};
 
             using Material = policy::InputElementT<Policies, 1>;
 
@@ -213,52 +231,57 @@ namespace lue {
             using InterPartitionStreamCellsResult = std::tuple<hpx::future<MaterialData>>;
 
 
-            template<typename Material>
-            auto cell_accumulator(
-                Policies const& policies, Material const& external_inflow, MaterialData& outflow) const
-                -> CellAccumulator<Material>
+            PartialAccu() = default;
+
+            PartialAccu(Count const nr_steps):
+
+                _nr_steps{std::max<Count>(nr_steps, 0)}
+
             {
-                return CellAccumulator<Material>{policies, external_inflow, outflow};
             }
+
+
+            template<typename Material>
+            CellAccumulator<Material> cell_accumulator(
+                Policies const& policies, Material const& external_inflow, MaterialData& outflow) const
+            {
+                return CellAccumulator<Material>{policies, external_inflow, outflow, _nr_steps};
+            }
+
+        private:
+
+            friend class hpx::serialization::access;
+
+            template<typename Archive>
+            void serialize(Archive& archive, [[maybe_unused]] unsigned version)
+            {
+                // clang-format off
+                archive & _nr_steps;
+                // clang-format on
+            }
+
+            Count _nr_steps;
     };
 
 
     template<typename Policies>
-    auto accu(
+    auto partial_accu(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
-        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& inflow)
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
+        Scalar<policy::InputElementT<Policies, 1>> const& inflow,
+        Count const nr_steps) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
-        detail::verify_compatible(flow_direction, inflow);
-
-        return std::get<0>(accumulating_router(policies, Accu<Policies>{}, flow_direction, inflow));
-    }
-
-
-    template<typename Policies>
-    auto accu(
-        Policies const& policies,
-        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
-        Scalar<policy::InputElementT<Policies, 1>> const& inflow)
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
-    {
-        return std::get<0>(accumulating_router(policies, Accu<Policies>{}, flow_direction, inflow));
+        return std::get<0>(
+            accumulating_router(policies, PartialAccu<Policies>{nr_steps}, flow_direction, inflow));
     }
 
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_ACCU(Policies)                                                                       \
+#define LUE_INSTANTIATE_PARTIAL_ACCU(Policies)                                                               \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu<ArgumentType<void(Policies)>>(                           \
+    template LUE_ROUTING_OPERATION_EXPORT auto partial_accu<ArgumentType<void(Policies)>>(                   \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
-        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&)                                      \
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;                                         \
-                                                                                                             \
-    template LUE_ROUTING_OPERATION_EXPORT auto accu<ArgumentType<void(Policies)>>(                           \
-        ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
-        Scalar<policy::InputElementT<Policies, 1>> const&)                                                   \
-        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
+        Scalar<policy::InputElementT<Policies, 1>> const&,                                                   \
+        Count) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

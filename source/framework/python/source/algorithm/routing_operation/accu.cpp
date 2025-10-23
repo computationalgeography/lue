@@ -22,21 +22,21 @@ namespace lue::framework {
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           PartitionedArray<FloatingPointElement, rank> const& inflow)
+                           PartitionedArray<FloatingPointElement, rank> const& inflow) -> auto
                         { return value_policies::accu(flow_direction, inflow); },
                         "flow_direction"_a,
                         "inflow"_a);
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           Scalar<FloatingPointElement> const& inflow)
+                           Scalar<FloatingPointElement> const& inflow) -> auto
                         { return value_policies::accu(flow_direction, inflow); },
                         "flow_direction"_a,
                         "inflow"_a);
                     module.def(
                         "accu",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           FloatingPointElement const& inflow)
+                           FloatingPointElement const& inflow) -> auto
                         { return value_policies::accu(flow_direction, lue::Scalar{inflow}); },
                         "flow_direction"_a,
                         "inflow"_a);

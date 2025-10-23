@@ -115,13 +115,19 @@ namespace lue {
                     }
 
 
-                    void leave_at_sink_cell(Index const idx0, Index const idx1)
+                    void stop_at_sink_cell(Index const idx0, Index const idx1)
                     {
                         _cell_class_data(idx0, idx1) = sink_cell;
                     }
 
 
-                    void leave_at_partition_output_cell(Index const idx0, Index const idx1)
+                    void stop_at_confluence_cell(Index const idx0, Index const idx1)
+                    {
+                        _cell_class_data(idx0, idx1) = confluence_cell;
+                    }
+
+
+                    void stop_at_partition_output_cell(Index const idx0, Index const idx1)
                     {
                         _cell_class_data(idx0, idx1) = partition_output_cell;
                     }
@@ -162,6 +168,13 @@ namespace lue {
                 hpx::future<std::array<typename Base::CellsIdxs, detail::nr_neighbours<2>()>>>;
 
             using InterPartitionStreamCellsResult = std::tuple<hpx::future<MaterialData>>;
+
+            template<typename... Arguments>
+            auto cell_accumulator(Policies const& policies, DataT<PartitionedArray<CellClass, 2>>& cell_class)
+                const -> CellAccumulator<Arguments...>
+            {
+                return CellAccumulator<Arguments...>{policies, cell_class};
+            }
     };
 
 

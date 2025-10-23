@@ -23,64 +23,6 @@
 // - It must implement the call operator(s) that eventually get called by accumulating_router. This operator
 //   must return results for the same number of values as the overall number of return types.
 
-/*
-    Core of the routing algorithm
-    Intra-partition stream cells
-
-        Iterate over all ridge cells:
-        - accumulator.enter_intra_partition_stream
-            - -> Enter a path, current cell is a ridge cell
-            - cell_accumulator.enter_intra_partition_stream
-        - accumulate
-        - accumulator.leave_intra_partition_stream
-            - cell_accumulator.leave_intra_partition_stream
-
-    Inter-partition stream cells
-
-        Iterate over all partition input cells:
-        - Once material is received from a partition output cell of a neighbouring partition:
-            - accumulator.enter_inter_partition_stream
-                - cell_accumulator.enter_inter_partition_stream
-            - Decrement inflow count of current cell
-            - If inflow count == zero:
-                - accumulate
-                - accumulator.leave_inter_partition_stream
-                    - cell_accumulator.leave_inter_partition_stream
-
-    accumulate:
-    - while(true)
-        - -> About to leave the current cell. All material from upstream (if any) has been
-          accumulated in the cell already. We still need to add the external input.
-        - accumulator.enter_cell
-            - cell_accumulator.enter_cell
-        - Determine kind of downstream cell (sink, !within_partition, within_partition)
-            - sink:
-                - accumulator.leave_at_sink_cell
-                    - cell_accumulator.leave_at_sink_cell
-                - cell_class = AccumulationExitCellClass::sink
-                - break
-            - !within_partition:
-                - -> Current cell is partition output cell. This is the end of this stream in the
-                  current partition. Finish calculation and exit.
-                - accumulator.leave_at_partition_output_cell
-                    - cell_accumulator.leave_at_partition_output_cell
-                    - -> Remove the partition output cell from the collection. Once all output
-                        cells are solved / handle, the sending channel can be closed. This will
-                        then end the reading for loop on the other side of the channel.
-                    - Send accumulated material to neighbouring partition
-                    - Close sending channel if this was the last partition output cell to handle
-                - cell_class = AccumulationExitCellClass::partition_output
-                - break
-            (within_partition)
-            - accumulator.leave_cell
-                - cell_accumulator.leave_cell
-            - Decrement inflow count of downstream cell
-            - If inflow count downstream cell > 0:
-                - cell_class = AccumulationExitCellClass::junction
-                - break
-    - return indxs of cell at which accumulation stopped and the associated cell class
-*/
-
 
 namespace lue {
 
@@ -198,7 +140,7 @@ namespace lue {
         enum class AccumulationExitCellClass : std::uint8_t {
             sink,
             partition_output,
-            junction,
+            confluence,
         };
 
 
@@ -509,14 +451,21 @@ namespace lue {
                 }
 
 
-                void leave_at_sink_cell(Index const idx0, Index const idx1)
+                void stop_at_sink_cell(Index const idx0, Index const idx1)
                 {
                     // What to do when we leave at a sink
-                    _cell_accumulator.leave_at_sink_cell(idx0, idx1);
+                    _cell_accumulator.stop_at_sink_cell(idx0, idx1);
                 }
 
 
-                void leave_at_partition_output_cell(
+                void stop_at_confluence_cell(Index const idx0, Index const idx1)
+                {
+                    // What to do when we leave at a confluence
+                    _cell_accumulator.stop_at_confluence_cell(idx0, idx1);
+                }
+
+
+                void stop_at_partition_output_cell(
                     Count const extent0,
                     Count const extent1,
                     Index const idx0,
@@ -525,7 +474,7 @@ namespace lue {
                     Index const offset1)
                 {
                     // What to do when we leave at a partition output cell
-                    _cell_accumulator.leave_at_partition_output_cell(idx0, idx1);
+                    _cell_accumulator.stop_at_partition_output_cell(idx0, idx1);
 
                     // Remove the partition output cell from the collection. Once all output cells
                     // are solved / handled, the sending channel can be closed. This will end
@@ -608,7 +557,7 @@ namespace lue {
                 {
                     // Current cell is a sink. This is the end of this
                     // stream.
-                    accumulator.leave_at_sink_cell(idx0, idx1);
+                    accumulator.stop_at_sink_cell(idx0, idx1);
                     cell_class = AccumulationExitCellClass::sink;
                     break;
                 }
@@ -619,7 +568,7 @@ namespace lue {
                     // Current cell is partition output cell. This is the
                     // end of this stream in the current partition. Finish
                     // calculations an exit.
-                    accumulator.leave_at_partition_output_cell(
+                    accumulator.stop_at_partition_output_cell(
                         nr_elements0, nr_elements1, idx0, idx1, offset0, offset1);
                     cell_class = AccumulationExitCellClass::partition_output;
                     break;
@@ -641,7 +590,8 @@ namespace lue {
                 if (inflow_count_data(idx0, idx1) > 0)
                 {
                     // There are other streams flowing into the new / downstream cell → stop
-                    cell_class = AccumulationExitCellClass::junction;
+                    accumulator.stop_at_confluence_cell(idx0, idx1);
+                    cell_class = AccumulationExitCellClass::confluence;
                     break;
                 }
             }
@@ -839,7 +789,7 @@ namespace lue {
         template<typename Policies, typename Functor, typename... Arguments>
         auto solve_intra_partition_stream_cells(
             Policies const& policies,
-            [[maybe_unused]] Functor const& functor,
+            Functor functor,
             ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
             Arguments const&... arguments,
             typename Functor::InflowCountPartition const& inflow_count_partition,
@@ -868,7 +818,7 @@ namespace lue {
                 hpx::dataflow(
                     hpx::launch::async,
 
-                    [policies, material_communicator](
+                    [policies, functor = std::move(functor), material_communicator](
                         FlowDirectionPartition const& flow_direction_partition,
                         Arguments const&... arguments,
                         typename Functor::InflowCountPartition const& inflow_count_partition,
@@ -905,8 +855,8 @@ namespace lue {
                             // MSVC doesn't like this: [&policies, &arguments...](auto&... result_data)
                             [&](auto&... result_data) -> auto
                             {
-                                return typename Functor::template CellAccumulator<decltype(get_data(
-                                    arguments))...>{policies, get_data(arguments)..., result_data...};
+                                return functor.template cell_accumulator<decltype(get_data(arguments))...>(
+                                    policies, get_data(arguments)..., result_data...);
                             },
                             result_data)};
 
@@ -924,7 +874,6 @@ namespace lue {
                                 else if (inflow_count_data(idx0, idx1) == 0)
                                 {
                                     accumulator.enter_intra_partition_stream(idx0, idx1);
-
                                     accumulate(
                                         accumulator, idx0, idx1, flow_direction_data, inflow_count_data_copy);
                                     accumulator.leave_intra_partition_stream(idx0, idx1);
@@ -953,7 +902,7 @@ namespace lue {
         template<typename Policies, typename Functor, typename... Arguments, typename... Results>
         auto solve_inter_partition_stream_cells(
             Policies const& policies,
-            [[maybe_unused]] Functor const& functor,
+            Functor functor,
             ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
             Arguments const&... arguments,
             hpx::future<typename Functor::InflowCountData>&& inflow_count_data_f,
@@ -971,7 +920,9 @@ namespace lue {
             auto result = hpx::dataflow(
                 hpx::launch::async,
 
-                [policies, material_communicator = std::move(material_communicator)](
+                [policies,
+                 functor = std::move(functor),
+                 material_communicator = std::move(material_communicator)](
                     FlowDirectionPartition const& flow_direction_partition,
                     Arguments const&... arguments,
                     hpx::future<InflowCountData>&& inflow_count_data_f,
@@ -1021,9 +972,8 @@ namespace lue {
                         // MSVC doesn't like this: [&policies, &arguments...](auto&... result_data)
                         [&](auto&... result_data) -> auto
                         {
-                            return
-                                typename Functor::template CellAccumulator<decltype(get_data(arguments))...>{
-                                    policies, get_data(arguments)..., result_data...};
+                            return functor.template cell_accumulator<decltype(get_data(arguments))...>(
+                                policies, get_data(arguments)..., result_data...);
                         },
                         result_data);
 
@@ -1270,7 +1220,7 @@ namespace lue {
 
                 static auto accumulate_partition(
                     Policies const& policies,
-                    Functor const& functor,
+                    Functor functor,
                     ArrayPartition<policy::InputElementT<Policies, 0>, 2> const& flow_direction_partition,
                     Arguments const&... arguments,
                     InflowCountCommunicator<2> inflow_count_communicator,
@@ -1300,7 +1250,7 @@ namespace lue {
                     tied_references2(results_partition_data_fs) =
                         solve_inter_partition_stream_cells<Policies, Functor, Arguments...>(
                             policies,
-                            functor,
+                            std::move(functor),
                             flow_direction_partition,
                             arguments...,
                             std::move(inflow_count_data_f),

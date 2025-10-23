@@ -485,13 +485,19 @@ namespace lue {
                         }
 
 
-                        void leave_at_sink_cell(
+                        void stop_at_sink_cell(
                             [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                         {
                         }
 
 
-                        void leave_at_partition_output_cell(
+                        void stop_at_confluence_cell(
+                            [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
+                        {
+                        }
+
+
+                        void stop_at_partition_output_cell(
                             [[maybe_unused]] Index const idx0, [[maybe_unused]] Index const idx1)
                         {
                         }
@@ -557,6 +563,41 @@ namespace lue {
                     hpx::future<std::array<typename Base::CellsIdxs, nr_neighbours<2>()>>>;
 
                 using InterPartitionStreamCellsResult = std::tuple<hpx::future<MaterialData>>;
+
+
+                template<
+                    typename CurrentOutflow,
+                    typename Inflow,
+                    typename Alpha,
+                    typename Beta,
+                    typename TimeStepDuration,
+                    typename ChannelLength>
+                auto cell_accumulator(
+                    Policies const& policies,
+                    CurrentOutflow const& current_outflow,
+                    Inflow const& inflow,
+                    Alpha const& alpha,
+                    Beta const& beta,
+                    TimeStepDuration const& time_step_duration,
+                    ChannelLength const& channel_length,
+                    MaterialData& outflow) const
+                {
+                    return CellAccumulator<
+                        CurrentOutflow,
+                        Inflow,
+                        Alpha,
+                        Beta,
+                        TimeStepDuration,
+                        ChannelLength>{
+                        policies,
+                        current_outflow,
+                        inflow,
+                        alpha,
+                        beta,
+                        time_step_duration,
+                        channel_length,
+                        outflow};
+                }
         };
 
     }  // namespace detail
