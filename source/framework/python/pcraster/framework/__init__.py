@@ -8,7 +8,8 @@ See the `PCRaster Python Modelling Framework documentation`_ for more informatio
 """
 
 import os.path
-import re
+import pathlib
+from typing import Union
 
 import lue.framework as lfr
 
@@ -323,50 +324,36 @@ class FrameworkError(Exception):
         return self._msg
 
 
-def generateNameT(name, time):
+def generateNameT(name: Union[str, os.PathLike[str]], timestep: int) -> str:
     """
     Return a filename based on the name and time step passed in.
 
-    The resulting name obeys the 8.3 DOS style format. The time step
-    will be added to the end of the filename and be prepended by 0's if
-    needed.
-
     The time step normally ranges from [1, nrTimeSteps].
-    The length of the name should be max 8 characters to leave room for
-    the time step.
 
     The name passed in may contain a directory name.
 
     See also: generateNameS(), generateNameST()
     """
-    head, tail = os.path.split(name)
+    path = pathlib.Path(name)
 
-    if re.search(r"\.", tail):
-        msg = "File extension given in '" + name + "' not allowed"
-        raise FrameworkError(msg)
+    if len(str(name)) == 0:
+        raise RuntimeError("No filename specified")
 
-    if len(tail) == 0:
-        msg = "No filename specified"
-        raise FrameworkError(msg)
+    if timestep < 1:
+        msg = f"Timestep ('{timestep}') must be larger than 0"
+        raise RuntimeError(msg)
 
-    if len(tail) > 8:
-        msg = "Filename '" + name + "' must be shorter than 8 characters"
-        raise FrameworkError(msg)
+    parent = path.parent
+    filename = path.name
+    suffix = path.suffix
 
-    if time < 0:
-        msg = "Timestep must be larger than 0"
-        raise FrameworkError(msg)
+    if suffix != "":
+        msg = f"File extension given in '{filename}' not allowed"
+        raise RuntimeError(msg)
 
-    nr = "%d" % (time)
+    filename = f"{filename}_{timestep}.tif"
 
-    space = 11 - (len(tail) + len(nr))
-    assert space >= 0
-
-    result = "%s%s%s" % (tail, space * "0", nr)
-    result = "%s.%s" % (result[:8], result[8:])
-    assert len(result) == 12
-
-    return os.path.join(head, result)
+    return f"{pathlib.Path(parent, filename)}"
 
 
 def generateNameS(name, sample):
