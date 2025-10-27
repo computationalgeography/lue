@@ -324,7 +324,7 @@ class FrameworkError(Exception):
         return self._msg
 
 
-def generateNameT(name: Union[str, bytes, os.PathLike], timestep: int) -> str:
+def generateNameT(name: Union[str, os.PathLike[str]], timestep: int) -> str:
     """
     Return a filename based on the name and time step passed in.
 
@@ -336,7 +336,7 @@ def generateNameT(name: Union[str, bytes, os.PathLike], timestep: int) -> str:
     """
     path = pathlib.Path(name)
 
-    if len(name) == 0:
+    if len(str(name)) == 0:
         raise RuntimeError("No filename specified")
 
     if timestep < 1:
