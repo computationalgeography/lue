@@ -51,7 +51,6 @@ set(local_operation_names
     acos
     add
     array_like
-    array_partition_id
     asin
     atan
     atan2
@@ -69,7 +68,6 @@ set(local_operation_names
     floor
     greater_than
     greater_than_equal_to
-    iterate_per_element
     less_than
     less_than_equal_to
     log
@@ -92,6 +90,10 @@ set(local_operation_names
     valid
     where
 )
+list(APPEND local_operation_names
+    array_partition_id
+    iterate_per_element
+)
 
 set(global_operation_names
     unique
@@ -106,14 +108,18 @@ set(miscellaneous_operation_names
 set(routing_operation_names
     accu
     accu_fraction
-    accu_info
     accu_threshold
     decreasing_order
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
-    inflow_count
     kinematic_wave
 )
+if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+    list(APPEND routing_operation_names
+        accu_info
+        inflow_count
+    )
+endif()
 
 set(zonal_operation_names
     clump
@@ -144,19 +150,23 @@ set(names
     downstream
     downstream_distance
     focal_operation
-    locality_id
     mesh_grid
     maximum
     minimum
     none
-    partition_count_unique
     range
     scalar
     sum
-    timestamp
     upstream
     verify_compatible
 )
+if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+    list(APPEND names
+        locality_id
+        partition_count_unique
+        timestamp
+    )
+endif()
 
 foreach(name ${names})
     set(module_name ${name}_test)

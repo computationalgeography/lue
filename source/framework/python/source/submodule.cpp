@@ -78,9 +78,11 @@ namespace lue::framework {
     void bind_scalar(pybind11::module& module);
     void bind_serial_route(pybind11::module& module);
 
+#ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
     void bind_array_partition_id(pybind11::module& module);
     void bind_locality_id(pybind11::module& module);
     void bind_timestamp(pybind11::module& module);
+#endif
 
     void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
@@ -131,6 +133,8 @@ namespace lue::framework {
         submodule.attr("index_element_type") = type_of<IndexElement>();
         submodule.attr("flow_direction_element_type") = type_of<FlowDirectionElement>();
 
+        submodule.attr("with_development_operations") = BuildOptions::framework_with_development_operations;
+
         // Wrap high-level data structures
         bind_scalar(submodule);
         bind_partitioned_array(submodule);
@@ -148,6 +152,7 @@ namespace lue::framework {
         bind_read_array(submodule);
         bind_write_array(submodule);
 
+#ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
         bind_array_partition_id(submodule);
 
         if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
@@ -159,6 +164,7 @@ namespace lue::framework {
         {
             bind_timestamp(submodule);
         }
+#endif
 
         bind_model(submodule);
         bind_progressor(submodule);

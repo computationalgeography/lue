@@ -1601,19 +1601,21 @@ set(offset "source/routing_operation")
 block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
 
-        # Instantiate accu_info
-        string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info-${Policies}.cpp")
+        if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+            # Instantiate accu_info
+            string(REPLACE "::" "_" name ${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT})
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_info-${Policies}.cpp")
 
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-                '{"name:":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_info.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"name:":"${name}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endif()
     endforeach()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
@@ -1662,18 +1664,20 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            # Instantiate partial_accu
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partial_accu-${Policies}_${element}.cpp")
+            if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+                # Instantiate partial_accu
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partial_accu-${Policies}_${element}.cpp")
 
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partial_accu.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partial_accu.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+            endif()
         endforeach()
     endforeach()
 
@@ -1887,20 +1891,22 @@ block()
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         math(EXPR count "${count} + 1")
 
-        # Instantiate inflow_count3
-        set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count3-${count}.cpp")
+        if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+            # Instantiate inflow_count3
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count3-${count}.cpp")
 
-        # We're using the boolean element type for the counts, assuming the boolean element type is a small
-        # integral capable of representing small numbers.
-        generate_template_instantiation(
-            INPUT_PATHNAME
-                "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count3.cpp.in"
-            OUTPUT_PATHNAME
-                "${output_pathname}"
-            DICTIONARY
-            '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
-        )
-        list(APPEND generated_source_files "${output_pathname}")
+            # We're using the boolean element type for the counts, assuming the boolean element type is a small
+            # integral capable of representing small numbers.
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count3.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+        endif()
     endforeach()
 
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)

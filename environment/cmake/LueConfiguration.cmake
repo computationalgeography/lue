@@ -29,6 +29,9 @@ option(LUE_FRAMEWORK_WITH_PCRASTER_PYTHON_API
 option(LUE_FRAMEWORK_WITH_IMAGE_LAND
     "Include operations required for the IMAGE land-use allocation model"
     FALSE)
+option(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
+    "Include operations which are mainly useful during development"
+    FALSE)
 
 option(LUE_BUILD_VIEW
     "Build LUE data model viewer"

@@ -7,6 +7,7 @@
 #cmakedefine LUE_BUILD_FRAMEWORK
 #cmakedefine LUE_FRAMEWORK_WITH_PYTHON_API
 #cmakedefine LUE_FRAMEWORK_WITH_IMAGE_LAND
+#cmakedefine LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
 #cmakedefine01 LUE_FRAMEWORK_ALGORITHM_DEFAULT_POLICIES_ENABLED
 #cmakedefine01 LUE_FRAMEWORK_ALGORITHM_DEFAULT_VALUE_POLICIES_ENABLED
 
@@ -26,6 +27,14 @@ namespace lue {
 
             static constexpr bool build_framework{
 #ifdef LUE_BUILD_FRAMEWORK
+                true
+#else
+                false
+#endif
+            };
+
+            static constexpr bool framework_with_development_operations{
+#ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
                 true
 #else
                 false
