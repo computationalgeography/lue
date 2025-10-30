@@ -99,7 +99,7 @@ target_sources(lue_py_framework_routing_operation
         source/algorithm/routing_operation/downstream_distance.cpp
         source/algorithm/routing_operation/first_n.cpp
         $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
-            source/algorithm/routing_operation/inflow_count3.cpp>
+            source/algorithm/routing_operation/inflow_count.cpp>
         source/algorithm/routing_operation/kinematic_wave.cpp
         $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
             source/algorithm/routing_operation/partial_accu.cpp>

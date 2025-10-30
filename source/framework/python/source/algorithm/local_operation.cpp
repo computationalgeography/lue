@@ -1,3 +1,4 @@
+#include "lue/configure.hpp"
 #include <pybind11/pybind11.h>
 
 

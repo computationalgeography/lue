@@ -1,8 +1,8 @@
 #pragma once
 #include "lue/framework/algorithm/detail/communicator_array.hpp"
 #include "lue/framework/algorithm/detail/idx_converter.hpp"
-#include "lue/framework/algorithm/inflow_count.hpp"  // inflow_count_partition_data
-#include "lue/framework/algorithm/inflow_count3.hpp"
+#include "lue/framework/algorithm/detail/inflow_count.hpp"  // inflow_count_partition_data
+#include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
@@ -525,10 +525,11 @@ namespace lue {
 
 
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-        ArrayPartition<CountElement, rank> inflow_count3_ready(
+        auto inflow_count_ready(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()> const& input_cells_idxs)
+            -> ArrayPartition<CountElement, rank>
         {
             lue_hpx_assert(flow_direction_partition.is_ready());
 
@@ -577,7 +578,7 @@ namespace lue {
 
 
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-        auto inflow_count3(
+        auto inflow_count(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>
@@ -606,7 +607,7 @@ namespace lue {
                 {
                     AnnotateFunction annotation{"inflow_count"};
 
-                    return inflow_count3_ready<CountElement>(
+                    return inflow_count_ready<CountElement>(
                         policies, flow_direction_partition, input_cells_idxs_f.get());
                 },
 
@@ -616,7 +617,7 @@ namespace lue {
 
 
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-        auto inflow_count3_action(
+        auto inflow_count_action(
             Policies const& policies,
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank> inflow_count_communicator)
@@ -642,7 +643,7 @@ namespace lue {
             using CountPartition = ArrayPartition<CountElement, rank>;
 
             CountPartition count_partition =
-                inflow_count3<CountElement>(policies, flow_direction_partition, input_cells_idxs_f);
+                inflow_count<CountElement>(policies, flow_direction_partition, input_cells_idxs_f);
 
             return hpx::make_tuple(
                 std::move(count_partition), std::move(input_cells_idxs_f), std::move(output_cells_idxs_f));
@@ -652,8 +653,8 @@ namespace lue {
         template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
         struct InflowCountAction3:
             hpx::actions::make_action<
-                decltype(&inflow_count3_action<CountElement, Policies, FlowDirectionElement, rank>),
-                &inflow_count3_action<CountElement, Policies, FlowDirectionElement, rank>,
+                decltype(&inflow_count_action<CountElement, Policies, FlowDirectionElement, rank>),
+                &inflow_count_action<CountElement, Policies, FlowDirectionElement, rank>,
                 InflowCountAction3<CountElement, Policies, FlowDirectionElement, rank>>::type
         {
         };
@@ -662,7 +663,7 @@ namespace lue {
 
 
     template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
-    auto inflow_count3(
+    auto inflow_count(
         Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
         -> PartitionedArray<CountElement, rank>
     {
@@ -679,7 +680,7 @@ namespace lue {
         using InflowCountCommunicatorArray =
             detail::CommunicatorArray<detail::InflowCountCommunicator<rank>, rank>;
 
-        InflowCountCommunicatorArray inflow_count_communicators{"/lue/inflow_count3/", localities};
+        InflowCountCommunicatorArray inflow_count_communicators{"/lue/inflow_count/", localities};
 
 
         // ---------------------------------------------------------------------
@@ -728,8 +729,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_INFLOW_COUNT3(Policies, CountElement, FlowDirectionElement)                          \
+#define LUE_INSTANTIATE_INFLOW_COUNT(Policies, CountElement, FlowDirectionElement)                           \
                                                                                                              \
     template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<CountElement, 2>                                  \
-    inflow_count3<CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(                      \
+    inflow_count<CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(                       \
         ArgumentType<void(Policies)> const&, PartitionedArray<FlowDirectionElement, 2> const&);

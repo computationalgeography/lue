@@ -1892,14 +1892,14 @@ block()
         math(EXPR count "${count} + 1")
 
         if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
-            # Instantiate inflow_count3
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count3-${count}.cpp")
+            # Instantiate inflow_count
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count-${count}.cpp")
 
             # We're using the boolean element type for the counts, assuming the boolean element type is a small
             # integral capable of representing small numbers.
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count3.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY

@@ -13,4 +13,4 @@ class InflowCount3Test(OperationTest):
                 flow_direction = lfr.create_array(
                     array_shape, lfr.flow_direction_element_type, direction
                 )
-                self.assert_overload(lfr.inflow_count3, flow_direction)
+                self.assert_overload(lfr.inflow_count, flow_direction)

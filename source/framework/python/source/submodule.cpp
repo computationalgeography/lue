@@ -2,6 +2,7 @@
 #include "hpx_runtime.hpp"
 #include "lue/framework/algorithm/timestamp.hpp"
 #include "lue/concept.hpp"
+#include "lue/configure.hpp"
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include <pybind11/numpy.h>

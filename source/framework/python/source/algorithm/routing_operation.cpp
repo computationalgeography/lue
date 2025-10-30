@@ -1,3 +1,4 @@
+#include "lue/configure.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -15,7 +16,7 @@ namespace lue::framework {
     void bind_downstream_distance(pybind11::module& module);
     void bind_first_n(pybind11::module& module);
 #ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
-    void bind_inflow_count3(pybind11::module& module);
+    void bind_inflow_count(pybind11::module& module);
 #endif
     void bind_kinematic_wave(pybind11::module& module);
 #ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
@@ -38,7 +39,7 @@ namespace lue::framework {
         bind_downstream_distance(module);
         bind_first_n(module);
 #ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
-        bind_inflow_count3(module);
+        bind_inflow_count(module);
 #endif
         bind_kinematic_wave(module);
 #ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
