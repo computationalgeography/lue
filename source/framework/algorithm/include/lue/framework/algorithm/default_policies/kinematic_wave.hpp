@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/kinematic_wave.hpp"
+#include "lue/framework.hpp"
 #include <concepts>
 
 
@@ -24,7 +25,7 @@ namespace lue {
 
     namespace default_policies {
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto kinematic_wave(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& current_outflow,
@@ -50,7 +51,7 @@ namespace lue {
         }
 
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto kinematic_wave(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& current_outflow,

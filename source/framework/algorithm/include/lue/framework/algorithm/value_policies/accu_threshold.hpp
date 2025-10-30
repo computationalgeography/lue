@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold.hpp"
+#include "lue/framework.hpp"
 #include <concepts>
 
 
@@ -31,7 +32,7 @@ namespace lue {
 
     namespace value_policies {
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow,
@@ -45,7 +46,7 @@ namespace lue {
         }
 
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow,
@@ -59,7 +60,7 @@ namespace lue {
         }
 
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
@@ -73,7 +74,7 @@ namespace lue {
         }
 
 
-        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
+        template<std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
