@@ -65,7 +65,8 @@ target_sources(lue_py_framework_local_operation
         source/algorithm/local_operation/cast.cpp
         source/algorithm/local_operation/cell_index.cpp
         source/algorithm/local_operation/comparison.cpp
-        source/algorithm/local_operation/iterate_per_element.cpp
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
+            source/algorithm/local_operation/iterate_per_element.cpp>
         source/algorithm/local_operation/logical.cpp
         source/algorithm/local_operation/modulus.cpp
         source/algorithm/local_operation/nearest_integer.cpp
@@ -87,18 +88,21 @@ target_sources(lue_py_framework_miscellaneous_operation
 target_sources(lue_py_framework_routing_operation
     PRIVATE
         source/algorithm/routing_operation.cpp
-        source/algorithm/routing_operation/accu3.cpp
+        source/algorithm/routing_operation/accu.cpp
         source/algorithm/routing_operation/accu_fraction.cpp
-        source/algorithm/routing_operation/accu_info3.cpp
-        source/algorithm/routing_operation/accu_threshold3.cpp
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
+            source/algorithm/routing_operation/accu_info.cpp>
+        source/algorithm/routing_operation/accu_threshold.cpp
         source/algorithm/routing_operation/d8_flow_direction.cpp
         source/algorithm/routing_operation/decreasing_order.cpp
         source/algorithm/routing_operation/downstream.cpp
         source/algorithm/routing_operation/downstream_distance.cpp
         source/algorithm/routing_operation/first_n.cpp
-        source/algorithm/routing_operation/inflow_count3.cpp
-        source/algorithm/routing_operation/inter_partition_stream.cpp
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
+            source/algorithm/routing_operation/inflow_count.cpp>
         source/algorithm/routing_operation/kinematic_wave.cpp
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
+            source/algorithm/routing_operation/partial_accu.cpp>
         source/algorithm/routing_operation/upstream.cpp
 )
 
@@ -172,9 +176,12 @@ target_include_directories(lue_py_framework
 
 target_sources(lue_py_framework
     PRIVATE
-        source/algorithm/array_partition_id.cpp
-        $<$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/locality_id.cpp>
-        $<$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>:${CMAKE_CURRENT_SOURCE_DIR}/source/algorithm/timestamp.cpp>
+        $<$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>:
+            source/algorithm/array_partition_id.cpp>
+        $<$<AND:$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>,$<BOOL:${LUE_FRAMEWORK_LOCALITY_ID_ELEMENT_AVAILABLE}>>:
+            source/algorithm/locality_id.cpp>
+        $<$<AND:$<BOOL:${LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS}>,$<BOOL:${LUE_FRAMEWORK_CLOCK_TICK_ELEMENT_AVAILABLE}>>:
+            source/algorithm/timestamp.cpp>
 
         source/core/create_partitioned_array.cpp
         ${generated_source_files}

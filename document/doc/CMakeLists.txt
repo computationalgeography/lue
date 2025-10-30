@@ -71,6 +71,7 @@ foreach(name IN ITEMS
     quick_start/index.md
     quick_start/python.md
     reference/algorithm/clump.md
+    reference/algorithm/flow_accumulation.md
     reference/algorithm/index.md
     # reference/cpp/dataset.md
     reference/c/index.md

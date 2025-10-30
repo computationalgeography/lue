@@ -1,0 +1,17 @@
+#include "lue/framework/algorithm/definition/inflow_count.hpp"
+
+
+using lue_CellsIdxs = std::vector<lue::Index>;
+
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_INFLOW_COUNT(
+            ESC(policy::inflow_count::{{ Policies }}<{{ Element }}, {{ FlowDirectionElement }}>),
+            {{ Element }},
+            {{ FlowDirectionElement }}
+        );
+
+}  // namespace lue

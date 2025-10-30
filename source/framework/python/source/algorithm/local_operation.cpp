@@ -1,3 +1,4 @@
+#include "lue/configure.hpp"
 #include <pybind11/pybind11.h>
 
 
@@ -9,7 +10,9 @@ namespace lue::framework {
     void bind_cast(pybind11::module& module);
     void bind_cell_index(pybind11::module& module);
     void bind_comparison(pybind11::module& module);
+#ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
     void bind_iterate_per_element(pybind11::module& module);
+#endif
     void bind_logical(pybind11::module& module);
     void bind_modulus(pybind11::module& module);
     void bind_nearest_integer(pybind11::module& module);
@@ -27,7 +30,9 @@ namespace lue::framework {
         bind_cast(module);
         bind_cell_index(module);
         bind_comparison(module);
+#ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
         bind_iterate_per_element(module);
+#endif
         bind_logical(module);
         bind_modulus(module);
         bind_nearest_integer(module);

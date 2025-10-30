@@ -1,166 +1,52 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/default_policies/accu3.hpp"
-#include "lue/framework/algorithm/value_policies/accu3.hpp"
+#include "lue/framework/algorithm/value_policies/accu.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
 
-namespace {
-
-    // Grab symbols from flow_accumulation header
-    using namespace lue::test;
-
-    std::size_t const rank = 2;
-
+BOOST_AUTO_TEST_CASE(overloads)
+{
+    using FlowDirectionElement = lue::FlowDirectionElement;
     using MaterialElement = lue::FloatingPointElement<0>;
-    using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
 
+    lue::PartitionedArray<FlowDirectionElement, 2> const flow_direction{};
+    lue::PartitionedArray<MaterialElement, 2> outflow{};
 
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
-    void test_accu3(
-        Policies const& policies,
-        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        lue::PartitionedArray<MaterialElement, rank> const& material,
-        lue::PartitionedArray<MaterialElement, rank> const& accu_we_want)
-    {
-        using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
+    lue::PartitionedArray<MaterialElement, 2> const inflow_raster{};
+    lue::Scalar<MaterialElement> const inflow_scalar{};
+    MaterialElement const inflow_value{};
 
-        MaterialArray accu_we_got = lue::accu3(policies, flow_direction, material);
+    // raster
+    outflow = lue::value_policies::accu(flow_direction, inflow_raster);
 
-        lue::test::check_arrays_are_equal(accu_we_got, accu_we_want);
-    }
+    // scalar
+    outflow = lue::value_policies::accu(flow_direction, inflow_scalar);
 
-
-    template<typename FlowDirectionElement, typename MaterialElement, lue::Rank rank>
-    void test_accu(
-        lue::PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        lue::PartitionedArray<MaterialElement, rank> const& material,
-        lue::PartitionedArray<MaterialElement, rank> const& accu_we_want)
-    {
-        if constexpr (lue::BuildOptions::default_policies_enabled)
-        {
-            using Policies = lue::policy::accu3::DefaultPolicies<FlowDirectionElement, MaterialElement>;
-
-            test_accu3(Policies{}, flow_direction, material, accu_we_want);
-        }
-    }
-
-}  // Anonymous namespace
+    // value
+    outflow = lue::value_policies::accu<MaterialElement>(flow_direction, inflow_value);
+}
 
 
 BOOST_AUTO_TEST_CASE(parallel_east)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
-            // clang-format off
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::e);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-                {
-                    e, e, e,
-                    e, e, e,
-                    e, e, e,
-                },
-            }  // clang-format off
-        ),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            // clang-format off
-            {
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-                {
-                    1, 1, 1,
-                    1, 1, 1,
-                    1, 1, 1,
-                },
-            }  // clang-format off
-        ),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            // clang-format off
-            {
+                // NOLINTBEGIN
+                // clang-format off
                 {
                     1, 2, 3,
                     1, 2, 3,
@@ -206,3330 +92,1010 @@ BOOST_AUTO_TEST_CASE(parallel_east)
                     7, 8, 9,
                     7, 8, 9,
                 },
-            }  // clang-format off
-        ));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_south_east)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::se);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    1, 1, 1,
+                    1, 2, 2,
+                    1, 2, 3,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    1, 2, 3,
+                    1, 2, 3,
+                    1, 2, 3,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    4, 4, 4,
+                    4, 5, 5,
+                    4, 5, 6,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    4, 4, 4,
+                    5, 5, 5,
+                    6, 6, 6,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    1, 2, 3,
+                    1, 2, 3,
+                    1, 2, 3,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    4, 5, 6,
+                    4, 5, 6,
+                    4, 5, 6,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    7, 7, 7,
+                    7, 8, 8,
+                    7, 8, 9,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    4,
-                    5,
-                    6,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    4,
-                    5,
-                    6,
-                    4,
-                    5,
-                    6,
-                    4,
-                    5,
-                    6,
-                },
-                {
-                    7,
-                    7,
-                    7,
-                    7,
-                    8,
-                    8,
-                    7,
-                    8,
-                    9,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_south)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::s);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    4, 4, 4,
+                    5, 5, 5,
+                    6, 6, 6,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    4, 4, 4,
+                    5, 5, 5,
+                    6, 6, 6,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    4, 4, 4,
+                    5, 5, 5,
+                    6, 6, 6,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    7, 7, 7,
+                    8, 8, 8,
+                    9, 9, 9,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    7, 7, 7,
+                    8, 8, 8,
+                    9, 9, 9,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    7, 7, 7,
+                    8, 8, 8,
+                    9, 9, 9,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                },
-                {
-                    7,
-                    7,
-                    7,
-                    8,
-                    8,
-                    8,
-                    9,
-                    9,
-                    9,
-                },
-                {
-                    7,
-                    7,
-                    7,
-                    8,
-                    8,
-                    8,
-                    9,
-                    9,
-                    9,
-                },
-                {
-                    7,
-                    7,
-                    7,
-                    8,
-                    8,
-                    8,
-                    9,
-                    9,
-                    9,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_south_west)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::sw);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    1, 1, 1,
+                    2, 2, 2,
+                    3, 3, 3,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    1, 1, 1,
+                    2, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    4, 4, 4,
+                    5, 5, 5,
+                    6, 6, 6,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    4, 4, 4,
+                    5, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    7, 7, 7,
+                    8, 8, 7,
+                    9, 8, 7,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    6, 5, 4,
+                    6, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    2,
-                    3,
-                    3,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    5,
-                    6,
-                    6,
-                    6,
-                },
-                {
-                    4,
-                    4,
-                    4,
-                    5,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    7,
-                    7,
-                    7,
-                    8,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_west)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::w);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    9, 8, 7,
+                    9, 8, 7,
+                    9, 8, 7,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    6, 5, 4,
+                    6, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    9, 8, 7,
+                    9, 8, 7,
+                    9, 8, 7,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    6, 5, 4,
+                    6, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    9, 8, 7,
+                    9, 8, 7,
+                    9, 8, 7,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    6, 5, 4,
+                    6, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                    9,
-                    8,
-                    7,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_north_west)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::nw);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    9, 8, 7,
+                    8, 8, 7,
+                    7, 7, 7,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    6, 5, 4,
+                    6, 5, 4,
+                    6, 5, 4,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    6, 6, 6,
+                    5, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    6, 5, 4,
+                    5, 5, 4,
+                    4, 4, 4,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    3, 2, 1,
+                    3, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    3, 2, 1,
+                    2, 2, 1,
+                    1, 1, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    9,
-                    8,
-                    7,
-                    8,
-                    8,
-                    7,
-                    7,
-                    7,
-                    7,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                    6,
-                    5,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    6,
-                    6,
-                    6,
-                    5,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    6,
-                    5,
-                    4,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_north)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::n);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    9, 9, 9,
+                    8, 8, 8,
+                    7, 7, 7,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    9, 9, 9,
+                    8, 8, 8,
+                    7, 7, 7,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    9, 9, 9,
+                    8, 8, 8,
+                    7, 7, 7,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    6, 6, 6,
+                    5, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    6, 6, 6,
+                    5, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    6, 6, 6,
+                    5, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    9,
-                    9,
-                    9,
-                    8,
-                    8,
-                    8,
-                    7,
-                    7,
-                    7,
-                },
-                {
-                    9,
-                    9,
-                    9,
-                    8,
-                    8,
-                    8,
-                    7,
-                    7,
-                    7,
-                },
-                {
-                    9,
-                    9,
-                    9,
-                    8,
-                    8,
-                    8,
-                    7,
-                    7,
-                    7,
-                },
-                {
-                    6,
-                    6,
-                    6,
-                    5,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    6,
-                    6,
-                    6,
-                    5,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    6,
-                    6,
-                    6,
-                    5,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(parallel_north_east)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::create_partitioned_array<FlowDirectionElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, lue::test::ne);
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    1, 2, 3,
+                    1, 2, 3,
+                    1, 2, 3,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    4, 5, 6,
+                    4, 5, 6,
+                    4, 5, 6,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    7, 8, 9,
+                    7, 8, 8,
+                    7, 7, 7,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    1, 2, 3,
+                    1, 2, 3,
+                    1, 2, 3,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    4, 5, 6,
+                    4, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    6, 6, 6,
+                    5, 5, 5,
+                    4, 4, 4,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    1, 2, 3,
+                    1, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    3, 3, 3,
+                    2, 2, 2,
+                    1, 1, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    4,
-                    5,
-                    6,
-                    4,
-                    5,
-                    6,
-                    4,
-                    5,
-                    6,
-                },
-                {
-                    7,
-                    8,
-                    9,
-                    7,
-                    8,
-                    8,
-                    7,
-                    7,
-                    7,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    4,
-                    5,
-                    6,
-                    4,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    6,
-                    6,
-                    6,
-                    5,
-                    5,
-                    5,
-                    4,
-                    4,
-                    4,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    3,
-                    3,
-                    2,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(converge)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const n = lue::test::n;
+    auto const ne = lue::test::ne;
+    auto const e = lue::test::e;
+    auto const se = lue::test::se;
+    auto const s = lue::test::s;
+    auto const sw = lue::test::sw;
+    auto const w = lue::test::w;
+    auto const nw = lue::test::nw;
+    auto const p = lue::test::p;
+
+    auto const flow_direction =
+        lue::test::create_partitioned_array<lue::PartitionedArray<FlowDirectionElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // clang-format off
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
                 },
                 {
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
                 },
                 {
-                    se,
-                    s,
-                    sw,
-                    e,
-                    p,
-                    w,
-                    ne,
-                    n,
-                    nw,
+                    se, s, sw,
+                    e, p, w,
+                    ne, n, nw,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
                 },
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
+                // clang-format on
+            });
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 1, 1,
+                    1, 2, 2,
+                    1, 2, 3,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 1, 1,
+                    3, 2, 3,
+                    6, 3, 6,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 1, 1,
+                    2, 2, 1,
+                    3, 2, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 3, 6,
+                    1, 2, 3,
+                    1, 3, 6,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    16, 4, 16,
+                    4, 81, 4,
+                    16, 4, 16,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    6, 3, 1,
+                    3, 2, 1,
+                    6, 3, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 2, 3,
+                    1, 2, 2,
+                    1, 1, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    6, 3, 6,
+                    3, 2, 3,
+                    1, 1, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    3, 2, 1,
+                    2, 2, 1,
+                    1, 1, 1,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    3,
-                    2,
-                    3,
-                    6,
-                    3,
-                    6,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    2,
-                    2,
-                    1,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    1,
-                    3,
-                    6,
-                    1,
-                    2,
-                    3,
-                    1,
-                    3,
-                    6,
-                },
-                {
-                    16,
-                    4,
-                    16,
-                    4,
-                    81,
-                    4,
-                    16,
-                    4,
-                    16,
-                },
-                {
-                    6,
-                    3,
-                    1,
-                    3,
-                    2,
-                    1,
-                    6,
-                    3,
-                    1,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    1,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    6,
-                    3,
-                    6,
-                    3,
-                    2,
-                    3,
-                    1,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    2,
-                    2,
-                    1,
-                    1,
-                    1,
-                    1,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(diverge)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const n = lue::test::n;
+    auto const ne = lue::test::ne;
+    auto const e = lue::test::e;
+    auto const se = lue::test::se;
+    auto const s = lue::test::s;
+    auto const sw = lue::test::sw;
+    auto const w = lue::test::w;
+    auto const nw = lue::test::nw;
+
+    auto const flow_direction =
+        lue::test::create_partitioned_array<lue::PartitionedArray<FlowDirectionElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // clang-format off
                 {
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
-                    nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
+                    nw, nw, nw,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
                 },
                 {
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
-                    ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
+                    ne, ne, ne,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
                 },
                 {
-                    nw,
-                    n,
-                    ne,
-                    w,
-                    s,
-                    e,
-                    sw,
-                    s,
-                    se,
+                    nw, n, ne,
+                    w, s, e,
+                    sw, s, se,
                 },
                 {
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
                 },
                 {
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
-                    sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
+                    sw, sw, sw,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
                 },
                 {
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
-                    se,
+                    se, se, se,
+                    se, se, se,
+                    se, se, se,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
+                // clang-format on
+            });
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    4, 2, 1,
+                    2, 3, 1,
+                    1, 1, 2,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    3, 4, 3,
+                    2, 3, 2,
+                    1, 2, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 2, 4,
+                    1, 3, 2,
+                    2, 1, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    3, 2, 1,
+                    4, 3, 2,
+                    3, 2, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 1, 1,
+                    1, 1, 1,
+                    1, 2, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 2, 3,
+                    2, 3, 4,
+                    1, 2, 3,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 1, 2,
+                    2, 3, 1,
+                    4, 2, 1,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 3, 1,
+                    2, 4, 2,
+                    3, 5, 3,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    2, 1, 1,
+                    1, 3, 2,
+                    1, 2, 4,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    4,
-                    2,
-                    1,
-                    2,
-                    3,
-                    1,
-                    1,
-                    1,
-                    2,
-                },
-                {
-                    3,
-                    4,
-                    3,
-                    2,
-                    3,
-                    2,
-                    1,
-                    2,
-                    1,
-                },
-                {
-                    1,
-                    2,
-                    4,
-                    1,
-                    3,
-                    2,
-                    2,
-                    1,
-                    1,
-                },
-                {
-                    3,
-                    2,
-                    1,
-                    4,
-                    3,
-                    2,
-                    3,
-                    2,
-                    1,
-                },
-                {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    2,
-                    1,
-                },
-                {
-                    1,
-                    2,
-                    3,
-                    2,
-                    3,
-                    4,
-                    1,
-                    2,
-                    3,
-                },
-                {
-                    1,
-                    1,
-                    2,
-                    2,
-                    3,
-                    1,
-                    4,
-                    2,
-                    1,
-                },
-                {
-                    1,
-                    3,
-                    1,
-                    2,
-                    4,
-                    2,
-                    3,
-                    5,
-                    3,
-                },
-                {
-                    2,
-                    1,
-                    1,
-                    1,
-                    3,
-                    2,
-                    1,
-                    2,
-                    4,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(spiral_in_case)
 {
-    test_accu(
-        lue::test::spiral_in(),
-        lue::test::ones<MaterialElement>(),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::test::spiral_in();
+    auto const inflow = lue::test::ones<MaterialElement>();
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    1,
-                    2,
-                    3,
-                    32,
-                    33,
-                    34,
-                    31,
-                    56,
-                    57,
+                    1, 2, 3,
+                    32, 33, 34,
+                    31, 56, 57,
                 },
                 {
-                    4,
-                    5,
-                    6,
-                    35,
-                    36,
-                    37,
-                    58,
-                    59,
-                    60,
+                    4, 5, 6,
+                    35, 36, 37,
+                    58, 59, 60,
                 },
                 {
-                    7,
-                    8,
-                    9,
-                    38,
-                    39,
-                    10,
-                    61,
-                    40,
-                    11,
+                    7, 8, 9,
+                    38, 39, 10,
+                    61, 40, 11,
                 },
                 {
-                    30,
-                    55,
-                    72,
-                    29,
-                    54,
-                    71,
-                    28,
-                    53,
-                    70,
+                    30, 55, 72,
+                    29, 54, 71,
+                    28, 53, 70,
                 },
                 {
-                    73,
-                    74,
-                    75,
-                    80,
-                    81,
-                    76,
-                    79,
-                    78,
-                    77,
+                    73, 74, 75,
+                    80, 81, 76,
+                    79, 78, 77,
                 },
                 {
-                    62,
-                    41,
-                    12,
-                    63,
-                    42,
-                    13,
-                    64,
-                    43,
-                    14,
+                    62, 41, 12,
+                    63, 42, 13,
+                    64, 43, 14,
                 },
                 {
-                    27,
-                    52,
-                    69,
-                    26,
-                    51,
-                    50,
-                    25,
-                    24,
-                    23,
+                    27, 52, 69,
+                    26, 51, 50,
+                    25, 24, 23,
                 },
                 {
-                    68,
-                    67,
-                    66,
-                    49,
-                    48,
-                    47,
-                    22,
-                    21,
-                    20,
+                    68, 67, 66,
+                    49, 48, 47,
+                    22, 21, 20,
                 },
                 {
-                    65,
-                    44,
-                    15,
-                    46,
-                    45,
-                    16,
-                    19,
-                    18,
-                    17,
+                    65, 44, 15,
+                    46, 45, 16,
+                    19, 18, 17,
                 },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(spiral_out)
 {
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
-            array_shape,
-            partition_shape,
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const n = lue::test::n;
+    auto const e = lue::test::e;
+    auto const s = lue::test::s;
+    auto const w = lue::test::w;
+
+    auto const flow_direction =
+        lue::test::create_partitioned_array<lue::PartitionedArray<FlowDirectionElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // clang-format off
                 {
-                    w,
-                    w,
-                    w,
-                    s,
-                    w,
-                    w,
-                    s,
-                    s,
-                    w,
+                    w, w, w,
+                    s, w, w,
+                    s, s, w,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    w, w, w,
+                    w, w, w,
+                    w, w, w,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
-                    n,
-                    w,
-                    n,
-                    n,
+                    w, w, w,
+                    w, w, n,
+                    w, n, n,
                 },
                 {
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
-                    s,
+                    s, s, s,
+                    s, s, s,
+                    s, s, s,
                 },
                 {
-                    w,
-                    w,
-                    w,
-                    s,
-                    w,
-                    n,
-                    e,
-                    e,
-                    n,
+                    w, w, w,
+                    s, w, n,
+                    e, e, n,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
-                    n,
+                    n, n, n,
+                    n, n, n,
+                    n, n, n,
                 },
                 {
-                    s,
-                    s,
-                    e,
-                    s,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
+                    s, s, e,
+                    s, e, e,
+                    e, e, e,
                 },
                 {
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
-                    e,
+                    e, e, e,
+                    e, e, e,
+                    e, e, e,
                 },
                 {
-                    n,
-                    n,
-                    n,
-                    e,
-                    n,
-                    n,
-                    e,
-                    e,
-                    n,
+                    n, n, n,
+                    e, n, n,
+                    e, e, n,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
+                // clang-format on
+            });
+    auto const inflow = lue::create_partitioned_array<MaterialElement, 2>(
+        lue::test::array_shape, lue::test::partition_shape, 1);
+
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    81, 80, 79,
+                    50, 49, 48,
+                    51, 26, 25,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    78, 77, 76,
+                    47, 46, 45,
+                    24, 23, 22,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    75, 74, 73,
+                    44, 43, 72,
+                    21, 42, 71,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    52, 27, 10,
+                    53, 28, 11,
+                    54, 29, 12,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    9, 8, 7,
+                    2, 1, 6,
+                    3, 4, 5,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    20, 41, 70,
+                    19, 40, 69,
+                    18, 39, 68,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    55, 30, 13,
+                    56, 31, 32,
+                    57, 58, 59,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    14, 15, 16,
+                    33, 34, 35,
+                    60, 61, 62,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    17, 38, 67,
+                    36, 37, 66,
+                    63, 64, 65,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    81,
-                    80,
-                    79,
-                    50,
-                    49,
-                    48,
-                    51,
-                    26,
-                    25,
-                },
-                {
-                    78,
-                    77,
-                    76,
-                    47,
-                    46,
-                    45,
-                    24,
-                    23,
-                    22,
-                },
-                {
-                    75,
-                    74,
-                    73,
-                    44,
-                    43,
-                    72,
-                    21,
-                    42,
-                    71,
-                },
-                {
-                    52,
-                    27,
-                    10,
-                    53,
-                    28,
-                    11,
-                    54,
-                    29,
-                    12,
-                },
-                {
-                    9,
-                    8,
-                    7,
-                    2,
-                    1,
-                    6,
-                    3,
-                    4,
-                    5,
-                },
-                {
-                    20,
-                    41,
-                    70,
-                    19,
-                    40,
-                    69,
-                    18,
-                    39,
-                    68,
-                },
-                {
-                    55,
-                    30,
-                    13,
-                    56,
-                    31,
-                    32,
-                    57,
-                    58,
-                    59,
-                },
-                {
-                    14,
-                    15,
-                    16,
-                    33,
-                    34,
-                    35,
-                    60,
-                    61,
-                    62,
-                },
-                {
-                    17,
-                    38,
-                    67,
-                    36,
-                    37,
-                    66,
-                    63,
-                    64,
-                    65,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(all_no_data_flow_direction)
 {
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
     auto const flow_direction = lue::test::no_data<FlowDirectionElement>();
-    auto const material = lue::test::ones<MaterialElement>();
-    auto const result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+    auto const inflow = lue::test::ones<MaterialElement>();
 
-    if constexpr (lue::BuildOptions::default_value_policies_enabled)
-    {
-        using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
 
-        test_accu3(Policies{}, flow_direction, material, result_we_want);
-    }
+    auto const outflow_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(all_no_data_material)
 {
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const e = lue::test::e;
+
     auto const flow_direction = lue::test::filled(e);
-    auto const material = lue::test::no_data<MaterialElement>();
-    auto const result_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+    auto const inflow = lue::test::no_data<MaterialElement>();
 
-    if constexpr (lue::BuildOptions::default_value_policies_enabled)
-    {
-        using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
 
-        test_accu3(Policies{}, flow_direction, material, result_we_want);
-    }
+    auto const outflow_we_want = lue::test::filled(lue::policy::no_data_value<MaterialElement>);
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
@@ -3538,244 +1104,144 @@ BOOST_AUTO_TEST_CASE(merging_streams_case_01)
     // No-data material in ridge cell. From there on, it must propagate
     // down to all downstream cells, in all downstream partitions.
 
-    auto flow_direction = lue::test::merging_streams();
+    using MaterialElement = lue::FloatingPointElement<0>;
+
+    auto const flow_direction = lue::test::merging_streams();
 
     auto const x{lue::policy::no_data_value<MaterialElement>};
 
-    auto material = create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
-        array_shape,
-        partition_shape,
+    auto const inflow = lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+        lue::test::array_shape,
+        lue::test::partition_shape,
         {
+            // NOLINTBEGIN
+            // clang-format off
             {
                 // 0, 0
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 0, 1
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 0, 2
-                1,
-                x,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, x, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 1, 0
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 1, 1
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 1, 2
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 2, 0
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 2, 1
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
             {
                 // 2, 2
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
-                1,
+                1, 1, 1,
+                1, 1, 1,
+                1, 1, 1,
             },
+            // clang-format on
+            // NOLINTEND
         });
 
-    auto result_we_want = create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
-        array_shape,
-        partition_shape,
-        {
-            {
-                // 0, 0
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                1,
-            },
-            {
-                // 0, 1
-                x,
-                1,
-                1,
-                x,
-                1,
-                1,
-                x,
-                2,
-                x,
-            },
-            {
-                // 0, 2
-                x,
-                x,
-                1,
-                3,
-                x,
-                1,
-                x,
-                x,
-                1,
-            },
-            {
-                // 1, 0
-                x,
-                x,
-                1,
-                x,
-                x,
-                1,
-                x,
-                x,
-                1,
-            },
-            {
-                // 1, 1
-                4,
-                x,
-                x,
-                x,
-                x,
-                2,
-                2,
-                x,
-                3,
-            },
-            {
-                // 1, 2
-                x,
-                x,
-                x,
-                1,
-                x,
-                x,
-                1,
-                x,
-                x,
-            },
-            {
-                // 2, 0
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-                x,
-            },
-            {
-                // 2, 1
-                x,
-                x,
-                x,
-                x,
-                x,
-                2,
-                4,
-                3,
-                2,
-            },
-            {
-                // 2, 2
-                1,
-                x,
-                x,
-                1,
-                x,
-                x,
-                1,
-                x,
-                x,
-            },
-        });
+    auto const outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
 
-    if constexpr (lue::BuildOptions::default_value_policies_enabled)
-    {
-        using Policies = lue::policy::accu3::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
+            lue::test::array_shape,
+            lue::test::partition_shape,
+            {
+                // NOLINTBEGIN
+                // clang-format off
+                {
+                    // 0, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, 1,
+                },
+                {
+                    // 0, 1
+                    x, 1, 1,
+                    x, 1, 1,
+                    x, 2, x,
+                },
+                {
+                    // 0, 2
+                    x, x, 1,
+                    3, x, 1,
+                    x, x, 1,
+                },
+                {
+                    // 1, 0
+                    x, x, 1,
+                    x, x, 1,
+                    x, x, 1,
+                },
+                {
+                    // 1, 1
+                    4, x, x,
+                    x, x, 2,
+                    2, x, 3,
+                },
+                {
+                    // 1, 2
+                    x, x, x,
+                    1, x, x,
+                    1, x, x,
+                },
+                {
+                    // 2, 0
+                    x, x, x,
+                    x, x, x,
+                    x, x, x,
+                },
+                {
+                    // 2, 1
+                    x, x, x,
+                    x, x, 2,
+                    4, 3, 2,
+                },
+                {
+                    // 2, 2
+                    1, x, x,
+                    1, x, x,
+                    1, x, x,
+                },
+                // clang-format on
+                // NOLINTEND
+            });
 
-        test_accu3(Policies{}, flow_direction, material, result_we_want);
-    }
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
@@ -3784,128 +1250,62 @@ BOOST_AUTO_TEST_CASE(back_and_forth)
     // Stream which runs from one partition to another and back and back
     // and back ...
 
+    using FlowDirectionElement = lue::FlowDirectionElement;
+    using MaterialElement = lue::FloatingPointElement<0>;
+
     lue::ShapeT<lue::test::FlowDirectionArray> const array_shape{{6, 5}};
     lue::ShapeT<lue::test::FlowDirectionArray> const partition_shape{{3, 5}};
 
-    test_accu(
-        lue::test::create_partitioned_array<FlowDirectionArray>(
+    auto const n = lue::test::n;
+    auto const e = lue::test::e;
+    auto const s = lue::test::s;
+    auto const p = lue::test::p;
+
+    auto const flow_direction =
+        lue::test::create_partitioned_array<lue::PartitionedArray<FlowDirectionElement, 2>>(
             array_shape,
             partition_shape,
             {
+                // clang-format off
                 {
-                    s,
-                    e,
-                    s,
-                    e,
-                    s,
-                    s,
-                    n,
-                    s,
-                    n,
-                    s,
-                    s,
-                    n,
-                    s,
-                    n,
-                    s,
+                    s, e, s, e, s,
+                    s, n, s, n, s,
+                    s, n, s, n, s,
                 },
                 {
-                    s,
-                    n,
-                    s,
-                    n,
-                    s,
-                    s,
-                    n,
-                    s,
-                    n,
-                    s,
-                    e,
-                    n,
-                    e,
-                    n,
-                    p,
+                    s, n, s, n, s,
+                    s, n, s, n, s,
+                    e, n, e, n, p,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
+                // clang-format on
+            });
+    lue::Scalar<MaterialElement> const inflow{1};
+
+    auto outflow_we_got = lue::value_policies::accu(flow_direction, inflow);
+
+    auto const outflow_we_want =
+        lue::test::create_partitioned_array<lue::PartitionedArray<MaterialElement, 2>>(
             array_shape,
             partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    1, 12, 13, 24, 25,
+                    2, 11, 14, 23, 26,
+                    3, 10, 15, 22, 27,
                 },
                 {
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
-                    1,
+                    4, 9, 16, 21, 28,
+                    5, 8, 17, 20, 29,
+                    6, 7, 18, 19, 30,
                 },
-            }),
-        lue::test::create_partitioned_array<MaterialArray>(
-            array_shape,
-            partition_shape,
-            {
-                {
-                    1,
-                    12,
-                    13,
-                    24,
-                    25,
-                    2,
-                    11,
-                    14,
-                    23,
-                    26,
-                    3,
-                    10,
-                    15,
-                    22,
-                    27,
-                },
-                {
-                    4,
-                    9,
-                    16,
-                    21,
-                    28,
-                    5,
-                    8,
-                    17,
-                    20,
-                    29,
-                    6,
-                    7,
-                    18,
-                    19,
-                    30,
-                },
-            }));
+                // clang-format on
+                // NOLINTEND
+            });
+
+    lue::test::check_arrays_are_equal(outflow_we_got, outflow_we_want);
 }
 
 
-// TODO Out of domain values: negative material is out of domain!
+// TODO: Out of domain values: negative material is out of domain!

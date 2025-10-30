@@ -258,6 +258,40 @@ BOOST_AUTO_TEST_CASE(move_assign)
 }
 
 
+BOOST_AUTO_TEST_CASE(convert_assign)
+{
+    {
+        using Element = std::uint8_t;
+
+        lue::Scalar<Element> scalar = Element{5};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), Element{5});
+    }
+
+    {
+        using Element = float;
+
+        lue::Scalar<Element> scalar = Element{5};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), Element{5});
+    }
+
+    {
+        using Element = std::string;
+
+        lue::Scalar<Element> scalar = Element{"5"};
+
+        BOOST_CHECK(scalar.future().valid());
+        BOOST_CHECK(scalar.future().is_ready());
+        BOOST_CHECK_EQUAL(scalar.future().get(), "5");
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(continuation)
 {
     using Element = std::string;
@@ -276,6 +310,32 @@ BOOST_AUTO_TEST_CASE(continuation)
 }
 
 
-// BOOST_AUTO_TEST_CASE(conversion)
-// {
-// }
+template<std::integral Element>
+auto mah(lue::Scalar<Element> const& scalar) -> Element
+{
+    return scalar.future().get();
+}
+
+
+BOOST_AUTO_TEST_CASE(implicit_conversion)
+{
+    {
+        using Element = std::int32_t;
+
+        Element const value = 5;
+
+        auto meh = [value]([[maybe_unused]] lue::Scalar<Element> const& scalar) -> void
+        { BOOST_CHECK_EQUAL(value, scalar.future().get()); };
+
+        meh(value);
+    }
+
+    {
+        using Element = std::int32_t;
+
+        Element const value = 5;
+
+        // Explicitly passing Element as a parameter is required. Otherwise Element cannot be deduced.
+        BOOST_CHECK_EQUAL(mah<Element>(value), value);
+    }
+}

@@ -6,7 +6,6 @@
 
 TODO
 
-
 ## Modelling operations
 
 Currently, PCRaster contains implementations of more modelling operations than LUE. Over time more operations
@@ -511,12 +510,9 @@ these differences as much as possible.
 %
 %    In LUE:
 %    - accu.hpp
-%    - accu3.hpp
 %    - accu_fraction.hpp
 %    - accu_info.hpp
-%    - accu_info3.hpp
 %    - accu_threshold.hpp
-%    - accu_threshold3.hpp
 %    - all.hpp
 %    - any.hpp
 %    - array_like.hpp
@@ -528,7 +524,6 @@ these differences as much as possible.
 %    - flow_direction.hpp
 %    - functor_traits.hpp
 %    - inflow_count.hpp
-%    - inflow_count3.hpp
 %    - inter_partition_stream.hpp
 %    - iterate_per_element.hpp
 %    - kernel.hpp
@@ -544,14 +539,12 @@ these differences as much as possible.
 %    - timestamp.hpp
 %    - unique.hpp
 
-
 ## Modelling framework
 
 Like PCRaster, LUE contains helper classes for implementing forward numerical simulation models as well. The
 [lue.pcraster.framework](lue-pcraster-framework-module) sub package contains classes that behave like the
 PCRaster Python Framework classes, but are implemented in terms of the LUE classes. Not all PCRaster classes
 have been ported to LUE yet. The next table lists the current status.
-
 
 ```{list-table} Legend
 :widths: auto

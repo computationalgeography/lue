@@ -1,6 +1,9 @@
-#include "lue/framework/algorithm/accu_fraction.hpp"
+#include "lue/framework/algorithm/value_policies/accu_fraction.hpp"
 #include "lue/framework/configure.hpp"
 #include "lue/py/bind.hpp"
+
+
+using namespace pybind11::literals;
 
 
 namespace lue::framework {
@@ -11,7 +14,7 @@ namespace lue::framework {
 
             public:
 
-                template<Arithmetic Element>
+                template<std::floating_point FloatingPointElement>
                 static void bind(pybind11::module& module)
                 {
                     Rank const rank{2};
@@ -19,14 +22,39 @@ namespace lue::framework {
                     module.def(
                         "accu_fraction",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           PartitionedArray<Element, rank> const& material,
-                           PartitionedArray<Element, rank> const& fraction)
-                        {
-                            using Policies = policy::accu_fraction::
-                                DefaultValuePolicies<FlowDirectionElement, Element, Element>;
-
-                            return accu_fraction(Policies{}, flow_direction, material, fraction);
-                        });
+                           PartitionedArray<FloatingPointElement, rank> const& inflow,
+                           PartitionedArray<FloatingPointElement, rank> const& fraction)
+                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                        "flow_direction"_a,
+                        "inflow"_a,
+                        "fraction"_a);
+                    module.def(
+                        "accu_fraction",
+                        [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+                           PartitionedArray<FloatingPointElement, rank> const& inflow,
+                           Scalar<FloatingPointElement> const& fraction)
+                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                        "flow_direction"_a,
+                        "inflow"_a,
+                        "fraction"_a);
+                    module.def(
+                        "accu_fraction",
+                        [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+                           Scalar<FloatingPointElement> const& inflow,
+                           Scalar<FloatingPointElement> const& fraction)
+                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                        "flow_direction"_a,
+                        "inflow"_a,
+                        "fraction"_a);
+                    module.def(
+                        "accu_fraction",
+                        [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
+                           Scalar<FloatingPointElement> const& inflow,
+                           PartitionedArray<FloatingPointElement, rank> const& fraction)
+                        { return value_policies::accu_fraction(flow_direction, inflow, fraction); },
+                        "flow_direction"_a,
+                        "inflow"_a,
+                        "fraction"_a);
                 }
         };
 

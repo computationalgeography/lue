@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm inflow_count
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/definition/inflow_count3.hpp"
+#include "lue/framework/algorithm/definition/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
@@ -32,14 +32,14 @@ namespace {
 
 
     template<typename Policies, typename FlowDirectionArray, typename InflowCountArray>
-    void test_inflow_count3(
+    void test_inflow_count(
         Policies const& policies,
         FlowDirectionArray const& flow_direction,
         InflowCountArray const& inflow_count_we_want)
     {
         using CountElement = lue::ElementT<InflowCountArray>;
 
-        InflowCount inflow_count_we_got = lue::inflow_count3<CountElement>(policies, flow_direction);
+        InflowCount inflow_count_we_got = lue::inflow_count<CountElement>(policies, flow_direction);
 
         lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
     }
@@ -52,9 +52,9 @@ namespace {
         using CountElement = lue::ElementT<InflowCountArray>;
         using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
 
-        using Policies = lue::policy::inflow_count3::DefaultPolicies<CountElement, FlowDirectionElement>;
+        using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
 
-        test_inflow_count3(Policies{}, flow_direction, inflow_count_we_want);
+        test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
     }
 
 }  // Anonymous namespace
@@ -2223,8 +2223,8 @@ BOOST_AUTO_TEST_CASE(all_no_data)
             x,
         }});
 
-    test_inflow_count3(
-        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+    test_inflow_count(
+        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
         flow_direction,
         inflow_count_we_want);
 }
@@ -2290,8 +2290,8 @@ BOOST_AUTO_TEST_CASE(no_data)
             },
         });
 
-    test_inflow_count3(
-        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+    test_inflow_count(
+        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
         flow_direction,
         inflow_count_we_want);
 }
@@ -2521,8 +2521,8 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
             },
         });
 
-    test_inflow_count3(
-        lue::policy::inflow_count3::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
+    test_inflow_count(
+        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
         flow_direction,
         inflow_count_we_want);
 }
