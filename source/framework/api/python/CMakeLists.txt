@@ -31,6 +31,7 @@ target_sources(lue_py_framework_x
         source/field.cpp
         # source/io.cpp
         source/local_operation.cpp
+        source/routing_operation.cpp
         source/scalar.cpp
         source/submodule.cpp
 )

@@ -5,11 +5,16 @@ set(local_operation_names
     local/uniform
 )
 
+set(routing_operation_names
+    routing/accu
+)
+
 set(names
     create_array
     create_scalar
     # io
     ${local_operation_names}
+    ${routing_operation_names}
 )
 
 foreach(name ${names})

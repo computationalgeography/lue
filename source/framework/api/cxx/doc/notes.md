@@ -1,6 +1,6 @@
 - `create_array`
-    - Should it return a field, like currently, or an array?
-    - Compare to scalars. Although a scalar can be used to represent a field, some functions really require a
+  - Should it return a field, like currently, or an array?
+  - Compare to scalars. Although a scalar can be used to represent a field, some functions really require a
       scalar to be passed. It doesn't make sense to pass anything else. It therefore is good if type info
       keeps attached to variables as long as possible.
 
@@ -26,8 +26,8 @@
 - Python: automatic conversion(?)
 - C:
 
-    - `auto scalar_as_field(scalar) -> Field`
-    - `auto array_as_field(array) -> Field`
+  - `auto scalar_as_field(scalar) -> Field`
+  - `auto array_as_field(array) -> Field`
 
 - How about the element type info? A scalar / array is still a family of concrete types.
 
@@ -50,11 +50,18 @@ Destruction happens in the destructor of the variant type:
 - Python: happens automatically
 - C: Call `destroy_<variant_type`, which can call `delete` on the layered opaque pointer
 
-20240710
+## 20240710
 
 - Having different types for Literal, Scalar, Array, Field gets us into overload hell again. What about only
   using Field instances and let overload resolution figure out what is supported (and document this so users
   know what to expect).
 
-    - A field is a value that varies through time and over space, or not
-    - Some functions require a field's value to not vary
+  - A field is a value that varies through time and over space, or not
+  - Some functions require a field's value to not vary
+
+## 20251030
+
+- Undefined references to symbols in the algorithm shared lib likely point to algorithm overloads being found
+(from api_cxx to algorithm lib) for arguments for which such overloads haven't been instantiated. This happens
+when the algorithm template is defined to accept more parameter types than needed. The solution is to restrict
+the template parameters so overload resolution will pick the catch-all overload meant for such cases.

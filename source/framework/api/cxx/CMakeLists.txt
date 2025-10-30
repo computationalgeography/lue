@@ -78,6 +78,7 @@ target_sources(lue_framework_api_cxx
         source/io.cpp
         source/local/add.cpp
         source/local/uniform.cpp
+        source/routing/accu.cpp
 )
 
 # TODO Integrate with target_sources call?
@@ -91,6 +92,7 @@ target_link_libraries(lue_framework_api_cxx
         lue::framework_io
         lue::framework_local_operation
         lue::framework_miscellaneous_operation
+        lue::framework_routing_operation
     PUBLIC
         lue::framework_algorithm
         lue::framework_partitioned_array
