@@ -57,15 +57,7 @@ namespace lue {
                             Weight const weight{kernel(r, c)};
                             InputElement const value{window[r, c]};
 
-                            if (indp.is_no_data(value))
-                            {
-                                // In case one of the cells within the window contains a no-data
-                                // value, the result is marked as no-data
-                                values.clear();
-                                r = window.extent(0);
-                                c = window.extent(1);
-                            }
-                            else
+                            if (!indp.is_no_data(value))
                             {
                                 if (weight)
                                 {
@@ -75,7 +67,7 @@ namespace lue {
                         }
                     }
 
-                    Count count;
+                    Count count{};
 
                     {
                         if (values.empty())

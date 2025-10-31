@@ -27,8 +27,8 @@ namespace lue {
     namespace default_policies {
 
         template<typename Count, typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Count, rank> focal_diversity(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        auto focal_diversity(PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+            -> PartitionedArray<Count, rank>
         {
             using Policies = policy::focal_diversity::DefaultPolicies<Count, Element>;
 

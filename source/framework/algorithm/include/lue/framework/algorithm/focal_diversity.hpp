@@ -13,7 +13,8 @@ namespace lue {
 
 
     template<typename Count, typename Policies, typename Element, Rank rank, typename Kernel>
-    PartitionedArray<Count, rank> focal_diversity(
-        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel);
+    auto focal_diversity(
+        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        -> PartitionedArray<Count, rank>;
 
 }  // namespace lue
