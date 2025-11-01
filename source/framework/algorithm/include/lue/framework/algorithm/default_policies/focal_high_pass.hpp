@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::focal_high_pass {
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -16,9 +16,9 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Element, rank> focal_high_pass(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        template<std::floating_point Element, typename Kernel>
+        auto focal_high_pass(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Element, 2>
         {
             using Policies = policy::focal_high_pass::DefaultPolicies<Element>;
 
