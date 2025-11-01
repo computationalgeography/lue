@@ -683,7 +683,8 @@ namespace lue {
                 partitions.begin(),
                 partitions.end(),
                 [inflow_count_communicators = std::move(inflow_count_communicators),
-                 material_communicators = std::move(material_communicators)](auto&& partitions) mutable
+                 material_communicators =
+                     std::move(material_communicators)]([[maybe_unused]] auto&& partitions) mutable -> auto
                 {
                     auto f1{inflow_count_communicators.unregister()};
                     auto f2{material_communicators.unregister()};

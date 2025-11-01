@@ -224,6 +224,7 @@ foreach(name ${focal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_focal_operation
+            lue::framework_local_operation
     )
 endforeach()
 

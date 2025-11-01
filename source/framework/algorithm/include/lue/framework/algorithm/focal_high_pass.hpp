@@ -5,8 +5,10 @@
 
 namespace lue {
 
-    template<typename Policies, typename Element, Rank rank, typename Kernel>
-    PartitionedArray<Element, rank> focal_high_pass(
-        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel);
+    template<typename Policies, typename Kernel>
+    auto focal_high_pass(
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& array,
+        Kernel const& kernel) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
 
 }  // namespace lue

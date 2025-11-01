@@ -7,7 +7,6 @@ namespace lue {
 
     LUE_INSTANTIATE_FOCAL_HIGH_PASS(
             ESC(policy::focal_high_pass::{{ Policies }}<{{ Element }}>),
-            {{ Element }},
             ESC(Kernel<{{ Boolean}}, 2>)
         );
 

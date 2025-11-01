@@ -1373,7 +1373,7 @@ BOOST_AUTO_TEST_CASE(random_input)
             std::for_each(
                 buffer_handle->begin(),
                 buffer_handle->end(),
-                [&random_number_engine, &distribution, no_data](ZoneElement& zone_id)
+                [&random_number_engine, &distribution, no_data](ZoneElement& zone_id) -> void
                 {
                     zone_id = distribution(random_number_engine);
 

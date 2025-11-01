@@ -25,7 +25,7 @@
             ],
             "cacheVariables": {
                 "CMAKE_C_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs",
-                "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs"
+                "CMAKE_CXX_FLAGS_INIT": "-Wall -Wextra -Werror=missing-include-dirs -Wno-unused-lambda-capture"
             }
         },
         {

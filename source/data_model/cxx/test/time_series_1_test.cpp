@@ -406,7 +406,8 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::DatasetFixture)
                     std::all_of(
                         active_ids_read.begin(),
                         active_ids_read.end(),
-                        [collection_id](lue::data_model::ID const id) { return id == collection_id; }));
+                        [collection_id](lue::data_model::ID const id) -> bool
+                        { return id == collection_id; }));
             }
 
             // Time domain
