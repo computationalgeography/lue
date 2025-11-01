@@ -1552,7 +1552,7 @@ namespace lue {
                 .then(
                     hpx::unwrapping(
 
-                        [route_id, max_nr_cells](auto&& tuple_f)
+                        [route_id, max_nr_cells](auto&& tuple_f) -> auto
                         {
                             auto component_fs = std::get<0>(tuple_f).get();
                             auto max_value_fs = std::get<1>(tuple_f).get();
@@ -1603,7 +1603,7 @@ namespace lue {
 
                             return start_f.then(
                                 [route_id, components = std::move(components)](
-                                    hpx::future<typename Route::FragmentLocation>&& start_f)
+                                    hpx::future<typename Route::FragmentLocation> start_f) -> auto
                                 {
                                     RouteStarts starts{};
 
@@ -1616,8 +1616,9 @@ namespace lue {
         // As long as not all output route partitions are ready, we need to keep the components
         // alive
         hpx::when_all(route_partitions.begin(), route_partitions.end())
-            .then([components = std::move(components)]([[maybe_unused]] auto&& partitions_f)
-                  { HPX_UNUSED(components); });
+            .then(
+                [components = std::move(components)]([[maybe_unused]] auto&& partitions_f) -> auto
+                { HPX_UNUSED(components); });
 
         return Route{array_shape, std::move(starts), std::move(route_partitions)};
     }
