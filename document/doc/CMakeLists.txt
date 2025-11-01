@@ -80,6 +80,7 @@ foreach(name IN ITEMS
     # reference/fortran/index.md
     # reference/java/index.md
     # reference/julia/index.md
+    reference/operation/focal_diversity.md
     reference/operation/index.md
     reference/operation/resample.md
     reference/operation/uniform.md

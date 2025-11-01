@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/focal_diversity.hpp"
-#include <limits>
 
 
 namespace lue {
@@ -27,9 +26,9 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Count, typename Element, Rank rank, typename Kernel>
-        auto focal_diversity(PartitionedArray<Element, rank> const& array, Kernel const& kernel)
-            -> PartitionedArray<Count, rank>
+        template<typename Count, typename Element, typename Kernel>
+        auto focal_diversity(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Count, 2>
         {
             // TODO This one should be policy-based
             Element const fill_value{policy::no_data_value<Element>};
@@ -41,7 +40,7 @@ namespace lue {
             policy::focal_diversity::DefaultValuePolicies<Count, Element> policies{
                 domain_policy, output_policies, input_policies};
 
-            return focal_diversity<Count>(policies, array, kernel);
+            return focal_diversity(policies, array, kernel);
         }
 
     }  // namespace value_policies

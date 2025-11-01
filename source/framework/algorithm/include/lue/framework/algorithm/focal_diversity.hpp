@@ -6,15 +6,16 @@
 namespace lue {
     namespace policy::focal_diversity {
 
-        template<typename Element>
+        template<std::integral Element>
         using DomainPolicy = AllValuesWithinDomain<Element>;
 
     }  // namespace policy::focal_diversity
 
 
-    template<typename Count, typename Policies, typename Element, Rank rank, typename Kernel>
+    template<typename Policies, typename Kernel>
     auto focal_diversity(
-        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)
-        -> PartitionedArray<Count, rank>;
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& array,
+        Kernel const& kernel) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
 
 }  // namespace lue
