@@ -11,6 +11,60 @@
 #include "lue/framework.hpp"
 
 
+BOOST_AUTO_TEST_CASE(pcraster_example)
+{
+    using Element = lue::LargestSignedIntegralElement;
+    using Count = lue::CountElement;
+    std::size_t const rank = 2;
+
+    using ElementArray = lue::PartitionedArray<Element, rank>;
+    using CountArray = lue::PartitionedArray<Count, rank>;
+    using Shape = lue::ShapeT<ElementArray>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    Element const x{lue::policy::no_data_value<Element>};
+
+    auto const array = lue::test::create_partitioned_array<ElementArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                1,  1, 1, -4, -4,
+                2,  x, 2, -4, -4,
+                3,  6, 3,  3,  3,
+                4,  2, 3,  3,  3,
+                0, 14, 3, -1,  0,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+    auto const kernel = lue::box_kernel<lue::BooleanElement, 2>(1, 1);
+    auto const result_we_got = lue::value_policies::focal_diversity<Count>(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<CountArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                2, 2, 3, 3, 1,
+                4, 4, 5, 4, 2,
+                4, 4, 4, 3, 2,
+                6, 6, 5, 3, 3,
+                4, 5, 4, 3, 3,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
+}
+
+
 BOOST_AUTO_TEST_CASE(focal_diversity_2d_int32)
 {
     using Element = lue::LargestSignedIntegralElement;
@@ -42,7 +96,7 @@ BOOST_AUTO_TEST_CASE(focal_diversity_2d_int32)
     auto const kernel = lue::box_kernel<lue::BooleanElement, rank>(1, 1);
     CountArray const result_we_got = focal_diversity<Count>(array, kernel);
 
-    CountArray result_we_want = lue::test::create_partitioned_array<CountArray>(
+    auto const result_we_want = lue::test::create_partitioned_array<CountArray>(
         array_shape,
         partition_shape,
         {
@@ -128,7 +182,7 @@ BOOST_AUTO_TEST_CASE(focal_diversity_no_data_focal_cell)
     auto const kernel = lue::box_kernel<lue::BooleanElement, rank>(1, 1);
     CountArray const result_we_got = focal_diversity<Count>(array, kernel);
 
-    auto result_we_want = lue::test::create_partitioned_array<CountArray>(
+    auto const result_we_want = lue::test::create_partitioned_array<CountArray>(
         array_shape,
         partition_shape,
         {
@@ -174,7 +228,7 @@ BOOST_AUTO_TEST_CASE(focal_diversity_no_data_neighbourhood_cell)
     auto const kernel = lue::box_kernel<lue::BooleanElement, rank>(1, 1);
     CountArray const result_we_got = focal_diversity<Count>(array, kernel);
 
-    auto result_we_want = lue::test::create_partitioned_array<CountArray>(
+    auto const result_we_want = lue::test::create_partitioned_array<CountArray>(
         array_shape,
         partition_shape,
         {

@@ -84,11 +84,11 @@ namespace lue {
 
 
     /*!
-      @brief      Return an array with per cell the number of unique element values found in the cells within
-                  the corresponding focal neighbourhood
-      @ingroup    focal_operation
+        @brief      Return an array with per cell the number of unique element values found in the cells
+                    within the corresponding focal neighbourhood
+        @ingroup    focal_operation
 
-      No-data values are filled unless all values within the neighbourhood are no-data.
+        No-data values are filled unless all values within the neighbourhood are no-data.
     */
     template<typename Policies, typename Kernel>
         requires std::is_integral_v<policy::InputElementT<Policies, 0>> &&
