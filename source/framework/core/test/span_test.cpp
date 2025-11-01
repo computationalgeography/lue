@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(dynamic_span_test)
     std::vector<int> cells(nr_cells);
 
     // Fill array with increasing valueѕ
-    std::ranges::iota(cells, 0);
+    std::iota(cells.begin(), cells.end(), 0);
 
     // View 1D array as a 2D array
     lue::DynamicSpan<int, 2> raster(cells.data(), nr_rows, nr_cols);
