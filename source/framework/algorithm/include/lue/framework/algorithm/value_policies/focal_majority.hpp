@@ -16,9 +16,9 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Element, rank> focal_majority(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        template<typename Element, typename Kernel>
+        auto focal_majority(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Element, 2>
         {
             using Policies = policy::focal_majority::DefaultValuePolicies<Element>;
 
