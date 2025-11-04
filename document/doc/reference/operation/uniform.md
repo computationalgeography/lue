@@ -1,6 +1,5 @@
 # Uniform
 
-
 ## Signature
 
 ```{eval-rst}
@@ -20,16 +19,13 @@
    Overload of :py:func:`uniform`. A default partition shape will be used.
 ```
 
-
 ## Description
 
 TODO
 
-
 ## No-data handling
 
 TODO
-
 
 ## Example
 

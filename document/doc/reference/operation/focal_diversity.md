@@ -32,8 +32,8 @@ array is likely to contain less no-data values than the input array.
 ```
 
 ```{code-block} c++
-auto const kernel = box_kernel<BooleanElement, rank>(1, 1);
-auto const result = focal_diversity<Count>(array, kernel);
+auto const kernel = lue::box_kernel<BooleanElement, rank>(1, 1);
+auto const result = lue::value_policies::focal_diversity<Count>(array, kernel);
 ```
 
 ```{code-block} java
@@ -42,7 +42,7 @@ auto const result = focal_diversity<Count>(array, kernel);
 
 ```{code-block} python
 kernel = np.full((3, 3), 1, dtype=lfr.boolean_element_type)
-result = focal_diversity(array, kernel)
+result = lfr.focal_diversity(array, kernel)
 ```
 
 ````

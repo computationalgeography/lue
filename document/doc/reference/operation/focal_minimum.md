@@ -1,21 +1,21 @@
-# Focal high-pass
+# Focal minimum
 
 ## Signature
 
 ```{eval-rst}
-.. py:function:: focal_high_pass(array, kernel) -> Field
+.. py:function:: focal_minimum(array, kernel) -> Field
 
-   TODO
+   Determine the minimum value in a neighbourhood
 
-   :param Field array: Floating point array to analyse
+   :param Field array: Arithmetic array to analyse
    :param Kernel kernel: Neighbourhood to search. The weights must be integral and will be used to determine
         whether a cell's value is to be evaluated (weight is non-zero) or not (weight is zero).
-   :return: New floating point array
+   :return: New arithmetic array
 ```
 
 ## Description
 
-TODO
+Focal operation for determining the minimum value in a neighbourhood.
 
 ## No-data handling
 
@@ -33,7 +33,7 @@ array is likely to contain less no-data values than the input array.
 
 ```{code-block} c++
 auto const kernel = lue::box_kernel<BooleanElement, rank>(1, 1);
-auto const result = lue::value_policies::focal_high_pass(array, kernel);
+auto const result = lue::value_policies::focal_minimum(array, kernel);
 ```
 
 ```{code-block} java
@@ -42,7 +42,7 @@ auto const result = lue::value_policies::focal_high_pass(array, kernel);
 
 ```{code-block} python
 kernel = np.full((3, 3), 1, dtype=lfr.boolean_element_type)
-result = lfr.focal_high_pass(array, kernel)
+result = lfr.focal_minimum(array, kernel)
 ```
 
 ````

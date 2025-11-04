@@ -143,3 +143,42 @@ BOOST_AUTO_TEST_CASE(focal_high_pass_2d_float)
 
     lue::test::check_arrays_are_equal(focal_high_pass, array_we_want);
 }
+
+
+BOOST_AUTO_TEST_CASE(all_no_data)
+{
+    using Element = lue::FloatingPointElement<0>;
+    std::size_t const rank = 2;
+
+    using ElementArray = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<ElementArray>;
+
+    Shape const array_shape{{3, 3}};
+    Shape const partition_shape{{3, 3}};
+
+    Element const x{lue::policy::no_data_value<Element>};
+
+    // x x x   x x x
+    // x x x → x x x
+    // x x x   x x x
+    auto const array{lue::create_partitioned_array<Element>(array_shape, partition_shape, x)};
+    auto const kernel = lue::box_kernel<lue::BooleanElement, rank>(1, 1);
+    auto const result_we_got = lue::value_policies::focal_high_pass(array, kernel);
+
+    auto const result_we_want = lue::test::create_partitioned_array<ElementArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                x, x, x,
+                x, x, x,
+                x, x, x,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
+}

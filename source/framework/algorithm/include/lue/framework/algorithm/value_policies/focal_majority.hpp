@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::focal_majority {
 
-        template<typename Element>
+        template<std::integral Element>
         using DefaultValuePolicies = policy::DefaultSpatialOperationValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -16,7 +16,7 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, typename Kernel>
+        template<std::integral Element, typename Kernel>
         auto focal_majority(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
             -> PartitionedArray<Element, 2>
         {
