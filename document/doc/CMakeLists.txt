@@ -81,6 +81,8 @@ foreach(name IN ITEMS
     # reference/java/index.md
     # reference/julia/index.md
     reference/operation/focal_diversity.md
+    reference/operation/focal_high_pass.md
+    reference/operation/focal_majority.md
     reference/operation/index.md
     reference/operation/resample.md
     reference/operation/uniform.md

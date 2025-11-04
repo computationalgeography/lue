@@ -38,6 +38,8 @@ parts:
           - file: reference/operation/index.md
             sections:
               - file: reference/operation/focal_diversity.md
+              - file: reference/operation/focal_high_pass.md
+              - file: reference/operation/focal_majority.md
               - file: reference/operation/resample.md
               - file: reference/operation/uniform.md
           - file: source/framework/api/doc/index.md

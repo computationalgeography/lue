@@ -1,11 +1,11 @@
-# Focal diversity
+# Focal majority
 
 ## Signature
 
 ```{eval-rst}
-.. py:function:: focal_diversity(array, kernel) -> Field
+.. py:function:: focal_majority(array, kernel) -> Field
 
-   Count the number of different values in a neighbourhood
+   Determine the most occurring value in a neighbourhood
 
    :param Field array: Integral array to analyse
    :param Kernel kernel: Neighbourhood to search. The weights must be integral and will be used to determine
@@ -15,7 +15,8 @@
 
 ## Description
 
-Focal operation for counting the number of different values in a neighbourhood.
+Focal operation for determining the most occurring value in a neighbourhood. If multiple values have the
+same highest occurrence, then the smallest one is selected.
 
 ## No-data handling
 
@@ -33,7 +34,7 @@ array is likely to contain less no-data values than the input array.
 
 ```{code-block} c++
 auto const kernel = box_kernel<BooleanElement, rank>(1, 1);
-auto const result = focal_diversity<Count>(array, kernel);
+auto const result = focal_majority(array, kernel);
 ```
 
 ```{code-block} java
@@ -42,7 +43,7 @@ auto const result = focal_diversity<Count>(array, kernel);
 
 ```{code-block} python
 kernel = np.full((3, 3), 1, dtype=lfr.boolean_element_type)
-result = focal_diversity(array, kernel)
+result = focal_majority(array, kernel)
 ```
 
 ````

@@ -1,21 +1,21 @@
-# Focal diversity
+# Focal high-pass
 
 ## Signature
 
 ```{eval-rst}
-.. py:function:: focal_diversity(array, kernel) -> Field
+.. py:function:: focal_high_pass(array, kernel) -> Field
 
-   Count the number of different values in a neighbourhood
+   TODO
 
-   :param Field array: Integral array to analyse
+   :param Field array: Floating point array to analyse
    :param Kernel kernel: Neighbourhood to search. The weights must be integral and will be used to determine
         whether a cell's value is to be evaluated (weight is non-zero) or not (weight is zero).
-   :return: New integral array
+   :return: New floating point array
 ```
 
 ## Description
 
-Focal operation for counting the number of different values in a neighbourhood.
+TODO
 
 ## No-data handling
 
@@ -33,7 +33,7 @@ array is likely to contain less no-data values than the input array.
 
 ```{code-block} c++
 auto const kernel = box_kernel<BooleanElement, rank>(1, 1);
-auto const result = focal_diversity<Count>(array, kernel);
+auto const result = focal_high_pass(array, kernel);
 ```
 
 ```{code-block} java
@@ -42,7 +42,7 @@ auto const result = focal_diversity<Count>(array, kernel);
 
 ```{code-block} python
 kernel = np.full((3, 3), 1, dtype=lfr.boolean_element_type)
-result = focal_diversity(array, kernel)
+result = focal_high_pass(array, kernel)
 ```
 
 ````
