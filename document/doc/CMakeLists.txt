@@ -84,6 +84,7 @@ foreach(name IN ITEMS
     reference/operation/focal_high_pass.md
     reference/operation/focal_majority.md
     reference/operation/focal_maximum.md
+    reference/operation/focal_mean.md
     reference/operation/focal_minimum.md
     reference/operation/index.md
     reference/operation/resample.md
