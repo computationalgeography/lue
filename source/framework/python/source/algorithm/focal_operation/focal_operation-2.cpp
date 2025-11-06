@@ -27,6 +27,14 @@ namespace lue::framework {
                         "elevation"_a);
 
                     module.def(
+                        "convolve",
+                        [](PartitionedArray<Element, rank> const& array,
+                           pybind11::array_t<Element> const& kernel) -> auto
+                        { return value_policies::convolve(array, array_to_kernel<Element, rank>(kernel)); },
+                        "array"_a,
+                        "kernel"_a.noconvert());
+
+                    module.def(
                         "focal_high_pass",
                         [](PartitionedArray<Element, rank> const& array,
                            pybind11::array_t<BooleanElement> const& kernel) -> auto

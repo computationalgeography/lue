@@ -1,10 +1,10 @@
 #pragma once
-#include "lue/framework/algorithm/definition/convolve.hpp"
 #include "lue/framework/algorithm/definition/divide.hpp"
 #include "lue/framework/algorithm/focal_operation_export.hpp"
 #include "lue/framework/algorithm/gradients.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/convolve.hpp"
 
 
 namespace lue {
@@ -54,8 +54,8 @@ namespace lue {
 
         // TODO(KDJ) Make dependent on Policies
         // Currently, halo is filled with no-data...
-        auto convolve_policies =
-            policy::convolve::DefaultPolicies<Element, Element>{lue::policy::no_data_value<Element>};
+        // auto convolve_policies =
+        //     policy::convolve::DefaultPolicies<Element, Element>{lue::policy::no_data_value<Element>};
 
         using DividePolicies = policy::Policies<
             policy::divide::DomainPolicy<Element>,
@@ -67,13 +67,9 @@ namespace lue {
         DividePolicies divide_policies{};
 
         Array dz_dx = divide(
-            divide_policies,
-            convolve<Element>(convolve_policies, elevation, dz_dx_kernel),
-            Element{8} * cell_size);
+            divide_policies, value_policies::convolve(elevation, dz_dx_kernel), Element{8} * cell_size);
         Array dz_dy = divide(
-            divide_policies,
-            convolve<Element>(convolve_policies, elevation, dz_dy_kernel),
-            Element{8} * cell_size);
+            divide_policies, value_policies::convolve(elevation, dz_dy_kernel), Element{8} * cell_size);
 
         return {std::move(dz_dx), std::move(dz_dy)};
     }

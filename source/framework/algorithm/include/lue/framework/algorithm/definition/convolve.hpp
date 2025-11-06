@@ -1,67 +1,72 @@
 #pragma once
 #include "lue/framework/algorithm/convolve.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
+#include "lue/framework/algorithm/focal_operation_export.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename OutputElement_, typename InputElement>
+        template<std::floating_point Element>
         class Convolve
         {
 
             public:
 
-                using OutputElement = OutputElement_;
-
-
-                static_assert(std::is_convertible_v<InputElement, OutputElement>);
-
                 static constexpr char const* name{"convolve"};
 
-
-                Convolve() = default;
+                using InputElement = Element;
+                using OutputElement = Element;
 
 
                 template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
-                OutputElement operator()(
+                auto operator()(
                     Kernel const& kernel,
-                    [[maybe_unused]] OutputPolicies const& output_policies,
-                    [[maybe_unused]] InputPolicies const& input_policies,
-                    Subspan const& window) const
+                    OutputPolicies const& output_policies,
+                    InputPolicies const& input_policies,
+                    Subspan const& window) const -> OutputElement
                 {
-                    static_assert(rank<Kernel> == 2);
-
                     using Weight = ElementT<Kernel>;
 
-                    // TODO Add traits to grab typename of elements in Subspan
-                    // static_assert(std::is_same_v<ElementT<Subspan>, InputElement>);
-                    static_assert(std::is_same_v<Weight, bool> || std::is_floating_point_v<Weight>);
+                    lue_hpx_assert(window.extent(0) == kernel.size());
+                    lue_hpx_assert(window.extent(1) == kernel.size());
+
+                    auto const& indp = input_policies.input_no_data_policy();
+                    auto const& ondp = output_policies.output_no_data_policy();
 
                     OutputElement sum{0};
+                    bool initialized{false};
 
-                    lue_hpx_assert(static_cast<Count>(window.extent(0)) == kernel.size());
-                    lue_hpx_assert(static_cast<Count>(window.extent(1)) == kernel.size());
-
-                    for (Index r = 0; r < window.extent(0); ++r)
+                    for (Index idx0 = 0; idx0 < window.extent(0); ++idx0)
                     {
-                        for (Index c = 0; c < window.extent(1); ++c)
+                        for (Index idx1 = 0; idx1 < window.extent(1); ++idx1)
                         {
-                            Weight const weight{kernel(r, c)};
-                            InputElement const value{window[r, c]};
+                            InputElement const value{window[idx0, idx1]};
 
-                            if constexpr (std::is_same_v<Weight, bool>)
+                            if (!indp.is_no_data(value))
                             {
-                                if (weight)
+                                Weight const weight{kernel(idx0, idx1)};
+
+                                if constexpr (std::is_integral_v<Weight>)
                                 {
-                                    sum += value;
+                                    if (weight)
+                                    {
+                                        sum += value;
+                                        initialized = true;
+                                    }
+                                }
+                                else
+                                {
+                                    sum += weight * value;
+                                    initialized = true;
                                 }
                             }
-                            else
-                            {
-                                sum += weight * value;
-                            }
                         }
+                    }
+
+                    if (!initialized)
+                    {
+                        ondp.mark_no_data(sum);
                     }
 
                     return sum;
@@ -71,13 +76,37 @@ namespace lue {
     }  // namespace detail
 
 
-    template<typename OutputElement, typename ConvolvePolicies, typename Array, typename Kernel>
-    PartitionedArrayT<Array, OutputElement> convolve(
-        ConvolvePolicies const& policies, Array const& array, Kernel const& kernel)
+    /*!
+        @brief      Return an array with the convolution of @a array with the weights of @a kernel
+        @ingroup    focal_operation
+
+        For each focal cell the input cells within the neighbourhood are multiplied by the corresponding
+        weight and summed.
+
+        No-data values are filled unless all values within the neighbourhood are no-data.
+
+        See focal_sum() for an algorithm that sums values using boolean weights (represented by integrals).
+    */
+    template<typename Policies, typename Kernel>
+        requires std::floating_point<policy::InputElementT<Policies, 0>> &&
+                 std::floating_point<policy::OutputElementT<Policies, 0>> &&
+                 std::same_as<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>> &&
+                 std::floating_point<ElementT<Kernel>> && (rank<Kernel> == 2)
+    auto convolve(
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& array,
+        Kernel const& kernel) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
-        using Functor = detail::Convolve<OutputElement, ElementT<Array>>;
+        using Functor = detail::Convolve<policy::InputElementT<Policies, 0>>;
 
         return focal_operation(policies, array, kernel, Functor{});
     }
 
 }  // namespace lue
+
+
+#define LUE_INSTANTIATE_CONVOLVE(Policies, Kernel)                                                           \
+    template LUE_FOCAL_OPERATION_EXPORT auto convolve<ArgumentType<void(Policies)>, Kernel>(                 \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
+        Kernel const&) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

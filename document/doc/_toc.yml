@@ -37,6 +37,7 @@ parts:
         sections:
           - file: reference/operation/index.md
             sections:
+              - file: reference/operation/convolve.md
               - file: reference/operation/focal_diversity.md
               - file: reference/operation/focal_high_pass.md
               - file: reference/operation/focal_majority.md

@@ -826,6 +826,21 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
+            # Instantiate convolve
+            set(Weight ${Element})
+            set(weight ${element})
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/convolve-${Policies}_${element}_${weight}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/convolve.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}","Weight":"${Weight}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             # Instantiate focal_high_pass
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/focal_high_pass-${Policies}_${element}.cpp")
 
