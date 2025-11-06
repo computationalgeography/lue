@@ -38,6 +38,7 @@ parts:
           - file: reference/operation/index.md
             sections:
               - file: reference/operation/convolve.md
+              - file: reference/operation/d8_flow_direction.md
               - file: reference/operation/focal_diversity.md
               - file: reference/operation/focal_high_pass.md
               - file: reference/operation/focal_majority.md

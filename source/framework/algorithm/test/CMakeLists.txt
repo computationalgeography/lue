@@ -110,6 +110,7 @@ set(routing_operation_names
     accu
     accu_fraction
     accu_threshold
+    d8_flow_direction
     decreasing_order
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
@@ -146,7 +147,6 @@ set(names
     any
     array_partition_io
     communicator_array
-    d8_flow_direction
     downstream
     downstream_distance
     focal_operation
