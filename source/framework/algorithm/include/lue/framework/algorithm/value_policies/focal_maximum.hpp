@@ -22,7 +22,7 @@ namespace lue {
         {
             using Policies = policy::focal_maximum::DefaultValuePolicies<Element>;
 
-            // TODO This one should be policy-based
+            // TODO: This one should be policy-based
             Element const fill_value{policy::no_data_value<Element>};
 
             return focal_maximum(Policies{fill_value}, array, kernel);

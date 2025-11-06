@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_mean
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/range.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
 #include "lue/framework/algorithm/value_policies/focal_mean.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"

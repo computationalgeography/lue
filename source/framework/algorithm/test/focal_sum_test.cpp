@@ -1,7 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm focal_sum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/range.hpp"
 #include "lue/framework/algorithm/value_policies/focal_sum.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
@@ -45,11 +44,11 @@ BOOST_AUTO_TEST_CASE(pcraster_example)
             // NOLINTBEGIN
             // clang-format off
             {
-                1, 3, -27, -29, -31,
-                6, 11, -18, -20, -25,
-                7, 13, 54, 53, 47,
-                4, 13, 60, 65, 56,
-                -1, 5, 51, 56, 50,
+                 1,  3, -27, -29, -31,
+                 6, 11, -18, -20, -25,
+                 7, 13,  54,  53,  47,
+                 4, 13,  60,  65,  56,
+                -1,  5,  51,  56,  50,
             },
             // clang-format on
             // NOLINTEND
