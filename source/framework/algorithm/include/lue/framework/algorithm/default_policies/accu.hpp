@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/accu.hpp"
-#include "lue/framework.hpp"
+#include "lue/framework/configure.hpp"
 #include <concepts>
 
 
