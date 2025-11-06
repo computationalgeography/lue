@@ -86,6 +86,7 @@ foreach(name IN ITEMS
     reference/operation/focal_maximum.md
     reference/operation/focal_mean.md
     reference/operation/focal_minimum.md
+    reference/operation/focal_sum.md
     reference/operation/index.md
     reference/operation/resample.md
     reference/operation/uniform.md

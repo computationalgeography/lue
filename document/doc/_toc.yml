@@ -43,6 +43,7 @@ parts:
               - file: reference/operation/focal_maximum.md
               - file: reference/operation/focal_mean.md
               - file: reference/operation/focal_minimum.md
+              - file: reference/operation/focal_sum.md
               - file: reference/operation/resample.md
               - file: reference/operation/uniform.md
           - file: source/framework/api/doc/index.md
