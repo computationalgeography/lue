@@ -1,4 +1,4 @@
-# Focal sum
+# `focal_sum`
 
 ## Signature
 
@@ -46,3 +46,7 @@ result = lfr.focal_sum(array, kernel)
 ```
 
 ````
+
+## See also
+
+- See {py:func}`convolve` for an operation which sums values, multiplying them by weights

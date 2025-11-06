@@ -1,4 +1,4 @@
-# Focal maximum
+# `focal_maximum`
 
 ## Signature
 

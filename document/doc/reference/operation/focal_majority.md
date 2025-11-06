@@ -1,4 +1,4 @@
-# Focal majority
+# `focal_majority`
 
 ## Signature
 

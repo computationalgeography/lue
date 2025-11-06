@@ -1,4 +1,4 @@
-# Focal mean
+# `focal_mean`
 
 ## Signature
 

@@ -1,4 +1,4 @@
-# Uniform
+# `uniform`
 
 ## Signature
 

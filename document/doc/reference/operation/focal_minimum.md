@@ -1,4 +1,4 @@
-# Focal minimum
+# `focal_minimum`
 
 ## Signature
 

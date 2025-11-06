@@ -1,4 +1,4 @@
-# Resample
+# `resample`
 
 ## Signature
 

@@ -1,4 +1,4 @@
-# Focal diversity
+# `focal_diversity`
 
 ## Signature
 

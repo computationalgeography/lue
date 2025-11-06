@@ -1,4 +1,4 @@
-# Focal high-pass
+# `focal_high_pass`
 
 ## Signature
 
