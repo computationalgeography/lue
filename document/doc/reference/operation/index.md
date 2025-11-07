@@ -22,6 +22,7 @@ Note: not all operations available are listed here already.
 ## Routing operations
 
 - {py:func}`d8_flow_direction`
+- {py:func}`downstream`
 
 ## Miscellaneous operations
 
