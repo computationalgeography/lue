@@ -2,14 +2,15 @@
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/downstream.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
+#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename FlowDirectionElement, typename MaterialElement>
+        template<std::integral FlowDirectionElement, Arithmetic MaterialElement>
         class Downstream
         {
 
@@ -27,15 +28,14 @@ namespace lue {
                     typename InputPolicies2,
                     typename Subspan1,
                     typename Subspan2>
-                OutputElement operator()(
+                auto operator()(
                     [[maybe_unused]] Kernel const& kernel,
                     OutputPolicies const& output_policies,
                     InputPolicies1 const& input_policies1,
                     InputPolicies2 const& input_policies2,
                     Subspan1 const& flow_direction_window,
-                    Subspan2 const& material_window) const
+                    Subspan2 const& material_window) const -> MaterialElement
                 {
-                    static_assert(rank<Kernel> == 2);
                     lue_hpx_assert(kernel.radius() == 1);
 
                     // Iterate over all neighbours and for each upstream
@@ -45,7 +45,7 @@ namespace lue {
                     auto indp2 = input_policies2.input_no_data_policy();
                     auto ondp = output_policies.output_no_data_policy();
 
-                    OutputElement material{0};
+                    MaterialElement material{0};
 
                     // If input flow direction or material contain a
                     // no-data in the focal cell, then the result will be
@@ -161,12 +161,23 @@ namespace lue {
     }  // namespace detail
 
 
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> downstream(
+    /*!
+      @brief      Assign the value from each cell's downstream cell to the cell itself
+      @ingroup    routing_operation
+    */
+    template<typename Policies>
+        requires std::integral<policy::InputElementT<Policies, 0>> &&
+                 Arithmetic<policy::InputElementT<Policies, 1>> &&
+                 Arithmetic<policy::OutputElementT<Policies, 0>> &&
+                 std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
+    auto downstream(
         Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        PartitionedArray<MaterialElement, rank> const& material)
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& material)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
+        using FlowDirectionElement = policy::InputElementT<Policies, 0>;
+        using MaterialElement = policy::InputElementT<Policies, 1>;
         using Functor = detail::Downstream<FlowDirectionElement, MaterialElement>;
 
         // Only used for its radius. Weights are not used.
@@ -178,10 +189,10 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_DOWNSTREAM(Policies, FlowDirectionElement, MaterialElement)                          \
+#define LUE_INSTANTIATE_DOWNSTREAM(Policies)                                                                 \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<MaterialElement, 2>                               \
-    downstream<ArgumentType<void(Policies)>, FlowDirectionElement, MaterialElement, 2>(                      \
+    template LUE_ROUTING_OPERATION_EXPORT auto downstream<ArgumentType<void(Policies)>>(                     \
         ArgumentType<void(Policies)> const&,                                                                 \
-        PartitionedArray<FlowDirectionElement, 2> const&,                                                    \
-        PartitionedArray<MaterialElement, 2> const&);
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const&)                                      \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

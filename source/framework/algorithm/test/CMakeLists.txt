@@ -112,6 +112,7 @@ set(routing_operation_names
     accu_threshold
     d8_flow_direction
     decreasing_order
+    downstream
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
     kinematic_wave
@@ -147,7 +148,6 @@ set(names
     any
     array_partition_io
     communicator_array
-    downstream
     downstream_distance
     focal_operation
     mesh_grid

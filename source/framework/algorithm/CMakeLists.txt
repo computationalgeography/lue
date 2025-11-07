@@ -1637,14 +1637,12 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate upstream
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/upstream-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/upstream-${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1851,14 +1849,12 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate downstream
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream-${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME

@@ -82,6 +82,7 @@ foreach(name IN ITEMS
     # reference/julia/index.md
     reference/operation/convolve.md
     reference/operation/d8_flow_direction.md
+    reference/operation/downstream.md
     reference/operation/focal_diversity.md
     reference/operation/focal_high_pass.md
     reference/operation/focal_majority.md
