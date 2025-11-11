@@ -1641,6 +1641,19 @@ block()
         foreach(Element IN LISTS LUE_FRAMEWORK_MATERIAL_ELEMENTS)
             string(REPLACE "::" "_" element ${Element})
 
+            # Instantiate downstream
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream-${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/downstream.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             # Instantiate upstream
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/upstream-${element}.cpp")
 
@@ -1848,28 +1861,28 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
-block()
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            string(REPLACE "::" "_" element ${Element})
-
-            # Instantiate downstream
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream-${element}.cpp")
-
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/downstream.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
+# block()
+#     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
+#         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+#             string(REPLACE "::" "_" element ${Element})
+#
+#             # Instantiate downstream
+#             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream-${element}.cpp")
+#
+#             generate_template_instantiation(
+#                 INPUT_PATHNAME
+#                     "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/downstream.cpp.in"
+#                 OUTPUT_PATHNAME
+#                     "${output_pathname}"
+#                 DICTIONARY
+#                     '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+#             )
+#             list(APPEND generated_source_files "${output_pathname}")
+#         endforeach()
+#     endforeach()
+#
+#     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
+# endblock()
 
 block()
     set(count "0")

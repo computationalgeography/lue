@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(pcraster_example)
     using MaterialArray = lue::PartitionedArray<MaterialElement, rank>;
     using Shape = lue::ShapeT<FlowDirectionArray>;
 
-    Shape const array_shape{{5, 5}};
-    Shape const partition_shape{{5, 5}};
+    Shape const array_shape{5, 5};
+    Shape const partition_shape{5, 5};
 
     auto const x{lue::policy::no_data_value<MaterialElement>};
 

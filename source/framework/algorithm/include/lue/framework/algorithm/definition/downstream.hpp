@@ -162,14 +162,14 @@ namespace lue {
 
 
     /*!
-      @brief      Assign the value from each cell's downstream cell to the cell itself
+      @brief      Assign the value from each cell's downstream neighbour to the cell itself
       @ingroup    routing_operation
     */
     template<typename Policies>
         requires std::integral<policy::InputElementT<Policies, 0>> &&
-                 Arithmetic<policy::InputElementT<Policies, 1>> &&
-                 Arithmetic<policy::OutputElementT<Policies, 0>> &&
-                 std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
+                     Arithmetic<policy::InputElementT<Policies, 1>> &&
+                     Arithmetic<policy::OutputElementT<Policies, 0>> &&
+                     std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
     auto downstream(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,

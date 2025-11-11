@@ -5,11 +5,11 @@
 ```{eval-rst}
 .. py:function:: downstream(flow_direction, material) -> Field
 
-   Assign the value from each cell's downstream cell to the cell itself
+   Assign the value from each cell's downstream neighbour to the cell itself
 
    :param Field flow_direction: Integral array
-   :param Field material: Floating point array
-   :return: New integral array
+   :param Field material: Arithmetic array
+   :return: New arithmetic array
 ```
 
 ## Description
