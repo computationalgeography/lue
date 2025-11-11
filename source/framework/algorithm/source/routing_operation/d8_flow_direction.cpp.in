@@ -1,12 +1,13 @@
+#include "lue/framework/algorithm/default_policies/d8_flow_direction.hpp"
 #include "lue/framework/algorithm/definition/d8_flow_direction.hpp"
+#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/d8_flow_direction.hpp"
 
 
 namespace lue {
 
     LUE_INSTANTIATE_D8_FLOW_DIRECTION(
-            ESC(policy::d8_flow_direction::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
-            {{ FlowDirectionElement }},
-            {{ Element }}
+            ESC(policy::d8_flow_direction::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>)
         );
 
 }  // namespace lue

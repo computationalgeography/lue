@@ -1,79 +1,9 @@
 #define BOOST_TEST_MODULE lue framework algorithm convolve
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/convolve.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/convolve.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
-
-
-// TODO Currently only 2D convolution is supported
-// BOOST_AUTO_TEST_CASE(window_total_1d)
-// {
-//     using Element = std::int32_t;
-//     std::size_t const rank = 1;
-//
-//     using Array = lue::PartitionedArray<Element, rank>;
-//     using Shape = lue::ShapeT<Array>;
-//
-//     Shape const array_shape{{8}};
-//     Shape const partition_shape{{3}};
-//
-//     // |           |           |       |
-//     // +---+---+---+---+---+---+---+---+
-//     // | 1 | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
-//     // +---+---+---+---+---+---+---+---+
-//     // |           |           |       |
-//     Array array{lue::create_partitioned_array(
-//         array_shape, partition_shape, Element{1}, lue::ClampMode::shrink)};
-//     BOOST_REQUIRE_EQUAL(lue::nr_partitions(array), 3);
-//
-//     // +---+---+---+
-//     // | 1 | 1 | 1 |
-//     // +---+---+---+
-//     auto const kernel = lue::box_kernel<bool, rank>(1, true);
-//
-//     // |           |           |       |
-//     // +---+---+---+---+---+---+---+---+
-//     // | 2 | 3 | 3 | 3 | 3 | 3 | 3 | 2 |
-//     // +---+---+---+---+---+---+---+---+
-//     // |           |           |       |
-//     auto convolve = lue::convolve<double>(array, kernel);
-//
-//     static_assert(std::is_same_v<lue::ElementT<decltype(convolve)>, double>);
-//
-//     BOOST_REQUIRE_EQUAL(lue::nr_partitions(convolve), 3);
-//     BOOST_REQUIRE_EQUAL(convolve.shape(), array_shape);
-//
-//     // First partition
-//     {
-//         auto const& partition = convolve.partitions()[0];
-//         auto const data = partition.data().get();
-//         BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
-//         BOOST_CHECK_EQUAL(data[0], 2.0);
-//         BOOST_CHECK_EQUAL(data[1], 3.0);
-//         BOOST_CHECK_EQUAL(data[2], 3.0);
-//     }
-//
-//     // Second partition
-//     {
-//         auto const& partition = convolve.partitions()[1];
-//         auto const data = partition.data().get();
-//         BOOST_REQUIRE_EQUAL(shape(data), partition_shape);
-//         BOOST_CHECK_EQUAL(data[0], 3.0);
-//         BOOST_CHECK_EQUAL(data[1], 3.0);
-//         BOOST_CHECK_EQUAL(data[2], 3.0);
-//     }
-//
-//     // Third partition
-//     {
-//         auto const& partition = convolve.partitions()[2];
-//         auto const data = partition.data().get();
-//         BOOST_REQUIRE_EQUAL(shape(data), Shape{{2}});
-//         BOOST_CHECK_EQUAL(data[0], 3.0);
-//         BOOST_CHECK_EQUAL(data[1], 2.0);
-//     }
-// }
 
 
 // TODO Test with larger kernel radius
@@ -85,205 +15,285 @@
 //      sometimes it doesn't...
 
 
+BOOST_AUTO_TEST_CASE(pcraster_example)
+{
+    using Element = lue::FloatingPointElement<0>;
+    std::size_t const rank = 2;
+
+    using ElementArray = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<ElementArray>;
+
+    Shape const array_shape{{5, 5}};
+    Shape const partition_shape{{5, 5}};
+
+    Element const x{lue::policy::no_data_value<Element>};
+
+    auto const array = lue::test::create_partitioned_array<ElementArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                0, -1, 1, -30,  0,
+                2,  x, 1,   2, -3,
+                3,  2, 3,   4,  2,
+                0,  0, 2,  40,  2,
+                1, -2, 4,   7,  1,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+    auto const kernel = lue::box_kernel<Element, rank>(1, 1);
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<ElementArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                 1,  3, -27, -29, -31,
+                 6, 11, -18, -20, -25,
+                 7, 13,  54,  53,  47,
+                 4, 13,  60,  65,  56,
+                -1,  5,  51,  56,  50,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+
+    lue::test::check_arrays_are_close(result_we_got, result_we_want);
+}
+
+
+BOOST_AUTO_TEST_CASE(all_no_data)
+{
+    using Element = lue::FloatingPointElement<0>;
+    std::size_t const rank = 2;
+
+    using ElementArray = lue::PartitionedArray<Element, rank>;
+    using Shape = lue::ShapeT<ElementArray>;
+
+    Shape const array_shape{{3, 3}};
+    Shape const partition_shape{{3, 3}};
+
+    Element const x{lue::policy::no_data_value<Element>};
+
+    // x x x   x x x
+    // x x x → x x x
+    // x x x   x x x
+    auto const array{lue::create_partitioned_array<Element>(array_shape, partition_shape, x)};
+    auto const kernel = lue::box_kernel<Element, rank>(1, 1);
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<ElementArray>(
+        array_shape,
+        partition_shape,
+        {
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                x, x, x,
+                x, x, x,
+                x, x, x,
+            },
+            // clang-format on
+            // NOLINTEND
+        });
+
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
+}
+
+
 BOOST_AUTO_TEST_CASE(window_total_2d)
 {
-    using Element = lue::SignedIntegralElement<0>;
-    using OutputElement = lue::FloatingPointElement<0>;
-
+    using Element = lue::FloatingPointElement<0>;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // ----------+----------+----------
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // ----------+----------+----------
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
-
-    // [true true true]
-    // [true true true]
-    // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-
-    // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // ----------+----------+----------
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // ----------+----------+----------
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve<OutputElement>(array, kernel);
-
-    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+    Array const array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
+    auto const kernel = lue::box_kernel<Element, rank>(1, 1);
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<Array>(
         array_shape,
         partition_shape,
         {
-            {4., 6., 6., 6., 9., 9., 6., 9., 9.},
-            {6., 6., 6., 9., 9., 9., 9., 9., 9.},
-            {6., 6., 4., 9., 9., 6., 9., 9., 6.},
-            {6., 9., 9., 6., 9., 9., 6., 9., 9.},
-            {9., 9., 9., 9., 9., 9., 9., 9., 9.},
-            {9., 9., 6., 9., 9., 6., 9., 9., 6.},
-            {6., 9., 9., 6., 9., 9., 4., 6., 6.},
-            {9., 9., 9., 9., 9., 9., 6., 6., 6.},
-            {9., 9., 6., 9., 9., 6., 6., 6., 4.},
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                4., 6., 6.,
+                6., 9., 9.,
+                6., 9., 9.
+            },
+            {
+                6., 6., 6.,
+                9., 9., 9.,
+                9., 9., 9.
+            },
+            {
+                6., 6., 4.,
+                9., 9., 6.,
+                9., 9., 6.
+            },
+            {
+                6., 9., 9.,
+                6., 9., 9.,
+                6., 9., 9.
+            },
+            {
+                9., 9., 9.,
+                9., 9., 9.,
+                9., 9., 9.
+            },
+            {
+                9., 9., 6.,
+                9., 9., 6.,
+                9., 9., 6.
+            },
+            {
+                6., 9., 9.,
+                6., 9., 9.,
+                4., 6., 6.
+            },
+            {
+                9., 9., 9.,
+                9., 9., 9.,
+                6., 6., 6.
+            },
+            {
+                9., 9., 6.,
+                9., 9., 6.,
+                6., 6., 4.
+            },
+            // clang-format on
+            // NOLINTEND
         });
 
-    lue::test::check_arrays_are_equal(convolve, array_we_want);
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_partition)
 {
-    using Element = lue::SignedIntegralElement<0>;
-    using OutputElement = lue::FloatingPointElement<0>;
-
+    using Element = lue::FloatingPointElement<0>;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{3, 3}};
     Shape const partition_shape{{3, 3}};
-
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
-
-    // [true true true]
-    // [true true true]
-    // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
+    Array const array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
+    auto const kernel = lue::box_kernel<Element, rank>(1, 1);
 
     // [4. 6. 4.]
     // [6. 9. 6.]
     // [4. 6. 4.]
-    auto convolve = lue::convolve<OutputElement>(array, kernel);
-
-    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<Array>(
         array_shape,
         partition_shape,
         {
-            {4., 6., 4., 6., 9., 6., 4., 6., 4.},
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                4., 6., 4.,
+                6., 9., 6.,
+                4., 6., 4.
+            },
+            // clang-format on
+            // NOLINTEND
         });
 
-    lue::test::check_arrays_are_equal(convolve, array_we_want);
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_row_of_partitions)
 {
-    using Element = lue::SignedIntegralElement<0>;
-    using OutputElement = lue::FloatingPointElement<0>;
-
+    using Element = lue::FloatingPointElement<0>;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{3, 9}};
     Shape const partition_shape{{3, 3}};
-
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    // [1. 1. 1. | 1. 1. 1. | 1. 1. 1.]
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
-
-    // [true true true]
-    // [true true true]
-    // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-
-    // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    // [6. 9. 9. | 9. 9. 9. | 9. 9. 6.]
-    // [4. 6. 6. | 6. 6. 6. | 6. 6. 4.]
-    auto convolve = lue::convolve<OutputElement>(array, kernel);
-
-    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+    Array const array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
+    auto const kernel = lue::box_kernel<Element, rank>(1, true);
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<Array>(
         array_shape,
         partition_shape,
         {
-            {4., 6., 6., 6., 9., 9., 4., 6., 6.},
-            {6., 6., 6., 9., 9., 9., 6., 6., 6.},
-            {6., 6., 4., 9., 9., 6., 6., 6., 4.},
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                4., 6., 6.,
+                6., 9., 9.,
+                4., 6., 6.
+            },
+            {
+                6., 6., 6.,
+                9., 9., 9.,
+                6., 6., 6.
+            },
+            {
+                6., 6., 4.,
+                9., 9., 6.,
+                6., 6., 4.
+            },
+            // clang-format on
+            // NOLINTEND
         });
 
-    lue::test::check_arrays_are_equal(convolve, array_we_want);
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }
 
 
 BOOST_AUTO_TEST_CASE(window_total_2d_single_col_of_partitions)
 {
-    using Element = lue::SignedIntegralElement<0>;
-    using OutputElement = lue::FloatingPointElement<0>;
-
+    using Element = lue::FloatingPointElement<0>;
     std::size_t const rank = 2;
 
     using Array = lue::PartitionedArray<Element, rank>;
-    using OutputArray = lue::PartitionedArray<OutputElement, rank>;
     using Shape = lue::ShapeT<Array>;
 
     Shape const array_shape{{9, 3}};
     Shape const partition_shape{{3, 3}};
 
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // ----------
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // ----------
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    // [1. 1. 1.]
-    Array array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
-
-    // [true true true]
-    // [true true true]
-    // [true true true]
-    auto const kernel = lue::box_kernel<bool, rank>(1, true);
-
-    // [4. 6. 4.]
-    // [6. 9. 6.]
-    // [6. 9. 6.]
-    // ----------
-    // [6. 9. 6.]
-    // [6. 9. 6.]
-    // [6. 9. 6.]
-    // ----------
-    // [6. 9. 6.]
-    // [6. 9. 6.]
-    // [4. 6. 4.]
-    auto convolve = lue::convolve<OutputElement>(array, kernel);
-
-    OutputArray array_we_want = lue::test::create_partitioned_array<OutputArray>(
+    Array const array{lue::create_partitioned_array(array_shape, partition_shape, Element{1})};
+    auto const kernel = lue::box_kernel<Element, rank>(1, 1);
+    auto const result_we_got = lue::value_policies::convolve(array, kernel);
+    auto const result_we_want = lue::test::create_partitioned_array<Array>(
         array_shape,
         partition_shape,
         {
-            {4., 6., 4., 6., 9., 6., 6., 9., 6.},
-            {6., 9., 6., 6., 9., 6., 6., 9., 6.},
-            {6., 9., 6., 6., 9., 6., 4., 6., 4.},
+            // NOLINTBEGIN
+            // clang-format off
+            {
+                4., 6., 4.,
+                6., 9., 6.,
+                6., 9., 6.
+            },
+            {
+                6., 9., 6.,
+                6., 9., 6.,
+                6., 9., 6.
+            },
+            {
+                6., 9., 6.,
+                6., 9., 6.,
+                4., 6., 4.
+            },
+            // clang-format on
+            // NOLINTEND
         });
 
-    lue::test::check_arrays_are_equal(convolve, array_we_want);
+    lue::test::check_arrays_are_equal(result_we_got, result_we_want);
 }

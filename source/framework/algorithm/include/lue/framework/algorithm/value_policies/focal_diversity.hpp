@@ -1,22 +1,21 @@
 #pragma once
 #include "lue/framework/algorithm/focal_diversity.hpp"
-#include <limits>
 
 
 namespace lue {
     namespace policy::focal_diversity {
 
-        template<typename Count>
+        template<std::integral Count>
         using DefaultValueOutputPolicies =
             policy::OutputPolicies<DefaultOutputNoDataPolicy<Count>, AllValuesWithinRange<Count>>;
 
 
-        template<typename Element>
+        template<std::integral Element>
         using DefaultValueInputPolicies = policy::
             SpatialOperationInputPolicies<DetectNoDataByValue<Element>, FillHaloWithConstantValue<Element>>;
 
 
-        template<typename Count, typename Element>
+        template<std::integral Count, std::integral Element>
         using DefaultValuePolicies = policy::Policies<
             DomainPolicy<Element>,
             OutputsPolicies<DefaultValueOutputPolicies<Count>>,
@@ -27,11 +26,11 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Count, typename Element, Rank rank, typename Kernel>
-        auto focal_diversity(PartitionedArray<Element, rank> const& array, Kernel const& kernel)
-            -> PartitionedArray<Count, rank>
+        template<std::integral Count, std::integral Element, typename Kernel>
+        auto focal_diversity(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Count, 2>
         {
-            // TODO This one should be policy-based
+            // TODO: This one should be policy-based
             Element const fill_value{policy::no_data_value<Element>};
 
             policy::focal_diversity::DomainPolicy<Element> domain_policy{};
@@ -41,7 +40,7 @@ namespace lue {
             policy::focal_diversity::DefaultValuePolicies<Count, Element> policies{
                 domain_policy, output_policies, input_policies};
 
-            return focal_diversity<Count>(policies, array, kernel);
+            return focal_diversity(policies, array, kernel);
         }
 
     }  // namespace value_policies

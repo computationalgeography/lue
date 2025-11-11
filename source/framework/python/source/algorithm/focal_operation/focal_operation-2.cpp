@@ -22,14 +22,22 @@ namespace lue::framework {
 
                     module.def(
                         "aspect",
-                        [](PartitionedArray<Element, rank> const& elevation)
+                        [](PartitionedArray<Element, rank> const& elevation) -> auto
                         { return value_policies::aspect(elevation); },
                         "elevation"_a);
 
                     module.def(
+                        "convolve",
+                        [](PartitionedArray<Element, rank> const& array,
+                           pybind11::array_t<Element> const& kernel) -> auto
+                        { return value_policies::convolve(array, array_to_kernel<Element, rank>(kernel)); },
+                        "array"_a,
+                        "kernel"_a.noconvert());
+
+                    module.def(
                         "focal_high_pass",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel)
+                           pybind11::array_t<BooleanElement> const& kernel) -> auto
                         {
                             return value_policies::focal_high_pass(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
@@ -40,7 +48,7 @@ namespace lue::framework {
                     module.def(
                         "focal_mean",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel)
+                           pybind11::array_t<BooleanElement> const& kernel) -> auto
                         {
                             return value_policies::focal_mean(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
@@ -50,7 +58,7 @@ namespace lue::framework {
 
                     module.def(
                         "slope",
-                        [](PartitionedArray<Element, rank> const& elevation, Element const& cell_size)
+                        [](PartitionedArray<Element, rank> const& elevation, Element const& cell_size) -> auto
                         { return value_policies::slope(elevation, cell_size); },
                         "elevation"_a,
                         "cell_size"_a);
@@ -71,7 +79,7 @@ namespace lue::framework {
                     module.def(
                         "focal_diversity",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel)
+                           pybind11::array_t<BooleanElement> const& kernel) -> auto
                         {
                             return value_policies::focal_diversity<CountElement>(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));
@@ -82,7 +90,7 @@ namespace lue::framework {
                     module.def(
                         "focal_majority",
                         [](PartitionedArray<Element, rank> const& array,
-                           pybind11::array_t<BooleanElement> const& kernel)
+                           pybind11::array_t<BooleanElement> const& kernel) -> auto
                         {
                             return value_policies::focal_majority(
                                 array, array_to_kernel<BooleanElement, rank>(kernel));

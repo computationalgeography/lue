@@ -36,6 +36,7 @@ target_link_libraries(lue_framework_algorithm_test
 set(scope lue_framework_algorithm)
 set(focal_operation_names
     aspect
+    convolve
     focal_diversity
     focal_high_pass
     focal_majority
@@ -109,10 +110,13 @@ set(routing_operation_names
     accu
     accu_fraction
     accu_threshold
+    d8_flow_direction
     decreasing_order
+    downstream
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
     kinematic_wave
+    upstream
 )
 if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
     list(APPEND routing_operation_names
@@ -145,9 +149,6 @@ set(names
     any
     array_partition_io
     communicator_array
-    convolve
-    d8_flow_direction
-    downstream
     downstream_distance
     focal_operation
     mesh_grid
@@ -157,7 +158,6 @@ set(names
     range
     scalar
     sum
-    upstream
     verify_compatible
 )
 if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
@@ -224,6 +224,7 @@ foreach(name ${focal_operation_names})
     target_link_libraries(${scope}_${name}_test
         PRIVATE
             lue::framework_focal_operation
+            lue::framework_local_operation
     )
 endforeach()
 

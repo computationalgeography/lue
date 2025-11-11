@@ -80,9 +80,20 @@ foreach(name IN ITEMS
     # reference/fortran/index.md
     # reference/java/index.md
     # reference/julia/index.md
+    reference/operation/convolve.md
+    reference/operation/d8_flow_direction.md
+    reference/operation/downstream.md
+    reference/operation/focal_diversity.md
+    reference/operation/focal_high_pass.md
+    reference/operation/focal_majority.md
+    reference/operation/focal_maximum.md
+    reference/operation/focal_mean.md
+    reference/operation/focal_minimum.md
+    reference/operation/focal_sum.md
     reference/operation/index.md
     reference/operation/resample.md
     reference/operation/uniform.md
+    reference/operation/upstream.md
     # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
     # reference/python/data_model/index.rst

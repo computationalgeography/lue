@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/partitioned_array.hpp"
 #include <format>
@@ -76,6 +77,13 @@ namespace lue::api::detail {
     auto type_name([[maybe_unused]] lue::Scalar<Element> const& argument) -> std::string
     {
         return std::format("Scalar<{}>", type_name<Element>());
+    }
+
+
+    template<typename Element, Rank rank>
+    auto type_name([[maybe_unused]] lue::Kernel<Element, rank> const& argument) -> std::string
+    {
+        return std::format("Kernel<{}, {}>", type_name<Element>(), rank);
     }
 
 

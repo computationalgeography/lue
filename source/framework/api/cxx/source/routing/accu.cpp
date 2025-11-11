@@ -25,7 +25,7 @@ namespace lue {
             @return     .
             @exception  .
         */
-        auto accu(Field const& flow_direction, Field const& inflow) -> Field
+        auto accu(FlowDirectionField const& flow_direction, Field const& inflow) -> Field
         {
             return std::visit(
                 overload{

@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::focal_sum {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -16,9 +16,9 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Element, rank> focal_sum(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        template<Arithmetic Element, typename Kernel>
+        auto focal_sum(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Element, 2>
         {
             using Policies = policy::focal_sum::DefaultPolicies<Element>;
 

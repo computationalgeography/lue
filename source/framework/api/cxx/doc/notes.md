@@ -65,3 +65,9 @@ Destruction happens in the destructor of the variant type:
 (from api_cxx to algorithm lib) for arguments for which such overloads haven't been instantiated. This happens
 when the algorithm template is defined to accept more parameter types than needed. The solution is to restrict
 the template parameters so overload resolution will pick the catch-all overload meant for such cases.
+
+  - The assumption is that if a function template accepts certain element types, it should be instantiated for
+  those types. Otherwise the catch-all overload won't be selected.
+  - The solve the issue: either increase the number of instantiations on the side of the libraries, or
+  decrease the element types for which overloads are searched on the side of the api library.
+  - Example: FlowDirectionElement is an integral, but is only instantiated for a specific integral

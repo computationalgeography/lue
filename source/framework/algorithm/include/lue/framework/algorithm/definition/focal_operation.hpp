@@ -1819,11 +1819,12 @@ namespace lue {
             typename... InputElements,
             typename Kernel,
             typename Functor>
-        PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
+        auto focal_operation_2d(
             Policies const& policies,
             Kernel const& kernel,
             Functor functor,
             WrappedPartitionedArray<InputPolicies, InputElements> const&... input_arrays)
+            -> PartitionedArray<OutputElementT<Functor>, rank<Kernel>>
         {
             using OutputElement = OutputElementT<Functor>;
             using OutputArray = PartitionedArray<OutputElement, rank<Kernel>>;
@@ -1842,6 +1843,12 @@ namespace lue {
                 action;
 
             auto const& first_input_array = std::get<0>(std::forward_as_tuple(input_arrays...)).array();
+
+            if (first_input_array.nr_elements() == 0)
+            {
+                return OutputArray{};
+            }
+
             OutputPartitions output_partitions{shape_in_partitions(first_input_array)};
 
             Rank const rank = lue::rank<Kernel>;
@@ -1969,12 +1976,13 @@ namespace lue {
             typename... InputElements,
             typename Kernel,
             typename Functor>
-        PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
+        auto focal_operation_2d(
             Policies const& policies,
             std::index_sequence<idxs...>,
             Kernel const& kernel,
             Functor functor,
             PartitionedArray<InputElements, rank<Kernel>> const&... input_arrays)
+            -> PartitionedArray<OutputElementT<Functor>, rank<Kernel>>
         {
             // Now we have enough information to, for each argument, create a
             // WrappedPartitionedArray instance, based on the policy and value
@@ -1988,11 +1996,12 @@ namespace lue {
 
 
         template<typename Policies, typename... InputElements, typename Kernel, typename Functor>
-        PartitionedArray<OutputElementT<Functor>, rank<Kernel>> focal_operation_2d(
+        auto focal_operation_2d(
             Policies const& policies,
             Kernel const& kernel,
             Functor functor,
             PartitionedArray<InputElements, rank<Kernel>> const&... input_arrays)
+            -> PartitionedArray<OutputElementT<Functor>, rank<Kernel>>
         {
             verify_compatible(input_arrays...);
 

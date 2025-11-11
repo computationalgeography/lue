@@ -5,6 +5,6 @@
 
 namespace lue::api {
 
-    auto LUE_FAPI_EXPORT accu(Field const& flow_direction, Field const& inflow) -> Field;
+    auto LUE_FAPI_EXPORT accu(FlowDirectionField const& flow_direction, Field const& inflow) -> Field;
 
 }  // namespace lue::api

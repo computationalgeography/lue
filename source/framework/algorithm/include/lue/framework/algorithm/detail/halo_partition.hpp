@@ -112,13 +112,14 @@ namespace lue::detail {
 
 
     template<typename InputPolicies, typename InputPartitions, typename Localities>
-    InputPartitions halo_corner_partitions(
+    auto halo_corner_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
         ShapeT<InputPartitions> const& min_shape,
-        [[maybe_unused]] InputPartitions const& input_partitions)
+        [[maybe_unused]] InputPartitions const& input_partitions) -> InputPartitions
     {
         auto const [nr_partitions0, nr_partitions1] = localities.shape();
+
         InputPartitions halo_partitions{{2, 2}};
 
         // Corner halo partitions
@@ -157,11 +158,11 @@ namespace lue::detail {
 
 
     template<typename InputPolicies, typename InputPartitions, typename Localities>
-    InputPartitions halo_longitudinal_side_partitions(
+    auto halo_longitudinal_side_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
         ShapeT<InputPartitions> const& min_shape,
-        InputPartitions const& input_partitions)
+        InputPartitions const& input_partitions) -> InputPartitions
     {
         auto const [nr_partitions0, nr_partitions1] = localities.shape();
         InputPartitions halo_partitions{{2, nr_partitions1}};
@@ -202,11 +203,11 @@ namespace lue::detail {
 
 
     template<typename InputPolicies, typename InputPartitions, typename Localities>
-    InputPartitions halo_latitudinal_side_partitions(
+    auto halo_latitudinal_side_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
         ShapeT<InputPartitions> const& min_shape,
-        InputPartitions const& input_partitions)
+        InputPartitions const& input_partitions) -> InputPartitions
     {
         auto const [nr_partitions0, nr_partitions1] = localities.shape();
         InputPartitions halo_partitions{{nr_partitions0, 2}};
@@ -250,13 +251,20 @@ namespace lue::detail {
 
 
     template<typename InputPolicies, typename InputPartitions, typename Localities>
-    std::array<InputPartitions, 3> halo_partitions(
+    auto halo_partitions(
         InputPolicies const& input_policies,
         Localities const& localities,
         ShapeT<InputPartitions> const& min_shape,
-        InputPartitions const& input_partitions)
+        InputPartitions const& input_partitions) -> std::array<InputPartitions, 3>
     {
         lue_hpx_assert(all_are_valid(input_partitions));  // But possibly not ready yet!
+
+        if (input_partitions.nr_elements() == 0)
+        {
+            return std::array<InputPartitions, 3>{};
+        }
+
+        lue_hpx_assert(input_partitions.nr_elements() > 0);
 
         return std::array<InputPartitions, 3>{
             halo_corner_partitions(input_policies, localities, min_shape, input_partitions),

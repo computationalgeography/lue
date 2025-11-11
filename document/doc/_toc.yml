@@ -37,8 +37,19 @@ parts:
         sections:
           - file: reference/operation/index.md
             sections:
+              - file: reference/operation/convolve.md
+              - file: reference/operation/d8_flow_direction.md
+              - file: reference/operation/downstream.md
+              - file: reference/operation/focal_diversity.md
+              - file: reference/operation/focal_high_pass.md
+              - file: reference/operation/focal_majority.md
+              - file: reference/operation/focal_maximum.md
+              - file: reference/operation/focal_mean.md
+              - file: reference/operation/focal_minimum.md
+              - file: reference/operation/focal_sum.md
               - file: reference/operation/resample.md
               - file: reference/operation/uniform.md
+              - file: reference/operation/upstream.md
           - file: source/framework/api/doc/index.md
             sections:
               - file: reference/c/index.md

@@ -1,4 +1,4 @@
-# Resample
+# `resample`
 
 ## Signature
 
@@ -41,7 +41,7 @@ target_array = downscale(source_array, 2, DownscaleStrategy.assign)
 ```
 
 ```{code-block} python
-target_array = downscale(source_array, 2, DownscaleStrategy.assign)
+target_array = lfr.downscale(source_array, 2, DownscaleStrategy.assign)
 ```
 
 ````

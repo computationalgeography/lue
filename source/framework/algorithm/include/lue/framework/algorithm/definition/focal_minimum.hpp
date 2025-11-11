@@ -7,7 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<Arithmetic Element>
         class FocalMinimum
         {
 
@@ -15,21 +15,18 @@ namespace lue {
 
                 static constexpr char const* name{"focal_minimum"};
 
-                using OutputElement = InputElement;
+                using InputElement = Element;
+                using OutputElement = Element;
 
 
                 template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
-                OutputElement operator()(
+                auto operator()(
                     Kernel const& kernel,
                     OutputPolicies const& output_policies,
                     InputPolicies const& input_policies,
-                    Subspan const& window) const
+                    Subspan const& window) const -> OutputElement
                 {
-                    static_assert(rank<Kernel> == 2);
-
                     using Weight = ElementT<Kernel>;
-
-                    static_assert(std::is_integral_v<Weight>);
 
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
@@ -47,15 +44,7 @@ namespace lue {
                             Weight const weight{kernel(r, c)};
                             InputElement const value{window[r, c]};
 
-                            if (indp.is_no_data(value))
-                            {
-                                // In case one of the cells within the window contains a no-data
-                                // value, the result is marked as no-data
-                                initialized = false;
-                                r = window.extent(0);
-                                c = window.extent(1);
-                            }
-                            else
+                            if (!indp.is_no_data(value))
                             {
                                 if (weight)
                                 {
@@ -85,11 +74,24 @@ namespace lue {
     }  // namespace detail
 
 
-    template<typename Policies, typename Element, Rank rank, typename Kernel>
-    PartitionedArray<Element, rank> focal_minimum(
-        Policies const& policies, PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+    /*!
+        @brief      Return an array with per cell the minimum element value found in the cells within the
+                    corresponding focal neighbourhood
+        @ingroup    focal_operation
+
+        No-data values are filled unless all values within the neighbourhood are no-data.
+    */
+    template<typename Policies, typename Kernel>
+        requires Arithmetic<policy::InputElementT<Policies, 0>> &&
+                 Arithmetic<policy::OutputElementT<Policies, 0>> &&
+                 std::same_as<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>> &&
+                 std::integral<ElementT<Kernel>> && (rank<Kernel> == 2)
+    auto focal_minimum(
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& array,
+        Kernel const& kernel) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
-        using Functor = detail::FocalMinimum<Element>;
+        using Functor = detail::FocalMinimum<policy::InputElementT<Policies, 0>>;
 
         return focal_operation(policies, array, kernel, Functor{});
     }
@@ -97,8 +99,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_FOCAL_MINIMUM(Policies, Element, Kernel)                                             \
-                                                                                                             \
-    template LUE_FOCAL_OPERATION_EXPORT PartitionedArray<Element, 2>                                         \
-    focal_minimum<ArgumentType<void(Policies)>, Element, 2, Kernel>(                                         \
-        ArgumentType<void(Policies)> const&, PartitionedArray<Element, 2> const&, Kernel const&);
+#define LUE_INSTANTIATE_FOCAL_MINIMUM(Policies, Kernel)                                                      \
+    template LUE_FOCAL_OPERATION_EXPORT auto focal_minimum<ArgumentType<void(Policies)>, Kernel>(            \
+        ArgumentType<void(Policies)> const&,                                                                 \
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
+        Kernel const&) -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

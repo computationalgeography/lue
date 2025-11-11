@@ -11,114 +11,64 @@ namespace lue::test {
             array_shape,
             partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
                     // 0, 0
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    se,
+                    nd, nd, nd,
+                    nd, nd, nd,
+                    nd, nd, se,
                 },
                 {
                     // 0, 1
-                    nd,
-                    nw,
-                    se,
-                    nd,
-                    s,
-                    e,
-                    nd,
-                    s,
-                    nd,
+                    nd, nw, se,
+                    nd, s, e,
+                    nd, s, nd,
                 },
                 {
                     // 0, 2
-                    nd,
-                    s,
-                    sw,
-                    se,
-                    s,
-                    w,
-                    nd,
-                    s,
-                    sw,
+                    nd, s, sw,
+                    se, s, w,
+                    nd, s, sw,
                 },
                 {
                     // 1, 0
-                    nd,
-                    nd,
-                    e,
-                    nd,
-                    nd,
-                    ne,
-                    nd,
-                    nd,
-                    e,
+                    nd, nd, e,
+                    nd, nd, ne,
+                    nd, nd, e,
                 },
                 {
                     // 1, 1
-                    e,
-                    s,
-                    w,
-                    nd,
-                    s,
-                    w,
-                    e,
-                    s,
-                    w,
+                    e, s, w,
+                    nd, s, w,
+                    e, s, w,
                 },
                 {
                     // 1, 2
-                    w,
-                    w,
-                    nd,
-                    w,
-                    nd,
-                    nd,
-                    w,
-                    nd,
-                    nd,
+                    w, w, nd,
+                    w, nd, nd,
+                    w, nd, nd,
                 },
                 {
                     // 2, 0
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    nd,
-                    s,
+                    nd, nd, nd,
+                    nd, nd, nd,
+                    nd, nd, s,
                 },
                 {
                     // 2, 1
-                    nd,
-                    s,
-                    nd,
-                    sw,
-                    w,
-                    w,
-                    w,
-                    w,
-                    w,
+                    nd, s, nd,
+                    sw, w, w,
+                    w, w, w,
                 },
                 {
                     // 2, 2
-                    nw,
-                    nd,
-                    nd,
-                    w,
-                    nd,
-                    nd,
-                    w,
-                    nd,
-                    nd,
+                    nw, nd, nd,
+                    w, nd, nd,
+                    w, nd, nd,
                 },
+                // clang-format on
+                // NOLINTEND
             });
     }
 
@@ -133,14 +83,19 @@ namespace lue::test {
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,
-            // clang-format off
-            {{
-                 s,  s,  s, sw, sw,
-                 s,  s, sw, sw, sw,
-                se,  s, sw,  w, sw,
-                se,  s, sw,  w,  w,
-                 e,  p,  w,  w,  w,
-            }}  // clang-format on
+            {
+                // NOLINTBEGIN
+                // clang-format off
+                {
+                    s,  s,  s, sw, sw,
+                    s,  s, sw, sw, sw,
+                    se,  s, sw,  w, sw,
+                    se,  s, sw,  w,  w,
+                    e,  p,  w,  w,  w,
+                }
+                // clang-format on
+                // NOLINTEND
+            }
         );
     }
 
@@ -150,8 +105,9 @@ namespace lue::test {
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,
-            // clang-format off
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
                     // 0, 0
                     nd, nd, nd,
@@ -206,7 +162,9 @@ namespace lue::test {
                     nd, nd, nd,
                     nd, nd, nd,
                 },
-            }  // clang-format on
+                // clang-format on
+                // NOLINTEND
+            }
         );
     }
 
@@ -216,8 +174,9 @@ namespace lue::test {
         return create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,
-            // clang-format off
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
                     e, e, e,
                     e, e, e,
@@ -263,7 +222,9 @@ namespace lue::test {
                     w, w, s,
                     w, w, w,
                 },
-            }  // clang-format on
+                // clang-format on
+                // NOLINTEND
+            }
         );
     }
 
@@ -275,114 +236,64 @@ namespace lue::test {
             array_shape,
             partition_shape,
             {
+                // NOLINTBEGIN
+                // clang-format off
                 {
                     // 0, 0
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 0, 1
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 0, 2
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 1, 0
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 1, 1
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 1, 2
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 2, 0
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 2, 1
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
                 {
                     // 2, 2
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
-                    v,
+                    v, v, v,
+                    v, v, v,
+                    v, v, v,
                 },
+                // clang-format on
+                // NOLINTEND
             });
     }
     {% endraw %}

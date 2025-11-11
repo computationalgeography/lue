@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::focal_minimum {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultPolicies = policy::DefaultSpatialOperationPolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,9 +17,9 @@ namespace lue {
 
     namespace default_policies {
 
-        template<typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Element, rank> focal_minimum(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        template<Arithmetic Element, typename Kernel>
+        auto focal_minimum(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Element, 2>
         {
             using Policies = policy::focal_minimum::DefaultPolicies<Element>;
 

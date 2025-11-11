@@ -2,15 +2,14 @@
 #include "lue/framework/algorithm/d8_flow_direction.hpp"
 #include "lue/framework/algorithm/definition/focal_operation.hpp"
 #include "lue/framework/algorithm/flow_direction.hpp"
+#include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/framework/algorithm/serialize/kernel.hpp"
-#include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename FlowDirectionElement, typename ElevationElement>
+        template<std::integral FlowDirectionElement, Arithmetic ElevationElement>
         class D8FlowDirection
         {
 
@@ -21,26 +20,19 @@ namespace lue {
                 using OutputElement = FlowDirectionElement;
 
 
-                D8FlowDirection() = default;
-
-
                 template<typename Kernel, typename OutputPolicies, typename InputPolicies, typename Subspan>
-                FlowDirectionElement operator()(
+                auto operator()(
                     [[maybe_unused]] Kernel const& kernel,
                     OutputPolicies const& output_policies,
                     InputPolicies const& input_policies,
-                    Subspan const& window) const
+                    Subspan const& window) const -> FlowDirectionElement
                 {
-                    using Weight = ElementT<Kernel>;
-
-                    // TODO Add traits to grab typename of elements in Subspan
-                    // static_assert(std::is_same_v<ElementT<Subspan>, ElevationElement>);
-                    static_assert(std::is_convertible_v<Weight, bool>);
-
                     // We are assuming a 3x3 kernel, containing only true weights
                     static_assert(rank<Kernel> == 2);
                     lue_hpx_assert(kernel.size() == 3);
-                    lue_hpx_assert(std::all_of(kernel.begin(), kernel.end(), [](auto w) { return bool{w}; }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            kernel.begin(), kernel.end(), [](auto const weight) { return bool{weight}; }));
 
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
@@ -48,7 +40,7 @@ namespace lue {
                     auto const& indp{input_policies.input_no_data_policy()};
                     auto const& ondp{output_policies.output_no_data_policy()};
 
-                    FlowDirectionElement direction;
+                    FlowDirectionElement direction{};
 
                     if (indp.is_no_data(window[1, 1]))
                     {
@@ -163,23 +155,28 @@ namespace lue {
       @brief      Determine the D8 flow direction in each cell for the array passed in
       @ingroup    routing_operation
     */
-    template<typename FlowDirectionElement, typename Policies, typename ElevationElement, Rank rank>
-    PartitionedArray<FlowDirectionElement, rank> d8_flow_direction(
-        Policies const& policies, PartitionedArray<ElevationElement, rank> const& elevation)
+    template<typename Policies>
+        requires Arithmetic<policy::InputElementT<Policies, 0>> &&
+                 std::integral<policy::OutputElementT<Policies, 0>>
+    auto d8_flow_direction(
+        Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& elevation)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
+        using ElevationElement = policy::InputElementT<Policies, 0>;
+        using FlowDirectionElement = policy::OutputElementT<Policies, 0>;
         using Weight = bool;
         using Functor = detail::D8FlowDirection<FlowDirectionElement, ElevationElement>;
 
-        Kernel<Weight, rank> kernel{box_kernel<Weight, rank>(1, true)};
+        Kernel<Weight, 2> kernel{box_kernel<Weight, 2>(1, true)};
 
-        return focal_operation(policies, elevation, kernel, Functor{});
+        return focal_operation(policies, elevation, std::move(kernel), Functor{});
     }
 
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_D8_FLOW_DIRECTION(Policies, FlowDirectionElement, ElevationElement)                  \
+#define LUE_INSTANTIATE_D8_FLOW_DIRECTION(Policies)                                                          \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<FlowDirectionElement, 2>                          \
-    d8_flow_direction<FlowDirectionElement, ArgumentType<void(Policies)>, ElevationElement, 2>(              \
-        ArgumentType<void(Policies)> const&, PartitionedArray<ElevationElement, 2> const&);
+    template LUE_ROUTING_OPERATION_EXPORT auto d8_flow_direction<ArgumentType<void(Policies)>>(              \
+        ArgumentType<void(Policies)> const&, PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&) \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

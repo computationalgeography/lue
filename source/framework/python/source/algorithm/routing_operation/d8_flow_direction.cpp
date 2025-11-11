@@ -1,6 +1,9 @@
-#include "lue/framework/algorithm/d8_flow_direction.hpp"
+#include "lue/framework/algorithm/value_policies/d8_flow_direction.hpp"
 #include "lue/framework/configure.hpp"
 #include "lue/py/bind.hpp"
+
+
+using namespace pybind11::literals;
 
 
 namespace lue::framework {
@@ -18,13 +21,9 @@ namespace lue::framework {
 
                     module.def(
                         "d8_flow_direction",
-                        [](PartitionedArray<ElevationElement, rank> const& elevation)
-                        {
-                            using Policies = policy::d8_flow_direction::
-                                DefaultValuePolicies<FlowDirectionElement, ElevationElement>;
-
-                            return d8_flow_direction<FlowDirectionElement>(Policies{}, elevation);
-                        });
+                        [](PartitionedArray<ElevationElement, rank> const& elevation) -> auto
+                        { return value_policies::d8_flow_direction<FlowDirectionElement>(elevation); },
+                        "elevation"_a);
                 }
         };
 

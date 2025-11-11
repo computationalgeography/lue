@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/accu_info.hpp"
-#include "lue/framework.hpp"
 #include <concepts>
 
 
@@ -18,6 +17,7 @@ namespace lue {
 
     namespace value_policies {
 
+        template<std::integral FlowDirectionElement>
         auto accu_info(PartitionedArray<FlowDirectionElement, 2> const& flow_direction)
             -> PartitionedArray<CellClass, 2>
         {

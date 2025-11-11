@@ -7,9 +7,7 @@ namespace lue {
 
     LUE_INSTANTIATE_FOCAL_DIVERSITY(
             ESC(policy::focal_diversity::{{ Policies }}<{{ Count }}, {{ Element }}>),
-            {{ Count }},
-            {{ Element }},
-            ESC(Kernel<{{ Boolean}}, 2>)
+            ESC(Kernel<{{ Boolean }}, 2>)
         );
 
 }  // namespace lue

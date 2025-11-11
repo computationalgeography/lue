@@ -29,7 +29,9 @@ target_sources(lue_py_framework_x
         source/array.cpp
         source/extension.cpp
         source/field.cpp
+        source/focal_operation.cpp
         # source/io.cpp
+        source/kernel.cpp
         source/local_operation.cpp
         source/routing_operation.cpp
         source/scalar.cpp
