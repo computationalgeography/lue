@@ -93,6 +93,7 @@ foreach(name IN ITEMS
     reference/operation/index.md
     reference/operation/resample.md
     reference/operation/uniform.md
+    reference/operation/upstream.md
     # reference/python/data_model/index.rst
     # reference/python/data_model/hdf5/index.rst
     # reference/python/data_model/index.rst

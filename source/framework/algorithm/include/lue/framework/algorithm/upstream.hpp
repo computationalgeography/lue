@@ -1,39 +1,19 @@
 #pragma once
-#include "lue/framework/algorithm/flow_accumulation.hpp"
-#include "lue/framework/algorithm/policy/all_values_within_domain.hpp"
-#include "lue/framework/algorithm/policy/default_policies.hpp"
-#include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array.hpp"
 
 
 namespace lue {
-    namespace policy::upstream {
 
-        template<typename FlowDirectionElement, typename MaterialElement>
-        using DefaultPolicies = flow_accumulation::DefaultPolicies<FlowDirectionElement, MaterialElement>;
-
-        template<typename FlowDirectionElement, typename MaterialElement>
-        using DefaultValuePolicies =
-            flow_accumulation::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-
-    }  // namespace policy::upstream
-
-
-    template<typename Policies, typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> upstream(
+    template<typename Policies>
+        requires std::integral<policy::InputElementT<Policies, 0>> &&
+                     Arithmetic<policy::InputElementT<Policies, 1>> &&
+                     Arithmetic<policy::OutputElementT<Policies, 0>> &&
+                     std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
+    auto upstream(
         Policies const& policies,
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        PartitionedArray<MaterialElement, rank> const& material);
-
-
-    template<typename FlowDirectionElement, typename MaterialElement, Rank rank>
-    PartitionedArray<MaterialElement, rank> upstream(
-        PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-        PartitionedArray<MaterialElement, rank> const& material)
-    {
-        using Policies = policy::upstream::DefaultPolicies<FlowDirectionElement, MaterialElement>;
-
-        return upstream(Policies{}, flow_direction, material);
-    }
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,
+        PartitionedArray<policy::InputElementT<Policies, 1>, 2> const& material)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;
 
 }  // namespace lue

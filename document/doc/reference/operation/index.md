@@ -23,6 +23,7 @@ Note: not all operations available are listed here already.
 
 - {py:func}`d8_flow_direction`
 - {py:func}`downstream`
+- {py:func}`upstream`
 
 ## Miscellaneous operations
 

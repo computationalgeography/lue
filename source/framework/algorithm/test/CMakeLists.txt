@@ -116,6 +116,7 @@ set(routing_operation_names
     # TODO https://github.com/computationalgeography/lue/issues/629
     # first_n
     kinematic_wave
+    upstream
 )
 if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
     list(APPEND routing_operation_names
@@ -157,7 +158,6 @@ set(names
     range
     scalar
     sum
-    upstream
     verify_compatible
 )
 if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)

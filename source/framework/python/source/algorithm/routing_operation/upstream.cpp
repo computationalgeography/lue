@@ -1,6 +1,9 @@
-#include "lue/framework/algorithm/upstream.hpp"
+#include "lue/framework/algorithm/value_policies/upstream.hpp"
 #include "lue/framework/configure.hpp"
 #include "lue/py/bind.hpp"
+
+
+using namespace pybind11::literals;
 
 
 namespace lue::framework {
@@ -19,13 +22,10 @@ namespace lue::framework {
                     module.def(
                         "upstream",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction,
-                           PartitionedArray<MaterialElement, rank> const& material)
-                        {
-                            using Policies =
-                                policy::upstream::DefaultValuePolicies<FlowDirectionElement, MaterialElement>;
-
-                            return upstream(Policies{}, flow_direction, material);
-                        });
+                           PartitionedArray<MaterialElement, rank> const& material) -> auto
+                        { return value_policies::upstream(flow_direction, material); },
+                        "flow_direction"_a,
+                        "material"_a);
                 }
         };
 

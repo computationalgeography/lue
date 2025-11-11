@@ -1,12 +1,13 @@
+#include "lue/framework/algorithm/default_policies/upstream.hpp"
 #include "lue/framework/algorithm/definition/upstream.hpp"
+#include "lue/framework/algorithm/serialize/kernel.hpp"
+#include "lue/framework/algorithm/value_policies/upstream.hpp"
 
 
 namespace lue {
 
     LUE_INSTANTIATE_UPSTREAM(
-            ESC(policy::upstream::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
-            {{ FlowDirectionElement }},
-            {{ Element }}
+            ESC(policy::upstream::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>)
         );
 
 }  // namespace lue
