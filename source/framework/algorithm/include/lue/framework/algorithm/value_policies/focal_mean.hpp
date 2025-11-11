@@ -16,9 +16,10 @@ namespace lue {
 
     namespace value_policies {
 
-        template<typename Element, Rank rank, typename Kernel>
-        PartitionedArray<Element, rank> focal_mean(
-            PartitionedArray<Element, rank> const& array, Kernel const& kernel)
+        template<std::floating_point Element, typename Kernel>
+            requires std::integral<ElementT<Kernel>> && (rank<Kernel> == 2)
+        auto focal_mean(PartitionedArray<Element, 2> const& array, Kernel const& kernel)
+            -> PartitionedArray<Element, 2>
         {
             using Policies = policy::focal_mean::DefaultValuePolicies<Element>;
 

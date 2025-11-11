@@ -1,5 +1,9 @@
 set(scope lue_framework_api_cxx)
 
+set(focal_operation_names
+    focal/mean
+)
+
 set(local_operation_names
     local/add
     local/uniform
@@ -12,6 +16,7 @@ set(routing_operation_names
 set(names
     create_array
     create_scalar
+    ${focal_operation_names}
     # io
     ${local_operation_names}
     ${routing_operation_names}

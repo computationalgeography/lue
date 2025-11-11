@@ -4,7 +4,6 @@
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/algorithm/upstream.hpp"
-#include "lue/macro.hpp"
 
 
 namespace lue {

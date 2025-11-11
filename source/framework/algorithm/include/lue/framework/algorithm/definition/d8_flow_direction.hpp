@@ -4,7 +4,6 @@
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
-#include "lue/macro.hpp"
 
 
 namespace lue {
@@ -31,9 +30,8 @@ namespace lue {
                     // We are assuming a 3x3 kernel, containing only true weights
                     static_assert(rank<Kernel> == 2);
                     lue_hpx_assert(kernel.size() == 3);
-                    lue_hpx_assert(
-                        std::all_of(
-                            kernel.begin(), kernel.end(), [](auto const weight) { return bool{weight}; }));
+                    lue_hpx_assert(std::all_of(
+                        kernel.begin(), kernel.end(), [](auto const weight) { return bool{weight}; }));
 
                     lue_hpx_assert(window.extent(0) == kernel.size());
                     lue_hpx_assert(window.extent(1) == kernel.size());
@@ -158,7 +156,7 @@ namespace lue {
     */
     template<typename Policies>
         requires Arithmetic<policy::InputElementT<Policies, 0>> &&
-                 std::integral<policy::OutputElementT<Policies, 0>>
+                     std::integral<policy::OutputElementT<Policies, 0>>
     auto d8_flow_direction(
         Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& elevation)
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>

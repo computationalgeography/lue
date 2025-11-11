@@ -19,6 +19,17 @@ block()
     )
     list(APPEND generated_source_files "${output_pathname}")
 
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/kernel.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/kernel.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","Elements":[${Elements}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/literal.hpp")
     generate_template_instantiation(
         INPUT_PATHNAME
@@ -75,6 +86,7 @@ target_sources(lue_framework_api_cxx
         ${generated_source_files}
         source/create_array.cpp
         source/create_scalar.cpp
+        source/focal/mean.cpp
         source/io.cpp
         source/local/add.cpp
         source/local/uniform.cpp
@@ -89,6 +101,7 @@ target_include_directories(lue_framework_api_cxx
 
 target_link_libraries(lue_framework_api_cxx
     PRIVATE
+        lue::framework_focal_operation
         lue::framework_io
         lue::framework_local_operation
         lue::framework_miscellaneous_operation
@@ -97,6 +110,12 @@ target_link_libraries(lue_framework_api_cxx
         lue::framework_algorithm
         lue::framework_partitioned_array
 )
+
+# Uncomment this in case of link errors:
+# target_link_options(lue_framework_api_cxx
+#     PRIVATE
+#         "-Wl,--no-undefined"
+# )
 
 lue_install_runtime_libraries(
     TARGETS

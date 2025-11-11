@@ -1,0 +1,43 @@
+#pragma once
+#include "lue/framework/algorithm/kernel.hpp"
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include <cstdint>
+
+
+namespace lue::api {
+
+    /*!
+        @brief      Class for representing kernels used in focal operations and convolution, for example
+    */
+    class Kernel:
+        public VariantWrapper<
+            {% for Element in Elements %}
+                lue::Kernel<{{ Element }}, 2>
+                {{ ", " if not loop.last else "" }}
+            {% endfor %}
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+
+    /*!
+        @brief      Class for representing kernels with boolean weights
+    */
+    class BooleanKernel:
+        public VariantWrapper<
+            lue::Kernel<{{ BooleanElement }}, 2>
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+}  // namespace lue::api
