@@ -35,9 +35,8 @@ namespace lue {
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow,
-            PartitionedArray<FloatingPointElement, 2> const& threshold)
-            -> std::
-                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            PartitionedArray<FloatingPointElement, 2> const& threshold) -> std::
+            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
@@ -50,9 +49,8 @@ namespace lue {
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow,
-            Scalar<FloatingPointElement> const& threshold)
-            -> std::
-                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            Scalar<FloatingPointElement> const& threshold) -> std::
+            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
@@ -65,9 +63,8 @@ namespace lue {
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
-            Scalar<FloatingPointElement> const& threshold)
-            -> std::
-                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            Scalar<FloatingPointElement> const& threshold) -> std::
+            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;
@@ -80,9 +77,8 @@ namespace lue {
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
-            PartitionedArray<FloatingPointElement, 2> const& threshold)
-            -> std::
-                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            PartitionedArray<FloatingPointElement, 2> const& threshold) -> std::
+            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultValuePolicies<FlowDirectionElement, FloatingPointElement>;

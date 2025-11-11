@@ -7,9 +7,9 @@ namespace lue {
 
     template<typename Policies>
         requires std::integral<policy::InputElementT<Policies, 0>> &&
-                     Arithmetic<policy::InputElementT<Policies, 1>> &&
-                     Arithmetic<policy::OutputElementT<Policies, 0>> &&
-                     std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
+                 Arithmetic<policy::InputElementT<Policies, 1>> &&
+                 Arithmetic<policy::OutputElementT<Policies, 0>> &&
+                 std::same_as<policy::InputElementT<Policies, 1>, policy::OutputElementT<Policies, 0>>
     auto upstream(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction,

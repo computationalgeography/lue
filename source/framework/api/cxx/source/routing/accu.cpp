@@ -28,9 +28,9 @@ namespace lue {
         auto accu(FlowDirectionField const& flow_direction, Field const& inflow) -> Field
         {
             return std::visit(
-                overload{[](auto const& flow_direction, auto const& inflow) -> Field {
-                    return value_policies::accu(flow_direction, inflow);
-                }},
+                overload{
+                    [](auto const& flow_direction, auto const& inflow) -> Field
+                    { return value_policies::accu(flow_direction, inflow); }},
                 flow_direction.variant(),
                 inflow.variant());
         }

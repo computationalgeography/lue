@@ -28,9 +28,9 @@ namespace lue {
         auto focal_mean(Field const& field, BooleanKernel const& kernel) -> Field
         {
             return std::visit(
-                overload{[](auto const& field, auto const& kernel) -> Field {
-                    return value_policies::focal_mean(field, kernel);
-                }},
+                overload{
+                    [](auto const& field, auto const& kernel) -> Field
+                    { return value_policies::focal_mean(field, kernel); }},
                 field.variant(),
                 kernel.variant());
         }
