@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/accu.hpp"
-#include "lue/framework/configure.hpp"
 #include <concepts>
 
 
@@ -18,7 +17,7 @@ namespace lue {
 
     namespace default_policies {
 
-        template<std::floating_point FloatingPointElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow)
@@ -30,7 +29,7 @@ namespace lue {
         }
 
 
-        template<std::floating_point FloatingPointElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow) -> PartitionedArray<FloatingPointElement, 2>

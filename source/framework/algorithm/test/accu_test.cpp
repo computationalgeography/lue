@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(overloads)
     outflow = lue::value_policies::accu(flow_direction, inflow_scalar);
 
     // value
-    outflow = lue::value_policies::accu<MaterialElement>(flow_direction, inflow_value);
+    outflow = lue::value_policies::accu<FlowDirectionElement, MaterialElement>(flow_direction, inflow_value);
 }
 
 

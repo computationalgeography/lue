@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold.hpp"
-#include "lue/framework.hpp"
 #include <concepts>
 
 
@@ -18,12 +17,13 @@ namespace lue {
 
     namespace default_policies {
 
-        template<std::floating_point FloatingPointElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             PartitionedArray<FloatingPointElement, 2> const& inflow,
-            Scalar<FloatingPointElement> const& threshold) -> std::
-            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            Scalar<FloatingPointElement> const& threshold)
+            -> std::
+                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
@@ -32,12 +32,13 @@ namespace lue {
         }
 
 
-        template<std::floating_point FloatingPointElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
-            Scalar<FloatingPointElement> const& threshold) -> std::
-            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            Scalar<FloatingPointElement> const& threshold)
+            -> std::
+                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;
@@ -46,12 +47,13 @@ namespace lue {
         }
 
 
-        template<std::floating_point FloatingPointElement>
+        template<std::integral FlowDirectionElement, std::floating_point FloatingPointElement>
         auto accu_threshold(
             PartitionedArray<FlowDirectionElement, 2> const& flow_direction,
             Scalar<FloatingPointElement> const& inflow,
-            PartitionedArray<FloatingPointElement, 2> const& threshold) -> std::
-            tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
+            PartitionedArray<FloatingPointElement, 2> const& threshold)
+            -> std::
+                tuple<PartitionedArray<FloatingPointElement, 2>, PartitionedArray<FloatingPointElement, 2>>
         {
             using Policies =
                 policy::accu_threshold::DefaultPolicies<FlowDirectionElement, FloatingPointElement>;

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(south)
             // clang-format on
             // NOLINTEND
         });
-    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
     auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
         array_shape,
         partition_shape,
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(north)
             // clang-format on
             // NOLINTEND
         });
-    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
     auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
         array_shape,
         partition_shape,
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(east)
             // clang-format on
             // NOLINTEND
         });
-    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
     auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
         array_shape,
         partition_shape,
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(west)
             // clang-format on
             // NOLINTEND
         });
-    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+    auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
     auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
         array_shape,
         partition_shape,
@@ -302,7 +302,8 @@ BOOST_AUTO_TEST_CASE(barnes_2017)
              w, nw, e, e, n, ne, n, nw, se, e, s, s,  sw, w, se, se, e, s,  s, s, s, s,  s,  se},
         });
 
-    FlowDirectionArray const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+    FlowDirectionArray const flow_direction_we_got =
+        lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
 
     // TOO bad, the DEM from the paper contains flat areas. Our operation
     // assumes this is not the case. The results are therefore not the
@@ -349,7 +350,7 @@ BOOST_AUTO_TEST_CASE(no_data)
                 // clang-format on
                 // NOLINTEND
             });
-        auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+        auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
         auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,
@@ -383,7 +384,7 @@ BOOST_AUTO_TEST_CASE(no_data)
                 // clang-format on
                 // NOLINTEND
             });
-        auto const flow_direction_we_got = lue::value_policies::d8_flow_direction(elevation);
+        auto const flow_direction_we_got = lue::value_policies::d8_flow_direction<FlowDirection>(elevation);
         auto const flow_direction_we_want = lue::test::create_partitioned_array<FlowDirectionArray>(
             array_shape,
             partition_shape,

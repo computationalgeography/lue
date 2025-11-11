@@ -42,7 +42,7 @@ array. No new no-data values are generated.
 ```
 
 ```{code-block} c++
-auto const flow_direction = lue::value_policies::d8_flow_direction(elevation);
+auto const flow_direction = lue::value_policies::d8_flow_direction<FlowDirectionElement>(elevation);
 ```
 
 ```{code-block} java

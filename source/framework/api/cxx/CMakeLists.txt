@@ -15,7 +15,7 @@ block()
         OUTPUT_PATHNAME
             ${output_pathname}
         DICTIONARY
-            '{"Elements":[${Elements}]}'
+            '{"FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Elements":[${Elements}]}'
     )
     list(APPEND generated_source_files "${output_pathname}")
 

@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(accu_raster_raster)
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
     using FloatingPointArray = lue::PartitionedArray<FloatingPointElement, 2>;
 
-    lue::api::Field const flow_direction = FlowDirectionArray{};
+    lue::api::FlowDirectionField const flow_direction = FlowDirectionArray{};
     lue::api::Field const inflow = FloatingPointArray{};
     lue::api::Field outflow = lue::api::accu(flow_direction, inflow);
 
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(accu_raster_scalar)
     using FloatingPointArray = lue::PartitionedArray<FloatingPointElement, 2>;
     using FloatingPointScalar = lue::Scalar<FloatingPointElement>;
 
-    lue::api::Field const flow_direction = FlowDirectionArray{};
+    lue::api::FlowDirectionField const flow_direction = FlowDirectionArray{};
     lue::api::Field const inflow = FloatingPointScalar{};
     lue::api::Field outflow = lue::api::accu(flow_direction, inflow);
 

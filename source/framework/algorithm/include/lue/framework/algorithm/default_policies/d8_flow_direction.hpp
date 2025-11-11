@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/algorithm/d8_flow_direction.hpp"
-#include "lue/framework/configure.hpp"
 #include <concepts>
 
 
@@ -46,7 +45,7 @@ namespace lue {
 
     namespace default_policies {
 
-        template<Arithmetic ElevationElement>
+        template<std::integral FlowDirectionElement, Arithmetic ElevationElement>
         auto d8_flow_direction(PartitionedArray<ElevationElement, 2> const& elevation)
             -> PartitionedArray<FlowDirectionElement, 2>
         {

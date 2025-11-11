@@ -28,4 +28,20 @@ namespace lue::api {
             using VariantWrapper::VariantWrapper;
     };
 
+
+    /*!
+        @brief      Class for representing continuous fields of flow directions
+    */
+    class FlowDirectionField:
+        public VariantWrapper<
+            lue::PartitionedArray<{{ FlowDirectionElement }}, 2>
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
 }  // namespace lue::api

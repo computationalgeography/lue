@@ -22,7 +22,7 @@ namespace lue::framework {
                     module.def(
                         "d8_flow_direction",
                         [](PartitionedArray<ElevationElement, rank> const& elevation) -> auto
-                        { return value_policies::d8_flow_direction(elevation); },
+                        { return value_policies::d8_flow_direction<FlowDirectionElement>(elevation); },
                         "elevation"_a);
                 }
         };
