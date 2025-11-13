@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/gdal/configure.hpp"
-#include "lue/gdal/export.hpp"
 #include <stdexcept>
 #include <type_traits>
 
