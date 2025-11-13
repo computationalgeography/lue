@@ -4,6 +4,7 @@ set(names
     driver
     raster
     raster_band
+    spatial_reference
     type_traits
     version
 )
