@@ -58,6 +58,11 @@ if(LUE_BUILD_GDAL)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/gdal)
 endif()
 
+if(LUE_BUILD_PROJ)
+    add_subdirectory(proj)
+    list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/proj)
+endif()
+
 if(LUE_DATA_MODEL_WITH_UTILITIES)
     add_subdirectory(translate)
     list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/translate)

@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_raster.hpp"
 #include <format>
 #include <string>
 #include <type_traits>
@@ -91,6 +91,13 @@ namespace lue::api::detail {
     auto type_name([[maybe_unused]] PartitionedArray<Element, rank> const& argument) -> std::string
     {
         return std::format("Array<{}, {}>", type_name<Element>(), rank);
+    }
+
+
+    template<typename Element>
+    auto type_name([[maybe_unused]] PartitionedRaster<Element> const& argument) -> std::string
+    {
+        return std::format("Raster<{}>", type_name<Element>());
     }
 
 }  // namespace lue::api::detail

@@ -71,6 +71,7 @@ target_sources(lue_hdf5
         source/test/file_fixture.cpp
 )
 
+# NOTE: Think twice before adding libraries here. lue::hdf5 is a simple, thin API around the HDF5 API.
 target_link_libraries(lue_hdf5
     PUBLIC
         hdf5::hdf5

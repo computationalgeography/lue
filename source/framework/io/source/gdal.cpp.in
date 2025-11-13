@@ -452,16 +452,67 @@ namespace lue {
         }
 
 
+        template<typename Policies>
+        auto write_partitions(
+            std::string const& name,
+            PartitionsT<PartitionedArray<policy::InputElementT<Policies, 0>, 2>> const& partitions
+        ) -> hpx::future<void>
+        {
+            // Asynchronously spawn a task that will write each ready partition to the dataset,
+            // one after the other. This task stops once all partitions have been written to the dataset.
+
+            using Element = policy::InputElementT<Policies, 0>;
+            using Array = PartitionedArray<Element, 2>;
+            using Partition = PartitionT<Array>;
+
+            hpx::future<void> result = hpx::async(
+                [name, partitions = std::vector<Partition>(partitions.begin(), partitions.end())]() mutable
+                {
+                    using Action = WritePartitionAction<Policies, Partition>;
+
+                    std::size_t nr_partitions_to_write{partitions.size()};
+                    Action action{};
+                    hpx::when_any_result<std::vector<Partition>> when_any_result;
+                    std::size_t idx;
+
+                    while (nr_partitions_to_write > 0)
+                    {
+                        // Find a ready partition. Wait for it if necessary.
+                        when_any_result =
+                            hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write)
+                                .get();
+                        partitions = std::move(when_any_result.futures);
+                        idx = when_any_result.index;
+
+                        // Write the ready partition to the dataset. Wait for it to finish.
+                        hpx::id_type const locality{
+                            hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
+                        action(locality, Policies{}, name, partitions[idx]);
+
+                        // Move the ready and written partition to just after the range with still
+                        // not written partitions
+                        std::rotate(
+                            partitions.begin() + idx,
+                            partitions.begin() + idx + 1,
+                            partitions.begin() + nr_partitions_to_write);
+
+                        --nr_partitions_to_write;
+                    }
+                });
+
+            return result;
+        }
+
     }  // Anonymous namespace
 
 
     template<typename Element>
-    auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape) -> PartitionedArray<Element, 2>
+    auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape) -> PartitionedRaster<Element>
     {
         if constexpr (!gdal::supports<Element>())
         {
             gdal::verify_support<Element>();
-            return PartitionedArray<Element, 2>{};
+            return PartitionedRaster<Element>{};
         }
         else
         {
@@ -516,12 +567,12 @@ namespace lue {
 
     template<typename Element>
     auto from_gdal(std::string const& name, Hyperslab<2> const& hyperslab, Shape<Count, 2> const& partition_shape)
-        -> PartitionedArray<Element, 2>
+        -> PartitionedRaster<Element>
     {
         if constexpr (!gdal::supports<Element>())
         {
             gdal::verify_support<Element>();
-            return PartitionedArray<Element, 2>{};
+            return PartitionedRaster<Element>{};
         }
         else
         {
@@ -575,10 +626,6 @@ namespace lue {
         }
         else
         {
-            using Policies = WritePolicies<Element>;
-            using Array = PartitionedArray<Element, 2>;
-            using Partition = PartitionT<Array>;
-
             // Write a partitioned array to a raster band using the GDAL API.
 
             // Each partition that has become ready is written to the dataset, on the locality containing
@@ -586,6 +633,8 @@ namespace lue {
 
             // On the / this root locality:
             // - Create the dataset to write a band in
+
+            using Policies = WritePolicies<Element>;
 
             Policies policies{};
             auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
@@ -595,6 +644,7 @@ namespace lue {
             auto const& raster_shape{array.shape()};
 
             {
+                // TODO: Refactor with to_gdal(raster)
                 Count const nr_bands{1};
                 GDALDataType const data_type{gdal::data_type_v<Element>};
                 gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
@@ -650,47 +700,70 @@ namespace lue {
                 }
             }
 
-            // Asynchronously spawn a task that will write each ready partition to the dataset,
-            // one after the other. This task stops once all partitions have been written to the dataset.
+            return write_partitions<Policies>(name, array.partitions());
+        }
+    }
 
-            std::vector<Partition> partitions(array.partitions().begin(), array.partitions().end());
 
-            hpx::future<void> result = hpx::async(
-                [name, partitions = std::move(partitions)]() mutable
-                {
-                    using Action = WritePartitionAction<Policies, Partition>;
+    template<typename Element>
+    auto to_gdal(
+        PartitionedRaster<Element> const& raster,
+        std::string const& name) -> hpx::future<void>
+    {
+        if constexpr (!gdal::supports<Element>())
+        {
+            gdal::verify_support<Element>();
+            return hpx::make_ready_future();
+        }
+        else
+        {
+            // Write a partitioned array to a raster band using the GDAL API.
 
-                    std::size_t nr_partitions_to_write{partitions.size()};
-                    Action action{};
-                    hpx::when_any_result<std::vector<Partition>> when_any_result;
-                    std::size_t idx;
+            // Each partition that has become ready is written to the dataset, on the locality containing
+            // the partition. No two partitions are written at the same time.
 
-                    while (nr_partitions_to_write > 0)
-                    {
-                        // Find a ready partition. Wait for it if necessary.
-                        when_any_result =
-                            hpx::when_any(partitions.begin(), partitions.begin() + nr_partitions_to_write)
-                                .get();
-                        partitions = std::move(when_any_result.futures);
-                        idx = when_any_result.index;
+            // On the / this root locality:
+            // - Create the dataset to write a band in
 
-                        // Write the ready partition to the dataset. Wait for it to finish.
-                        hpx::id_type const locality{
-                            hpx::get_colocation_id(hpx::launch::sync, partitions[idx].get_id())};
-                        action(locality, Policies{}, name, partitions[idx]);
+            using Policies = WritePolicies<Element>;
 
-                        // Move the ready and written partition to just after the range with still
-                        // not written partitions
-                        std::rotate(
-                            partitions.begin() + idx,
-                            partitions.begin() + idx + 1,
-                            partitions.begin() + nr_partitions_to_write);
+            Policies policies{};
+            auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+            Element no_data_value;
+            ondp.mark_no_data(no_data_value);
 
-                        --nr_partitions_to_write;
-                    }
-                });
+            auto const& raster_shape{raster.shape()};
 
-            return result;
+            {
+                // TODO: Refactor with to_gdal(array)
+                Count const nr_bands{1};
+                GDALDataType const data_type{gdal::data_type_v<Element>};
+                gdal::DatasetPtr dataset_ptr{gdal::create_dataset(
+                    "GTiff",
+                    name,
+                    gdal::Shape{
+                        static_cast<gdal::Count>(raster_shape[0]),
+                        static_cast<gdal::Count>(raster_shape[1])},
+                    nr_bands,
+                    data_type)};
+                gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
+
+                gdal::set_no_data_value(*band_ptr, no_data_value);
+
+                // TODO: Write raster's CRS
+                gdal::GeoTransform geo_transform{
+                    0.0,  // west
+                    1.0,  // cell width
+                    0.0,  // row rotation
+                    static_cast<gdal::Coordinate>(raster_shape[0]),  // north
+                    0.0,  // col rotation
+                    -1.0,  // cell height (neg for north-up)
+                };
+
+                gdal::set_geo_transform(*dataset_ptr, geo_transform);
+            }
+
+            return write_partitions<Policies>(name, raster.cells().partitions());
         }
     }
 
@@ -698,16 +771,17 @@ namespace lue {
 
 
 {% for Element in Elements %}
-    {% for rank in ranks %}
 
-        template LUE_FRAMEWORK_IO_EXPORT lue::PartitionedArray<{{ Element }}, {{ rank }}> lue::from_gdal<{{ Element }}>(
-            std::string const&, lue::Shape<lue::Count, {{ rank }}> const&);
+    template LUE_FRAMEWORK_IO_EXPORT lue::PartitionedRaster<{{ Element }}> lue::from_gdal<{{ Element }}>(
+        std::string const&, lue::Shape<lue::Count, 2> const&);
 
-        template LUE_FRAMEWORK_IO_EXPORT lue::PartitionedArray<{{ Element }}, {{ rank }}> lue::from_gdal<{{ Element }}>(
-            std::string const&, lue::Hyperslab<{{ rank }}> const&, lue::Shape<lue::Count, {{ rank }}> const&);
+    template LUE_FRAMEWORK_IO_EXPORT lue::PartitionedRaster<{{ Element }}> lue::from_gdal<{{ Element }}>(
+        std::string const&, lue::Hyperslab<2> const&, lue::Shape<lue::Count, 2> const&);
 
-        template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
-            lue::PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&, std::string const&);
+    template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
+        lue::PartitionedArray<{{ Element }}, 2> const&, std::string const&, std::string const&);
 
-    {% endfor %}
+    template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
+        lue::PartitionedRaster<{{ Element }}> const&, std::string const&);
+
 {% endfor %}

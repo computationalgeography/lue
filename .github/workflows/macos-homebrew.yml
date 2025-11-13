@@ -78,6 +78,7 @@ jobs:
             lftp \
             nlohmann-json \
             numpy \
+            proj \
             pybind11 \
             python-matplotlib
           python${{ matrix.python_version }} -m venv --system-site-packages env
@@ -163,6 +164,9 @@ jobs:
 
       - name: test
         run: |
+          find ${HOMEBREW_PREFIX}/lib -name libtcmalloc_minimal.dylib
+          DYLD_INSERT_LIBRARIES=$(find ${HOMEBREW_PREFIX}/lib -name libtcmalloc_minimal.dylib)
+
           source env/bin/activate
 
           # Unit tests

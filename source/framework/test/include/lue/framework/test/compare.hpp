@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/component/component_array.hpp"
+#include "lue/framework/partitioned_raster.hpp"
 #include "lue/framework/test/stream.hpp"
 #include <boost/range/irange.hpp>
 #include <boost/test/included/unit_test.hpp>
@@ -202,6 +203,20 @@ namespace lue::test {
         BOOST_REQUIRE_EQUAL(array1.shape(), array2.shape());
 
         check_partitions_are_equal(array1.partitions(), array2.partitions());
+    }
+
+
+    template<typename Element>
+    void check_rasters_are_equal(
+        PartitionedRaster<Element> const& raster1, PartitionedRaster<Element> const& raster2)
+    {
+        BOOST_CHECK_EQUAL(raster1.nr_cells(), raster2.nr_cells());
+        BOOST_CHECK_EQUAL(raster1.shape(), raster2.shape());
+        BOOST_CHECK_EQUAL(raster1.cell_shape(), raster2.cell_shape());
+        BOOST_CHECK_EQUAL(raster1.crs(), raster2.crs());
+        BOOST_CHECK_EQUAL(raster1.mbr(), raster2.mbr());
+
+        check_arrays_are_equal(raster1.cells(), raster2.cells());
     }
 
 

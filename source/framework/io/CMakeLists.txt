@@ -10,7 +10,7 @@ block()
         OUTPUT_PATHNAME
             "${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp"
         DICTIONARY
-            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
+            '{"Elements":[${Elements}]}'
     )
 endblock()
 
@@ -53,7 +53,7 @@ target_link_libraries(lue_framework_io
     PRIVATE
         lue::framework_algorithm
     PUBLIC
-        lue::framework_partitioned_array
+        lue::framework_partitioned_raster
         lue::data_model_hl
         lue::gdal
         $<$<BOOL:${LUE_FRAMEWORK_WITH_PARALLEL_IO}>:MPI::MPI_CXX>

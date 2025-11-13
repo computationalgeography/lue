@@ -10,6 +10,9 @@ list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/core)
 add_subdirectory(partitioned_array)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/partitioned_array)
 
+add_subdirectory(partitioned_raster)
+list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/partitioned_raster)
+
 add_subdirectory(partitioned_route)
 list(APPEND doxygen_input ${CMAKE_CURRENT_SOURCE_DIR}/partitioned_route)
 

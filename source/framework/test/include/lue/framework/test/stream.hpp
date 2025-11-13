@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_raster.hpp"
 #include "lue/stream.hpp"
 #include <boost/range/irange.hpp>
 
@@ -45,7 +45,7 @@
 namespace std {
 
     template<typename Element, lue::Rank rank>
-    std::ostream& stream_span(std::ostream& stream, lue::DynamicSpan<Element, rank> const& span)
+    auto stream_span(std::ostream& stream, lue::DynamicSpan<Element, rank> const& span) -> std::ostream&
     {
         auto const idxs = boost::irange<lue::Index>(0, rank);
 
@@ -65,22 +65,112 @@ namespace std {
 
 
     template<typename Element>
-    std::ostream& operator<<(std::ostream& stream, lue::DynamicSpan<Element, 1> const& span)
+    auto operator<<(std::ostream& stream, lue::DynamicSpan<Element, 1> const& span) -> std::ostream&
     {
         return stream_span<Element, 1>(stream, span);
     }
 
 
     template<typename Element>
-    std::ostream& operator<<(std::ostream& stream, lue::DynamicSpan<Element, 2> const& span)
+    auto operator<<(std::ostream& stream, lue::DynamicSpan<Element, 2> const& span) -> std::ostream&
     {
         return stream_span<Element, 2>(stream, span);
+    }
+
+
+    template<typename Element>
+    auto operator<<(std::ostream& stream, pair<Element, Element> const pair) -> std::ostream&
+    {
+        stream << '(' << pair.first << ", " << pair.second << ')';
+
+        return stream;
     }
 
 }  // namespace std
 
 
 namespace lue {
+
+    auto operator<<(std::ostream& stream, EPSG const& epsg) -> std::ostream&
+    {
+        stream << to_string(epsg);
+
+        return stream;
+    }
+
+
+    auto operator<<(std::ostream& stream, PROJ4 const& proj4) -> std::ostream&
+    {
+        stream << to_string(proj4);
+
+        return stream;
+    }
+
+
+    auto operator<<(std::ostream& stream, WKT const& wkt) -> std::ostream&
+    {
+        stream << to_string(wkt);
+
+        return stream;
+    }
+
+
+    auto operator<<(std::ostream& stream, CRS const& crs) -> std::ostream&
+    {
+        stream << to_string(crs);
+
+        return stream;
+    }
+
+
+    auto operator<<(std::ostream& stream, CRS::Type const& type) -> std::ostream&
+    {
+        switch (type)
+        {
+            case CRS::Type::Geodetic:
+            {
+                stream << "geodetic";
+                break;
+            }
+            case CRS::Type::Projected:
+            {
+                stream << "projected";
+                break;
+            }
+            case CRS::Type::Vertical:
+            {
+                stream << "vertical";
+                break;
+            }
+            case CRS::Type::Engineering:
+            {
+                stream << "engineering";
+                break;
+            }
+            case CRS::Type::Image:
+            {
+                stream << "image";
+                break;
+            }
+        };
+
+        return stream;
+    }
+
+
+    template<typename Coordinate, Rank rank>
+    auto operator<<(std::ostream& stream, BoundingBox<Coordinate, rank> const box) -> std::ostream&
+    {
+        stream << '(';
+
+        auto joiner = lue_make_ostream_joiner(stream, ", ");
+        std::copy(box.limits().begin(), box.limits().end(), joiner);
+
+        stream << ')';
+
+        return stream;
+    }
+
 
     template<typename Element, Rank rank>
     std::ostream& operator<<(std::ostream& stream, Array<Element, rank> const& data)
