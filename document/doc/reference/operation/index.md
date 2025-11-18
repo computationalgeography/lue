@@ -4,7 +4,7 @@
 - Not all operations available are listed here already.
 - The signatures of the operations are written in a language-agnostic manner. How to use each operation from a
   specific language might slightly differ. Check the usage examples for inspiration. Also, in Python the
-  `help` function can be used (e.g.: `help(lfr.uniform)`).
+  `help` function can be used to obtain more information (e.g.: `help(lfr.uniform)`).
 ```
 
 ## Local operations
