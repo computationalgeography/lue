@@ -409,10 +409,10 @@ endif()
 
 
 if(LUE_BUILD_DOCUMENTATION)
-    # set(LUE_BREATHE_REQUIRED TRUE)
     set(LUE_DOXYGEN_REQUIRED TRUE)
     set(LUE_GRAPHVIZ_REQUIRED TRUE)
     set(LUE_JUPYTER_BOOK_REQUIRED TRUE)
+    set(LUE_LATEX_REQUIRED TRUE)
     set(LUE_SPHINX_REQUIRED TRUE)
     set(LUE_DOXYGEN_AWESOME_CSS_REQUIRED TRUE)
 
@@ -612,12 +612,14 @@ if(LUE_HDF5_REQUIRED)
         set(HDF5_PREFER_PARALLEL TRUE)
     endif()
 
-    # set(HDF5_FIND_DEBUG TRUE)  # Uncomment to debug HDF5's find logic
-    find_package(HDF5 REQUIRED COMPONENTS C)
+    # set(HDF5_FIND_DEBUG TRUE)  # Uncomment to debug HDF5's find logic (MODULE mode only?)
+    find_package(HDF5 MODULE REQUIRED COMPONENTS C)
 
     if(NOT HDF5_FOUND)
         message(FATAL_ERROR "HDF5 not found")
     elseif(NOT TARGET hdf5::hdf5)
+        # If this fails, consider migrating to CONFIG search mode and use HDF5's hdf5-config.cmake. It
+        # defines other targets and variables though...
         message(FATAL_ERROR "Target hdf5::hdf5 not available")
     endif()
 
@@ -657,6 +659,24 @@ if(LUE_NLOHMANN_JSON_REQUIRED)
         FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(nlohmann_json)
+endif()
+
+
+if(LUE_LATEX_REQUIRED)
+    find_package(LATEX REQUIRED)
+
+    if(LATEX_FOUND)
+        include(UseLATEX)
+
+        # Needed for logo targets
+        find_program(dvisvgm_EXECUTABLE dvisvgm)
+        if(NOT dvisvgm_EXECUTABLE)
+            message(FATAL_ERROR "dvisvgm not found, LaTeX installation not complete")
+        endif()
+
+        # Needed for logo targets
+        find_package(ImageMagick REQUIRED COMPONENTS convert)
+    endif()
 endif()
 
 

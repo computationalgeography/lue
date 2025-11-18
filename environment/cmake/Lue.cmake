@@ -11,16 +11,6 @@ set(LUE_MIN_CXX_STANDARD 23)
 
 set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 
-find_package(LATEX)
-if(LATEX_FOUND)
-    include(UseLATEX)
-    find_program(dvisvgm_EXECUTABLE dvisvgm)
-    if(NOT dvisvgm_EXECUTABLE)
-        message(FATAL_ERROR "dvisvgm not found, LaTeX installation not complete")
-    endif()
-    find_package(ImageMagick COMPONENTS convert)
-endif()
-
 # Handle configuration and 3rd party libraries and tools, and ...
 include(LueConfiguration)
 
