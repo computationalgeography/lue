@@ -522,8 +522,7 @@ endif()
 
 
 if(LUE_HPX_REQUIRED)
-    # find_package(HPX 1.11...<1.12 REQUIRED)
-    find_package(HPX REQUIRED)
+    find_package(HPX 1.11...<1.12 REQUIRED)
 
     if(HPX_FOUND)
         message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
