@@ -27,8 +27,8 @@ without the user having to know about high-performance computing and
 the related technology.
 
 - [Homepage](https://lue.computationalgeography.org)
-    - [Documentation](https://lue.computationalgeography.org/doc)
-    - [Publications](https://lue.computationalgeography.org/publication)
+  - [Documentation](https://lue.computationalgeography.org/doc)
+  - [Publications](https://lue.computationalgeography.org/publication)
 - [R&D team](https://www.computationalgeography.org)
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org)
   (users)
@@ -37,15 +37,9 @@ the related technology.
 
 [![Latest release](https://zenodo.org/badge/DOI/10.5281/zenodo.5535685.svg)](https://doi.org/10.5281/zenodo.5535685)
 
-
 ## Source code
 
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/computationalgeography/lue/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
-
 
 ## C/I builds
 
