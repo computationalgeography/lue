@@ -1,5 +1,5 @@
 {
-    "version": 6,
+    "version": 10,
     "configurePresets": [
         {
             "name": "hpx_shared_configuration",
@@ -44,8 +44,11 @@
         {
             "name": "hpx_macos_configuration",
             "hidden": true,
+            "$comment": [
+                "homebrew's asio doesn't work (too new?)"
+            ],
             "cacheVariables": {
-                "HPX_WITH_FETCH_ASIO": "FALSE",
+                "HPX_WITH_FETCH_ASIO": "TRUE",
                 "HPX_WITH_FETCH_HWLOC": "FALSE",
                 "HPX_WITH_HIDDEN_VISIBILITY": "FALSE",
                 "HPX_WITH_GOOGLE_PERFTOOLS": "TRUE",

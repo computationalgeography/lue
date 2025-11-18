@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        macos_version: ["14", "15"]
+        macos_version: ["14"] # TODO uncomment this version again, "15"]
         compiler:
           - { name: clang, c: clang, cxx: clang++ }
         python_version: ["3.13"]
@@ -68,7 +68,6 @@ jobs:
       - name: setup platform
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install \
-            asio \
             boost \
             cxxopts \
             gdal \
