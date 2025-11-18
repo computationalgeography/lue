@@ -5,8 +5,8 @@ name: Linux CI
 
 on:
   pull_request:
-    # branches-ignore:
-    #   - "*"
+    branches-ignore:
+      - "*"
     paths:
       - "**"
       - "!.github/workflows/*"
