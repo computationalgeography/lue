@@ -17,6 +17,18 @@
    :no-index:
 
    Overload of :py:func:`uniform`. A default partition shape will be used.
+
+.. py:function:: uniform(array, min_value, max_value) -> Field
+   :no-index:
+
+   Overload of :py:func:`uniform`. The passed in array's shape and partition shape will be used.
+
+.. py:function:: uniform(min_value, max_value) -> Scalar
+   Return a scalar with a value drawn from the uniform distribution.
+
+   :param Field min_value: Minimum value of the distribution (value, scalar)
+   :param Field max_value: Maximum value of the distribution (value, scalar)
+   :return: New scalar
 ```
 
 ## Description
