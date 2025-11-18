@@ -68,6 +68,7 @@ jobs:
       - name: setup platform
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install \
+            asio \
             boost \
             cxxopts \
             gdal \
@@ -88,7 +89,7 @@ jobs:
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
-          hpx_build_nr: 1
+          hpx_build_nr: 2
         with:
           cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
           c_compiler: ${{ matrix.compiler.c }}
@@ -114,6 +115,10 @@ jobs:
 
       - name: configure
         run: |
+          ls -ltr ${{ env.hpx_install_directory }}/lib/cmake/HPX
+          cat ${{ env.hpx_install_directory }}/lib/cmake/HPX/HPXConfig.cmake
+          cat ${{ env.hpx_install_directory }}/lib/cmake/HPX/HPXConfigVersion.cmake
+
           source env/bin/activate
           mkdir ${{ env.lue_build_directory }}
 
