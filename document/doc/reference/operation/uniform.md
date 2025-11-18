@@ -16,7 +16,20 @@
 .. py:function:: uniform(array_shape, min_value, max_value) -> Field
    :no-index:
 
-   Overload of :py:func:`uniform`. A default partition shape will be used.
+   Overload. A default partition shape will be used.
+
+.. py:function:: uniform(array, min_value, max_value) -> Field
+   :no-index:
+
+   Overload. The passed in array's shape and partition shape will be used.
+
+.. py:function:: uniform(min_value, max_value) -> Scalar
+
+   Return a scalar with a value drawn from the uniform distribution.
+
+   :param Scalar min_value: Minimum value of the distribution (value, scalar)
+   :param Scalar max_value: Maximum value of the distribution (value, scalar)
+   :return: New scalar
 ```
 
 ## Description
@@ -36,7 +49,9 @@ TODO
 ```
 
 ```{code-block} c++
-// TODO
+// The output element type is deduced from the min/max argument values, but can be overridden by a
+// template parameter.
+auto const result = lue::value_policies::uniform<std::uint64_t>(array, 0, 100);
 ```
 
 ```{code-block} java
@@ -44,7 +59,8 @@ TODO
 ```
 
 ```{code-block} python
-# TODO
+# A dtype argument is used to specify the output element type
+result = lfr.uniform(array, np.int64, 0, 100)
 ```
 
 ````
