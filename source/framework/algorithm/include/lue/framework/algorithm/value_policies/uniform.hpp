@@ -18,7 +18,7 @@ namespace lue {
 
     namespace value_policies {
 
-        template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
+        template<Arithmetic Element, Arithmetic SomeElement, Rank rank>
             requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
         auto uniform(
             PartitionedArray<SomeElement, rank> const& input_array,
@@ -31,7 +31,7 @@ namespace lue {
         }
 
 
-        template<Arithmetic SomeElement, Arithmetic Element, Rank rank>
+        template<Arithmetic Element, Arithmetic SomeElement, Rank rank>
             requires(!std::is_same_v<Element, std::uint8_t> && !std::is_same_v<Element, std::int8_t>)
         auto uniform(
             PartitionedArray<SomeElement, rank> const& input_array,
