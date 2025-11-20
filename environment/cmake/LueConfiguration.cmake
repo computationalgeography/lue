@@ -522,7 +522,10 @@ endif()
 
 
 if(LUE_HPX_REQUIRED)
+    set(CMAKE_FIND_DEBUG_MODE TRUE)
+    message(STATUS "CMAKE_SIZEOF_VOID_P: ${CMAKE_SIZEOF_VOID_P}")
     find_package(HPX 1.11...<1.12 REQUIRED)
+    set(CMAKE_FIND_DEBUG_MODE FALSE)
 
     if(HPX_FOUND)
         message(STATUS "Using HPX ${HPX_VERSION} found in ${HPX_PREFIX}")
