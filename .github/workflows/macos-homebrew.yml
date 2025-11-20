@@ -67,7 +67,9 @@ jobs:
 
       - name: setup platform
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install \
+          # HOMEBREW_NO_AUTO_UPDATE=1 brew install
+          # brew install --overwrite
+          brew install \
             boost \
             cxxopts \
             gdal \
@@ -76,10 +78,12 @@ jobs:
             hdf5 \
             hwloc \
             lftp \
+            ninja \
             nlohmann-json \
             numpy \
             pybind11 \
             python-matplotlib
+          brew upgrade cmake
           python${{ matrix.python_version }} -m venv --system-site-packages env
           source env/bin/activate
           pip${{ matrix.python_version }} install --upgrade pip
