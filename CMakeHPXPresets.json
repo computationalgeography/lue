@@ -4,8 +4,10 @@
         {
             "name": "hpx_shared_configuration",
             "hidden": true,
+            "$comment": [
+                "HPX_USE_CMAKE_CXX_STANDARD: TRUE"
+            ],
             "cacheVariables": {
-                "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
                 "HPX_WITH_EXAMPLES": "FALSE",
                 "HPX_WITH_HWLOC": "TRUE",
                 "HPX_WITH_PKGCONFIG": "FALSE",
