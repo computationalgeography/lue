@@ -55,6 +55,7 @@ if(LATEX_FOUND)
                 ${figure}-style.tex
                 ${style}.tex
                 style.tex
+            FORCE_PDF
         )
 
         add_custom_command(
@@ -113,6 +114,7 @@ if(LATEX_FOUND)
                 ${figure}-style.tex
                 ${style}.tex
                 style.tex
+            FORCE_PDF
         )
 
         add_custom_command(
