@@ -34,7 +34,7 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-#if LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifdef LUE_FRAMEWORK_WITH_PARALLEL_IO
             transfer_property_list.set_transfer_mode(H5FD_MPIO_INDEPENDENT);
 #endif
 
@@ -65,11 +65,11 @@ namespace lue {
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
             // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
             // thread it seems.
-            hpx::execution::experimental::io_pool_executor executor;
+            // hpx::execution::experimental::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
-                    executor,
+                    // executor,
                     [  // executor,
                         policies,
                         array_hyperslab_start,
@@ -118,6 +118,22 @@ namespace lue {
                             std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
                             std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
 
+                // std::vector<hpx::future<void>> partitions_written{};
+                // partitions_written.reserve(partitions.size());
+                // partitions_written.emplace_back(
+                //     hpx::async(
+                //         // executor,
+                //         write_partition,
+                //         std::ref(policies),
+                //         std::ref(partitions[partition_idx]),
+                //         create_hyperslab,
+                //         object_id,
+                //         std::ref(property)));
+
+#ifndef HDF5_IS_THREADSAFE
+#else
+#endif
+
                         hpx::async(
                             // executor,
                             write_partition,
@@ -154,9 +170,12 @@ namespace lue {
 
                             partitions = std::move(partitions_);
                         }
+
+#ifndef HDF5_IS_THREADSAFE
+#else
+#endif
                     });
         }
-
 
         template<typename Policies, typename Partitions>
         auto write_partitions_variable(
@@ -173,11 +192,11 @@ namespace lue {
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
             // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
             // thread it seems.
-            hpx::execution::experimental::io_pool_executor executor;
+            // hpx::execution::experimental::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
-                    executor,
+                    // executor,
                     [  // executor,
                         policies,
                         array_hyperslab_start,
@@ -332,7 +351,7 @@ namespace lue {
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
 
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
         localities_finished.emplace_back(hpx::make_ready_future());
 #endif
 
@@ -352,7 +371,7 @@ namespace lue {
 
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once the partitions have been written.
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
             hpx::future<void>& previous_locality_finished = localities_finished.back();
             localities_finished.push_back(previous_locality_finished.then(
                 [locality,
@@ -385,7 +404,7 @@ namespace lue {
 #endif
         }
 
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
         lue_hpx_assert(localities_finished.back().valid());
         return std::move(localities_finished.back());
 #else
@@ -444,7 +463,7 @@ namespace lue {
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
 
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
         localities_finished.emplace_back(hpx::make_ready_future());
 #endif
 
@@ -464,7 +483,7 @@ namespace lue {
 
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once the partitions have been written.
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
             hpx::future<void>& previous_locality_finished = localities_finished.back();
             localities_finished.push_back(previous_locality_finished.then(
                 [locality,
@@ -500,7 +519,7 @@ namespace lue {
 #endif
         }
 
-#if !LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
         lue_hpx_assert(localities_finished.back().valid());
         return std::move(localities_finished.back());
 #else

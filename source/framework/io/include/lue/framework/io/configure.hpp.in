@@ -1,4 +1,4 @@
 #pragma once
 
 
-#cmakedefine01 LUE_FRAMEWORK_WITH_PARALLEL_IO
+#cmakedefine LUE_FRAMEWORK_WITH_PARALLEL_IO
