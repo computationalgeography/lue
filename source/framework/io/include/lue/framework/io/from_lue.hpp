@@ -48,7 +48,7 @@ namespace lue {
             // Open value. Configure for use of parallel I/O if necessary.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
 
-#if LUE_FRAMEWORK_WITH_PARALLEL_IO
+#ifdef LUE_FRAMEWORK_WITH_PARALLEL_IO
             transfer_property_list.set_transfer_mode(H5FD_MPIO_INDEPENDENT);
 #endif
 
