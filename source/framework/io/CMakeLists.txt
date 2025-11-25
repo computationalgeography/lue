@@ -46,6 +46,7 @@ target_sources(lue_framework_io
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/io/export.hpp
     PRIVATE
         source/dataset.cpp
+        source/lue.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
 )
 

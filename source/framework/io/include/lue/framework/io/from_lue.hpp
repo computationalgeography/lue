@@ -5,6 +5,7 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/dataset.hpp"
+#include "lue/framework/io/lue.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
@@ -35,12 +36,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename Policies, typename Property, typename CreateHyperslab, typename Partitions>
+        template<typename Policies, typename CreateHyperslab, typename Partitions>
         void read_partitions(
             [[maybe_unused]] Policies const& policies,
-            Property const& property,
+            data_model::Array const& array,
             CreateHyperslab create_hyperslab,
-            data_model::ID const object_id,
             Partitions const& partitions)
         {
             AnnotateFunction const annotate{"read: partitions"};
@@ -53,8 +53,6 @@ namespace lue {
 #endif
 
             // Iterate over partitions and read each partition's piece from the dataset
-            auto const& value{property.value()};
-            auto const array{value[object_id]};
 
             using Partition = typename Partitions::value_type;
             using Element = ElementT<Partition>;
@@ -81,7 +79,7 @@ namespace lue {
 
         auto keep_dataset_open_until_all_partitions_read(hpx::future<data_model::Dataset> dataset_f)
         {
-            dataset_f.then([](auto const& dataset_f) { HPX_UNUSED(dataset_f); });
+            dataset_f.then([](auto const& dataset_f) -> auto { HPX_UNUSED(dataset_f); });
         }
 
 
@@ -89,6 +87,7 @@ namespace lue {
         auto read_partitions_constant(
             Policies const& policies,
             std::string const& array_pathname,
+            Count const open_count,
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block read from array
             data_model::ID const object_id,
             Partitions const& partitions) -> hpx::future<Partitions>
@@ -96,43 +95,68 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
+            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+                parse_array_pathname(array_pathname);
+
+            std::filesystem::path const dataset_path{normalize(dataset_pathname)};
+            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
+            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
+
             // TODO On I/O thread
+
             auto [dataset_f, partitions_f] = hpx::split_future(
                 hpx::dataflow(
                     hpx::launch::async,
-                    hpx::unwrapping(
-                        [policies, array_pathname, array_hyperslab_start, object_id](Partitions&& partitions)
-                        {
-                            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
-                                parse_array_pathname(array_pathname);
-                            auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
+                    [policies,
+                     array_hyperslab_start,
+                     dataset_pathname,
+                     open_file_promise = std::move(open_file_promise),
+                     phenomenon_name,
+                     property_set_name,
+                     property_name,
+                     object_id](
+                        [[maybe_unused]] auto const& predecessor_future, auto&& partitions_f) mutable -> auto
+                    {
+                        Partitions partitions = partitions_f.get();
 
-                            // Open phenomenon
-                            auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
+                        auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
 
-                            // Open property-set
-                            auto const& property_set{phenomenon.property_sets()[property_set_name]};
+                        // Done with the collective calls
+                        open_file_promise.set_value();
 
-                            // Open property
-                            lue_hpx_assert(property_set.properties().contains(property_name));
-                            lue_hpx_assert(
-                                property_set.properties().shape_per_object(property_name) ==
-                                data_model::ShapePerObject::different);
-                            lue_hpx_assert(
-                                property_set.properties().value_variability(property_name) ==
-                                data_model::ValueVariability::constant);
-                            using Properties = data_model::different_shape::Properties;
-                            auto const& property{
-                                property_set.properties().collection<Properties>()[property_name]};
+                        // Open phenomenon
+                        auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
-                            auto create_hyperslab =
-                                [array_hyperslab_start](PartitionServer const& partition_server)
-                            { return hyperslab(array_hyperslab_start, partition_server); };
+                        // Open property-set
+                        auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
-                            read_partitions(policies, property, create_hyperslab, object_id, partitions);
+                        // Open property
+                        lue_hpx_assert(property_set.properties().contains(property_name));
+                        lue_hpx_assert(
+                            property_set.properties().shape_per_object(property_name) ==
+                            data_model::ShapePerObject::different);
+                        lue_hpx_assert(
+                            property_set.properties().value_variability(property_name) ==
+                            data_model::ValueVariability::constant);
+                        using Properties = data_model::different_shape::Properties;
+                        auto const& property{
+                            property_set.properties().collection<Properties>()[property_name]};
 
-                            return std::make_tuple(std::move(dataset), std::move(partitions));
-                        }),
+                        // constant: data_model::different_shape::Value
+                        auto const& value{property.value()};
+
+                        // constant: data_model::Array: hdf5::Dataset
+                        auto array{value[object_id]};
+
+                        auto create_hyperslab =
+                            [array_hyperslab_start](PartitionServer const& partition_server) -> auto
+                        { return hyperslab(array_hyperslab_start, partition_server); };
+
+                        read_partitions(policies, array, create_hyperslab, partitions);
+
+                        return std::make_tuple(std::move(dataset), std::move(partitions));
+                    },
+                    predecessor_future,
                     hpx::when_all(partitions)));
 
             keep_dataset_open_until_all_partitions_read(std::move(dataset_f));
@@ -146,6 +170,7 @@ namespace lue {
         auto read_partitions_variable(
             Policies const& policies,
             std::string const& array_pathname,
+            Count const open_count,
             hdf5::Offset const& array_hyperslab_start,
             data_model::ID const object_id,
             Index const time_step_idx,
@@ -154,46 +179,70 @@ namespace lue {
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
+            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+                parse_array_pathname(array_pathname);
+
+            std::filesystem::path const dataset_path{normalize(dataset_pathname)};
+            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
+            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
+
             auto [dataset_f, partitions_f] = hpx::split_future(
                 hpx::dataflow(
                     hpx::launch::async,
-                    hpx::unwrapping(
-                        [policies, array_pathname, array_hyperslab_start, object_id, time_step_idx](
-                            Partitions&& partitions)
-                        {
-                            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
-                                parse_array_pathname(array_pathname);
-                            auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
+                    [policies,
+                     array_hyperslab_start,
+                     dataset_pathname,
+                     open_file_promise = std::move(open_file_promise),
+                     phenomenon_name,
+                     property_set_name,
+                     property_name,
+                     object_id,
+                     time_step_idx](
+                        [[maybe_unused]] auto const& predecessor_future, auto&& partitions_f) mutable -> auto
+                    {
+                        Partitions partitions = partitions_f.get();
 
-                            // Open phenomenon
-                            auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
+                        auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
 
-                            // Open property-set
-                            auto const& property_set{phenomenon.property_sets()[property_set_name]};
+                        // Done with the collective calls
+                        open_file_promise.set_value();
 
-                            // Open property
-                            lue_hpx_assert(property_set.properties().contains(property_name));
-                            lue_hpx_assert(
-                                property_set.properties().shape_per_object(property_name) ==
-                                data_model::ShapePerObject::different);
-                            lue_hpx_assert(
-                                property_set.properties().value_variability(property_name) ==
-                                data_model::ValueVariability::variable);
-                            lue_hpx_assert(
-                                property_set.properties().shape_variability(property_name) ==
-                                data_model::ShapeVariability::constant);
-                            using Properties = data_model::different_shape::constant_shape::Properties;
-                            auto const& property{
-                                property_set.properties().collection<Properties>()[property_name]};
+                        // Open phenomenon
+                        auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
-                            auto create_hyperslab = [array_hyperslab_start,
-                                                     time_step_idx](PartitionServer const& partition_server)
-                            { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
+                        // Open property-set
+                        auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
-                            read_partitions(policies, property, create_hyperslab, object_id, partitions);
+                        // Open property
+                        lue_hpx_assert(property_set.properties().contains(property_name));
+                        lue_hpx_assert(
+                            property_set.properties().shape_per_object(property_name) ==
+                            data_model::ShapePerObject::different);
+                        lue_hpx_assert(
+                            property_set.properties().value_variability(property_name) ==
+                            data_model::ValueVariability::variable);
+                        lue_hpx_assert(
+                            property_set.properties().shape_variability(property_name) ==
+                            data_model::ShapeVariability::constant);
+                        using Properties = data_model::different_shape::constant_shape::Properties;
+                        auto const& property{
+                            property_set.properties().collection<Properties>()[property_name]};
 
-                            return std::make_tuple(std::move(dataset), std::move(partitions));
-                        }),
+                        // constant: data_model::different_shape::Value
+                        auto const& value{property.value()};
+
+                        // constant: data_model::Array: hdf5::Dataset
+                        auto const array{value[object_id]};
+
+                        auto create_hyperslab = [array_hyperslab_start, time_step_idx](
+                                                    PartitionServer const& partition_server) -> auto
+                        { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
+
+                        read_partitions(policies, array, create_hyperslab, partitions);
+
+                        return std::make_tuple(std::move(dataset), std::move(partitions));
+                    },
+                    predecessor_future,
                     hpx::when_all(partitions)));
 
             keep_dataset_open_until_all_partitions_read(std::move(dataset_f));
@@ -243,6 +292,10 @@ namespace lue {
             using Action = ReadPartitionsConstantAction<Policies, std::vector<Partition>>;
             Action action{};
 
+            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+                parse_array_pathname(array_pathname);
+            auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+
             // Iterate over all grouped partitions
             for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
@@ -262,6 +315,7 @@ namespace lue {
                         locality,
                         policies,
                         array_pathname,
+                        open_count,
                         array_hyperslab_start,
                         object_id,
                         std::move(partitions)),
@@ -323,6 +377,10 @@ namespace lue {
             using Action = ReadPartitionsVariableAction<Policies, std::vector<Partition>>;
             Action action{};
 
+            auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+                parse_array_pathname(array_pathname);
+            auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+
             // Iterate over all grouped partitions
             for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
@@ -343,6 +401,7 @@ namespace lue {
                         locality,
                         policies,
                         array_pathname,
+                        open_count,
                         array_hyperslab_start,
                         object_id,
                         time_step_idx,
