@@ -38,11 +38,12 @@ namespace lue::framework {
 
             if constexpr (arithmetic_element_supported<Element>)
             {
-                result = pybind11::cast(value_policies::uniform(
-                    array_shape,
-                    partition_shape,
-                    pybind11::cast<Element>(min_value),
-                    pybind11::cast<Element>(max_value)));
+                result = pybind11::cast(
+                    value_policies::uniform(
+                        array_shape,
+                        partition_shape,
+                        pybind11::cast<Element>(min_value),
+                        pybind11::cast<Element>(max_value)));
             }
 
             return result;
@@ -156,10 +157,11 @@ namespace lue::framework {
 
                 if (dynamic_array_shape.size() != dynamic_partition_shape.size())
                 {
-                    throw std::runtime_error(std::format(
-                        "Rank of array shape and partition shape must be equal ({} != {})",
-                        dynamic_array_shape.size(),
-                        dynamic_partition_shape.size()));
+                    throw std::runtime_error(
+                        std::format(
+                            "Rank of array shape and partition shape must be equal ({} != {})",
+                            dynamic_array_shape.size(),
+                            dynamic_partition_shape.size()));
                 }
             }
 
