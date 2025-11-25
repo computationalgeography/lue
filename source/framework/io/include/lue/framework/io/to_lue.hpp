@@ -51,6 +51,68 @@ namespace lue {
         }
 
 
+        template<typename Policies, typename Partitions, typename CreateHyperslab, typename Property>
+        void write_partitions(
+            Policies const& policies,
+            Partitions const& partitions,
+            CreateHyperslab create_hyperslab,
+            data_model::ID const object_id,
+            Property& property)
+        {
+            // This function blocks until all partitions have been written. This is required because local
+            // variables are passed into the function that does the writing and which is called from an
+            // asynchronous task.
+            using Partition = typename Partitions::value_type;
+
+            auto write_partition = detail::write_partition<
+                std::remove_reference_t<std::remove_cv_t<Policies>>,
+                std::remove_reference_t<std::remove_cv_t<Partition>>,
+                std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
+                std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
+
+#ifndef HDF5_IS_THREADSAFE
+            // Write any other ready partition, until all partitions are written, one after the other
+            auto remaining_partitions = partitions;
+
+            while (!remaining_partitions.empty())
+            {
+                auto [partition_idx, partitions_] = hpx::when_any(remaining_partitions).get();
+
+                hpx::async(
+                    // executor,
+                    write_partition,
+                    std::ref(policies),
+                    std::ref(partitions_[partition_idx]),
+                    create_hyperslab,
+                    object_id,
+                    std::ref(property))
+                    .get();
+
+                partitions_.erase(partitions_.begin() + partition_idx);
+
+                remaining_partitions = std::move(partitions_);
+            }
+#else
+            // Asynchronously write all partitions. Let HDF5 do the serialization.
+            std::vector<hpx::future<void>> partitions_written{};
+            partitions_written.reserve(partitions.size());
+
+            for (auto& partition : partitions)
+            {
+                // Pass in references to objects. This is fine, since we are waiting after
+                // the loop. Local variables will not go out of scope too soon.
+                partitions_written.emplace_back(partition.then(
+                    [write_partition, &policies, create_hyperslab, object_id, &property](
+                        auto const& partition) -> auto
+                    { write_partition(policies, partition, create_hyperslab, object_id, property); }));
+            }
+
+            // Don't return before the writing has finished
+            hpx::wait_all(partitions_written);
+#endif
+        }
+
+
         template<typename Policies, typename Partitions>
         auto write_partitions_constant(
             Policies const& policies,
@@ -110,68 +172,10 @@ namespace lue {
                             [array_hyperslab_start](PartitionServer const& partition_server) -> auto
                         { return hyperslab(array_hyperslab_start, partition_server); };
 
-                        auto write_partition = detail::write_partition<
-                            std::remove_reference_t<std::remove_cv_t<Policies>>,
-                            std::remove_reference_t<std::remove_cv_t<Partition>>,
-                            std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
-                            std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
-
                         auto [partition_idx, partitions] = when_any_result_f.get();
 
-#ifndef HDF5_IS_THREADSAFE
-                        hpx::async(
-                            // executor,
-                            write_partition,
-                            std::ref(policies),
-                            std::ref(partitions[partition_idx]),
-                            create_hyperslab,
-                            object_id,
-                            std::ref(property))
-                            .get();
-
-                        partitions.erase(partitions.begin() + partition_idx);
-
-                        // Write any other ready partition, until all partitions are written, one after the
-                        // other
-                        while (!partitions.empty())
-                        {
-                            auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
-
-                            hpx::async(
-                                // executor,
-                                write_partition,
-                                std::ref(policies),
-                                std::ref(partitions_[partition_idx]),
-                                create_hyperslab,
-                                object_id,
-                                std::ref(property))
-                                .get();
-
-                            partitions_.erase(partitions_.begin() + partition_idx);
-
-                            partitions = std::move(partitions_);
-                        }
-#else
-                        // Asynchronously write all partitions. Let HDF5 do the serialization.
-                        std::vector<hpx::future<void>> partitions_written{};
-                        partitions_written.reserve(partitions.size());
-
-                        for (auto& partition : partitions)
-                        {
-                            // Pass in references to objects. This is fine, since we are waiting after
-                            // the loop. Local variables will not go out of scope too soon.
-                            partitions_written.emplace_back(partition.then(
-                                [write_partition, &policies, create_hyperslab, object_id, &property](
-                                    auto const& partition) -> auto
-                                {
-                                    write_partition(
-                                        policies, partition, create_hyperslab, object_id, property);
-                                }));
-                        }
-
-                        // Don't return before the writing has finished
-                        hpx::wait_all(partitions_written);
-#endif
+                        // Blocks
+                        write_partitions(policies, partitions, create_hyperslab, object_id, property);
                     });
         }
 
@@ -241,44 +245,8 @@ namespace lue {
 
                         auto [partition_idx, partitions] = when_any_result_f.get();
 
-                        auto write_partition = detail::write_partition<
-                            std::remove_reference_t<std::remove_cv_t<Policies>>,
-                            std::remove_reference_t<std::remove_cv_t<Partition>>,
-                            std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
-                            std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
-
-                        hpx::async(
-                            // executor,
-                            write_partition,
-                            std::ref(policies),
-                            std::ref(partitions[partition_idx]),
-                            create_hyperslab,
-                            object_id,
-                            std::ref(property))
-                            .get();
-
-                        partitions.erase(partitions.begin() + partition_idx);
-
-                        // Write any other ready partition, until all partition are written, one after the
-                        // other
-                        while (!partitions.empty())
-                        {
-                            auto [partition_idx, partitions_] = hpx::when_any(partitions).get();
-
-                            hpx::async(
-                                // executor,
-                                write_partition,
-                                std::ref(policies),
-                                std::ref(partitions_[partition_idx]),
-                                create_hyperslab,
-                                object_id,
-                                std::ref(property))
-                                .get();
-
-                            partitions_.erase(partitions_.begin() + partition_idx);
-
-                            partitions = std::move(partitions_);
-                        }
+                        // Blocks
+                        write_partitions(policies, partitions, create_hyperslab, object_id, property);
                     });
         }
 
