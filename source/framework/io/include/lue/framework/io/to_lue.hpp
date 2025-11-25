@@ -77,7 +77,7 @@ namespace lue {
                         phenomenon_name,
                         property_set_name,
                         property_name,
-                        object_id](auto when_any_result_f)
+                        object_id](auto when_any_result_f) -> auto
                     {
                         AnnotateFunction const annotate{"to_lue: partitions constant"};
 
@@ -107,10 +107,8 @@ namespace lue {
                         using PartitionServer = Partition::Server;
 
                         auto create_hyperslab =
-                            [array_hyperslab_start](PartitionServer const& partition_server)
+                            [array_hyperslab_start](PartitionServer const& partition_server) -> auto
                         { return hyperslab(array_hyperslab_start, partition_server); };
-
-                        auto [partition_idx, partitions] = when_any_result_f.get();
 
                         auto write_partition = detail::write_partition<
                             std::remove_reference_t<std::remove_cv_t<Policies>>,
@@ -118,22 +116,9 @@ namespace lue {
                             std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
                             std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
 
-                // std::vector<hpx::future<void>> partitions_written{};
-                // partitions_written.reserve(partitions.size());
-                // partitions_written.emplace_back(
-                //     hpx::async(
-                //         // executor,
-                //         write_partition,
-                //         std::ref(policies),
-                //         std::ref(partitions[partition_idx]),
-                //         create_hyperslab,
-                //         object_id,
-                //         std::ref(property)));
+                        auto [partition_idx, partitions] = when_any_result_f.get();
 
 #ifndef HDF5_IS_THREADSAFE
-#else
-#endif
-
                         hpx::async(
                             // executor,
                             write_partition,
@@ -162,17 +147,30 @@ namespace lue {
                                 std::ref(property))
                                 .get();
 
-                            // write_partition(
-                            //     policies, partitions_[partition_idx], create_hyperslab, object_id,
-                            //     property);
-
                             partitions_.erase(partitions_.begin() + partition_idx);
 
                             partitions = std::move(partitions_);
                         }
-
-#ifndef HDF5_IS_THREADSAFE
 #else
+                        // Asynchronously write all partitions. Let HDF5 do the serialization.
+                        std::vector<hpx::future<void>> partitions_written{};
+                        partitions_written.reserve(partitions.size());
+
+                        for (auto& partition : partitions)
+                        {
+                            // Pass in references to objects. This is fine, since we are waiting after
+                            // the loop. Local variables will not go out of scope too soon.
+                            partitions_written.emplace_back(partition.then(
+                                [write_partition, &policies, create_hyperslab, object_id, &property](
+                                    auto const& partition) -> auto
+                                {
+                                    write_partition(
+                                        policies, partition, create_hyperslab, object_id, property);
+                                }));
+                        }
+
+                        // Don't return before the writing has finished
+                        hpx::wait_all(partitions_written);
 #endif
                     });
         }
@@ -189,10 +187,9 @@ namespace lue {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
-            // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
-            // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
-            // thread it seems.
-            // hpx::execution::experimental::io_pool_executor executor;
+            // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works
+            // in parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the
+            // compute thread it seems. hpx::execution::experimental::io_pool_executor executor;
 
             return hpx::when_any(partitions)
                 .then(
