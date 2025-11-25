@@ -4,6 +4,7 @@
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/io/configure.hpp"
 #include "lue/framework/io/dataset.hpp"
+#include "lue/framework/io/lue.hpp"
 #include "lue/framework/io/util.hpp"
 #include "lue/data_model/hl/util.hpp"
 
@@ -21,13 +22,12 @@
 namespace lue {
     namespace detail {
 
-        template<typename Policies, typename Partition, typename CreateHyperslab, typename Property>
+        template<typename Policies, typename Partition, typename CreateHyperslab>
         void write_partition(
             [[maybe_unused]] Policies const& policies,
             Partition const& partition,
             CreateHyperslab create_hyperslab,
-            data_model::ID const object_id,
-            Property& property)
+            data_model::Array& array)
         {
             AnnotateFunction const annotate{"to_lue: partition"};
 
@@ -37,9 +37,6 @@ namespace lue {
 #ifdef LUE_FRAMEWORK_WITH_PARALLEL_IO
             transfer_property_list.set_transfer_mode(H5FD_MPIO_INDEPENDENT);
 #endif
-
-            auto& value{property.value()};
-            auto array{value[object_id]};
 
             using Element = ElementT<Partition>;
 
@@ -51,13 +48,12 @@ namespace lue {
         }
 
 
-        template<typename Policies, typename Partitions, typename CreateHyperslab, typename Property>
+        template<typename Policies, typename Partitions, typename CreateHyperslab>
         void write_partitions(
             Policies const& policies,
             Partitions const& partitions,
             CreateHyperslab create_hyperslab,
-            data_model::ID const object_id,
-            Property& property)
+            data_model::Array& array)
         {
             // This function blocks until all partitions have been written. This is required because local
             // variables are passed into the function that does the writing and which is called from an
@@ -67,8 +63,7 @@ namespace lue {
             auto write_partition = detail::write_partition<
                 std::remove_reference_t<std::remove_cv_t<Policies>>,
                 std::remove_reference_t<std::remove_cv_t<Partition>>,
-                std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>,
-                std::remove_reference_t<std::remove_cv_t<decltype((property))>>>;
+                std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>>;
 
 #ifndef HDF5_IS_THREADSAFE
             // Write any other ready partition, until all partitions are written, one after the other
@@ -84,8 +79,7 @@ namespace lue {
                     std::ref(policies),
                     std::ref(partitions_[partition_idx]),
                     create_hyperslab,
-                    object_id,
-                    std::ref(property))
+                    std::ref(array))
                     .get();
 
                 partitions_.erase(partitions_.begin() + partition_idx);
@@ -102,9 +96,8 @@ namespace lue {
                 // Pass in references to objects. This is fine, since we are waiting after
                 // the loop. Local variables will not go out of scope too soon.
                 partitions_written.emplace_back(partition.then(
-                    [write_partition, &policies, create_hyperslab, object_id, &property](
-                        auto const& partition) -> auto
-                    { write_partition(policies, partition, create_hyperslab, object_id, property); }));
+                    [write_partition, &policies, create_hyperslab, &array](auto const& partition) -> auto
+                    { write_partition(policies, partition, create_hyperslab, array); }));
             }
 
             // Don't return before the writing has finished
@@ -119,29 +112,37 @@ namespace lue {
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block written to array
             Partitions const& partitions,
             std::string const& array_pathname,
+            Count const open_count,
             data_model::ID const object_id) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
+
+            std::filesystem::path const dataset_path{normalize(dataset_pathname)};
+            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
+            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
 
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works in
             // parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the compute
             // thread it seems.
             // hpx::execution::experimental::io_pool_executor executor;
 
-            return hpx::when_any(partitions)
+            return hpx::when_all(predecessor_future, hpx::when_any(partitions))
                 .then(
                     // executor,
                     [  // executor,
                         policies,
                         array_hyperslab_start,
                         dataset_pathname,
+                        open_file_promise = std::move(open_file_promise),
                         phenomenon_name,
                         property_set_name,
                         property_name,
-                        object_id](auto when_any_result_f) -> auto
+                        object_id](auto&& when_all_result_f) mutable -> auto
                     {
                         AnnotateFunction const annotate{"to_lue: partitions constant"};
+
+                        auto [predecessor_future, when_any_result_f] = when_all_result_f.get();
 
                         // Open the dataset once the first partition is ready to be written
                         auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDWR);
@@ -163,7 +164,17 @@ namespace lue {
                             property_set.properties().value_variability(property_name) ==
                             data_model::ValueVariability::constant);
                         using Properties = data_model::different_shape::Properties;
+                        // data_model::different_shape::Property
                         auto& property{property_set.properties().collection<Properties>()[property_name]};
+
+                        // constant: data_model::different_shape::Value
+                        auto const& value{property.value()};
+
+                        // constant: data_model::Array: hdf5::Dataset
+                        auto array{value[object_id]};
+
+                        // Done with the collective calls
+                        open_file_promise.set_value();
 
                         using Partition = typename Partitions::value_type;
                         using PartitionServer = Partition::Server;
@@ -175,7 +186,7 @@ namespace lue {
                         auto [partition_idx, partitions] = when_any_result_f.get();
 
                         // Blocks
-                        write_partitions(policies, partitions, create_hyperslab, object_id, property);
+                        write_partitions(policies, partitions, create_hyperslab, array);
                     });
         }
 
@@ -185,30 +196,38 @@ namespace lue {
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block written to array
             Partitions const& partitions,
             std::string const& array_pathname,
+            Count const open_count,
             data_model::ID const object_id,
             Index const time_step_idx) -> hpx::future<void>
         {
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
 
+            std::filesystem::path const dataset_path{normalize(dataset_pathname)};
+            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
+            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
+
             // TODO: How to make all I/O happen on the I/O thread? Passing executor to continuation works
             // in parallel I/O case but serial case hangs. Currently, the nested I/O ends up on the
             // compute thread it seems. hpx::execution::experimental::io_pool_executor executor;
 
-            return hpx::when_any(partitions)
+            return hpx::when_all(predecessor_future, hpx::when_any(partitions))
                 .then(
                     // executor,
                     [  // executor,
                         policies,
                         array_hyperslab_start,
                         dataset_pathname,
+                        open_file_promise = std::move(open_file_promise),
                         phenomenon_name,
                         property_set_name,
                         property_name,
                         object_id,
-                        time_step_idx](auto&& when_any_result_f)
+                        time_step_idx](auto&& when_all_result_f) mutable -> auto
                     {
                         AnnotateFunction const annotate{"to_lue: partitions variable"};
+
+                        auto [predecessor_future, when_any_result_f] = when_all_result_f.get();
 
                         // Open the dataset once the first partition is ready to be written
                         auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDWR);
@@ -233,20 +252,31 @@ namespace lue {
                             property_set.properties().shape_variability(property_name) ==
                             data_model::ShapeVariability::constant);
                         using Properties = data_model::different_shape::constant_shape::Properties;
+                        // data_model::different_shape::constant_shape::Property
                         auto const& property{
                             property_set.properties().collection<Properties>()[property_name]};
+
+                        // variable: data_model::different_shape::constant_shape::Value
+                        const auto& value{property.value()};
+
+                        // variable: data_model::same_shape::constant_shape::Value: data_model::Array:
+                        // hdf5::Dataset
+                        auto array{value[object_id]};
+
+                        // Done with the collective calls
+                        open_file_promise.set_value();
 
                         using Partition = typename Partitions::value_type;
                         using PartitionServer = Partition::Server;
 
-                        auto create_hyperslab =
-                            [array_hyperslab_start, time_step_idx](PartitionServer const& partition_server)
+                        auto create_hyperslab = [array_hyperslab_start, time_step_idx](
+                                                    PartitionServer const& partition_server) -> auto
                         { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
 
                         auto [partition_idx, partitions] = when_any_result_f.get();
 
                         // Blocks
-                        write_partitions(policies, partitions, create_hyperslab, object_id, property);
+                        write_partitions(policies, partitions, create_hyperslab, array);
                     });
         }
 
@@ -323,6 +353,10 @@ namespace lue {
         using Action = detail::WritePartitionsConstantAction<Policies, std::vector<Partition>>;
         Action action{};
 
+        auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+            parse_array_pathname(array_pathname);
+        auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+
         for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
             // Copy current partitions from input array to a new collection
@@ -345,6 +379,7 @@ namespace lue {
                  array_hyperslab = detail::shape_to_hyperslab(array.shape()),
                  partitions = std::move(partitions),
                  array_pathname,
+                 open_count,
                  object_id]([[maybe_unused]] auto const& previous_locality_finished)
                 {
                     return hpx::async(
@@ -354,6 +389,7 @@ namespace lue {
                         array_hyperslab.start(),
                         std::move(partitions),
                         std::move(array_pathname),
+                        open_count,
                         object_id);
                 }));
 #else
@@ -365,6 +401,7 @@ namespace lue {
                     detail::shape_to_hyperslab(array.shape()).start(),
                     std::move(partitions),
                     std::move(array_pathname),
+                    open_count,
                     object_id));
 #endif
         }
@@ -435,6 +472,10 @@ namespace lue {
         using Action = detail::WritePartitionsVariableAction<Policies, std::vector<Partition>>;
         Action action{};
 
+        auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
+            parse_array_pathname(array_pathname);
+        auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+
         for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
             // Copy current partitions from input array to a new collection
@@ -457,6 +498,7 @@ namespace lue {
                  array_hyperslab = detail::shape_to_hyperslab(array.shape()),
                  partitions = std::move(partitions),
                  array_pathname,
+                 open_count,
                  object_id,
                  time_step_idx]([[maybe_unused]] auto const& previous_locality_finished)
                 {
@@ -467,6 +509,7 @@ namespace lue {
                         array_hyperslab.start(),
                         std::move(partitions),
                         std::move(array_pathname),
+                        open_count,
                         object_id,
                         time_step_idx);
                 }));
@@ -479,6 +522,7 @@ namespace lue {
                     detail::shape_to_hyperslab(array.shape()).start(),
                     std::move(partitions),
                     std::move(array_pathname),
+                    open_count,
                     object_id,
                     time_step_idx));
 #endif
