@@ -194,16 +194,16 @@ namespace lue::data_model {
 
                 ~RasterView() override = default;
 
-                RasterView& operator=(RasterView const&) = default;
+                auto operator=(RasterView const&) -> RasterView& = default;
 
-                RasterView& operator=(RasterView&&) noexcept = default;
+                auto operator=(RasterView&&) noexcept -> RasterView& = default;
 
-                TimeBox const& time_box() const;
+                auto time_box() const -> TimeBox const&;
 
                 hdf5::Shape::value_type nr_time_steps() const;
 
                 template<typename Element>
-                Layer add_layer(std::string const& name)
+                auto add_layer(std::string const& name) -> Layer
                 {
                     if constexpr (std::is_same_v<Element, bool>)
                     {
@@ -215,9 +215,9 @@ namespace lue::data_model {
                     }
                 }
 
-                Layer add_layer(std::string const& name, hdf5::Datatype const& datatype);
+                auto add_layer(std::string const& name, hdf5::Datatype const& datatype) -> Layer;
 
-                Layer layer(std::string const& name);
+                auto layer(std::string const& name) -> Layer;
 
             private:
 
