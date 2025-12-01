@@ -22,11 +22,8 @@ namespace lue::hdf5 {
         @exception  std::runtime_error In case the H5D_CORE driver cannot be set
         @sa [H5Pset_fapl_core](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplCore)
     */
-    void File::AccessPropertyList::use_core_driver(std::size_t const increment, hbool_t const backing_store)
+    void File::AccessPropertyList::use_core_driver(std::size_t const increment, bool const backing_store)
     {
-        // std::size_t const increment = 64000;  // 64k
-        // hbool_t const backing_store = 0;  // false
-
         herr_t const status{H5Pset_fapl_core(id(), increment, backing_store)};
 
         if (status < 0)
