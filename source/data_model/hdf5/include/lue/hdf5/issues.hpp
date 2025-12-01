@@ -2,63 +2,61 @@
 #include "lue/hdf5/issue.hpp"
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        /*!
-            @brief      Collection for storing errors
-        */
-        using Errors = std::vector<Issue>;
-
-
-        /*!
-            @brief      Collection for storing warnings
-        */
-        using Warnings = std::vector<Issue>;
+    /*!
+        @brief      Collection for storing errors
+    */
+    using Errors = std::vector<Issue>;
 
 
-        /*!
-            @brief      Collections of issues (warnings and errors) found during
-                        validation
-            @sa         Issue
-        */
-        class LUE_HDF5_EXPORT Issues
-        {
+    /*!
+        @brief      Collection for storing warnings
+    */
+    using Warnings = std::vector<Issue>;
 
-            public:
 
-                Issues() = default;
+    /*!
+        @brief      Collections of issues (warnings and errors) found during
+                    validation
+        @sa         Issue
+    */
+    class LUE_HDF5_EXPORT Issues
+    {
 
-                Issues(Issues const&) = default;
+        public:
 
-                Issues(Issues&&) = default;
+            Issues() = default;
 
-                ~Issues() = default;
+            Issues(Issues const& other) = default;
 
-                Issues& operator=(Issues const&) = default;
+            Issues(Issues&& other) = default;
 
-                Issues& operator=(Issues&&) = default;
+            ~Issues() = default;
 
-                Errors const& errors() const;
+            auto operator=(Issues const& other) -> Issues& = default;
 
-                Warnings const& warnings() const;
+            auto operator=(Issues&& other) -> Issues& = default;
 
-                void add_error(Identifier const& id, std::string const& message);
+            auto errors() const -> Errors const&;
 
-                void add_warning(Identifier const& id, std::string const& message);
+            auto warnings() const -> Warnings const&;
 
-                bool errors_found() const;
+            void add_error(Identifier const& id, std::string const& message);
 
-                bool warnings_found() const;
+            void add_warning(Identifier const& id, std::string const& message);
 
-            private:
+            auto errors_found() const -> bool;
 
-                //! Collection of errors
-                Errors _errors;
+            auto warnings_found() const -> bool;
 
-                //! Collection of warnings
-                Warnings _warnings;
-        };
+        private:
 
-    }  // namespace hdf5
-}  // namespace lue
+            //! Collection of errors
+            Errors _errors;
+
+            //! Collection of warnings
+            Warnings _warnings;
+    };
+
+}  // namespace lue::hdf5

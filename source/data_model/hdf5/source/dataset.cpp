@@ -3,7 +3,6 @@
 #include <cassert>
 #include <cstring>
 #include <format>
-#include <memory>
 
 
 namespace lue::hdf5 {
@@ -28,7 +27,7 @@ namespace lue::hdf5 {
 
     void Dataset::CreationPropertyList::set_chunk(Shape const& chunk)
     {
-        auto status = ::H5Pset_chunk(id(), static_cast<int>(chunk.size()), chunk.data());
+        auto status = H5Pset_chunk(id(), static_cast<int>(chunk.size()), chunk.data());
 
         if (status < 0)
         {
@@ -39,7 +38,7 @@ namespace lue::hdf5 {
 
     void Dataset::CreationPropertyList::set_fill_time(H5D_fill_time_t const fill_time)
     {
-        auto status = ::H5Pset_fill_time(id(), fill_time);
+        auto status = H5Pset_fill_time(id(), fill_time);
 
         if (status < 0)
         {
@@ -111,9 +110,9 @@ namespace lue::hdf5 {
         @exception  std::runtime_error In case data transfer mode cannot be set
         @sa [H5Pset_dxpl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetDxplMpio)
     */
-    void Dataset::TransferPropertyList::set_transfer_mode(::H5FD_mpio_xfer_t const xfer_mode)
+    void Dataset::TransferPropertyList::set_transfer_mode(H5FD_mpio_xfer_t const xfer_mode)
     {
-        ::herr_t const status{::H5Pset_dxpl_mpio(id(), xfer_mode)};
+        herr_t const status{H5Pset_dxpl_mpio(id(), xfer_mode)};
 
         if (status < 0)
         {
@@ -125,16 +124,14 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Construct a dataset instance based on an existing
-                    HDF5 dataset
-        @exception  std::runtime_error In case dataset named @a name and
-                    located at @a parent cannot be opened
+        @brief      Construct a dataset instance based on an existing HDF5 dataset
+        @exception  std::runtime_error In case dataset named @a name and located at @a parent cannot be
+                    opened
     */
     Dataset::Dataset(
         Group const& parent, std::string const& name, AccessPropertyList const& access_property_list):
 
-        PrimaryDataObject{
-            Identifier{::H5Dopen(parent.id(), name.c_str(), access_property_list.id()), ::H5Dclose}}
+        PrimaryDataObject{Identifier{H5Dopen(parent.id(), name.c_str(), access_property_list.id()), H5Dclose}}
 
     {
         if (!id().is_valid())
@@ -161,9 +158,9 @@ namespace lue::hdf5 {
 
         The datatype returned is the in-file datatype of the dataset
     */
-    Datatype Dataset::datatype() const
+    auto Dataset::datatype() const -> Datatype
     {
-        return Datatype{Identifier{::H5Dget_type(id()), ::H5Tclose}};
+        return Datatype{Identifier{H5Dget_type(id()), H5Tclose}};
     }
 
 
@@ -171,7 +168,7 @@ namespace lue::hdf5 {
     {
         assert(static_cast<int>(new_dimension_sizes.size()) == dataspace().nr_dimensions());
 
-        ::herr_t const status{::H5Dset_extent(id(), new_dimension_sizes.data())};
+        herr_t const status{H5Dset_extent(id(), new_dimension_sizes.data())};
 
         if (status < 0)
         {
@@ -180,15 +177,15 @@ namespace lue::hdf5 {
     }
 
 
-    Dataspace Dataset::dataspace() const
+    auto Dataset::dataspace() const -> Dataspace
     {
         assert(id().is_valid());
 
-        return Dataspace{::H5Dget_space(id())};
+        return Dataspace{H5Dget_space(id())};
     }
 
 
-    Shape Dataset::shape() const
+    auto Dataset::shape() const -> Shape
     {
         assert(id().is_valid());
 
@@ -248,8 +245,8 @@ namespace lue::hdf5 {
 
         // Select elements: create hyperslab
         Dataspace const file_dataspace{this->dataspace()};
-        ::hsize_t const* block = nullptr;
-        ::herr_t status{::H5Sselect_hyperslab(
+        hsize_t const* block = nullptr;
+        herr_t status{H5Sselect_hyperslab(
             file_dataspace.id(),
             H5S_SELECT_SET,
             hyperslab.start().data(),
@@ -265,7 +262,7 @@ namespace lue::hdf5 {
         assert(id().is_valid());
         assert(file_dataspace.id().is_valid());
 
-        status = ::H5Dread(
+        status = H5Dread(
             id(),
             datatype.id(),
             memory_dataspace.id(),
@@ -285,13 +282,12 @@ namespace lue::hdf5 {
         @param      datatype Data type of elements in @a buffer
         @param      buffer Buffer with elements for whole dataset
 
-        In case the dataset contains values for multiple items, it is assumed
-        that it is large enough for all elements.
+        In case the dataset contains values for multiple items, it is assumed that it is large enough for
+        all elements.
     */
     void Dataset::write(Datatype const& datatype, void const* buffer) const
     {
-        // Select all values in the dataset. Assume the buffer contains
-        // values for all values in the dataset.
+        // Select all values in the dataset. Assume the buffer contains values for all values in the dataset.
         write(datatype, Hyperslab{shape()}, buffer);
     }
 
@@ -346,8 +342,8 @@ namespace lue::hdf5 {
 
         // Select elements: create hyperslab
         Dataspace const file_dataspace{this->dataspace()};
-        ::hsize_t const* block = nullptr;
-        ::herr_t status{::H5Sselect_hyperslab(
+        hsize_t const* block = nullptr;
+        herr_t status{H5Sselect_hyperslab(
             file_dataspace.id(),
             H5S_SELECT_SET,
             hyperslab.start().data(),
@@ -360,7 +356,7 @@ namespace lue::hdf5 {
             throw std::runtime_error("Cannot create hyperslab");
         }
 
-        status = ::H5Dwrite(
+        status = H5Dwrite(
             id(),
             datatype.id(),
             memory_dataspace.id(),
@@ -386,10 +382,9 @@ namespace lue::hdf5 {
     {
         assert(datatype.is_native());
 
-        // We have to fill the dataset with a single value. But to do this
-        // it seems we have to have a memory buffer with the same number of
-        // values that we want to write to. There is no fill functionality
-        // in the HDF5 API.
+        // We have to fill the dataset with a single value. But to do this it seems we have to have a memory
+        // buffer with the same number of values that we want to write to. There is no fill functionality in
+        // the HDF5 API.
 
         // Create a buffer to hold the fill values.
         using byte = unsigned char;
@@ -430,16 +425,17 @@ namespace lue::hdf5 {
     }
 
 
-    bool dataset_exists(Identifier const& parent, std::string const& name)
+    auto dataset_exists(Identifier const& parent, std::string const& name) -> bool
     {
         return link_exists(parent, name) && link_is_dataset(parent, name);
     }
 
 
-    Dataset open_dataset(
+    auto open_dataset(
         Identifier& parent, std::string const& name, Dataset::AccessPropertyList const& access_property_list)
+        -> Dataset
     {
-        Identifier dataset_location{::H5Dopen(parent, name.c_str(), access_property_list.id()), ::H5Dclose};
+        Identifier dataset_location{H5Dopen(parent, name.c_str(), access_property_list.id()), H5Dclose};
 
         if (!dataset_location.is_valid())
         {
@@ -451,23 +447,21 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Add an HDF5 dataset and return the corresponding Dataset
-                    instance
+        @brief      Add an HDF5 dataset and return the corresponding Dataset instance
         @param      parent Id of parent object of dataset
         @param      name Name of dataset
         @param      datatype Datatype of elements in dataset
         @param      dataspace Dataspace of dataset
         @param      creation_property_list Creation properties
         @return     Newly created dataset
-        @exception  std::runtime_error In case dataset already exists,
-                    or cannot be created
+        @exception  std::runtime_error In case dataset already exists, or cannot be created
     */
-    Dataset create_dataset(
+    auto create_dataset(
         Identifier& parent,
         std::string const& name,
         Datatype const& datatype,
         Dataspace const& dataspace,
-        Dataset::CreationPropertyList const& creation_property_list)
+        Dataset::CreationPropertyList const& creation_property_list) -> Dataset
     {
         assert(datatype.is_standard() || datatype.is_string());
 
@@ -477,7 +471,7 @@ namespace lue::hdf5 {
         }
 
         Identifier dataset_location{
-            ::H5Dcreate(
+            H5Dcreate(
                 parent,
                 name.c_str(),
                 datatype.id(),
@@ -485,7 +479,7 @@ namespace lue::hdf5 {
                 H5P_DEFAULT,
                 creation_property_list.id(),
                 H5P_DEFAULT),
-            ::H5Dclose};
+            H5Dclose};
 
         if (!dataset_location.is_valid())
         {
