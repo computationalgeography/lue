@@ -1,44 +1,41 @@
 #pragma once
 #include "lue/hdf5/identifier.hpp"
 #include <string>
-#include <vector>
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        /*!
-            @brief      Information about issue found during validation
-        */
-        class LUE_HDF5_EXPORT Issue
-        {
+    /*!
+        @brief      Information about issue found during validation
+    */
+    class LUE_HDF5_EXPORT Issue
+    {
 
-            public:
+        public:
 
-                Issue(Identifier const& id, std::string const& message);
+            Issue(Identifier id, std::string message);
 
-                Issue(Issue const&) = default;
+            Issue(Issue const& other) = default;
 
-                Issue(Issue&&) = default;
+            Issue(Issue&& other) = default;
 
-                ~Issue() = default;
+            ~Issue() = default;
 
-                Issue& operator=(Issue const&) = default;
+            auto operator=(Issue const& other) -> Issue& = default;
 
-                Issue& operator=(Issue&&) = default;
+            auto operator=(Issue&& other) -> Issue& = default;
 
-                Identifier const& id() const;
+            auto id() const -> Identifier const&;
 
-                std::string const& message() const;
+            auto message() const -> std::string const&;
 
-            private:
+        private:
 
-                //! Id of HDF5 object related to the issue
-                Identifier _id;
+            //! Id of HDF5 object related to the issue
+            Identifier _id;
 
-                //! Message describing the issue
-                std::string _message;
-        };
+            //! Message describing the issue
+            std::string _message;
+    };
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

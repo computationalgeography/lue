@@ -22,7 +22,7 @@ namespace lue::hdf5 {
         @exception  std::runtime_error In case the H5D_CORE driver cannot be set
         @sa [H5Pset_fapl_core](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplCore)
     */
-    void File::AccessPropertyList::use_core_driver(std::size_t const increment, ::hbool_t const backing_store)
+    void File::AccessPropertyList::use_core_driver(std::size_t const increment, hbool_t const backing_store)
     {
         // std::size_t const increment = 64000;  // 64k
         // hbool_t const backing_store = 0;  // false
@@ -39,14 +39,12 @@ namespace lue::hdf5 {
 #ifdef HDF5_IS_PARALLEL
     /*!
         @brief      Use MPI communicator for creating/opening a file
-        @exception  std::runtime_error In case the communicator information cannot
-                    be set
+        @exception  std::runtime_error In case the communicator information cannot be set
         @sa [H5Pset_fapl_mpio](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetFaplMpio)
     */
-    void File::AccessPropertyList::use_mpi_communicator(
-        ::MPI_Comm const& communicator, ::MPI_Info const& info)
+    void File::AccessPropertyList::use_mpi_communicator(MPI_Comm const& communicator, MPI_Info const& info)
     {
-        ::herr_t const status{H5Pset_fapl_mpio(id(), communicator, info)};
+        herr_t const status{H5Pset_fapl_mpio(id(), communicator, info)};
 
         if (status < 0)
         {
@@ -57,19 +55,17 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Set bounds on library versions, and indirectly format
-                    versions, to be used when creating objects
-        @param      low Earliest version of library that will be used for
-                    writing objects
+        @brief      Set bounds on library versions, and indirectly format versions, to be used when creating
+                    objects
+        @param      low Earliest version of library that will be used for writing objects
         @param      high ...
-        @exception  std::runtime_error In case the bounds on the library
-                    versions cannot be set
+        @exception  std::runtime_error In case the bounds on the library versions cannot be set
         @sa
        [H5Pset_libver_bounds](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-SetLibverBounds)
     */
     void File::AccessPropertyList::set_library_version_bounds(H5F_libver_t const low, H5F_libver_t const high)
     {
-        ::herr_t const status{H5Pset_libver_bounds(id(), low, high)};
+        herr_t const status{H5Pset_libver_bounds(id(), low, high)};
 
         if (status < 0)
         {
@@ -151,10 +147,10 @@ namespace lue::hdf5 {
     auto File::pathname() const -> std::string
     {
         static_assert(
-            std::is_same<std::string::value_type, char>::value, "expect std::string::value_type to be char");
+            std::is_same_v<std::string::value_type, char>, "expect std::string::value_type to be char");
 
         assert(id().is_valid());
-        ::ssize_t const nr_bytes{H5Fget_name(id(), nullptr, 0)};
+        ssize_t const nr_bytes{H5Fget_name(id(), nullptr, 0)};
 
         std::string result(nr_bytes, 'x');
 
@@ -166,7 +162,7 @@ namespace lue::hdf5 {
 
     void File::flush() const
     {
-        ::herr_t const status{H5Fflush(id(), H5F_SCOPE_LOCAL)};
+        herr_t const status{H5Fflush(id(), H5F_SCOPE_LOCAL)};
 
         if (status < 0)
         {
@@ -178,7 +174,7 @@ namespace lue::hdf5 {
     auto File::intent() const -> unsigned int
     {
         unsigned int intent{};
-        ::herr_t const status{H5Fget_intent(id(), &intent)};
+        herr_t const status{H5Fget_intent(id(), &intent)};
 
         if (status < 0)
         {

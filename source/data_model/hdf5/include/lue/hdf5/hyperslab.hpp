@@ -5,72 +5,70 @@
 #include "lue/hdf5/stride.hpp"
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        /*!
-            @brief      Class representing a hyperslab selection of a dataspace
-            @sa         [Reading from or writing to a subset of a dataset](
-                        https://support.hdfgroup.org/HDF5/Tutor/selectsimple.html)
+    /*!
+        @brief      Class representing a hyperslab selection of a dataspace
+        @sa         [Reading from or writing to a subset of a dataset](
+                    https://support.hdfgroup.org/HDF5/Tutor/selectsimple.html)
 
-            A hyperslab defines a subset of a dataspace.
-        */
-        class LUE_HDF5_EXPORT Hyperslab
-        {
+        A hyperslab defines a subset of a dataspace.
+    */
+    class LUE_HDF5_EXPORT Hyperslab
+    {
 
-            public:
+        public:
 
-                Hyperslab() = default;
+            Hyperslab() = default;
 
-                Hyperslab(Offset const& start, Stride const& stride, Count const& count);
+            Hyperslab(Offset start, Stride stride, Count count);
 
-                Hyperslab(Offset const& start, Count const& count);
+            Hyperslab(Offset start, Count count);
 
-                explicit Hyperslab(Shape const& shape);
+            explicit Hyperslab(Shape const& shape);
 
-                Hyperslab(Hyperslab const&) = default;
+            Hyperslab(Hyperslab const& other) = default;
 
-                Hyperslab(Hyperslab&&) = default;
+            Hyperslab(Hyperslab&& other) = default;
 
-                ~Hyperslab() = default;
+            ~Hyperslab() = default;
 
-                Hyperslab& operator=(Hyperslab const&) = default;
+            auto operator=(Hyperslab const& other) -> Hyperslab& = default;
 
-                Hyperslab& operator=(Hyperslab&&) = default;
+            auto operator=(Hyperslab&& other) -> Hyperslab& = default;
 
-                Offset const& start() const;
+            auto start() const -> Offset const&;
 
-                Offset& start();
+            auto start() -> Offset&;
 
-                Stride const& stride() const;
+            auto stride() const -> Stride const&;
 
-                Stride& stride();
+            auto stride() -> Stride&;
 
-                Count const& count() const;
+            auto count() const -> Count const&;
 
-                Count& count();
+            auto count() -> Count&;
 
-                std::size_t nr_dimensions() const;
+            auto nr_dimensions() const -> std::size_t;
 
-                bool empty() const;
+            auto empty() const -> bool;
 
-                std::size_t nr_elements() const;
+            auto nr_elements() const -> std::size_t;
 
-            private:
+        private:
 
-                //! Offset of the starting element
-                Offset _start;
+            //! Offset of the starting element
+            Offset _start;
 
-                //! Amount of elements to move in each direction
-                Stride _stride;
+            //! Amount of elements to move in each direction
+            Stride _stride;
 
-                //! Number of blocks to select
-                Count _count;
-        };
+            //! Number of blocks to select
+            Count _count;
+    };
 
 
-        LUE_HDF5_EXPORT Hyperslab
-        hyperslab(Offset const& subset_center, Shape const& subset_shape, Shape const& array_shape);
+    LUE_HDF5_EXPORT auto hyperslab(
+        Offset const& subset_center, Shape const& subset_shape, Shape const& array_shape) -> Hyperslab;
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

@@ -10,17 +10,17 @@ namespace lue::hdf5 {
 
         public:
 
-            FileFixture(std::string const& pathname, bool remove_file_upon_destruction = true);
+            FileFixture(std::string pathname, bool remove_file_upon_destruction = true);
 
-            FileFixture(FileFixture const&) = delete;
+            FileFixture(FileFixture const& other) = delete;
 
-            FileFixture(FileFixture&&) = delete;
+            FileFixture(FileFixture&& other) = delete;
 
             virtual ~FileFixture();
 
-            auto operator=(FileFixture const&) -> FileFixture& = delete;
+            auto operator=(FileFixture const& other) -> FileFixture& = delete;
 
-            auto operator=(FileFixture&&) -> FileFixture& = delete;
+            auto operator=(FileFixture&& other) -> FileFixture& = delete;
 
         private:
 
