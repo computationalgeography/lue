@@ -2,11 +2,15 @@
 Checks: >
     -*,
     bugprone-*,
+    -bugprone-easily-swappable-parameters,
     cppcoreguidelines-*,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-readability-magic-numbers,
     modernize-*,
     -modernize-use-nodiscard,
     performance-*,
     readability-*
+    -readability-redundant-member-init
 CheckOptions:
     - key: readability-identifier-length.IgnoredVariableNames
       value: id

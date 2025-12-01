@@ -203,7 +203,7 @@ namespace lue::hdf5 {
 
     auto Datatype::is_standard() const -> bool
     {
-#if !defined(BOOST_ENDIAN_LITTLE_BYTE)
+#ifndef BOOST_ENDIAN_LITTLE_BYTE
         // We assume little endian platforms in tests. This can be changed
         // when necessary. In that case, first check whether the tests for
         // standard data types are really necessary. Ideally, let HDF
@@ -345,7 +345,7 @@ namespace lue::hdf5 {
         @param      nr_bytes Total size of the datatype
         @exception  std::runtime_error In case the datatype cannot be created
     */
-    Datatype create_datatype(::hid_t const type_id, std::size_t const nr_bytes)
+    auto create_datatype(::hid_t const type_id, std::size_t const nr_bytes) -> Datatype
     {
         Identifier id{H5Tcopy(type_id), H5Tclose};
 

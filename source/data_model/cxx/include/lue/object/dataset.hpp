@@ -41,20 +41,20 @@ namespace lue {
 
                 auto operator=(Dataset&&) -> Dataset& = default;
 
-                [[nodiscard]] auto lue_version() const -> std::string;
+                auto lue_version() const -> std::string;
 
                 auto add_universe(std::string const& name) -> Universe&;
 
                 auto add_phenomenon(std::string const& name, std::string const& description = "")
                     -> Phenomenon&;
 
-                [[nodiscard]] auto description() const -> std::string const&;
+                auto description() const -> std::string const&;
 
-                [[nodiscard]] auto universes() const -> Universes const&;
+                auto universes() const -> Universes const&;
 
                 auto universes() -> Universes&;
 
-                [[nodiscard]] auto phenomena() const -> Phenomena const&;
+                auto phenomena() const -> Phenomena const&;
 
                 auto phenomena() -> Phenomena&;
 
