@@ -5,6 +5,7 @@ Checks: >
     -bugprone-easily-swappable-parameters,
     cppcoreguidelines-*,
     -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-macro-usage,
     -cppcoreguidelines-readability-magic-numbers,
     modernize-*,
     -modernize-use-nodiscard,

@@ -74,6 +74,8 @@ repos:
             exclude: |
                 (?x)^(
                   source/data_model/cxx/.*|
+                  source/data_model/cxx/test/.*|
+                  source/data_model/gdal/.*|
                   source/data_model/gdal/include/lue/gdal/library.hpp|
                   source/data_model/hdf5/test/.*|
                   source/data_model/hl/.*|
