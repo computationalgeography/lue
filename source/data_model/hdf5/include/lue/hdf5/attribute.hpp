@@ -11,10 +11,14 @@ namespace lue::hdf5 {
     namespace detail {
 
         template<typename T>
-        inline std::enable_if_t<!std::is_base_of<std::vector<::hsize_t>, T>::value> read_attribute(
-            Identifier const& id, Datatype const& datatype, Dataspace const& /* dataspace */, T& value)
+            requires(!std::is_base_of_v<std::vector<::hsize_t>, T>)
+        void read_attribute(
+            Identifier const& id,
+            Datatype const& datatype,
+            [[maybe_unused]] Dataspace const& dataspace,
+            T& value)
         {
-            ::herr_t const status{::H5Aread(id, datatype.id(), &value)};
+            herr_t const status{H5Aread(id, datatype.id(), &value)};
 
             if (status < 0)
             {
@@ -27,20 +31,19 @@ namespace lue::hdf5 {
         inline void read_attribute<std::string>(
             Identifier const& id,
             Datatype const& datatype,
-            Dataspace const& /* dataspace */,
+            [[maybe_unused]] Dataspace const& dataspace,
             std::string& value)
         {
             static_assert(
-                std::is_same<std::string::value_type, char>::value,
-                "expect std::string::value_type to be char");
+                std::is_same_v<std::string::value_type, char>, "expect std::string::value_type to be char");
 
-            assert(datatype.encoding() == ::H5T_CSET_UTF8);
+            assert(datatype.encoding() == H5T_CSET_UTF8);
 
             std::size_t const nr_bytes{datatype.size()};
 
             value.resize(nr_bytes, 'x');
 
-            ::herr_t const status{::H5Aread(id, datatype.id(), value.data())};
+            herr_t const status{H5Aread(id, datatype.id(), value.data())};
             assert(value.size() == nr_bytes);
 
             if (status < 0)
@@ -51,14 +54,14 @@ namespace lue::hdf5 {
 
 
         template<typename T>
-        inline void read_attribute(
+        void read_attribute(
             Identifier const& id, Datatype const& datatype, Dataspace const& dataspace, std::vector<T>& value)
         {
-            ::hssize_t const nr_elements{dataspace.nr_elements()};
+            hssize_t const nr_elements{dataspace.nr_elements()};
 
             value.resize(nr_elements);
 
-            ::herr_t const status{::H5Aread(id, datatype.id(), value.data())};
+            herr_t const status{H5Aread(id, datatype.id(), value.data())};
             assert(value.size() == static_cast<std::size_t>(nr_elements));
 
             if (status < 0)
@@ -69,10 +72,10 @@ namespace lue::hdf5 {
 
 
         template<typename T>
-        inline std::enable_if_t<!std::is_base_of<std::vector<::hsize_t>, T>::value> write_attribute(
-            Identifier const& id, Datatype const& datatype, T const& value)
+            requires(!std::is_base_of_v<std::vector<::hsize_t>, T>)
+        void write_attribute(Identifier const& id, Datatype const& datatype, T const& value)
         {
-            ::herr_t const status{::H5Awrite(id, datatype.id(), &value)};
+            herr_t const status{H5Awrite(id, datatype.id(), &value)};
 
             if (status < 0)
             {
@@ -85,7 +88,7 @@ namespace lue::hdf5 {
         inline void write_attribute<std::string>(
             Identifier const& id, Datatype const& datatype, std::string const& value)
         {
-            ::herr_t const status{::H5Awrite(id, datatype.id(), value.c_str())};
+            herr_t const status{H5Awrite(id, datatype.id(), value.c_str())};
 
             if (status < 0)
             {
@@ -95,10 +98,9 @@ namespace lue::hdf5 {
 
 
         template<typename T>
-        inline void write_attribute(
-            Identifier const& id, Datatype const& datatype, std::vector<T> const& value)
+        void write_attribute(Identifier const& id, Datatype const& datatype, std::vector<T> const& value)
         {
-            ::herr_t const status{::H5Awrite(id, datatype.id(), value.data())};
+            herr_t const status{H5Awrite(id, datatype.id(), value.data())};
 
             if (status < 0)
             {
@@ -119,23 +121,23 @@ namespace lue::hdf5 {
 
             Attribute(Identifier const& location, std::string const& name);
 
-            Attribute(Attribute const&) = default;
+            Attribute(Attribute const& other) = default;
 
-            Attribute(Attribute&&) = default;
+            Attribute(Attribute&& other) = default;
 
             Attribute(Identifier&& id);
 
             ~Attribute() = default;
 
-            auto operator=(Attribute const&) -> Attribute& = default;
+            auto operator=(Attribute const& other) -> Attribute& = default;
 
-            auto operator=(Attribute&&) -> Attribute& = default;
+            auto operator=(Attribute&& other) -> Attribute& = default;
 
-            [[nodiscard]] auto id() const -> Identifier const&;
+            auto id() const -> Identifier const&;
 
-            [[nodiscard]] auto datatype() const -> Datatype const&;
+            auto datatype() const -> Datatype const&;
 
-            [[nodiscard]] auto dataspace() const -> Dataspace const&;
+            auto dataspace() const -> Dataspace const&;
 
 
             /*!
@@ -195,11 +197,11 @@ namespace lue::hdf5 {
     };
 
 
-    LUE_HDF5_EXPORT Attribute create_attribute(
+    LUE_HDF5_EXPORT auto create_attribute(
         Identifier const& location,
         std::string const& name,
         Datatype const& datatype,
-        Dataspace const& dataspace);
+        Dataspace const& dataspace) -> Attribute;
 
 
     /*!
@@ -215,11 +217,11 @@ namespace lue::hdf5 {
         overload for std::vector<T> for Shape, for example.
     */
     template<typename T>
-    inline std::enable_if_t<!std::is_base_of<std::vector<hsize_t>, T>::value, Attribute> create_attribute(
-        Identifier const& location, std::string const& name, T const& value)
+        requires(!std::is_base_of_v<std::vector<hsize_t>, T>)
+    auto create_attribute(Identifier const& location, std::string const& name, T const& value) -> Attribute
     {
         Datatype const datatype{NativeDatatypeTraits<T>::type_id()};
-        Dataspace const dataspace{::H5S_SCALAR};
+        Dataspace const dataspace{H5S_SCALAR};
         Attribute attribute{create_attribute(location, name, datatype, dataspace)};
 
         attribute.write(value);
@@ -233,7 +235,7 @@ namespace lue::hdf5 {
         Identifier const& location, std::string const& name, std::string const& value) -> Attribute
     {
         Datatype const datatype{create_datatype(value.size())};
-        Dataspace const dataspace{Dataspace{::H5S_SCALAR}};
+        Dataspace const dataspace{Dataspace{H5S_SCALAR}};
         Attribute attribute{create_attribute(location, name, datatype, dataspace)};
 
         attribute.write(value);
@@ -243,8 +245,8 @@ namespace lue::hdf5 {
 
 
     template<typename T>
-    inline Attribute create_attribute(
-        Identifier const& location, std::string const& name, std::vector<T> const& value)
+    auto create_attribute(Identifier const& location, std::string const& name, std::vector<T> const& value)
+        -> Attribute
     {
         Datatype const datatype{Datatype{NativeDatatypeTraits<T>::type_id()}};
         Dataspace const dataspace{create_dataspace(Shape{value.size()})};

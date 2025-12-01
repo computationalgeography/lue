@@ -4,6 +4,11 @@ Checks: >
     bugprone-*,
     cppcoreguidelines-*,
     modernize-*,
+    -modernize-use-nodiscard,
     performance-*,
     readability-*
-...
+CheckOptions:
+    - key: readability-identifier-length.IgnoredVariableNames
+      value: id
+    - key: readability-identifier-length.IgnoredParameterNames
+      value: id
