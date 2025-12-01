@@ -34,7 +34,7 @@ namespace lue::hdf5 {
     */
     auto Attributes::exists(std::string const& name) const -> bool
     {
-        return ::H5Aexists(_id, name.c_str()) > 0;
+        return H5Aexists(_id, name.c_str()) > 0;
     }
 
 
@@ -44,12 +44,6 @@ namespace lue::hdf5 {
     auto Attributes::attribute(std::string const& name) const -> Attribute
     {
         assert(_id.is_valid());
-
-        // if(!exists(name)) {
-        //     throw std::runtime_error(
-        //         name + ": no such attribute in " + _id.pathname());
-        // }
-
         assert(exists(name));
 
         return {_id, name};

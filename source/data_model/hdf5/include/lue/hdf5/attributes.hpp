@@ -51,11 +51,11 @@ namespace lue::hdf5 {
             }
 
 
-            [[nodiscard]] auto exists(std::string const& name) const -> bool;
+            auto exists(std::string const& name) const -> bool;
 
-            [[nodiscard]] auto attribute(std::string const& name) const -> Attribute;
+            auto attribute(std::string const& name) const -> Attribute;
 
-            [[nodiscard]] auto datatype(std::string const& name) const -> Datatype;
+            auto datatype(std::string const& name) const -> Datatype;
 
         private:
 

@@ -13,11 +13,9 @@ namespace lue::hdf5 {
 
     /*!
         @brief      Construct an object based on an identifier
-        @warning    Whether or not the @a id passing in is valid must be
-                    checked by calling code
+        @warning    Whether or not the @a id passing in is valid must be checked by calling code
 
-        The identifier passed in is the id of the object itself; no object
-        will be opened.
+        The identifier passed in is the id of the object itself; no object will be opened.
     */
     PrimaryDataObject::PrimaryDataObject(Identifier&& id):
 
@@ -79,8 +77,7 @@ namespace lue::hdf5 {
 
     /*!
         @brief      Return whether two objects are equal
-        @exception  std::runtime_error In case the metadata for the objects
-                    passed in cannot be retrieved
+        @exception  std::runtime_error In case the metadata for the objects passed in cannot be retrieved
 
         Two objects are considered equal if they are pointing to the same objects in the HDF5 dataset.
     */
@@ -92,8 +89,7 @@ namespace lue::hdf5 {
 
     /*!
         @brief      Return whether two objects are not equal
-        @exception  std::runtime_error In case the metadata for the objects
-                    passed in cannot be retrieved
+        @exception  std::runtime_error In case the metadata for the objects passed in cannot be retrieved
 
         Two objects are considered equal if they are pointing to the same object in the HDF5 dataset.
     */

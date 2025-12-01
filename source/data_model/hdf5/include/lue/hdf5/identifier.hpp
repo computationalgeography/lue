@@ -7,15 +7,12 @@
 namespace lue::hdf5 {
 
     /*!
-        @brief      This class represents an HDF5 identifier of an open
-                    HDF5 object
+        @brief      This class represents an HDF5 identifier of an open HDF5 object
         @sa         https://portal.hdfgroup.org/display/HDF5/Identifiers
 
-        Scoping the identifier in this class ensures that the identifier is
-        closed upon exiting the scope.
+        Scoping the identifier in this class ensures that the identifier is closed upon exiting the scope.
 
-        Copies can be made. Only when the last copy goes out of scope will the
-        identifier be closed.
+        Copies can be made. Only when the last copy goes out of scope will the identifier be closed.
     */
     class LUE_HDF5_EXPORT Identifier
     {
@@ -23,17 +20,16 @@ namespace lue::hdf5 {
         public:
 
             /*!
-                @brief      Type of function to call when the identifier must
-                            be closed
+                @brief      Type of function to call when the identifier must be closed
 
-                For example, when an HDF5 group is opened, you would pass H5Gclose
-                as the close function into the constructor.
+                For example, when an HDF5 group is opened, you would pass H5Gclose as the close function into
+                the constructor.
             */
             using Close = std::function<herr_t(hid_t)>;
 
             Identifier();
 
-            Identifier(hid_t id, Close const& close);
+            Identifier(hid_t id, Close close);
 
             Identifier(Identifier const& other);
 
@@ -41,38 +37,37 @@ namespace lue::hdf5 {
 
             ~Identifier() noexcept;
 
-            Identifier& operator=(Identifier const& other);
+            auto operator=(Identifier const& other) -> Identifier&;
 
-            Identifier& operator=(Identifier&& other) noexcept;
+            auto operator=(Identifier&& other) noexcept -> Identifier&;
 
-            bool operator==(Identifier const& other) const;
+            auto operator==(Identifier const& other) const -> bool;
 
-            bool operator!=(Identifier const& other) const;
+            auto operator!=(Identifier const& other) const -> bool;
 
-            bool is_valid() const;
+            auto is_valid() const -> bool;
 
-            ::H5I_type_t type() const;
+            auto type() const -> ::H5I_type_t;
 
-            void* object();
+            auto object() -> void*;
 
-            int reference_count() const;
+            auto reference_count() const -> int;
 
-            // Allow explicit conversion to underlying hid_t. It is very
-            // convenient, in this specific case.
+            // Allow explicit conversion to underlying hid_t. It is very convenient, in this specific case.
             // NOLINTNEXTLINE(google-explicit-constructor, hicpp-explicit-conversions)
             operator hid_t() const;
 
-            std::string pathname() const;
+            auto pathname() const -> std::string;
 
-            std::string name() const;
+            auto name() const -> std::string;
 
-            ObjectInfo info() const;
+            auto info() const -> ObjectInfo;
 
-            Identifier file_id() const;
+            auto file_id() const -> Identifier;
 
         private:
 
-            int increment_reference_count();
+            auto increment_reference_count() -> int;
 
             void close_if_valid();
 

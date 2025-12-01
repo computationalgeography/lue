@@ -3,34 +3,32 @@
 #include "lue/hdf5/datatype.hpp"
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        class LUE_HDF5_EXPORT VLenMemory
-        {
+    class LUE_HDF5_EXPORT VLenMemory
+    {
 
-            public:
+        public:
 
-                VLenMemory(Datatype const& datatype, Dataspace const& dataspace, void* buffer);
+            VLenMemory(Datatype datatype, Dataspace dataspace, void* buffer);
 
-                VLenMemory(VLenMemory const&) = delete;
+            VLenMemory(VLenMemory const& other) = delete;
 
-                VLenMemory(VLenMemory&&) = delete;
+            VLenMemory(VLenMemory&& other) = delete;
 
-                ~VLenMemory();
+            ~VLenMemory();
 
-                VLenMemory& operator=(VLenMemory const&) = delete;
+            auto operator=(VLenMemory const& other) -> VLenMemory& = delete;
 
-                VLenMemory& operator=(VLenMemory&&) = delete;
+            auto operator=(VLenMemory&& other) -> VLenMemory& = delete;
 
-            private:
+        private:
 
-                Datatype _datatype;
+            Datatype _datatype;
 
-                Dataspace _dataspace;
+            Dataspace _dataspace;
 
-                void* _buffer;
-        };
+            void* _buffer;
+    };
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

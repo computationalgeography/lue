@@ -5,6 +5,6 @@
 
 namespace lue {
 
-    LUE_HDF5_EXPORT std::string hdf5_version();
+    LUE_HDF5_EXPORT auto hdf5_version() -> std::string;
 
 }  // namespace lue

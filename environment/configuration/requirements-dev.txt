@@ -8,7 +8,8 @@ types-python-dateutil==2.9.0.20241003
 # Build against numpy 2, while also supporting running against numpy 1
 numpy>=2.0
 
-clang-format==20.1.8
+clang-format==20.1.8  # TODO: 21.1.6
+clang-tidy==21.1.6
 pre-commit==4.3.0
 
 ruamel.yaml==0.18.14

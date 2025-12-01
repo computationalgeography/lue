@@ -21,10 +21,10 @@ namespace lue::hdf5 {
 
                     AccessPropertyList();
 
-                    void use_core_driver(std::size_t increment = 64000, ::hbool_t backing_store = 0);
+                    void use_core_driver(std::size_t increment = 64000, hbool_t backing_store = 0);
 
 #ifdef HDF5_IS_PARALLEL
-                    void use_mpi_communicator(::MPI_Comm const& communicator, ::MPI_Info const& info);
+                    void use_mpi_communicator(::MPI_Comm const& communicator, MPI_Info const& info);
 #endif
 
                     void set_library_version_bounds(H5F_libver_t low, H5F_libver_t high);
@@ -42,13 +42,13 @@ namespace lue::hdf5 {
 
             explicit File(Group&& group);
 
-            [[nodiscard]] auto hdf5_version() const -> std::string;
+            auto hdf5_version() const -> std::string;
 
-            [[nodiscard]] auto pathname() const -> std::string;
+            auto pathname() const -> std::string;
 
             void flush() const;
 
-            [[nodiscard]] auto intent() const -> unsigned int;
+            auto intent() const -> unsigned int;
     };
 
 

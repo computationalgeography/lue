@@ -14,17 +14,17 @@ namespace lue::hdf5 {
 
         public:
 
-            PropertyList(PropertyList const&) = default;
+            PropertyList(PropertyList const& other) = default;
 
-            PropertyList(PropertyList&&) = default;
+            PropertyList(PropertyList&& other) = default;
 
             virtual ~PropertyList() = default;
 
-            PropertyList& operator=(PropertyList const&) = default;
+            auto operator=(PropertyList const& other) -> PropertyList& = default;
 
-            PropertyList& operator=(PropertyList&&) = default;
+            auto operator=(PropertyList&& other) -> PropertyList& = default;
 
-            Identifier const& id() const;
+            auto id() const -> Identifier const&;
 
         protected:
 
