@@ -12,14 +12,14 @@
 namespace lue {
     namespace detail {
 
-        inline bool empty(char const* string)
+        inline auto empty(char const* string) -> bool
         {
             return std::strlen(string) == 0;
         }
 
 
         template<typename String>
-        bool empty(String const& string)
+        auto empty(String const& string) -> bool
         {
             return string.empty();
         }

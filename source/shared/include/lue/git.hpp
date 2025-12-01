@@ -4,8 +4,8 @@
 
 namespace lue {
 
-    std::string sha1();
+    auto sha1() -> std::string;
 
-    std::string short_sha1();
+    auto short_sha1() -> std::string;
 
 }  // namespace lue
