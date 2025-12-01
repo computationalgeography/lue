@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "lue/hdf5/attributes.hpp"
 
 
@@ -7,9 +9,9 @@ namespace lue::hdf5 {
         @brief      Construct collection based on @a id
         @param      id Id of object containing attributes
     */
-    Attributes::Attributes(Identifier const& id):
+    Attributes::Attributes(Identifier id):
 
-        _id{id}
+        _id{std::move(id)}
 
     {
     }

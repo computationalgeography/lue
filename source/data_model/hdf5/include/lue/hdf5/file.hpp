@@ -21,7 +21,8 @@ namespace lue::hdf5 {
 
                     AccessPropertyList();
 
-                    void use_core_driver(std::size_t increment = 64000, hbool_t backing_store = 0);
+                    // NOLINTNEXTLINE(readability-magic-numbers)
+                    void use_core_driver(std::size_t increment = 64000, bool backing_store = false);
 
 #ifdef HDF5_IS_PARALLEL
                     void use_mpi_communicator(::MPI_Comm const& communicator, MPI_Info const& info);

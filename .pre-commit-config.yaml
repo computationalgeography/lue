@@ -62,26 +62,26 @@ repos:
       hooks:
           - id: typos
             args: [] # Relevant: don't update files, just report
-    - repo: https://github.com/pocc/pre-commit-hooks
-      rev: v1.3.5
+    - repo: https://github.com/cpp-linter/cpp-linter-hooks
+      rev: v1.1.10
       hooks:
+          # Keep clang-* versions in sync with environment/configuration/requirements-dev.txt
           - id: clang-format
-            args: [-i]
-    - repo: https://github.com/pocc/pre-commit-hooks
-      rev: v1.3.5
-      hooks:
+            args: [--version=21.1.6, --dry-run]
           - id: clang-tidy
-            args: [--quiet]
+            args: [--version=21.1.6, --quiet]
             # TODO: Update code and remove excluded directories from this list
             exclude: |
                 (?x)^(
                   source/data_model/cxx/.*|
                   source/data_model/gdal/include/lue/gdal/library.hpp|
+                  source/data_model/hdf5/test/.*|
                   source/data_model/hl/.*|
                   source/data_model/python/.*|
                   source/data_model/translate/.*|
                   source/data_model/utility/.*|
                   source/data_model/validate/.*|
                   source/framework/.*|
+                  source/quality_assurance/.*|
                   source/view/.*|
                 )$
