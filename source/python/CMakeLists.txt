@@ -29,10 +29,10 @@ set_target_properties(lue_py
 )
 
 target_link_libraries(lue_py
-    PRIVATE
-        Boost::headers
     PUBLIC
         lue::shared
+    PRIVATE
+        Boost::headers
 )
 
 if(LUE_BUILD_DATA_MODEL AND LUE_DATA_MODEL_WITH_PYTHON_API)
