@@ -84,6 +84,7 @@ repos:
                   source/data_model/utility/.*|
                   source/data_model/validate/.*|
                   source/framework/.*|
+                  source/python/.*|
                   source/python/test/.*|
                   source/quality_assurance/.*|
                   source/view/.*|
