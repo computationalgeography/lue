@@ -7,8 +7,8 @@ name: macOS CI (Homebrew)
 
 on:
   pull_request:
-    branches-ignore:
-      - "*"
+    # branches-ignore:
+    #   - "*"
     paths:
       - "**"
       - "!.github/workflows/*"
