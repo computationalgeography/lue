@@ -19,6 +19,7 @@ foreach(name ${names})
             lue::framework_miscellaneous_operation
             lue::data_model_hl
             Boost::headers
+            # HPX::iostreams_component
     )
 
     add_test(NAME ${test_name}

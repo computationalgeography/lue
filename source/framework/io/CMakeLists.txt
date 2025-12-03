@@ -53,6 +53,7 @@ target_sources(lue_framework_io
 target_link_libraries(lue_framework_io
     PRIVATE
         lue::framework_algorithm
+        # HPX::iostreams_component
     PUBLIC
         lue::framework_partitioned_array
         lue::data_model_hl

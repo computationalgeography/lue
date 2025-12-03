@@ -3,6 +3,7 @@
 #include <hpx/future.hpp>
 #include <boost/container/flat_map.hpp>
 #include <concepts>
+#include <mutex>
 
 
 namespace lue {
@@ -12,7 +13,7 @@ namespace lue {
         @tparam     Key Type for objects to group information by. In case of serializing access to a file,
                     this could be the type used to represent the name of the file, for example.
         @tparam     Generation Type to represent the generation / order / count
-        @warning    This class is not thread-safe: call its member functions from a single thread
+        @warning    This class is thread-safe
         @warning    There is no facility yet to allow instances of this class to shrink again
 
         An example use-case for this class is performing parallel I/O to an HDF5 file. When opening the same
@@ -39,11 +40,11 @@ namespace lue {
             hpx::promise<void> promise = open_file_serializer.promise_for(pathname, count);
 
             // The future is related to the one before us, with count count - 1
-            hpx::future<void> predecessor_future = open_file_serializer.when_predecessor_done(
+            hpx::shared_future<void> predecessor_future = open_file_serializer.when_predecessor_done(
                 pathname, count);
 
-            hpx::future<Dataset> a_future = predecessor_future.then(
-                [](hpx::future<void> const& future)
+            hpx::shared_future<Dataset> a_future = predecessor_future.then(
+                [](hpx::shared_future<void> const& future)
                 {
                     // Call H5Open
                     // ...
@@ -82,10 +83,11 @@ namespace lue {
                 on it). Otherwise none of the tasks associated with a higher generation will ever be
                 scheduled.
             */
-            auto promise_for([[maybe_unused]] Key const& key, [[maybe_unused]] Generation const generation)
-                -> hpx::promise<void>
+            auto promise_for(Key const& key, Generation const generation) -> hpx::promise<void>
             {
                 lue_hpx_assert(generation > 0);
+
+                std::lock_guard<std::mutex> lock_tuples{_tuples_mutex};
 
                 // Map will be created if not present already
                 auto& map{_tuples[key]};
@@ -96,7 +98,7 @@ namespace lue {
                     auto add_tuple = [&map](Generation const generation) -> void
                     {
                         hpx::promise<void> promise{};
-                        hpx::future<void> future{promise.get_future()};
+                        hpx::shared_future<void> future{promise.get_future().share()};
                         map[generation] = std::make_tuple(std::move(promise), std::move(future));
                     };
 
@@ -130,36 +132,75 @@ namespace lue {
             }
 
 
+            auto contains(Key const& key, Generation const generation) -> bool
+            {
+                std::lock_guard<std::mutex> lock_tuples{_tuples_mutex};
+
+                return _tuples.contains(key) && _tuples[key].contains(generation);
+            }
+
+
             /*!
                 @brief      Return the future associated with the **predecessor** call for the @a key and
                             @a generation passed in
 
                 Attach a continuation to the future returned to serialize access to some resource.
-
-                This function can only be called once for a @a key and @a generation. The future returned is
-                the only one. Subsequent calls will return a future that is in a valid but unspecified state
-                (it is useless).
             */
-            auto when_predecessor_done(
-                [[maybe_unused]] Key const& key, [[maybe_unused]] Generation const generation)
-                -> hpx::future<void>
+            auto when_predecessor_done(Key const& key, Generation const generation)
+                -> hpx::shared_future<void>
             {
+                lue_hpx_assert(generation > 0);
+
+                return when_done(key, generation - 1);
+            }
+
+
+            // auto when_done(Key const& key) -> hpx::shared_future<void>
+            // {
+            //     Generation generation{};
+            //
+            //     {
+            //         std::lock_guard<std::mutex> lock_tuples{_tuples_mutex};
+            //
+            //         lue_hpx_assert(_tuples.contains(key));
+            //         auto& map{_tuples[key]};
+            //         lue_hpx_assert(map.rbegin() != map.rend());
+            //
+            //         generation = map.rbegin()->first;
+            //     }
+            //
+            //     return when_done(key, generation);
+            // }
+            //
+            //
+            // auto contains(Key const& key) -> bool
+            // {
+            //     // TODO: Make function const
+            //     std::lock_guard<std::mutex> lock_tuples{_tuples_mutex};
+            //
+            //     return _tuples.contains(key);
+            // }
+
+
+            auto when_done(Key const& key, Generation const generation) -> hpx::shared_future<void>
+            {
+                std::lock_guard<std::mutex> lock_tuples{_tuples_mutex};
+
                 lue_hpx_assert(_tuples.contains(key));
                 auto& map{_tuples[key]};
                 lue_hpx_assert(map.contains(generation));
-                lue_hpx_assert(map.size() > 1);
 
-                hpx::future<void>& future = std::get<1>(map[generation - 1]);
+                hpx::shared_future<void> future = std::get<1>(map[generation]);
                 lue_hpx_assert(future.valid());
 
-                return std::move(future);
+                return future;
             }
 
         private:
 
             using Promise = hpx::promise<void>;
 
-            using Future = hpx::future<void>;
+            using Future = hpx::shared_future<void>;
 
             using FutureTuple = std::tuple<Promise, Future>;
 
@@ -168,6 +209,8 @@ namespace lue {
             using TupleByGenerationByKey = std::map<Key, TupleByGeneration>;
 
             TupleByGenerationByKey _tuples;
+
+            std::mutex _tuples_mutex;
     };
 
 }  // namespace lue
