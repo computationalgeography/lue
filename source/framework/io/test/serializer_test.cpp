@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 
     // Create collection of randomly ordered task IDs
     std::vector<TaskID> input_task_ids(max_task_id);
-    std::ranges::iota(input_task_ids, min_task_id);
+    std::iota(input_task_ids.begin(), input_task_ids.end(), min_task_id);
     std::ranges::shuffle(input_task_ids, random_number_engine);
 
     // Each task writes its ID into this collection. If all goes well, all task IDs should end up here,
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
     std::vector<TaskID> output_task_ids{};
 
     // Collection of futures to wait on before we can start testing
-    std::vector<hpx::future<void>> futures{};
+    std::vector<hpx::shared_future<void>> futures{};
 
     for (TaskID task_id : input_task_ids)
     {
@@ -40,21 +40,21 @@ BOOST_AUTO_TEST_CASE(variable_raster)
         hpx::promise<void> promise = task_serializer.promise_for(key, task_id);
 
         // Create a task that will run after the one with task ID equal to task_id - 1 has finished
-        futures.push_back(task_serializer.when_predecessor_done(key, task_id)
-                              .then(
-                                  [&output_task_ids, task_id, promise = std::move(promise)](
-                                      hpx::future<void> const& future) mutable -> auto
-                                  {
-                                      BOOST_REQUIRE(future.valid());
-                                      BOOST_REQUIRE(future.is_ready());
+        futures.emplace_back(task_serializer.when_predecessor_done(key, task_id)
+                                 .then(
+                                     [&output_task_ids, task_id, promise = std::move(promise)](
+                                         hpx::shared_future<void> const& future) mutable -> auto
+                                     {
+                                         BOOST_REQUIRE(future.valid());
+                                         BOOST_REQUIRE(future.is_ready());
 
-                                      // All threads access this same collection, but since these calls are
-                                      // serialized, these accesses won't happen at the same time
-                                      output_task_ids.push_back(task_id);
+                                         // All threads access this same collection, but since these calls are
+                                         // serialized, these accesses won't happen at the same time
+                                         output_task_ids.push_back(task_id);
 
-                                      // We are done, next in line can do its thing
-                                      promise.set_value();
-                                  }));
+                                         // We are done, next in line can do its thing
+                                         promise.set_value();
+                                     }));
     }
 
     hpx::wait_all(futures.begin(), futures.end());
