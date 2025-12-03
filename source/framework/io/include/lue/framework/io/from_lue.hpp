@@ -10,6 +10,8 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/data_model/hl/util.hpp"
 
+// #include <hpx/iostream.hpp>
+
 
 /*!
     @file
@@ -22,15 +24,61 @@
 */
 
 
-// All tasks can perform independent I/O, asynchronous → independent is OK when blocks are
-// non-overlapping / non-interleaved
+// LUE dataset is an HDF5 file
+// LUE array is an HDF5 dataset
 
-// NOTE:
-// Depending on the expected data size and number of your I/O requests, having it INDEPENDENT or
-// COLLECTIVE can help or hinder. Independent is good if the data size of I/O is sufficiently
-// large (hopefully a few file system blocksize), otherwise, Collective is better
+// All I/O:
+// - Reading from a dataset must happen after any previous calls to writing to that same dataset have
+//   finished. See usage of to_lue_order.
 
-// - Is there some heuristic we can use to choose between INDEPENDENT / COLLECTIVE?
+// Serial I/O:
+// - Notes:
+//     - Don't read while a write is still ongoing
+//     - Reading from multiple processes at the same time is fine
+//     - Parallel I/O requires serializing collective calls to open / close of HDF5 dataset within each
+//       process. These need to happen in the same order in all processes. The implementation does the same
+//       thing in the serial case.
+//
+// - Root process:
+//     - Group partitions by process
+//     - Obtain from_lue_order to be able to serialize open / close calls to the same dataset in worker
+//       processes
+//     - Obtain to_lue_order to be able to wait on last to_lue call (if any) to the same dataset
+//     - Asynchronously wait on last to_lue call
+//     - Spawn a task per process to read into its partitions
+//
+//  - Worker process:
+//     - Obtain a promise to be able to signal any successors once we are done opening the file
+//     - Obtain a future representing a previous from_lue open dataset call done by the same process
+//     - Obtain a future representing a previous to_lue call (if any) done by the same process
+//     - Asynchronously wait on previous to_lue call, previous from_lue open dataset call, and all partitions
+//       to read into
+//     - Open dataset for reading
+//     - Set value of open dataset promise
+//     - Read HDF5 dataset into LUE array
+//     - Obtain a promise to be able to signal any successors once we are done closing the file
+//     - Obtain a future representing a previous from_lue close dataset call done by the same process
+//     - Asynchronously wait on previous from_lue close dataset call
+//     - Close dataset
+//     - Set value of close dataset promise
+//
+// Parallel I/O:
+// - TODO: doc
+// - Notes:
+//     - Opening and closing a dataset are collective operations. They need to happen in the same order in all
+//       processes. See usage of from_lue_order.
+//     - Reading from an array can be done independently
+// - Root process:
+//     - Group partitions by process
+//     - Obtain from_lue_order to be able to serialize open / close calls in worker processes
+//     - Obtain to_lue_order to be able to wait on last to_lue call (if any) to the same dataset in worker
+//       processes
+//     - Spawn a task per process to read into its partitions
+//
+// - Worker process:
+//     - ...
+//
+//
 
 
 namespace lue {
@@ -77,21 +125,19 @@ namespace lue {
         }
 
 
-        auto keep_dataset_open_until_all_partitions_read(hpx::future<data_model::Dataset> dataset_f)
-        {
-            dataset_f.then([](auto const& dataset_f) -> auto { HPX_UNUSED(dataset_f); });
-        }
-
-
         template<typename Policies, typename Partitions>
         auto read_partitions_constant(
             Policies const& policies,
             std::string const& array_pathname,
-            Count const open_count,
+            Count const from_lue_order,
+            Count const to_lue_order,
             hdf5::Offset const& array_hyperslab_start,  // Only needed to offset block read from array
             data_model::ID const object_id,
             Partitions const& partitions) -> hpx::future<Partitions>
         {
+            // hpx::cout << std::format("DEBUG: from_lue/open {} (start trying)\n", from_lue_order)
+            //           << std::flush;
+
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
@@ -99,70 +145,115 @@ namespace lue {
                 parse_array_pathname(array_pathname);
 
             std::filesystem::path const dataset_path{normalize(dataset_pathname)};
-            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
-            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
+            hpx::promise<void> from_lue_open_dataset_p =
+                from_lue_open_dataset_promise_for(dataset_path, from_lue_order);
+            hpx::shared_future<void> from_lue_open_dataset_when_predecessor_done_f =
+                from_lue_open_dataset_when_predecessor_done(dataset_path, from_lue_order);
 
-            // TODO On I/O thread
+            if (to_lue_order > 0)
+            {
+                // Due to scheduling of tasks we may get here before a previous call to to_lue has even
+                // started
+                while (!to_lue_close_dataset_done_available(dataset_path, to_lue_order))
+                {
+                    // hpx::cout << std::format(
+                    //                  "DEBUG: from_lue/open {} (sleep for {})\n", from_lue_order,
+                    //                  to_lue_order)
+                    //           << std::flush;
+                    hpx::this_thread::sleep_for(std::chrono::seconds(1));
+                }
+            }
 
-            auto [dataset_f, partitions_f] = hpx::split_future(
-                hpx::dataflow(
-                    hpx::launch::async,
-                    [policies,
-                     array_hyperslab_start,
-                     dataset_pathname,
-                     open_file_promise = std::move(open_file_promise),
-                     phenomenon_name,
-                     property_set_name,
-                     property_name,
-                     object_id](
-                        [[maybe_unused]] auto const& predecessor_future, auto&& partitions_f) mutable -> auto
-                    {
-                        Partitions partitions = partitions_f.get();
+            hpx::shared_future<void> to_lue_close_dataset_done_f =
+                to_lue_close_dataset_done(dataset_path, to_lue_order);
 
-                        auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
+            hpx::future<Partitions> partitions_f = hpx::dataflow(
+                hpx::launch::async,
+                [policies,
+                 array_hyperslab_start,
+                 dataset_path,
+                 from_lue_order,
+                 from_lue_open_dataset_p = std::move(from_lue_open_dataset_p),
+                 phenomenon_name,
+                 property_set_name,
+                 property_name,
+                 object_id](
+                    [[maybe_unused]] auto const& to_lue_close_dataset_done_f,
+                    [[maybe_unused]] auto const& from_lue_open_dataset_when_predecessor_done_f,
+                    auto&& partitions_f) mutable -> hpx::future<Partitions>
+                {
+                    Partitions partitions = partitions_f.get();
 
-                        // Done with the collective calls
-                        open_file_promise.set_value();
+                    // hpx::cout << std::format("DEBUG: from_lue/open {}\n", from_lue_order) << std::flush;
 
-                        // Open phenomenon
-                        auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
+                    auto dataset = open_dataset(dataset_path.string(), H5F_ACC_RDONLY);
 
-                        // Open property-set
-                        auto const& property_set{phenomenon.property_sets()[property_set_name]};
+                    // Done with the collective calls
+                    from_lue_open_dataset_p.set_value();
 
-                        // Open property
-                        lue_hpx_assert(property_set.properties().contains(property_name));
-                        lue_hpx_assert(
-                            property_set.properties().shape_per_object(property_name) ==
-                            data_model::ShapePerObject::different);
-                        lue_hpx_assert(
-                            property_set.properties().value_variability(property_name) ==
-                            data_model::ValueVariability::constant);
-                        using Properties = data_model::different_shape::Properties;
-                        auto const& property{
-                            property_set.properties().collection<Properties>()[property_name]};
+                    // Open phenomenon
+                    auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
-                        // constant: data_model::different_shape::Value
-                        auto const& value{property.value()};
+                    // Open property-set
+                    auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
-                        // constant: data_model::Array: hdf5::Dataset
-                        auto array{value[object_id]};
+                    // Open property
+                    lue_hpx_assert(property_set.properties().contains(property_name));
+                    lue_hpx_assert(
+                        property_set.properties().shape_per_object(property_name) ==
+                        data_model::ShapePerObject::different);
+                    lue_hpx_assert(
+                        property_set.properties().value_variability(property_name) ==
+                        data_model::ValueVariability::constant);
+                    using Properties = data_model::different_shape::Properties;
+                    auto const& property{property_set.properties().collection<Properties>()[property_name]};
 
-                        auto create_hyperslab =
-                            [array_hyperslab_start](PartitionServer const& partition_server) -> auto
-                        { return hyperslab(array_hyperslab_start, partition_server); };
+                    // constant: data_model::different_shape::Value
+                    auto const& value{property.value()};
 
-                        read_partitions(policies, array, create_hyperslab, partitions);
+                    // constant: data_model::Array: hdf5::Dataset
+                    auto array{value[object_id]};
 
-                        return std::make_tuple(std::move(dataset), std::move(partitions));
-                    },
-                    predecessor_future,
-                    hpx::when_all(partitions)));
+                    auto create_hyperslab =
+                        [array_hyperslab_start](PartitionServer const& partition_server) -> auto
+                    { return hyperslab(array_hyperslab_start, partition_server); };
 
-            keep_dataset_open_until_all_partitions_read(std::move(dataset_f));
+                    // Synchronous
+                    read_partitions(policies, array, create_hyperslab, partitions);
 
-            // For some reason, RVO doesn't kick in on some compilers (Clang, MSVS)
-            return std::move(partitions_f);
+                    // Closing a dataset is a collective operation: only close the dataset (let it go out
+                    // of scope) when it is our turn to do so.
+                    hpx::promise<void> from_lue_close_dataset_p =
+                        from_lue_close_dataset_promise_for(dataset_path, from_lue_order);
+                    hpx::shared_future<void> from_lue_close_dataset_predecessor_f =
+                        from_lue_close_dataset_when_predecessor_done(dataset_path, from_lue_order);
+
+                    return from_lue_close_dataset_predecessor_f.then(
+                        [dataset = std::move(dataset),
+                         // from_lue_order,
+                         from_lue_close_dataset_p = std::move(from_lue_close_dataset_p),
+                         partitions = std::move(partitions)](
+                            [[maybe_unused]] auto const& close_for_read_file_predecessor_f) mutable
+                            -> Partitions
+                        {
+                            // The dataset must go out of scope before we set the promise's value
+                            [dataset = std::move(dataset) /* , from_lue_order */]() -> auto
+                            {
+                                HPX_UNUSED(dataset);
+                                // hpx::cout << std::format("DEBUG: from_lue/close {}\n", from_lue_order)
+                                //           << std::flush;
+                            }();
+
+                            from_lue_close_dataset_p.set_value();
+
+                            return partitions;
+                        });
+                },
+                to_lue_close_dataset_done_f,
+                from_lue_open_dataset_when_predecessor_done_f,
+                hpx::when_all(partitions));
+
+            return partitions_f;
         }
 
 
@@ -170,12 +261,16 @@ namespace lue {
         auto read_partitions_variable(
             Policies const& policies,
             std::string const& array_pathname,
-            Count const open_count,
+            Count const from_lue_order,
+            Count const to_lue_order,
             hdf5::Offset const& array_hyperslab_start,
             data_model::ID const object_id,
             Index const time_step_idx,
             Partitions const& partitions) -> hpx::future<Partitions>
         {
+            // hpx::cout << std::format("DEBUG: from_lue/open {} (start trying)\n", from_lue_order)
+            //           << std::flush;
+
             using Partition = typename Partitions::value_type;
             using PartitionServer = Partition::Server;
 
@@ -183,72 +278,129 @@ namespace lue {
                 parse_array_pathname(array_pathname);
 
             std::filesystem::path const dataset_path{normalize(dataset_pathname)};
-            hpx::promise<void> open_file_promise = open_file_promise_for(dataset_path, open_count);
-            hpx::future<void> predecessor_future = open_file_when_predecessor_done(dataset_path, open_count);
+            hpx::promise<void> from_lue_open_dataset_p =
+                from_lue_open_dataset_promise_for(dataset_path, from_lue_order);
+            hpx::shared_future<void> from_lue_open_dataset_when_predecessor_done_f =
+                from_lue_open_dataset_when_predecessor_done(dataset_path, from_lue_order);
 
-            auto [dataset_f, partitions_f] = hpx::split_future(
-                hpx::dataflow(
-                    hpx::launch::async,
-                    [policies,
-                     array_hyperslab_start,
-                     dataset_pathname,
-                     open_file_promise = std::move(open_file_promise),
-                     phenomenon_name,
-                     property_set_name,
-                     property_name,
-                     object_id,
-                     time_step_idx](
-                        [[maybe_unused]] auto const& predecessor_future, auto&& partitions_f) mutable -> auto
-                    {
-                        Partitions partitions = partitions_f.get();
+            // TODO: Only needed in parallel I/O case?
+            // if (to_lue_order > 0)
+            // {
+            //     // Due to scheduling of tasks we may get here before a previous call to to_lue has even
+            //     // started
+            //     while (!to_lue_close_dataset_done_available(dataset_path, to_lue_order))
+            //     {
+            //         hpx::cout << std::format(
+            //                          "DEBUG: from_lue/open {} (sleep for {})\n", from_lue_order,
+            //                          to_lue_order)
+            //                   << std::flush;
+            //         hpx::this_thread::sleep_for(std::chrono::seconds(1));
+            //     }
+            // }
 
-                        auto dataset = open_dataset(dataset_pathname, H5F_ACC_RDONLY);
+            // TODO: This may not be true in case of parallel I/O(?) Is it required to be true in that case?
+            lue_hpx_assert(
+                to_lue_order == 0 || to_lue_close_dataset_done_available(dataset_path, to_lue_order));
+            hpx::shared_future<void> to_lue_close_dataset_done_f =
+                to_lue_close_dataset_done(dataset_path, to_lue_order);
+            // TODO: This is not the case in case of parallel I/O, right?
+            lue_hpx_assert(to_lue_close_dataset_done_f.is_ready());
 
-                        // Done with the collective calls
-                        open_file_promise.set_value();
+            hpx::future<Partitions> partitions_f = hpx::dataflow(
+                hpx::launch::async,
+                [policies,
+                 array_hyperslab_start,
+                 dataset_path,
+                 from_lue_order,
+                 from_lue_open_dataset_p = std::move(from_lue_open_dataset_p),
+                 phenomenon_name,
+                 property_set_name,
+                 property_name,
+                 object_id,
+                 time_step_idx](
+                    [[maybe_unused]] auto const& to_lue_close_dataset_done_f,
+                    [[maybe_unused]] auto const& from_lue_open_dataset_when_predecessor_done_f,
+                    auto&& partitions_f) mutable -> hpx::future<Partitions>
+                {
+                    AnnotateFunction const annotate{"from_lue: partitions variable"};
 
-                        // Open phenomenon
-                        auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
+                    // hpx::cout << std::format("DEBUG: from_lue/open {}\n", from_lue_order) << std::flush;
 
-                        // Open property-set
-                        auto const& property_set{phenomenon.property_sets()[property_set_name]};
+                    Partitions partitions = partitions_f.get();
 
-                        // Open property
-                        lue_hpx_assert(property_set.properties().contains(property_name));
-                        lue_hpx_assert(
-                            property_set.properties().shape_per_object(property_name) ==
-                            data_model::ShapePerObject::different);
-                        lue_hpx_assert(
-                            property_set.properties().value_variability(property_name) ==
-                            data_model::ValueVariability::variable);
-                        lue_hpx_assert(
-                            property_set.properties().shape_variability(property_name) ==
-                            data_model::ShapeVariability::constant);
-                        using Properties = data_model::different_shape::constant_shape::Properties;
-                        auto const& property{
-                            property_set.properties().collection<Properties>()[property_name]};
+                    auto dataset = open_dataset(dataset_path.string(), H5F_ACC_RDONLY);
 
-                        // constant: data_model::different_shape::Value
-                        auto const& value{property.value()};
+                    // Done with the collective call
+                    from_lue_open_dataset_p.set_value();
 
-                        // constant: data_model::Array: hdf5::Dataset
-                        auto const array{value[object_id]};
+                    // Open phenomenon
+                    auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
-                        auto create_hyperslab = [array_hyperslab_start, time_step_idx](
-                                                    PartitionServer const& partition_server) -> auto
-                        { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
+                    // Open property-set
+                    auto const& property_set{phenomenon.property_sets()[property_set_name]};
 
-                        read_partitions(policies, array, create_hyperslab, partitions);
+                    // Open property
+                    lue_hpx_assert(property_set.properties().contains(property_name));
+                    lue_hpx_assert(
+                        property_set.properties().shape_per_object(property_name) ==
+                        data_model::ShapePerObject::different);
+                    lue_hpx_assert(
+                        property_set.properties().value_variability(property_name) ==
+                        data_model::ValueVariability::variable);
+                    lue_hpx_assert(
+                        property_set.properties().shape_variability(property_name) ==
+                        data_model::ShapeVariability::constant);
+                    using Properties = data_model::different_shape::constant_shape::Properties;
+                    auto const& property{property_set.properties().collection<Properties>()[property_name]};
 
-                        return std::make_tuple(std::move(dataset), std::move(partitions));
-                    },
-                    predecessor_future,
-                    hpx::when_all(partitions)));
+                    // constant: data_model::different_shape::Value
+                    auto const& value{property.value()};
 
-            keep_dataset_open_until_all_partitions_read(std::move(dataset_f));
+                    // constant: data_model::Array: hdf5::Dataset
+                    auto const array{value[object_id]};
 
-            // For some reason, RVO doesn't kick in on some compilers (Clang, MSVS)
-            return std::move(partitions_f);
+                    auto create_hyperslab = [array_hyperslab_start,
+                                             time_step_idx](PartitionServer const& partition_server) -> auto
+                    { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
+
+                    // Synchronous
+                    read_partitions(policies, array, create_hyperslab, partitions);
+
+                    // Closing a dataset is a collective operation: only close the dataset (let it go out
+                    // of scope) when it is our turn to do so.
+                    hpx::promise<void> from_lue_close_dataset_p =
+                        from_lue_close_dataset_promise_for(dataset_path, from_lue_order);
+                    hpx::shared_future<void> from_lue_close_dataset_predecessor_f =
+                        from_lue_close_dataset_when_predecessor_done(dataset_path, from_lue_order);
+
+                    return from_lue_close_dataset_predecessor_f.then(
+                        [dataset = std::move(dataset),
+                         // from_lue_order,
+                         from_lue_close_dataset_p = std::move(from_lue_close_dataset_p),
+                         partitions = std::move(partitions)](
+                            [[maybe_unused]] auto const& close_for_read_file_predecessor_f) mutable
+                            -> Partitions
+                        {
+                            // The dataset must go out of scope before we set the promise's value
+                            [dataset = std::move(dataset)
+                             // from_lue_order
+                            ]() -> auto
+                            {
+                                HPX_UNUSED(dataset);
+                                // hpx::cout << std::format("DEBUG: from_lue/close {}\n", from_lue_order)
+                                //           << std::flush;
+                            }();
+
+                            from_lue_close_dataset_p.set_value();
+
+                            return partitions;
+                        });
+                },
+                to_lue_close_dataset_done_f,
+                from_lue_open_dataset_when_predecessor_done_f,
+                hpx::when_all(partitions));
+
+            return partitions_f;
         }
 
 
@@ -294,7 +446,9 @@ namespace lue {
 
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
-            auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+            auto const dataset_path{detail::normalize(dataset_pathname)};
+            auto const from_lue_order = detail::from_lue_order(dataset_path);
+            auto const to_lue_order = detail::current_to_lue_order(dataset_path);
 
             // Iterate over all grouped partitions
             for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
@@ -315,7 +469,8 @@ namespace lue {
                         locality,
                         policies,
                         array_pathname,
-                        open_count,
+                        from_lue_order,
+                        to_lue_order,
                         array_hyperslab_start,
                         object_id,
                         std::move(partitions)),
@@ -328,7 +483,7 @@ namespace lue {
                     // finished. Under the hood the "new" partition is the same and the original one, but
                     // this is not relevant for the caller.
                     array.partitions()[partition_idx] = partition_fs[idx++].then(
-                        [](auto&& partition_f)
+                        [](auto&& partition_f) -> auto
                         {
                             lue_hpx_assert(partition_f.valid());
                             lue_hpx_assert(partition_f.is_ready());
@@ -346,7 +501,7 @@ namespace lue {
                 std::all_of(
                     array.partitions().begin(),
                     array.partitions().end(),
-                    [](auto const& partition) { return partition.valid(); }));
+                    [](auto const& partition) -> auto { return partition.valid(); }));
 
             return array;
         }
@@ -379,14 +534,20 @@ namespace lue {
 
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
-            auto const open_count = detail::open_count(detail::normalize(dataset_pathname));
+            auto const dataset_path{detail::normalize(dataset_pathname)};
+            auto const from_lue_order = detail::from_lue_order(dataset_path);
+            auto const to_lue_order = detail::current_to_lue_order(dataset_path);
+
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
+            // Make read dependent on any previous write to the same dataset, if done so
+            auto to_lue_close_dataset_done_f = detail::to_lue_finished(dataset_path, to_lue_order);
+#endif
 
             // Iterate over all grouped partitions
             for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
             {
                 // Move current partitions from input array into new collection
-                std::vector<Partition> partitions{};
-                partitions.resize(partition_idxs.size());
+                std::vector<Partition> partitions(partition_idxs.size());
 
                 for (std::size_t idx = 0; auto const partition_idx : partition_idxs)
                 {
@@ -396,16 +557,45 @@ namespace lue {
                 // Spawn a task that reads from the dataset into the current partitions. This returns a
                 // collection of futures to partitions, each of which becomes ready once its data is read.
                 std::vector<hpx::future<Partition>> partition_fs = hpx::split_future<Partition>(
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
+                    to_lue_close_dataset_done_f.then(
+                        [action,
+                         locality,
+                         policies,
+                         array_pathname,
+                         from_lue_order,
+                         to_lue_order,
+                         array_hyperslab_start,
+                         object_id,
+                         time_step_idx,
+                         partitions = std::move(partitions)
+
+                ]([[maybe_unused]] auto const& to_lue_close_dataset_done_f) -> auto
+                        {
+                            return action(
+                                locality,
+                                policies,
+                                array_pathname,
+                                from_lue_order,
+                                to_lue_order,
+                                array_hyperslab_start,
+                                object_id,
+                                time_step_idx,
+                                std::move(partitions));
+                        }),
+#else
                     hpx::async(
                         action,
                         locality,
                         policies,
                         array_pathname,
-                        open_count,
+                        from_lue_order,
+                        to_lue_order,
                         array_hyperslab_start,
                         object_id,
                         time_step_idx,
                         std::move(partitions)),
+#endif
                     std::size(partition_idxs));
 
                 // Iterate over each selected partition
@@ -415,7 +605,7 @@ namespace lue {
                     // finished. Under the hood the "new" partition is the same and the original one, but
                     // this is not relevant for the caller.
                     array.partitions()[partition_idx] = partition_fs[idx++].then(
-                        [](auto&& partition_f)
+                        [](auto&& partition_f) -> auto
                         {
                             lue_hpx_assert(partition_f.valid());
                             lue_hpx_assert(partition_f.is_ready());
@@ -433,7 +623,14 @@ namespace lue {
                 std::all_of(
                     array.partitions().begin(),
                     array.partitions().end(),
-                    [](auto const& partition) { return partition.valid(); }));
+                    [](auto const& partition) -> auto { return partition.valid(); }));
+
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
+            detail::add_from_lue_finished(
+                dataset_path,
+                from_lue_order,
+                hpx::when_all(array.partitions().begin(), array.partitions().end()).share());
+#endif
 
             return array;
         }
