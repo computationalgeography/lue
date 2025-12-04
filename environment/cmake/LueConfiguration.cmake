@@ -641,18 +641,19 @@ if(LUE_HDF5_REQUIRED)
 
     set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
+    check_symbol_exists(H5_HAVE_PARALLEL "hdf5.h" HDF5_IS_PARALLEL)
     unset(CMAKE_REQUIRED_INCLUDES)
-
-    if(NOT HDF5_IS_THREADSAFE)
-        message(FATAL_ERROR
-            "LUE requires HDF5 to be threadsafe, but the version found (${HDF5_INCLUDE_DIRS}) is not")
-    endif()
 
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
     message(STATUS "HDF5_IS_THREADSAFE            : ${HDF5_IS_THREADSAFE}")
     message(STATUS "HDF5_DEFINITIONS              : ${HDF5_DEFINITIONS}")
     message(STATUS "HDF5_INCLUDE_DIRS             : ${HDF5_INCLUDE_DIRS}")
     message(STATUS "HDF5_C_LIBRARIES              : ${HDF5_C_LIBRARIES}")
+
+    if(NOT HDF5_IS_THREADSAFE)
+        message(FATAL_ERROR
+            "LUE requires HDF5 to be threadsafe, but the version found (${HDF5_INCLUDE_DIRS}) is not")
+    endif()
 endif()
 
 
