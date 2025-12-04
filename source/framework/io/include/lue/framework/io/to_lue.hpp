@@ -37,6 +37,8 @@
 //       locked)
 //     - When a previous write is done, we can assume that no writing is ongoing anymore (dataset is closed /
 //       not locked)
+//     - In the case of serial I/O icw non-threadsafe HDF5, all HDF5 API calls must be done from the same OS
+//       thread
 //
 // Root process:
 //     - Group partitions by process
@@ -136,8 +138,9 @@ namespace lue {
                 std::remove_reference_t<std::remove_cv_t<Partition>>,
                 std::remove_reference_t<std::remove_cv_t<decltype((create_hyperslab))>>>;
 
-            // Asynchronously write all partitions. Let HDF5 do the serialization.
-            // TODO: Handle non-parallel_io and non-threadsafe case
+#if defined(LUE_FRAMEWORK_WITH_PARALLEL_IO) || defined(HDF5_IS_THREADSAFE)
+            // Asynchronously write all partitions. Let HDF5 figure out how to efficiently do this.
+
             std::vector<hpx::future<void>> partitions_written{};
             partitions_written.reserve(partitions.size());
 
@@ -152,6 +155,37 @@ namespace lue {
 
             // Don't return before the writing has finished
             hpx::wait_all(partitions_written);
+#else
+            // Synchronously write all partitions, from the same OS thread
+            // TODO: I don't think we can be certain this task keeps running on the same OS thread
+            //       We may have to wait on all partitions first and then to the write in one go,
+            //       from the thread we are scheduled to run on. Could be an OS thread as well.
+            // auto remaining_partitions = partitions;
+
+            // hpx::wait_all(remaining_partitions);
+
+            lue_hpx_assert(
+                std::all_of(
+                    partitions.begin(),
+                    partitions.end(),
+                    [](auto const& partition) -> auto { return partition.is_ready(); }));
+
+            for (auto& partition : partitions)
+            {
+                write_partition(policies, partition, create_hyperslab, array);
+            }
+
+            // while (!remaining_partitions.empty())
+            // {
+            //     auto [partition_idx, partitions_] = hpx::when_any(remaining_partitions).get();
+            //
+            //     write_partition(policies, partitions_[partition_idx], create_hyperslab, array);
+            //
+            //     partitions_.erase(partitions_.begin() + partition_idx);
+            //
+            //     remaining_partitions = std::move(partitions_);
+            // }
+#endif
         }
 
 
@@ -220,6 +254,16 @@ namespace lue {
 
                     // hpx::cout << std::format("DEBUG: to_lue/open {}\n", to_lue_order) << std::flush;
 
+                    auto [partition_idx, partitions] = when_any_result_f.get();
+
+                    if constexpr (serial_io_non_thread_safe)
+                    {
+                        // Wait before opening the dataset. We need to make sure all HDF5 API calls are
+                        // done from the same OS thread. We therefore make sure we don't have to wait anywhere
+                        // else (and potentially get rescheduled on another OS thread) during the write.
+                        hpx::wait_all(partitions);
+                    }
+
                     // Open the dataset once the first partition is ready to be written
                     auto dataset = open_dataset(dataset_path.string(), H5F_ACC_RDWR);
 
@@ -255,8 +299,6 @@ namespace lue {
                         [array_hyperslab_start](PartitionServer const& partition_server) -> auto
                     { return hyperslab(array_hyperslab_start, partition_server); };
 
-                    auto [partition_idx, partitions] = when_any_result_f.get();
-
                     // Synchronous
                     write_partitions(policies, partitions, create_hyperslab, array);
 
@@ -268,6 +310,7 @@ namespace lue {
                         to_lue_close_dataset_when_predecessor_done(dataset_path, to_lue_order);
 
                     return to_lue_close_dataset_predecessor_f.then(
+                        ternary_if<serial_io_non_thread_safe>(hpx::launch::sync, hpx::launch::async),
                         [dataset = std::move(dataset),
                          // to_lue_order,
                          to_lue_close_dataset_p = std::move(to_lue_close_dataset_p),
@@ -360,6 +403,16 @@ namespace lue {
 
                     // hpx::cout << std::format("DEBUG: to_lue/open {}\n", to_lue_order) << std::flush;
 
+                    auto [partition_idx, partitions] = when_any_result_f.get();
+
+                    if constexpr (serial_io_non_thread_safe)
+                    {
+                        // Wait before opening the dataset. We need to make sure all HDF5 API calls are
+                        // done from the same OS thread. We therefore make sure we don't have to wait anywhere
+                        // else (and potentially get rescheduled on another OS thread) during the write.
+                        hpx::wait_all(partitions);
+                    }
+
                     // Open the dataset once the first partition is ready to be written
                     auto dataset = open_dataset(dataset_path.string(), H5F_ACC_RDWR);
 
@@ -399,8 +452,6 @@ namespace lue {
                                              time_step_idx](PartitionServer const& partition_server) -> auto
                     { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
 
-                    auto [partition_idx, partitions] = when_any_result_f.get();
-
                     // Synchronous
                     write_partitions(policies, partitions, create_hyperslab, array);
 
@@ -412,6 +463,7 @@ namespace lue {
                         to_lue_close_dataset_when_predecessor_done(dataset_path, to_lue_order);
 
                     return to_lue_close_dataset_predecessor_f.then(
+                        ternary_if<serial_io_non_thread_safe>(hpx::launch::sync, hpx::launch::async),
                         [dataset = std::move(dataset),
                          // to_lue_order,
                          to_lue_close_dataset_p = std::move(to_lue_close_dataset_p),
@@ -512,7 +564,7 @@ namespace lue {
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
 
-        if constexpr (!BuildOptions::framework_with_parallel_io)
+        if constexpr (detail::serial_io)
         {
             // Make this to_lue call dependent on any previous call to to_lue / from_lue to the same
             // dataset, if done so. This ensures the dataset is closed.
@@ -535,7 +587,7 @@ namespace lue {
 
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once these partitions have been written.
-            if constexpr (!BuildOptions::framework_with_parallel_io)
+            if constexpr (detail::serial_io)
             {
                 hpx::future<void>& previous_locality_finished = localities_finished.back();
                 localities_finished.push_back(previous_locality_finished.then(
@@ -577,7 +629,7 @@ namespace lue {
             }
         }
 
-        if constexpr (!BuildOptions::framework_with_parallel_io)
+        if constexpr (detail::serial_io)
         {
             // When the last process has finished, all partitions have been written
             auto to_lue_finished = localities_finished.back().share();
@@ -654,7 +706,7 @@ namespace lue {
         std::vector<hpx::future<void>> localities_finished{};
         localities_finished.reserve(partition_idxs_by_locality.size() + 1);
 
-        if constexpr (!BuildOptions::framework_with_parallel_io)
+        if constexpr (detail::serial_io)
         {
             // Make this to_lue call dependent on any previous call to to_lue / from_lue to the same
             // dataset, if done so. This ensures the dataset is closed.
@@ -677,7 +729,7 @@ namespace lue {
 
             // Spawn a task that writes the current partitions to the dataset. This returns a future which
             // becomes ready once these partitions have been written.
-            if constexpr (!BuildOptions::framework_with_parallel_io)
+            if constexpr (detail::serial_io)
             {
                 hpx::future<void>& previous_locality_finished = localities_finished.back();
                 localities_finished.push_back(previous_locality_finished.then(
@@ -722,7 +774,7 @@ namespace lue {
             }
         }
 
-        if constexpr (!BuildOptions::framework_with_parallel_io)
+        if constexpr (detail::serial_io)
         {
             // When the last process has finished, all partitions have been written
             auto to_lue_finished = localities_finished.back().share();

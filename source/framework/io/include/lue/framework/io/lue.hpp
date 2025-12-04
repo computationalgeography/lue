@@ -3,10 +3,38 @@
 #include "lue/framework/io/export.hpp"
 #include "lue/framework/io/serializer.hpp"
 #include "lue/configure.hpp"
+#include "lue/hdf5/configure.hpp"
 #include <filesystem>
 
 
 namespace lue::detail {
+
+    template<bool condition, typename A, typename B>
+    constexpr auto ternary_if(A&& a, B&& b)
+    {
+        if constexpr (condition)
+        {
+            return std::forward<A>(a);
+        }
+        else
+        {
+            return std::forward<B>(b);
+        }
+    }
+
+
+    // E.g.: cluster with parallel filesystem
+    // This implies hdf5::BuildOptions::hdf5_is_parallel is true
+    static constexpr bool parallel_io = BuildOptions::framework_with_parallel_io;
+
+    static constexpr bool serial_io = !parallel_io;
+
+    // E.g.: Ubuntu Linux, custom HDF5 builds
+    static constexpr bool serial_io_thread_safe = serial_io && hdf5::BuildOptions::hdf5_is_threadsafe;
+
+    // E.g.: most default HDF5 installations
+    static constexpr bool serial_io_non_thread_safe = serial_io && (!hdf5::BuildOptions::hdf5_is_threadsafe);
+
 
     using FileSerializer = Serializer<std::filesystem::path, Count>;
 
