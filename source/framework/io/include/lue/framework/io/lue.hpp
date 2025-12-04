@@ -2,6 +2,7 @@
 #include "lue/framework/core/define.hpp"
 #include "lue/framework/io/export.hpp"
 #include "lue/framework/io/serializer.hpp"
+#include "lue/configure.hpp"
 #include <filesystem>
 
 
