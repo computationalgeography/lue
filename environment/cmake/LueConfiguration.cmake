@@ -649,11 +649,6 @@ if(LUE_HDF5_REQUIRED)
     message(STATUS "HDF5_DEFINITIONS              : ${HDF5_DEFINITIONS}")
     message(STATUS "HDF5_INCLUDE_DIRS             : ${HDF5_INCLUDE_DIRS}")
     message(STATUS "HDF5_C_LIBRARIES              : ${HDF5_C_LIBRARIES}")
-
-    if(NOT HDF5_IS_THREADSAFE)
-        message(FATAL_ERROR
-            "LUE requires HDF5 to be threadsafe, but the version found (${HDF5_INCLUDE_DIRS}) is not")
-    endif()
 endif()
 
 
