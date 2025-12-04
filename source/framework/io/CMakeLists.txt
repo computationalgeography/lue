@@ -24,11 +24,6 @@ set_target_properties(lue_framework_io
         SOVERSION ${LUE_VERSION_MAJOR}
 )
 
-configure_file(
-    include/lue/framework/io/configure.hpp.in
-    include/lue/framework/io/configure.hpp
-)
-
 generate_export_header(lue_framework_io
     EXPORT_FILE_NAME include/lue/framework/io/export.hpp
     EXPORT_MACRO_NAME LUE_FRAMEWORK_IO_EXPORT
@@ -42,16 +37,17 @@ target_sources(lue_framework_io
             ${CMAKE_CURRENT_BINARY_DIR}/include
         FILES
             include/lue
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/io/configure.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/io/export.hpp
     PRIVATE
         source/dataset.cpp
+        source/lue.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/source/gdal.cpp
 )
 
 target_link_libraries(lue_framework_io
     PRIVATE
         lue::framework_algorithm
+        # HPX::iostreams_component
     PUBLIC
         lue::framework_partitioned_array
         lue::data_model_hl

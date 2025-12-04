@@ -1,5 +1,4 @@
 #include "hpx_runtime.hpp"
-#include "ostream.hpp"
 #include <hpx/hpx_start.hpp>
 #include <pybind11/pybind11.h>
 
@@ -18,8 +17,7 @@ namespace lue {
 
         hpx::init_params params{};
         params.cfg = _configuration;
-        params.mode = hpx::runtime_mode::default_;
-        // params.mode = hpx::runtime_mode::console;
+        params.mode = hpx::runtime_mode::console;
 
         if (!hpx::start(start_function, _command_line.argc(), _command_line.argv(), params))
         {
@@ -55,7 +53,7 @@ namespace lue {
 
 
     // Main HPX thread, does nothing but wait for the application to exit
-    int HPXRuntime::hpx_main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
+    auto HPXRuntime::hpx_main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) -> int
     {
         // Store a pointer to the runtime here.
         _runtime = hpx::get_runtime_ptr();
@@ -68,14 +66,6 @@ namespace lue {
 
         _startup_condition_variable.notify_one();
 
-        // Redirect all console output to Python's stdout
-        std::unique_ptr<phylanx::bindings::scoped_ostream_redirect> stream;
-
-        {
-            pybind11::gil_scoped_acquire acquire;
-            stream = std::unique_ptr<phylanx::bindings::scoped_ostream_redirect>{};
-        }
-
         // Now, wait for destructor to be called.
         {
             std::unique_lock<hpx::spinlock> lock(_mutex);
@@ -83,11 +73,6 @@ namespace lue {
             {
                 _condition_variable.wait(lock);
             }
-        }
-
-        {
-            pybind11::gil_scoped_acquire acquire;
-            stream.reset();
         }
 
         // Tell the runtime it's OK to exit

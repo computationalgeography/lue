@@ -22,7 +22,7 @@ namespace lue::data_model {
 
             auto operator=(DatasetFixture&&) -> DatasetFixture& = delete;
 
-            [[nodiscard]] auto pathname() const -> std::string const&;
+            auto pathname() const -> std::string const&;
 
             auto dataset() -> Dataset&;
 

@@ -29,8 +29,9 @@ set_target_properties(lue_py
 )
 
 target_link_libraries(lue_py
-    PRIVATE
+    PUBLIC
         lue::shared
+    PRIVATE
         Boost::headers
 )
 

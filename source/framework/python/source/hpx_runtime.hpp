@@ -13,11 +13,19 @@ namespace lue {
 
             HPXRuntime(std::vector<std::string> const& configuration);
 
+            HPXRuntime(HPXRuntime const& other) = delete;
+
+            HPXRuntime(HPXRuntime&& other) = delete;
+
             ~HPXRuntime();
+
+            auto operator=(HPXRuntime const& other) -> HPXRuntime& = delete;
+
+            auto operator=(HPXRuntime&& other) -> HPXRuntime& = delete;
 
         protected:
 
-            int hpx_main(int argc, char* argv[]);
+            auto hpx_main(int argc, char* argv[]) -> int;
 
         private:
 

@@ -13,7 +13,7 @@ namespace lue::hdf5 {
 
         public:
 
-            explicit Attributes(Identifier const& id);
+            explicit Attributes(Identifier id);
 
             auto add(std::string const& name, Datatype const& file_datatype, Dataspace const& dataspace)
                 -> Attribute;
@@ -51,11 +51,11 @@ namespace lue::hdf5 {
             }
 
 
-            [[nodiscard]] auto exists(std::string const& name) const -> bool;
+            auto exists(std::string const& name) const -> bool;
 
-            [[nodiscard]] auto attribute(std::string const& name) const -> Attribute;
+            auto attribute(std::string const& name) const -> Attribute;
 
-            [[nodiscard]] auto datatype(std::string const& name) const -> Datatype;
+            auto datatype(std::string const& name) const -> Datatype;
 
         private:
 

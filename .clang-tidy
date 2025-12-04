@@ -2,8 +2,18 @@
 Checks: >
     -*,
     bugprone-*,
+    -bugprone-easily-swappable-parameters,
     cppcoreguidelines-*,
+    -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-macro-usage,
+    -cppcoreguidelines-readability-magic-numbers,
     modernize-*,
+    -modernize-use-nodiscard,
     performance-*,
     readability-*
-...
+    -readability-redundant-member-init
+CheckOptions:
+    - key: readability-identifier-length.IgnoredVariableNames
+      value: id
+    - key: readability-identifier-length.IgnoredParameterNames
+      value: id
