@@ -1,5 +1,5 @@
 #include "lue/framework/io/dataset.hpp"
-#include "lue/framework/io/configure.hpp"
+#include "lue/configure.hpp"
 
 
 namespace lue {
