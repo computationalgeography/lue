@@ -5,61 +5,60 @@
 #include "lue/info/time.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        using TimeConfiguration = Configuration<TimeDomainItemType>;
-
-
-        class LUE_DATA_MODEL_EXPORT TimeDomain: public hdf5::Group
-        {
-
-            public:
-
-                explicit TimeDomain(hdf5::Group const& parent);
-
-                explicit TimeDomain(hdf5::Group&& group);
-
-                TimeDomain(TimeDomain const&) = default;
-
-                TimeDomain(TimeDomain&&) = default;
-
-                ~TimeDomain() override = default;
-
-                TimeDomain& operator=(TimeDomain const&) = default;
-
-                TimeDomain& operator=(TimeDomain&&) = default;
-
-                TimeConfiguration const& configuration() const;
-
-                Clock const& clock() const;
-
-                template<typename T>
-                T value();
-
-            private:
-
-                TimeConfiguration _configuration;
-
-                Clock _clock;
-        };
+    using TimeConfiguration = Configuration<TimeDomainItemType>;
 
 
-        TimeDomain create_time_domain(
-            hdf5::Group& parent, TimeConfiguration const& configuration, data_model::Clock const& clock);
+    class LUE_DATA_MODEL_EXPORT TimeDomain: public hdf5::Group
+    {
 
-        void link_time_domain(hdf5::Group& parent, TimeDomain& domain);
+        public:
 
-        bool has_linked_time_domain(hdf5::Group const& parent);
+            explicit TimeDomain(hdf5::Group const& parent);
 
-        bool time_domain_exists(hdf5::Group const& parent);
+            explicit TimeDomain(hdf5::Group&& group);
+
+            TimeDomain(TimeDomain const& other) = default;
+
+            TimeDomain(TimeDomain&& other) = default;
+
+            ~TimeDomain() override = default;
+
+            auto operator=(TimeDomain const& other) -> TimeDomain& = default;
+
+            auto operator=(TimeDomain&& other) -> TimeDomain& = default;
+
+            auto configuration() const -> TimeConfiguration const&;
+
+            auto clock() const -> Clock const&;
+
+            template<typename T>
+            auto value() -> T;
+
+        private:
+
+            TimeConfiguration _configuration;
+
+            Clock _clock;
+    };
 
 
-        template<typename T>
-        inline T TimeDomain::value()
-        {
-            return T{*this};
-        }
+    auto create_time_domain(
+        hdf5::Group& parent, TimeConfiguration const& configuration, data_model::Clock const& clock)
+        -> TimeDomain;
 
-    }  // namespace data_model
-}  // namespace lue
+    void link_time_domain(hdf5::Group& parent, TimeDomain& domain);
+
+    auto has_linked_time_domain(hdf5::Group const& parent) -> bool;
+
+    auto time_domain_exists(hdf5::Group const& parent) -> bool;
+
+
+    template<typename T>
+    inline auto TimeDomain::value() -> T
+    {
+        return T{*this};
+    }
+
+}  // namespace lue::data_model

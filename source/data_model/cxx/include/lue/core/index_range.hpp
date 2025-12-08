@@ -2,66 +2,64 @@
 #include "lue/core/define.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        class IndexRange
-        {
+    class IndexRange
+    {
 
-            public:
+        public:
 
-                IndexRange(Index begin, Index end);
+            IndexRange(Index begin, Index end);
 
-                IndexRange(IndexRange const&) = default;
+            IndexRange(IndexRange const& other) = default;
 
-                IndexRange(IndexRange&&) = default;
+            IndexRange(IndexRange&& other) = default;
 
-                ~IndexRange() = default;
+            ~IndexRange() = default;
 
-                IndexRange& operator=(IndexRange const&) = default;
+            auto operator=(IndexRange const& other) -> IndexRange& = default;
 
-                IndexRange& operator=(IndexRange&&) = default;
+            auto operator=(IndexRange&& other) -> IndexRange& = default;
 
-                Index begin() const;
+            auto begin() const -> Index;
 
-                Index end() const;
+            auto end() const -> Index;
 
-                hsize_t size() const;
+            auto size() const -> hsize_t;
 
-            private:
+        private:
 
-                Index _begin;
+            Index _begin;
 
-                Index _end;
-        };
-
-
-        inline IndexRange::IndexRange(Index const begin, Index const end):
-
-            _begin{begin},
-            _end{end}
-
-        {
-            assert(begin <= end);
-        }
+            Index _end;
+    };
 
 
-        inline Index IndexRange::begin() const
-        {
-            return _begin;
-        }
+    inline IndexRange::IndexRange(Index const begin, Index const end):
+
+        _begin{begin},
+        _end{end}
+
+    {
+        assert(begin <= end);
+    }
 
 
-        inline Index IndexRange::end() const
-        {
-            return _end;
-        }
+    inline auto IndexRange::begin() const -> Index
+    {
+        return _begin;
+    }
 
 
-        inline hsize_t IndexRange::size() const
-        {
-            return _end - _begin;
-        }
+    inline auto IndexRange::end() const -> Index
+    {
+        return _end;
+    }
 
-    }  // namespace data_model
-}  // namespace lue
+
+    inline auto IndexRange::size() const -> hsize_t
+    {
+        return _end - _begin;
+    }
+
+}  // namespace lue::data_model
