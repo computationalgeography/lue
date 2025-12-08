@@ -2,49 +2,47 @@
 #include "lue/info/time/location_in_time.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            - Zero or more time points per item
-            - Each time point has a unique location in time
-        */
-        class LUE_DATA_MODEL_EXPORT TimePoint: public LocationInTime
-        {
+    /*!
+        - Zero or more time points per item
+        - Each time point has a unique location in time
+    */
+    class LUE_DATA_MODEL_EXPORT TimePoint: public LocationInTime
+    {
 
-            public:
+        public:
 
-                explicit TimePoint(hdf5::Group const& parent);
+            explicit TimePoint(hdf5::Group const& parent);
 
-                explicit TimePoint(LocationInTime&& value);
+            explicit TimePoint(LocationInTime&& value);
 
-                TimePoint(TimePoint const&) = default;
+            TimePoint(TimePoint const& other) = default;
 
-                TimePoint(TimePoint&&) = default;
+            TimePoint(TimePoint&& other) = default;
 
-                ~TimePoint() override = default;
+            ~TimePoint() override = default;
 
-                TimePoint& operator=(TimePoint const&) = default;
+            auto operator=(TimePoint const& other) -> TimePoint& = default;
 
-                TimePoint& operator=(TimePoint&&) = default;
+            auto operator=(TimePoint&& other) -> TimePoint& = default;
 
-                Count nr_points() const;
+            auto nr_points() const -> Count;
 
-            private:
-        };
-
-
-        TimePoint create_time_point(hdf5::Group& parent);
+        private:
+    };
 
 
-        template<>
-        class ValueTraits<TimePoint>
-        {
+    auto create_time_point(hdf5::Group& parent) -> TimePoint;
 
-            public:
 
-                using Element = typename ValueTraits<LocationInTime>::Element;
-        };
+    template<>
+    class ValueTraits<TimePoint>
+    {
 
-    }  // namespace data_model
-}  // namespace lue
+        public:
+
+            using Element = typename ValueTraits<LocationInTime>::Element;
+    };
+
+}  // namespace lue::data_model

@@ -2,11 +2,9 @@
 #include "lue/info/property/property_traits.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        template<typename Properties>
-        using PropertyT = typename PropertyTraits<Properties>::Property;
+    template<typename Properties>
+    using PropertyT = typename PropertyTraits<Properties>::Property;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

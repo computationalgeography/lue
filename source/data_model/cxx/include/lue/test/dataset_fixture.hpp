@@ -12,15 +12,15 @@ namespace lue::data_model {
 
             DatasetFixture();
 
-            DatasetFixture(DatasetFixture const&) = delete;
+            DatasetFixture(DatasetFixture const& other) = delete;
 
-            DatasetFixture(DatasetFixture&&) = delete;
+            DatasetFixture(DatasetFixture&& other) = delete;
 
             ~DatasetFixture();
 
-            auto operator=(DatasetFixture const&) -> DatasetFixture& = delete;
+            auto operator=(DatasetFixture const& other) -> DatasetFixture& = delete;
 
-            auto operator=(DatasetFixture&&) -> DatasetFixture& = delete;
+            auto operator=(DatasetFixture&& other) -> DatasetFixture& = delete;
 
             auto pathname() const -> std::string const&;
 

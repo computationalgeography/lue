@@ -2,41 +2,39 @@
 #include "lue/object/phenomena.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        class LUE_DATA_MODEL_EXPORT Universe: public hdf5::Group
-        {
+    class LUE_DATA_MODEL_EXPORT Universe: public hdf5::Group
+    {
 
-            public:
+        public:
 
-                Universe(hdf5::Group const& parent, std::string const& name);
+            Universe(hdf5::Group const& parent, std::string const& name);
 
-                explicit Universe(hdf5::Group&& group);
+            explicit Universe(hdf5::Group&& group);
 
-                Universe(Universe const&) = default;
+            Universe(Universe const& other) = default;
 
-                Universe(Universe&&) = default;
+            Universe(Universe&& other) = default;
 
-                ~Universe() override = default;
+            ~Universe() override = default;
 
-                Universe& operator=(Universe const&) = default;
+            auto operator=(Universe const& other) -> Universe& = default;
 
-                Universe& operator=(Universe&&) = default;
+            auto operator=(Universe&& other) -> Universe& = default;
 
-                Phenomena const& phenomena() const;
+            auto phenomena() const -> Phenomena const&;
 
-                Phenomena& phenomena();
+            auto phenomena() -> Phenomena&;
 
-                Phenomenon& add_phenomenon(std::string const& name, std::string const& description = "");
+            auto add_phenomenon(std::string const& name, std::string const& description = "") -> Phenomenon&;
 
-            private:
+        private:
 
-                Phenomena _phenomena;
-        };
+            Phenomena _phenomena;
+    };
 
 
-        Universe create_universe(hdf5::Group& parent, std::string const& name);
+    auto create_universe(hdf5::Group& parent, std::string const& name) -> Universe;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

@@ -3,35 +3,33 @@
 #include "lue/object/phenomenon.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        class LUE_DATA_MODEL_EXPORT Phenomena: public Collection<Phenomenon>
-        {
+    class LUE_DATA_MODEL_EXPORT Phenomena: public Collection<Phenomenon>
+    {
 
-            public:
+        public:
 
-                explicit Phenomena(hdf5::Group const& parent);
+            explicit Phenomena(hdf5::Group const& parent);
 
-                explicit Phenomena(Collection<Phenomenon>&& collection);
+            explicit Phenomena(Collection<Phenomenon>&& collection);
 
-                Phenomena(Phenomena const&) = default;
+            Phenomena(Phenomena const& other) = default;
 
-                Phenomena(Phenomena&&) = default;
+            Phenomena(Phenomena&& other) = default;
 
-                ~Phenomena() override = default;
+            ~Phenomena() override = default;
 
-                Phenomena& operator=(Phenomena const&) = default;
+            auto operator=(Phenomena const& other) -> Phenomena& = default;
 
-                Phenomena& operator=(Phenomena&&) = default;
+            auto operator=(Phenomena&& other) -> Phenomena& = default;
 
-                Phenomenon& add(std::string const& name, std::string const& description = "");
+            auto add(std::string const& name, std::string const& description = "") -> Phenomenon&;
 
-            private:
-        };
+        private:
+    };
 
 
-        Phenomena create_phenomena(hdf5::Group& parent);
+    auto create_phenomena(hdf5::Group& parent) -> Phenomena;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

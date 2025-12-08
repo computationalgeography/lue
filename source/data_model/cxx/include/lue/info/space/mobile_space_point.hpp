@@ -2,48 +2,46 @@
 #include "lue/array/same_shape/constant_shape/value.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            - Zero or more space points per item
-            - Each space point has a unique location in space
-        */
-        class LUE_DATA_MODEL_EXPORT MobileSpacePoint: public same_shape::constant_shape::Value
-        {
+    /*!
+        - Zero or more space points per item
+        - Each space point has a unique location in space
+    */
+    class LUE_DATA_MODEL_EXPORT MobileSpacePoint: public same_shape::constant_shape::Value
+    {
 
-            public:
+        public:
 
-                explicit MobileSpacePoint(hdf5::Group const& parent);
+            explicit MobileSpacePoint(hdf5::Group const& parent);
 
-                MobileSpacePoint(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
+            MobileSpacePoint(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
 
-                explicit MobileSpacePoint(same_shape::constant_shape::Value&& value);
+            explicit MobileSpacePoint(same_shape::constant_shape::Value&& value);
 
-                MobileSpacePoint(MobileSpacePoint const&) = default;
+            MobileSpacePoint(MobileSpacePoint const& other) = default;
 
-                MobileSpacePoint(MobileSpacePoint&&) = default;
+            MobileSpacePoint(MobileSpacePoint&& other) = default;
 
-                ~MobileSpacePoint() override = default;
+            ~MobileSpacePoint() override = default;
 
-                MobileSpacePoint& operator=(MobileSpacePoint const&) = default;
+            auto operator=(MobileSpacePoint const& other) -> MobileSpacePoint& = default;
 
-                MobileSpacePoint& operator=(MobileSpacePoint&&) = default;
+            auto operator=(MobileSpacePoint&& other) -> MobileSpacePoint& = default;
 
-                Count nr_points() const;
+            auto nr_points() const -> Count;
 
-            private:
-        };
+        private:
+    };
 
 
-        MobileSpacePoint create_mobile_space_point(
-            hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank);
+    auto create_mobile_space_point(
+        hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank) -> MobileSpacePoint;
 
-        MobileSpacePoint create_mobile_space_point(
-            hdf5::Group& parent,
-            hdf5::Datatype const& file_datatype,
-            hdf5::Datatype const& memory_datatype,
-            std::size_t rank);
+    auto create_mobile_space_point(
+        hdf5::Group& parent,
+        hdf5::Datatype const& file_datatype,
+        hdf5::Datatype const& memory_datatype,
+        std::size_t rank) -> MobileSpacePoint;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

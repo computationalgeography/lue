@@ -226,7 +226,7 @@ namespace lue::data_model {
         std::generate(
             values.begin(),
             values.end(),
-            [&distribution, &random_number_engine]() { return distribution(random_number_engine); });
+            [&distribution, &random_number_engine]() -> auto { return distribution(random_number_engine); });
     }
 
 
@@ -305,7 +305,8 @@ namespace lue::data_model {
             std::generate(
                 shape.begin(),
                 shape.end(),
-                [&distribution, &random_number_engine]() { return distribution(random_number_engine); });
+                [&distribution, &random_number_engine]() -> auto
+                { return distribution(random_number_engine); });
         }
     }
 

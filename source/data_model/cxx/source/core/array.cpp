@@ -1,147 +1,144 @@
 #include "lue/core/array.hpp"
 #include <cassert>
+#include <utility>
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        Array::Array(hdf5::Group const& parent, std::string const& name):
+    Array::Array(hdf5::Group const& parent, std::string const& name):
 
-            hdf5::Dataset{parent, name},
-            _memory_datatype{hdf5::memory_datatype(datatype())}
+        hdf5::Dataset{parent, name},
+        _memory_datatype{hdf5::memory_datatype(datatype())}
 
-        {
-            assert(id().is_valid());
-        }
-
-
-        Array::Array(
-            hdf5::Group const& parent, std::string const& name, hdf5::Datatype const& memory_datatype):
-
-            hdf5::Dataset{parent, name},
-            _memory_datatype{memory_datatype}
-
-        {
-            assert(id().is_valid());
-        }
+    {
+        assert(id().is_valid());
+    }
 
 
-        Array::Array(hdf5::Dataset&& dataset, hdf5::Datatype const& memory_datatype):
+    Array::Array(hdf5::Group const& parent, std::string const& name, hdf5::Datatype memory_datatype):
 
-            hdf5::Dataset{std::move(dataset)},
-            _memory_datatype{memory_datatype}
+        hdf5::Dataset{parent, name},
+        _memory_datatype{std::move(memory_datatype)}
 
-        {
-            assert(id().is_valid());
-        }
-
-
-        Array::Array(hdf5::Identifier&& id, hdf5::Datatype const& memory_datatype):
-
-            hdf5::Dataset{std::move(id)},
-            _memory_datatype{memory_datatype}
-
-        {
-            assert(this->id().is_valid());
-        }
+    {
+        assert(id().is_valid());
+    }
 
 
-        hdf5::Datatype const& Array::memory_datatype() const
-        {
-            return _memory_datatype;
-        }
+    Array::Array(hdf5::Dataset&& dataset, hdf5::Datatype memory_datatype):
+
+        hdf5::Dataset{std::move(dataset)},
+        _memory_datatype{std::move(memory_datatype)}
+
+    {
+        assert(id().is_valid());
+    }
 
 
-        hdf5::Datatype Array::file_datatype() const
-        {
-            return datatype();
-        }
+    Array::Array(hdf5::Identifier&& id, hdf5::Datatype memory_datatype):
+
+        hdf5::Dataset{std::move(id)},
+        _memory_datatype{std::move(memory_datatype)}
+
+    {
+        assert(this->id().is_valid());
+    }
 
 
-        void Array::read(void* buffer) const
-        {
-            hdf5::Dataset::read(_memory_datatype, buffer);
-        }
+    auto Array::memory_datatype() const -> hdf5::Datatype const&
+    {
+        return _memory_datatype;
+    }
 
 
-        void Array::read(hdf5::Hyperslab const& hyperslab, void* buffer) const
-        {
-            hdf5::Dataset::read(_memory_datatype, hyperslab, buffer);
-        }
+    auto Array::file_datatype() const -> hdf5::Datatype
+    {
+        return datatype();
+    }
 
 
-        void Array::read(
-            hdf5::Datatype const& memory_datatype, hdf5::Hyperslab const& hyperslab, void* buffer) const
-        {
-            hdf5::Dataset::read(memory_datatype, hyperslab, buffer);
-        }
+    void Array::read(void* buffer) const
+    {
+        hdf5::Dataset::read(_memory_datatype, buffer);
+    }
 
 
-        void Array::read(
-            hdf5::Datatype const& memory_datatype,
-            hdf5::Hyperslab const& hyperslab,
-            TransferPropertyList const& transfer_property_list,
-            void* buffer) const
-        {
-            hdf5::Dataset::read(memory_datatype, hyperslab, transfer_property_list, buffer);
-        }
+    void Array::read(hdf5::Hyperslab const& hyperslab, void* buffer) const
+    {
+        hdf5::Dataset::read(_memory_datatype, hyperslab, buffer);
+    }
 
 
-        void Array::read(hdf5::Dataspace const& memory_dataspace, void* buffer) const
-        {
-            hdf5::Dataset::read(_memory_datatype, memory_dataspace, buffer);
-        }
+    void Array::read(
+        hdf5::Datatype const& memory_datatype, hdf5::Hyperslab const& hyperslab, void* buffer) const
+    {
+        hdf5::Dataset::read(memory_datatype, hyperslab, buffer);
+    }
 
 
-        void Array::write(void const* buffer)
-        {
-            hdf5::Dataset::write(_memory_datatype, buffer);
-        }
+    void Array::read(
+        hdf5::Datatype const& memory_datatype,
+        hdf5::Hyperslab const& hyperslab,
+        TransferPropertyList const& transfer_property_list,
+        void* buffer) const
+    {
+        hdf5::Dataset::read(memory_datatype, hyperslab, transfer_property_list, buffer);
+    }
 
 
-        void Array::write(hdf5::Hyperslab const& hyperslab, void const* buffer)
-        {
-            hdf5::Dataset::write(_memory_datatype, hyperslab, buffer);
-        }
+    void Array::read(hdf5::Dataspace const& memory_dataspace, void* buffer) const
+    {
+        hdf5::Dataset::read(_memory_datatype, memory_dataspace, buffer);
+    }
 
 
-        void Array::write(
-            hdf5::Hyperslab const& hyperslab,
-            TransferPropertyList const& transfer_property_list,
-            void const* buffer)
-        {
-            hdf5::Dataset::write(_memory_datatype, hyperslab, transfer_property_list, buffer);
-        }
+    void Array::write(void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, buffer);
+    }
 
 
-        void Array::write(hdf5::Dataspace const& memory_dataspace, void const* buffer)
-        {
-            hdf5::Dataset::write(_memory_datatype, memory_dataspace, buffer);
-        }
+    void Array::write(hdf5::Hyperslab const& hyperslab, void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, hyperslab, buffer);
+    }
 
 
-        void Array::write(
-            hdf5::Dataspace const& memory_dataspace, hdf5::Hyperslab const& hyperslab, void const* buffer)
-        {
-            hdf5::Dataset::write(_memory_datatype, memory_dataspace, hyperslab, buffer);
-        }
+    void Array::write(
+        hdf5::Hyperslab const& hyperslab,
+        TransferPropertyList const& transfer_property_list,
+        void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, hyperslab, transfer_property_list, buffer);
+    }
 
 
-        void Array::write(
-            hdf5::Dataspace const& memory_dataspace,
-            hdf5::Hyperslab const& hyperslab,
-            TransferPropertyList const& transfer_property_list,
-            void const* buffer)
-        {
-            hdf5::Dataset::write(
-                _memory_datatype, memory_dataspace, hyperslab, transfer_property_list, buffer);
-        }
+    void Array::write(hdf5::Dataspace const& memory_dataspace, void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, memory_dataspace, buffer);
+    }
 
 
-        auto Array::has_no_data_value() const -> bool
-        {
-            return creation_property_list().fill_value_defined();
-        }
+    void Array::write(
+        hdf5::Dataspace const& memory_dataspace, hdf5::Hyperslab const& hyperslab, void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, memory_dataspace, hyperslab, buffer);
+    }
 
-    }  // namespace data_model
-}  // namespace lue
+
+    void Array::write(
+        hdf5::Dataspace const& memory_dataspace,
+        hdf5::Hyperslab const& hyperslab,
+        TransferPropertyList const& transfer_property_list,
+        void const* buffer)
+    {
+        hdf5::Dataset::write(_memory_datatype, memory_dataspace, hyperslab, transfer_property_list, buffer);
+    }
+
+
+    auto Array::has_no_data_value() const -> bool
+    {
+        return creation_property_list().fill_value_defined();
+    }
+
+}  // namespace lue::data_model

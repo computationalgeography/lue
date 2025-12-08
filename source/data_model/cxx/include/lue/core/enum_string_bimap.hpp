@@ -24,78 +24,74 @@
 #include <string>
 
 
-namespace lue {
-    namespace data_model {
-        namespace detail {
+namespace lue::data_model::detail {
 
-            template<typename T>
-            class EnumStringBimap
-            {
+    template<typename T>
+    class EnumStringBimap
+    {
 
-                public:
+        public:
 
-                    using Map = boost::bimap<T, std::string>;
-                    using value_type = typename Map::value_type;
+            using Map = boost::bimap<T, std::string>;
+            using value_type = typename Map::value_type;
 
-                    EnumStringBimap() = default;
+            EnumStringBimap() = default;
 
-                    explicit EnumStringBimap(std::initializer_list<value_type> const& values);
+            explicit EnumStringBimap(std::initializer_list<value_type> const& values);
 
-                    EnumStringBimap(EnumStringBimap const&) = default;
+            EnumStringBimap(EnumStringBimap const& other) = default;
 
-                    EnumStringBimap(EnumStringBimap&&) noexcept = default;
+            EnumStringBimap(EnumStringBimap&& other) noexcept = default;
 
-                    ~EnumStringBimap() = default;
+            ~EnumStringBimap() = default;
 
-                    EnumStringBimap& operator=(EnumStringBimap const&) = default;
+            auto operator=(EnumStringBimap const& other) -> EnumStringBimap& = default;
 
-                    EnumStringBimap& operator=(EnumStringBimap&&) noexcept = default;
+            auto operator=(EnumStringBimap&& other) noexcept -> EnumStringBimap& = default;
 
-                    bool contains(std::string const& string) const;
+            auto contains(std::string const& string) const -> bool;
 
-                    T as_value(std::string const& string) const;
+            auto as_value(std::string const& string) const -> T;
 
-                    std::string as_string(T value) const;
+            auto as_string(T value) const -> std::string;
 
-                private:
+        private:
 
-                    Map _map;
-            };
+            Map _map;
+    };
 
 
-            template<typename T>
-            inline EnumStringBimap<T>::EnumStringBimap(std::initializer_list<value_type> const& values):
+    template<typename T>
+    inline EnumStringBimap<T>::EnumStringBimap(std::initializer_list<value_type> const& values):
 
-                _map(values.begin(), values.end())
+        _map(values.begin(), values.end())
 
-            {
-            }
-
-
-            template<typename T>
-            inline bool EnumStringBimap<T>::contains(std::string const& string) const
-            {
-                return _map.right.find(string) != _map.right.end();
-            }
+    {
+    }
 
 
-            template<typename T>
-            inline T EnumStringBimap<T>::as_value(std::string const& string) const
-            {
-                assert(contains(string));
-
-                return _map.right.at(string);
-            }
+    template<typename T>
+    inline auto EnumStringBimap<T>::contains(std::string const& string) const -> bool
+    {
+        return _map.right.find(string) != _map.right.end();
+    }
 
 
-            template<typename T>
-            inline std::string EnumStringBimap<T>::as_string(T const value) const
-            {
-                assert(_map.left.find(value) != _map.left.end());
+    template<typename T>
+    inline auto EnumStringBimap<T>::as_value(std::string const& string) const -> T
+    {
+        assert(contains(string));
 
-                return _map.left.at(value);
-            }
+        return _map.right.at(string);
+    }
 
-        }  // namespace detail
-    }  // namespace data_model
-}  // namespace lue
+
+    template<typename T>
+    inline auto EnumStringBimap<T>::as_string(T const value) const -> std::string
+    {
+        assert(_map.left.find(value) != _map.left.end());
+
+        return _map.left.at(value);
+    }
+
+}  // namespace lue::data_model::detail
