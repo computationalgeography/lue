@@ -1,90 +1,88 @@
 #pragma once
+#include <utility>
+
 #include "lue/core/time/duration.hpp"
 #include "lue/core/time/epoch.hpp"
 
 
-namespace lue {
-    namespace data_model {
-        namespace time {
+namespace lue::data_model::time {
 
-            /*!
-                @brief      Class for representing a period of time since an epoch
-                @tparam     TickPeriod Type for representing the length of a tick period
-            */
-            template<typename TickPeriod>
-            class Clock
-            {
+    /*!
+        @brief      Class for representing a period of time since an epoch
+        @tparam     TickPeriod Type for representing the length of a tick period
+    */
+    template<typename TickPeriod>
+    class Clock
+    {
 
-                public:
+        public:
 
-                    using Duration = time::Duration<TickPeriod>;
+            using Duration = time::Duration<TickPeriod>;
 
-                    Clock() = default;
+            Clock() = default;
 
-                    Clock(Epoch const& epoch, TickPeriod const& tick_period);
+            Clock(Epoch epoch, TickPeriod const& tick_period);
 
-                    Clock(Clock const&) = default;
+            Clock(Clock const& other) = default;
 
-                    Clock(Clock&&) noexcept = default;
+            Clock(Clock&& other) noexcept = default;
 
-                    ~Clock() = default;
+            ~Clock() = default;
 
-                    Clock& operator=(Clock const&) = default;
+            auto operator=(Clock const& other) -> Clock& = default;
 
-                    Clock& operator=(Clock&&) noexcept = default;
+            auto operator=(Clock&& other) noexcept -> Clock& = default;
 
-                    Epoch const& epoch() const;
+            auto epoch() const -> Epoch const&;
 
-                    TickPeriod const& tick_period() const;
+            auto tick_period() const -> TickPeriod const&;
 
-                    template<template<typename> class TimePoint>
-                    typename TickPeriod::Count nr_units(TimePoint<Clock> const& time_point);
-
-                private:
-
-                    Epoch _epoch;
-
-                    TickPeriod _tick_period;
-            };
-
-
-            template<typename TickPeriod>
-            inline Clock<TickPeriod>::Clock(Epoch const& epoch, TickPeriod const& tick_period):
-
-                _epoch{epoch},
-                _tick_period{tick_period}
-
-            {
-            }
-
-
-            template<typename TickPeriod>
-            inline Epoch const& Clock<TickPeriod>::epoch() const
-            {
-                return _epoch;
-            }
-
-
-            template<typename TickPeriod>
-            inline TickPeriod const& Clock<TickPeriod>::tick_period() const
-            {
-                return _tick_period;
-            }
-
-
-            /*!
-                @brief      Return the time point's number of units since the
-                            Clock's epoch
-                @tparam     TimePoint Class template for representing time points
-                            in this clock
-            */
-            template<typename TickPeriod>
             template<template<typename> class TimePoint>
-            inline typename TickPeriod::Count Clock<TickPeriod>::nr_units(TimePoint<Clock> const& time_point)
-            {
-                return time_point.nr_ticks() * _tick_period.nr_units();
-            }
+            auto nr_units(TimePoint<Clock> const& time_point) -> typename TickPeriod::Count;
 
-        }  // namespace time
-    }  // namespace data_model
-}  // namespace lue
+        private:
+
+            Epoch _epoch;
+
+            TickPeriod _tick_period;
+    };
+
+
+    template<typename TickPeriod>
+    inline Clock<TickPeriod>::Clock(Epoch epoch, TickPeriod const& tick_period):
+
+        _epoch{std::move(epoch)},
+        _tick_period{tick_period}
+
+    {
+    }
+
+
+    template<typename TickPeriod>
+    inline auto Clock<TickPeriod>::epoch() const -> Epoch const&
+    {
+        return _epoch;
+    }
+
+
+    template<typename TickPeriod>
+    inline auto Clock<TickPeriod>::tick_period() const -> TickPeriod const&
+    {
+        return _tick_period;
+    }
+
+
+    /*!
+        @brief      Return the time point's number of units since the
+                    Clock's epoch
+        @tparam     TimePoint Class template for representing time points
+                    in this clock
+    */
+    template<typename TickPeriod>
+    template<template<typename> class TimePoint>
+    inline auto Clock<TickPeriod>::nr_units(TimePoint<Clock> const& time_point) -> typename TickPeriod::Count
+    {
+        return time_point.nr_ticks() * _tick_period.nr_units();
+    }
+
+}  // namespace lue::data_model::time

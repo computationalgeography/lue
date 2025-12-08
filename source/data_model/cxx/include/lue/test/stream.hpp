@@ -9,7 +9,7 @@
 namespace lue::data_model {
 
     template<typename T>
-    inline auto write(std::ostream& stream, Aspect<T> const& aspect) -> std::ostream&
+    auto write(std::ostream& stream, Aspect<T> const& aspect) -> std::ostream&
     {
         return stream << aspect.value();
     }
@@ -35,7 +35,7 @@ namespace lue::data_model {
 
 
     template<typename Aspect, typename... Aspects>
-    inline auto write(std::ostream& stream, Aspect const& aspect, Aspects const&... aspects) -> std::ostream&
+    auto write(std::ostream& stream, Aspect const& aspect, Aspects const&... aspects) -> std::ostream&
     {
         write(stream, aspect);
         stream << ", ";
@@ -46,7 +46,7 @@ namespace lue::data_model {
 
 
     template<typename... Ts, std::size_t... indices>
-    inline auto write(
+    auto write(
         std::ostream& stream,
         Configuration<Ts...> const& configuration,
         [[maybe_unused]] std::index_sequence<indices...> const& sequence) -> std::ostream&
@@ -56,7 +56,7 @@ namespace lue::data_model {
 
 
     template<typename... Ts>
-    inline auto operator<<(std::ostream& stream, Configuration<Ts...> const& configuration) -> std::ostream&
+    auto operator<<(std::ostream& stream, Configuration<Ts...> const& configuration) -> std::ostream&
     {
         return write(stream, configuration, std::index_sequence_for<Ts...>());
     }

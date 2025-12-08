@@ -3,130 +3,128 @@
 #include "lue/object/property/properties.hpp"
 #include "lue/object/space_domain.hpp"
 #include "lue/object/time_domain.hpp"
-// #include <memory>
 #include <optional>
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            @brief      Class representing a set of properties sharing a time
-                        and space domain
-        */
-        class LUE_DATA_MODEL_EXPORT PropertySet: public hdf5::Group
-        {
+    /*!
+        @brief      Class representing a set of properties sharing a time
+                    and space domain
+    */
+    class LUE_DATA_MODEL_EXPORT PropertySet: public hdf5::Group
+    {
 
-            public:
+        public:
 
-                PropertySet(hdf5::Group const& parent, std::string const& name);
+            PropertySet(hdf5::Group const& parent, std::string const& name);
 
-                explicit PropertySet(hdf5::Group&& group);
+            explicit PropertySet(hdf5::Group&& group);
 
-                PropertySet(PropertySet const&) = default;
+            PropertySet(PropertySet const& other) = default;
 
-                PropertySet(PropertySet&&) = default;
+            PropertySet(PropertySet&& other) = default;
 
-                ~PropertySet() override = default;
+            ~PropertySet() override = default;
 
-                PropertySet& operator=(PropertySet const&) = default;
+            auto operator=(PropertySet const& other) -> PropertySet& = default;
 
-                PropertySet& operator=(PropertySet&&) = default;
+            auto operator=(PropertySet&& other) -> PropertySet& = default;
 
-                ObjectTracker const& object_tracker() const;
+            auto object_tracker() const -> ObjectTracker const&;
 
-                ObjectTracker& object_tracker();
+            auto object_tracker() -> ObjectTracker&;
 
-                bool owns_object_tracker() const;
+            auto owns_object_tracker() const -> bool;
 
-                bool has_time_domain() const;
+            auto has_time_domain() const -> bool;
 
-                bool owns_time_domain() const;
+            auto owns_time_domain() const -> bool;
 
-                bool has_space_domain() const;
+            auto has_space_domain() const -> bool;
 
-                TimeDomain const& time_domain() const;
+            auto time_domain() const -> TimeDomain const&;
 
-                TimeDomain& time_domain();
+            auto time_domain() -> TimeDomain&;
 
-                SpaceDomain const& space_domain() const;
+            auto space_domain() const -> SpaceDomain const&;
 
-                SpaceDomain& space_domain();
+            auto space_domain() -> SpaceDomain&;
 
-                Properties const& properties() const;
+            auto properties() const -> Properties const&;
 
-                Properties& properties();
+            auto properties() -> Properties&;
 
-            private:
+        private:
 
-                ObjectTracker _object_tracker;
+            ObjectTracker _object_tracker;
 
-                std::optional<TimeDomain> _time_domain;
+            std::optional<TimeDomain> _time_domain;
 
-                std::optional<SpaceDomain> _space_domain;
+            std::optional<SpaceDomain> _space_domain;
 
-                Properties _properties;
-        };
+            Properties _properties;
+    };
 
 
-        PropertySet create_property_set(hdf5::Group& parent, std::string const& name);
+    auto create_property_set(hdf5::Group& parent, std::string const& name) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            SpaceConfiguration const& space_configuration,
-            hdf5::Datatype const& space_coordinate_datatype,
-            std::size_t rank);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        SpaceConfiguration const& space_configuration,
+        hdf5::Datatype const& space_coordinate_datatype,
+        std::size_t rank) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            TimeConfiguration const& time_configuration,
-            Clock const& clock);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        TimeConfiguration const& time_configuration,
+        Clock const& clock) -> PropertySet;
 
-        PropertySet create_property_set(hdf5::Group& parent, std::string const& name, TimeDomain& domain);
+    auto create_property_set(hdf5::Group& parent, std::string const& name, TimeDomain& domain) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            TimeConfiguration const& time_configuration,
-            Clock const& clock,
-            ObjectTracker& object_tracker);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        TimeConfiguration const& time_configuration,
+        Clock const& clock,
+        ObjectTracker& object_tracker) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent, std::string const& name, TimeDomain& domain, ObjectTracker& object_tracker);
+    auto create_property_set(
+        hdf5::Group& parent, std::string const& name, TimeDomain& domain, ObjectTracker& object_tracker)
+        -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            TimeConfiguration const& time_configuration,
-            Clock const& clock,
-            SpaceConfiguration const& space_configuration,
-            hdf5::Datatype const& space_coordinate_datatype,
-            std::size_t rank);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        TimeConfiguration const& time_configuration,
+        Clock const& clock,
+        SpaceConfiguration const& space_configuration,
+        hdf5::Datatype const& space_coordinate_datatype,
+        std::size_t rank) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            TimeDomain& time_domain,
-            SpaceConfiguration const& space_configuration,
-            hdf5::Datatype const& space_coordinate_datatype,
-            std::size_t rank);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        TimeDomain& time_domain,
+        SpaceConfiguration const& space_configuration,
+        hdf5::Datatype const& space_coordinate_datatype,
+        std::size_t rank) -> PropertySet;
 
-        PropertySet create_property_set(
-            hdf5::Group& parent,
-            std::string const& name,
-            TimeDomain& time_domain,
-            ObjectTracker& object_tracker,
-            SpaceConfiguration const& space_configuration,
-            hdf5::Datatype const& space_coordinate_datatype,
-            std::size_t rank);
+    auto create_property_set(
+        hdf5::Group& parent,
+        std::string const& name,
+        TimeDomain& time_domain,
+        ObjectTracker& object_tracker,
+        SpaceConfiguration const& space_configuration,
+        hdf5::Datatype const& space_coordinate_datatype,
+        std::size_t rank) -> PropertySet;
 
-        // PropertySet        create_property_set (hdf5::Group& parent,
-        //                                         std::string const& name,
-        //                                         TimeDomain& time_domain,
-        //                                         SpaceConfiguration const&
-        //                                             space_configuration);
+    // PropertySet        create_property_set (hdf5::Group& parent,
+    //                                         std::string const& name,
+    //                                         TimeDomain& time_domain,
+    //                                         SpaceConfiguration const&
+    //                                             space_configuration);
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model
