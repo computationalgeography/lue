@@ -112,7 +112,7 @@ namespace lue::data_model {
     auto PropertySet::time_domain() const -> TimeDomain const&
     {
         assert(_time_domain);
-        return *_time_domain;
+        return *_time_domain;  // NOLINT(bugprone-unchecked-optional-access)
     }
 
 
@@ -122,7 +122,7 @@ namespace lue::data_model {
     auto PropertySet::time_domain() -> TimeDomain&
     {
         assert(_time_domain);
-        return *_time_domain;
+        return *_time_domain;  // NOLINT(bugprone-unchecked-optional-access)
     }
 
 
@@ -134,7 +134,7 @@ namespace lue::data_model {
     auto PropertySet::space_domain() const -> SpaceDomain const&
     {
         assert(_space_domain);
-        return *_space_domain;
+        return *_space_domain;  // NOLINT(bugprone-unchecked-optional-access)
     }
 
 
@@ -144,7 +144,7 @@ namespace lue::data_model {
     auto PropertySet::space_domain() -> SpaceDomain&
     {
         assert(_space_domain);
-        return *_space_domain;
+        return *_space_domain;  // NOLINT(bugprone-unchecked-optional-access)
     }
 
 
