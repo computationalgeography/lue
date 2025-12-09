@@ -9,6 +9,8 @@ namespace lue::detail {
 
     using CountByPath = std::map<std::filesystem::path, Count>;
 
+    using FileSerializer = Serializer<std::filesystem::path, Count>;
+
 
     auto normalize(std::string const& pathname) -> std::filesystem::path
     {
@@ -16,39 +18,45 @@ namespace lue::detail {
     }
 
 
-    /*!
-        @brief      .
-        @tparam     .
-        @param      .
-        @return     The number of times this function is called for @a path. The value returned is always
-                    larger than zero.
+    namespace {
 
-        The @a path passed in adds to this count, so the count returned is always larger than zero.
-    */
-    auto count_by_path(CountByPath& count_by_path, std::filesystem::path const& path) -> Count
-    {
-        // If this is the first time path is added, initialize the count to 0
-        count_by_path.try_emplace(path, 0);
+        /*!
+            @brief      .
+            @tparam     .
+            @param      .
+            @return     The number of times this function is called for @a path. The value returned is always
+                        larger than zero.
 
-        // Increment the count and return it
-        return ++count_by_path[path];
-    }
+            The @a path passed in adds to this count, so the count returned is always larger than zero.
 
+            This function is intended to be called from the root locality.
+        */
+        auto count_by_path(CountByPath& count_by_path, std::filesystem::path const& path) -> Count
+        {
+            // If this is the first time path is added, initialize the count to 0
+            count_by_path.try_emplace(path, 0);
 
-    auto from_lue_count_by_dataset_path() -> CountByPath&
-    {
-        static CountByPath count_by_path{};
-
-        return count_by_path;
-    }
+            // Increment the count and return it
+            return ++count_by_path[path];
+        }
 
 
-    auto to_lue_count_by_dataset_path() -> CountByPath&
-    {
-        static CountByPath count_by_path{};
+        auto from_lue_count_by_dataset_path() -> CountByPath&
+        {
+            static CountByPath count_by_path{};
 
-        return count_by_path;
-    }
+            return count_by_path;
+        }
+
+
+        auto to_lue_count_by_dataset_path() -> CountByPath&
+        {
+            static CountByPath count_by_path{};
+
+            return count_by_path;
+        }
+
+    }  // Anonymous namespace
 
 
     /*!
@@ -91,8 +99,98 @@ namespace lue::detail {
     }
 
 
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
+
     namespace {
 
+        using CallFinished = std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>>;
+
+
+        auto to_lue_finished() -> CallFinished&
+        {
+            static CallFinished to_lue_finished;
+
+            return to_lue_finished;
+        }
+
+
+        auto from_lue_finished() -> CallFinished&
+        {
+            static CallFinished from_lue_finished;
+
+            return from_lue_finished;
+        }
+
+
+        void add_call_finished(
+            CallFinished& call_finished,
+            std::filesystem::path const& path,
+            Count const count,
+            hpx::shared_future<void> future)
+        {
+#ifndef NDEBUG
+            if (call_finished.contains(path))
+            {
+                lue_hpx_assert(!call_finished[path].contains(count));
+            }
+#endif
+            lue_hpx_assert(future.valid());
+
+            call_finished[path][count] = std::move(future);
+
+            lue_hpx_assert(call_finished.contains(path));
+            lue_hpx_assert(call_finished[path].contains(count));
+            lue_hpx_assert(call_finished[path][count].valid());
+        }
+
+
+        auto call_finished(CallFinished& call_finished, std::filesystem::path const& path, Count const count)
+            -> hpx::shared_future<void>
+        {
+#ifndef NDEBUG
+            if (count > 0)
+            {
+                lue_hpx_assert(call_finished.contains(path));
+                lue_hpx_assert(call_finished[path].contains(count));
+                lue_hpx_assert(call_finished[path][count].valid());
+            }
+#endif
+
+            return count > 0 ? call_finished[path][count] : hpx::make_ready_future().share();
+        }
+
+    }  // Anonymous namespace
+
+
+    void add_to_lue_finished(
+        std::filesystem::path const& path, Count const count, hpx::shared_future<void> future)
+    {
+        add_call_finished(to_lue_finished(), path, count, std::move(future));
+    }
+
+
+    void add_from_lue_finished(
+        std::filesystem::path const& path, Count const count, hpx::shared_future<void> future)
+    {
+        add_call_finished(from_lue_finished(), path, count, std::move(future));
+    }
+
+
+    auto to_lue_finished(std::filesystem::path const& path, Count const count) -> hpx::shared_future<void>
+    {
+        return call_finished(to_lue_finished(), path, count);
+    }
+
+
+    auto from_lue_finished(std::filesystem::path const& path, Count const count) -> hpx::shared_future<void>
+    {
+        return call_finished(from_lue_finished(), path, count);
+    }
+
+#endif
+
+
+    namespace {
 
         auto to_lue_open_dataset_serializer() -> FileSerializer&
         {
@@ -250,99 +348,5 @@ namespace lue::detail {
         return count > 0 ? to_lue_close_dataset_serializer().when_done(path, count)
                          : hpx::make_ready_future().share();
     }
-
-
-#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
-
-    namespace {
-
-        auto to_lue_finished() -> std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>>&
-        {
-            static std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>> to_lue_finished;
-
-            return to_lue_finished;
-        }
-
-
-        auto from_lue_finished()
-            -> std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>>&
-        {
-            static std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>>
-                from_lue_finished;
-
-            return from_lue_finished;
-        }
-
-    }  // Anonymous namespace
-
-
-    void add_to_lue_finished(
-        std::filesystem::path const& path, Count const count, hpx::shared_future<void> future)
-    {
-#ifndef NDEBUG
-        if (to_lue_finished().contains(path))
-        {
-            lue_hpx_assert(!to_lue_finished()[path].contains(count));
-        }
-#endif
-        lue_hpx_assert(future.valid());
-
-        to_lue_finished()[path][count] = std::move(future);
-
-        lue_hpx_assert(to_lue_finished().contains(path));
-        lue_hpx_assert(to_lue_finished()[path].contains(count));
-        lue_hpx_assert(to_lue_finished()[path][count].valid());
-    }
-
-
-    void add_from_lue_finished(
-        std::filesystem::path const& path, Count const count, hpx::shared_future<void> future)
-    {
-#ifndef NDEBUG
-        if (from_lue_finished().contains(path))
-        {
-            lue_hpx_assert(!from_lue_finished()[path].contains(count));
-        }
-#endif
-        lue_hpx_assert(future.valid());
-
-        from_lue_finished()[path][count] = std::move(future);
-
-        lue_hpx_assert(from_lue_finished().contains(path));
-        lue_hpx_assert(from_lue_finished()[path].contains(count));
-        lue_hpx_assert(from_lue_finished()[path][count].valid());
-    }
-
-
-    auto to_lue_finished(std::filesystem::path const& path, Count const count) -> hpx::shared_future<void>
-    {
-#ifndef NDEBUG
-        if (count > 0)
-        {
-            lue_hpx_assert(to_lue_finished().contains(path));
-            lue_hpx_assert(to_lue_finished()[path].contains(count));
-            lue_hpx_assert(to_lue_finished()[path][count].valid());
-        }
-#endif
-
-        return count > 0 ? to_lue_finished()[path][count] : hpx::make_ready_future().share();
-    }
-
-
-    auto from_lue_finished(std::filesystem::path const& path, Count const count) -> hpx::shared_future<void>
-    {
-#ifndef NDEBUG
-        if (count > 0)
-        {
-            lue_hpx_assert(from_lue_finished().contains(path));
-            lue_hpx_assert(from_lue_finished()[path].contains(count));
-            lue_hpx_assert(from_lue_finished()[path][count].valid());
-        }
-#endif
-
-        return count > 0 ? from_lue_finished()[path][count] : hpx::make_ready_future().share();
-    }
-
-#endif
 
 }  // namespace lue::detail
