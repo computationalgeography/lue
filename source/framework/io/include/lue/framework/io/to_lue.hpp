@@ -528,7 +528,7 @@ namespace lue {
         @return     A future which becomes ready once the writing is done
     */
     template<typename Policies, Rank rank>
-    [[nodiscard]] auto to_lue(
+    auto to_lue(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies>, rank> const& array,
         std::string const& array_pathname,
@@ -645,7 +645,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] auto to_lue(
+    auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id) -> hpx::future<void>
@@ -669,7 +669,7 @@ namespace lue {
         @return     A future which becomes ready once the writing is done
     */
     template<typename Policies, Rank rank>
-    [[nodiscard]] auto to_lue(
+    auto to_lue(
         Policies const& policies,
         PartitionedArray<policy::InputElementT<Policies>, rank> const& array,
         std::string const& array_pathname,
@@ -790,7 +790,7 @@ namespace lue {
         Default policies will be used.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] auto to_lue(
+    auto to_lue(
         PartitionedArray<Element, rank> const& array,
         std::string const& array_pathname,
         data_model::ID const object_id,

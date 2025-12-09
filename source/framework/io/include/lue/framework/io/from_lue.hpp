@@ -314,8 +314,6 @@ namespace lue {
             // }
 
             // TODO: This may not be true in case of parallel I/O(?) Is it required to be true in that case?
-            // hierverder: to_lue_close_dataset_done vs to_lue_done. Als to_lue_done klaar is, is
-            // to_lue_close_dataset_done dan ook zeker klaar?
 
             // If this fails, then a to_lue call that came before us hasn't progressed enough yet to record
             // a future. This can happen when we have introduced too much freedom.

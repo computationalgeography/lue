@@ -35,7 +35,7 @@ namespace lue::data_model {
 
 
         template<typename Property>
-        static auto is_collection_property(Property& property) -> bool
+        auto is_collection_property(Property& property) -> bool
         {
             return property_sets(property).id().name() == collection_property_sets_tag;
         }
@@ -59,7 +59,7 @@ namespace lue::data_model {
         // Handle all errors. These will be printed first.
         for (auto const& error : issues.errors())
         {
-            if (messages.find(error.id()) == messages.end())
+            if (!messages.contains(error.id()))
             {
                 ids.push_back(error.id());
             }
@@ -72,7 +72,7 @@ namespace lue::data_model {
         // stored last.
         for (auto const& warning : issues.warnings())
         {
-            if (messages.find(warning.id()) == messages.end())
+            if (!messages.contains(warning.id()))
             {
                 ids.push_back(warning.id());
             }
@@ -363,13 +363,13 @@ namespace lue::data_model {
             {
                 auto const end_idx = active_set_idxs[i];
 
-                for (std::size_t o = begin_idx; o < end_idx; ++o)
+                for (std::size_t object_idx = begin_idx; object_idx < end_idx; ++object_idx)
                 {
-                    assert(o < active_object_ids.size());
-                    assert(o < active_object_idxs.size());
+                    assert(object_idx < active_object_ids.size());
+                    assert(object_idx < active_object_idxs.size());
 
-                    auto const object_id = active_object_ids[o];
-                    auto const object_array_idx = active_object_idxs[o];
+                    auto const object_id = active_object_ids[object_idx];
+                    auto const object_array_idx = active_object_idxs[object_idx];
                     auto value_array = value[object_id];
 
                     if (object_array_idx >= value_array.nr_arrays())
@@ -1692,7 +1692,8 @@ namespace lue::data_model {
                     check_active_object_indices = !collection.empty();
                 }
 
-                if (std::ranges::any_of(check_active_sets, [](bool const b) -> bool { return b; }))
+                if (std::ranges::any_of(
+                        check_active_sets, [](bool const set_is_active) -> bool { return set_is_active; }))
                 {
 
                     // In case the number of objects is one, as it should, than

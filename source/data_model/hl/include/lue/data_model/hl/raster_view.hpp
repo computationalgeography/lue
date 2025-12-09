@@ -14,36 +14,35 @@ namespace lue::data_model {
 
             using SpaceBox = std::array<double, 4>;
 
-            std::string const& phenomenon_name() const;
+            auto phenomenon_name() const -> std::string const&;
 
-            std::string const& property_set_name() const;
+            auto property_set_name() const -> std::string const&;
 
-            ID object_id() const;
+            auto object_id() const -> ID;
 
-            SpaceBox const& space_box() const;
+            auto space_box() const -> SpaceBox const&;
 
-            hdf5::Shape const& grid_shape() const;
+            auto grid_shape() const -> hdf5::Shape const&;
 
-            Count nr_layers() const;
+            auto nr_layers() const -> Count;
 
-            std::vector<std::string> const& layer_names() const;
+            auto layer_names() const -> std::vector<std::string> const&;
 
-            bool contains(std::string const& name);
+            auto contains(std::string const& name) -> bool;
 
             ~RasterView() override = default;
 
         protected:
 
-            RasterView(
-                DatasetPtr dataset, std::string const& phenomenon_name, std::string const& property_set_name);
+            RasterView(DatasetPtr dataset, std::string phenomenon_name, std::string property_set_name);
 
-            RasterView(RasterView const&) = default;
+            RasterView(RasterView const& other) = default;
 
-            RasterView(RasterView&&) noexcept = default;
+            RasterView(RasterView&& other) noexcept = default;
 
-            RasterView& operator=(RasterView const&) = default;
+            auto operator=(RasterView const& other) -> RasterView& = default;
 
-            RasterView& operator=(RasterView&&) noexcept = default;
+            auto operator=(RasterView&& other) noexcept -> RasterView& = default;
 
             void add_layer(std::string const& name);
 
@@ -82,19 +81,19 @@ namespace lue::data_model {
                     std::string const& phenomenon_name,
                     std::string const& property_set_name);
 
-                RasterView(RasterView const&) = default;
+                RasterView(RasterView const& other) = default;
 
-                RasterView(RasterView&&) noexcept = default;
+                RasterView(RasterView&& other) noexcept = default;
 
                 ~RasterView() override = default;
 
-                RasterView& operator=(RasterView const&) = default;
+                auto operator=(RasterView const& other) -> RasterView& = default;
 
-                RasterView& operator=(RasterView&&) noexcept = default;
+                auto operator=(RasterView&& other) noexcept -> RasterView& = default;
 
 
                 template<typename Element>
-                Layer add_layer(std::string const& name)
+                auto add_layer(std::string const& name) -> Layer
                 {
                     if constexpr (std::is_same_v<Element, bool>)
                     {
@@ -108,7 +107,7 @@ namespace lue::data_model {
 
 
                 template<typename Element>
-                Layer add_layer(std::string const& name, Element const no_data_value)
+                auto add_layer(std::string const& name, Element const no_data_value) -> Layer
                 {
                     if constexpr (std::is_same_v<Element, bool>)
                     {
@@ -123,42 +122,44 @@ namespace lue::data_model {
                 }
 
 
-                Layer add_layer(
+                auto add_layer(
                     std::string const& name,
                     hdf5::Datatype const& datatype,
-                    void const* no_data_value = nullptr);
+                    void const* no_data_value = nullptr) -> Layer;
 
-                Layer layer(std::string const& name);
+                auto layer(std::string const& name) -> Layer;
 
             private:
         };
 
 
-        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
-            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
+        LUE_DATA_MODEL_HL_EXPORT auto contains_raster(
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool;
 
 
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> open_raster_view(
+        auto open_raster_view(
             DatasetPtr dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> RasterView<DatasetPtr>
         {
             return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
         }
 
 
-        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT auto probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
-            std::string const& layer_name);
+            std::string const& layer_name) -> std::tuple<ID, hdf5::Shape, hdf5::Datatype>;
 
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> create_raster_view(
+        auto create_raster_view(
             DatasetPtr dataset,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
             hdf5::Shape const& grid_shape,
-            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);
+            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box) -> RasterView<DatasetPtr>;
 
     }  // namespace constant
 
@@ -200,7 +201,7 @@ namespace lue::data_model {
 
                 auto time_box() const -> TimeBox const&;
 
-                hdf5::Shape::value_type nr_time_steps() const;
+                auto nr_time_steps() const -> hdf5::Shape::value_type;
 
                 template<typename Element>
                 auto add_layer(std::string const& name) -> Layer
@@ -227,26 +228,28 @@ namespace lue::data_model {
         };
 
 
-        LUE_DATA_MODEL_HL_EXPORT bool contains_raster(
-            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name);
+        LUE_DATA_MODEL_HL_EXPORT auto contains_raster(
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool;
 
 
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> open_raster_view(
+        auto open_raster_view(
             DatasetPtr dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> RasterView<DatasetPtr>
         {
             return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
         }
 
 
-        LUE_DATA_MODEL_HL_EXPORT std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        LUE_DATA_MODEL_HL_EXPORT auto probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
-            std::string const& layer_name);
+            std::string const& layer_name) -> std::tuple<ID, hdf5::Shape, hdf5::Datatype>;
 
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> create_raster_view(
+        auto create_raster_view(
             DatasetPtr dataset,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
@@ -254,7 +257,7 @@ namespace lue::data_model {
             Count nr_time_steps,
             typename RasterView<DatasetPtr>::TimeBox const& time_box,
             hdf5::Shape const& grid_shape,
-            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box);
+            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box) -> RasterView<DatasetPtr>;
 
     }  // namespace variable
 }  // namespace lue::data_model
