@@ -10,10 +10,12 @@ Checks: >
     modernize-*,
     -modernize-use-nodiscard,
     performance-*,
-    readability-*
+    readability-*,
+    -readability-function-cognitive-complexity,
+    -readability-magic-numbers,
     -readability-redundant-member-init
 CheckOptions:
     - key: readability-identifier-length.IgnoredVariableNames
-      value: id
+      value: "id|it|x|y"
     - key: readability-identifier-length.IgnoredParameterNames
-      value: id
+      value: "id|it|x|y"

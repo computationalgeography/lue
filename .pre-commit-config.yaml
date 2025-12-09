@@ -73,13 +73,8 @@ repos:
             # TODO: Update code and remove excluded directories from this list
             exclude: |
                 (?x)^(
-                  source/data_model/cxx/test/.*|
-                  source/data_model/gdal/.*|
-                  source/data_model/gdal/include/lue/gdal/library.hpp|
-                  source/data_model/hdf5/test/.*|
-                  source/data_model/hl/.*|
+                  source/data_model/.*/test/.*|
                   source/data_model/python/.*|
-                  source/data_model/translate/.*|
                   source/data_model/utility/.*|
                   source/data_model/validate/.*|
                   source/framework/.*|

@@ -19,7 +19,7 @@ namespace lue::gdal {
     /*!
         @brief      Deleter to use when creating shared pointers to GDAL datasets
     */
-    inline auto const gdal_close = [](GDALDataset* dataset)
+    inline auto const gdal_close = [](GDALDataset* dataset) -> void
     {
         if (dataset != nullptr)
         {
