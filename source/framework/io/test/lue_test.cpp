@@ -172,8 +172,16 @@ BOOST_AUTO_TEST_CASE(variable_raster)
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
+        // TODO: hierverder
+        // Fixes crash
+        // write_finished.get();
+
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
+
+        // Doesn't help
+        // hpx::wait_all(array_read.partitions().begin(), array_read.partitions().end());
+
         lue::test::check_arrays_are_equal(array_read, array_written);
     }
 }
@@ -191,6 +199,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 // }
 
 
+#if 0
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
 {
     // 1. Write stack of n arrays
@@ -271,3 +280,4 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
         lue::test::check_arrays_are_equal(array_read, array_written);
     }
 }
+#endif

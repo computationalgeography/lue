@@ -243,22 +243,14 @@ namespace lue {
                     return from_lue_close_dataset_predecessor_f.then(
                         ternary_if<serial_io_non_thread_safe>(hpx::launch::sync, hpx::launch::async),
                         [dataset = std::move(dataset),
-                         // from_lue_order,
                          from_lue_close_dataset_p = std::move(from_lue_close_dataset_p),
                          partitions = std::move(partitions)](
                             [[maybe_unused]] auto const& close_for_read_file_predecessor_f) mutable
                             -> Partitions
                         {
                             // The dataset must go out of scope before we set the promise's value
-                            [dataset = std::move(dataset) /* , from_lue_order */]() -> auto
-                            {
-                                HPX_UNUSED(dataset);
-                                // hpx::cout << std::format("DEBUG: from_lue/close {}\n", from_lue_order)
-                                //           << std::flush;
-                            }();
-
+                            [](auto&& dataset) -> auto { HPX_UNUSED(dataset); }(std::move(dataset));
                             from_lue_close_dataset_p.set_value();
-
                             return partitions;
                         });
                 },
@@ -270,6 +262,16 @@ namespace lue {
         }
 
 
+        /*!
+            @brief      .
+            @tparam     .
+            @param      .
+            @return     .
+            @exception  .
+
+            The future returned becomes ready once all partitions have been read. It is guaranteed that by
+            that time the dataset is closed again.
+        */
         template<typename Policies, typename Partitions>
         auto read_partitions_variable(
             Policies const& policies,
@@ -312,6 +314,11 @@ namespace lue {
             // }
 
             // TODO: This may not be true in case of parallel I/O(?) Is it required to be true in that case?
+            // hierverder: to_lue_close_dataset_done vs to_lue_done. Als to_lue_done klaar is, is
+            // to_lue_close_dataset_done dan ook zeker klaar?
+
+            // If this fails, then a to_lue call that came before us hasn't progressed enough yet to record
+            // a future. This can happen when we have introduced too much freedom.
             lue_hpx_assert(
                 to_lue_order == 0 || to_lue_close_dataset_done_available(dataset_path, to_lue_order));
             hpx::shared_future<void> to_lue_close_dataset_done_f =
@@ -389,24 +396,14 @@ namespace lue {
                     return from_lue_close_dataset_predecessor_f.then(
                         ternary_if<serial_io_non_thread_safe>(hpx::launch::sync, hpx::launch::async),
                         [dataset = std::move(dataset),
-                         // from_lue_order,
                          from_lue_close_dataset_p = std::move(from_lue_close_dataset_p),
                          partitions = std::move(partitions)](
                             [[maybe_unused]] auto const& close_for_read_file_predecessor_f) mutable
                             -> Partitions
                         {
                             // The dataset must go out of scope before we set the promise's value
-                            [dataset = std::move(dataset)
-                             // from_lue_order
-                            ]() -> auto
-                            {
-                                HPX_UNUSED(dataset);
-                                // hpx::cout << std::format("DEBUG: from_lue/close {}\n", from_lue_order)
-                                //           << std::flush;
-                            }();
-
+                            [](auto&& dataset) -> auto { HPX_UNUSED(dataset); }(std::move(dataset));
                             from_lue_close_dataset_p.set_value();
-
                             return partitions;
                         });
                 },
@@ -519,7 +516,8 @@ namespace lue {
                              partitions =
                                  std::move(partitions)]([[maybe_unused]] auto const& dataset_closed_f) -> auto
                             {
-                                return action(
+                                return hpx::async(
+                                    action,
                                     locality,
                                     policies,
                                     array_pathname,
@@ -673,7 +671,8 @@ namespace lue {
                              partitions =
                                  std::move(partitions)]([[maybe_unused]] auto const& dataset_closed_f) -> auto
                             {
-                                return action(
+                                return hpx::async(
+                                    action,
                                     locality,
                                     policies,
                                     array_pathname,
