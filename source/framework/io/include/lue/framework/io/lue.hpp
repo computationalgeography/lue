@@ -23,6 +23,16 @@ namespace lue::detail {
     }
 
 
+    // enum class IOStrategy : std::uint8_t {
+    //     SerialThreadSafe,
+    //     SerialNonThreadSafe,
+    //     Parallel,
+    // };
+    //
+    //
+    // static constexpr IOStrategy io_strategy =
+
+
     // E.g.: cluster with parallel filesystem
     // This implies hdf5::BuildOptions::hdf5_is_parallel is true
     static constexpr bool parallel_io = BuildOptions::framework_with_parallel_io;
