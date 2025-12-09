@@ -272,6 +272,8 @@ namespace lue::detail {
             }
         }
 
+        lue_hpx_assert(result.size() <= hpx::find_all_localities().size());
+
         return result;
     }
 

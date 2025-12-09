@@ -16,6 +16,15 @@ namespace lue::detail {
     }
 
 
+    /*!
+        @brief      .
+        @tparam     .
+        @param      .
+        @return     The number of times this function is called for @a path. The value returned is always
+                    larger than zero.
+
+        The @a path passed in adds to this count, so the count returned is always larger than zero.
+    */
     auto count_by_path(CountByPath& count_by_path, std::filesystem::path const& path) -> Count
     {
         // If this is the first time path is added, initialize the count to 0
@@ -44,6 +53,7 @@ namespace lue::detail {
 
     /*!
         @brief      Return the number of times the dataset pointed to by @a path is opened for reading
+        @sa         count_by_path()
 
         This count can be used to order / serialize open_dataset calls
     */
@@ -55,6 +65,7 @@ namespace lue::detail {
 
     /*!
         @brief      Return the number of times the dataset pointed to by @a path is opened for writing
+        @sa         count_by_path()
 
         This count can be used to order / serialize open_dataset calls
     */

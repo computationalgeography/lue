@@ -172,10 +172,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
-        // // TODO: This should not be necessary, but in practice it sometimes is. Given that this is a
-        // //       corner case (write/read to/from the same dataset), this is OK for now.
-        // write_finished.get();
-
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
         lue::test::check_arrays_are_equal(array_read, array_written);
@@ -195,7 +191,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 // }
 
 
-#if 0
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
 {
     // 1. Write stack of n arrays
@@ -229,10 +224,6 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
     {
         writes_finished[time_step] =
             lue::to_lue(arrays_written[time_step], array_pathname, object_id, time_step);
-
-        // TODO: This should not be necessary, but in practice it sometimes is. Given that this is a
-        //       corner case (write/read to/from to the same dataset), this is OK for now.
-        writes_finished[time_step].get();
     }
 
     // Read arrays
@@ -241,51 +232,42 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
     {
         arrays_read[time_step] =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
-
-        // TODO: Does this help? → Yes! So what now? Can't read in parallel?
-        // TODO: hier verder: ga na of er kans is dat een
-        hpx::wait_all(arrays_read[time_step].partitions().begin(), arrays_read[time_step].partitions().end());
     }
 
-    // // Compare arrays
-    // for (lue::Index time_step = 0; time_step < static_cast<lue::Count>(nr_time_steps); ++time_step)
-    // {
-    //     lue::test::check_arrays_are_equal(arrays_read[time_step], arrays_written[time_step]);
-    // }
+    // Compare arrays
+    for (lue::Index time_step = 0; time_step < static_cast<lue::Count>(nr_time_steps); ++time_step)
+    {
+        lue::test::check_arrays_are_equal(arrays_read[time_step], arrays_written[time_step]);
+    }
 }
-#endif
 
 
-// BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
-// {
-//     // Iteratively write, read, and compare n arrays
-//     namespace ldm = lue::data_model;
-//
-//     std::string const
-//     dataset_pathname{"lue_framework_io_lue_multiple_read_variable_raster_same_file_2.lue"}; std::string
-//     const phenomenon_name{"area"}; std::string const property_set_name{"area"}; std::string const
-//     property_name{"elevation"}; std::string const array_pathname{
-//         std::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, property_name)};
-//
-//     using Element = lue::LargestIntegralElement;
-//
-//     auto const [object_id, nr_time_steps, raster_shape, partition_shape] =
-//         layout_variable_raster<Element>(array_pathname);
-//
-//     // Create, write, read, and compare arrays
-//     for (lue::Index time_step = 0; time_step < static_cast<lue::Count>(nr_time_steps); ++time_step)
-//     {
-//         Array<Element> array_written =
-//             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
-//         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id,
-//         time_step);
-//
-//         // TODO: This should not be necessary, but in practice it sometimes is. Given that this is a
-//         //       corner case (write/read to/from the same dataset), this is OK for now.
-//         // write_finished.get();
-//
-//         Array<Element> array_read =
-//             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
-//         lue::test::check_arrays_are_equal(array_read, array_written);
-//     }
-// }
+BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
+{
+    // Iteratively write, read, and compare n arrays
+    namespace ldm = lue::data_model;
+
+    std::string const dataset_pathname{"lue_framework_io_lue_multiple_read_variable_raster_same_file_2.lue"};
+    std::string const phenomenon_name{"area"};
+    std::string const property_set_name{"area"};
+    std::string const property_name{"elevation"};
+    std::string const array_pathname{
+        std::format("{}/{}/{}/{}", dataset_pathname, phenomenon_name, property_set_name, property_name)};
+
+    using Element = lue::LargestIntegralElement;
+
+    auto const [object_id, nr_time_steps, raster_shape, partition_shape] =
+        layout_variable_raster<Element>(array_pathname);
+
+    // Create, write, read, and compare arrays
+    for (lue::Index time_step = 0; time_step < static_cast<lue::Count>(nr_time_steps); ++time_step)
+    {
+        Array<Element> array_written =
+            lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
+        hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
+
+        Array<Element> array_read =
+            lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
+        lue::test::check_arrays_are_equal(array_read, array_written);
+    }
+}

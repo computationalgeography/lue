@@ -547,22 +547,22 @@ namespace lue {
         using Element = policy::InputElementT<Policies>;
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
-
-        // Group partitions by locality
-        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
-        lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
-
         using Action = detail::WritePartitionsConstantAction<Policies, std::vector<Partition>>;
+
+        // Partitions and localities
+        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+        std::vector<hpx::future<void>> localities_finished{};
+        localities_finished.reserve(partition_idxs_by_locality.size() + 1);
+
         Action action{};
 
         auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
             parse_array_pathname(array_pathname);
         auto const dataset_path{detail::normalize(dataset_pathname)};
+
+        // Dependencies
         auto const to_lue_order = detail::to_lue_order(dataset_path);
         auto const from_lue_order = detail::current_from_lue_order(dataset_path);
-
-        std::vector<hpx::future<void>> localities_finished{};
-        localities_finished.reserve(partition_idxs_by_locality.size() + 1);
 
         if constexpr (detail::serial_io)
         {
@@ -689,26 +689,26 @@ namespace lue {
         using Element = policy::InputElementT<Policies>;
         using Array = PartitionedArray<Element, rank>;
         using Partition = PartitionT<Array>;
-
-        // Group partitions by locality
-        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
-        lue_hpx_assert(partition_idxs_by_locality.size() <= hpx::find_all_localities().size());
-
         using Action = detail::WritePartitionsVariableAction<Policies, std::vector<Partition>>;
+
+        // Partitions and localities
+        auto const partition_idxs_by_locality{detail::partition_idxs_by_locality(array)};
+        std::vector<hpx::future<void>> localities_finished{};
+        localities_finished.reserve(partition_idxs_by_locality.size() + 1);
+
         Action action{};
 
         auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
             parse_array_pathname(array_pathname);
         auto const dataset_path{detail::normalize(dataset_pathname)};
+
+        // Dependencies
         auto const to_lue_order = detail::to_lue_order(dataset_path);
         auto const from_lue_order = detail::current_from_lue_order(dataset_path);
 
-        std::vector<hpx::future<void>> localities_finished{};
-        localities_finished.reserve(partition_idxs_by_locality.size() + 1);
-
         if constexpr (detail::serial_io)
         {
-            // Make this to_lue call dependent on any previous call to to_lue / from_lue to the same
+            // Make this to_lue call dependent on any previous calls to to_lue / from_lue to the same
             // dataset, if done so. This ensures the dataset is closed.
             localities_finished.emplace_back(
                 hpx::when_all(
