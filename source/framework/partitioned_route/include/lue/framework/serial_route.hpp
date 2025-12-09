@@ -132,13 +132,13 @@ namespace lue {
             }
 
 
-            [[nodiscard]] auto valid() const -> bool
+            auto valid() const -> bool
             {
                 return _starts.valid();
             }
 
 
-            [[nodiscard]] auto is_ready() const -> bool
+            auto is_ready() const -> bool
             {
                 return _starts.is_ready();
             }

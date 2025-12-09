@@ -7,16 +7,19 @@
 
 namespace lue {
 
-    std::array<std::string, 3> parse_array_pathname3(std::string const& array_pathname)
+    auto parse_array_pathname3(std::string const& array_pathname) -> std::array<std::string, 3>
     {
         // Parse array pathname into
         // <phenomenon_name>/<property_set_name>/<property_name>
-        std::string phenomenon_name, property_set_name, property_name;
+        std::string phenomenon_name{};
+        std::string property_set_name{};
+        std::string property_name{};
 
         {
             // Split on forward slash and grab the elements
             std::vector<std::string> tokens;
-            boost::algorithm::split(tokens, array_pathname, [](char const c) { return c == '/'; });
+            boost::algorithm::split(
+                tokens, array_pathname, [](char const char_) -> bool { return char_ == '/'; });
 
             if (tokens.size() != 3)
             {
@@ -36,17 +39,21 @@ namespace lue {
     }
 
 
-    std::array<std::string, 4> parse_array_pathname(std::string const& array_pathname)
+    auto parse_array_pathname(std::string const& array_pathname) -> std::array<std::string, 4>
     {
         // Parse array pathname into
         // <dataset_pathname>/<phenomenon_name>/<property_set_name>/<property_name>
-        std::string dataset_pathname, phenomenon_name, property_set_name, property_name;
+        std::string dataset_pathname{};
+        std::string phenomenon_name{};
+        std::string property_set_name{};
+        std::string property_name{};
 
         {
             // Split on forward slash and grab the elements from end. The
             // remaining ones belong to the dataset pathname.
             std::vector<std::string> tokens;
-            boost::algorithm::split(tokens, array_pathname, [](char const c) { return c == '/'; });
+            boost::algorithm::split(
+                tokens, array_pathname, [](char const char_) -> bool { return char_ == '/'; });
 
             if (tokens.size() < 4)
             {

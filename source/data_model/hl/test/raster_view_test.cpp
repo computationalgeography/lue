@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE lue data_model_hl
+#define BOOST_TEST_MODULE lue data_model_hl raster_view
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/test/stream.hpp"
 #include "lue/hdf5/test/stream.hpp"

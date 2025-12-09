@@ -11,7 +11,7 @@ namespace lue::data_model {
 
         public:
 
-            ValueGroup(Group const& parent, hdf5::Datatype memory_datatype);
+            ValueGroup(Group const& group, hdf5::Datatype memory_datatype);
 
             ValueGroup(ValueGroup const& object) = default;
 

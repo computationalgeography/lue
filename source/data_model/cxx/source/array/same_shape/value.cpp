@@ -193,7 +193,7 @@ namespace lue::data_model::same_shape {
         auto chunk_dimension_sizes = hdf5::chunk_shape(array_shape, file_datatype.size());
         creation_property_list.set_chunk(chunk_dimension_sizes);
 
-        if (no_data_value)
+        if (no_data_value != nullptr)
         {
             creation_property_list.set_fill_value(memory_datatype, no_data_value);
         }

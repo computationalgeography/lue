@@ -5,7 +5,6 @@
 #include "lue/string.hpp"
 #include <cassert>
 #include <format>
-#include <ranges>
 
 
 namespace lue::gdal {
@@ -23,7 +22,7 @@ namespace lue::gdal {
             auto compare_elements = [no_data_value_valid, no_data_value](
                                         std::vector<Element> const& values1,
                                         std::vector<Element> const& values2,
-                                        Count nr_valid_cells)
+                                        Count nr_valid_cells) -> auto
             {
                 bool result{false};
 
@@ -35,7 +34,7 @@ namespace lue::gdal {
                             values1.begin(),
                             values1.begin() + nr_valid_cells,
                             values2.begin(),
-                            [](Element const value1, Element const value2)
+                            [](Element const value1, Element const value2) -> auto
                             { return (std::isnan(value1) && std::isnan(value2)) || (value1 == value2); });
                     }
                     else
@@ -44,7 +43,8 @@ namespace lue::gdal {
                             values1.begin(),
                             values1.begin() + nr_valid_cells,
                             values2.begin(),
-                            [](Element const value1, Element const value2) { return value1 == value2; });
+                            [](Element const value1, Element const value2) -> auto
+                            { return value1 == value2; });
                     }
                 }
                 else
@@ -56,7 +56,7 @@ namespace lue::gdal {
                         values1.begin(),
                         values1.begin() + nr_valid_cells,
                         values2.begin(),
-                        [](Element const value1, Element const value2) { return value1 == value2; });
+                        [](Element const value1, Element const value2) -> auto { return value1 == value2; });
                 }
 
                 return result;
@@ -134,7 +134,8 @@ namespace lue::gdal {
                     std::format("different no-data validity: {} != {}", no_data_valid1, no_data_valid2));
             }
 
-            bool const no_data_values_equal = [](Element const no_data_value1, Element const no_data_value2)
+            bool const no_data_values_equal = [](Element const no_data_value1,
+                                                 Element const no_data_value2) -> auto
             {
                 bool result{false};
 

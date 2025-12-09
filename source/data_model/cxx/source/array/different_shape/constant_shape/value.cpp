@@ -67,10 +67,10 @@ namespace lue::data_model::different_shape::constant_shape {
     void Value::expand(
         Count const nr_objects, ID const* ids, hdf5::Shape const* shapes, Count const* nr_locations_in_time)
     {
-        for (std::size_t o = 0; o < nr_objects; ++o)
+        for (std::size_t object_idx = 0; object_idx < nr_objects; ++object_idx)
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-            expand_(ids[o], shapes[o], nr_locations_in_time[o]);
+            expand_(ids[object_idx], shapes[object_idx], nr_locations_in_time[object_idx]);
         }
 
         _nr_objects += nr_objects;

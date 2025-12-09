@@ -45,28 +45,26 @@ namespace lue {
                     throw std::logic_error(
                         std::format("{}:{}: assertion failed: {}", filename, line_nr, condition_as_string));
                 }
+
+                if constexpr (sizeof...(Arguments) == 0)
+                {
+                    throw std::logic_error(
+                        std::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            format_string));
+                }
                 else
                 {
-                    if constexpr (sizeof...(Arguments) == 0)
-                    {
-                        throw std::logic_error(
-                            std::format(
-                                "{}:{}: assertion failed: {}: {}",
-                                filename,
-                                line_nr,
-                                condition_as_string,
-                                format_string));
-                    }
-                    else
-                    {
-                        throw std::logic_error(
-                            std::format(
-                                "{}:{}: assertion failed: {}: {}",
-                                filename,
-                                line_nr,
-                                condition_as_string,
-                                std::format(format_string, arguments...)));
-                    }
+                    throw std::logic_error(
+                        std::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            std::format(format_string, arguments...)));
                 }
             }
         }

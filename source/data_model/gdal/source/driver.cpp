@@ -67,11 +67,10 @@ namespace lue::gdal {
     {
         std::string extension{std::filesystem::path(dataset_name).extension().string()};
 
-        std::transform(
+        std::ranges::transform(
+            extension,
             extension.begin(),
-            extension.end(),
-            extension.begin(),
-            [](unsigned char const character) { return std::tolower(character); });
+            [](unsigned char const character) -> int { return std::tolower(character); });
 
         std::string result{"Unknown"};
 

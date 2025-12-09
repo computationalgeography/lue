@@ -1,7 +1,6 @@
 #pragma once
 #include "lue/data_model/hl/export.hpp"
 #include "lue/object/dataset.hpp"
-#include <memory>
 
 
 namespace lue::data_model {

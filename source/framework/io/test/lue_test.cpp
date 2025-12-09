@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
-        // TODO: hierverder
+        // TODO:
         // Fixes crash
         // write_finished.get();
 

@@ -27,7 +27,7 @@ namespace lue::utility {
 
     Translate::Translate(int const argc, char const* const* argv):
         Application{
-            []()
+            []() -> cxxopts::Options
             {
                 cxxopts::Options options{
                     "lue_translate", "Translate data into or from the LUE dataset format"};

@@ -53,11 +53,7 @@ namespace std {
     auto operator<<(std::ostream& stream, std::tuple<Ts...> const& tuple) -> std::ostream&
     {
         stream << '(';
-        std::apply(
-
-            [&stream](auto&&... ts) -> auto { ((stream << ts << ", "), ...); },
-
-            tuple);
+        std::apply([&stream](auto&&... element) -> auto { ((stream << element << ", "), ...); }, tuple);
         stream << ')';
 
         return stream;

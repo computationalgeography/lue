@@ -833,7 +833,7 @@ namespace lue::utility {
     void gdal_to_lue(
         gdal::Raster::Band& gdal_raster_band, RasterView& lue_raster_view, std::string const& layer_name)
     {
-        typename RasterView::Layer lue_raster_layer = [&]()
+        typename RasterView::Layer lue_raster_layer = [&]() -> auto
         {
             auto const [no_data_value, has_no_data_value] = gdal_raster_band.no_data_value<T>();
 
@@ -967,8 +967,9 @@ namespace lue::utility {
         }
 
         // Create or open the output dataset
-        auto create_dataset = [lue_dataset_name]() { return ldm::create_dataset(lue_dataset_name); };
-        auto open_dataset = [lue_dataset_name, add]()
+        auto create_dataset = [lue_dataset_name]() -> ldm::Dataset
+        { return ldm::create_dataset(lue_dataset_name); };
+        auto open_dataset = [lue_dataset_name, add]() -> ldm::Dataset
         {
             if (!add)
             {
@@ -1002,7 +1003,7 @@ namespace lue::utility {
             auto const [nr_rows, nr_cols] = gdal_raster.shape();
             auto const [west, cell_width, row_rotation, north, col_rotation, cell_height] =
                 gdal_raster.geo_transform();
-            double const east = west + nr_cols * cell_width;
+            double const east = west + (nr_cols * cell_width);
             double const south = north - (nr_rows * std::abs(cell_height));
 
             assert(east >= west);
@@ -1018,7 +1019,7 @@ namespace lue::utility {
                 static_cast<lh5::Shape::value_type>(nr_rows), static_cast<lh5::Shape::value_type>(nr_cols)};
             SpaceBox const space_box{west, south, east, north};
 
-            auto contains_raster = [dataset, phenomenon_name, property_set_name]()
+            auto contains_raster = [dataset, phenomenon_name, property_set_name]() -> bool
             {
                 return dataset.phenomena().contains(phenomenon_name) &&
                        dataset.phenomena()[phenomenon_name].property_sets().contains(property_set_name) &&
