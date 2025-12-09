@@ -8,7 +8,7 @@ namespace lue {
     namespace detail {
 
         template<typename Partition>
-        [[nodiscard]] hpx::future<void> range_partition(
+        hpx::future<void> range_partition(
             Partition input_partition, ElementT<Partition> const start_value, Count const stride)
         {
             static_assert(rank<Partition> == 2);
@@ -90,8 +90,7 @@ namespace lue {
         future if you need to know when the filling is done.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] auto range(
-        PartitionedArray<Element, rank>& input_array, hpx::shared_future<Element> const& start_value)
+    auto range(PartitionedArray<Element, rank>& input_array, hpx::shared_future<Element> const& start_value)
         -> hpx::future<void>
     {
         static_assert(rank == 2);
@@ -181,8 +180,7 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] auto range(PartitionedArray<Element, rank>& input_array, Element const start_value)
-        -> hpx::future<void>
+    auto range(PartitionedArray<Element, rank>& input_array, Element const start_value) -> hpx::future<void>
     {
         return range(input_array, hpx::make_ready_future<Element>(start_value).share());
     }

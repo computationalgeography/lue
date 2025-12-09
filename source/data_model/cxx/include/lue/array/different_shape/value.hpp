@@ -5,71 +5,63 @@
 #include "lue/core/define.hpp"
 
 
-namespace lue {
-    namespace data_model {
-        namespace different_shape {
+namespace lue::data_model::different_shape {
 
-            /*!
-                @brief      Class for storing different shape x constant value
-                            object arrays
+    /*!
+        @brief      Class for storing different shape x constant value object arrays
 
-                The implementation uses an HDF5 dataset per object array.
-            */
-            class LUE_DATA_MODEL_EXPORT Value: public ValueGroup
-            {
+        The implementation uses an HDF5 dataset per object array.
+    */
+    class LUE_DATA_MODEL_EXPORT Value: public ValueGroup
+    {
 
-                public:
+        public:
 
-                    Value(hdf5::Group& parent, std::string const& name);
+            Value(hdf5::Group& parent, std::string const& name);
 
-                    Value(
-                        hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype);
+            Value(hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype);
 
-                    explicit Value(ValueGroup&& group);
+            explicit Value(ValueGroup&& group);
 
-                    Value(Value const&) = default;
+            Value(Value const& other) = default;
 
-                    Value(Value&&) = default;
+            Value(Value&& other) = default;
 
-                    ~Value() override = default;
+            ~Value() override = default;
 
-                    Value& operator=(Value const&) = default;
+            auto operator=(Value const& other) -> Value& = default;
 
-                    Value& operator=(Value&&) = default;
+            auto operator=(Value&& other) -> Value& = default;
 
-                    Count nr_objects() const;
+            auto nr_objects() const -> Count;
 
-                    void expand(Count nr_objects, ID const* ids, hdf5::Shape const* shapes);
+            void expand(Count nr_objects, ID const* ids, hdf5::Shape const* shapes);
 
-                    void expand(Count nr_objects, ID const* ids, hdf5::Shape::value_type const* shapes);
+            void expand(Count nr_objects, ID const* ids, hdf5::Shape::value_type const* shapes);
 
-                    void expand(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
+            void expand(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
 
-                    bool contains(ID id) const;
+            auto contains(ID id) const -> bool;
 
-                    Array operator[](ID id) const;
+            auto operator[](ID id) const -> Array;
 
-                private:
+        private:
 
-                    void expand_core(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
+            void expand_core(ID id, hdf5::Shape const& shape, void const* no_data_value = nullptr);
 
-                    Count _nr_objects;
-            };
+            Count _nr_objects;
+    };
 
 
-            LUE_DATA_MODEL_EXPORT Value create_value(
-                hdf5::Group& parent,
-                std::string const& name,
-                hdf5::Datatype const& memory_datatype,
-                Rank rank);
+    LUE_DATA_MODEL_EXPORT auto create_value(
+        hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype, Rank rank)
+        -> Value;
 
-            LUE_DATA_MODEL_EXPORT Value create_value(
-                hdf5::Group& parent,
-                std::string const& name,
-                hdf5::Datatype const& file_datatype,
-                hdf5::Datatype const& memory_datatype,
-                Rank rank);
+    LUE_DATA_MODEL_EXPORT auto create_value(
+        hdf5::Group& parent,
+        std::string const& name,
+        hdf5::Datatype const& file_datatype,
+        hdf5::Datatype const& memory_datatype,
+        Rank rank) -> Value;
 
-        }  // namespace different_shape
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model::different_shape

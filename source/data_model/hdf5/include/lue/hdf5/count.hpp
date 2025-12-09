@@ -3,19 +3,17 @@
 #include <vector>
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        /*!
-            @brief      Class for instances representing counts in each dimension
-            @sa         Offset, Stride
+    /*!
+        @brief      Class for instances representing counts in each dimension
+        @sa         Offset, Stride
 
-            Using this class instead of HDF5's `hsize_t const*` is more type-safe.
-        */
-        class Count: public std::vector<::hsize_t>
-        {
-                using std::vector<::hsize_t>::vector;
-        };
+        Using this class instead of HDF5's `hsize_t const*` is more type-safe.
+    */
+    class Count: public std::vector<hsize_t>
+    {
+            using std::vector<hsize_t>::vector;
+    };
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

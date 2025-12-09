@@ -6,18 +6,17 @@
 
 using json = nlohmann::json;
 
-namespace lue {
-    namespace utility {
 
-        data_model::Dataset translate_json_to_lue(::json const& json, std::string const& dataset_name);
+namespace lue::utility {
 
-        void translate_json_to_lue(::json const& json, std::string const& lue_pathname, bool add);
+    auto translate_json_to_lue(::json const& json, std::string const& dataset_name) -> data_model::Dataset;
 
-        void translate_json_to_lue(
-            std::string const& json_pathname,
-            std::string const& lue_pathname,
-            bool add,
-            Metadata const& metadata);
+    void translate_json_to_lue(::json const& json, std::string const& lue_pathname, bool add);
 
-    }  // namespace utility
-}  // namespace lue
+    void translate_json_to_lue(
+        std::string const& json_pathname,
+        std::string const& lue_pathname,
+        bool add,
+        Metadata const& metadata);
+
+}  // namespace lue::utility

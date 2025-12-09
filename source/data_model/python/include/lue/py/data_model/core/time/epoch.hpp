@@ -3,12 +3,10 @@
 #include <string>
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        std::string formal_string_representation(time::Epoch const& epoch);
+    auto formal_string_representation(time::Epoch const& epoch) -> std::string;
 
-        std::string informal_string_representation(time::Epoch const& epoch);
+    auto informal_string_representation(time::Epoch const& epoch) -> std::string;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model
