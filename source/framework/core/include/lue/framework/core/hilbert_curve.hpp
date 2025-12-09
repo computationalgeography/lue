@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/shape.hpp"
+#include <cmath>
 
 
 // The Hilbert curve algorithm is inspired by the Gilbert code:
