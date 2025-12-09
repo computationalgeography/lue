@@ -46,9 +46,6 @@ namespace lue::detail {
     static constexpr bool serial_io_non_thread_safe = serial_io && (!hdf5::BuildOptions::hdf5_is_threadsafe);
 
 
-    using FileSerializer = Serializer<std::filesystem::path, Count>;
-
-
     LUE_FRAMEWORK_IO_EXPORT auto normalize(std::string const& pathname) -> std::filesystem::path;
 
 
@@ -60,6 +57,22 @@ namespace lue::detail {
     LUE_FRAMEWORK_IO_EXPORT auto current_from_lue_order(std::filesystem::path const& dataset_path) -> Count;
 
     LUE_FRAMEWORK_IO_EXPORT auto current_to_lue_order(std::filesystem::path const& dataset_path) -> Count;
+
+
+#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
+
+    LUE_FRAMEWORK_IO_EXPORT void add_to_lue_finished(
+        std::filesystem::path const& path, Count count, hpx::shared_future<void> future);
+
+    LUE_FRAMEWORK_IO_EXPORT void add_from_lue_finished(
+        std::filesystem::path const& path, Count count, hpx::shared_future<void> future);
+
+    LUE_FRAMEWORK_IO_EXPORT auto to_lue_finished(std::filesystem::path const& path, Count count)
+        -> hpx::shared_future<void>;
+
+    LUE_FRAMEWORK_IO_EXPORT auto from_lue_finished(std::filesystem::path const& path, Count count)
+        -> hpx::shared_future<void>;
+#endif
 
 
     LUE_FRAMEWORK_IO_EXPORT auto from_lue_open_dataset_promise_for(
@@ -99,21 +112,5 @@ namespace lue::detail {
 
     LUE_FRAMEWORK_IO_EXPORT auto to_lue_close_dataset_done(std::filesystem::path const& path, Count count)
         -> hpx::shared_future<void>;
-
-
-#ifndef LUE_FRAMEWORK_WITH_PARALLEL_IO
-
-    LUE_FRAMEWORK_IO_EXPORT void add_to_lue_finished(
-        std::filesystem::path const& path, Count count, hpx::shared_future<void> future);
-
-    LUE_FRAMEWORK_IO_EXPORT void add_from_lue_finished(
-        std::filesystem::path const& path, Count count, hpx::shared_future<void> future);
-
-    LUE_FRAMEWORK_IO_EXPORT auto to_lue_finished(std::filesystem::path const& path, Count count)
-        -> hpx::shared_future<void>;
-
-    LUE_FRAMEWORK_IO_EXPORT auto from_lue_finished(std::filesystem::path const& path, Count count)
-        -> hpx::shared_future<void>;
-#endif
 
 }  // namespace lue::detail
