@@ -348,6 +348,7 @@ namespace lue::gdal {
     auto set_geo_transform(GDALDataset& dataset, GeoTransform const& geo_transform) -> void
     {
         // For some reason, GDAL wants a non-const pointer...
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
         dataset.SetGeoTransform(const_cast<Coordinate*>(geo_transform.data()));
     }
 

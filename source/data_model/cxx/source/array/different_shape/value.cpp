@@ -51,10 +51,10 @@ namespace lue::data_model::different_shape {
     */
     void Value::expand(Count const nr_objects, ID const* ids, hdf5::Shape const* shapes)
     {
-        for (Index o = 0; o < nr_objects; ++o)
+        for (Index object_idx = 0; object_idx < nr_objects; ++object_idx)
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-            expand_core(ids[o], shapes[o]);
+            expand_core(ids[object_idx], shapes[object_idx]);
         }
 
         _nr_objects += nr_objects;
@@ -74,10 +74,10 @@ namespace lue::data_model::different_shape {
     {
         Rank const rank{this->rank()};
 
-        for (Index o = 0, s = 0; o < nr_objects; ++o, s += rank)
+        for (Index object_idx = 0, shape_idx = 0; object_idx < nr_objects; ++object_idx, shape_idx += rank)
         {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-            expand_core(ids[o], hdf5::Shape{shapes[s], shapes[s + 1]});
+            expand_core(ids[object_idx], hdf5::Shape{shapes[shape_idx], shapes[shape_idx + 1]});
         }
 
         _nr_objects += nr_objects;
@@ -120,7 +120,7 @@ namespace lue::data_model::different_shape {
         //     hdf5::chunk_shape(array_shape, file_datatype.size());
         // creation_property_list.set_chunk(chunk_dimension_sizes);
 
-        if (no_data_value)
+        if (no_data_value != nullptr)
         {
             creation_property_list.set_fill_value(memory_datatype(), no_data_value);
         }

@@ -78,7 +78,7 @@ namespace lue::api {
             auto operator=(VariantWrapper&&) noexcept -> VariantWrapper& = default;
 
 
-            [[nodiscard]] auto variant() const -> Variant const&
+            auto variant() const -> Variant const&
             {
                 return _variant;
             }
