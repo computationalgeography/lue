@@ -2,6 +2,7 @@
 #include "lue/framework.hpp"
 #include "lue/gdal.hpp"
 #include "lue/py/bind.hpp"
+#include <pybind11/stl.h>
 
 
 using namespace pybind11::literals;
@@ -25,7 +26,26 @@ namespace lue::framework {
                     {
                         // If not one of the types not supported by older versions of GDAL OR using a GDAL
                         // version that supports them ...
-                        module.def("to_gdal", to_gdal<Element>, "array"_a, "name"_a, "clone_name"_a = "");
+                        module.def(
+                            "to_gdal",
+                            to_gdal<Element>,
+                            R"(
+    Write array to a dataset using GDAL
+
+    :param array: Array to write
+    :param name: Name of dataset to write
+    :param clone_name: Name of existing dataset to copy geo transform and
+        spatial reference from
+    :param dict options: Creation options (see GDAL driver documentation for
+        a list)
+
+    The GTiff driver will be used to do the writing.
+)",
+                            "array"_a,
+                            "name"_a,
+                            pybind11::kw_only(),
+                            "clone_name"_a = "",
+                            "options"_a = std::map<std::string, std::string>{});
                     }
                 }
         };

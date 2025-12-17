@@ -19,6 +19,7 @@ namespace lue {
     auto to_gdal(
         PartitionedArray<Element, 2> const& array,
         std::string const& name,
-        std::string const& clone_name = "") -> hpx::future<void>;
+        std::string const& clone_name = "",
+        std::map<std::string, std::string> const& options = {}) -> hpx::future<void>;
 
 }  // namespace lue

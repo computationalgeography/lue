@@ -4,6 +4,7 @@
 #include <cmath>
 #include <format>
 #include <stdexcept>
+#include <vector>
 
 
 namespace lue::gdal {
@@ -20,6 +21,69 @@ namespace lue::gdal {
         {
             return geo_transform[1] == std::abs(geo_transform[5]);
         }
+
+
+        class Options
+        {
+
+            public:
+
+                Options(std::map<std::string, std::string> const& options):
+
+                    _dictionary{options},
+                    _buffers{}
+
+                {
+                    _buffers.reserve(_dictionary.size() + 1);
+
+                    for (auto const& [name, value] : _dictionary)
+                    {
+                        std::string const string = std::format("{}={}", name, value);
+                        char* buffer = new char[string.size() + 1];
+                        std::strcpy(buffer, string.c_str());
+                        _buffers.emplace_back(buffer);
+
+                        assert(std::strlen(_buffers.back()) == string.size());
+                    }
+
+                    _buffers.push_back(nullptr);
+
+                    assert(_buffers.size() == _dictionary.size() + 1);
+                }
+
+
+                Options(Options const& other) = delete;
+
+                Options(Options&& other) = delete;
+
+
+                ~Options()
+                {
+                    for (char* buffer : _buffers)
+                    {
+                        // Yes, also deleting the final nullptr. It's fine.
+                        delete[] buffer;
+                    }
+                }
+
+
+                auto operator=(Options const& other) -> Options& = delete;
+
+                auto operator=(Options&& other) -> Options& = delete;
+
+
+                auto buffers() -> char**
+                {
+                    return _buffers.data();
+                }
+
+            private:
+
+                std::map<std::string, std::string> _dictionary;
+
+                // Null-terminated vector of pointers to char buffers
+                std::vector<char*> _buffers;
+        };
 
     }  // Anonymous namespace
 
@@ -59,6 +123,8 @@ namespace lue::gdal {
         @param      shape Shape of the raster bands in the dataset
         @param      nr_bands Number of bands to add to the dataset
         @param      data_type Type of the elements in the raster band(s)
+        @param      options Options to use when creating the dataset. See the GDAL driver's documentation for
+                    a list of these.
         @exception  std::runtime_error In case the dataset cannot be created
     */
     auto create_dataset(
@@ -66,10 +132,12 @@ namespace lue::gdal {
         std::string const& dataset_name,
         Shape const& shape,
         Count nr_bands,
-        GDALDataType data_type) -> DatasetPtr
+        GDALDataType data_type,
+        std::map<std::string, std::string> const& options) -> DatasetPtr
     {
         DatasetPtr dataset_ptr{
-            driver.Create(dataset_name.c_str(), shape[1], shape[0], nr_bands, data_type, nullptr),
+            driver.Create(
+                dataset_name.c_str(), shape[1], shape[0], nr_bands, data_type, Options{options}.buffers()),
             gdal_close};
 
         if (!dataset_ptr)
@@ -89,18 +157,22 @@ namespace lue::gdal {
         std::string const& dataset_name,
         Shape const& shape,
         Count nr_bands,
-        GDALDataType data_type) -> DatasetPtr
+        GDALDataType data_type,
+        std::map<std::string, std::string> const& options) -> DatasetPtr
     {
-        return create_dataset(*driver(driver_name), dataset_name, shape, nr_bands, data_type);
+        return create_dataset(*driver(driver_name), dataset_name, shape, nr_bands, data_type, options);
     }
 
 
     /*!
         @overload
     */
-    auto create_dataset(std::string const& driver_name, std::string const& dataset_name) -> DatasetPtr
+    auto create_dataset(
+        std::string const& driver_name,
+        std::string const& dataset_name,
+        std::map<std::string, std::string> const& options) -> DatasetPtr
     {
-        return create_dataset(driver_name, dataset_name, Shape{0, 0}, 0, GDT_Unknown);
+        return create_dataset(driver_name, dataset_name, Shape{0, 0}, 0, GDT_Unknown, options);
     }
 
 
@@ -108,15 +180,22 @@ namespace lue::gdal {
         @brief      Create a copy of a dataset
         @param      name Name of the new dataset
         @param      clone_dataset Dataset to copy
+        @param      options Options to use when creating the dataset. See the GDAL driver's documentation for
+                    a list of these.
         @exception  std::runtime_error In case the dataset cannot be created
     */
-    auto create_copy(std::string const& name, GDALDataset& clone_dataset) -> DatasetPtr
+    auto create_copy(
+        std::string const& name,
+        GDALDataset& clone_dataset,
+        std::map<std::string, std::string> const& options) -> DatasetPtr
     {
         // TODO let GDAL pick the driver and/or use extension(?)
         DriverPtr driver{gdal::driver("GTiff")};
 
         DatasetPtr dataset_ptr{
-            driver->CreateCopy(name.c_str(), &clone_dataset, FALSE, nullptr, nullptr, nullptr), gdal_close};
+            driver->CreateCopy(
+                name.c_str(), &clone_dataset, FALSE, Options{options}.buffers(), nullptr, nullptr),
+            gdal_close};
 
         if (!dataset_ptr)
         {

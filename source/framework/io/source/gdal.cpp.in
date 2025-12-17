@@ -566,7 +566,8 @@ namespace lue {
     auto to_gdal(
         PartitionedArray<Element, 2> const& array,
         std::string const& name,
-        std::string const& clone_name) -> hpx::future<void>
+        std::string const& clone_name,
+        std::map<std::string, std::string> const& options) -> hpx::future<void>
     {
         if constexpr (!gdal::supports<Element>())
         {
@@ -604,7 +605,8 @@ namespace lue {
                         static_cast<gdal::Count>(raster_shape[0]),
                         static_cast<gdal::Count>(raster_shape[1])},
                     nr_bands,
-                    data_type)};
+                    data_type,
+                    options)};
                 gdal::RasterBandPtr band_ptr{gdal::raster_band(*dataset_ptr)};
 
                 gdal::set_no_data_value(*band_ptr, no_data_value);
@@ -657,7 +659,7 @@ namespace lue {
 
             hpx::future<void> result = hpx::async(
                 [name, partitions = std::move(partitions)]() mutable
-                {
+                -> auto {
                     using Action = WritePartitionAction<Policies, Partition>;
 
                     std::size_t nr_partitions_to_write{partitions.size()};
@@ -707,7 +709,7 @@ namespace lue {
             std::string const&, lue::Hyperslab<{{ rank }}> const&, lue::Shape<lue::Count, {{ rank }}> const&);
 
         template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
-            lue::PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&, std::string const&);
+            lue::PartitionedArray<{{ Element }}, {{ rank }}> const&, std::string const&, std::string const&, std::map<std::string, std::string> const&);
 
     {% endfor %}
 {% endfor %}
