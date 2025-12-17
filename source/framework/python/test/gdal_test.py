@@ -15,7 +15,6 @@ def tearDownModule():
 class GdalTest(lue_test.TestCase):
     @lue_test.framework_test_case
     def test_array_default_partition_shape(self):
-
         array_shape = (600, 400)
         dtype = np.int32
         fill_value = 5
@@ -34,7 +33,6 @@ class GdalTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_array_custom_partition_shape(self):
-
         array_shape = (600, 400)
         partition_shape = (10, 10)
         dtype = np.int32
@@ -56,7 +54,6 @@ class GdalTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_hyperslab(self):
-
         array_shape = (600, 400)
 
         condition = lfr.create_array(array_shape, lfr.boolean_element_type, 1)
@@ -91,3 +88,19 @@ class GdalTest(lue_test.TestCase):
         # Verify the hyperslabs read contain values we expect
         self.assertTrue(lfr.all(row_idxs_read == row_idxs_hyperslab).future.get())
         self.assertTrue(lfr.all(col_idxs_read == col_idxs_hyperslab).future.get())
+
+    @lue_test.framework_test_case
+    def test_creation_options(self):
+        array_shape = (600, 400)
+        dtype = np.int32
+        fill_value = 5
+        array_written = lfr.create_array(array_shape, dtype, fill_value)
+
+        name = "gdal_creation_options.tif"
+        options = {
+            "BIGTIFF": "YES",
+            "COMPRESS": "ZSTD",
+        }
+
+        written = lfr.to_gdal(array_written, name, options=options)
+        written.get()

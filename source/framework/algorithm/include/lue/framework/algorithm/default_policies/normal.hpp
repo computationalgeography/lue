@@ -68,7 +68,7 @@ namespace lue {
         {
             using Policies = policy::normal::DefaultPolicies<Element>;
 
-            return lue::normal<Element>(Policies{}, array_shape, partition_shape, mean, stddev);
+            return lue::normal(Policies{}, array_shape, partition_shape, mean, stddev);
         }
 
 
@@ -81,7 +81,7 @@ namespace lue {
         {
             using Policies = policy::normal::DefaultPolicies<Element>;
 
-            return lue::normal<Element>(Policies{}, array_shape, partition_shape, mean, stddev);
+            return lue::normal(Policies{}, array_shape, partition_shape, mean, stddev);
         }
 
 
@@ -92,7 +92,7 @@ namespace lue {
         {
             using Policies = policy::normal::DefaultPolicies<Element>;
 
-            return lue::normal<Element>(Policies{}, array_shape, mean, stddev);
+            return lue::normal(Policies{}, array_shape, mean, stddev);
         }
 
 
@@ -102,7 +102,7 @@ namespace lue {
         {
             using Policies = policy::normal::DefaultPolicies<Element>;
 
-            return lue::normal<Element>(Policies{}, array_shape, mean, stddev);
+            return lue::normal(Policies{}, array_shape, mean, stddev);
         }
 
     }  // namespace default_policies

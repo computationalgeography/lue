@@ -2,6 +2,7 @@
 #include "lue/gdal/define.hpp"
 #include "lue/gdal/raster_band.hpp"
 #include <gdal_priv.h>
+#include <map>
 #include <memory>
 
 
@@ -41,19 +42,26 @@ namespace lue::gdal {
         std::string const& dataset_name,
         Shape const& shape,
         Count nr_bands,
-        GDALDataType data_type) -> DatasetPtr;
+        GDALDataType data_type,
+        std::map<std::string, std::string> const& options = {}) -> DatasetPtr;
 
     LUE_GDAL_EXPORT auto create_dataset(
         std::string const& driver_name,
         std::string const& dataset_name,
         Shape const& shape,
         Count nr_bands,
-        GDALDataType data_type) -> DatasetPtr;
+        GDALDataType data_type,
+        std::map<std::string, std::string> const& options = {}) -> DatasetPtr;
 
-    LUE_GDAL_EXPORT auto create_dataset(std::string const& driver_name, std::string const& dataset_name)
-        -> DatasetPtr;
+    LUE_GDAL_EXPORT auto create_dataset(
+        std::string const& driver_name,
+        std::string const& dataset_name,
+        std::map<std::string, std::string> const& options = {}) -> DatasetPtr;
 
-    LUE_GDAL_EXPORT auto create_copy(std::string const& name, GDALDataset& clone_dataset) -> DatasetPtr;
+    LUE_GDAL_EXPORT auto create_copy(
+        std::string const& name,
+        GDALDataset& clone_dataset,
+        std::map<std::string, std::string> const& options = {}) -> DatasetPtr;
 
     LUE_GDAL_EXPORT auto delete_dataset(GDALDriver& driver, std::string const& dataset_name) -> void;
 
