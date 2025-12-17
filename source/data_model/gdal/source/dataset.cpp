@@ -2,6 +2,7 @@
 #include "lue/gdal/driver.hpp"
 #include <cassert>
 #include <cmath>
+#include <cstring>
 #include <format>
 #include <stdexcept>
 #include <vector>
