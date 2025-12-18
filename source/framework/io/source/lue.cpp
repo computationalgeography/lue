@@ -37,7 +37,7 @@ namespace lue::detail {
             count_by_path.try_emplace(path, 0);
 
             // Increment the count and return it
-            return ++count_by_path[path];
+            return ++count_by_path.at(path);
         }
 
 
@@ -106,6 +106,15 @@ namespace lue::detail {
         using CallFinished = std::map<std::filesystem::path, std::map<Count, hpx::shared_future<void>>>;
 
 
+        /*!
+            @brief      .
+            @tparam     .
+            @param      .
+            @return     .
+            @exception  .
+
+            This function must be called from the root locality, on the main thread
+        */
         auto to_lue_finished() -> CallFinished&
         {
             static CallFinished to_lue_finished;
@@ -114,6 +123,15 @@ namespace lue::detail {
         }
 
 
+        /*!
+            @brief      .
+            @tparam     .
+            @param      .
+            @return     .
+            @exception  .
+
+            This function must be called from the root locality, on the main thread
+        */
         auto from_lue_finished() -> CallFinished&
         {
             static CallFinished from_lue_finished;
@@ -140,10 +158,19 @@ namespace lue::detail {
 
             lue_hpx_assert(call_finished.contains(path));
             lue_hpx_assert(call_finished[path].contains(count));
-            lue_hpx_assert(call_finished[path][count].valid());
+            lue_hpx_assert(call_finished.at(path).at(count).valid());
         }
 
 
+        /*!
+            @brief      .
+            @tparam     .
+            @param      .
+            @return     .
+            @exception  .
+
+            This function must be called from the root locality, on the main thread
+        */
         auto call_finished(CallFinished& call_finished, std::filesystem::path const& path, Count const count)
             -> hpx::shared_future<void>
         {
@@ -156,7 +183,7 @@ namespace lue::detail {
             }
 #endif
 
-            return count > 0 ? call_finished[path][count] : hpx::make_ready_future().share();
+            return count > 0 ? call_finished.at(path).at(count) : hpx::make_ready_future().share();
         }
 
     }  // Anonymous namespace
