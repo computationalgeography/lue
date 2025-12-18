@@ -3,67 +3,65 @@
 #include "lue/object/property_sets.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            @brief      Class for phenomenon information
+    /*!
+        @brief      Class for phenomenon information
 
-            A phenomenon has two sets of property sets:
-            - property sets: for storing property sets containing information
-              for all active objects
-            - collection property sets: for storing property sets containing
-              information for the collection of objects as a whole
-        */
-        class LUE_DATA_MODEL_EXPORT Phenomenon: public hdf5::Group
-        {
+        A phenomenon has two sets of property sets:
 
-            public:
+        - property sets: for storing property sets containing information for all active objects
+        - collection property sets: for storing property sets containing information for the collection
+          of objects as a whole
+    */
+    class LUE_DATA_MODEL_EXPORT Phenomenon: public hdf5::Group
+    {
 
-                Phenomenon(hdf5::Group const& parent, std::string const& name);
+        public:
 
-                explicit Phenomenon(hdf5::Group&& group);
+            Phenomenon(hdf5::Group const& parent, std::string const& name);
 
-                Phenomenon(Phenomenon const&) = default;
+            explicit Phenomenon(hdf5::Group&& group);
 
-                Phenomenon(Phenomenon&&) = default;
+            Phenomenon(Phenomenon const& other) = default;
 
-                ~Phenomenon() override = default;
+            Phenomenon(Phenomenon&& other) = default;
 
-                Phenomenon& operator=(Phenomenon const&) = default;
+            ~Phenomenon() override = default;
 
-                Phenomenon& operator=(Phenomenon&&) = default;
+            auto operator=(Phenomenon const& other) -> Phenomenon& = default;
 
-                std::string const& description() const;
+            auto operator=(Phenomenon&& other) -> Phenomenon& = default;
 
-                ObjectID const& object_id() const;
+            auto description() const -> std::string const&;
 
-                ObjectID& object_id();
+            auto object_id() const -> ObjectID const&;
 
-                PropertySets const& collection_property_sets() const;
+            auto object_id() -> ObjectID&;
 
-                PropertySets& collection_property_sets();
+            auto collection_property_sets() const -> PropertySets const&;
 
-                PropertySets const& property_sets() const;
+            auto collection_property_sets() -> PropertySets&;
 
-                PropertySets& property_sets();
+            auto property_sets() const -> PropertySets const&;
 
-            private:
+            auto property_sets() -> PropertySets&;
 
-                std::string _description;
+        private:
 
-                ObjectID _object_id;
+            std::string _description;
 
-                //! Sets of properties of the collection of objects
-                PropertySets _collection_property_sets;
+            ObjectID _object_id;
 
-                //! Sets of properties of the objects in the collection
-                PropertySets _property_sets;
-        };
+            //! Sets of properties of the collection of objects
+            PropertySets _collection_property_sets;
+
+            //! Sets of properties of the objects in the collection
+            PropertySets _property_sets;
+    };
 
 
-        Phenomenon create_phenomenon(
-            hdf5::Group& parent, std::string const& name, std::string const& description);
+    auto create_phenomenon(hdf5::Group& parent, std::string const& name, std::string const& description)
+        -> Phenomenon;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

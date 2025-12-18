@@ -17,7 +17,7 @@ namespace lue::utility {
     Import::Import(int const argc, char const* const* argv):
 
         Command(
-            []()
+            []() -> cxxopts::Options
             {
                 cxxopts::Options options{Import::name, "Translate data into the LUE dataset format"};
                 options.add_options()("h,help", "Show usage")(
@@ -61,7 +61,7 @@ namespace lue::utility {
         // bool const stack_passed = argument_parsed("--start");
         auto const metadata = argument_parsed("meta") ? Metadata(argument<std::string>("meta")) : Metadata();
 
-        auto const first_input_dataset_name = input_dataset_names[0];
+        auto const& first_input_dataset_name = input_dataset_names[0];
 
         // if(input_dataset_names.size() == 1) {
         //     auto const input_dataset_name = first_input_dataset_name;
