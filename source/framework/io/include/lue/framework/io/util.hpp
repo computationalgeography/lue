@@ -4,8 +4,31 @@
 #include <hpx/runtime_distributed/find_localities.hpp>
 #include <map>
 
+#if 0
+#include <hpx/iostream.hpp>
+#include <format>
+#endif
+
 
 namespace lue::detail {
+
+#if 0
+    template<class... Args>
+    inline void print_debug(std::format_string<Args...> fmt, Args&&... args)
+    {
+        hpx::cout << std::format(
+                         "DEBUG[{}]: {}\n",
+                         hpx::agas::get_locality_id(),
+                         std::format(fmt, std::forward<Args...>(args)...))
+                  << std::flush;
+    }
+#else
+    template<class... Args>
+    inline void print_debug([[maybe_unused]] std::format_string<Args...> fmt, [[maybe_unused]] Args&&... args)
+    {
+    }
+#endif
+
 
     template<typename Shape>
     auto shape_to_hyperslab(Shape const& shape) -> hdf5::Hyperslab
