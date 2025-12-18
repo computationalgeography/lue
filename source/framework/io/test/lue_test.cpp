@@ -12,6 +12,13 @@
 // using namespace std::chrono_literals;
 
 
+// TODO: Thread-safe doesn't work icw hdf5-1.10
+// - Figure out why: HDF5 version bug or thread-safe usage bug?
+//     - How about thread-safe icw hdf5-1.14? (*buntu 25.10?)
+// - Add tests for constant rasters. Requires update in data model code
+// - Revamp parallel I/O logic
+
+
 namespace {
 
     using DatasetPtr = std::shared_ptr<lue::data_model::Dataset>;
@@ -133,12 +140,6 @@ namespace {
     }
 
 }  // Anonymous namespace
-
-
-BOOST_AUTO_TEST_CASE(placeholder)
-{
-    BOOST_CHECK(true);
-}
 
 
 BOOST_AUTO_TEST_CASE(constant_raster)
