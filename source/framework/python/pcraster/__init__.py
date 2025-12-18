@@ -422,7 +422,7 @@ def report(expression, pathname):
     if is_non_spatial(expression):
         expression = non_spatial_to_spatial(fill_value=expression)
 
-    lfr.to_gdal(expression, pathname, configuration.pathname)
+    lfr.to_gdal(expression, pathname, clone_name=configuration.pathname)
 
 
 def div(expression1, expression2):
