@@ -109,6 +109,7 @@ set(miscellaneous_operation_names
 set(routing_operation_names
     accu
     accu_fraction
+    accu_capacity
     accu_threshold
     d8_flow_direction
     decreasing_order
