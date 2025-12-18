@@ -67,25 +67,22 @@ these differences as much as possible.
     -
 *   - abs
     - ✅
-    - abs with non-spatial expression is not available
+    -
 *   - accucapacityflux \
       accucapacitystate
-    - ❌
-    - 1
+    - ✅
+    - accu_capacity
 *   - accuflux
     - ✅
-    - not yet in Python package \
-      accuflux with non-spatial material is not available
+    - accu
 *   - accufractionflux
       accufractionstate
     - ✅
-    - accu_fraction \
-      accu_fraction with non-spatial material and non-spatial transport fraction is not available
+    - accu_fraction
 *   - accuthresholdflux \
       accuthresholdstate
     - ✅
-    - accu_threshold3 \
-      accu_threshold with non-spatial material and non-spatial threshold is not available
+    - accu_threshold
 *   - accutriggerflux \
       accutriggerstate
     - ❌
@@ -161,7 +158,7 @@ these differences as much as possible.
     -
 *   - boolean
     - ✅
-    - boolean with non-spatial argument is not available
+    -
 *   - catchment
     - ❌
     - 2

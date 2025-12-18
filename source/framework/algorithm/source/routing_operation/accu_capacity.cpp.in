@@ -1,0 +1,19 @@
+#include "lue/framework/algorithm/default_policies/accu_capacity.hpp"
+#include "lue/framework/algorithm/definition/accu_capacity.hpp"
+#include "lue/framework/algorithm/value_policies/accu_capacity.hpp"
+
+
+using lue_CellsIdxs = std::vector<lue::Index>;
+using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
+
+HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs);
+HPX_REGISTER_CHANNEL_DECLARATION(ChannelMaterial_{{ name }});
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_ACCU_CAPACITY(
+            ESC(policy::accu_capacity::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>)
+        );
+
+}  // namespace lue

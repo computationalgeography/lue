@@ -1715,6 +1715,19 @@ block()
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
             string(REPLACE "::" "_" element ${Element})
 
+            # Instantiate accu_capacity
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_capacity-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_capacity.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             # Instantiate accu_fraction
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_fraction-${Policies}_${element}.cpp")
 

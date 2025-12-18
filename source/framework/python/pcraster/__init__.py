@@ -436,12 +436,20 @@ def abs(expression):
     return lfr.abs(expression)
 
 
-def accucapacityflux(flow_direction, material, transportcapacity):
-    raise NotImplementedError("accucapacityflux")
+def accucapacity(flow_direction, inflow, capacity):
+    flow_direction = ldd(flow_direction)
+    inflow = scalar(inflow)
+    capacity = scalar(capacity)
+
+    return lfr.accu_capacity(flow_direction, inflow, capacity)
 
 
-def accucapacitystate(flow_direction, material, transportcapacity):
-    raise NotImplementedError("accucapacitystate")
+def accucapacityflux(flow_direction, inflow, capacity):
+    return accucapacity(flow_direction, inflow, capacity)[0]
+
+
+def accucapacitystate(flow_direction, inflow, capacity):
+    return accucapacity(flow_direction, inflow, capacity)[1]
 
 
 def accuflux(flow_direction, inflow):
