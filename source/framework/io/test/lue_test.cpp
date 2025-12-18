@@ -1,4 +1,3 @@
-#include "lue/object/dataset.hpp"
 #define BOOST_TEST_MODULE lue framework io lue
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/io/from_lue.hpp"
@@ -142,7 +141,6 @@ BOOST_AUTO_TEST_CASE(placeholder)
 }
 
 
-#if 0
 BOOST_AUTO_TEST_CASE(constant_raster)
 {
     // Write a constant raster with integers and read it back in. Compare raster written with raster read.
@@ -166,10 +164,8 @@ BOOST_AUTO_TEST_CASE(constant_raster)
     Array<Element> array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
-#endif
 
 
-#if 0  // Does not work
 BOOST_AUTO_TEST_CASE(variable_raster)
 {
     // Write a variable raster with integers and read them back in. Compare rasters written with rasters
@@ -227,7 +223,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
         lue::test::check_arrays_are_equal(array_read, array_written);
     }
 }
-#endif
 
 
 // TODO:
@@ -242,7 +237,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 // }
 
 
-#if 0  // Works individually
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
 {
     // 1. Create stack of n arrays
@@ -293,10 +287,8 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
         lue::test::check_arrays_are_equal(arrays_read[time_step], arrays_written[time_step]);
     }
 }
-#endif
 
 
-#if 0  // Doesn't work individually
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
 {
     // Iteratively write, read, and compare n arrays
@@ -328,4 +320,3 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
         // std::this_thread::sleep_for(3s);
     }
 }
-#endif
