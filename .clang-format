@@ -57,7 +57,7 @@ BreakConstructorInitializers: AfterColon
 ### BreakStringLiterals: true
 ColumnLimit: 110
 ### CommentPragmas:  '^ IWYU pragma:'
-### QualifierAlignment: Leave
+QualifierAlignment: Right
 ### CompactNamespaces: false
 ### ConstructorInitializerIndentWidth: 4
 ### ContinuationIndentWidth: 4
