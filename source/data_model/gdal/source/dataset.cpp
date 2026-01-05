@@ -40,6 +40,7 @@ namespace lue::gdal {
                     for (auto const& [name, value] : _dictionary)
                     {
                         std::string const string = std::format("{}={}", name, value);
+                        // NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
                         char* buffer = new char[string.size() + 1];
                         std::strcpy(buffer, string.c_str());
                         _buffers.emplace_back(buffer);
@@ -63,7 +64,7 @@ namespace lue::gdal {
                     for (char* buffer : _buffers)
                     {
                         // Yes, also deleting the final nullptr. It's fine.
-                        delete[] buffer;
+                        delete[] buffer;  // NOLINT(cppcoreguidelines-owning-memory)
                     }
                 }
 
