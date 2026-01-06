@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/default_policies/all.hpp"
 #include "lue/framework/algorithm/default_policies/divide.hpp"
 #include "lue/framework/algorithm/default_policies/equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/divide.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -60,4 +61,35 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     lue::Rank const rank{2};
 
     test_array<lue::FloatingPointElement<0>, rank>();
+}
+
+
+BOOST_AUTO_TEST_CASE(overloads)
+{
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
+    {
+        using namespace lue::value_policies;
+
+        // Integral
+        {
+            using Element = lue::SignedIntegralElement<0>;
+            using Scalar = lue::Scalar<Element>;
+
+            Scalar const result_we_got = Scalar{Element{5} / Scalar{Element{2}}};
+            Element const result_we_want = Element{5} / Element{2};
+
+            BOOST_CHECK_EQUAL(result_we_got.future().get(), result_we_want);
+        }
+
+        // Floating point
+        {
+            using Element = lue::FloatingPointElement<0>;
+            using Scalar = lue::Scalar<Element>;
+
+            Scalar const result_we_got = Scalar{Element{5} / Scalar{Element{2}}};
+            Element const result_we_want = Element{5} / Element{2};
+
+            BOOST_CHECK_EQUAL(result_we_got.future().get(), result_we_want);
+        }
+    }
 }

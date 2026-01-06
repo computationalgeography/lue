@@ -63,7 +63,7 @@ class ScalarTest(lue_test.TestCase):
 
     @lue_test.framework_test_case
     def test_operator_divide_overloads(self):
-        for type_, dtype in self.dtype_by_floating_point_type.items():
+        for type_, dtype in self.dtype_by_type.items():
             value = self.value_by_type[type_]
             scalar = lfr.create_scalar(dtype, value)
 
@@ -73,6 +73,18 @@ class ScalarTest(lue_test.TestCase):
             scalar /= scalar
             scalar /= value
             value /= scalar
+
+    def test_operator_floor_div_overloads(self):
+        for type_, dtype in self.dtype_by_floating_point_type.items():
+            value = self.value_by_type[type_]
+            scalar = lfr.create_scalar(dtype, value)
+
+            _ = scalar // scalar
+            _ = scalar // value
+            _ = value // scalar
+            scalar //= scalar
+            scalar //= value
+            value //= scalar
 
     @lue_test.framework_test_case
     def test_operator_mod_overloads(self):

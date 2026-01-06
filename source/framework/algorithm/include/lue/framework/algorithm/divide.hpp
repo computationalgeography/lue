@@ -7,13 +7,13 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<Arithmetic InputElement, Arithmetic OutputElement_ = InputElement>
         class Divide
         {
 
             public:
 
-                static_assert(std::is_floating_point_v<InputElement>);
+                static_assert(std::is_same_v<InputElement, OutputElement_>);
 
                 static constexpr char const* name{"divide"};
 
@@ -33,7 +33,7 @@ namespace lue {
 
     namespace policy::divide {
 
-        template<typename Element>
+        template<Arithmetic Element>
         class DomainPolicy
         {
 

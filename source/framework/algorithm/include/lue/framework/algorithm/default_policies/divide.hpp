@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::divide {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultPolicies = policy::
             DefaultPolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element, Element>>;
 

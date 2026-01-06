@@ -378,9 +378,9 @@ def harmonize_types(expression1, expression2):
 
     assert not lue_is_value(expression1), expression1
     assert not lue_is_value(expression2), expression2
-    assert (
-        expression1.dtype == expression2.dtype
-    ), f"{expression1.dtype} != {expression2.dtype}"
+    assert expression1.dtype == expression2.dtype, (
+        f"{expression1.dtype} != {expression2.dtype}"
+    )
 
     return expression1, expression2
 
@@ -743,8 +743,9 @@ def horizontan(*args):
     raise NotImplementedError("horizontan")
 
 
-def idiv(*args):
-    raise NotImplementedError("idiv")
+def idiv(expression1, expression2):
+    # PCRaster's idiv truncates towards zero
+    return lfr.round_toward_zero(expression1, expression2)
 
 
 def ifthen(condition, expression):

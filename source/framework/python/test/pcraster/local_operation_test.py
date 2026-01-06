@@ -1,5 +1,6 @@
 import numpy as np
 
+import lue.framework as lfr
 import lue.pcraster as lpr
 import lue_test
 
@@ -277,6 +278,24 @@ class LocalOperationTest(OperationTest):
             _ = lpr.gt(spatial, non_spatial)
             _ = lpr.gt(non_spatial, spatial)
             _ = lpr.gt(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_idiv(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type],
+            )
+
+            _ = spatial // spatial
+            _ = spatial // non_spatial
+            _ = non_spatial // spatial
+            _ = non_spatial // non_spatial
+
+            _ = lpr.idiv(spatial, spatial)
+            _ = lpr.idiv(spatial, non_spatial)
+            _ = lpr.idiv(non_spatial, spatial)
+            _ = lpr.idiv(non_spatial, non_spatial)
 
     @lue_test.framework_test_case
     def test_ifthen(self):
