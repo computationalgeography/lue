@@ -2,16 +2,16 @@
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include <type_traits>
 
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<Arithmetic InputElement, Arithmetic OutputElement_ = InputElement>
         class Modulus
         {
             public:
 
-                static_assert(std::is_integral_v<InputElement>);
                 static_assert(std::is_same_v<InputElement, OutputElement_>);
 
                 static constexpr char const* name{"modulus"};
@@ -20,9 +20,16 @@ namespace lue {
 
                 constexpr auto operator()(
                     InputElement const& input_element1, InputElement const& input_element2) const noexcept
-                    -> OutputElement
                 {
-                    return input_element1 % input_element2;
+                    if constexpr (std::is_integral_v<InputElement>)
+                    {
+                        return input_element1 % input_element2;
+                    }
+
+                    if constexpr (std::is_floating_point_v<InputElement>)
+                    {
+                        return std::fmod(input_element1, input_element2);
+                    }
                 }
         };
 
@@ -31,7 +38,7 @@ namespace lue {
 
     namespace policy::modulus {
 
-        template<typename Element>
+        template<Arithmetic Element>
         class DomainPolicy
         {
 

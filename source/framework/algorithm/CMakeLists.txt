@@ -208,6 +208,19 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # Instantiate modulus
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${Policies}_${element}_${rank}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/modulus.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # Instantiate multiply
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/multiply-${Policies}_${element}_${rank}.cpp")
 
@@ -257,33 +270,6 @@ block()
                         "${output_pathname}"
                     DICTIONARY
                         '{"Policies":"${Policies}","ConditionElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","ExpressionElement":"${Element}","rank":"${rank}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-
-block()
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            string(REPLACE "::" "_" element ${Element})
-
-            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-
-                # Instantiate modulus
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/modulus-${Policies}_${element}_${rank}.cpp")
-
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/modulus.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
             endforeach()

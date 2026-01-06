@@ -1,8 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm modulus
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/all.hpp"
-#include "lue/framework/algorithm/default_policies/equal_to.hpp"
-#include "lue/framework/algorithm/default_policies/modulus.hpp"
+#include "lue/framework/algorithm/value_policies/all.hpp"
+#include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/modulus.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
@@ -13,38 +12,35 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        if constexpr (lue::BuildOptions::default_policies_enabled)
-        {
-            using namespace lue::default_policies;
+        using namespace lue::value_policies;
 
-            using Scalar = lue::Scalar<Element>;
-            using Array = lue::PartitionedArray<Element, rank>;
+        using Scalar = lue::Scalar<Element>;
+        using Array = lue::PartitionedArray<Element, rank>;
 
-            auto const array_shape{lue::Test<Array>::shape()};
-            auto const partition_shape{lue::Test<Array>::partition_shape()};
+        auto const array_shape{lue::Test<Array>::shape()};
+        auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-            Element const value1{15};
-            Element const value2{6};
-            Element const value_we_want{15 % 6};
+        Element const value1{15};
+        Element const value2{6};
+        Element const value_we_want{15 % 6};
 
-            Scalar scalar1{value1};
-            Scalar scalar2{value2};
+        Scalar scalar1{value1};
+        Scalar scalar2{value2};
 
-            Array array1{lue::create_partitioned_array(array_shape, partition_shape, value1)};
-            Array array2{lue::create_partitioned_array(array_shape, partition_shape, value2)};
+        Array array1{lue::create_partitioned_array(array_shape, partition_shape, value1)};
+        Array array2{lue::create_partitioned_array(array_shape, partition_shape, value2)};
 
-            BOOST_CHECK(all(array1 % array2 == value_we_want).future().get());
-            BOOST_CHECK(all(array1 % scalar2 == value_we_want).future().get());
-            BOOST_CHECK(all(array1 % value2 == value_we_want).future().get());
+        BOOST_CHECK(all(array1 % array2 == value_we_want).future().get());
+        BOOST_CHECK(all(array1 % scalar2 == value_we_want).future().get());
+        BOOST_CHECK(all(array1 % value2 == value_we_want).future().get());
 
-            BOOST_CHECK(all(scalar1 % array2 == value_we_want).future().get());
-            BOOST_CHECK(all(value1 % array2 == value_we_want).future().get());
+        BOOST_CHECK(all(scalar1 % array2 == value_we_want).future().get());
+        BOOST_CHECK(all(value1 % array2 == value_we_want).future().get());
 
-            BOOST_CHECK((scalar1 % scalar2 == value_we_want).future().get());
-            BOOST_CHECK((scalar1 % value2 == value_we_want).future().get());
+        BOOST_CHECK((scalar1 % scalar2 == value_we_want).future().get());
+        BOOST_CHECK((scalar1 % value2 == value_we_want).future().get());
 
-            BOOST_CHECK((value1 % scalar2 == value_we_want).future().get());
-        }
+        BOOST_CHECK((value1 % scalar2 == value_we_want).future().get());
     }
 
 }  // Anonymous namespace
@@ -210,5 +206,33 @@ BOOST_AUTO_TEST_CASE(modulus_2d_no_data_values)
 
         auto modulus = array1 % array2;
         lue::test::check_arrays_are_equal(modulus, array_we_want);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(modulus_overloads)
+{
+    using namespace lue::value_policies;
+
+    // Signed integral
+    {
+        using Element = lue::SignedIntegralElement<0>;
+        using Scalar = lue::Scalar<Element>;
+
+        Scalar const result_we_got = Scalar{15} % Scalar{6};
+        Element const result_we_want = Element{15} % Element{6};
+
+        BOOST_CHECK_EQUAL(result_we_got.future().get(), result_we_want);
+    }
+
+    // Floating point
+    {
+        using Element = lue::FloatingPointElement<0>;
+        using Scalar = lue::Scalar<Element>;
+
+        Scalar const result_we_got = Scalar{15} % Scalar{6};
+        Element const result_we_want = std::fmod(Element{15}, Element{6});
+
+        BOOST_CHECK_EQUAL(result_we_got.future().get(), result_we_want);
     }
 }
