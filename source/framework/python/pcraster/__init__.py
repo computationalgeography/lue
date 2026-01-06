@@ -949,8 +949,8 @@ def min(*args):
         return lfr.where(condition, expression1, expression2)
 
 
-def mod(*args):
-    raise NotImplementedError("mod")
+def mod(expression1, expression2):
+    return expression1 % expression2
 
 
 def ne(expression1, expression2):

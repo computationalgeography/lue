@@ -382,7 +382,7 @@ class LocalOperationTest(OperationTest):
             _ = lpr.lt(non_spatial, non_spatial)
 
     @lue_test.framework_test_case
-    def test_ne(self):
+    def test_mod(self):
         for expression_type in [np.uint8, np.int32, np.float32]:
             spatial, non_spatial = (
                 self.spatial[expression_type],
@@ -398,6 +398,24 @@ class LocalOperationTest(OperationTest):
             _ = lpr.ne(spatial, non_spatial)
             _ = lpr.ne(non_spatial, spatial)
             _ = lpr.ne(non_spatial, non_spatial)
+
+    @lue_test.framework_test_case
+    def test_ne(self):
+        for expression_type in [np.float32]:
+            spatial, non_spatial = (
+                self.spatial[expression_type],
+                self.non_spatial[expression_type],
+            )
+
+            _ = spatial != spatial
+            _ = spatial != non_spatial
+            _ = non_spatial != spatial
+            _ = non_spatial != non_spatial
+
+            _ = lpr.mod(spatial, spatial)
+            _ = lpr.mod(spatial, non_spatial)
+            _ = lpr.mod(non_spatial, spatial)
+            _ = lpr.mod(non_spatial, non_spatial)
 
     @lue_test.framework_test_case
     def test_normal(self):

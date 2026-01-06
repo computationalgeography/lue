@@ -319,8 +319,8 @@ these differences as much as possible.
     - ❌
     - 1
 *   - mod, `%`
-    - ❌
-    - 1
+    - ✅
+    - modulus
 *   - ne or `!=`
     - ✅
     -

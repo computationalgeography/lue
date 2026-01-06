@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::modulus {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             DomainPolicy<Element>,
             OutputElements<Element>,
