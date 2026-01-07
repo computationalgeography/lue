@@ -287,11 +287,13 @@ class LocalOperationTest(OperationTest):
                 self.non_spatial[expression_type],
             )
 
+            # Note: floor(divide(a, b))
             _ = spatial // spatial
             _ = spatial // non_spatial
             _ = non_spatial // spatial
             _ = non_spatial // non_spatial
 
+            # Note: trunc(divide(a, b))
             _ = lpr.idiv(spatial, spatial)
             _ = lpr.idiv(spatial, non_spatial)
             _ = lpr.idiv(non_spatial, spatial)
