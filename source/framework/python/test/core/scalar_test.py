@@ -74,6 +74,7 @@ class ScalarTest(lue_test.TestCase):
             scalar /= value
             value /= scalar
 
+    @lue_test.framework_test_case
     def test_operator_floor_div_overloads(self):
         for type_, dtype in self.dtype_by_floating_point_type.items():
             value = self.value_by_type[type_]
