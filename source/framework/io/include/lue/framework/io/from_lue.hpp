@@ -698,8 +698,8 @@ namespace lue {
 
             // Collection of futures, each of which becomes ready once the reading task has finished its work
             // and has closed the dataset again
-            std::vector<hpx::future<void>> dataset_cloѕed_fs{};
-            dataset_cloѕed_fs.reserve(partition_idxs_by_locality.size());
+            std::vector<hpx::future<void>> dataset_closed_fs{};
+            dataset_closed_fs.reserve(partition_idxs_by_locality.size());
 
             Action action{};
 
@@ -753,7 +753,7 @@ namespace lue {
                         }));
                     partition_fs =
                         hpx::split_future<Partition>(std::move(partitions_f), std::size(partition_idxs));
-                    dataset_cloѕed_fs.push_back(std::move(dataset_closed_f));
+                    dataset_closed_fs.push_back(std::move(dataset_closed_f));
                 }
 
                 if constexpr (parallel_io)
@@ -805,7 +805,7 @@ namespace lue {
             if constexpr (serial_io)
             {
                 detail::add_from_lue_finished(
-                    dataset_path, from_lue_order, hpx::when_all(dataset_cloѕed_fs).share());
+                    dataset_path, from_lue_order, hpx::when_all(dataset_closed_fs).share());
             }
 
             return array;
