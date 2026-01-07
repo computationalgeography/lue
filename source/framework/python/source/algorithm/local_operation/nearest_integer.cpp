@@ -31,6 +31,10 @@ namespace lue::framework {
                     module.def("round", [](Array const& array) { return round(array); });
                     module.def("round", [](Scalar const& scalar) { return round(scalar); });
                     module.def("round", [](Value const value) { return round(value); });
+
+                    module.def("trunc", [](Array const& array) { return trunc(array); });
+                    module.def("trunc", [](Scalar const& scalar) { return trunc(scalar); });
+                    module.def("trunc", [](Value const value) { return trunc(value); });
                 }
         };
 
