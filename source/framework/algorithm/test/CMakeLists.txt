@@ -112,6 +112,7 @@ set(routing_operation_names
     accu_fraction
     accu_capacity
     accu_threshold
+    accu_trigger
     d8_flow_direction
     decreasing_order
     downstream

@@ -462,7 +462,7 @@ def accuflux(flow_direction, inflow):
 def accufraction(flow_direction, inflow, fraction):
     flow_direction = ldd(flow_direction)
     inflow = scalar(inflow)
-    threshold = scalar(fraction)
+    fraction = scalar(fraction)
 
     return lfr.accu_fraction(flow_direction, inflow, fraction)
 
@@ -491,12 +491,20 @@ def accuthresholdstate(flow_direction, inflow, threshold):
     return accuthreshold(flow_direction, inflow, threshold)[1]
 
 
-def accutriggerflux(flow_direction, material, transporttrigger):
-    raise NotImplementedError("accutriggerflux")
+def accutrigger(flow_direction, inflow, trigger):
+    flow_direction = ldd(flow_direction)
+    inflow = scalar(inflow)
+    trigger = scalar(trigger)
+
+    return lfr.accu_trigger(flow_direction, inflow, trigger)
 
 
-def accutriggerstate(flow_direction, material, transporttrigger):
-    raise NotImplementedError("accutriggerstate")
+def accutriggerflux(flow_direction, inflow, trigger):
+    return accutrigger(flow_direction, inflow, trigger)[0]
+
+
+def accutriggerstate(flow_direction, inflow, trigger):
+    return accutrigger(flow_direction, inflow, trigger)[1]
 
 
 def accutraveltimeflux(flow_direction, material, transporttraveltime):
