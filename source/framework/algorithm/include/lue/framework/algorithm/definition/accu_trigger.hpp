@@ -150,12 +150,12 @@ namespace lue {
 
                                 // Now we know the final, total amount of inflow that enters this cell
 
-                                // Assume the trigger is exceeded ...
+                                // Assume the trigger is reached ...
                                 outflow += external_inflow;
                                 remainder = 0;
 
                                 // ... but if not, store the material
-                                if (outflow <= trigger)
+                                if (outflow < trigger)
                                 {
                                     std::swap(outflow, remainder);
                                 }
