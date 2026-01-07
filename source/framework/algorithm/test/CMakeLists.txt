@@ -87,6 +87,7 @@ set(local_operation_names
     sqrt
     subtract
     tan
+    trunc
     unique_id
     valid
     where
