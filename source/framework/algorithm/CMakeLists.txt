@@ -1754,6 +1754,19 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
+            # Instantiate accu_trigger
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/accu_trigger-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/accu_trigger.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"name":"${element}","Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             # Instantiate d8_flow_direction
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/d8_flow_direction-${Policies}_${element}.cpp")
 

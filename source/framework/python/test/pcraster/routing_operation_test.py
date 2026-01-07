@@ -9,6 +9,29 @@ from .operation_test import OperationTest, setUpModule, tearDownModule
 
 class RoutingOperationTest(OperationTest):
     @lue_test.framework_test_case
+    def test_accucapacity(self):
+        ldd = self.ldd
+
+        for type_ in [np.float32]:
+            spatial_material, non_spatial_material = (
+                self.spatial[type_],
+                self.non_spatial[type_],
+            )
+
+            non_spatial_capacity = type_(0.5) * non_spatial_material
+            spatial_capacity = lfr.create_array(
+                self.array_shape,
+                type_,
+                non_spatial_capacity,
+                partition_shape=self.partition_shape,
+            )
+
+            _ = lpr.accucapacityflux(ldd, spatial_material, spatial_capacity)
+            _ = lpr.accucapacitystate(ldd, spatial_material, spatial_capacity)
+            _ = lpr.accucapacityflux(ldd, non_spatial_material, spatial_capacity)
+            _ = lpr.accucapacitystate(ldd, non_spatial_material, spatial_capacity)
+
+    @lue_test.framework_test_case
     def test_accufraction(self):
         ldd = self.ldd
 
@@ -56,6 +79,29 @@ class RoutingOperationTest(OperationTest):
             _ = lpr.accuthresholdstate(ldd, spatial_material, spatial_threshold)
             _ = lpr.accuthresholdflux(ldd, non_spatial_material, spatial_threshold)
             _ = lpr.accuthresholdstate(ldd, non_spatial_material, spatial_threshold)
+
+    @lue_test.framework_test_case
+    def test_accutrigger(self):
+        ldd = self.ldd
+
+        for type_ in [np.float32]:
+            spatial_material, non_spatial_material = (
+                self.spatial[type_],
+                self.non_spatial[type_],
+            )
+
+            non_spatial_trigger = type_(0.5) * non_spatial_material
+            spatial_trigger = lfr.create_array(
+                self.array_shape,
+                type_,
+                non_spatial_trigger,
+                partition_shape=self.partition_shape,
+            )
+
+            _ = lpr.accutriggerflux(ldd, spatial_material, spatial_trigger)
+            _ = lpr.accutriggerstate(ldd, spatial_material, spatial_trigger)
+            _ = lpr.accutriggerflux(ldd, non_spatial_material, spatial_trigger)
+            _ = lpr.accutriggerstate(ldd, non_spatial_material, spatial_trigger)
 
     @lue_test.framework_test_case
     def test_downstream(self):

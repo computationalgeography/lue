@@ -34,7 +34,7 @@ these differences as much as possible.
     - LUE supports this PCRaster operation, or an operation like it. It may be that the LUE operation is named
       differently, that it supports different parameters, or that it accepts parameters in a different order.
 *   - ❌
-    - This PCRaster operations is not considered yet. It may be in the future.
+    - This PCRaster operation is not considered yet. It may be in the future.
 *   - 🗑
     - This PCRaster operation is considered, but skipped. See notes for reason.
 *   - 1, 2, 3
@@ -85,8 +85,8 @@ these differences as much as possible.
     - accu_threshold
 *   - accutriggerflux \
       accutriggerstate
-    - ❌
-    - 1
+    - ✅
+    - accu_trigger
 *   - accutraveltimestate \
       accutraveltimeflux \
       accutraveltimeremoved
