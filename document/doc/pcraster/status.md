@@ -225,9 +225,8 @@ these differences as much as possible.
     - 1
 *   - idiv, `//`
     - ✅
-    - LUE's version of the `//` operator produces slightly different results compared to PCRaster, because
-      it truncates towards the lowest integral value (AKA floor division), instead of towards zero.
-      Call the `idiv` function if you need PCRaster's behaviour.
+    - `idiv` and `//` produce slightly different results. The `idiv` function truncates towards zero, like
+      PCRaster's `idiv`, while the `//` operator truncates towards the floor, as per Python convention.
 *   - ifthen
     - ✅
     - where(condition_expression, true_expression)
