@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/value_policies/add.hpp"
 #include "lue/framework/algorithm/value_policies/divide.hpp"
 #include "lue/framework/algorithm/value_policies/equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/floor.hpp"
 #include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include "lue/framework/algorithm/value_policies/greater_than_equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/less_than.hpp"
@@ -311,6 +312,34 @@ namespace lue::framework {
                     "__rmod__",
                     [](Array const& argument2, Element const argument1) -> auto
                     { return modulus(argument1, argument2); },
+                    pybind11::is_operator())
+
+                // a / b, b / a, a /= b
+                .def(
+                    "__truediv__",
+                    [](Array const& argument1, Array const& argument2) -> auto
+                    { return divide(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__truediv__",
+                    [](Array const& argument1, Scalar const& argument2) -> auto
+                    { return divide(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__truediv__",
+                    [](Array const& argument1, Element const argument2) -> auto
+                    { return divide(argument1, argument2); },
+                    pybind11::is_operator())
+
+                .def(
+                    "__rtruediv__",
+                    [](Array const& argument2, Scalar const& argument1) -> auto
+                    { return divide(argument1, argument2); },
+                    pybind11::is_operator())
+                .def(
+                    "__rtruediv__",
+                    [](Array const& argument2, Element const argument1) -> auto
+                    { return divide(argument1, argument2); },
                     pybind11::is_operator());
         }
 
@@ -455,32 +484,32 @@ namespace lue::framework {
                     { return multiply(argument1, argument2); },
                     pybind11::is_operator())
 
-                // a / b, b / a, a /= b
+                // a // b, b // a, a //= b
                 .def(
-                    "__truediv__",
+                    "__floordiv__",
                     [](Array const& argument1, Array const& argument2) -> auto
-                    { return divide(argument1, argument2); },
+                    { return floor(divide(argument1, argument2)); },
                     pybind11::is_operator())
                 .def(
-                    "__truediv__",
+                    "__floordiv__",
                     [](Array const& argument1, Scalar const& argument2) -> auto
-                    { return divide(argument1, argument2); },
+                    { return floor(divide(argument1, argument2)); },
                     pybind11::is_operator())
                 .def(
-                    "__truediv__",
+                    "__floordiv__",
                     [](Array const& argument1, Element const argument2) -> auto
-                    { return divide(argument1, argument2); },
+                    { return floor(divide(argument1, argument2)); },
                     pybind11::is_operator())
 
                 .def(
-                    "__rtruediv__",
+                    "__rfloordiv__",
                     [](Array const& argument2, Scalar const& argument1) -> auto
-                    { return divide(argument1, argument2); },
+                    { return floor(divide(argument1, argument2)); },
                     pybind11::is_operator())
                 .def(
-                    "__rtruediv__",
+                    "__rfloordiv__",
                     [](Array const& argument2, Element const argument1) -> auto
-                    { return divide(argument1, argument2); },
+                    { return floor(divide(argument1, argument2)); },
                     pybind11::is_operator())
 
                 // a ** b, b ** a, a **= b

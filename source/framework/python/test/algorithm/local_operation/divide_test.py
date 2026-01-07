@@ -6,8 +6,7 @@ from lue_test.operation_test import OperationTest, setUpModule, tearDownModule
 class DivideTest(OperationTest):
     @lue_test.framework_test_case
     def test_overloads(self):
-
-        for element_type in lfr.floating_point_element_types:
+        for element_type in lfr.arithmetic_element_types:
             value = self.value[element_type]
             scalar = self.scalar[element_type]
             array = self.array[element_type]

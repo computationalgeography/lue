@@ -224,8 +224,9 @@ these differences as much as possible.
     - ❌
     - 1
 *   - idiv, `//`
-    - ❌
-    - 1
+    - ✅
+    - `idiv` and `//` produce slightly different results. The `idiv` function truncates towards zero, like
+      PCRaster's `idiv`, while the `//` operator truncates towards the floor, as per Python convention.
 *   - ifthen
     - ✅
     - where(condition_expression, true_expression)

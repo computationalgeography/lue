@@ -63,7 +63,7 @@ class CreatePartitionedArrayTest(OperationTest):
 
     @lue_test.framework_test_case
     def test_operator_div_overloads(self):
-        for element_type in lfr.floating_point_element_types:
+        for element_type in lfr.arithmetic_element_types:
             array = self.array[element_type]
             scalar = self.scalar[element_type]
             value = self.value[element_type]
@@ -79,6 +79,25 @@ class CreatePartitionedArrayTest(OperationTest):
             array /= value
             scalar /= array
             value /= array
+
+    @lue_test.framework_test_case
+    def test_operator_floor_div_overloads(self):
+        for element_type in lfr.floating_point_element_types:
+            array = self.array[element_type]
+            scalar = self.scalar[element_type]
+            value = self.value[element_type]
+
+            _ = array // array
+            _ = array // scalar
+            _ = array // value
+            _ = scalar // array
+            _ = value // array
+
+            array //= array
+            array //= scalar
+            array //= value
+            scalar //= array
+            value //= array
 
     @lue_test.framework_test_case
     def test_operator_gt_overloads(self):

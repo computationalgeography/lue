@@ -117,6 +117,19 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
+                # divide
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/divide-${Policies}_${element}_${rank}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/divide.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
                 # Instantiate equal_to
                 set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/equal_to-${Policies}_${element}_${rank}.cpp")
 
@@ -415,19 +428,6 @@ block()
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/cos.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                        '{"Policies":"${Policies}","Element":"${Element}","rank":"${rank}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-
-                # divide
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/divide-${Policies}_${element}_${rank}.cpp")
-
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/divide.cpp.in"
                     OUTPUT_PATHNAME
                         "${output_pathname}"
                     DICTIONARY

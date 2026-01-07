@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::divide {
 
-        template<typename OutputElement, typename InputElement>
+        template<Arithmetic OutputElement, Arithmetic InputElement>
         class RangePolicy
         {
 
@@ -23,7 +23,7 @@ namespace lue {
         };
 
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultValuePolicies = policy::Policies<
             DomainPolicy<Element>,
             OutputsPolicies<

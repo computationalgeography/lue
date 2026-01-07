@@ -743,8 +743,9 @@ def horizontan(*args):
     raise NotImplementedError("horizontan")
 
 
-def idiv(*args):
-    raise NotImplementedError("idiv")
+def idiv(expression1, expression2):
+    # PCRaster's idiv truncates towards zero
+    return lfr.trunc(expression1 / expression2)
 
 
 def ifthen(condition, expression):
