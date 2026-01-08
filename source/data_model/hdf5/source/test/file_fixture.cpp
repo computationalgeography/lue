@@ -4,9 +4,9 @@
 
 namespace lue::hdf5 {
 
-    FileFixture::FileFixture(std::string const& pathname, bool const remove_file_upon_destruction):
+    FileFixture::FileFixture(std::string pathname, bool const remove_file_upon_destruction):
 
-        _pathname{pathname},
+        _pathname{std::move(pathname)},
         _remove_file_upon_destruction{remove_file_upon_destruction}
 
     {

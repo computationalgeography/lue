@@ -1,4 +1,5 @@
 set(names
+    command
     import
     stack_name
 )

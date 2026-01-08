@@ -30,9 +30,9 @@ namespace lue::qa {
 
             auto operator=(ArrayExperiment&&) -> ArrayExperiment& = default;
 
-            [[nodiscard]] auto array_shape() const -> Shape const&;
+            auto array_shape() const -> Shape const&;
 
-            [[nodiscard]] auto partition_shape() const -> Shape const&;
+            auto partition_shape() const -> Shape const&;
 
         private:
 

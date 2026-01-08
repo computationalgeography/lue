@@ -1,6 +1,12 @@
 #pragma once
 #include "lue/assert.hpp"
+// clang-format off
+// safe_integer.hpp lacks an include of a header
+// https://github.com/boostorg/safe_numerics/issues/139
+// Still true in Boost-1.89.0
+#include <exception>
 #include <boost/safe_numerics/safe_integer.hpp>
+// clang-format on
 #include <cmath>
 #include <type_traits>
 

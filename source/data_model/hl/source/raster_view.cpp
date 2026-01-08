@@ -1,5 +1,7 @@
 #include "lue/data_model/hl/raster_view.hpp"
+#include <algorithm>
 #include <format>
+#include <utility>
 
 
 namespace lue::data_model {
@@ -14,11 +16,11 @@ namespace lue::data_model {
 
     template<typename DatasetPtr>
     RasterView<DatasetPtr>::RasterView(
-        DatasetPtr dataset_ptr, std::string const& phenomenon_name, std::string const& property_set_name):
+        DatasetPtr dataset_ptr, std::string phenomenon_name, std::string property_set_name):
 
         DatasetView<DatasetPtr>{std::move(dataset_ptr)},
-        _phenomenon_name{phenomenon_name},
-        _property_set_name{property_set_name},
+        _phenomenon_name{std::move(phenomenon_name)},
+        _property_set_name{std::move(property_set_name)},
         _object_id{999},
         _space_box(),
         _space_grid(2),
@@ -50,58 +52,58 @@ namespace lue::data_model {
 
 
     template<typename DatasetPtr>
-    std::string const& RasterView<DatasetPtr>::phenomenon_name() const
+    auto RasterView<DatasetPtr>::phenomenon_name() const -> std::string const&
     {
         return _phenomenon_name;
     }
 
 
     template<typename DatasetPtr>
-    std::string const& RasterView<DatasetPtr>::property_set_name() const
+    auto RasterView<DatasetPtr>::property_set_name() const -> std::string const&
     {
         return _property_set_name;
     }
 
 
     template<typename DatasetPtr>
-    ID RasterView<DatasetPtr>::object_id() const
+    auto RasterView<DatasetPtr>::object_id() const -> ID
     {
         return _object_id;
     }
 
 
     template<typename DatasetPtr>
-    typename RasterView<DatasetPtr>::SpaceBox const& RasterView<DatasetPtr>::space_box() const
+    auto RasterView<DatasetPtr>::space_box() const -> typename RasterView<DatasetPtr>::SpaceBox const&
     {
         return _space_box;
     }
 
 
     template<typename DatasetPtr>
-    hdf5::Shape const& RasterView<DatasetPtr>::grid_shape() const
+    auto RasterView<DatasetPtr>::grid_shape() const -> hdf5::Shape const&
     {
         return _space_grid;
     }
 
 
     template<typename DatasetPtr>
-    Count RasterView<DatasetPtr>::nr_layers() const
+    auto RasterView<DatasetPtr>::nr_layers() const -> Count
     {
         return _layer_names.size();
     }
 
 
     template<typename DatasetPtr>
-    std::vector<std::string> const& RasterView<DatasetPtr>::layer_names() const
+    auto RasterView<DatasetPtr>::layer_names() const -> std::vector<std::string> const&
     {
         return _layer_names;
     }
 
 
     template<typename DatasetPtr>
-    bool RasterView<DatasetPtr>::contains(std::string const& name)
+    auto RasterView<DatasetPtr>::contains(std::string const& name) -> bool
     {
-        return std::find(_layer_names.begin(), _layer_names.end(), name) != _layer_names.end();
+        return std::ranges::find(_layer_names, name) != _layer_names.end();
     }
 
 
@@ -116,8 +118,9 @@ namespace lue::data_model {
     }
 
 
-    bool contains_raster(
+    auto contains_raster(
         Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+        -> bool
     {
         bool result{false};
 
@@ -212,9 +215,8 @@ namespace lue::data_model {
             @brief      Construct an instance
             @param      dataset Dataset to manage
 
-            It is assumed that @a dataset is already laid out per this class'
-            conventions. Typically, it is the result of calling
-            create_raster_view(), or similar.
+            It is assumed that @a dataset is already laid out per this class' conventions. Typically, it is
+            the result of calling create_raster_view(), or similar.
         */
         template<typename DatasetPtr>
         RasterView<DatasetPtr>::RasterView(
@@ -266,8 +268,9 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
-            std::string const& name, hdf5::Datatype const& datatype, void const* no_data_value)
+        auto RasterView<DatasetPtr>::add_layer(
+            std::string const& name, hdf5::Datatype const& datatype, void const* no_data_value) ->
+            typename RasterView<DatasetPtr>::Layer
         {
             if (this->contains(name))
             {
@@ -306,7 +309,7 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::layer(std::string const& name)
+        auto RasterView<DatasetPtr>::layer(std::string const& name) -> typename RasterView<DatasetPtr>::Layer
         {
             if (!this->contains(name))
             {
@@ -333,8 +336,9 @@ namespace lue::data_model {
         }
 
 
-        bool contains_raster(
+        auto contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool
         {
             bool result{false};
 
@@ -354,11 +358,11 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        auto probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
-            std::string const& layer_name)
+            std::string const& layer_name) -> std::tuple<ID, hdf5::Shape, hdf5::Datatype>
         {
             auto dataset_ptr =
                 std::make_shared<data_model::Dataset>(data_model::open_dataset(dataset_pathname));
@@ -376,12 +380,12 @@ namespace lue::data_model {
             @exception  .
         */
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> create_raster_view(
+        auto create_raster_view(
             DatasetPtr dataset_ptr,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
             hdf5::Shape const& grid_shape,
-            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box)
+            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box) -> RasterView<DatasetPtr>
         {
             // FIXME Refactor with variable::create_raster_view
 
@@ -442,9 +446,8 @@ namespace lue::data_model {
             @brief      Construct an instance
             @param      dataset Dataset to manage
 
-            It is assumed that @a dataset is already laid out per this class'
-            conventions. Typically, it is the result of calling
-            create_raster_view(), or similar.
+            It is assumed that @a dataset is already laid out per this class' conventions. Typically, it is
+            the result of calling create_raster_view(), or similar.
         */
         template<typename DatasetPtr>
         RasterView<DatasetPtr>::RasterView(
@@ -519,22 +522,22 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        typename RasterView<DatasetPtr>::TimeBox const& RasterView<DatasetPtr>::time_box() const
+        auto RasterView<DatasetPtr>::time_box() const -> typename RasterView<DatasetPtr>::TimeBox const&
         {
             return _time_box;
         }
 
 
         template<typename DatasetPtr>
-        hdf5::Shape::value_type RasterView<DatasetPtr>::nr_time_steps() const
+        auto RasterView<DatasetPtr>::nr_time_steps() const -> hdf5::Shape::value_type
         {
             return _time_grid[0];
         }
 
 
         template<typename DatasetPtr>
-        typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::add_layer(
-            std::string const& name, hdf5::Datatype const& datatype)
+        auto RasterView<DatasetPtr>::add_layer(std::string const& name, hdf5::Datatype const& datatype) ->
+            typename RasterView<DatasetPtr>::Layer
         {
             if (this->contains(name))
             {
@@ -584,7 +587,7 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        typename RasterView<DatasetPtr>::Layer RasterView<DatasetPtr>::layer(std::string const& name)
+        auto RasterView<DatasetPtr>::layer(std::string const& name) -> typename RasterView<DatasetPtr>::Layer
         {
             if (!this->contains(name))
             {
@@ -611,8 +614,9 @@ namespace lue::data_model {
         }
 
 
-        bool contains_raster(
+        auto contains_raster(
             Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool
         {
             bool result{false};
 
@@ -687,11 +691,11 @@ namespace lue::data_model {
         }
 
 
-        std::tuple<ID, hdf5::Shape, hdf5::Datatype> probe_raster(
+        auto probe_raster(
             std::string const& dataset_pathname,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
-            std::string const& layer_name)
+            std::string const& layer_name) -> std::tuple<ID, hdf5::Shape, hdf5::Datatype>
         {
             auto dataset_ptr =
                 std::make_shared<data_model::Dataset>(data_model::open_dataset(dataset_pathname));
@@ -709,7 +713,7 @@ namespace lue::data_model {
             @exception  .
         */
         template<typename DatasetPtr>
-        RasterView<DatasetPtr> create_raster_view(
+        auto create_raster_view(
             DatasetPtr dataset_ptr,
             std::string const& phenomenon_name,
             std::string const& property_set_name,
@@ -717,7 +721,7 @@ namespace lue::data_model {
             Count nr_time_steps,
             typename RasterView<DatasetPtr>::TimeBox const& time_box,
             hdf5::Shape const& grid_shape,
-            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box)
+            typename data_model::RasterView<DatasetPtr>::SpaceBox const& space_box) -> RasterView<DatasetPtr>
         {
             // FIXME Refactor with constant::create_raster_view
 

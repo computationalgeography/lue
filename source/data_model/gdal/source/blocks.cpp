@@ -17,7 +17,7 @@ namespace lue::gdal {
             -> Count
         {
             return ((block_offset + 1) * block_extent > full_extent)
-                       ? full_extent - block_offset * block_extent
+                       ? full_extent - (block_offset * block_extent)
                        : block_extent;
         }
 

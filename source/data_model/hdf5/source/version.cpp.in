@@ -3,7 +3,7 @@
 
 namespace lue {
 
-    std::string hdf5_version()
+    auto hdf5_version() -> std::string
     {
         return "${HDF5_VERSION}";
     }
