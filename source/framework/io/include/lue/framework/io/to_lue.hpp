@@ -342,7 +342,7 @@ namespace lue {
             Partitions const& partitions,
             std::string const& array_pathname,
             Count const to_lue_order,
-            Count const from_lue_order,
+            [[maybe_unused]] Count const from_lue_order,
             data_model::ID const object_id,
             Index const time_step_idx) -> hpx::future<void>
         {
@@ -489,7 +489,7 @@ namespace lue {
                         auto const& property{
                             property_set.properties().collection<Properties>()[property_name]};
                         // variable: data_model::different_shape::constant_shape::Value
-                        const auto& value{property.value()};
+                        auto const& value{property.value()};
                         // variable: data_model::same_shape::constant_shape::Value: data_model::Array:
                         // hdf5::Dataset
                         auto array{value[object_id]};
