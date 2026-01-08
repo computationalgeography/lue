@@ -408,7 +408,7 @@ namespace lue::utility {
         {
             std::string const name = property_json.at("name");
 
-            std::string const datatype_json = property_json.at("datatype");
+            [[maybe_unused]] std::string const datatype_json = property_json.at("datatype");
             assert(datatype_json == "uint64");
 
             auto const datatype = hdf5::Datatype{hdf5::NativeDatatypeTraits<Datatype>::type_id()};
@@ -575,7 +575,7 @@ namespace lue::utility {
             std::string const name = property_json.at("name");
             data_model::Rank const rank = property_json.at("rank");
 
-            std::string const datatype_json = property_json.at("datatype");
+            [[maybe_unused]] std::string const datatype_json = property_json.at("datatype");
             assert(datatype_json == "uint64");
 
             auto const datatype = hdf5::Datatype{hdf5::NativeDatatypeTraits<Datatype>::type_id()};
@@ -890,7 +890,7 @@ namespace lue::utility {
                 throw std::runtime_error("Could not find space domain values");
             }
 
-            std::string const datatype_json = space_domain_json.at("datatype");
+            [[maybe_unused]] std::string const datatype_json = space_domain_json.at("datatype");
             assert(datatype_json == "float64");
             auto const datatype = hdf5::native_float64;
             std::size_t const rank = space_domain_json.at("rank");
