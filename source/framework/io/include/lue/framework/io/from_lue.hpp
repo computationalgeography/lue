@@ -272,7 +272,7 @@ namespace lue {
             Policies const& policies,
             std::string const& array_pathname,
             Count const from_lue_order,
-            Count const to_lue_order,
+            [[maybe_unused]] Count const to_lue_order,
             hdf5::Offset const& array_hyperslab_start,
             data_model::ID const object_id,
             Index const time_step_idx,
