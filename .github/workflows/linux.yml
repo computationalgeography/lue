@@ -171,14 +171,6 @@ jobs:
               -D HPX_ROOT=${{ env.hpx_install_directory }} \
               -D mdspan_ROOT=${{ env.mdspan_install_directory }}
 
-      - name: analyse
-        if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
-        run: |
-          cd ${{ env.lue_source_directory }}
-          pre-commit install
-          ln -s ../${{ env.lue_build_directory }}/compile_commands.json .
-          pre-commit run --all-files
-
       - name: build
         run: |
           cmake --build ${{ env.lue_build_directory }} \
@@ -244,6 +236,14 @@ jobs:
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
         run: |
           cmake --build ${{ env.lue_build_directory }} --target documentation
+
+      - name: analyse
+        if: matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.13'
+        run: |
+          cd ${{ env.lue_source_directory }}
+          pre-commit install
+          ln -s ../${{ env.lue_build_directory }}/compile_commands.json .
+          pre-commit run --all-files
 
       # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
       # a fork.
