@@ -1,4 +1,5 @@
 #pragma once
+// NOLINTNEXTLINE(clang-diagnostic-error)
 #include "lue/gdal/configure.hpp"
 #include "lue/gdal/export.hpp"
 #include <stdexcept>

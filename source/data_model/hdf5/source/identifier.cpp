@@ -221,10 +221,12 @@ namespace lue::hdf5 {
     }
 
 
+    // NOLINTBEGIN(readability-convert-member-functions-to-static)
     void Identifier::assert_invariant() const
     {
         assert(!(is_valid() && _close == nullptr));
     }
+    // NOLINTEND(readability-convert-member-functions-to-static)
 
 
     /*!
