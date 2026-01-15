@@ -385,15 +385,12 @@ namespace lue {
                 //
                 // - Any previous from_lue call has finished (from_lue_order)
                 //     - This is handled in the root locality and must therefore be true already
-                //     - We can't assert that here. This info is only available on the root locality.
                 //
                 // - Any previous to_lue call has finished (to_lue_order - 1)
                 //     - This is handled in the root locality and must therefore be true already
-                //     - We can't assert that here. This info is only available on the root locality.
                 //
-                // - Any previous locality has finished writing it partitions (to_lue_close_dataset_done)
+                // - Any previous locality has finished writing its partitions (to_lue_close_dataset_done)
                 //     - This is handled in the root locality and must therefore be true already
-                //     - We can't assert that here. This info is only available on the root locality.
 
 #ifndef NDEBUG
                 lue_hpx_assert(
@@ -420,6 +417,7 @@ namespace lue {
 
                 if constexpr (serial_io_thread_safe)
                 {
+                    // All preconditions are true already
                     precondition_f = hpx::make_ready_future();
                 }
             }
@@ -456,18 +454,19 @@ namespace lue {
 
                     auto [partition_idx, partitions] = when_any_result_f.get();
 
-                    // if constexpr (serial_io_non_thread_safe)
-                    // {
-                    //     // TODO: Can be moved to precondition stuff above
-                    //
-                    //     // Wait before opening the dataset. We need to make sure all HDF5 API calls are
-                    //     // done from the same OS thread. We therefore make sure we don't have to wait
-                    //     anywhere
-                    //     // else (and potentially get rescheduled on another OS thread) during the write.
-                    //     hpx::wait_all(partitions);
-                    // }
-
                     // Open the dataset once the first partition is ready to be written
+
+                    // BUG: In some cases the dataset is still open for reading...:
+                    // How can this be??? Maybe read doesn't really close the dataset is some circumstances?
+                    // This happens when writing and reading from / to the same file
+
+                    // 184: HDF5-DIAG: Error detected in HDF5 (1.10.10) thread 1:
+                    // 184:   #000: ../../../src/H5F.c line 412 in H5Fopen(): unable to open file
+                    // 184:     major: File accessibility
+                    // 184:     minor: Unable to open file
+                    // 184:   #001: ../../../src/H5Fint.c line 1698 in H5F_open(): file is already open for
+                    // read-only 184:     major: File accessibility 184:     minor: Unable to open file
+
                     auto dataset = open_dataset(dataset_path.string(), H5F_ACC_RDWR);
 
                     {
@@ -522,10 +521,12 @@ namespace lue {
                         [](auto&& dataset) -> auto
                         {
                             HPX_UNUSED(dataset);
-                            dataset.flush();
+                            // dataset.flush();
                         }(std::move(dataset));
 
                         to_lue_close_dataset_p.set_value();
+
+                        lue_hpx_assert(to_lue_close_dataset_done(dataset_path, to_lue_order).is_ready());
 
                         print_debug("to_lue/close {}", to_lue_order);
 
@@ -543,16 +544,20 @@ namespace lue {
                                 [[maybe_unused]] auto const& close_for_read_file_predecessor_f) mutable
                                 -> auto
                             {
-                                print_debug("to_lue/close {}", to_lue_order);
-
                                 // The dataset must go out of scope before we set the promise's value
                                 [](auto&& dataset) -> auto
                                 {
                                     HPX_UNUSED(dataset);
-                                    dataset.flush();
+                                    // dataset.flush();
                                 }(std::move(dataset));
 
                                 to_lue_close_dataset_p.set_value();
+
+                                // TODO: Uncomment and refactor with previous block
+                                // lue_hpx_assert(
+                                //     to_lue_close_dataset_done(dataset_path, to_lue_order).is_ready());
+
+                                print_debug("to_lue/close {}", to_lue_order);
                             });
                     }
                 },
@@ -794,7 +799,6 @@ namespace lue {
         for (auto const& [locality, partition_idxs] : partition_idxs_by_locality)
         {
             // Copy current selection of partitions from input array to a new collection
-            // NOTE: Use a view?
             std::vector<Partition> partitions(partition_idxs.size());
 
             for (std::size_t idx = 0; auto const partition_idx : partition_idxs)

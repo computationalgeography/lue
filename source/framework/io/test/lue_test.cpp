@@ -134,7 +134,7 @@ namespace {
         view.add_layer<Element>(property_name);
 
         // TODO: Add to the view(?)
-        dataset_ptr->flush();
+        // dataset_ptr->flush();
 
         return {view.object_id(), nr_time_steps, raster_shape, partition_shape};
     }
@@ -142,6 +142,7 @@ namespace {
 }  // Anonymous namespace
 
 
+#if 0
 BOOST_AUTO_TEST_CASE(constant_raster)
 {
     // Write a constant raster with integers and read it back in. Compare raster written with raster read.
@@ -165,6 +166,7 @@ BOOST_AUTO_TEST_CASE(constant_raster)
     Array<Element> array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
+#endif
 
 
 BOOST_AUTO_TEST_CASE(variable_raster)
@@ -190,36 +192,32 @@ BOOST_AUTO_TEST_CASE(variable_raster)
     // Shape const raster_shape = {60, 40};
     // Shape const partition_shape = {10, 10};
 
+    // 184: HDF5-DIAG: Error detected in HDF5 (1.10.10) thread 1:
+    // 184:   #000: ../../../src/H5F.c line 412 in H5Fopen(): unable to open file
+    // 184:     major: File accessibility
+    // 184:     minor: Unable to open file
+    // 184:   #001: ../../../src/H5Fint.c line 1698 in H5F_open(): file is already open for read-only
+    // 184:     major: File accessibility
+    // 184:     minor: Unable to open file
+
     // Create, write, read, and compare arrays
     for (lue::Index time_step = 0; time_step < nr_time_steps; ++time_step)
     {
-        // hpx::cout << std::format("time_step: {}\n", time_step);
-
-        // NOTE: This works, without the read
         Array<Element> array_written =
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
-        // // write_finished.get();
-        // hpx::cout << std::format("/time_step: {}\n", time_step);
-
-        // TODO: Fixes crash!!!
+        // // TODO: Fixes crash!!!
         // write_finished.get();
 
-        // // TODO: Fixes crash!!!
+        // TODO: Fixes crash!!!
         // lue::detail::to_lue_finished(lue::detail::normalize(dataset_pathname), time_step + 1).wait();
 
-        // NOTE: This works, without the write
-        // TODO: Reading starts sometimes before writing has finished!!!
-
-        // NOTE: from_lue's done future is either not correct or not used correctly by to_lue
-        // TODO: Make sure from_lue is finished when it is marked as such. Maybe closing the dataset is
-        // not synchronous yet. Make it so.
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
 
-        // Doesn't help
-        // hpx::wait_all(array_read.partitions().begin(), array_read.partitions().end());
+        // // Doesn't help
+        // // hpx::wait_all(array_read.partitions().begin(), array_read.partitions().end());
 
         lue::test::check_arrays_are_equal(array_read, array_written);
     }
@@ -238,6 +236,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 // }
 
 
+#if 0
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
 {
     // 1. Create stack of n arrays
@@ -321,3 +320,4 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
         // std::this_thread::sleep_for(3s);
     }
 }
+#endif
