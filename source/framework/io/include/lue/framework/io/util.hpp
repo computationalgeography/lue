@@ -19,7 +19,7 @@ namespace lue::detail {
         hpx::cout << std::format(
                          "DEBUG[{}]: {}\n",
                          hpx::agas::get_locality_id(),
-                         std::format(fmt, std::forward<Args...>(args)...))
+                         std::format(fmt, std::forward<Args>(args)...))
                   << std::flush;
     }
 #else
