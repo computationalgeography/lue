@@ -21,6 +21,7 @@ namespace lue::hdf5 {
 
     {
         assert(!is_valid());
+        assert_invariant();
     }
 
 
@@ -71,6 +72,7 @@ namespace lue::hdf5 {
 
     {
         other._id = -1;
+        other._close = nullptr;
 
         try
         {
@@ -156,6 +158,7 @@ namespace lue::hdf5 {
             other._id = -1;
 
             _close = std::move(other._close);
+            other._close = nullptr;
 
             assert_invariant();
             assert(!other.is_valid());
@@ -216,7 +219,16 @@ namespace lue::hdf5 {
         if (is_valid())
         {
             assert(reference_count() > 0);
+
+#ifndef NDEBUG
+            auto const rc_pre_close = reference_count();
+#endif
+
             _close(_id);
+
+#ifndef NDEBUG
+            assert(rc_pre_close == 1 || reference_count() == rc_pre_close - 1);
+#endif
         }
     }
 
@@ -224,6 +236,7 @@ namespace lue::hdf5 {
     // NOLINTBEGIN(readability-convert-member-functions-to-static)
     void Identifier::assert_invariant() const
     {
+        // NOTE: An instance can be non-valid and have a _close function set
         assert(!(is_valid() && _close == nullptr));
     }
     // NOLINTEND(readability-convert-member-functions-to-static)

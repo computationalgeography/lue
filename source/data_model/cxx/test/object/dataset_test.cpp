@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(use_moved_file)
     lue::hdf5::File::AccessPropertyList access_property_list = lue::hdf5::File::AccessPropertyList{};
     access_property_list.set_library_version_bounds(H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
 
-    auto file1 = lue::hdf5::create_file(name, std::move(access_property_list));
+    auto file1 = lue::hdf5::create_file(name, access_property_list);
 
     file1.attributes().write<std::string>("attr1", "attr1");
     file1.attributes().write<std::string>("attr2", "attr2");
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(use_moved_file)
 BOOST_AUTO_TEST_CASE(create_new_dataset)
 {
     std::string const dataset_name = "create_new_dataset.lue";
-    lue::hdf5::FileFixture f{dataset_name};
+    lue::hdf5::FileFixture fixture{dataset_name};
 
     auto dataset = lue::data_model::create_dataset(dataset_name);
 
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(create_new_dataset)
 BOOST_AUTO_TEST_CASE(open_new_dataset)
 {
     std::string const dataset_name = "open_new_dataset.lue";
-    lue::hdf5::FileFixture f{dataset_name};
+    lue::hdf5::FileFixture fixture{dataset_name};
 
     /* auto const dataset = */ lue::data_model::create_dataset(dataset_name);
 
@@ -79,4 +79,22 @@ BOOST_AUTO_TEST_CASE(open_new_dataset)
     auto const& phenomena = dataset.phenomena();
 
     BOOST_CHECK_EQUAL(phenomena.size(), 0);
+}
+
+
+BOOST_AUTO_TEST_CASE(object_count)
+{
+    std::string const dataset_name = "dataset_object_count.lue";
+    lue::hdf5::FileFixture fixture{dataset_name, false};
+
+    {
+        auto const dataset = lue::data_model::create_dataset(dataset_name);
+
+        // Two groups: lue_phenomena and lue_universes
+        BOOST_CHECK_EQUAL(dataset.object_count(H5F_OBJ_FILE), 1);
+        BOOST_CHECK_EQUAL(dataset.object_count(H5F_OBJ_DATASET), 0);
+        BOOST_CHECK_EQUAL(dataset.object_count(H5F_OBJ_GROUP), 2);
+        BOOST_CHECK_EQUAL(dataset.object_count(H5F_OBJ_DATATYPE), 0);
+        BOOST_CHECK_EQUAL(dataset.object_count(H5F_OBJ_ATTR), 0);
+    }
 }
