@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE lue hdf5 dataset
 #include "lue/hdf5/dataset.hpp"
 #include "lue/hdf5/file.hpp"
+#include "lue/hdf5/test/file_fixture.hpp"
 #include "lue/hdf5/vlen_memory.hpp"
 #include <boost/test/included/unit_test.hpp>
 
@@ -208,4 +209,44 @@ BOOST_AUTO_TEST_CASE(dataset_utf8)
             }
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(object_count)
+{
+    std::string const filename = "dataset_object_count.h5";
+    lue::hdf5::FileFixture fixture{filename};
+
+    auto file = lue::hdf5::create_file(filename);
+
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_FILE), 1);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATASET), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_GROUP), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATATYPE), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_ATTR), 0);
+
+    {
+        lue::hdf5::Dataset::CreationPropertyList creation_property_list;
+        lue::hdf5::Datatype const file_datatype{H5T_STD_I32LE};
+        lue::hdf5::Dataspace const dataspace = lue::hdf5::create_dataspace({60, 40});
+
+        auto dataset_a =
+            lue::hdf5::create_dataset(file.id(), "a", file_datatype, dataspace, creation_property_list);
+        auto dataset_b =
+            lue::hdf5::create_dataset(file.id(), "b", file_datatype, dataspace, creation_property_list);
+        auto dataset_c =
+            lue::hdf5::create_dataset(file.id(), "c", file_datatype, dataspace, creation_property_list);
+
+        BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_FILE), 1);
+        BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATASET), 3);
+        BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_GROUP), 0);
+        BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATATYPE), 0);
+        BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_ATTR), 0);
+    }
+
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_FILE), 1);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATASET), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_GROUP), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_DATATYPE), 0);
+    BOOST_CHECK_EQUAL(file.object_count(H5F_OBJ_ATTR), 0);
 }

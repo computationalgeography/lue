@@ -71,6 +71,17 @@ namespace lue::hdf5 {
     }
 
 
+    void File::AccessPropertyList::set_close_degree(H5F_close_degree_t const degree)
+{
+        herr_t const status{H5Pset_fclose_degree(id(), degree)};
+
+        if (status < 0)
+        {
+            throw std::runtime_error("Cannot set file close degree");
+        }
+}
+
+
     /*!
         @brief      Open file
         @param      name Name of file
@@ -179,6 +190,19 @@ namespace lue::hdf5 {
         }
 
         return intent;
+    }
+
+
+    auto File::object_count(unsigned int const types) const -> ssize_t
+    {
+        ssize_t count{H5Fget_obj_count(id(), types)};
+
+        if (count < 0)
+        {
+            throw std::runtime_error(std::format("Cannot determine object count of file {}", pathname()));
+        }
+
+        return count;
     }
 
 

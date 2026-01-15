@@ -29,6 +29,8 @@ namespace lue::hdf5 {
 #endif
 
                     void set_library_version_bounds(H5F_libver_t low, H5F_libver_t high);
+
+                    void set_close_degree(H5F_close_degree_t degree);
             };
 
             explicit File(std::string const& name);
@@ -50,6 +52,8 @@ namespace lue::hdf5 {
             void flush() const;
 
             auto intent() const -> unsigned int;
+
+            auto object_count(unsigned int types) const -> ssize_t;
     };
 
 
