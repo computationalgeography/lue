@@ -24,7 +24,7 @@
 namespace std {
 
     template<typename Element, std::size_t size>
-    ostream& operator<<(ostream& stream, array<Element, size> const& array)
+    auto operator<<(ostream& stream, array<Element, size> const& array) -> ostream&
     {
         stream << '[';
         std::copy(std::begin(array), std::end(array), lue_make_ostream_joiner(stream, ", "));
@@ -36,7 +36,7 @@ namespace std {
 
 
     template<typename T>
-    ostream& operator<<(ostream& stream, optional<T> const& instance)
+    auto operator<<(ostream& stream, optional<T> const& instance) -> ostream&
     {
         stream << '(';
         if (instance)
@@ -50,14 +50,10 @@ namespace std {
 
 
     template<typename... Ts>
-    std::ostream& operator<<(std::ostream& stream, std::tuple<Ts...> const& tuple)
+    auto operator<<(std::ostream& stream, std::tuple<Ts...> const& tuple) -> std::ostream&
     {
         stream << '(';
-        std::apply(
-
-            [&stream](auto&&... ts) { ((stream << ts << ", "), ...); },
-
-            tuple);
+        std::apply([&stream](auto&&... element) -> auto { ((stream << element << ", "), ...); }, tuple);
         stream << ')';
 
         return stream;
@@ -65,7 +61,7 @@ namespace std {
 
 
     template<typename T>
-    ostream& operator<<(ostream& stream, std::vector<T> const& vector)
+    auto operator<<(ostream& stream, std::vector<T> const& vector) -> ostream&
     {
         stream << '[';
 
@@ -100,7 +96,7 @@ namespace std {
 
 
     template<typename Key, typename Value>
-    ostream& operator<<(ostream& stream, std::map<Key, Value> const& map_)
+    auto operator<<(ostream& stream, std::map<Key, Value> const& map_) -> ostream&
     {
         stream << '{';
 

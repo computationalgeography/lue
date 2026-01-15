@@ -2,48 +2,46 @@
 #include "lue/core/time.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        class LUE_DATA_MODEL_EXPORT Clock
-        {
+    class LUE_DATA_MODEL_EXPORT Clock
+    {
 
-            public:
+        public:
 
-                Clock(time::Unit unit, time::TickPeriodCount nr_units);
+            Clock(time::Unit unit, time::TickPeriodCount nr_units);
 
-                Clock(time::Epoch const& epoch, time::Unit unit, time::TickPeriodCount nr_units);
+            Clock(time::Epoch epoch, time::Unit unit, time::TickPeriodCount nr_units);
 
-                Clock(Clock const&) = default;
+            Clock(Clock const& other) = default;
 
-                Clock(Clock&&) = default;
+            Clock(Clock&& other) = default;
 
-                ~Clock() = default;
+            ~Clock() = default;
 
-                Clock& operator=(Clock const&) = default;
+            auto operator=(Clock const& other) -> Clock& = default;
 
-                Clock& operator=(Clock&&) = default;
+            auto operator=(Clock&& other) -> Clock& = default;
 
-                bool operator==(Clock const& other) const;
+            auto operator==(Clock const& other) const -> bool;
 
-                bool operator!=(Clock const& other) const;
+            auto operator!=(Clock const& other) const -> bool;
 
-                bool operator<(Clock const& other) const;
+            auto operator<(Clock const& other) const -> bool;
 
-                time::Epoch const& epoch() const;
+            auto epoch() const -> time::Epoch const&;
 
-                time::Unit unit() const;
+            auto unit() const -> time::Unit;
 
-                time::TickPeriodCount nr_units() const;
+            auto nr_units() const -> time::TickPeriodCount;
 
-            private:
+        private:
 
-                time::Epoch _epoch;
+            time::Epoch _epoch;
 
-                time::Unit _unit;
+            time::Unit _unit;
 
-                time::TickPeriodCount _nr_units;
-        };
+            time::TickPeriodCount _nr_units;
+    };
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

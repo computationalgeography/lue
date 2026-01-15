@@ -33,7 +33,7 @@ namespace lue::qa {
 
             void stop();
 
-            [[nodiscard]] auto start_time_point() const -> Stopwatch::SystemTimePoint const&;
+            auto start_time_point() const -> Stopwatch::SystemTimePoint const&;
 
             /*!
                 @brief      Return the duration between the start and end time points

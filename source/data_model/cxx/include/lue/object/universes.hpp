@@ -3,35 +3,33 @@
 #include "lue/object/universe.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        class LUE_DATA_MODEL_EXPORT Universes: public Collection<Universe>
-        {
+    class LUE_DATA_MODEL_EXPORT Universes: public Collection<Universe>
+    {
 
-            public:
+        public:
 
-                explicit Universes(hdf5::Group const& parent);
+            explicit Universes(hdf5::Group const& parent);
 
-                explicit Universes(Collection<Universe>&& collection);
+            explicit Universes(Collection<Universe>&& collection);
 
-                Universes(Universes const&) = default;
+            Universes(Universes const& other) = default;
 
-                Universes(Universes&&) = default;
+            Universes(Universes&& other) = default;
 
-                ~Universes() override = default;
+            ~Universes() override = default;
 
-                Universes& operator=(Universes const&) = default;
+            auto operator=(Universes const& other) -> Universes& = default;
 
-                Universes& operator=(Universes&&) = default;
+            auto operator=(Universes&& other) -> Universes& = default;
 
-                Universe& add(std::string const& name);
+            auto add(std::string const& name) -> Universe&;
 
-            private:
-        };
+        private:
+    };
 
 
-        Universes create_universes(hdf5::Group& parent);
+    auto create_universes(hdf5::Group& parent) -> Universes;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

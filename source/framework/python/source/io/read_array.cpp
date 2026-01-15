@@ -165,7 +165,7 @@ namespace lue::framework {
 
 
                     template<typename Element, Rank rank>
-                    [[nodiscard]] auto read(
+                    auto read(
                         std::string const& array_pathname,
                         StaticShape<rank> const& partition_shape,
                         data_model::ID const object_id) const -> pybind11::object
@@ -198,7 +198,7 @@ namespace lue::framework {
                     }
 
                     template<typename Element, Rank rank>
-                    [[nodiscard]] auto read(
+                    auto read(
                         std::string const& array_pathname,
                         StaticShape<rank> const& partition_shape,
                         data_model::ID const object_id) const -> pybind11::object

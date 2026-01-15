@@ -41,7 +41,7 @@ namespace lue::qa {
 
             void stop();
 
-            [[nodiscard]] auto start_time_point() const -> SystemTimePoint const&;
+            auto start_time_point() const -> SystemTimePoint const&;
 
             /*!
                 @brief      Return the duration casted to @a ToDuration
@@ -53,7 +53,7 @@ namespace lue::qa {
                 @endcode
             */
             template<typename ToDuration>
-            [[nodiscard]] auto duration() const -> ToDuration
+            auto duration() const -> ToDuration
             {
                 return _time_interval.duration<ToDuration>();
             }

@@ -315,7 +315,7 @@ namespace lue {
                 }
 
 
-                [[nodiscard]] auto cell_idx() const -> Index const&
+                auto cell_idx() const -> Index const&
                 {
                     return _cell_idx;
                 }

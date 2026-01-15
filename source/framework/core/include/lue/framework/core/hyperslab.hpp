@@ -80,7 +80,7 @@ namespace lue {
                 return _strides;
             }
 
-            [[nodiscard]] auto is_strided() const -> bool
+            auto is_strided() const -> bool
             {
                 return std::ranges::any_of(_strides, [](auto const stride) { return stride > 1; });
             }

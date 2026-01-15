@@ -4,52 +4,50 @@
 #include "lue/core/time/duration.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            @todo       Privately inherit to hide base class' API?
+    /*!
+        @todo       Privately inherit to hide base class' API?
 
-            - Zero or more locations in time per item
-        */
-        class LUE_DATA_MODEL_EXPORT LocationInTime: public same_shape::constant_shape::Value
-        {
+        - Zero or more locations in time per item
+    */
+    class LUE_DATA_MODEL_EXPORT LocationInTime: public same_shape::constant_shape::Value
+    {
 
-            public:
+        public:
 
-                using Element = time::DurationCount;
+            using Element = time::DurationCount;
 
-                explicit LocationInTime(hdf5::Group const& parent);
+            explicit LocationInTime(hdf5::Group const& parent);
 
-                explicit LocationInTime(same_shape::constant_shape::Value&& value);
+            explicit LocationInTime(same_shape::constant_shape::Value&& value);
 
-                LocationInTime(LocationInTime const&) = default;
+            LocationInTime(LocationInTime const& other) = default;
 
-                LocationInTime(LocationInTime&&) = default;
+            LocationInTime(LocationInTime&& other) = default;
 
-                ~LocationInTime() override = default;
+            ~LocationInTime() override = default;
 
-                LocationInTime& operator=(LocationInTime const&) = default;
+            auto operator=(LocationInTime const& other) -> LocationInTime& = default;
 
-                LocationInTime& operator=(LocationInTime&&) = default;
+            auto operator=(LocationInTime&& other) -> LocationInTime& = default;
 
-                Count nr_locations() const;
+            auto nr_locations() const -> Count;
 
-            private:
-        };
-
-
-        LocationInTime create_location_in_time(hdf5::Group& parent, hdf5::Shape const& value_shape);
+        private:
+    };
 
 
-        template<>
-        class ValueTraits<LocationInTime>
-        {
+    auto create_location_in_time(hdf5::Group& parent, hdf5::Shape const& value_shape) -> LocationInTime;
 
-            public:
 
-                using Element = LocationInTime::Element;
-        };
+    template<>
+    class ValueTraits<LocationInTime>
+    {
 
-    }  // namespace data_model
-}  // namespace lue
+        public:
+
+            using Element = LocationInTime::Element;
+    };
+
+}  // namespace lue::data_model

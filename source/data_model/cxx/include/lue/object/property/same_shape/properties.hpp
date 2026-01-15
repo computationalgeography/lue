@@ -4,62 +4,60 @@
 #include "lue/object/property/properties_traits.hpp"
 
 
-namespace lue {
-    namespace data_model {
-        namespace same_shape {
+namespace lue::data_model {
+    namespace same_shape {
 
-            /*!
-                @brief      Collection of same shape x constant value properties
-            */
-            class LUE_DATA_MODEL_EXPORT Properties: public Collection<Property>
-            {
-
-                public:
-
-                    explicit Properties(hdf5::Group const& parent);
-
-                    explicit Properties(Collection<Property>&& collection);
-
-                    Properties(Properties const&) = default;
-
-                    Properties(Properties&&) = default;
-
-                    ~Properties() override = default;
-
-                    Properties& operator=(Properties const&) = default;
-
-                    Properties& operator=(Properties&&) = default;
-
-                    Property& add(
-                        std::string const& name,
-                        hdf5::Datatype const& datatype,
-                        std::string const& description = "");
-
-                    Property& add(
-                        std::string const& name,
-                        hdf5::Datatype const& datatype,
-                        hdf5::Shape const& shape,
-                        std::string const& description = "");
-
-                private:
-            };
-
-
-            Properties create_properties(hdf5::Group& parent);
-
-        }  // namespace same_shape
-
-
-        template<>
-        class PropertyTraits<same_shape::Properties>
+        /*!
+            @brief      Collection of same shape x constant value properties
+        */
+        class LUE_DATA_MODEL_EXPORT Properties: public Collection<Property>
         {
 
             public:
 
-                using Property = same_shape::Properties::Element;
+                explicit Properties(hdf5::Group const& parent);
 
-                using Value = ValueT<Property>;
+                explicit Properties(Collection<Property>&& collection);
+
+                Properties(Properties const& other) = default;
+
+                Properties(Properties&& other) = default;
+
+                ~Properties() override = default;
+
+                auto operator=(Properties const& other) -> Properties& = default;
+
+                auto operator=(Properties&& other) -> Properties& = default;
+
+                auto add(
+                    std::string const& name,
+                    hdf5::Datatype const& datatype,
+                    std::string const& description = "") -> Property&;
+
+                auto add(
+                    std::string const& name,
+                    hdf5::Datatype const& datatype,
+                    hdf5::Shape const& shape,
+                    std::string const& description = "") -> Property&;
+
+            private:
         };
 
-    }  // namespace data_model
-}  // namespace lue
+
+        auto create_properties(hdf5::Group& parent) -> Properties;
+
+    }  // namespace same_shape
+
+
+    template<>
+    class PropertyTraits<same_shape::Properties>
+    {
+
+        public:
+
+            using Property = same_shape::Properties::Element;
+
+            using Value = ValueT<Property>;
+    };
+
+}  // namespace lue::data_model

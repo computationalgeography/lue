@@ -1,28 +1,29 @@
 #include "lue/translate/format/lue.hpp"
 
 
-namespace lue {
-    namespace utility {
+namespace lue::utility {
 
-        /*!
-            @brief      Try to open a dataset read-only
-            @return     A pointer to a Dataset instance if the dataset can be
-                        opened. Otherwise a default constructed pointer.
-        */
-        LUEDatasetPtr try_open_lue_dataset_for_read(std::string const& dataset_name)
+    /*!
+        @brief      Try to open a dataset read-only
+        @return     A pointer to a Dataset instance if the dataset can be
+                    opened. Otherwise a default constructed pointer.
+    */
+    auto try_open_lue_dataset_for_read(std::string const& dataset_name) -> LUEDatasetPtr
+    {
+        LUEDatasetPtr result;
+
+        try
         {
-            LUEDatasetPtr result;
-
-            try
-            {
-                result = std::make_unique<data_model::Dataset>(dataset_name, H5F_ACC_RDONLY);
-            }
-            catch (...)
-            {
-            }
-
-            return result;
+            result = std::make_unique<data_model::Dataset>(dataset_name, H5F_ACC_RDONLY);
         }
+        // NOLINTBEGIN(bugprone-empty-catch)
+        catch (...)
+        {
+            // Yes, empty catch. Relax, it's fine.
+        }
+        // NOLINTEND(bugprone-empty-catch)
 
-    }  // namespace utility
-}  // namespace lue
+        return result;
+    }
+
+}  // namespace lue::utility

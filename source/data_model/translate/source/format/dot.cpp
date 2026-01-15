@@ -13,7 +13,7 @@ namespace lue {
         using Record = std::tuple<std::string, std::string>;
         using Table = std::vector<Record>;
 
-        std::string to_dot(Record const& record)
+        auto to_dot(Record const& record) -> std::string
         {
             auto const& cell1 = std::get<0>(record);
             auto const& cell2 = std::get<1>(record);
@@ -35,7 +35,7 @@ namespace lue {
         }
 
 
-        std::string to_dot(Table const& table)
+        auto to_dot(Table const& table) -> std::string
         {
             std::string result = "<table"
                                  " border=\"0\""
@@ -52,48 +52,49 @@ namespace lue {
         }
 
 
-        std::string to_string(hdf5::Shape const& shape)
+        auto to_string(hdf5::Shape const& shape) -> std::string
         {
-            auto to_string = [](hdf5::Shape::value_type const value) { return std::to_string(value); };
+            auto to_string = [](hdf5::Shape::value_type const value) -> std::string
+            { return std::to_string(value); };
 
             return "(" + boost::join(shape | boost::adaptors::transformed(to_string), ", ") + ")";
         }
 
 
-        std::string dot_name(hdf5::Identifier const& id)
+        auto dot_name(hdf5::Identifier const& id) -> std::string
         {
             return "node_" + std::to_string(id.info().addr());
         }
 
 
-        std::string dot_name(hdf5::PrimaryDataObject const& data_object)
+        auto dot_name(hdf5::PrimaryDataObject const& data_object) -> std::string
         {
             return dot_name(data_object.id());
         }
 
 
         // Shapes are based on the HDF5 object type ------------------------------------
-        std::string shape(hdf5::Group const& /* group */, Metadata const& metadata)
+        auto shape(hdf5::Group const& /* group */, Metadata const& metadata) -> std::string
         {
             return metadata.string(JSONPointer("/hdf5/group/shape"), "oval");
         }
 
 
-        std::string shape(hdf5::Dataset const& /* dataset */, Metadata const& metadata)
+        auto shape(hdf5::Dataset const& /* dataset */, Metadata const& metadata) -> std::string
         {
             return metadata.string(JSONPointer("/hdf5/dataset/shape"), "box");
         }
 
 
         // Colors are based on the LUE type --------------------------------------------
-        std::string default_fillcolor()
+        auto default_fillcolor() -> std::string
         {
             return "transparent";
         }
 
 
         template<typename T>
-        std::string fillcolor(T const& /* object */)
+        auto fillcolor(T const& /* object */) -> std::string
         {
             return default_fillcolor();
         }
@@ -132,9 +133,9 @@ subgraph cluster_{} {{
                     _stream << "}\n\n";
                 }
 
-                Subgraph& operator=(Subgraph const&) = delete;
+                auto operator=(Subgraph const&) -> Subgraph& = delete;
 
-                Subgraph& operator=(Subgraph&&) = delete;
+                auto operator=(Subgraph&&) -> Subgraph& = delete;
 
             private:
 
