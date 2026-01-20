@@ -8,10 +8,6 @@
 #include <hpx/config.hpp>
 
 
-// #include <chrono>
-// using namespace std::chrono_literals;
-
-
 // TODO: Thread-safe doesn't work icw hdf5-1.10
 // - Figure out why: HDF5 version bug or thread-safe usage bug?
 //     - How about thread-safe icw hdf5-1.14? (*buntu 25.10?)
@@ -133,9 +129,6 @@ namespace {
 
         view.add_layer<Element>(property_name);
 
-        // TODO: Add to the view(?)
-        // dataset_ptr->flush();
-
         return {view.object_id(), nr_time_steps, raster_shape, partition_shape};
     }
 
@@ -145,6 +138,8 @@ namespace {
 #if 0
 BOOST_AUTO_TEST_CASE(constant_raster)
 {
+    // TODO: make this work as variable rasters
+
     // Write a constant raster with integers and read it back in. Compare raster written with raster read.
     namespace ldm = lue::data_model;
 
@@ -163,6 +158,10 @@ BOOST_AUTO_TEST_CASE(constant_raster)
     Array<Element> array_written =
         lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
     hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id);
+
+    // TODO: See variable_raster test case
+    write_finished.get();
+
     Array<Element> array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
     lue::test::check_arrays_are_equal(array_read, array_written);
 }
@@ -187,19 +186,6 @@ BOOST_AUTO_TEST_CASE(variable_raster)
     auto const [object_id, nr_time_steps, raster_shape, partition_shape] =
         layout_variable_raster<Element>(array_pathname);
 
-    // ObjectID const object_id = 5;
-    // lue::Count const nr_time_steps = 20;
-    // Shape const raster_shape = {60, 40};
-    // Shape const partition_shape = {10, 10};
-
-    // 184: HDF5-DIAG: Error detected in HDF5 (1.10.10) thread 1:
-    // 184:   #000: ../../../src/H5F.c line 412 in H5Fopen(): unable to open file
-    // 184:     major: File accessibility
-    // 184:     minor: Unable to open file
-    // 184:   #001: ../../../src/H5Fint.c line 1698 in H5F_open(): file is already open for read-only
-    // 184:     major: File accessibility
-    // 184:     minor: Unable to open file
-
     // Create, write, read, and compare arrays
     for (lue::Index time_step = 0; time_step < nr_time_steps; ++time_step)
     {
@@ -207,17 +193,28 @@ BOOST_AUTO_TEST_CASE(variable_raster)
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
-        // // TODO: Fixes crash!!!
-        // write_finished.get();
+        // TODO:
+        // Waiting for the write to finish here fixes an error from occurring in ~5% of the cases:
+        //
+        // 184: HDF5-DIAG: Error detected in HDF5 (1.10.10) thread 1:
+        // 184:   #000: ../../../src/H5F.c line 412 in H5Fopen(): unable to open file
+        // 184:     major: File accessibility
+        // 184:     minor: Unable to open file
+        // 184:   #001: ../../../src/H5Fint.c line 1698 in H5F_open(): file is already open for read-only
+        // 184:     major: File accessibility
+        // 184:     minor: Unable to open file
+        //
+        // The error suggests that to_lue can't open the dataset because from_lue is not ready reading from
+        // it.
+        //
+        // Waiting for to_lue to finish here prevents the issue. Weird thing is that moving these
+        // synchronization points elsewhere, like into to_lue or from_lue does not prevent the issue.
 
-        // TODO: Fixes crash!!!
-        // lue::detail::to_lue_finished(lue::detail::normalize(dataset_pathname), time_step + 1).wait();
+        // write_finished.get();  // Also fine
+        lue::detail::to_lue_finished(lue::detail::normalize(dataset_pathname), time_step + 1).wait();
 
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
-
-        // // Doesn't help
-        // // hpx::wait_all(array_read.partitions().begin(), array_read.partitions().end());
 
         lue::test::check_arrays_are_equal(array_read, array_written);
     }
@@ -225,18 +222,17 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 
 
 // TODO:
-// BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_1)
-// {
-// }
+BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_1)
+{
+}
 
 
 // TODO:
-// BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_2)
-// {
-// }
+BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_2)
+{
+}
 
 
-#if 0
 BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
 {
     // 1. Create stack of n arrays
@@ -272,6 +268,9 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
         writes_finished[time_step] =
             lue::to_lue(arrays_written[time_step], array_pathname, object_id, time_step);
     }
+
+    // TODO: See variable_raster test case
+    writes_finished.back().wait();
 
     // Read arrays
     std::vector<Array<Element>> arrays_read(nr_time_steps);
@@ -311,13 +310,15 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
     {
         Array<Element> array_written =
             lue::value_policies::uniform<Element>(raster_shape, partition_shape, Element{0}, Element{10});
+
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
+
+        // TODO: See variable_raster test case
+        write_finished.wait();
 
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
-        lue::test::check_arrays_are_equal(array_read, array_written);
 
-        // std::this_thread::sleep_for(3s);
+        lue::test::check_arrays_are_equal(array_read, array_written);
     }
 }
-#endif
