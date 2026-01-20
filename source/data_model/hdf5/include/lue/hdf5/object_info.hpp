@@ -12,24 +12,24 @@ namespace lue::hdf5 {
 
             explicit ObjectInfo(hid_t id);
 
-            ObjectInfo(ObjectInfo const&) = default;
+            ObjectInfo(ObjectInfo const& other) = default;
 
-            ObjectInfo(ObjectInfo&&) = default;
+            ObjectInfo(ObjectInfo&& other) = default;
 
             ~ObjectInfo() = default;
 
-            ObjectInfo& operator=(ObjectInfo const&) = default;
+            auto operator=(ObjectInfo const& other) -> ObjectInfo& = default;
 
-            ObjectInfo& operator=(ObjectInfo&&) = default;
+            auto operator=(ObjectInfo&& other) -> ObjectInfo& = default;
 
-            bool operator==(ObjectInfo const& other) const;
+            auto operator==(ObjectInfo const& other) const -> bool;
 
-            bool operator!=(ObjectInfo const& other) const;
+            auto operator!=(ObjectInfo const& other) const -> bool;
 
             // NOLINTNEXTLINE(google-runtime-int)
-            unsigned long fileno() const;
+            auto fileno() const -> unsigned long;
 
-            haddr_t addr() const;
+            auto addr() const -> haddr_t;
 
         private:
 

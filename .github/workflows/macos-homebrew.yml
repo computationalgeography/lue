@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        macos_version: ["14", "15"]
+        macos_version: ["15"]
         compiler:
           - { name: clang, c: clang, cxx: clang++ }
         python_version: ["3.13"]

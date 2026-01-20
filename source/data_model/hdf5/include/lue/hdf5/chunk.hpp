@@ -3,30 +3,28 @@
 #include "lue/hdf5/shape.hpp"
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        std::size_t lower_chunk_size_limit();
+    auto lower_chunk_size_limit() -> std::size_t;
 
-        std::size_t upper_chunk_size_limit();
+    auto upper_chunk_size_limit() -> std::size_t;
 
-        LUE_HDF5_EXPORT Shape chunk_shape(Shape const& value_shape, std::size_t size_of_element);
+    LUE_HDF5_EXPORT auto chunk_shape(Shape const& value_shape, std::size_t size_of_element) -> Shape;
 
-        Shape::value_type size_of_chunk(Shape const& chunk, std::size_t size_of_element);
-
-
-        template<typename T>
-        inline Shape chunk_shape(Shape const& value_shape)
-        {
-            return chunk_shape(value_shape, sizeof(T));
-        }
+    auto size_of_chunk(Shape const& chunk, std::size_t size_of_element) -> Shape::value_type;
 
 
-        template<typename T>
-        inline Shape::value_type size_of_chunk(Shape const& value_shape)
-        {
-            return size_of_chunk(value_shape, sizeof(T));
-        }
+    template<typename T>
+    auto chunk_shape(Shape const& value_shape) -> Shape
+    {
+        return chunk_shape(value_shape, sizeof(T));
+    }
 
-    }  // namespace hdf5
-}  // namespace lue
+
+    template<typename T>
+    auto size_of_chunk(Shape const& value_shape) -> Shape::value_type
+    {
+        return size_of_chunk(value_shape, sizeof(T));
+    }
+
+}  // namespace lue::hdf5

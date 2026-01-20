@@ -2,48 +2,46 @@
 #include "lue/array/same_shape/constant_shape/value.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            - Zero or more space boxes per item
-            - Each space box has a unique location in space
-        */
-        class LUE_DATA_MODEL_EXPORT MobileSpaceBox: public same_shape::constant_shape::Value
-        {
+    /*!
+        - Zero or more space boxes per item
+        - Each space box has a unique location in space
+    */
+    class LUE_DATA_MODEL_EXPORT MobileSpaceBox: public same_shape::constant_shape::Value
+    {
 
-            public:
+        public:
 
-                explicit MobileSpaceBox(hdf5::Group const& parent);
+            explicit MobileSpaceBox(hdf5::Group const& parent);
 
-                MobileSpaceBox(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
+            MobileSpaceBox(hdf5::Group const& parent, hdf5::Datatype const& memory_datatype);
 
-                explicit MobileSpaceBox(same_shape::constant_shape::Value&& value);
+            explicit MobileSpaceBox(same_shape::constant_shape::Value&& value);
 
-                MobileSpaceBox(MobileSpaceBox const&) = default;
+            MobileSpaceBox(MobileSpaceBox const& other) = default;
 
-                MobileSpaceBox(MobileSpaceBox&&) = default;
+            MobileSpaceBox(MobileSpaceBox&& other) = default;
 
-                ~MobileSpaceBox() override = default;
+            ~MobileSpaceBox() override = default;
 
-                MobileSpaceBox& operator=(MobileSpaceBox const&) = default;
+            auto operator=(MobileSpaceBox const& other) -> MobileSpaceBox& = default;
 
-                MobileSpaceBox& operator=(MobileSpaceBox&&) = default;
+            auto operator=(MobileSpaceBox&& other) -> MobileSpaceBox& = default;
 
-                Count nr_boxes() const;
+            auto nr_boxes() const -> Count;
 
-            private:
-        };
+        private:
+    };
 
 
-        MobileSpaceBox create_mobile_space_box(
-            hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank);
+    auto create_mobile_space_box(hdf5::Group& parent, hdf5::Datatype const& memory_datatype, std::size_t rank)
+        -> MobileSpaceBox;
 
-        MobileSpaceBox create_mobile_space_box(
-            hdf5::Group& parent,
-            hdf5::Datatype const& file_datatype,
-            hdf5::Datatype const& memory_datatype,
-            std::size_t rank);
+    auto create_mobile_space_box(
+        hdf5::Group& parent,
+        hdf5::Datatype const& file_datatype,
+        hdf5::Datatype const& memory_datatype,
+        std::size_t rank) -> MobileSpaceBox;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

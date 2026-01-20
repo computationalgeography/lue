@@ -19,7 +19,7 @@ namespace lue::utility {
     Export::Export(int const argc, char const* const* argv):
 
         Command(
-            []()
+            []() -> cxxopts::Options
             {
                 cxxopts::Options options{Export::name, "Translate data from the LUE dataset format"};
                 options.add_options()("h,help", "Show usage")(

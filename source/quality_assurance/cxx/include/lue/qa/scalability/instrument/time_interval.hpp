@@ -38,7 +38,7 @@ namespace lue::qa {
 
             void set_stop(TimePoint const& time_point);
 
-            [[nodiscard]] auto duration() const -> Duration;
+            auto duration() const -> Duration;
 
             /*!
                 @brief      Return the duration casted to @a ToDuration
@@ -47,7 +47,7 @@ namespace lue::qa {
                 like seconds.
             */
             template<typename ToDuration>
-            [[nodiscard]] auto duration() const -> ToDuration
+            auto duration() const -> ToDuration
             {
                 return std::chrono::duration_cast<ToDuration>(duration());
             }

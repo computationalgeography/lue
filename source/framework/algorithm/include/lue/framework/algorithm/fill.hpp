@@ -17,7 +17,7 @@ namespace lue {
         you need to know when the filling is done.
     */
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> fill(
+    hpx::future<void> fill(
         PartitionedArray<Element, rank>& array, hpx::shared_future<Element> const& fill_value)
     {
         std::vector<hpx::future<void>> fill_partitions(nr_partitions(array));
@@ -35,7 +35,7 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    [[nodiscard]] hpx::future<void> fill(PartitionedArray<Element, rank>& array, Element const& fill_value)
+    hpx::future<void> fill(PartitionedArray<Element, rank>& array, Element const& fill_value)
     {
         return fill(array, hpx::make_ready_future<Element>(fill_value).share());
     }

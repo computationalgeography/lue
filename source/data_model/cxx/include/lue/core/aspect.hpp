@@ -7,28 +7,27 @@
 #include <format>
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        template<typename T>
-        struct Tag
-        {
-                static std::string const& value();
-        };
+    template<typename T>
+    struct Tag
+    {
+            static auto value() -> std::string const&;
+    };
 
 
-        template<typename T>
-        struct AspectMap
-        {
-                static detail::EnumStringBimap<T> const& value();
-        };
+    template<typename T>
+    struct AspectMap
+    {
+            static auto value() -> detail::EnumStringBimap<T> const&;
+    };
 
 
 #define TAG(EnumType, tag_name)                                                                              \
     template<>                                                                                               \
     struct Tag<EnumType>                                                                                     \
     {                                                                                                        \
-            inline static std::string const& value()                                                         \
+            inline static auto value() -> std::string const&                                                 \
             {                                                                                                \
                 static std::string const tag = tag_name;                                                     \
                 return tag;                                                                                  \
@@ -40,7 +39,7 @@ namespace lue {
     template<>                                                                                               \
     struct AspectMap<EnumType>                                                                               \
     {                                                                                                        \
-            inline static detail::EnumStringBimap<EnumType> const& value()                                   \
+            inline static auto value() -> detail::EnumStringBimap<EnumType> const&                           \
             {                                                                                                \
                 static detail::EnumStringBimap<EnumType> const map enum_pairs;                               \
                 return map;                                                                                  \
@@ -52,180 +51,176 @@ namespace lue {
     TAG(EnumType, tag_name)                                                                                  \
     MAP(EnumType, enum_pairs)
 
-        TAG_AND_MAP(
-            ShapePerObject,
-            shape_per_object_tag,
-            ({{ShapePerObject::same, "same_shape"}, {ShapePerObject::different, "different_shape"}}))
+    TAG_AND_MAP(
+        ShapePerObject,
+        shape_per_object_tag,
+        ({{ShapePerObject::same, "same_shape"}, {ShapePerObject::different, "different_shape"}}))
 
-        TAG_AND_MAP(
-            ValueVariability,
-            value_variability_tag,
-            ({{ValueVariability::constant, "constant"}, {ValueVariability::variable, "variable"}}))
+    TAG_AND_MAP(
+        ValueVariability,
+        value_variability_tag,
+        ({{ValueVariability::constant, "constant"}, {ValueVariability::variable, "variable"}}))
 
-        TAG_AND_MAP(
-            ShapeVariability,
-            shape_variability_tag,
-            ({{ShapeVariability::constant, "constant_shape"},
-              {ShapeVariability::variable, "variable_shape"}}))
+    TAG_AND_MAP(
+        ShapeVariability,
+        shape_variability_tag,
+        ({{ShapeVariability::constant, "constant_shape"}, {ShapeVariability::variable, "variable_shape"}}))
 
-        TAG_AND_MAP(
-            TimeDomainItemType,
-            time_domain_item_type_tag,
-            ({{TimeDomainItemType::box, "box"},
-              {TimeDomainItemType::cell, "cell"},
-              {TimeDomainItemType::point, "point"}}))
+    TAG_AND_MAP(
+        TimeDomainItemType,
+        time_domain_item_type_tag,
+        ({{TimeDomainItemType::box, "box"},
+          {TimeDomainItemType::cell, "cell"},
+          {TimeDomainItemType::point, "point"}}))
 
-        TAG_AND_MAP(
-            Mobility, mobility_tag, ({{Mobility::mobile, "mobile"}, {Mobility::stationary, "stationary"}}))
+    TAG_AND_MAP(
+        Mobility, mobility_tag, ({{Mobility::mobile, "mobile"}, {Mobility::stationary, "stationary"}}))
 
-        TAG_AND_MAP(
-            SpaceDomainItemType,
-            space_domain_item_type_tag,
-            ({{SpaceDomainItemType::point, "point"}, {SpaceDomainItemType::box, "box"}}))
+    TAG_AND_MAP(
+        SpaceDomainItemType,
+        space_domain_item_type_tag,
+        ({{SpaceDomainItemType::point, "point"}, {SpaceDomainItemType::box, "box"}}))
 
-        TAG_AND_MAP(
-            SpaceDiscretization,
-            space_discretization_tag,
-            ({{SpaceDiscretization::regular_grid, "regular_grid"}}))
+    TAG_AND_MAP(
+        SpaceDiscretization,
+        space_discretization_tag,
+        ({{SpaceDiscretization::regular_grid, "regular_grid"}}))
 
-        TAG_AND_MAP(
-            TimeDiscretization,
-            time_discretization_tag,
-            ({{TimeDiscretization::regular_grid, "regular_grid"}}))
+    TAG_AND_MAP(
+        TimeDiscretization, time_discretization_tag, ({{TimeDiscretization::regular_grid, "regular_grid"}}))
 
-        TAG_AND_MAP(
-            time::Unit,
-            time_unit_tag,
-            ({{time::Unit::nanosecond, time::UnitTraits<time::Unit::nanosecond>::name()},
-              {time::Unit::microsecond, time::UnitTraits<time::Unit::microsecond>::name()},
-              {time::Unit::millisecond, time::UnitTraits<time::Unit::millisecond>::name()},
-              {time::Unit::second, time::UnitTraits<time::Unit::second>::name()},
-              {time::Unit::minute, time::UnitTraits<time::Unit::minute>::name()},
-              {time::Unit::hour, time::UnitTraits<time::Unit::hour>::name()},
-              {time::Unit::day, time::UnitTraits<time::Unit::day>::name()},
-              {time::Unit::week, time::UnitTraits<time::Unit::week>::name()},
-              {time::Unit::month, time::UnitTraits<time::Unit::month>::name()},
-              {time::Unit::year, time::UnitTraits<time::Unit::year>::name()}}))
+    TAG_AND_MAP(
+        time::Unit,
+        time_unit_tag,
+        ({{time::Unit::nanosecond, time::UnitTraits<time::Unit::nanosecond>::name()},
+          {time::Unit::microsecond, time::UnitTraits<time::Unit::microsecond>::name()},
+          {time::Unit::millisecond, time::UnitTraits<time::Unit::millisecond>::name()},
+          {time::Unit::second, time::UnitTraits<time::Unit::second>::name()},
+          {time::Unit::minute, time::UnitTraits<time::Unit::minute>::name()},
+          {time::Unit::hour, time::UnitTraits<time::Unit::hour>::name()},
+          {time::Unit::day, time::UnitTraits<time::Unit::day>::name()},
+          {time::Unit::week, time::UnitTraits<time::Unit::week>::name()},
+          {time::Unit::month, time::UnitTraits<time::Unit::month>::name()},
+          {time::Unit::year, time::UnitTraits<time::Unit::year>::name()}}))
 
-        TAG_AND_MAP(time::Calendar, epoch_calendar_tag, ({{time::Calendar::gregorian, "gregorian"}}))
+    TAG_AND_MAP(time::Calendar, epoch_calendar_tag, ({{time::Calendar::gregorian, "gregorian"}}))
 
-        TAG_AND_MAP(
-            time::Epoch::Kind,
-            epoch_kind_tag,
-            ({{time::Epoch::Kind::common_era, "common_era"},
-              {time::Epoch::Kind::formation_of_earth, "formation_of_earth"}}))
+    TAG_AND_MAP(
+        time::Epoch::Kind,
+        epoch_kind_tag,
+        ({{time::Epoch::Kind::common_era, "common_era"},
+          {time::Epoch::Kind::formation_of_earth, "formation_of_earth"}}))
 
 #undef TAG_AND_MAP
 #undef MAP
 #undef TAG
 
 
-        template<typename T>
-        inline std::string aspect_to_string(T const value)
+    template<typename T>
+    inline auto aspect_to_string(T const value) -> std::string
+    {
+        return AspectMap<T>::value().as_string(value);
+    }
+
+
+    template<typename T>
+    inline auto string_to_aspect(std::string const& string) -> T
+    {
+        auto const& map = AspectMap<T>::value();
+
+        if (!map.contains(string))
         {
-            return AspectMap<T>::value().as_string(value);
+            throw std::runtime_error(std::format("Unknown aspect: {}", string));
         }
 
+        return map.as_value(string);
+    }
 
-        template<typename T>
-        inline T string_to_aspect(std::string const& string)
-        {
-            auto const& map = AspectMap<T>::value();
 
-            if (!map.contains(string))
+    template<typename T>
+    class Aspect
+    {
+
+        public:
+
+            explicit Aspect(T value);
+
+            explicit Aspect(hdf5::Attributes const& attributes);
+
+            Aspect(Aspect const& other) = default;
+
+            Aspect(Aspect&& other) noexcept = default;
+
+            ~Aspect() = default;
+
+            auto operator=(Aspect const& other) -> Aspect& = default;
+
+            auto operator=(Aspect&& other) noexcept -> Aspect& = default;
+
+            auto value() const -> T;
+
+            void save(hdf5::Attributes& attributes) const;
+
+            friend auto operator==(Aspect<T> const& lhs, Aspect<T> const& rhs) -> bool
             {
-                throw std::runtime_error(std::format("Unknown aspect: {}", string));
+                return lhs._value == rhs._value;
             }
 
-            return map.as_value(string);
-        }
+        protected:
+
+            void load(hdf5::Attributes const& attributes);
+
+        private:
+
+            T _value;
+    };
 
 
-        template<typename T>
-        class Aspect
-        {
+    template<typename T>
+    inline Aspect<T>::Aspect(T const value)
 
-            public:
-
-                explicit Aspect(T value);
-
-                explicit Aspect(hdf5::Attributes const& attributes);
-
-                Aspect(Aspect const&) = default;
-
-                Aspect(Aspect&&) noexcept = default;
-
-                ~Aspect() = default;
-
-                Aspect& operator=(Aspect const&) = default;
-
-                Aspect& operator=(Aspect&&) noexcept = default;
-
-                T value() const;
-
-                void save(hdf5::Attributes& attributes) const;
-
-                friend bool operator==(Aspect<T> const& lhs, Aspect<T> const& rhs)
-                {
-                    return lhs._value == rhs._value;
-                }
-
-            protected:
-
-                void load(hdf5::Attributes const& attributes);
-
-            private:
-
-                T _value;
-        };
+        :
+        _value{value}
+    {
+    }
 
 
-        template<typename T>
-        inline Aspect<T>::Aspect(T const value)
+    /*!
+        @brief      Read configuration aspect from @a attributes
+        @sa         Tag, string_to_aspect(std::string const&)
 
-            :
-            _value{value}
-        {
-        }
+        The template parameter @a T is used to lookup a tag (a string),
+        which is used as the name of the attribute to read. The attribute value
+        is translated into an instance of @a T.
+    */
+    template<typename T>
+    inline Aspect<T>::Aspect(hdf5::Attributes const& attributes)
 
+        :
+        _value{string_to_aspect<T>(attributes.read<std::string>(Tag<T>::value()))}
 
-        /*!
-            @brief      Read configuration aspect from @a attributes
-            @sa         Tag, string_to_aspect(std::string const&)
-
-            The template parameter @a T is used to lookup a tag (a string),
-            which is used as the name of the attribute to read. The attribute value
-            is translated into an instance of @a T.
-        */
-        template<typename T>
-        inline Aspect<T>::Aspect(hdf5::Attributes const& attributes)
-
-            :
-            _value{string_to_aspect<T>(attributes.read<std::string>(Tag<T>::value()))}
-
-        {
-        }
+    {
+    }
 
 
-        template<typename T>
-        inline T Aspect<T>::value() const
-        {
-            return _value;
-        }
+    template<typename T>
+    inline auto Aspect<T>::value() const -> T
+    {
+        return _value;
+    }
 
 
-        template<typename T>
-        inline void Aspect<T>::save(hdf5::Attributes& attributes) const
-        {
-            attributes.write<std::string>(Tag<T>::value(), aspect_to_string<T>(_value));
-        }
+    template<typename T>
+    inline void Aspect<T>::save(hdf5::Attributes& attributes) const
+    {
+        attributes.write<std::string>(Tag<T>::value(), aspect_to_string<T>(_value));
+    }
 
 
-        template<typename T>
-        inline void Aspect<T>::load(hdf5::Attributes const& attributes)
-        {
-            _value = string_to_aspect<T>(attributes.read<std::string>(Tag<T>::value()));
-        }
+    template<typename T>
+    inline void Aspect<T>::load(hdf5::Attributes const& attributes)
+    {
+        _value = string_to_aspect<T>(attributes.read<std::string>(Tag<T>::value()));
+    }
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

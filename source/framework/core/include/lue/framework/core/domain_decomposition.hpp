@@ -113,7 +113,11 @@ namespace lue {
 
         if (!detail::is_subset_of(partition_shape, array_shape))
         {
-            throw std::runtime_error("Partition size must be smaller than or equal to array size");
+            throw std::runtime_error(
+                std::format(
+                    "Partition size ({}) must be smaller than or equal to array size ({})",
+                    nr_elements(partition_shape),
+                    nr_elements(array_shape)));
         }
 
         Shape shape_in_partitions{};
@@ -123,7 +127,7 @@ namespace lue {
             array_shape.end(),
             partition_shape.begin(),
             shape_in_partitions.begin(),
-            [](Count const area_extent, Count const partition_extent)
+            [](Count const area_extent, Count const partition_extent) -> auto
             { return area_extent / partition_extent; });
 
         // Create an array of shape, filled with the partition shape passed in
