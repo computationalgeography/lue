@@ -6,11 +6,10 @@
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/framework.hpp"
 #include <hpx/config.hpp>
+#include <boost/predef.h>
 
 
-// TODO: Thread-safe doesn't work icw hdf5-1.10
-// - Figure out why: HDF5 version bug or thread-safe usage bug?
-//     - How about thread-safe icw hdf5-1.14? (*buntu 25.10?)
+// TODO:
 // - Add tests for constant rasters. Requires update in data model code
 // - Revamp parallel I/O logic
 
@@ -256,9 +255,12 @@ BOOST_AUTO_TEST_CASE(variable_raster)
         //
         // Waiting for to_lue to finish here prevents the issue. Weird thing is that moving these
         // synchronization points elsewhere, like into to_lue or from_lue does not prevent the issue.
+        // See https://github.com/computationalgeography/lue/issues/945
 
+#ifndef BOOST_OS_WINDOWS
         // write_finished.get();  // Also fine
         lue::detail::to_lue_finished(lue::detail::normalize(dataset_pathname), time_step + 1).wait();
+#endif
 
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
@@ -316,8 +318,10 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
             lue::to_lue(arrays_written[time_step], array_pathname, object_id, time_step);
     }
 
+#ifndef BOOST_OS_WINDOWS
     // TODO: See variable_raster test case
     writes_finished.back().wait();
+#endif
 
     // Read arrays
     std::vector<Array<Element>> arrays_read(nr_time_steps);
@@ -360,8 +364,10 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
 
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id, time_step);
 
+#ifndef BOOST_OS_WINDOWS
         // TODO: See variable_raster test case
         write_finished.wait();
+#endif
 
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step);
