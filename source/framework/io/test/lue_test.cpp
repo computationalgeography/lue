@@ -195,7 +195,8 @@ BOOST_AUTO_TEST_CASE(variable_raster)
 
         // TODO:
         // Waiting for the write to finish here fixes an error from occurring in ~5% of the cases:
-        //
+
+        // clang-format off
         // 184: HDF5-DIAG: Error detected in HDF5 (1.10.10) thread 1:
         // 184:   #000: ../../../src/H5F.c line 412 in H5Fopen(): unable to open file
         // 184:     major: File accessibility
@@ -203,6 +204,52 @@ BOOST_AUTO_TEST_CASE(variable_raster)
         // 184:   #001: ../../../src/H5Fint.c line 1698 in H5F_open(): file is already open for read-only
         // 184:     major: File accessibility
         // 184:     minor: Unable to open file
+
+        // HDF5-DIAG: Error detected in HDF5 (1.14.6):
+        //   #000: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5D.c line 1044 in H5Dread(): can't synchronously read data
+        //     major: Dataset
+        // HDF5-DIAG: Error detected in HDF5 (1.14.6):
+        //   #000: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5F.c line 827 in H5Fopen(): unable to synchronously open file
+        //     major: File accessibility
+        //     minor: Unable to open file
+        //   #001: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5F.c line 788 in H5F__open_api_common(): unable to open file
+        //     major: File accessibility
+        //     minor: Unable to open file
+        //     minor: Read failed
+        //   #007: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5D.c line 992 in H5D__read_api_common(): can't read data
+        //     major: Dataset
+        //     minor: Read failed
+        //   #008: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLcallback.c line 2083 in H5VL_dataset_read(): can't reset VOL wrapper info
+        //     major: Virtual Object Layer
+        //     minor: Can't reset object
+        //   #009: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLint.c line 2406 in H5VL_reset_vol_wrapper(): no VOL object wrap context?
+        //     major: Virtual Object Layer
+        //     minor: Bad value
+        //   #002: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLcallback.c line 3680 in H5VL_file_open(): open failed
+        //     major: Virtual Object Layer
+        //     minor: Can't open object
+        //   #003: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLcallback.c line 3514 in H5VL__file_open(): open failed
+        //     major: Virtual Object Layer
+        //     minor: Can't open object
+        //   #004: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLnative_file.c line 128 in H5VL__native_file_open(): unable to open file
+        //     major: File accessibility
+        //     minor: Unable to open file
+        //   #005: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5Fint.c line 1925 in H5F_open(): file is already open for read-only
+        //     major: File accessibility
+        //     minor: Unable to open file
+        //   #006: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5D.c line 1044 in H5Dread(): can't synchronously read data
+        //     major: Dataset
+        //     minor: Read failed
+        //   #007: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5D.c line 992 in H5D__read_api_common(): can't read data
+        //     major: Dataset
+        //     minor: Read failed
+        //   #008: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLcallback.c line 2083 in H5VL_dataset_read(): can't reset VOL wrapper info
+        //     major: Virtual Object Layer
+        //     minor: Can't reset object
+        //   #009: /usr/src/debug/hdf5/hdf5-hdf5_1.14.6/src/H5VLint.c line 2406 in H5VL_reset_vol_wrapper(): no VOL object wrap context?
+        //     major: Virtual Object Layer
+        //     minor: Bad value
+        // clang-format on
         //
         // The error suggests that to_lue can't open the dataset because from_lue is not ready reading from
         // it.
