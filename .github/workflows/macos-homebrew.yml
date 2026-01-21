@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        macos_version: ["14", "15"]
+        macos_version: ["14"] # TODO uncomment this version again, "15"]
         compiler:
           - { name: clang, c: clang, cxx: clang++ }
         python_version: ["3.13"]
@@ -67,7 +67,9 @@ jobs:
 
       - name: setup platform
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 brew install \
+          # HOMEBREW_NO_AUTO_UPDATE=1 brew install
+          # brew install --overwrite
+          brew install \
             boost \
             cxxopts \
             gdal \
@@ -76,10 +78,12 @@ jobs:
             hdf5 \
             hwloc \
             lftp \
+            ninja \
             nlohmann-json \
             numpy \
             pybind11 \
             python-matplotlib
+          brew upgrade cmake
           python${{ matrix.python_version }} -m venv --system-site-packages env
           source env/bin/activate
           pip${{ matrix.python_version }} install --upgrade pip
@@ -88,7 +92,7 @@ jobs:
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
-          hpx_build_nr: 1
+          hpx_build_nr: 2
         with:
           cache_key: macos-${{ matrix.macos_version }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
           c_compiler: ${{ matrix.compiler.c }}
@@ -114,6 +118,10 @@ jobs:
 
       - name: configure
         run: |
+          ls -ltr ${{ env.hpx_install_directory }}/lib/cmake/HPX
+          cat ${{ env.hpx_install_directory }}/lib/cmake/HPX/HPXConfig.cmake
+          cat ${{ env.hpx_install_directory }}/lib/cmake/HPX/HPXConfigVersion.cmake
+
           source env/bin/activate
           mkdir ${{ env.lue_build_directory }}
 
