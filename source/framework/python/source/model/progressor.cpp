@@ -7,7 +7,7 @@ using namespace pybind11::literals;
 
 namespace lue::framework {
 
-    class PyProgressor: public Progressor
+    class PyProgressor: public Progressor, public pybind11::trampoline_self_life_support
     {
 
         public:
@@ -24,7 +24,7 @@ namespace lue::framework {
 
             void initialize() override
             {
-                PYBIND11_OVERRIDE(void, Progressor, initialize);
+                PYBIND11_OVERRIDE(void, Progressor, initialize, );
             }
 
 
@@ -36,18 +36,20 @@ namespace lue::framework {
 
             void finalize() override
             {
-                PYBIND11_OVERRIDE(void, Progressor, finalize);
+                PYBIND11_OVERRIDE(void, Progressor, finalize, );
             }
 
 
             void postprocess() override
             {
-                PYBIND11_OVERRIDE(void, Progressor, postprocess);
+                PYBIND11_OVERRIDE(void, Progressor, postprocess, );
             }
     };
+
+
     void bind_progressor(pybind11::module& module)
     {
-        pybind11::class_<Progressor, PyProgressor>(module, "Progressor")
+        pybind11::class_<Progressor, PyProgressor, pybind11::smart_holder>(module, "Progressor")
             .def(pybind11::init<>())
             .def("preprocess", &Progressor::preprocess)
             .def("initialize", &Progressor::initialize)

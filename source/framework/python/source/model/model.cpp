@@ -7,7 +7,14 @@ using namespace pybind11::literals;
 
 namespace lue::framework {
 
-    class PyModel: public Model
+    /*!
+        @brief      Trampoline class for intercepting virtual calls and redirecting them to Python
+                    implementations
+
+        The `PYBIND11_OVERRIDE` calls intercept the virtual calls and redirects them to the Python
+        implementations.
+    */
+    class PyModel: public Model, public pybind11::trampoline_self_life_support
     {
 
         public:
@@ -24,7 +31,7 @@ namespace lue::framework {
 
             void initialize() override
             {
-                PYBIND11_OVERRIDE(void, Model, initialize);
+                PYBIND11_OVERRIDE(void, Model, initialize, );
             }
 
 
@@ -36,20 +43,20 @@ namespace lue::framework {
 
             void finalize() override
             {
-                PYBIND11_OVERRIDE(void, Model, finalize);
+                PYBIND11_OVERRIDE(void, Model, finalize, );
             }
 
 
             void postprocess() override
             {
-                PYBIND11_OVERRIDE(void, Model, postprocess);
+                PYBIND11_OVERRIDE(void, Model, postprocess, );
             }
     };
 
 
     void bind_model(pybind11::module& module)
     {
-        pybind11::class_<Model, PyModel>(module, "Model")
+        pybind11::class_<Model, PyModel, pybind11::smart_holder>(module, "Model")
             .def(pybind11::init<>())
             .def("preprocess", &Model::preprocess)
             .def("initialize", &Model::initialize)

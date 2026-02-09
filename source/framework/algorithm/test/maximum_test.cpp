@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE lue framework algorithm maximum
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/maximum.hpp"
 #include "lue/framework/algorithm/range.hpp"
+#include "lue/framework/algorithm/value_policies/maximum.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -11,11 +11,11 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        if constexpr (lue::BuildOptions::default_policies_enabled)
+        if constexpr (lue::BuildOptions::default_value_policies_enabled)
         {
             BOOST_TEST_INFO_SCOPE(std::format("test_array<{}, {}>", lue::as_string<Element>, rank));
 
-            using namespace lue::default_policies;
+            using namespace lue::value_policies;
 
             using Array = lue::PartitionedArray<Element, rank>;
 
