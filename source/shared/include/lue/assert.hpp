@@ -12,14 +12,14 @@
 namespace lue {
     namespace detail {
 
-        inline bool empty(char const* string)
+        inline auto empty(char const* string) -> bool
         {
             return std::strlen(string) == 0;
         }
 
 
         template<typename String>
-        bool empty(String const& string)
+        auto empty(String const& string) -> bool
         {
             return string.empty();
         }
@@ -45,28 +45,26 @@ namespace lue {
                     throw std::logic_error(
                         std::format("{}:{}: assertion failed: {}", filename, line_nr, condition_as_string));
                 }
+
+                if constexpr (sizeof...(Arguments) == 0)
+                {
+                    throw std::logic_error(
+                        std::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            format_string));
+                }
                 else
                 {
-                    if constexpr (sizeof...(Arguments) == 0)
-                    {
-                        throw std::logic_error(
-                            std::format(
-                                "{}:{}: assertion failed: {}: {}",
-                                filename,
-                                line_nr,
-                                condition_as_string,
-                                format_string));
-                    }
-                    else
-                    {
-                        throw std::logic_error(
-                            std::format(
-                                "{}:{}: assertion failed: {}: {}",
-                                filename,
-                                line_nr,
-                                condition_as_string,
-                                std::format(format_string, arguments...)));
-                    }
+                    throw std::logic_error(
+                        std::format(
+                            "{}:{}: assertion failed: {}: {}",
+                            filename,
+                            line_nr,
+                            condition_as_string,
+                            std::format(format_string, arguments...)));
                 }
             }
         }

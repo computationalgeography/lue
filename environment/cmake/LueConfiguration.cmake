@@ -41,6 +41,10 @@ option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
     FALSE)
 
+option(LUE_WITH_EXAMPLES
+    "Include examples"
+    FALSE)
+
 option(LUE_BUILD_QUALITY_ASSURANCE
     "Include support for quality assurance"
     FALSE)
@@ -546,6 +550,7 @@ if(LUE_HPX_REQUIRED)
     message(STATUS "HPX_WITH_NETWORKING           : ${HPX_WITH_NETWORKING}")
     message(STATUS "HPX_WITH_PARCELPORT_TCP       : ${HPX_WITH_PARCELPORT_TCP}")
     message(STATUS "HPX_WITH_PARCELPORT_MPI       : ${HPX_WITH_PARCELPORT_MPI}")
+    message(STATUS "HPX_WITH_MALLOC               : ${HPX_WITH_MALLOC}")
 endif()
 
 
@@ -635,8 +640,10 @@ if(LUE_HDF5_REQUIRED)
         endif()
     endif()
 
+    set(CMAKE_REQUIRED_INCLUDES ${HDF5_INCLUDE_DIRS})
     check_symbol_exists(H5_HAVE_THREADSAFE "hdf5.h" HDF5_IS_THREADSAFE)
-    unset(CMAKE_REQUIRED_INCLUDED)
+    check_symbol_exists(H5_HAVE_PARALLEL "hdf5.h" HDF5_IS_PARALLEL)
+    unset(CMAKE_REQUIRED_INCLUDES)
 
     message(STATUS "HDF5_IS_PARALLEL              : ${HDF5_IS_PARALLEL}")
     message(STATUS "HDF5_IS_THREADSAFE            : ${HDF5_IS_THREADSAFE}")

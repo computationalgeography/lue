@@ -52,7 +52,7 @@ namespace lue::utility {
 
             auto run() noexcept -> int;
 
-            [[nodiscard]] auto argument_parsed(std::string const& name) const -> bool;
+            auto argument_parsed(std::string const& name) const -> bool;
 
             /*!
                 @brief      Return the argument value of argument @a name

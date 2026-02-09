@@ -2,33 +2,31 @@
 #include "lue/hdf5/link.hpp"
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        class LUE_HDF5_EXPORT SoftLink: public Link
-        {
+    class LUE_HDF5_EXPORT SoftLink: public Link
+    {
 
-            public:
+        public:
 
-                SoftLink(Group const& group, std::string const& name);
+            SoftLink(Group const& group, std::string const& name);
 
-                SoftLink(SoftLink const&) = default;
+            SoftLink(SoftLink const& other) = default;
 
-                SoftLink(SoftLink&&) = default;
+            SoftLink(SoftLink&& other) = default;
 
-                ~SoftLink() = default;
+            ~SoftLink() = default;
 
-                SoftLink& operator=(SoftLink const&) = default;
+            auto operator=(SoftLink const& other) -> SoftLink& = default;
 
-                SoftLink& operator=(SoftLink&&) = default;
+            auto operator=(SoftLink&& other) -> SoftLink& = default;
 
-                std::string path() const;
-        };
+            auto path() const -> std::string;
+    };
 
 
-        bool soft_link_exists(Group const& group, std::string const& name);
+    auto soft_link_exists(Group const& group, std::string const& name) -> bool;
 
-        SoftLink create_soft_link(Group& group, Identifier const& target, std::string const& name);
+    auto create_soft_link(Group& group, Identifier const& target, std::string const& name) -> SoftLink;
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

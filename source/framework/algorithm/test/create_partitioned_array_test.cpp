@@ -57,7 +57,7 @@ namespace {
 
                 return hpx::async(
 
-                    [locality_id, offset, partition_shape, fill_value]()
+                    [locality_id, offset, partition_shape, fill_value]() -> auto
                     { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
                 );
@@ -88,7 +88,7 @@ namespace {
 
         partitions[0] = hpx::async(
 
-            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]()
+            [locality_id, offset = offsets[0], partition_shape = partition_shapes[0], fill_value]() -> auto
             { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
         );
@@ -98,7 +98,7 @@ namespace {
             partitions[idx] = partitions[idx - 1].then(
 
                 [locality_id, offset = offsets[idx], partition_shape = partition_shapes[idx], fill_value](
-                    auto const& /* previous_partition */)
+                    auto const& /* previous_partition */) -> auto
                 { return Partition{locality_id, offset, partition_shape, fill_value}; }
 
             );
@@ -154,7 +154,7 @@ namespace {
                     [locality_id,
                      action = std::move(action),
                      offsets = std::move(offsets),
-                     partition_shapes = std::move(partition_shapes)]()
+                     partition_shapes = std::move(partition_shapes)]() -> auto
                     { return action(locality_id, offsets, partition_shapes); }
 
                 );
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
 
     Array array = lue::create_partitioned_array(array_shape, partition_shape, functor);
     BOOST_CHECK_GE(buffer_handle.use_count(), 2);
-    BOOST_CHECK_LE(buffer_handle.use_count(), 2 + 6 * 4);
+    BOOST_CHECK_LE(buffer_handle.use_count(), 2 + (6 * 4));
 
     BOOST_CHECK_EQUAL(array.nr_elements(), nr_rows * nr_cols);
     BOOST_CHECK_EQUAL(array.shape(), array_shape);
@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
                             BOOST_CHECK_EQUAL(
                                 data(cell0, cell1),
                                 // previous rows:
-                                ((partition0 * partition_shape[0]) + cell0) * array_shape[1] +
+                                (((partition0 * partition_shape[0]) + cell0) * array_shape[1]) +
                                     // previous cols:
                                     (partition1 * partition_shape[1]) + cell1);
                         }
@@ -419,7 +419,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
         {
             for (lue::Index i1 = 0; i1 < 4; ++i1)
             {
-                buffer_handle.get()[i0 * 10 * nr_cols + i1 * 10] = 111;
+                buffer_handle.get()[(i0 * 10 * nr_cols) + (i1 * 10)] = 111;
             }
         }
 

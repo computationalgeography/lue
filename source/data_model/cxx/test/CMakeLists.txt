@@ -1,4 +1,10 @@
 set(names
+    core/aspect
+    core/collection
+    core/configuration
+    core/define
+    core/index_range
+
     core/time/clock
     core/time/duration
     core/time/tick_period

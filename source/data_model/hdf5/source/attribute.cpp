@@ -10,8 +10,8 @@ namespace lue::hdf5 {
     Attribute::Attribute(Identifier&& id):
 
         _id{std::move(id)},
-        _datatype{::H5Aget_type(_id)},
-        _dataspace{::H5Aget_space(_id)}
+        _datatype{H5Aget_type(_id)},
+        _dataspace{H5Aget_space(_id)}
 
     {
     }
@@ -25,9 +25,9 @@ namespace lue::hdf5 {
     */
     Attribute::Attribute(Identifier const& location, std::string const& name):
 
-        _id(::H5Aopen(location, name.c_str(), H5P_DEFAULT), ::H5Aclose),
-        _datatype{::H5Aget_type(_id)},
-        _dataspace{::H5Aget_space(_id)}
+        _id(H5Aopen(location, name.c_str(), H5P_DEFAULT), H5Aclose),
+        _datatype{H5Aget_type(_id)},
+        _dataspace{H5Aget_space(_id)}
 
     {
     }
@@ -79,8 +79,8 @@ namespace lue::hdf5 {
         // H5Pset_char_encoding(plist, H5T_CSET_UTF8);
 
         Identifier id{
-            ::H5Acreate(location, name.c_str(), datatype.id(), dataspace.id(), H5P_DEFAULT, H5P_DEFAULT),
-            ::H5Aclose};
+            H5Acreate(location, name.c_str(), datatype.id(), dataspace.id(), H5P_DEFAULT, H5P_DEFAULT),
+            H5Aclose};
 
         if (!id.is_valid())
         {

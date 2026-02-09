@@ -17,13 +17,13 @@ namespace lue::gdal {
 
             Blocks(Shape const& raster_shape, Shape const& block_shape);
 
-            [[nodiscard]] auto raster_shape() const -> Shape;
+            auto raster_shape() const -> Shape;
 
-            [[nodiscard]] auto block_shape() const -> Shape;
+            auto block_shape() const -> Shape;
 
-            [[nodiscard]] auto shape_in_blocks() const -> Shape;
+            auto shape_in_blocks() const -> Shape;
 
-            [[nodiscard]] auto shape_in_valid_cells(Offset const& block_offset) const -> Shape;
+            auto shape_in_valid_cells(Offset const& block_offset) const -> Shape;
 
         private:
 

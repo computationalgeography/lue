@@ -8,6 +8,8 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+#include <hpx/algorithm.hpp>
+
 
 namespace lue::framework {
     namespace {
@@ -17,11 +19,10 @@ namespace lue::framework {
 
         void start_hpx_runtime(std::vector<std::string> const& configuration)
         {
-            // Iff the pointer to the runtime is not pointing to an instance,
-            // instantiate one. This will start the HPX runtime.
+            // Iff the pointer to the runtime is not pointing to an instance, instantiate one. This will
+            // start the HPX runtime.
             if (runtime == nullptr)
             {
-                pybind11::gil_scoped_release release;
                 runtime = new HPXRuntime{configuration};
             }
         }
@@ -35,7 +36,6 @@ namespace lue::framework {
             {
                 HPXRuntime* r = runtime;
                 runtime = nullptr;
-                pybind11::gil_scoped_release release;
                 delete r;
             }
         }
@@ -111,11 +111,12 @@ namespace lue::framework {
 
         gdal::register_gdal_drivers();
 
-        submodule.def("start_hpx_runtime", &start_hpx_runtime);
-
-        submodule.def("stop_hpx_runtime", &stop_hpx_runtime);
-
-        submodule.def("on_root_locality", &on_root_locality);
+        submodule.def(
+            "start_hpx_runtime", &start_hpx_runtime, pybind11::call_guard<pybind11::gil_scoped_release>());
+        submodule.def(
+            "stop_hpx_runtime", &stop_hpx_runtime, pybind11::call_guard<pybind11::gil_scoped_release>());
+        submodule.def(
+            "on_root_locality", &on_root_locality, pybind11::call_guard<pybind11::gil_scoped_release>());
 
         bind_hpx(submodule);
 

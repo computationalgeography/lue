@@ -2,58 +2,54 @@
 #include <stdexcept>
 
 
-namespace lue {
-    namespace hdf5 {
+namespace lue::hdf5 {
 
-        ObjectInfo::ObjectInfo(hid_t const id):
+    ObjectInfo::ObjectInfo(hid_t const id):
 
-            _info{}
+        _info{}
 
+    {
+        auto status = H5Oget_info(id, &_info);
+
+        if (status < 0)
         {
-            auto status = ::H5Oget_info(id, &_info);
-
-            if (status < 0)
-            {
-                throw std::runtime_error("Cannot retrieve object info");
-            }
+            throw std::runtime_error("Cannot retrieve object info");
         }
+    }
 
 
-        unsigned long ObjectInfo::fileno() const  // NOLINT(google-runtime-int)
-        {
-            return _info.fileno;
-        }
+    auto ObjectInfo::fileno() const -> unsigned long  // NOLINT(google-runtime-int)
+    {
+        return _info.fileno;
+    }
 
 
-        haddr_t ObjectInfo::addr() const
-        {
-            return _info.addr;
-        }
+    auto ObjectInfo::addr() const -> haddr_t
+    {
+        return _info.addr;
+    }
 
 
-        /*!
-            @brief      Return whether two instances are equal
+    /*!
+        @brief      Return whether two instances are equal
 
-            Two instances are considered equal if they are pointing to the same
-            object in the HDF5 dataset.
-        */
-        bool ObjectInfo::operator==(ObjectInfo const& other) const
-        {
-            return fileno() == other.fileno() && addr() == other.addr();
-        }
+        Two instances are considered equal if they are pointing to the same object in the HDF5 dataset.
+    */
+    auto ObjectInfo::operator==(ObjectInfo const& other) const -> bool
+    {
+        return fileno() == other.fileno() && addr() == other.addr();
+    }
 
 
-        /*!
-            @brief      Return whether two instances are not equal
-            @sa         operator==(ObjectInfo const&) const
+    /*!
+        @brief      Return whether two instances are not equal
+        @sa         operator==(ObjectInfo const&) const
 
-            Two instances are considered equal if they are pointing to the same
-            object in the HDF5 dataset.
-        */
-        bool ObjectInfo::operator!=(ObjectInfo const& other) const
-        {
-            return !(*this == other);
-        }
+        Two instances are considered equal if they are pointing to the same object in the HDF5 dataset.
+    */
+    auto ObjectInfo::operator!=(ObjectInfo const& other) const -> bool
+    {
+        return !(*this == other);
+    }
 
-    }  // namespace hdf5
-}  // namespace lue
+}  // namespace lue::hdf5

@@ -1,17 +1,15 @@
 #pragma once
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        template<typename Value>
-        class ValueTraits
-        {
-        };
+    template<typename Value>
+    class ValueTraits
+    {
+    };
 
 
-        template<typename Value>
-        using ElementT = typename ValueTraits<Value>::Element;
+    template<typename Value>
+    using ElementT = typename ValueTraits<Value>::Element;
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

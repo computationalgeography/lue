@@ -4,6 +4,6 @@
 
 namespace lue {
 
-    std::string version();
+    auto version() -> std::string;
 
 }  // namespace lue

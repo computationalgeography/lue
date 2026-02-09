@@ -3,6 +3,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 
 
 namespace lue::hdf5 {
@@ -20,17 +21,17 @@ namespace lue::hdf5 {
 
     {
         assert(!is_valid());
+        assert_invariant();
     }
 
 
     /*!
-        @brief      Construct an instance based on an HDF5 identifier and a
-                    close function
+        @brief      Construct an instance based on an HDF5 identifier and a close function
     */
-    Identifier::Identifier(hid_t const id, Close const& close):
+    Identifier::Identifier(hid_t const id, Close close):
 
         _id{id},
-        _close{close}
+        _close{std::move(close)}
 
     {
         assert_invariant();
@@ -40,8 +41,7 @@ namespace lue::hdf5 {
     /*!
         @brief      Copy construct an instance
 
-        If the HDF5 identifier is valid, the reference count of the object
-        it identifies will be incremented.
+        If the HDF5 identifier is valid, the reference count of the object it identifies will be incremented.
     */
     Identifier::Identifier(Identifier const& other):
 
@@ -61,10 +61,9 @@ namespace lue::hdf5 {
     /*!
         @brief      Move construct an instance
 
-        The resulting instance will be valid when @a other is valid, otherwise it
-        will be invalid. Once the new instance is constructed, @a other will be
-        in a valid state, but semantically invalid (not identifying an
-        object anymore).
+        The resulting instance will be valid when @a other is valid, otherwise it will be invalid. Once the
+        new instance is constructed, @a other will be in a valid state, but semantically invalid (not
+        identifying an object anymore).
     */
     Identifier::Identifier(Identifier&& other) noexcept:
 
@@ -73,6 +72,7 @@ namespace lue::hdf5 {
 
     {
         other._id = -1;
+        other._close = nullptr;
 
         try
         {
@@ -109,10 +109,10 @@ namespace lue::hdf5 {
     /*!
         @brief      Copy-assign @a other to this instance
 
-        If necessary, the close function is called on the currently layered
-        HDF5 identifier before the assignment.
+        If necessary, the close function is called on the currently layered HDF5 identifier before the
+        assignment.
     */
-    Identifier& Identifier::operator=(Identifier const& other)
+    auto Identifier::operator=(Identifier const& other) -> Identifier&
     {
         // Copy-assign:
         // - Clean-up this instance
@@ -141,10 +141,10 @@ namespace lue::hdf5 {
     /*!
         @brief      Move-assign @a other to this instance
 
-        If necessary, the close function is called on the currently layered
-        HDF5 identifier before the assignment.
+        If necessary, the close function is called on the currently layered HDF5 identifier before the
+        assignment.
     */
-    Identifier& Identifier::operator=(Identifier&& other) noexcept
+    auto Identifier::operator=(Identifier&& other) noexcept -> Identifier&
     {
         // Move-assign:
         // - Clean-up this instance
@@ -158,6 +158,7 @@ namespace lue::hdf5 {
             other._id = -1;
 
             _close = std::move(other._close);
+            other._close = nullptr;
 
             assert_invariant();
             assert(!other.is_valid());
@@ -174,12 +175,12 @@ namespace lue::hdf5 {
 
     /*!
         @brief      Return reference count of the object
-        @exception  std::runtime_error In case the reference count cannot be retrieved. This
-                    happens when the object is not valid.
+        @exception  std::runtime_error In case the reference count cannot be retrieved. This happens when the
+                    object is not valid.
     */
-    int Identifier::reference_count() const
+    auto Identifier::reference_count() const -> int
     {
-        int const count{::H5Iget_ref(_id)};
+        int const count{H5Iget_ref(_id)};
 
         if (count < 0)
         {
@@ -191,11 +192,11 @@ namespace lue::hdf5 {
 
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    int Identifier::increment_reference_count()
+    auto Identifier::increment_reference_count() -> int
     {
         assert(is_valid());
 
-        int const count{::H5Iinc_ref(_id)};
+        int const count{H5Iinc_ref(_id)};
 
         if (count < 0)
         {
@@ -209,41 +210,51 @@ namespace lue::hdf5 {
     /*!
         @brief      Close the HDF5 object pointed to by the instance
 
-        Nothing will happen if the instance is not valid. Otherwise the
-        layered close function which was passed upon construction is
-        called. Typically, close functions will decrement the reference count
-        of the object identified by the identifier and close the object when
-        this count becomes zero.
+        Nothing will happen if the instance is not valid. Otherwise the layered close function which was
+        passed upon construction is called. Typically, close functions will decrement the reference count of
+        the object identified by the identifier and close the object when this count becomes zero.
     */
     void Identifier::close_if_valid()
     {
         if (is_valid())
         {
             assert(reference_count() > 0);
+
+#ifndef NDEBUG
+            auto const rc_pre_close = reference_count();
+#endif
+
             _close(_id);
+
+#ifndef NDEBUG
+            assert(rc_pre_close == 1 || reference_count() == rc_pre_close - 1);
+#endif
         }
     }
 
 
+    // NOLINTBEGIN(readability-convert-member-functions-to-static)
     void Identifier::assert_invariant() const
     {
+        // NOTE: An instance can be non-valid and have a _close function set
         assert(!(is_valid() && _close == nullptr));
     }
+    // NOLINTEND(readability-convert-member-functions-to-static)
 
 
     /*!
         @brief      Return whether the identifier is valid
     */
-    bool Identifier::is_valid() const
+    auto Identifier::is_valid() const -> bool
     {
         // Don't call assert_invariant here, since it uses is_valid in its
         // implementation...
 
-        ::htri_t status{0};
+        htri_t status{0};
 
         if (_id >= 0)
         {
-            status = ::H5Iis_valid(_id);
+            status = H5Iis_valid(_id);
 
             if (status < 0)
             {
@@ -255,11 +266,11 @@ namespace lue::hdf5 {
     }
 
 
-    ::H5I_type_t Identifier::type() const
+    auto Identifier::type() const -> H5I_type_t
     {
-        ::H5I_type_t const result{::H5Iget_type(_id)};
+        H5I_type_t const result{H5Iget_type(_id)};
 
-        if (result == ::H5I_BADID)
+        if (result == H5I_BADID)
         {
             throw std::runtime_error("Cannot determine type of object identifier");
         }
@@ -269,9 +280,9 @@ namespace lue::hdf5 {
 
 
     // NOLINTNEXTLINE(readability-make-member-function-const)
-    void* Identifier::object()
+    auto Identifier::object() -> void*
     {
-        void* result{::H5Iobject_verify(_id, type())};
+        void* result{H5Iobject_verify(_id, type())};
 
         if (result == nullptr)
         {
@@ -295,22 +306,21 @@ namespace lue::hdf5 {
         @brief      Return the pathname to the object
         @sa         name()
 
-        There may be more than one pathname to an object. This function returns
-        one of them. When possible, it is the one with which the object was
-        opened.
+        There may be more than one pathname to an object. This function returns one of them. When possible, it
+        is the one with which the object was opened.
 
-        If the object identified by this identifier is an attribute, then
-        the name of the object to which the attribute is attached is returned.
+        If the object identified by this identifier is an attribute, then the name of the object to which the
+        attribute is attached is returned.
     */
-    std::string Identifier::pathname() const
+    auto Identifier::pathname() const -> std::string
     {
         static_assert(
-            std::is_same<std::string::value_type, char>::value, "expect std::string::value_type to be char");
+            std::is_same_v<std::string::value_type, char>, "expect std::string::value_type to be char");
 
         assert(is_valid());
 
         // Number of bytes, excluding \0
-        ::ssize_t const nr_bytes{::H5Iget_name(_id, nullptr, 0)};
+        ssize_t const nr_bytes{H5Iget_name(_id, nullptr, 0)};
 
         if (nr_bytes < 0)
         {
@@ -319,7 +329,7 @@ namespace lue::hdf5 {
 
         std::string result(nr_bytes, 'x');
 
-        /* nr_bytes = */ ::H5Iget_name(_id, result.data(), nr_bytes + 1);
+        /* nr_bytes = */ H5Iget_name(_id, result.data(), nr_bytes + 1);
 
         return result;
     }
@@ -329,13 +339,13 @@ namespace lue::hdf5 {
         @brief      Return the name component of the pathname to the object
         @sa         pathname()
 
-        The name is the part of the pathname after the last forward slash. If
-        there is no forward slash in the pathname, name equals the pathname.
+        The name is the part of the pathname after the last forward slash. If there is no forward slash in
+        the pathname, name equals the pathname.
 
-        An HDF5 object itself does not have a name. It has a unique ID within
-        a file and at least one pathname pointing to it.
+        An HDF5 object itself does not have a name. It has a unique ID within a file and at least one
+        pathname pointing to it.
     */
-    std::string Identifier::name() const
+    auto Identifier::name() const -> std::string
     {
         assert(is_valid());
 
@@ -346,7 +356,7 @@ namespace lue::hdf5 {
     }
 
 
-    ObjectInfo Identifier::info() const
+    auto Identifier::info() const -> ObjectInfo
     {
         assert(is_valid());
 
@@ -354,28 +364,27 @@ namespace lue::hdf5 {
     }
 
 
-    Identifier Identifier::file_id() const
+    auto Identifier::file_id() const -> Identifier
     {
         assert(is_valid());
 
-        ::hid_t const object_id{::H5Iget_file_id(_id)};
+        hid_t const object_id{H5Iget_file_id(_id)};
 
         if (object_id < 0)
         {
             throw std::runtime_error("Cannot get file ID");
         }
 
-        return Identifier{object_id, ::H5Fclose};
+        return Identifier{object_id, H5Fclose};
     }
 
 
     /*!
         @brief      Return whether two object identifiers are equal
 
-        Two identifiers are considered equal if they are pointing to the same
-        object in the HDF5 dataset.
+        Two identifiers are considered equal if they are pointing to the same object in the HDF5 dataset.
     */
-    bool Identifier::operator==(Identifier const& other) const
+    auto Identifier::operator==(Identifier const& other) const -> bool
     {
         return info() == other.info();
     }
@@ -384,10 +393,9 @@ namespace lue::hdf5 {
     /*!
         @brief      Return whether two object identifiers are not equal
 
-        Two identifiers are considered equal if they are pointing to the same
-        object in the HDF5 dataset.
+        Two identifiers are considered equal if they are pointing to the same object in the HDF5 dataset.
     */
-    bool Identifier::operator!=(Identifier const& other) const
+    auto Identifier::operator!=(Identifier const& other) const -> bool
     {
         return info() != other.info();
     }

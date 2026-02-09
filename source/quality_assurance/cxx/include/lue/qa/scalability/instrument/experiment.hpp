@@ -70,11 +70,11 @@ namespace lue::qa {
 
             auto operator=(Experiment&&) -> Experiment& = default;
 
-            [[nodiscard]] auto nr_workers() const -> Count;
+            auto nr_workers() const -> Count;
 
             void add(Run const& run);
 
-            [[nodiscard]] auto runs() const -> Runs const&;
+            auto runs() const -> Runs const&;
 
         private:
 

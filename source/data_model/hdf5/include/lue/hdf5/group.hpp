@@ -6,8 +6,7 @@
 
 namespace lue::hdf5 {
 
-    // Forward declare the File class to be able to declare it a friend of
-    // the Group class
+    // Forward declare the File class to be able to declare it a friend of the Group class
     class File;
 
 
@@ -27,23 +26,23 @@ namespace lue::hdf5 {
 
             explicit Group(Identifier&& id);
 
-            [[nodiscard]] auto has_parent() const -> bool;
+            auto has_parent() const -> bool;
 
-            [[nodiscard]] auto parent_pathname() const -> std::string const&;
+            auto parent_pathname() const -> std::string const&;
 
-            [[nodiscard]] auto parent() const -> Group;
+            auto parent() const -> Group;
 
-            [[nodiscard]] auto group_names() const -> std::vector<std::string>;
+            auto group_names() const -> std::vector<std::string>;
 
-            [[nodiscard]] auto object_names() const -> std::vector<std::string>;
+            auto object_names() const -> std::vector<std::string>;
 
-            [[nodiscard]] auto contains_group(std::string const& name) const -> bool;
+            auto contains_group(std::string const& name) const -> bool;
 
-            [[nodiscard]] auto contains_dataset(std::string const& name) const -> bool;
+            auto contains_dataset(std::string const& name) const -> bool;
 
-            [[nodiscard]] auto contains_soft_link(std::string const& name) const -> bool;
+            auto contains_soft_link(std::string const& name) const -> bool;
 
-            [[nodiscard]] auto contains_hard_link(std::string const& name) const -> bool;
+            auto contains_hard_link(std::string const& name) const -> bool;
 
             auto soft_link(std::string const& name) -> SoftLink;
 
@@ -64,8 +63,8 @@ namespace lue::hdf5 {
     };
 
 
-    LUE_HDF5_EXPORT bool group_exists(Group const& parent, std::string const& name);
+    LUE_HDF5_EXPORT auto group_exists(Group const& parent, std::string const& name) -> bool;
 
-    LUE_HDF5_EXPORT Group create_group(Group& parent, std::string const& name);
+    LUE_HDF5_EXPORT auto create_group(Group& parent, std::string const& name) -> Group;
 
 }  // namespace lue::hdf5

@@ -125,9 +125,8 @@ namespace lue::data_model {
     /*!
         @brief      Return whether or not a dataset exists
         @param      name Name of dataset
-        @warning    This function only checks whether a regular file named
-                    @a name is present. No attempt is made to verify the file
-                    is accessible or is formatted correctly.
+        @warning    This function only checks whether a regular file named @a name is present. No attempt is
+                    made to verify the file is accessible or is formatted correctly.
     */
     auto dataset_exists(std::string const& name) -> bool
     {
@@ -183,7 +182,7 @@ namespace lue::data_model {
     {
         access_property_list.set_library_version_bounds(H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
 
-        hdf5::File file{hdf5::create_file(name, std::move(access_property_list))};
+        hdf5::File file{hdf5::create_file(name, access_property_list)};
 
         return create_dataset(std::move(file), description);
     }

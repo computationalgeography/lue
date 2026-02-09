@@ -19,7 +19,7 @@ namespace lue::hdf5 {
     }
 
 
-    Identifier const& PropertyList::id() const
+    auto PropertyList::id() const -> Identifier const&
     {
         return _id;
     }

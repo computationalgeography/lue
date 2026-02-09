@@ -2,38 +2,36 @@
 #include "lue/core/tag.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        ActiveObjectID::ActiveObjectID(hdf5::Group const& parent):
+    ActiveObjectID::ActiveObjectID(hdf5::Group const& parent):
 
-            same_shape::constant_shape::Value{parent, active_object_id_tag}
+        same_shape::constant_shape::Value{parent, active_object_id_tag}
 
-        {
-        }
-
-
-        ActiveObjectID::ActiveObjectID(same_shape::constant_shape::Value&& value):
-
-            same_shape::constant_shape::Value{std::move(value)}
-
-        {
-        }
+    {
+    }
 
 
-        Count ActiveObjectID::nr_ids() const
-        {
-            return nr_arrays();
-        }
+    ActiveObjectID::ActiveObjectID(same_shape::constant_shape::Value&& value):
+
+        same_shape::constant_shape::Value{std::move(value)}
+
+    {
+    }
 
 
-        ActiveObjectID create_active_object_id(hdf5::Group& parent)
-        {
-            same_shape::constant_shape::Value value{same_shape::constant_shape::create_value(
-                parent, active_object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+    auto ActiveObjectID::nr_ids() const -> Count
+    {
+        return nr_arrays();
+    }
 
-            return ActiveObjectID{std::move(value)};
-        }
 
-    }  // namespace data_model
-}  // namespace lue
+    auto create_active_object_id(hdf5::Group& parent) -> ActiveObjectID
+    {
+        same_shape::constant_shape::Value value{same_shape::constant_shape::create_value(
+            parent, active_object_id_tag, hdf5::Datatype{H5T_NATIVE_HSIZE})};
+
+        return ActiveObjectID{std::move(value)};
+    }
+
+}  // namespace lue::data_model

@@ -1,7 +1,4 @@
 #pragma once
-#include "lue/py/configure.hpp"
-#include <functional>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,9 +12,9 @@ namespace lue {
 
             CommandLine();
 
-            [[nodiscard]] auto argc() const -> int;
+            auto argc() const -> int;
 
-            [[nodiscard]] auto argv() const -> char**;
+            auto argv() const -> char**;
 
         private:
 

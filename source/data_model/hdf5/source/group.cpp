@@ -47,7 +47,8 @@ namespace lue::hdf5 {
 
 
         auto retrieve_object_names(
-            hid_t const location, char const* name, H5L_info_t const* /* info */, void* data) -> herr_t
+            hid_t const location, char const* name, [[maybe_unused]] H5L_info_t const* info, void* data)
+            -> herr_t
         {
             H5O_info_t infobuf;
             herr_t const status{H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT)};
@@ -67,7 +68,8 @@ namespace lue::hdf5 {
 
 
         auto retrieve_group_names(
-            hid_t const location, char const* name, H5L_info_t const* /* info */, void* data) -> herr_t
+            hid_t const location, char const* name, [[maybe_unused]] H5L_info_t const* info, void* data)
+            -> herr_t
         {
             H5O_info_t infobuf;
             herr_t const status{H5Oget_info_by_name(location, name, &infobuf, H5P_DEFAULT)};
@@ -141,8 +143,7 @@ namespace lue::hdf5 {
     /*!
         @brief      Construct a group based on an identifier
         @param      id Identifier of group
-        @warning    Whether or not the @a id passed in is valid must be
-                    checked by the calling code
+        @warning    Whether or not the @a id passed in is valid must be checked by the calling code
 
         Use this constructor for groups that have no parent.
     */
@@ -154,8 +155,8 @@ namespace lue::hdf5 {
     {
         // Only used by File constructor
 
-        // No assertions please. It is well possible that the id is not
-        // valid. The calling code must check that.
+        // No assertions please. It is well possible that the id is not valid. The calling code must check
+        // that.
 
         // assert(this->id().is_valid());
         // assert(this->id().type() == H5I_FILE);
@@ -207,8 +208,7 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Return whether or not the group contains a child-group named
-                    @a name
+        @brief      Return whether or not the group contains a child-group named @a name
     */
     auto Group::contains_group(std::string const& name) const -> bool
     {
@@ -217,8 +217,7 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Return whether or not the group contains a dataset named
-                    @a name
+        @brief      Return whether or not the group contains a dataset named @a name
     */
     auto Group::contains_dataset(std::string const& name) const -> bool
     {
@@ -227,8 +226,7 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Return whether or not the group contains a soft-link named
-                    @a name
+        @brief      Return whether or not the group contains a soft-link named @a name
     */
     auto Group::contains_soft_link(std::string const& name) const -> bool
     {
@@ -237,8 +235,7 @@ namespace lue::hdf5 {
 
 
     /*!
-        @brief      Return whether or not the group contains a hard-link named
-                    @a name
+        @brief      Return whether or not the group contains a hard-link named @a name
     */
     auto Group::contains_hard_link(std::string const& name) const -> bool
     {

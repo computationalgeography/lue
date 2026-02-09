@@ -17,7 +17,7 @@ namespace lue {
 
             auto operator++() -> Count&;
 
-            [[nodiscard]] auto keep_walking() const -> bool;
+            auto keep_walking() const -> bool;
 
         protected:
 

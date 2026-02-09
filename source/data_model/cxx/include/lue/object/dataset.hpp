@@ -4,88 +4,82 @@
 #include "lue/object/universes.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            @brief      This class is for managing LUE datasets.
+    /*!
+        @brief      This class is for managing LUE datasets.
 
-            A dataset represents everything that a LUE file contains. Datasets
-            contain collections of:
-            - universes, which together represent alternative states of a system
-            - phenomena, which together represent one state of a system
-        */
-        class LUE_DATA_MODEL_EXPORT Dataset: public hdf5::File
-        {
+        A dataset represents everything that a LUE file contains. Datasets
+        contain collections of:
+        - universes, which together represent alternative states of a system
+        - phenomena, which together represent one state of a system
+    */
+    class LUE_DATA_MODEL_EXPORT Dataset: public hdf5::File
+    {
 
-            public:
+        public:
 
-                Dataset(
-                    std::string const& name,
-                    unsigned int flags,
-                    AccessPropertyList const& access_property_list);
+            Dataset(
+                std::string const& name, unsigned int flags, AccessPropertyList const& access_property_list);
 
-                Dataset(std::string const& name, AccessPropertyList const& access_property_list);
+            Dataset(std::string const& name, AccessPropertyList const& access_property_list);
 
-                explicit Dataset(std::string const& name, unsigned int flags = H5F_ACC_RDONLY);
+            explicit Dataset(std::string const& name, unsigned int flags = H5F_ACC_RDONLY);
 
-                explicit Dataset(hdf5::File&& file);
+            explicit Dataset(hdf5::File&& file);
 
-                Dataset(Dataset const&) = default;
+            Dataset(Dataset const& other) = default;
 
-                Dataset(Dataset&&) = default;
+            Dataset(Dataset&& other) = default;
 
-                ~Dataset() override = default;
+            ~Dataset() override = default;
 
-                auto operator=(Dataset const&) -> Dataset& = default;
+            auto operator=(Dataset const& other) -> Dataset& = default;
 
-                auto operator=(Dataset&&) -> Dataset& = default;
+            auto operator=(Dataset&& other) -> Dataset& = default;
 
-                [[nodiscard]] auto lue_version() const -> std::string;
+            auto lue_version() const -> std::string;
 
-                auto add_universe(std::string const& name) -> Universe&;
+            auto add_universe(std::string const& name) -> Universe&;
 
-                auto add_phenomenon(std::string const& name, std::string const& description = "")
-                    -> Phenomenon&;
+            auto add_phenomenon(std::string const& name, std::string const& description = "") -> Phenomenon&;
 
-                [[nodiscard]] auto description() const -> std::string const&;
+            auto description() const -> std::string const&;
 
-                [[nodiscard]] auto universes() const -> Universes const&;
+            auto universes() const -> Universes const&;
 
-                auto universes() -> Universes&;
+            auto universes() -> Universes&;
 
-                [[nodiscard]] auto phenomena() const -> Phenomena const&;
+            auto phenomena() const -> Phenomena const&;
 
-                auto phenomena() -> Phenomena&;
+            auto phenomena() -> Phenomena&;
 
-            private:
+        private:
 
-                std::string _description;
+            std::string _description;
 
-                Universes _universes;
+            Universes _universes;
 
-                Phenomena _phenomena;
-        };
+            Phenomena _phenomena;
+    };
 
 
-        LUE_DATA_MODEL_EXPORT auto dataset_exists(std::string const& name) -> bool;
+    LUE_DATA_MODEL_EXPORT auto dataset_exists(std::string const& name) -> bool;
 
-        LUE_DATA_MODEL_EXPORT auto open_dataset(
-            std::string const& name,
-            unsigned int flags = H5F_ACC_RDONLY,
-            hdf5::File::AccessPropertyList const& access_property_list = hdf5::File::AccessPropertyList{})
-            -> Dataset;
+    LUE_DATA_MODEL_EXPORT auto open_dataset(
+        std::string const& name,
+        unsigned int flags = H5F_ACC_RDONLY,
+        hdf5::File::AccessPropertyList const& access_property_list = hdf5::File::AccessPropertyList{})
+        -> Dataset;
 
-        LUE_DATA_MODEL_EXPORT auto create_dataset(
-            std::string const& name,
-            std::string const& description = "",
-            hdf5::File::AccessPropertyList access_property_list = hdf5::File::AccessPropertyList{})
-            -> Dataset;
+    LUE_DATA_MODEL_EXPORT auto create_dataset(
+        std::string const& name,
+        std::string const& description = "",
+        hdf5::File::AccessPropertyList access_property_list = hdf5::File::AccessPropertyList{}) -> Dataset;
 
-        LUE_DATA_MODEL_EXPORT auto create_in_memory_dataset(
-            std::string const& name, std::string const& description = "") -> Dataset;
+    LUE_DATA_MODEL_EXPORT auto create_in_memory_dataset(
+        std::string const& name, std::string const& description = "") -> Dataset;
 
-        LUE_DATA_MODEL_EXPORT void remove_dataset(std::string const& name);
+    LUE_DATA_MODEL_EXPORT void remove_dataset(std::string const& name);
 
-    }  // namespace data_model
-}  // namespace lue
+}  // namespace lue::data_model

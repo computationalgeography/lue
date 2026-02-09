@@ -2,49 +2,47 @@
 #include "lue/info/time/location_in_time.hpp"
 
 
-namespace lue {
-    namespace data_model {
+namespace lue::data_model {
 
-        /*!
-            - Zero or more time boxes per item
-            - Each time box has a unique location in time
-        */
-        class LUE_DATA_MODEL_EXPORT TimeBox: public LocationInTime
-        {
+    /*!
+        - Zero or more time boxes per item
+        - Each time box has a unique location in time
+    */
+    class LUE_DATA_MODEL_EXPORT TimeBox: public LocationInTime
+    {
 
-            public:
+        public:
 
-                explicit TimeBox(hdf5::Group const& parent);
+            explicit TimeBox(hdf5::Group const& parent);
 
-                explicit TimeBox(LocationInTime&& value);
+            explicit TimeBox(LocationInTime&& value);
 
-                TimeBox(TimeBox const&) = default;
+            TimeBox(TimeBox const& other) = default;
 
-                TimeBox(TimeBox&&) = default;
+            TimeBox(TimeBox&& other) = default;
 
-                ~TimeBox() override = default;
+            ~TimeBox() override = default;
 
-                TimeBox& operator=(TimeBox const&) = default;
+            auto operator=(TimeBox const& other) -> TimeBox& = default;
 
-                TimeBox& operator=(TimeBox&&) = default;
+            auto operator=(TimeBox&& other) -> TimeBox& = default;
 
-                Count nr_boxes() const;
+            auto nr_boxes() const -> Count;
 
-            private:
-        };
-
-
-        TimeBox create_time_box(hdf5::Group& parent);
+        private:
+    };
 
 
-        template<>
-        class ValueTraits<TimeBox>
-        {
+    auto create_time_box(hdf5::Group& parent) -> TimeBox;
 
-            public:
 
-                using Element = typename ValueTraits<LocationInTime>::Element;
-        };
+    template<>
+    class ValueTraits<TimeBox>
+    {
 
-    }  // namespace data_model
-}  // namespace lue
+        public:
+
+            using Element = typename ValueTraits<LocationInTime>::Element;
+    };
+
+}  // namespace lue::data_model

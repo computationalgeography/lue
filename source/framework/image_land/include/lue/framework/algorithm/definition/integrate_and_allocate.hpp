@@ -20,8 +20,7 @@ namespace lue {
         @brief      Return whether two maps have the same keys, no less and no more
     */
     template<typename Key, typename Value1, typename Value2>
-    [[nodiscard]] auto keys_are_equal(std::map<Key, Value1> const& map1, std::map<Key, Value2> const& map2)
-        -> bool
+    auto keys_are_equal(std::map<Key, Value1> const& map1, std::map<Key, Value2> const& map2) -> bool
     {
         bool result = false;
 
@@ -115,7 +114,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            [[nodiscard]] auto demand(ZoneElement const zone, Index const crop_idx) -> FloatingPointElement
+            auto demand(ZoneElement const zone, Index const crop_idx) -> FloatingPointElement
             {
                 assert(_zonal_demand_by_crop.find(zone) != _zonal_demand_by_crop.end());
 
@@ -134,8 +133,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            [[nodiscard]] auto production(ZoneElement const zone, Index const crop_idx)
-                -> FloatingPointElement
+            auto production(ZoneElement const zone, Index const crop_idx) -> FloatingPointElement
             {
                 assert(_zonal_production_by_crop.find(zone) != _zonal_production_by_crop.end());
 
@@ -164,7 +162,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            [[nodiscard]] auto demand_met(ZoneElement const zone, Index const crop_idx) -> bool
+            auto demand_met(ZoneElement const zone, Index const crop_idx) -> bool
             {
                 assert(_zonal_demand_met.find(zone) != _zonal_demand_met.end());
 
@@ -183,7 +181,7 @@ namespace lue::detail::integrate_and_allocate {
             }
 
 
-            [[nodiscard]] auto keep_walking() const -> bool
+            auto keep_walking() const -> bool
             {
                 return std::all_of(
                     _zonal_demand_met.begin(),

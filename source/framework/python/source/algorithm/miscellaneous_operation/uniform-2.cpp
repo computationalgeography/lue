@@ -12,7 +12,21 @@ using namespace pybind11::literals;
 namespace lue::framework {
     namespace {
 
-        // Step 3: Call the algorithm
+        // Step 4: Release the GIL and call the algorithm
+        template<typename Element, Rank rank>
+        auto uniform(
+            StaticShape<rank> const& array_shape,
+            StaticShape<rank> const& partition_shape,
+            Element const& min_value,
+            Element const& max_value) -> PartitionedArray<Element, rank>
+        {
+            pybind11::gil_scoped_release release{};
+
+            return value_policies::uniform(array_shape, partition_shape, min_value, max_value);
+        }
+
+
+        // Step 3: Convert between Python and C++ types
         template<typename Element, Rank rank>
         auto uniform(
             StaticShape<rank> const& array_shape,
