@@ -180,7 +180,7 @@ namespace lue::framework {
         // Unless the user calls stop_hpx_runtime explicitly, we will do it
         // automatically upon module unload
         auto atexit = pybind11::module_::import("atexit");
-        atexit.attr("register")(pybind11::cpp_function([]() { stop_hpx_runtime(); }));
+        atexit.attr("register")(pybind11::cpp_function([]() -> void { stop_hpx_runtime(); }));
     }
 
 }  // namespace lue::framework

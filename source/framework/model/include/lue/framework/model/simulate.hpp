@@ -11,7 +11,7 @@ namespace lue {
         static auto attach_signaller = [](hpx::sliding_semaphore& semaphore,
                                           auto&& previous_state,
                                           auto&& current_state,
-                                          Count const lower_limit)
+                                          Count const lower_limit) -> auto
         {
             // To prevent states to overtake each other, we order them explicitly here
 
@@ -19,13 +19,14 @@ namespace lue {
             return previous_state.then(
                 [&semaphore,
                  current_state = std::forward<decltype(current_state)>(current_state),
-                 lower_limit]([[maybe_unused]] auto const& previous_state)
+                 lower_limit]([[maybe_unused]] auto const& previous_state) -> auto
                 {
+                    lue_hpx_assert(previous_state.is_ready());
+
                     // ... and once the current state is ready...
                     return current_state.then(
-                        [&semaphore, lower_limit](auto const& current_state)
+                        [&semaphore, lower_limit]([[maybe_unused]] auto const& current_state) -> auto
                         {
-                            HPX_UNUSED(current_state);  // Silence compiler in non-Debug build
                             lue_hpx_assert(current_state.is_ready());
 
                             // ... notify the semaphore about the new lower limit
@@ -102,7 +103,7 @@ namespace lue {
                     // This will make sure this function does not return before the last state is
                     // ready. Returning too early results in dangling references to the semaphore.
                     // Wait explicitly here, because the semaphore only waits conditionally. The
-                    // last state may or may not be already ready.
+                    // last state may or may not be ready already.
                     previous_state.wait();
                 }
             }
