@@ -17,7 +17,7 @@ namespace lue {
         located at offset [0, 0].
     */
     template<typename Element, Rank rank>
-    class ArrayPartition:
+    class LUE_FPA_EXPORT ArrayPartition:
         public hpx::components::
             client_base<ArrayPartition<Element, rank>, server::ArrayPartition<Element, rank>>
 

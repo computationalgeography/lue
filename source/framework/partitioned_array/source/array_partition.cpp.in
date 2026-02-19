@@ -1,9 +1,8 @@
 #include "lue/framework/partitioned_array/array_partition_impl.hpp"
-#include "lue/framework/partitioned_array/export.hpp"
 
 
 namespace lue {
 
-    template class LUE_FPA_EXPORT ArrayPartition<{{ Element }}, {{ rank }}>;
+    template class ArrayPartition<{{ Element }}, {{ rank }}>;
 
 }  // namespace lue
