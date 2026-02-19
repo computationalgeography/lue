@@ -3,7 +3,7 @@
 #include "lue/framework/algorithm/policy/default_policies.hpp"
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
 #include "lue/framework/core/annotate.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

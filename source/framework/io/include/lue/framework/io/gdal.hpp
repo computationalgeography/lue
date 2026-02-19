@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/core/hyperslab.hpp"
 #include "lue/framework/io/export.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

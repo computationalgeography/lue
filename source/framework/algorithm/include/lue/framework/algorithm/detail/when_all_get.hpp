@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/partitioned_array/array_partition.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 
 
 namespace lue::detail {

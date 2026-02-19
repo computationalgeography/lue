@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include "lue/framework/configure.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue::test {

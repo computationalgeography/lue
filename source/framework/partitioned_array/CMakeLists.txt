@@ -2,29 +2,23 @@
 set(generated_source_files "")
 
 block()
-    set(offset "include/lue/framework/partitioned_array/server")
-    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array_partition.hpp")
-
-    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
-    list(TRANSFORM Elements PREPEND "\"")
-    list(TRANSFORM Elements APPEND "\"")
-    list(JOIN Elements ", " Elements)
-
-    generate_template_instantiation(
-        INPUT_PATHNAME
-            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/array_partition.hpp.in"
-        OUTPUT_PATHNAME
-            "${output_pathname}"
-        DICTIONARY
-            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
-    )
-
-    list(APPEND generated_source_files "${output_pathname}")
-
     foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
+        string(REPLACE "std::" "" Element ${Element})
         string(REPLACE "::" "_" element ${Element})
 
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/partitioned_array-${element}_${rank}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/partitioned_array.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Element":"${Element}","rank":"${rank}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/array_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
@@ -78,7 +72,6 @@ target_sources(lue_framework_partitioned_array
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition.hpp
     PRIVATE
         source/server/array_partition.cpp
         ${generated_source_files}

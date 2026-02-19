@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/core/component.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue::detail {

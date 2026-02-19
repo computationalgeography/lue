@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/detail/communicator.hpp"
 #include "lue/framework/core/array.hpp"
-#include "lue/framework/partitioned_array.hpp"  // Localities
+#include "lue/framework/partitioned_array_decl.hpp"  // Localities
 
 
 namespace lue::detail {

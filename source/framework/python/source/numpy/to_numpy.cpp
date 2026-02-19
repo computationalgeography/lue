@@ -1,5 +1,5 @@
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>
