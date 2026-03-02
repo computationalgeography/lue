@@ -4,9 +4,13 @@ on:
   pull_request:
     branches-ignore:
       - "*"
+    paths-ignore:
+      - "environment/easybuild/*"
   push:
     branches-ignore:
       - "*"
+    paths-ignore:
+      - "environment/easybuild/*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
