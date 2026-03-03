@@ -12,9 +12,12 @@ on:
       - "**"
       - "!.github/workflows/*"
       - ".github/workflows/windows-conda.yml"
+      - "!environment/easybuild/*"
   push:
     branches:
       - "master"
+    paths-ignore:
+      - "environment/easybuild/*"
   workflow_dispatch:
 
 concurrency:
