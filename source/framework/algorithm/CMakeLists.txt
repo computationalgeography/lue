@@ -1063,6 +1063,19 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
+            # Instantiate open_simplex_noise
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/open_simplex_noise-${Policies}_${element}.cpp")
+
+            generate_template_instantiation(
+                INPUT_PATHNAME
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/open_simplex_noise.cpp.in"
+                OUTPUT_PATHNAME
+                    "${output_pathname}"
+                DICTIONARY
+                    '{"Policies":"${Policies}","Element":"${Element}"}'
+            )
+            list(APPEND generated_source_files "${output_pathname}")
+
             foreach(SomeElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
                 string(REPLACE "std::" "" some_element ${SomeElement})
 

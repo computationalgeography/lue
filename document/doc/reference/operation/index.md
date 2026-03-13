@@ -32,5 +32,6 @@
 
 ## Miscellaneous operations
 
+- {py:func}`open_simplex2_noise`
 - {py:func}`resample`
 - {py:func}`uniform`

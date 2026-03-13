@@ -103,6 +103,7 @@ set(global_operation_names
 
 set(miscellaneous_operation_names
     normal
+    open_simplex_noise
     resample
     uniform
 )
