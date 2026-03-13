@@ -80,6 +80,7 @@ target_sources(lue_py_framework_miscellaneous_operation
     PRIVATE
         source/algorithm/miscellaneous_operation.cpp
         source/algorithm/miscellaneous_operation/normal.cpp
+        source/algorithm/miscellaneous_operation/open_simplex_noise.cpp
         source/algorithm/miscellaneous_operation/resample.cpp
         source/algorithm/miscellaneous_operation/uniform-1.cpp
         source/algorithm/miscellaneous_operation/uniform-2.cpp

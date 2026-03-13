@@ -1,0 +1,11 @@
+// https://github.com/DavidAnson/markdownlint-cli2/blob/main/test/markdownlint-cli2-jsonc-example/.markdownlint-cli2.jsonc
+{
+    "config": {
+        "line-length": {
+            "line_length": 110
+        },
+        "no-duplicate-heading": {
+            "siblings_only": true
+        }
+    }
+}

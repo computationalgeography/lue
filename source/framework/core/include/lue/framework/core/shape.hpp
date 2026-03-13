@@ -33,7 +33,7 @@ namespace lue {
 
 
     template<typename Count, Rank rank>
-    inline Count nr_elements(Shape<Count, rank> const& shape)
+    auto nr_elements(Shape<Count, rank> const& shape) -> Count
     {
         static_assert(rank > 0);
 
@@ -46,14 +46,14 @@ namespace lue {
 
 
     template<typename Count>
-    inline constexpr Count nr_elements(Shape<Count, 0> const& /* shape */)
+    constexpr auto nr_elements(Shape<Count, 0> const& /* shape */) -> Count
     {
         return 0;
     }
 
 
     template<typename Count, Rank rank>
-    inline constexpr bool is_hypercube(Shape<Count, rank> const& shape)
+    constexpr auto is_hypercube(Shape<Count, rank> const& shape) -> bool
     {
         return shape.empty() ? false
                              : static_cast<typename Shape<Count, rank>::size_type>(

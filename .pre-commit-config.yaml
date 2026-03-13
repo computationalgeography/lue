@@ -8,6 +8,7 @@ exclude: |
       environment/cmake/.*\.patch|
       environment/cmake/UseLATEX\.cmake|
       environment/cmake/conan-.*\.cmake|
+      source/framework/algorithm/include/lue/framework/algorithm/definition/FastNoiseLite.h|
       source/view/imgui/include/lue/imgui/font/.*
     )$
 repos:
