@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/partitioned_array/server/array_partition.hpp"
+#include "lue/framework/partitioned_array/server/array_partition_decl.hpp"
 
 
 namespace lue::server {
@@ -86,7 +86,7 @@ namespace lue::server {
 
 
     template<typename Element, Rank rank>
-    ArrayPartition<Element, rank>::ArrayPartition(ArrayPartition&& other):
+    ArrayPartition<Element, rank>::ArrayPartition(ArrayPartition&& other) noexcept:
 
         Base{std::move(other)},
         _offset{std::move(other._offset)},
@@ -156,3 +156,26 @@ namespace lue::server {
     }
 
 }  // namespace lue::server
+
+
+// Register array partition action declarations for an array partition type
+#define LUE_REGISTER_ARRAY_PARTITION_ACTIONS(ArrayPartition)                                                 \
+    HPX_REGISTER_ACTION(ArrayPartition::DataAction, HPX_PP_CAT(ArrayPartition, DataAction));                 \
+    HPX_REGISTER_ACTION(ArrayPartition::SliceAction, HPX_PP_CAT(ArrayPartition, SliceAction));               \
+    HPX_REGISTER_ACTION(ArrayPartition::FillAction, HPX_PP_CAT(ArrayPartition, FillAction));                 \
+    HPX_REGISTER_ACTION(ArrayPartition::SetDataAction, HPX_PP_CAT(ArrayPartition, SetDataAction));           \
+    HPX_REGISTER_ACTION(ArrayPartition::OffsetAction, HPX_PP_CAT(ArrayPartition, OffsetAction));             \
+    HPX_REGISTER_ACTION(ArrayPartition::ShapeAction, HPX_PP_CAT(ArrayPartition, ShapeAction));               \
+    HPX_REGISTER_ACTION(ArrayPartition::NrElementsAction, HPX_PP_CAT(ArrayPartition, NrElementsAction));
+
+#define LUE_REGISTER_ARRAY_PARTITION_COMPONENT(ArrayPartition)                                               \
+    using HPX_PP_CAT(ArrayPartition, Component) = hpx::components::component<ArrayPartition>;                \
+    HPX_REGISTER_COMPONENT(HPX_PP_CAT(ArrayPartition, Component));
+
+// Register array partition declaration for an element type and rank
+#define LUE_REGISTER_ARRAY_PARTITION(Element, rank)                                                          \
+    using HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)) =                                     \
+        lue::server::ArrayPartition<Element, rank>;                                                          \
+                                                                                                             \
+    LUE_REGISTER_ARRAY_PARTITION_COMPONENT(HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)));    \
+    LUE_REGISTER_ARRAY_PARTITION_ACTIONS(HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)));

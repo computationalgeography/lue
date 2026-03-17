@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/policy/policy_traits.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <type_traits>
 
 

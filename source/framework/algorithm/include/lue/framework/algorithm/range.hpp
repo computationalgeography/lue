@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/annotate.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <hpx/include/lcos.hpp>
 
 

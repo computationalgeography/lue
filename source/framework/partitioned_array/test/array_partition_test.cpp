@@ -1,5 +1,5 @@
 #define BOOST_TEST_MODULE lue framework partitioned_array array_partition
-#include "lue/framework/partitioned_array/array_partition.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 

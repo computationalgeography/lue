@@ -1,4 +1,4 @@
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/concept.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/framework/stream.hpp"

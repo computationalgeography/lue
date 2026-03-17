@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/string.hpp"
 #include <format>
 #include <stdexcept>

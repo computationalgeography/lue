@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

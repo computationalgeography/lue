@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/hdf5/hyperslab.hpp"
 #include <hpx/runtime_distributed/find_localities.hpp>
 #include <map>

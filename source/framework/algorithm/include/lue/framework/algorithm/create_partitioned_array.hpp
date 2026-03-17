@@ -8,7 +8,7 @@
 #include "lue/framework/core/index_util.hpp"
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework/serial_route.hpp"
 #include <optional>
 
