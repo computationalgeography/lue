@@ -52,7 +52,6 @@ namespace lue::server {
 
             auto operator=(ArrayPartition&&) -> ArrayPartition& = delete;
 
-
             auto offset() const -> typename ArrayPartition<Element, rank>::Offset;
 
             auto data() const -> typename ArrayPartition<Element, rank>::Data;
@@ -74,7 +73,6 @@ namespace lue::server {
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, offset, OffsetAction)
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, shape, ShapeAction)
             HPX_DEFINE_COMPONENT_ACTION(ArrayPartition, nr_elements, NrElementsAction)
-
 
         private:
 
@@ -98,7 +96,7 @@ namespace lue::server {
     HPX_REGISTER_ACTION_DECLARATION(                                                                         \
         ArrayPartition::NrElementsAction, HPX_PP_CAT(ArrayPartition, NrElementsAction))
 
-// Register array partition declaration for an element type and rank
+// Register array partition declarations for an element type and rank
 #define LUE_REGISTER_ARRAY_PARTITION_DECLARATION(Element, rank)                                              \
     using HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)) =                                     \
         lue::server::ArrayPartition<Element, rank>;                                                          \

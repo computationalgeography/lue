@@ -30,18 +30,6 @@ block()
                     '{"Element":"${Element}","rank":"${rank}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
-
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/server/array_partition-${element}_${rank}.cpp")
-
-            generate_template_instantiation(
-                INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/array_partition.cpp.in"
-                OUTPUT_PATHNAME
-                    "${output_pathname}"
-                DICTIONARY
-                    '{"Element":"${Element}","rank":"${rank}"}'
-            )
-            list(APPEND generated_source_files "${output_pathname}")
         endforeach()
     endforeach()
 
@@ -73,7 +61,7 @@ target_sources(lue_framework_partitioned_array
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
     PRIVATE
-        source/server/array_partition.cpp
+        source/array_partition.cpp
         ${generated_source_files}
 )
 
