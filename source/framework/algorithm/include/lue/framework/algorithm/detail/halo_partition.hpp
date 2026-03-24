@@ -11,8 +11,8 @@ namespace lue::detail {
 
 
     template<typename Element>
-    ArrayPartition<Element, 2> corner_halo_partition(
-        ShapeT<ArrayPartition<Element, 2>> const& min_shape, Element const fill_value)
+    auto corner_halo_partition(ShapeT<ArrayPartition<Element, 2>> const& min_shape, Element const fill_value)
+        -> ArrayPartition<Element, 2>
     {
         // Asynchronously create a new partition:
         // - With a shape based on the partition paѕsed in
@@ -26,10 +26,10 @@ namespace lue::detail {
 
 
     template<typename Element>
-    ArrayPartition<Element, 2> longitudinal_side_halo_partition(
+    auto longitudinal_side_halo_partition(
         ArrayPartition<Element, 2> const& partition,
         ShapeT<ArrayPartition<Element, 2>> const& min_shape,
-        Element const fill_value)
+        Element const fill_value) -> ArrayPartition<Element, 2>
     {
         // Asynchronously create a new partition:
         // - With a shape based on the partition paѕsed in
@@ -45,19 +45,19 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                [extent0 = std::get<0>(min_shape), fill_value](Shape const& shape)
+                [extent0 = std::get<0>(min_shape), fill_value](Shape const& shape) -> auto
                 { return Partition{hpx::find_here(), Offset{}, Shape{{extent0, shape[1]}}, fill_value}; }
 
                 ),
-            partition.shape());
+            partition.shape(hpx::launch::async));
     }
 
 
     template<typename Element>
-    ArrayPartition<Element, 2> latitudinal_side_halo_partition(
+    auto latitudinal_side_halo_partition(
         ArrayPartition<Element, 2> const& partition,
         ShapeT<ArrayPartition<Element, 2>> const& min_shape,
-        Element const fill_value)
+        Element const fill_value) -> ArrayPartition<Element, 2>
     {
         // Asynchronously create a new partition:
         // - With a shape based on the partition paѕsed in
@@ -73,11 +73,11 @@ namespace lue::detail {
             hpx::launch::async,
             hpx::unwrapping(
 
-                [extent1 = std::get<1>(min_shape), fill_value](Shape const& shape)
+                [extent1 = std::get<1>(min_shape), fill_value](Shape const& shape) -> auto
                 { return Partition{hpx::find_here(), Offset{}, Shape{{shape[0], extent1}}, fill_value}; }
 
                 ),
-            partition.shape());
+            partition.shape(hpx::launch::async));
     }
 
 

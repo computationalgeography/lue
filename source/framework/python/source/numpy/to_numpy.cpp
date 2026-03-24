@@ -50,13 +50,13 @@ namespace lue::framework {
 
             lue::policy::DefaultInputNoDataPolicy<Element> indp{};
 
-            for (Index p = 0; p < nr_partitions; ++p)
+            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
             {
-                partitions[p].get();  // Blocks
+                partitions[partition_idx].get();  // Blocks
 
                 // These calls block and may involve network traffic
-                auto partition_data_f{partitions[p].data()};
-                auto partition_offset_f{partitions[p].offset()};
+                auto partition_data_f{partitions[partition_idx].data(hpx::launch::async)};
+                auto partition_offset_f{partitions[partition_idx].offset(hpx::launch::async)};
                 hpx::wait_all(partition_data_f, partition_offset_f);
 
                 auto partition_data{partition_data_f.get()};

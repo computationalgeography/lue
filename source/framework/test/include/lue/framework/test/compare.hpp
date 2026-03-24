@@ -25,7 +25,7 @@ namespace std::experimental {
                    idxs.begin(),
                    idxs.end(),
 
-                   [&lhs, &rhs](lue::Index const idx) { return lhs.extent(idx) != rhs.extent(idx); }
+                   [&lhs, &rhs](lue::Index const idx) -> auto { return lhs.extent(idx) != rhs.extent(idx); }
 
                    ) == idxs.end();
     }
@@ -134,9 +134,10 @@ namespace lue::test {
             BOOST_REQUIRE(partition1.get_id());
             BOOST_REQUIRE(partition2.get_id());
 
-            BOOST_REQUIRE_EQUAL(partition1.shape().get(), partition2.shape().get());
+            BOOST_REQUIRE_EQUAL(partition1.shape(hpx::launch::sync), partition2.shape(hpx::launch::sync));
 
-            check_array_partition_data_is_equal(partition1.data().get(), partition2.data().get());
+            check_array_partition_data_is_equal(
+                partition1.data(hpx::launch::sync), partition2.data(hpx::launch::sync));
         }
     }
 
@@ -158,9 +159,10 @@ namespace lue::test {
             BOOST_REQUIRE(partition1.get_id());
             BOOST_REQUIRE(partition2.get_id());
 
-            BOOST_REQUIRE_EQUAL(partition1.shape().get(), partition2.shape().get());
+            BOOST_REQUIRE_EQUAL(partition1.shape(hpx::launch::sync), partition2.shape(hpx::launch::sync));
 
-            check_array_partition_data_is_close(partition1.data().get(), partition2.data().get(), tolerance);
+            check_array_partition_data_is_close(
+                partition1.data(hpx::launch::sync), partition2.data(hpx::launch::sync), tolerance);
         }
     }
 

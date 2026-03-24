@@ -31,19 +31,19 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             PartitionData<Element, rank> true_data{shape, true_values};
             Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
             true_array.partitions()(0, 0).get();
-            true_array.partitions()(0, 0).set_data(std::move(true_data)).get();
+            true_array.partitions()(0, 0).set_data(hpx::launch::sync, std::move(true_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_array);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -63,14 +63,14 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_value);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -91,24 +91,24 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             PartitionData<Element, rank> true_data{shape, true_values};
             Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
             true_array.partitions()(0, 0).get();
-            true_array.partitions()(0, 0).set_data(std::move(true_data)).get();
+            true_array.partitions()(0, 0).set_data(hpx::launch::sync, std::move(true_data));
 
             PartitionData<Element, rank> false_data{shape, false_values};
             Array<Element, rank> false_array{lue::create_partitioned_array<Element>(shape, shape)};
             false_array.partitions()(0, 0).get();
-            false_array.partitions()(0, 0).set_data(std::move(false_data)).get();
+            false_array.partitions()(0, 0).set_data(hpx::launch::sync, std::move(false_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_array, false_array);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -129,19 +129,19 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             PartitionData<Element, rank> true_data{shape, true_values};
             Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
             true_array.partitions()(0, 0).get();
-            true_array.partitions()(0, 0).set_data(std::move(true_data)).get();
+            true_array.partitions()(0, 0).set_data(hpx::launch::sync, std::move(true_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_array, false_value);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -162,19 +162,19 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             PartitionData<Element, rank> false_data{shape, false_values};
             Array<Element, rank> false_array{lue::create_partitioned_array<Element>(shape, shape)};
             false_array.partitions()(0, 0).get();
-            false_array.partitions()(0, 0).set_data(std::move(false_data)).get();
+            false_array.partitions()(0, 0).set_data(hpx::launch::sync, std::move(false_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_value, false_array);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -195,14 +195,14 @@ namespace {
             Array<ConditionElement, rank> condition{
                 lue::create_partitioned_array<ConditionElement>(shape, shape)};
             condition.partitions()(0, 0).get();
-            condition.partitions()(0, 0).set_data(std::move(condition_data)).get();
+            condition.partitions()(0, 0).set_data(hpx::launch::sync, std::move(condition_data));
 
             auto result_we_got = lue::value_policies::where(condition, true_value, false_value);
 
             PartitionData<Element, rank> result_we_want_data{shape, result_values_we_want};
             Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
             result_we_want.partitions()(0, 0).get();
-            result_we_want.partitions()(0, 0).set_data(std::move(result_we_want_data)).get();
+            result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, std::move(result_we_want_data));
 
             lue::test::check_arrays_are_equal(result_we_got, result_we_want);
         }
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
         Array<ConditionElement, rank> condition{
             lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).get();
-        condition.partitions()(0, 0).set_data(condition_data).get();
+        condition.partitions()(0, 0).set_data(hpx::launch::sync, condition_data);
 
         PartitionData<Element, rank> true_data{
             shape,
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }};
         Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
         true_array.partitions()(0, 0).get();
-        true_array.partitions()(0, 0).set_data(true_data).get();
+        true_array.partitions()(0, 0).set_data(hpx::launch::sync, true_data);
 
         Element const false_value{9};
 
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE(use_case_1)
             }};
         Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
         result_we_want.partitions()(0, 0).get();
-        result_we_want.partitions()(0, 0).set_data(result_we_want_data).get();
+        result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, result_we_want_data);
 
         lue::test::check_arrays_are_equal(result_we_got, result_we_want);
     }
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
         Array<ConditionElement, rank> condition{
             lue::create_partitioned_array<ConditionElement>(shape, shape)};
         condition.partitions()(0, 0).get();
-        condition.partitions()(0, 0).set_data(condition_data).get();
+        condition.partitions()(0, 0).set_data(hpx::launch::sync, condition_data);
 
         PartitionData<Element, rank> true_data{
             shape,
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
             }};
         Array<Element, rank> true_array{lue::create_partitioned_array<Element>(shape, shape)};
         true_array.partitions()(0, 0).get();
-        true_array.partitions()(0, 0).set_data(true_data).get();
+        true_array.partitions()(0, 0).set_data(hpx::launch::sync, true_data);
 
         auto result_we_got = lue::value_policies::where(condition, true_array);
 
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
             }};
         Array<Element, rank> result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
         result_we_want.partitions()(0, 0).get();
-        result_we_want.partitions()(0, 0).set_data(result_we_want_data).get();
+        result_we_want.partitions()(0, 0).set_data(hpx::launch::sync, result_we_want_data);
 
         lue::test::check_arrays_are_equal(result_we_got, result_we_want);
     }

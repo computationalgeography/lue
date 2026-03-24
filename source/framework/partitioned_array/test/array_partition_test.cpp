@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework partitioned_array array_partition
-#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(construct_uninitialized)
     Shape shape{{5, 6}};
 
     PartitionClient partition{hpx::find_here(), offset, shape};
-    Data data_we_got = partition.data().get();
+    Data data_we_got = partition.data(hpx::launch::sync);
 
     // Since the data values are uninitialized, we cannot assume anything
     // about them. Therefore, only look at the definition.
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(construct_initialized_with_single_value)
     Value value{9};
 
     PartitionClient partition{hpx::find_here(), offset, shape, value};
-    Data data_we_got = partition.data().get();
+    Data data_we_got = partition.data(hpx::launch::sync);
 
     Data data_we_want{shape, value};
     BOOST_CHECK_EQUAL(data_we_got, data_we_want);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
         PartitionClient other{hpx::find_here(), offset, shape, value};
         partition = other;
 
-        Data data_we_got = partition.data().get();
+        Data data_we_got = partition.data(hpx::launch::sync);
         Data data_we_want{shape, value};
         BOOST_CHECK_EQUAL(data_we_got, data_we_want);
     }
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
         PartitionClient other{hpx::find_here(), offset, shape, value};
         partition = other;
 
-        Data data_we_got = partition.data().get();
+        Data data_we_got = partition.data(hpx::launch::sync);
         Data data_we_want{shape, value};
         BOOST_CHECK_EQUAL(data_we_got, data_we_want);
     }
@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(assignment_operator)
         PartitionClient other{hpx::find_here(), offset, shape, value};
         partition = other;
 
-        Data data_we_got = partition.data().get();
+        Data data_we_got = partition.data(hpx::launch::sync);
         Data data_we_want{shape, value};
         BOOST_CHECK_EQUAL(data_we_got, data_we_want);
     }
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
         BOOST_CHECK(partition1.valid());
         BOOST_CHECK(!partition1.is_ready());
 
-        auto solve = [component_id_p = std::move(component_id_p)]() mutable
+        auto solve = [component_id_p = std::move(component_id_p)]() mutable -> void
         {
             // Create a server instance
             Offset offset{3, 4};
@@ -185,13 +185,14 @@ BOOST_AUTO_TEST_CASE(emulate_promise_future)
         BOOST_CHECK(partition1.valid());
         BOOST_CHECK(!partition1.is_ready());
 
-        hpx::future<lue::Count> answer = partition1.then([]([[maybe_unused]] PartitionClient&& client)
-                                                         { return lue::nr_elements(client.shape().get()); });
+        hpx::future<lue::Count> answer = partition1.then(
+            []([[maybe_unused]] PartitionClient const& client) -> auto
+            { return lue::nr_elements(client.shape(hpx::launch::sync)); });
 
         BOOST_CHECK(answer.valid());
         BOOST_CHECK(!answer.is_ready());
 
-        auto solve = [component_id_p = std::move(component_id_p)]() mutable
+        auto solve = [component_id_p = std::move(component_id_p)]() mutable -> void
         {
             Offset offset{3, 4};
             Shape shape{{5, 6}};

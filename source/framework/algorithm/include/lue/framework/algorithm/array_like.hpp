@@ -13,7 +13,7 @@ namespace lue {
         auto array_like_partition(
             Policies const& policies,
             ArrayPartition<InputElement, rank> const& input_partition,
-            OutputElement const fill_value) -> ArrayPartition<OutputElement, rank>
+            hpx::shared_future<OutputElement> const fill_value) -> ArrayPartition<OutputElement, rank>
         {
             using InputPartition = ArrayPartition<InputElement, rank>;
             using Offset = OffsetT<InputPartition>;
@@ -22,48 +22,47 @@ namespace lue {
             using OutputPartition = ArrayPartition<OutputElement, rank>;
             using OutputData = DataT<OutputPartition>;
 
-            lue_hpx_assert(input_partition.is_ready());
-
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [policies, input_partition, fill_value](Offset const& offset, Shape const& shape)
+                [policies](
+                    InputPartition const& input_partition,
+                    hpx::shared_future<OutputElement> const& fill_value_f) -> auto
+                {
+                    AnnotateFunction annotation{"array_like_partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    Shape const shape = input_partition.shape(hpx::launch::sync);
+                    OutputElement const fill_value = fill_value_f.get();
+                    OutputData output_partition_data{shape};
+
+                    // NOTE Can't use indp to check for no-data in the (output!) fill_value
+                    // auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    // auto const& ondp =
+                    // std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    Count const nr_elements{lue::nr_elements(output_partition_data)};
+
+                    // if (indp.is_no_data(fill_value))
+                    // {
+                    //     for (Index i = 0; i < nr_elements; ++i)
+                    //     {
+                    //         ondp.mark_no_data(output_partition_data, i);
+                    //     }
+                    // }
+                    // else
+                    // {
+                    for (Index i = 0; i < nr_elements; ++i)
                     {
-                        AnnotateFunction annotation{"array_like_partition"};
-
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_partition_data{shape};
-
-                        // NOTE Can't use indp to check for no-data in the (output!) fill_value
-                        // auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        // auto const& ondp =
-                        // std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        Count const nr_elements{lue::nr_elements(output_partition_data)};
-
-                        // if (indp.is_no_data(fill_value))
-                        // {
-                        //     for (Index i = 0; i < nr_elements; ++i)
-                        //     {
-                        //         ondp.mark_no_data(output_partition_data, i);
-                        //     }
-                        // }
-                        // else
-                        // {
-                        for (Index i = 0; i < nr_elements; ++i)
-                        {
-                            output_partition_data[i] = fill_value;
-                        }
-                        // }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                        output_partition_data[i] = fill_value;
                     }
+                    // }
 
-                    ),
-                input_partition.offset(),
-                input_partition.shape());
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                },
+
+                input_partition,
+                fill_value);
         }
 
     }  // namespace detail
@@ -97,14 +96,13 @@ namespace lue {
 
 
     template<typename OutputElement, typename Policies, typename InputElement, Rank rank>
-    PartitionedArray<OutputElement, rank> array_like(
+    auto array_like(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
-        hpx::shared_future<OutputElement> const& fill_value)
+        hpx::shared_future<OutputElement> const& fill_value) -> PartitionedArray<OutputElement, rank>
     {
         using InputArray = PartitionedArray<InputElement, rank>;
         using InputPartitions = PartitionsT<InputArray>;
-        using InputPartition = PartitionT<InputArray>;
 
         using OutputArray = PartitionedArray<OutputElement, rank>;
         using OutputPartitions = PartitionsT<OutputArray>;
@@ -115,22 +113,10 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies](
-                    InputPartition const& input_partition,
-                    hpx::shared_future<OutputElement> const& fill_value)
-                {
-                    AnnotateFunction annotation{"array_like"};
-
-                    return action(locality_id, policies, input_partition, fill_value.get());
-                },
-
-                input_partitions[p],
-                fill_value);
+            output_partitions[partition_idx] = hpx::async(
+                action, localities[partition_idx], policies, input_partitions[partition_idx], fill_value);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};

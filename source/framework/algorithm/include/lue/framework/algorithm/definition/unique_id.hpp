@@ -17,7 +17,6 @@ namespace lue {
             ConditionPartition const& condition_partition,
             ElementT<IDPartition> start_value) -> IDPartition
         {
-            lue_hpx_assert(condition_partition.is_ready());
             lue_hpx_assert(start_value > ElementT<IDPartition>{0});
 
             using Offset = OffsetT<ConditionPartition>;
@@ -27,46 +26,43 @@ namespace lue {
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [condition_partition, policies, start_value](
-                        Offset const& offset,
-                        ConditionData const& input_partition_data) mutable  // The promise is set
+                [policies,
+                 start_value](ConditionPartition const& condition_partition) mutable  // The promise is set
+                -> IDPartition
+                {
+                    Offset const offset = condition_partition.offset(hpx::launch::sync);
+                    ConditionData const condition_data = condition_partition.data(hpx::launch::sync);
+                    IDData output_partition_data{condition_data.shape()};
+
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    Count const nr_elements{lue::nr_elements(condition_data)};
+
+                    for (Index i = 0; i < nr_elements; ++i)
                     {
-                        HPX_UNUSED(condition_partition);
-
-                        IDData output_partition_data{input_partition_data.shape()};
-
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                        for (Index i = 0; i < nr_elements; ++i)
+                        if (indp.is_no_data(condition_data, i))
                         {
-                            if (indp.is_no_data(input_partition_data, i))
+                            ondp.mark_no_data(output_partition_data, i);
+                        }
+                        else
+                        {
+                            if (condition_data[i])
                             {
-                                ondp.mark_no_data(output_partition_data, i);
+                                output_partition_data[i] = start_value++;
                             }
                             else
                             {
-                                if (input_partition_data[i])
-                                {
-                                    output_partition_data[i] = start_value++;
-                                }
-                                else
-                                {
-                                    output_partition_data[i] = 0;
-                                }
+                                output_partition_data[i] = 0;
                             }
                         }
-
-                        return IDPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                     }
 
-                    ),
-                condition_partition.offset(),
-                condition_partition.data());
+                    return IDPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                },
+
+                condition_partition);
         }
 
 
@@ -85,7 +81,7 @@ namespace lue {
             Policies const& policies,
             Localities<rank> const& localities,
             PartitionsT<PartitionedArray<ConditionElement, rank>> const& condition_partitions,
-            Array<hpx::future<Count>, rank>&& partition_sizes,
+            Array<hpx::future<Count>, rank> partition_sizes,
             IDPromiseArray<rank> id_partitions_component_ids)
         {
             // Given the collection of input partitions and their sizes:
@@ -148,7 +144,7 @@ namespace lue {
                     .then(
 
                         [promise = std::move(id_partitions_component_ids[partition_idx])](
-                            auto&& partition) mutable { promise.set_value(partition.get().get_id()); }
+                            auto&& partition) mutable -> auto { promise.set_value(partition.get().get_id()); }
 
                     );
 
@@ -156,15 +152,18 @@ namespace lue {
 
                 // Move the partition stuff just handled to just after the range with still to
                 // handle partition stuff
-                std::rotate(
-                    partition_sizes_.begin() + remaining_partition_idx,
-                    partition_sizes_.begin() + remaining_partition_idx + 1,
-                    partition_sizes_.begin() + nr_partitions_to_handle);
+                {
+                    using Difference = std::vector<hpx::future<Count>>::difference_type;
+                    std::rotate(
+                        partition_sizes_.begin() + static_cast<Difference>(remaining_partition_idx),
+                        partition_sizes_.begin() + static_cast<Difference>(remaining_partition_idx + 1),
+                        partition_sizes_.begin() + nr_partitions_to_handle);
 
-                std::rotate(
-                    partition_idxs.begin() + remaining_partition_idx,
-                    partition_idxs.begin() + remaining_partition_idx + 1,
-                    partition_idxs.begin() + nr_partitions_to_handle);
+                    std::rotate(
+                        partition_idxs.begin() + static_cast<Difference>(remaining_partition_idx),
+                        partition_idxs.begin() + static_cast<Difference>(remaining_partition_idx + 1),
+                        partition_idxs.begin() + nr_partitions_to_handle);
+                }
 
                 --nr_partitions_to_handle;
             }
@@ -196,11 +195,12 @@ namespace lue {
 
             Count const nr_partitions{nr_elements(shape_in_partitions)};
 
-            for (Index p = 0; p < nr_partitions; ++p)
+            for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
             {
                 // Connect the array with promises with the array of futures
-                id_partitions[p] = IDPartition{id_partitions_component_ids[p].get_future()};
-                lue_hpx_assert(id_partitions[p].valid());
+                id_partitions[partition_idx] =
+                    IDPartition{id_partitions_component_ids[partition_idx].get_future()};
+                lue_hpx_assert(id_partitions[partition_idx].valid());
             }
 
             // Asynchronously plan work that will result in result partitions being filled with
@@ -212,7 +212,7 @@ namespace lue {
                 policies,
                 localities,
                 condition_partitions,
-                std::forward<Array<hpx::future<Count>, rank>>(partition_sizes),
+                std::move(partition_sizes),
                 std::move(id_partitions_component_ids));
 
             return id_partitions;

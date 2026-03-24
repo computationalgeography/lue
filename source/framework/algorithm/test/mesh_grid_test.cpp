@@ -71,6 +71,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     Array result_we_want{lue::create_partitioned_array<Element>(shape, shape)};
     lue::wait_all(result_we_want.partitions());
     result_we_want.partitions()(0, 0).set_data(
+        hpx::launch::sync,
         PartitionData{
             shape,
             std::initializer_list<Element>{
@@ -94,6 +95,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
     lue::test::check_arrays_are_close(result_we_got1, result_we_want);
 
     result_we_want.partitions()(0, 0).set_data(
+        hpx::launch::sync,
         PartitionData{
             shape,
             std::initializer_list<Element>{

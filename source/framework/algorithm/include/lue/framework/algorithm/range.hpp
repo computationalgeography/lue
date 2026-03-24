@@ -8,8 +8,8 @@ namespace lue {
     namespace detail {
 
         template<typename Partition>
-        hpx::future<void> range_partition(
-            Partition input_partition, ElementT<Partition> const start_value, Count const stride)
+        auto range_partition(
+            Partition input_partition, ElementT<Partition> const start_value, Count const stride) -> void
         {
             static_assert(rank<Partition> == 2);
 
@@ -25,38 +25,31 @@ namespace lue {
 
             assert(input_partition.is_ready());
 
-            // Given the partition's shape, we can create a new collection for
-            // partition elements
-            return input_partition.shape().then(
-                hpx::unwrapping(
-                    [input_partition, start_value, stride](Shape const& shape) mutable
-                    {
-                        AnnotateFunction annotation{"range_partition"};
+            AnnotateFunction annotation{"range_partition"};
 
-                        // If stride equals nr_cols, then this partition's extent
-                        // equals the arrays extent (along the second dimension)
-                        lue_hpx_assert(stride >= std::get<1>(shape));
+            // Given the partition's shape, we can create a new collection for partition elements
+            Shape const shape{input_partition.shape(hpx::launch::sync)};
 
-                        Data data{shape};
+            // If stride equals nr_cols, then this partition's extent
+            // equals the arrays extent (along the second dimension)
+            lue_hpx_assert(stride >= std::get<1>(shape));
 
-                        Element value = start_value;
-                        Element const offset = stride - std::get<1>(shape);
+            Data data{shape};
 
-                        for (Index idx0 = 0; idx0 < std::get<0>(shape); ++idx0)
-                        {
-                            for (Index idx1 = 0; idx1 < std::get<1>(shape); ++idx1)
-                            {
-                                data(idx0, idx1) = value++;
-                            }
+            Element value = start_value;
+            Element const offset = stride - std::get<1>(shape);
 
-                            value += offset;
-                        }
+            for (Index idx0 = 0; idx0 < std::get<0>(shape); ++idx0)
+            {
+                for (Index idx1 = 0; idx1 < std::get<1>(shape); ++idx1)
+                {
+                    data(idx0, idx1) = value++;
+                }
 
-                        // This runs asynchronous and returns a future<void>
-                        return input_partition.set_data(std::move(data));
-                    }
+                value += offset;
+            }
 
-                    ));
+            input_partition.set_data(hpx::launch::sync, std::move(data));
         }
 
 
@@ -106,13 +99,15 @@ namespace lue {
 
         std::vector<hpx::future<Shape>> partition_shapes(nr_partitions);
 
+        // TODO: We are only using the first column of partition shapes, but here we are asking for all of
+        // them
         for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
             InputPartition& partition = partitions[partition_idx];
 
             // Once the partition is ready ask for its shape
-            partition_shapes[partition_idx] =
-                partition.then([](InputPartition&& partition) { return partition.shape(); });
+            partition_shapes[partition_idx] = partition.then(
+                [](InputPartition const& partition) -> auto { return partition.shape(hpx::launch::sync); });
         }
 
         return hpx::when_all(hpx::when_all_n(partition_shapes.begin(), partition_shapes.size()), start_value)
@@ -120,7 +115,7 @@ namespace lue {
                 hpx::unwrapping(
 
                     // Copy partitions. This is similar to copying shared pointers.
-                    [localities, partitions, array_shape = input_array.shape()](auto&& data)
+                    [localities, partitions, array_shape = input_array.shape()](auto&& data) -> auto
                     {
                         AnnotateFunction annotation{"range"};
 
@@ -137,7 +132,7 @@ namespace lue {
                             partition_shapes_futures.end(),
                             partition_shapes.begin(),
 
-                            [](auto&& future) { return future.get(); });
+                            [](auto&& future) -> auto { return future.get(); });
 
                         lue::DynamicSpan<Shape, rank> partition_shapes_span(
                             partition_shapes.data(), nr_partitions0, nr_partitions1);

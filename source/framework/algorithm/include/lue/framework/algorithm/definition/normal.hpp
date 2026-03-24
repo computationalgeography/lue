@@ -21,81 +21,83 @@ namespace lue {
         auto normal_partition(
             Policies const& policies,
             InputPartition const& input_partition,
-            policy::OutputElementT<Policies, 0> const mean,
-            policy::OutputElementT<Policies, 0> const stddev)
+            hpx::shared_future<policy::OutputElementT<Policies, 0>> const mean,
+            hpx::shared_future<policy::OutputElementT<Policies, 0>> const stddev)
             -> PartitionT<InputPartition, policy::OutputElementT<Policies, 0>>
         {
             using Offset = OffsetT<InputPartition>;
-            using Shape = ShapeT<InputPartition>;
             using Element = policy::OutputElementT<Policies, 0>;
+            using InputData = DataT<InputPartition>;
             using OutputPartition = PartitionT<InputPartition, Element>;
             using OutputData = DataT<OutputPartition>;
 
-            lue_hpx_assert(input_partition.is_ready());
-
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [policies, input_partition, mean, stddev](Offset const& offset, Shape const& shape)
+                [policies](
+                    InputPartition const& input_partition,
+                    hpx::shared_future<Element> const& mean_f,
+                    hpx::shared_future<Element> const& stddev_f) -> OutputPartition
+                {
+                    AnnotateFunction annotation{"normal: partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    InputData const input_partition_data = input_partition.data(hpx::launch::sync);
+                    Element const mean = mean_f.get();
+                    Element const stddev = stddev_f.get();
+                    OutputData output_partition_data{input_partition_data.shape()};
+
+                    auto const& dp = policies.domain_policy();
+                    // TODO Use indp1 to test for no-data-ness in input partition's data(?)
+                    auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    if (indp2.is_no_data(mean) || indp3.is_no_data(stddev))
                     {
-                        AnnotateFunction annotation{"normal: partition"};
+                        Count const nr_elements{lue::nr_elements(output_partition_data)};
 
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_partition_data{shape};
-
-                        auto const& dp = policies.domain_policy();
-                        // TODO Use indp1 to test for no-data-ness in input partition's data(?)
-                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        if (indp2.is_no_data(mean) || indp3.is_no_data(stddev))
+                        for (Index i = 0; i < nr_elements; ++i)
                         {
-                            Count const nr_elements{lue::nr_elements(output_partition_data)};
-
-                            for (Index i = 0; i < nr_elements; ++i)
-                            {
-                                ondp.mark_no_data(output_partition_data, i);
-                            }
+                            ondp.mark_no_data(output_partition_data, i);
                         }
-                        else if (!dp.within_domain(mean, stddev))
+                    }
+                    else if (!dp.within_domain(mean, stddev))
+                    {
+                        Count const nr_elements{lue::nr_elements(output_partition_data)};
+
+                        for (Index i = 0; i < nr_elements; ++i)
                         {
-                            Count const nr_elements{lue::nr_elements(output_partition_data)};
-
-                            for (Index i = 0; i < nr_elements; ++i)
-                            {
-                                ondp.mark_no_data(output_partition_data, i);
-                            }
+                            ondp.mark_no_data(output_partition_data, i);
                         }
-                        else
-                        {
-                            // Will be used to obtain a seed for the random number engine
-                            std::random_device random_device;
+                    }
+                    else
+                    {
+                        // Will be used to obtain a seed for the random number engine
+                        std::random_device random_device;
 
-                            // Standard mersenne_twister_engine seeded with the random_device
-                            std::mt19937 random_number_engine(random_device());
+                        // Standard mersenne_twister_engine seeded with the random_device
+                        std::mt19937 random_number_engine(random_device());
 
-                            auto distribution = [mean, stddev]()
-                            { return std::normal_distribution<Element>{mean, stddev}; }();
+                        auto distribution = [mean, stddev]() -> auto
+                        { return std::normal_distribution<Element>{mean, stddev}; }();
 
-                            std::generate(
-                                output_partition_data.begin(),
-                                output_partition_data.end(),
+                        std::generate(
+                            output_partition_data.begin(),
+                            output_partition_data.end(),
 
-                                [&distribution, &random_number_engine]()
-                                { return distribution(random_number_engine); }
+                            [&distribution, &random_number_engine]() -> auto
+                            { return distribution(random_number_engine); }
 
-                            );
-                        }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                        );
                     }
 
-                    ),
-                input_partition.offset(),
-                input_partition.shape());
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                },
+
+                input_partition,
+                mean,
+                stddev);
         }
 
 
@@ -152,15 +154,10 @@ namespace lue {
 
         for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[partition_idx] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[partition_idx], action, policies](
-                    InputPartition const& input_partition,
-                    hpx::shared_future<Element> const& mean,
-                    hpx::shared_future<Element> const& stddev)
-                { return action(locality_id, policies, input_partition, mean.get(), stddev.get()); },
-
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
                 input_partitions[partition_idx],
                 mean.future(),
                 stddev.future());
@@ -214,7 +211,7 @@ namespace lue {
                         // Standard mersenne_twister_engine seeded with the random_device
                         std::mt19937 random_number_engine(random_device());
 
-                        auto distribution = [mean, stddev]()
+                        auto distribution = [mean, stddev]() -> auto
                         { return std::normal_distribution<Element>{mean, stddev}; }();
 
                         output_element = distribution(random_number_engine);
@@ -262,7 +259,8 @@ namespace lue {
                 partition_data.begin(),
                 partition_data.end(),
 
-                [&distribution, &random_number_engine]() { return distribution(random_number_engine); }
+                [&distribution, &random_number_engine]() -> auto
+                { return distribution(random_number_engine); }
 
             );
 

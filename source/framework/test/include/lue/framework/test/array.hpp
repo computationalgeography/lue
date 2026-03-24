@@ -91,8 +91,9 @@ namespace lue {
 
                 for (Partition& partition : array.partitions())
                 {
-                    partition.get();  // FIXME be made asynchronous
-                    partition.set_data(Data{partition.shape().get(), *elements_it});
+                    partition.get();  // FIXME: Can be made asynchronous
+                    partition.set_data(
+                        hpx::launch::sync, Data{partition.shape(hpx::launch::sync), *elements_it});
                     ++elements_it;
                 }
             }

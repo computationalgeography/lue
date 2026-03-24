@@ -8,16 +8,14 @@ namespace lue {
     auto array_partition_id(PartitionedArray<InputElement, rank> const& input_array)
         -> PartitionedArray<IDElement, rank>
     {
-        // Iterate over all partitions and spawn a task per partition. Each
-        // of these tasks runs on the component the partition is located on and
-        // creates a new partition with the same shape as the input partition.
-        // Each cell in the new partition is assigned the ID of the partition.
-        // This ID equals the linear index of the partition in the array
-        // of partitions.
+
+        // Iterate over all partitions and spawn a task per partition. Each of these tasks runs on the
+        // component the partition is located on and creates a new partition with the same shape as the input
+        // partition. Each cell in the new partition is assigned the ID of the partition. This ID equals the
+        // linear index of the partition in the array of partitions.
 
         using InputArray = PartitionedArray<InputElement, rank>;
         using InputPartitions = PartitionsT<InputArray>;
-        using InputPartition = PartitionT<InputArray>;
 
         using OutputElement = IDElement;
         using OutputArray = PartitionedArray<OutputElement, rank>;
@@ -33,19 +31,14 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, p](InputPartition const& input_partition)
-                {
-                    AnnotateFunction annotation{"array_partition_id"};
-
-                    return action(locality_id, policies, input_partition, static_cast<IDElement>(p));
-                },
-
-                input_partitions[p]);
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
+                input_partitions[partition_idx],
+                hpx::make_ready_future<IDElement>(partition_idx).share());
         }
 
         return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
