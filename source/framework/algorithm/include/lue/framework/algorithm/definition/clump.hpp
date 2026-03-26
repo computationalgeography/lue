@@ -124,8 +124,7 @@ namespace lue {
                        (direction == 1 && current_row < nr_rows - 1);  // downwards
             };
 
-            auto cell_is_connected =
-                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool
+            auto cell_is_connected = [&](Index const row, Index const col) -> bool
             {
                 return !indp.is_no_data(zone_elements, row, col) &&
                        in_clump(zone_elements, row, col, zone_id);
@@ -156,7 +155,7 @@ namespace lue {
                 Index col = west;
 
                 // Test whether the cell to the west of the parent span is potentially connected
-                if (cell_is_connected(row, col) &&
+                if (col > 0 && cell_is_connected(row, col) &&
                     // col > 0 && cell_is_connected(row, col - 1) &&
                     !added_to_clump_already(ondp, clump_elements, row, col - 1))
                 {
@@ -333,8 +332,7 @@ namespace lue {
                        (direction == 1 && current_row < nr_rows - 1);  // downwards
             };
 
-            auto cell_is_connected =
-                [&, indp = indp, zone_element = zone_elements](Index const row, Index const col) -> bool
+            auto cell_is_connected = [&](Index const row, Index const col) -> bool
             {
                 return !indp.is_no_data(zone_elements, row, col) &&
                        in_clump(zone_elements, row, col, zone_id);
@@ -812,10 +810,8 @@ namespace lue {
         template<typename Policies, typename Partition>
         auto clump_partition(
             Policies const& policies, Partition const& zone_partition, Connectivity const connectivity)
-            -> LocalResult<Partition>
+            -> LocalResultF<Partition>
         {
-            lue_hpx_assert(zone_partition.is_ready());
-
             using LocalResult = LocalResult<Partition>;
             using ClumpElement = typename LocalResult::ClumpElement;
             using ClumpData = typename LocalResult::ClumpData;
@@ -829,86 +825,97 @@ namespace lue {
             // IDs to the result partition. No-data in the result partition must exactly correspond
             // with no-data in the input partition. No more or less no-data elements.
 
-            AnnotateFunction const annotate{"clump: partition"};
+            return hpx::dataflow(
+                hpx::launch::async,
 
-            auto const offset = zone_partition.offset(hpx::launch::sync);
-            auto const zone_data = zone_partition.data(hpx::launch::sync);
-
-            auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-            auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-            auto const shape = zone_data.shape();
-            ClumpElement clump_nd{};
-            ondp.mark_no_data(clump_nd);
-            ClumpData clump_data{shape, clump_nd};
-
-            auto const [nr_rows, nr_cols] = shape;
-            ClumpElement clump_id{0};
-
-            for (Count row = 0; row < nr_rows; ++row)
-            {
-                for (Count col = 0; col < nr_cols; ++col)
+                [policies, connectivity](Partition const& zone_partition) -> LocalResult
                 {
-                    // Skip cells that do not contain a valid zone ID, or that
-                    // already contain a valid clump ID
-                    if ((!indp.is_no_data(zone_data, row, col)) && ondp.is_no_data(clump_data, row, col))
+                    AnnotateFunction const annotate{"clump: partition"};
+
+                    auto const offset = zone_partition.offset(hpx::launch::sync);
+                    auto const zone_data = zone_partition.data(hpx::launch::sync);
+
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    auto const shape = zone_data.shape();
+                    ClumpElement clump_nd{};
+                    ondp.mark_no_data(clump_nd);
+                    ClumpData clump_data{shape, clump_nd};
+
+                    auto const [nr_rows, nr_cols] = shape;
+                    ClumpElement clump_id{0};
+
+                    for (Count row = 0; row < nr_rows; ++row)
                     {
-                        flood_fill(indp, ondp, zone_data, {row, col}, clump_data, clump_id, connectivity);
-                        ++clump_id;
+                        for (Count col = 0; col < nr_cols; ++col)
+                        {
+                            // Skip cells that do not contain a valid zone ID, or that
+                            // already contain a valid clump ID
+                            if ((!indp.is_no_data(zone_data, row, col)) &&
+                                ondp.is_no_data(clump_data, row, col))
+                            {
+                                flood_fill(
+                                    indp, ondp, zone_data, {row, col}, clump_data, clump_id, connectivity);
+                                ++clump_id;
+                            }
+                        }
                     }
-                }
-            }
 
-            ZoneData north{{1, nr_cols}};
-            ZoneData south{{1, nr_cols}};
-            {
-                auto src_begin = zone_data.begin();
-                std::copy(src_begin, src_begin + nr_cols, north.begin());
+                    ZoneData north{{1, nr_cols}};
+                    ZoneData south{{1, nr_cols}};
+                    {
+                        auto src_begin = zone_data.begin();
+                        std::copy(src_begin, src_begin + nr_cols, north.begin());
 
-                src_begin = zone_data.begin() + (nr_rows - 1) * nr_cols;
-                std::copy(src_begin, src_begin + nr_cols, south.begin());
-            }
+                        src_begin = zone_data.begin() + (nr_rows - 1) * nr_cols;
+                        std::copy(src_begin, src_begin + nr_cols, south.begin());
+                    }
 
-            ZoneData west{{nr_rows, 1}};
-            ZoneData east{{nr_rows, 1}};
+                    ZoneData west{{nr_rows, 1}};
+                    ZoneData east{{nr_rows, 1}};
 
-            for (Index row = 0; row < nr_rows; ++row)
-            {
-                west[row] = zone_data(row, 0);
-                east[row] = zone_data(row, nr_cols - 1);
-            }
+                    for (Index row = 0; row < nr_rows; ++row)
+                    {
+                        west[row] = zone_data(row, 0);
+                        east[row] = zone_data(row, nr_cols - 1);
+                    }
 
-            ZoneSides zone_sides{{{std::move(north), std::move(south)}, {std::move(west), std::move(east)}}};
+                    ZoneSides zone_sides{
+                        {{std::move(north), std::move(south)}, {std::move(west), std::move(east)}}};
 
-            ClumpData clump_data_north{{1, nr_cols}};
-            ClumpData clump_data_south{{1, nr_cols}};
-            {
-                auto src_begin = clump_data.begin();
-                std::copy(src_begin, src_begin + nr_cols, clump_data_north.begin());
+                    ClumpData clump_data_north{{1, nr_cols}};
+                    ClumpData clump_data_south{{1, nr_cols}};
+                    {
+                        auto src_begin = clump_data.begin();
+                        std::copy(src_begin, src_begin + nr_cols, clump_data_north.begin());
 
-                src_begin = clump_data.begin() + (nr_rows - 1) * nr_cols;
-                std::copy(src_begin, src_begin + nr_cols, clump_data_south.begin());
-            }
+                        src_begin = clump_data.begin() + (nr_rows - 1) * nr_cols;
+                        std::copy(src_begin, src_begin + nr_cols, clump_data_south.begin());
+                    }
 
-            ClumpData clump_data_west{{nr_rows, 1}};
-            ClumpData clump_data_east{{nr_rows, 1}};
+                    ClumpData clump_data_west{{nr_rows, 1}};
+                    ClumpData clump_data_east{{nr_rows, 1}};
 
-            for (Index row = 0; row < nr_rows; ++row)
-            {
-                clump_data_west[row] = clump_data(row, 0);
-                clump_data_east[row] = clump_data(row, nr_cols - 1);
-            }
+                    for (Index row = 0; row < nr_rows; ++row)
+                    {
+                        clump_data_west[row] = clump_data(row, 0);
+                        clump_data_east[row] = clump_data(row, nr_cols - 1);
+                    }
 
-            ClumpSides clump_sides{
-                {{std::move(clump_data_north), std::move(clump_data_south)},
-                 {std::move(clump_data_west), std::move(clump_data_east)}}};
+                    ClumpSides clump_sides{
+                        {{std::move(clump_data_north), std::move(clump_data_south)},
+                         {std::move(clump_data_west), std::move(clump_data_east)}}};
 
-            return {
-                offset,
-                std::move(clump_data),
-                static_cast<Count>(clump_id),
-                std::move(zone_sides),
-                std::move(clump_sides)};
+                    return {
+                        offset,
+                        std::move(clump_data),
+                        static_cast<Count>(clump_id),
+                        std::move(zone_sides),
+                        std::move(clump_sides)};
+                },
+
+                zone_partition);
         }
 
 
@@ -950,12 +957,12 @@ namespace lue {
             {
                 for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                 {
-                    local_result_fs[partition_idx] = hpx::dataflow(
-                        hpx::launch::async,
-                        [locality_id = localities[partition_idx], action, policies, connectivity](
-                            ZonePartition const& zone_partition) -> auto
-                        { return action(locality_id, policies, zone_partition, connectivity); },
-                        zone_partitions[partition_idx]);
+                    local_result_fs[partition_idx] = hpx::async(
+                        action,
+                        localities[partition_idx],
+                        policies,
+                        zone_partitions[partition_idx],
+                        connectivity);
                 }
             }
 
