@@ -19,8 +19,8 @@ set_property(
     APPEND
     PROPERTY
         # Preload the tcmalloc shared library, if necessary.
-        ENVIRONMENT
-            $<$<AND:$<NOT:$<PLATFORM_ID:Windows>>,$<STREQUAL:${HPX_WITH_MALLOC},tcmalloc>>:$<IF:$<PLATFORM_ID:Darwin>,DYLD_INSERT_LIBRARIES,LD_PRELOAD>=${Tcmalloc_LIBRARY}>
+        ENVIRONMENT_MODIFICATION
+            LD_PRELOAD=path_list_append:$<$<PLATFORM_ID:Linux>:${Tcmalloc_LIBRARY}>
 )
 
 set_property(

@@ -545,7 +545,7 @@ namespace lue {
                 private:
 
                     void notify_skip_recording_route_fragments(
-                        RouteID const route_id, DownstreamMaxima<Value>&& downstream_maxima)
+                        RouteID const route_id, DownstreamMaxima<Value> const& downstream_maxima)
                     {
                         // Iterate over all downstream maxima and notify the associated component
                         // that recording of route fragments for the current route will be
@@ -1036,7 +1036,7 @@ namespace lue {
                 private:
 
                     void notify_skip_recording_route_fragments(
-                        RouteID const route_id, DownstreamMaxima<Value>&& downstream_maxima)
+                        RouteID const route_id, DownstreamMaxima<Value> const& downstream_maxima)
                     {
                         // Iterate over all downstream maxima and notify the associated component
                         // that recording of route fragments for the current route will be
@@ -1409,9 +1409,8 @@ namespace lue {
                             return hpx::when_all(start_fs.begin(), start_fs.end())
                                 .then(
                                     [zones = std::move(zones), components = std::move(components)](
-                                        hpx::future<
-                                            std::vector<hpx::future<typename Route::FragmentLocation>>>&&
-                                            starts_ff) -> auto
+                                        hpx::future<std::vector<
+                                            hpx::future<typename Route::FragmentLocation>>> starts_ff) -> auto
                                     {
                                         // Collect the route starts
                                         RouteStarts starts{};

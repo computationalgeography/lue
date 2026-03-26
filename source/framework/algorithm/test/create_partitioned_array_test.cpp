@@ -149,15 +149,7 @@ namespace {
                 using Action = NumberPartitionsPerLocalityAction</* Policies, */ Partition>;
                 Action action{};
 
-                return hpx::async(
-
-                    [locality_id,
-                     action = std::move(action),
-                     offsets = std::move(offsets),
-                     partition_shapes = std::move(partition_shapes)]() -> auto
-                    { return action(locality_id, offsets, partition_shapes); }
-
-                );
+                return hpx::async(action, locality_id, std::move(offsets), std::move(partition_shapes));
             }
 
         private:
