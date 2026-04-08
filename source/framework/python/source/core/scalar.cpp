@@ -39,6 +39,11 @@ namespace lue::framework {
                             result = pybind11::cast(create_scalar<std::int8_t>(value));
                             break;
                         }
+                        case 2:
+                        {
+                            result = pybind11::cast(create_scalar<std::int16_t>(value));
+                            break;
+                        }
                         case 4:
                         {
                             result = pybind11::cast(create_scalar<std::int32_t>(value));
@@ -61,6 +66,11 @@ namespace lue::framework {
                         case 1:
                         {
                             result = pybind11::cast(create_scalar<std::uint8_t>(value));
+                            break;
+                        }
+                        case 2:
+                        {
+                            result = pybind11::cast(create_scalar<std::uint16_t>(value));
                             break;
                         }
                         case 4:

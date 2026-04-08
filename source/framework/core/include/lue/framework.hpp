@@ -92,12 +92,18 @@ namespace lue {
                     unsigned_integral_element_supported<std::uint32_t>,
                     std::uint32_t,
                     std::conditional_t<
-                        signed_integral_element_supported<std::int8_t>,
-                        std::int8_t,
+                        signed_integral_element_supported<std::int16_t>,
+                        std::int16_t,
                         std::conditional_t<
-                            unsigned_integral_element_supported<std::uint8_t>,
-                            std::uint8_t,
-                            void>>>>>>;
+                            unsigned_integral_element_supported<std::uint16_t>,
+                            std::uint16_t,
+                            std::conditional_t<
+                                signed_integral_element_supported<std::int8_t>,
+                                std::int8_t,
+                                std::conditional_t<
+                                    unsigned_integral_element_supported<std::uint8_t>,
+                                    std::uint8_t,
+                                    void>>>>>>>>;
 
     using SmallestIntegralElement = std::conditional_t<
         signed_integral_element_supported<std::int8_t>,
@@ -106,18 +112,24 @@ namespace lue {
             unsigned_integral_element_supported<std::uint8_t>,
             std::uint8_t,
             std::conditional_t<
-                signed_integral_element_supported<std::int32_t>,
-                std::int32_t,
+                signed_integral_element_supported<std::int16_t>,
+                std::int16_t,
                 std::conditional_t<
-                    unsigned_integral_element_supported<std::uint32_t>,
-                    std::uint32_t,
+                    unsigned_integral_element_supported<std::uint16_t>,
+                    std::uint16_t,
                     std::conditional_t<
-                        signed_integral_element_supported<std::int64_t>,
-                        std::int64_t,
+                        signed_integral_element_supported<std::int32_t>,
+                        std::int32_t,
                         std::conditional_t<
-                            unsigned_integral_element_supported<std::uint64_t>,
-                            std::uint64_t,
-                            void>>>>>>;
+                            unsigned_integral_element_supported<std::uint32_t>,
+                            std::uint32_t,
+                            std::conditional_t<
+                                signed_integral_element_supported<std::int64_t>,
+                                std::int64_t,
+                                std::conditional_t<
+                                    unsigned_integral_element_supported<std::uint64_t>,
+                                    std::uint64_t,
+                                    void>>>>>>>>;
 
     using LargestSignedIntegralElement = std::conditional_t<
         signed_integral_element_supported<std::int64_t>,
@@ -125,15 +137,21 @@ namespace lue {
         std::conditional_t<
             signed_integral_element_supported<std::int32_t>,
             std::int32_t,
-            std::conditional_t<signed_integral_element_supported<std::int8_t>, std::int8_t, void>>>;
+            std::conditional_t<
+                signed_integral_element_supported<std::int16_t>,
+                std::int16_t,
+                std::conditional_t<signed_integral_element_supported<std::int8_t>, std::int8_t, void>>>>;
 
     using SmallestSignedIntegralElement = std::conditional_t<
         signed_integral_element_supported<std::int8_t>,
         std::int8_t,
         std::conditional_t<
-            signed_integral_element_supported<std::int32_t>,
-            std::int32_t,
-            std::conditional_t<signed_integral_element_supported<std::int64_t>, std::int64_t, void>>>;
+            signed_integral_element_supported<std::int16_t>,
+            std::int16_t,
+            std::conditional_t<
+                signed_integral_element_supported<std::int32_t>,
+                std::int32_t,
+                std::conditional_t<signed_integral_element_supported<std::int64_t>, std::int64_t, void>>>>;
 
     using LargestUnsignedIntegralElement = std::conditional_t<
         unsigned_integral_element_supported<std::uint64_t>,
@@ -141,15 +159,22 @@ namespace lue {
         std::conditional_t<
             unsigned_integral_element_supported<std::uint32_t>,
             std::uint32_t,
-            std::conditional_t<unsigned_integral_element_supported<std::uint8_t>, std::uint8_t, void>>>;
+            std::conditional_t<
+                unsigned_integral_element_supported<std::uint16_t>,
+                std::uint16_t,
+                std::conditional_t<unsigned_integral_element_supported<std::uint8_t>, std::uint8_t, void>>>>;
 
     using SmallestUnsignedIntegralElement = std::conditional_t<
         unsigned_integral_element_supported<std::uint8_t>,
         std::uint8_t,
         std::conditional_t<
-            unsigned_integral_element_supported<std::uint32_t>,
-            std::uint32_t,
-            std::conditional_t<unsigned_integral_element_supported<std::uint64_t>, std::uint64_t, void>>>;
+            unsigned_integral_element_supported<std::uint16_t>,
+            std::uint16_t,
+            std::conditional_t<
+                unsigned_integral_element_supported<std::uint32_t>,
+                std::uint32_t,
+                std::
+                    conditional_t<unsigned_integral_element_supported<std::uint64_t>, std::uint64_t, void>>>>;
 
     using LargestFloatingPointElement = std::conditional_t<
         floating_point_element_supported<double>,

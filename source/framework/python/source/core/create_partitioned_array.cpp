@@ -64,6 +64,18 @@ namespace lue::framework {
 
                             break;
                         }
+                        case 2:
+                        {
+                            using Element = std::int16_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;
@@ -100,6 +112,18 @@ namespace lue::framework {
                         case 1:
                         {
                             using Element = std::uint8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
+                        case 2:
+                        {
+                            using Element = std::uint16_t;
 
                             if constexpr (arithmetic_element_supported<Element>)
                             {
@@ -308,6 +332,18 @@ namespace lue::framework {
 
                             break;
                         }
+                        case 2:
+                        {
+                            using Element = std::int16_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array2<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;
@@ -344,6 +380,18 @@ namespace lue::framework {
                         case 1:
                         {
                             using Element = std::uint8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(
+                                    create_array2<Element, rank>(array_shape, partition_shape, fill_value));
+                            }
+
+                            break;
+                        }
+                        case 2:
+                        {
+                            using Element = std::uint16_t;
 
                             if constexpr (arithmetic_element_supported<Element>)
                             {

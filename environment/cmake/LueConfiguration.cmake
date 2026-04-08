@@ -173,11 +173,16 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_SIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
-                "std::int8_t\;std::int32_t\;std::int64_t"
-                "std::int8_t\;std::int32_t"
+                "std::int8_t\;std::int16_t\;std::int32_t\;std::int64_t"
+                "std::int8_t\;std::int16_t\;std::int32_t"
+                "std::int8_t\;std::int16_t"
                 "std::int8_t"
+                "std::int16_t\;std::int32_t\;std::int64_t"
+                "std::int16_t\;std::int32_t"
+                "std::int16_t"
                 "std::int32_t\;std::int64_t"
                 "std::int32_t"
+                "std::int64_t"
     )
 
     set(LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
@@ -185,11 +190,16 @@ if(LUE_BUILD_FRAMEWORK)
     set_property(CACHE LUE_FRAMEWORK_UNSIGNED_INTEGRAL_ELEMENTS
         PROPERTY
             STRINGS
-                "std::uint8_t\;std::uint32_t\;std::uint64_t"
-                "std::uint8_t\;std::uint32_t"
+                "std::uint8_t\;std::uint16_t\;std::uint32_t\;std::uint64_t"
+                "std::uint8_t\;std::uint16_t\;std::uint32_t"
+                "std::uint8_t\;std::uint16_t"
                 "std::uint8_t"
+                "std::uint16_t\;std::uint32_t\;std::uint64_t"
+                "std::uint16_t\;std::uint32_t"
+                "std::uint16_t"
                 "std::uint32_t\;std::uint64_t"
                 "std::uint32_t"
+                "std::uint64_t"
     )
 
     set(LUE_FRAMEWORK_INTEGRAL_ELEMENTS

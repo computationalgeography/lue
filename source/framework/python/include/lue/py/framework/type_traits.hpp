@@ -38,9 +38,11 @@ namespace lue::framework {
     };
 
     TYPE_TRAITS(std::uint8_t, "uint8")
+    TYPE_TRAITS(std::uint16_t, "uint16")
     TYPE_TRAITS(std::uint32_t, "uint32")
     TYPE_TRAITS(std::uint64_t, "uint64")
     TYPE_TRAITS(std::int8_t, "int8")
+    TYPE_TRAITS(std::int16_t, "int16")
     TYPE_TRAITS(std::int32_t, "int32")
     TYPE_TRAITS(std::int64_t, "int64")
     TYPE_TRAITS(float, "float32")

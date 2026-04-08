@@ -57,6 +57,11 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 2:
+                        {
+                            result = uniform<std::int16_t>(array, min_value, max_value);
+                            break;
+                        }
                         case 4:
                         {
                             result = uniform<std::int32_t>(array, min_value, max_value);
@@ -76,6 +81,11 @@ namespace lue::framework {
                     // Unsigned integer
                     switch (size)
                     {
+                        case 2:
+                        {
+                            result = uniform<std::uint16_t>(array, min_value, max_value);
+                            break;
+                        }
                         case 4:
                         {
                             result = uniform<std::uint32_t>(array, min_value, max_value);
@@ -156,6 +166,11 @@ namespace lue::framework {
                     // Signed integer
                     switch (size)
                     {
+                        case 2:
+                        {
+                            result = uniform<std::int16_t>(min_value, max_value);
+                            break;
+                        }
                         case 4:
                         {
                             result = uniform<std::int32_t>(min_value, max_value);
@@ -175,6 +190,11 @@ namespace lue::framework {
                     // Unsigned integer
                     switch (size)
                     {
+                        case 2:
+                        {
+                            result = uniform<std::uint16_t>(min_value, max_value);
+                            break;
+                        }
                         case 4:
                         {
                             result = uniform<std::uint32_t>(min_value, max_value);
