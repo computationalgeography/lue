@@ -938,7 +938,6 @@ namespace lue {
         {
             using ZoneArray = PartitionedArray<policy::InputElementT<Policies, 0>, rank>;
             using ZonePartitions = PartitionsT<ZoneArray>;
-            using ZonePartition = PartitionT<ZoneArray>;
 
             using ClumpArray = PartitionedArray<policy::OutputElementT<Policies, 0>, rank>;
             using ClumpPartition = PartitionT<ClumpArray>;

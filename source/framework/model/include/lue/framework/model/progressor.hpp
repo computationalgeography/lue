@@ -22,15 +22,15 @@ namespace lue {
 
             virtual ~Progressor() = default;
 
-            Progressor& operator=(Progressor const&) = default;
+            auto operator=(Progressor const&) -> Progressor& = default;
 
-            Progressor& operator=(Progressor&&) = default;
+            auto operator=(Progressor&&) -> Progressor& = default;
 
-            virtual void preprocess(Count const sample_nr);
+            virtual void preprocess(Count sample_nr);
 
             virtual void initialize();
 
-            virtual void simulate(Count const time_step);
+            virtual void simulate(Count time_step);
 
             virtual void finalize();
 
@@ -40,11 +40,11 @@ namespace lue {
     };
 
 
-    void preprocess(Progressor& progressor, Count const sample_nr);
+    void preprocess(Progressor& progressor, Count sample_nr);
 
     void initialize(Progressor& progressor);
 
-    void simulate(Progressor& progressor, Count const time_step);
+    void simulate(Progressor& progressor, Count time_step);
 
     void finalize(Progressor& progressor);
 
