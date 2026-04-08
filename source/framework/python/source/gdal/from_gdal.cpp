@@ -64,13 +64,17 @@ namespace lue::framework {
 
             if constexpr (lue::arithmetic_element_supported<std::uint8_t>)
             {
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+                if (data_type == GDT_UInt8)
+#else
                 if (data_type == GDT_Byte)
+#endif
                 {
                     result = framework::from_gdal<uint8_t>(name, hyperslab, static_partition_shape);
                 }
             }
 
-#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS == 1
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
             if constexpr (lue::arithmetic_element_supported<std::int8_t>)
             {
                 if (data_type == GDT_Int8)
@@ -96,7 +100,7 @@ namespace lue::framework {
                 }
             }
 
-#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS == 1
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             if constexpr (lue::arithmetic_element_supported<std::uint64_t>)
             {
                 if (data_type == GDT_UInt64)
@@ -173,13 +177,17 @@ namespace lue::framework {
 
             if constexpr (lue::arithmetic_element_supported<std::uint8_t>)
             {
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+                if (data_type == GDT_UInt8)
+#else
                 if (data_type == GDT_Byte)
+#endif
                 {
                     result = from_gdal<uint8_t>(name, static_partition_shape);
                 }
             }
 
-#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS == 1
+#if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
             if constexpr (lue::arithmetic_element_supported<std::int8_t>)
             {
                 if (data_type == GDT_Int8)
@@ -205,7 +213,7 @@ namespace lue::framework {
                 }
             }
 
-#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS == 1
+#if LUE_GDAL_SUPPORTS_64BIT_INTEGERS
             if constexpr (lue::arithmetic_element_supported<std::uint64_t>)
             {
                 if (data_type == GDT_UInt64)

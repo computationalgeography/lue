@@ -24,7 +24,13 @@ namespace lue::gdal {
 
         public:
 
-            static constexpr GDALDataType data_type{GDT_Byte};
+            static constexpr GDALDataType data_type{
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+                GDT_UInt8
+#else
+                GDT_Byte
+#endif
+            };
     };
 
 

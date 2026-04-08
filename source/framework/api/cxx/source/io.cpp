@@ -56,7 +56,11 @@ namespace lue {
             {
                 std::optional<Field::Variant> result{};
 
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+                if (data_type == GDT_UInt8)
+#else
                 if (data_type == GDT_Byte)
+#endif
                 {
                     result = from_gdal<std::uint8_t>(name, partition_shape);
                 }
