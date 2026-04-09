@@ -49,7 +49,11 @@ namespace lue::utility {
 
         switch (data_type)
         {
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+            case GDT_UInt8:
+#else
             case GDT_Byte:
+#endif
             {
                 result = hdf5::native_datatype<std::uint8_t>();
                 break;
@@ -880,7 +884,11 @@ namespace lue::utility {
 
         switch (data_type)
         {
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+            case GDT_UInt8:
+#else
             case GDT_Byte:
+#endif
             {
                 gdal_to_lue<RasterView, uint8_t>(gdal_raster_band, lue_raster_view, layer_name);
                 break;

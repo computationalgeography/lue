@@ -266,7 +266,11 @@ namespace lue::gdal {
 
                 switch (data_type1)
                 {
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+                    case GDT_UInt8:
+#else
                     case GDT_Byte:
+#endif
                     {
                         compare_raster_bands<std::uint8_t>(band1, band2, differences);
                         break;

@@ -16,11 +16,19 @@ namespace lue::gdal {
                 result = "GDT_Unknown";
                 break;
             }
+#if LUE_GDAL_SUPPORTS_8BIT_UNSIGNED_INTEGERS
+            case GDT_UInt8:
+            {
+                result = "GDT_UInt8";
+                break;
+            }
+#else
             case GDT_Byte:
             {
                 result = "GDT_Byte";
                 break;
             }
+#endif
 #if LUE_GDAL_SUPPORTS_8BIT_SIGNED_INTEGERS
             case GDT_Int8:
             {
