@@ -41,7 +41,7 @@ namespace lue {
     */
     auto Model::simulate([[maybe_unused]] Count const time_step) -> hpx::shared_future<void>
     {
-        return hpx::make_ready_future<void>();
+        return hpx::make_ready_future();
     }
 
 

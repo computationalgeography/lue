@@ -13,7 +13,7 @@ namespace lue::detail {
         asynchronously wait for each of them to become ready.
     */
     template<typename Partitions>
-    Array<hpx::future<Count>, rank<Partitions>> partition_sizes(Partitions const& partitions)
+    auto partition_sizes(Partitions const& partitions) -> Array<hpx::future<Count>, rank<Partitions>>
     {
         using Partition = PartitionT<Partitions>;
         using Shape = ShapeT<Partitions>;
@@ -31,7 +31,8 @@ namespace lue::detail {
                 partition_sizes(idx0, idx1) = hpx::dataflow(
                     hpx::launch::async,
 
-                    [](Partition const& partition) { return partition.nr_elements(); },
+                    [](Partition const& partition) -> auto
+                    { return partition.nr_elements(hpx::launch::sync); },
 
                     partitions(idx0, idx1));
             }
@@ -42,8 +43,8 @@ namespace lue::detail {
 
 
     template<typename Partitions>
-    Array<hpx::shared_future<ShapeT<Partitions>>, rank<Partitions>> partition_shapes(
-        Partitions const& partitions)
+    auto partition_shapes(Partitions const& partitions)
+        -> Array<hpx::shared_future<ShapeT<Partitions>>, rank<Partitions>>
     {
         using Shape = ShapeT<Partitions>;
         using PartitionShapes = Array<hpx::shared_future<Shape>, rank<Partitions>>;
@@ -65,8 +66,8 @@ namespace lue::detail {
 
 
     template<typename Partitions, typename PartitionShapes>
-    Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>> partition_data(
-        Partitions const& partitions, PartitionShapes const& partition_shapes)
+    auto partition_data(Partitions const& partitions, PartitionShapes const& partition_shapes)
+        -> Array<hpx::shared_future<DataT<PartitionT<Partitions>>>, rank<Partitions>>
     {
         using Partition = PartitionT<Partitions>;
         Rank const rank{lue::rank<Partition>};
@@ -84,7 +85,7 @@ namespace lue::detail {
         data(0, 0) = partition_shapes(0, 0).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(0, 0)](Shape const& partition_shape)
+                [input_partition = partitions(0, 0)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -101,7 +102,7 @@ namespace lue::detail {
         data(0, 1) = partition_shapes(0, 1).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(0, 1)](Shape const& partition_shape)
+                [input_partition = partitions(0, 1)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -117,7 +118,7 @@ namespace lue::detail {
         data(0, 2) = partition_shapes(0, 2).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(0, 2)](Shape const& partition_shape)
+                [input_partition = partitions(0, 2)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -133,7 +134,7 @@ namespace lue::detail {
         data(1, 0) = partition_shapes(1, 0).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(1, 0)](Shape const& partition_shape)
+                [input_partition = partitions(1, 0)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -152,7 +153,7 @@ namespace lue::detail {
         data(1, 2) = partition_shapes(1, 2).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(1, 2)](Shape const& partition_shape)
+                [input_partition = partitions(1, 2)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -167,7 +168,7 @@ namespace lue::detail {
         data(2, 0) = partition_shapes(2, 0).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(2, 0)](Shape const& partition_shape)
+                [input_partition = partitions(2, 0)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 
@@ -183,7 +184,7 @@ namespace lue::detail {
         data(2, 1) = partition_shapes(2, 1).then(
             hpx::unwrapping(
 
-                [input_partition = partitions(2, 1)](Shape const& partition_shape)
+                [input_partition = partitions(2, 1)](Shape const& partition_shape) -> auto
                 {
                     AnnotateFunction annotation{"partition_data"};
 

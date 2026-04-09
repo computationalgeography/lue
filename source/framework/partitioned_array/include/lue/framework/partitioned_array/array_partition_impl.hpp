@@ -136,16 +136,28 @@ namespace lue {
         @brief      Return a future to the underlying data
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::data() const
+    auto ArrayPartition<Element, rank>::data(hpx::launch::async_policy) const
         -> hpx::future<typename ArrayPartition<Element, rank>::Data>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::DataAction action;
+        using Action = Server::DataAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id());
+        return hpx::async(Action{}, this->get_id());
+    }
+
+
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::data(hpx::launch::sync_policy) const ->
+        typename ArrayPartition<Element, rank>::Data
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::DataAction;
+
+        return Action{}(this->get_id());
     }
 
 
@@ -153,16 +165,28 @@ namespace lue {
         @brief      Return a future to a subset of the underlying data
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::slice(Slices const& slices) const
+    auto ArrayPartition<Element, rank>::slice(hpx::launch::async_policy, Slices const& slices) const
         -> hpx::future<typename ArrayPartition<Element, rank>::Data>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::SliceAction action;
+        using Action = Server::SliceAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id(), slices);
+        return hpx::async(Action{}, this->get_id(), slices);
+    }
+
+
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::slice(hpx::launch::sync_policy, Slices const& slices) const ->
+        typename ArrayPartition<Element, rank>::Data
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::SliceAction;
+
+        return Action{}(this->get_id(), slices);
     }
 
 
@@ -170,15 +194,29 @@ namespace lue {
         @brief      Return a future to the number of elements
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::nr_elements() const -> hpx::future<Count>
+    auto ArrayPartition<Element, rank>::nr_elements(hpx::launch::async_policy) const -> hpx::future<Count>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::NrElementsAction action;
+        using Action = Server::NrElementsAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id());
+        return hpx::async(Action{}, this->get_id());
+    }
+
+
+    /*!
+        @brief      Return the number of elements
+    */
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::nr_elements(hpx::launch::sync_policy) const -> Count
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::NrElementsAction;
+
+        return Action{}(this->get_id());
     }
 
 
@@ -186,16 +224,28 @@ namespace lue {
         @brief      Return a future to the offset
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::offset() const
+    auto ArrayPartition<Element, rank>::offset(hpx::launch::async_policy) const
         -> hpx::future<typename ArrayPartition<Element, rank>::Offset>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::OffsetAction action;
+        using Action = Server::OffsetAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id());
+        return hpx::async(Action{}, this->get_id());
+    }
+
+
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::offset(hpx::launch::sync_policy) const ->
+        typename ArrayPartition<Element, rank>::Offset
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::OffsetAction;
+
+        return Action{}(this->get_id());
     }
 
 
@@ -203,16 +253,28 @@ namespace lue {
         @brief      Return a future to the shape
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::shape() const
+    auto ArrayPartition<Element, rank>::shape(hpx::launch::async_policy) const
         -> hpx::future<typename ArrayPartition<Element, rank>::Shape>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::ShapeAction action;
+        using Action = Server::ShapeAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id());
+        return hpx::async(Action{}, this->get_id());
+    }
+
+
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::shape(hpx::launch::sync_policy) const ->
+        typename ArrayPartition<Element, rank>::Shape
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::ShapeAction;
+
+        return Action{}(this->get_id());
     }
 
 
@@ -221,15 +283,30 @@ namespace lue {
         @return     A future that will become ready once the partition is filled
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::fill(Element const value) -> hpx::future<void>
+    auto ArrayPartition<Element, rank>::fill(hpx::launch::async_policy, Element const value)
+        -> hpx::future<void>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::FillAction action;
+        using Action = Server::FillAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id(), value);
+        return hpx::async(Action{}, this->get_id(), value);
+    }
+
+
+    /*!
+        @brief      Synchronously fill the partition with @a value
+    */
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::fill(hpx::launch::sync_policy, Element const value) -> void
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::FillAction;
+
+        return Action{}(this->get_id(), value);
     }
 
 
@@ -238,15 +315,30 @@ namespace lue {
         @return     A future that will become ready once the data is assigned
     */
     template<typename Element, Rank rank>
-    auto ArrayPartition<Element, rank>::set_data(Data const& data) -> hpx::future<void>
+    auto ArrayPartition<Element, rank>::set_data(hpx::launch::async_policy, Data const& data)
+        -> hpx::future<void>
     {
         lue_hpx_assert(this->is_ready());
         lue_hpx_assert(this->get_id());
 
-        typename Server::SetDataAction action;
+        using Action = Server::SetDataAction;
 
-        // this->get_id() identifies the server instance
-        return hpx::async(action, this->get_id(), data);
+        return hpx::async(Action{}, this->get_id(), data);
+    }
+
+
+    /*!
+        @brief      Synchronously assign @a data to the partition
+    */
+    template<typename Element, Rank rank>
+    auto ArrayPartition<Element, rank>::set_data(hpx::launch::sync_policy, Data const& data) -> void
+    {
+        lue_hpx_assert(this->is_ready());
+        lue_hpx_assert(this->get_id());
+
+        using Action = Server::SetDataAction;
+
+        return Action{}(this->get_id(), data);
     }
 
 }  // namespace lue

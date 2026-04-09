@@ -162,7 +162,7 @@ namespace lue {
                                     target_partition_offset,
                                     std::move(target_partition_data)};
                             }),
-                        source_partition.data());
+                        source_partition.data(hpx::launch::async));
                 },
                 source_partition);
         }
@@ -320,7 +320,7 @@ namespace lue {
             // Creating a partitioned array requires a partition shape. We use the same partition shape as
             // the one used by the source array. This "blocks" on the first partition.
             array.partitions()[0].wait();
-            auto const partition_shape = array.partitions()[0].shape().get();
+            auto const partition_shape = array.partitions()[0].shape(hpx::launch::sync);
 
             return create_partitioned_array(
                 policies,

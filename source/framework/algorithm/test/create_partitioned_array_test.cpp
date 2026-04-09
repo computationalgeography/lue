@@ -149,15 +149,7 @@ namespace {
                 using Action = NumberPartitionsPerLocalityAction</* Policies, */ Partition>;
                 Action action{};
 
-                return hpx::async(
-
-                    [locality_id,
-                     action = std::move(action),
-                     offsets = std::move(offsets),
-                     partition_shapes = std::move(partition_shapes)]() -> auto
-                    { return action(locality_id, offsets, partition_shapes); }
-
-                );
+                return hpx::async(action, locality_id, std::move(offsets), std::move(partition_shapes));
             }
 
         private:
@@ -255,8 +247,8 @@ BOOST_AUTO_TEST_CASE(clamp_mode_merge)
     auto const& partitions = array.partitions();
     lue::wait_all(partitions);
 
-    BOOST_CHECK_EQUAL(partitions(0, 0).shape().get(), array_shape);
-    BOOST_CHECK_EQUAL((partitions(0, 0).offset().get()), Offset({0, 0}));
+    BOOST_CHECK_EQUAL(partitions(0, 0).shape(hpx::launch::sync), array_shape);
+    BOOST_CHECK_EQUAL((partitions(0, 0).offset(hpx::launch::sync)), Offset({0, 0}));
 }
 
 
@@ -371,7 +363,7 @@ BOOST_AUTO_TEST_CASE(use_case_2)
             BOOST_TEST_CONTEXT(std::format("Partition {}, {}", partition0, partition1))
             {
                 auto const& partition{partitions(partition0, partition1)};
-                auto const data{partition.data().get()};
+                auto const data{partition.data(hpx::launch::sync)};
                 auto const [nr_cells0, nr_cells1] = data.shape();
 
                 for (lue::Index cell0 = 0; cell0 < nr_cells0; ++cell0)
@@ -461,7 +453,7 @@ BOOST_AUTO_TEST_CASE(use_case_3)
                 {
                     auto const& partition{array.partitions()(partition0, partition1)};
                     partition.get();
-                    auto const data{partition.data().get()};
+                    auto const data{partition.data(hpx::launch::sync)};
 
                     BOOST_CHECK(ondp.is_no_data(data, 0, 0));
                     BOOST_CHECK(!ondp.is_no_data(data, 0, 1));

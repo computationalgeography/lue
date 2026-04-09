@@ -63,19 +63,33 @@ namespace lue {
 
             auto operator=(ArrayPartition&&) -> ArrayPartition& = default;
 
-            auto data() const -> hpx::future<Data>;
+            auto data(hpx::launch::async_policy) const -> hpx::future<Data>;
 
-            auto slice(Slices const& slices) const -> hpx::future<Data>;
+            auto data(hpx::launch::sync_policy) const -> Data;
 
-            auto fill(Element value) -> hpx::future<void>;
+            auto slice(hpx::launch::async_policy, Slices const& slices) const -> hpx::future<Data>;
 
-            auto set_data(Data const& data) -> hpx::future<void>;
+            auto slice(hpx::launch::sync_policy, Slices const& slices) const -> Data;
 
-            auto offset() const -> hpx::future<Offset>;
+            auto fill(hpx::launch::async_policy, Element value) -> hpx::future<void>;
 
-            auto shape() const -> hpx::future<Shape>;
+            auto fill(hpx::launch::sync_policy, Element value) -> void;
 
-            auto nr_elements() const -> hpx::future<Count>;
+            auto set_data(hpx::launch::async_policy, Data const& data) -> hpx::future<void>;
+
+            auto set_data(hpx::launch::sync_policy, Data const& data) -> void;
+
+            auto offset(hpx::launch::async_policy) const -> hpx::future<Offset>;
+
+            auto offset(hpx::launch::sync_policy) const -> Offset;
+
+            auto shape(hpx::launch::async_policy) const -> hpx::future<Shape>;
+
+            auto shape(hpx::launch::sync_policy) const -> Shape;
+
+            auto nr_elements(hpx::launch::async_policy) const -> hpx::future<Count>;
+
+            auto nr_elements(hpx::launch::sync_policy) const -> Count;
     };
 
 

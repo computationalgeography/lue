@@ -30,13 +30,13 @@ namespace lue {
             typename... Element,
             typename Functor,
             typename Kernel>
-        OutputElementT<Functor> inner(
+        auto inner(
             Functor const& functor,
             Kernel const& kernel,
             OutputPolicies const& output_policies,
             InputPolicies const& input_policies,
             std::index_sequence<idxs...>,
-            DynamicSubspan<Element, rank<Kernel>> const&... windows)
+            DynamicSubspan<Element, rank<Kernel>> const&... windows) -> OutputElementT<Functor>
         {
             // windows:
             // For each array, a span pointing to the data to consider in this
@@ -55,13 +55,13 @@ namespace lue {
             typename... Element,
             typename Functor,
             typename Kernel>
-        OutputElementT<Functor> inner(
+        auto inner(
             Functor const& functor,
             Kernel const& kernel,
             OutputPolicies const& output_policies,
             InputPolicies const& input_policies,
             std::index_sequence<idxs...>,
-            DynamicSpan<Element, rank<Kernel>> const&... windows)
+            DynamicSpan<Element, rank<Kernel>> const&... windows) -> OutputElementT<Functor>
         {
             // windows:
             // For each array, a span pointing to the data to consider in this
@@ -74,16 +74,17 @@ namespace lue {
 
 
         template<typename Element, Rank rank>
-        DynamicSpan<Element, rank> span(Array<Element, rank> const& array)
+        auto span(Array<Element, rank> const& array) -> DynamicSpan<Element, rank>
         {
             return array.span();
         }
 
 
         template<typename Element, typename Shape>
-        Array<Element, rank<Shape>> copy_to_array(
+        auto copy_to_array(
             Shape const& kernel_shape,
             Array<DynamicSubspan<Element, rank<Shape>>, rank<Shape>> const& windows)
+            -> Array<Element, rank<Shape>>
         {
             // Copy values from different views into a single array and pass it
             // on to function calculating the result for the focal cell
@@ -94,28 +95,28 @@ namespace lue {
             // we must see the same number of cells as present in the kernel
 
             // Check number of columns in each row of partitions
-            for (Count r = 0; r < windows.shape()[0]; ++r)
+            for (Count idx0 = 0; idx0 < windows.shape()[0]; ++idx0)
             {
                 Count count = 0;
 
-                for (Count c = 0; c < windows.shape()[1]; ++c)
+                for (Count idx1 = 0; idx1 < windows.shape()[1]; ++idx1)
                 {
-                    lue_hpx_assert(windows(r, c).extent(1) > 0);
-                    count += windows(r, c).extent(1);
+                    lue_hpx_assert(windows(idx0, idx1).extent(1) > 0);
+                    count += windows(idx0, idx1).extent(1);
                 }
 
                 lue_hpx_assert(count == std::get<1>(kernel_shape));
             }
 
             // Check number of rows in each column of partitions
-            for (Count c = 0; c < windows.shape()[1]; ++c)
+            for (Count idx1 = 0; idx1 < windows.shape()[1]; ++idx1)
             {
                 Count count = 0;
 
-                for (Count r = 0; r < windows.shape()[0]; ++r)
+                for (Count idx0 = 0; idx0 < windows.shape()[0]; ++idx0)
                 {
-                    lue_hpx_assert(windows(r, c).extent(0) > 0);
-                    count += windows(r, c).extent(0);
+                    lue_hpx_assert(windows(idx0, idx1).extent(0) > 0);
+                    count += windows(idx0, idx1).extent(0);
                 }
 
                 lue_hpx_assert(count == std::get<0>(kernel_shape));
@@ -123,25 +124,25 @@ namespace lue {
 
             // Within a row of partitions, the number of rows per
             // partition must be the same
-            for (Count r = 0; r < windows.shape()[0]; ++r)
+            for (Count idx0 = 0; idx0 < windows.shape()[0]; ++idx0)
             {
-                Count const nr_rows = windows(r, 0).extent(0);
+                Count const nr_rows = windows(idx0, 0).extent(0);
 
-                for (Count c = 0; c < windows.shape()[1]; ++c)
+                for (Count idx1 = 0; idx1 < windows.shape()[1]; ++idx1)
                 {
-                    lue_hpx_assert(windows(r, c).extent(0) == nr_rows);
+                    lue_hpx_assert(windows(idx0, idx1).extent(0) == nr_rows);
                 }
             }
 
             // Within a column of partitions, the number of columns per
             // partition must be the same
-            for (Count c = 0; c < windows.shape()[1]; ++c)
+            for (Count idx1 = 0; idx1 < windows.shape()[1]; ++idx1)
             {
-                Count const nr_cols = windows(0, c).extent(1);
+                Count const nr_cols = windows(0, idx1).extent(1);
 
-                for (Count r = 0; r < windows.shape()[0]; ++r)
+                for (Count idx0 = 0; idx0 < windows.shape()[0]; ++idx0)
                 {
-                    lue_hpx_assert(windows(r, c).extent(1) == nr_cols);
+                    lue_hpx_assert(windows(idx0, idx1).extent(1) == nr_cols);
                 }
             }
 
@@ -149,8 +150,8 @@ namespace lue {
 
             Array<Element, rank<Shape>> array{kernel_shape};
 
-            // {r,c}w : {row,col} index of window in windows
-            // {r,c}k : {row,col} index of cell in kernel
+            // {idx0,idx1}w : {row,col} index of window in windows
+            // {idx0,idx1}k : {row,col} index of cell in kernel
 
             Index rk = 0;
 
@@ -166,14 +167,14 @@ namespace lue {
                     lue_hpx_assert(window.extent(0) <= std::get<0>(kernel_shape));
                     lue_hpx_assert(window.extent(1) <= std::get<1>(kernel_shape));
 
-                    for (Index r = 0; r < window.extent(0); ++r, ++rk)
+                    for (Index idx0 = 0; idx0 < window.extent(0); ++idx0, ++rk)
                     {
-                        for (Index c = 0; c < window.extent(1); ++c, ++ck)
+                        for (Index idx1 = 0; idx1 < window.extent(1); ++idx1, ++ck)
                         {
                             lue_hpx_assert(rk < std::get<0>(kernel_shape));
                             lue_hpx_assert(ck < std::get<1>(kernel_shape));
 
-                            array(rk, ck) = window[r, c];
+                            array(rk, ck) = window[idx0, idx1];
                         }
 
                         ck -= window.extent(1);  // Carriage return
@@ -202,12 +203,13 @@ namespace lue {
             typename... Element,
             typename Functor,
             typename Kernel>
-        OutputElementT<Functor> border(
+        auto border(
             Functor const& functor,
             Kernel const& kernel,
             OutputPolicies const& output_policies,
             InputPolicies const& input_policies,
             Array<DynamicSubspan<Element, rank<Kernel>>, rank<Kernel>> const&... windows)
+            -> OutputElementT<Functor>
         {
             // windows:
             // For each array, a collection of spans pointing to the data to
@@ -230,7 +232,7 @@ namespace lue {
         }
 
         template<lue::Rank rank, lue::Index dimension = rank>
-        constexpr lue::Count nr_neighbors()
+        constexpr auto nr_neighbors() -> lue::Count
         {
             // Given the rank of a partition, how many neighboring partitions
             // are there?
@@ -239,12 +241,12 @@ namespace lue {
             // 2D: 1 * 2 * (2 - 0) + 2 * 2 * (2 - 1) → 4 + 4 → 8
             // 3D: 1 * 2 * (3 - 0) + 2 * 2 * (3 - 1) + 3 * 2 * (3 - 2) → 6 + 8 + 12 → 26
             //
-            // Given rank r, for each current dimension d є (0, r]:
-            //     d * 2 * (r - (d - 1))
+            // Given rank idx0, for each current dimension d є (0, idx0]:
+            //     d * 2 * (idx0 - (d - 1))
 
             if constexpr (dimension > 0)
             {
-                return dimension * 2 * (rank - (dimension - 1)) + nr_neighbors<rank, dimension - 1>();
+                return (dimension * 2 * (rank - (dimension - 1))) + nr_neighbors<rank, dimension - 1>();
             }
             else
             {
@@ -254,7 +256,7 @@ namespace lue {
 
 
         template<typename Partition>
-        constexpr lue::Count nr_neighbors()
+        constexpr auto nr_neighbors() -> lue::Count
         {
             // Given a partition, how many neighboring partitions are there?
             return nr_neighbors<rank<Partition>>();
@@ -283,7 +285,7 @@ namespace lue {
         {
             if (nr_elements0 < kernel_radius || nr_elements1 < kernel_radius)
             {
-                throw_partition_too_small_exception(nr_elements0, nr_elements1, 2 * kernel_radius + 1);
+                throw_partition_too_small_exception(nr_elements0, nr_elements1, (2 * kernel_radius) + 1);
             }
         }
 
@@ -325,19 +327,19 @@ namespace lue {
                     lue_hpx_assert(all_are_valid(_data));
                 }
 
-                InputPartitions const& partitions() const
+                auto partitions() const -> InputPartitions const&
                 {
                     return _partitions;
                 }
 
-                InputPartitionsData const& data() const
+                auto data() const -> InputPartitionsData const&
                 {
                     return _data;
                 }
 
             private:
 
-                InputPartitionsData read_data()
+                auto read_data() -> InputPartitionsData
                 {
                     using Shape = ShapeT<InputPartitions>;
 
@@ -386,11 +388,11 @@ namespace lue {
 
                     PartitionShapes partition_shapes{_partitions.shape()};
 
-                    for (Index r = 0; r < nr_partitions0; ++r)
+                    for (Index idx0 = 0; idx0 < nr_partitions0; ++idx0)
                     {
-                        for (Index c = 0; c < nr_partitions1; ++c)
+                        for (Index idx1 = 0; idx1 < nr_partitions1; ++idx1)
                         {
-                            partition_shapes(r, c) = _partitions(r, c).shape();
+                            partition_shapes(idx0, idx1) = _partitions(idx0, idx1).shape(hpx::launch::async);
                         }
                     }
 
@@ -405,7 +407,8 @@ namespace lue {
                     data(0, 0) = partition_shapes(0, 0).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(0, 0)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(0, 0)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -413,6 +416,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{
                                         {Slice{nr_elements0 - kernel_radius, nr_elements0},
                                          Slice{nr_elements1 - kernel_radius, nr_elements1}}});
@@ -424,7 +428,8 @@ namespace lue {
                     data(0, 1) = partition_shapes(0, 1).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(0, 1)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(0, 1)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -432,6 +437,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{
                                         {Slice{nr_elements0 - kernel_radius, nr_elements0},
                                          Slice{0, nr_elements1}}});
@@ -443,7 +449,8 @@ namespace lue {
                     data(0, 2) = partition_shapes(0, 2).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(0, 2)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(0, 2)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -451,6 +458,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{
                                         {Slice{nr_elements0 - kernel_radius, nr_elements0},
                                          Slice{0, kernel_radius}}});
@@ -462,7 +470,8 @@ namespace lue {
                     data(1, 0) = partition_shapes(1, 0).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(1, 0)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(1, 0)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -470,6 +479,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{
                                         {Slice{0, nr_elements0},
                                          Slice{nr_elements1 - kernel_radius, nr_elements1}}});
@@ -478,13 +488,14 @@ namespace lue {
                             ));
 
                     // Center partition: get all elements
-                    data(1, 1) = _partitions(1, 1).data();
+                    data(1, 1) = _partitions(1, 1).data(hpx::launch::async);
 
                     // East partition: get west side elements
                     data(1, 2) = partition_shapes(1, 2).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(1, 2)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(1, 2)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -492,6 +503,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{{Slice{0, nr_elements0}, Slice{0, kernel_radius}}});
                             }
 
@@ -501,7 +513,8 @@ namespace lue {
                     data(2, 0) = partition_shapes(2, 0).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(2, 0)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(2, 0)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -509,6 +522,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{
                                         {Slice{0, kernel_radius},
                                          Slice{nr_elements1 - kernel_radius, nr_elements1}}});
@@ -520,7 +534,8 @@ namespace lue {
                     data(2, 1) = partition_shapes(2, 1).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(2, 1)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(2, 1)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -528,6 +543,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{{Slice{0, kernel_radius}, Slice{0, nr_elements1}}});
                             }
 
@@ -537,7 +553,8 @@ namespace lue {
                     data(2, 2) = partition_shapes(2, 2).then(
                         hpx::unwrapping(
 
-                            [kernel_radius, input_partition = _partitions(2, 2)](Shape const& partition_shape)
+                            [kernel_radius,
+                             input_partition = _partitions(2, 2)](Shape const& partition_shape) -> auto
                             {
                                 auto const [nr_elements0, nr_elements1] = partition_shape;
 
@@ -545,6 +562,7 @@ namespace lue {
                                     nr_elements0, nr_elements1, kernel_radius);
 
                                 return input_partition.slice(
+                                    hpx::launch::async,
                                     Slices{{Slice{0, kernel_radius}, Slice{0, kernel_radius}}});
                             }
 
@@ -575,8 +593,8 @@ namespace lue {
 
 
             template<typename WrappedArrayPartitions, typename... Idxs>
-            auto const& input_partition_data(
-                WrappedArrayPartitions const& input_partitions, Idxs const... idxs)
+            auto input_partition_data(WrappedArrayPartitions const& input_partitions, Idxs const... idxs)
+                -> auto const&
             {
                 // Future<Data>
                 return input_partitions.data()(idxs...);
@@ -584,7 +602,8 @@ namespace lue {
 
 
             template<typename WrappedArrayPartitions, typename... Idxs>
-            auto const& input_partition(WrappedArrayPartitions const& input_partitions, Idxs const... idxs)
+            auto input_partition(WrappedArrayPartitions const& input_partitions, Idxs const... idxs)
+                -> auto const&
             {
                 return input_partitions.partitions()(idxs...);
             }
@@ -599,19 +618,20 @@ namespace lue {
 
 
             template<typename Element, Rank rank, typename Slice>
-            DynamicSubspan<Element, rank> subspan(
+            auto subspan(
                 ArrayPartitionData<Element, rank> const& partition_data,
                 Slice const& slice1,
-                Slice const& slice2)
+                Slice const& slice2) -> DynamicSubspan<Element, rank>
             {
                 return submdspan(partition_data.span(), slice1, slice2);
             }
 
 
             template<typename Element, Rank rank, typename Slice>
-            Array<DynamicSubspan<Element, rank>, rank> subspans(
+            auto subspans(
                 Array<DynamicSpan<Element, rank>, rank> const& spans,
                 Array<std::array<Slice, rank>, rank> const& slices)
+                -> Array<DynamicSubspan<Element, rank>, rank>
             {
                 static_assert(rank == 2);
 
@@ -625,7 +645,7 @@ namespace lue {
                     slices.begin(),
                     subspans.begin(),
 
-                    [](DynamicSpan<Element, rank> const& span, std::array<Slice, rank> const& slices)
+                    [](DynamicSpan<Element, rank> const& span, std::array<Slice, rank> const& slices) -> auto
                     { return submdspan(span, slices[0], slices[1]); }
 
                 );
@@ -635,9 +655,9 @@ namespace lue {
 
 
             template<typename Element, Rank rank>
-            Array<ArrayPartitionData<Element, rank>, rank> partition_data(
+            auto partition_data(
                 Array<hpx::shared_future<ArrayPartitionData<Element, rank>>, rank> const&
-                    partition_data_futures)
+                    partition_data_futures) -> Array<ArrayPartitionData<Element, rank>, rank>
             {
                 using PartitionData = Array<ArrayPartitionData<Element, rank>, rank>;
 
@@ -650,7 +670,7 @@ namespace lue {
                     partition_data_futures.end(),
                     partition_data.begin(),
 
-                    [](auto const& future)
+                    [](auto const& future) -> auto
                     {
                         // TODO(KDJ) This makes a (shallow) copy! future is a shared future
                         return future.get();
@@ -663,8 +683,9 @@ namespace lue {
 
 
             template<typename InputPolicies, typename InputPartitions>
-            hpx::future<Array<InputData<InputPartitions>, rank<InputData<InputPartitions>>>>
-            get_partition_data(WrappedArrayPartitions<InputPolicies, InputPartitions> const& input_partitions)
+            auto get_partition_data(
+                WrappedArrayPartitions<InputPolicies, InputPartitions> const& input_partitions)
+                -> hpx::future<Array<InputData<InputPartitions>, rank<InputData<InputPartitions>>>>
             {
                 lue_hpx_assert(all_are_valid(input_partitions.data()));
 
@@ -689,7 +710,7 @@ namespace lue {
 
                         [shape = input_partitions.data().shape()](
                             std::vector<hpx::shared_future<InputData<InputPartitions>>> const&
-                                partition_data_futures)
+                                partition_data_futures) -> auto
                         {
                             Rank const rank{lue::rank<InputData<InputPartitions>>};
                             lue::Array<hpx::shared_future<InputData<InputPartitions>>, rank> result{shape};
@@ -708,8 +729,9 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> nw_corner_partition_spans(
+            auto nw_corner_partition_spans(
                 lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the nw corner
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 2}};
@@ -724,8 +746,9 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> ne_corner_partition_spans(
+            auto ne_corner_partition_spans(
                 lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the ne corner
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 2}};
@@ -740,8 +763,9 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> sw_corner_partition_spans(
+            auto sw_corner_partition_spans(
                 lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the sw corner
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 2}};
@@ -756,8 +780,9 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> se_corner_partition_spans(
+            auto se_corner_partition_spans(
                 lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the se corner
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 2}};
@@ -772,8 +797,8 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> n_side_partition_spans(
-                lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+            auto n_side_partition_spans(lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the n side
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 1}};
@@ -786,8 +811,8 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> s_side_partition_spans(
-                lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+            auto s_side_partition_spans(lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the s side
                 Array<DynamicSpan<Element, 2>, 2> result{{2, 1}};
@@ -800,8 +825,8 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> w_side_partition_spans(
-                lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+            auto w_side_partition_spans(lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the w side
                 Array<DynamicSpan<Element, 2>, 2> result{{1, 2}};
@@ -814,8 +839,8 @@ namespace lue {
 
 
             template<typename Element>
-            Array<DynamicSpan<Element, 2>, 2> e_side_partition_spans(
-                lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+            auto e_side_partition_spans(lue::Array<ArrayPartitionData<Element, 2>, 2> const& partition_data)
+                -> Array<DynamicSpan<Element, 2>, 2>
             {
                 // Given 3x3 partitions, return the span of those partitions in the e side
                 Array<DynamicSpan<Element, 2>, 2> result{{1, 2}};
@@ -841,11 +866,12 @@ namespace lue {
                 typename Functor,
                 typename... InputPartitions,
                 typename... InputPolicies>
-            OutputPartition focal_operation_partition(
+            auto focal_operation_partition(
                 Policies const& policies,
                 Kernel const& kernel,
                 Functor const& functor,
                 WrappedArrayPartitions<InputPolicies, InputPartitions> const&... input_partitions)
+                -> OutputPartition
             {
                 // Data is being read. Attach tasks for computing the results for
                 // the inner partition to the futures representing the data. These
@@ -861,7 +887,7 @@ namespace lue {
                 // The first focal input partition
                 auto const& first_focal_input_partition{std::get<0>(focal_input_partitions)};
 
-                hpx::future<Offset> offset{first_focal_input_partition.offset()};
+                hpx::future<Offset> offset{first_focal_input_partition.offset(hpx::launch::async)};
 
                 using Slice = SliceT<OutputPartition>;
                 using Slices = SlicesT<OutputPartition>;
@@ -874,7 +900,7 @@ namespace lue {
                     hpx::unwrapping(
 
                         [policies, input_partitions = focal_input_partitions, kernel, functor](
-                            meh::InputData<InputPartitions> const&... partition_data)
+                            meh::InputData<InputPartitions> const&... partition_data) -> auto
                         {
                             AnnotateFunction const annotation{
                                 std::format("{}: partition", functor_name<Functor>)};
@@ -936,7 +962,7 @@ namespace lue {
                             Offset offset,
                             lue::
                                 Array<meh::InputData<InputPartitions>, rank<Kernel>> const&... partition_data,
-                            OutputData output_partition_data)
+                            OutputData output_partition_data) -> auto
                         {
                             AnnotateFunction const annotation{
                                 std::format("{}: partition", functor_name<Functor>)};
@@ -959,7 +985,7 @@ namespace lue {
                                     first_partitions_data.end(),
                                     partition_shapes.begin(),
 
-                                    [](auto const& data) { return data.shape(); }
+                                    [](auto const& data) -> auto { return data.shape(); }
 
                                 );
                             }
@@ -981,7 +1007,7 @@ namespace lue {
 
                                 // Indices of the four partition views used in the corners
                                 // {row, col}, {north-west, ..., south-west}, {begin, end}
-                                // → {r,c}{nw,ne,se,sw}{b,e}
+                                // → {idx0,idx1}{nw,ne,se,sw}{b,e}
                                 Index rnwb, rnwe, cnwb, cnwe;
                                 Index rneb, rnee, cneb, cnee;
                                 Index rswb, rswe, cswb, cswe;
@@ -1491,12 +1517,12 @@ namespace lue {
             typename Functor,
             typename... InputPartitions,
             std::size_t... idxs>
-        OutputPartition focal_operation_partition2(
+        auto focal_operation_partition2(
             Policies const& policies,
             std::index_sequence<idxs...>,
             InputPartitions const&... input_partitions,
             Kernel const& kernel,
-            Functor const& functor)
+            Functor const& functor) -> OutputPartition
         {
             return meh::focal_operation_partition<OutputPartition>(
                 policies,
@@ -1513,11 +1539,11 @@ namespace lue {
             typename Kernel,
             typename Functor,
             typename... InputPartitions>
-        OutputPartition focal_operation_partition(
+        auto focal_operation_partition(
             Policies const& policies,
             InputPartitions const&... input_partitions,
             Kernel const& kernel,
-            Functor const& functor)
+            Functor const& functor) -> OutputPartition
         {
             return focal_operation_partition2<Policies, OutputPartition, Kernel, Functor, InputPartitions...>(
                 policies,
@@ -1554,7 +1580,7 @@ namespace lue {
 
 
         template<typename... T>
-        std::tuple<T...> get_futures_meh(hpx::future<T>&&... futures)
+        auto get_futures_meh(hpx::future<T>&&... futures) -> std::tuple<T...>
         {
             // Given any number of ready(!) futures to values of various types,
             // return an std::tuple of the values themselves
@@ -1563,7 +1589,7 @@ namespace lue {
 
 
         template<typename... T>
-        std::tuple<T...> get_futures(hpx::tuple<hpx::future<T>...>&& futures)
+        auto get_futures(hpx::tuple<hpx::future<T>...>&& futures) -> std::tuple<T...>
         {
             // Given an hpx::tuple of ready(!) futures to values of various types,
             // return an std::tuple of the values themselves
@@ -1595,10 +1621,10 @@ namespace lue {
                 .then(
                     hpx::unwrapping(
                         [locality_id, action, policies, kernel, functor](
-                            hpx::tuple<hpx::future<InputPartitions>...>&& input_partitions)
+                            hpx::tuple<hpx::future<InputPartitions>...>&& input_partitions) -> auto
                         {
                             auto call_action = [locality_id, action, policies, kernel, functor](
-                                                   InputPartitions&&... input_partitions)
+                                                   InputPartitions&&... input_partitions) -> auto
                             {
                                 return action(
                                     locality_id, policies, std::move(input_partitions)..., kernel, functor);
@@ -1643,63 +1669,63 @@ namespace lue {
                 }
 
 
-                InputArray const& array() const
+                auto array() const -> InputArray const&
                 {
                     return _array;
                 }
 
 
-                InputPartitions north_west_corner_input_partitions() const
+                auto north_west_corner_input_partitions() const -> InputPartitions
                 {
                     return detail::north_west_corner_input_partitions(_array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions north_east_corner_input_partitions() const
+                auto north_east_corner_input_partitions() const -> InputPartitions
                 {
                     return detail::north_east_corner_input_partitions(_array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions south_west_corner_input_partitions() const
+                auto south_west_corner_input_partitions() const -> InputPartitions
                 {
                     return detail::south_west_corner_input_partitions(_array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions south_east_corner_input_partitions() const
+                auto south_east_corner_input_partitions() const -> InputPartitions
                 {
                     return detail::south_east_corner_input_partitions(_array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions north_side_input_partitions(Index const c) const
+                auto north_side_input_partitions(Index const idx1) const -> InputPartitions
                 {
-                    return detail::north_side_input_partitions(c, _array.partitions(), _halo_partitions);
+                    return detail::north_side_input_partitions(idx1, _array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions south_side_input_partitions(Index const c) const
+                auto south_side_input_partitions(Index const idx1) const -> InputPartitions
                 {
-                    return detail::south_side_input_partitions(c, _array.partitions(), _halo_partitions);
+                    return detail::south_side_input_partitions(idx1, _array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions west_side_input_partitions(Index const r) const
+                auto west_side_input_partitions(Index const idx0) const -> InputPartitions
                 {
-                    return detail::west_side_input_partitions(r, _array.partitions(), _halo_partitions);
+                    return detail::west_side_input_partitions(idx0, _array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions east_side_input_partitions(Index const r) const
+                auto east_side_input_partitions(Index const idx0) const -> InputPartitions
                 {
-                    return detail::east_side_input_partitions(r, _array.partitions(), _halo_partitions);
+                    return detail::east_side_input_partitions(idx0, _array.partitions(), _halo_partitions);
                 }
 
 
-                InputPartitions inner_input_partitions(Index const r, Index const c) const
+                auto inner_input_partitions(Index const idx0, Index const idx1) const -> InputPartitions
                 {
-                    return detail::inner_input_partitions(r, c, _array.partitions());
+                    return detail::inner_input_partitions(idx0, idx1, _array.partitions());
                 }
 
 
@@ -1738,74 +1764,78 @@ namespace lue {
         namespace meh {
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> north_west_corner_input_partitions(
-                WrappedPartitionedArray const& input_array)
+            auto north_west_corner_input_partitions(WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.north_west_corner_input_partitions();
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> north_east_corner_input_partitions(
-                WrappedPartitionedArray const& input_array)
+            auto north_east_corner_input_partitions(WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.north_east_corner_input_partitions();
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> south_west_corner_input_partitions(
-                WrappedPartitionedArray const& input_array)
+            auto south_west_corner_input_partitions(WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.south_west_corner_input_partitions();
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> south_east_corner_input_partitions(
-                WrappedPartitionedArray const& input_array)
+            auto south_east_corner_input_partitions(WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.south_east_corner_input_partitions();
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> north_side_input_partitions(
+            auto north_side_input_partitions(
                 Index const col_partition_idx, WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.north_side_input_partitions(col_partition_idx);
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> south_side_input_partitions(
+            auto south_side_input_partitions(
                 Index const col_partition_idx, WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.south_side_input_partitions(col_partition_idx);
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> west_side_input_partitions(
+            auto west_side_input_partitions(
                 Index const row_partition_idx, WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.west_side_input_partitions(row_partition_idx);
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> east_side_input_partitions(
+            auto east_side_input_partitions(
                 Index const row_partition_idx, WrappedPartitionedArray const& input_array)
+                -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.east_side_input_partitions(row_partition_idx);
             }
 
 
             template<typename WrappedPartitionedArray>
-            InputPartitionsT<WrappedPartitionedArray> inner_input_partitions(
+            auto inner_input_partitions(
                 Index const row_partition_idx,
                 Index const col_partition_idx,
-                WrappedPartitionedArray const& input_array)
+                WrappedPartitionedArray const& input_array) -> InputPartitionsT<WrappedPartitionedArray>
             {
                 return input_array.inner_input_partitions(row_partition_idx, col_partition_idx);
             }
@@ -1899,68 +1929,68 @@ namespace lue {
                     meh::south_east_corner_input_partitions(input_arrays)...);
             }
 
-            for (Index c = 1; c < nr_partitions1 - 1; ++c)
+            for (Index idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
             {
-                output_partitions(0, c) = spawn_focal_operation_partition(
-                    localities(0, c),
+                output_partitions(0, idx1) = spawn_focal_operation_partition(
+                    localities(0, idx1),
                     action,
                     policies,
                     kernel,
                     functor,
-                    meh::north_side_input_partitions(c, input_arrays)...);
+                    meh::north_side_input_partitions(idx1, input_arrays)...);
             }
 
             if (nr_partitions0 > 1)
             {
-                for (Index c = 1; c < nr_partitions1 - 1; ++c)
+                for (Index idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
                 {
-                    output_partitions(nr_partitions0 - 1, c) = spawn_focal_operation_partition(
-                        localities(nr_partitions0 - 1, c),
+                    output_partitions(nr_partitions0 - 1, idx1) = spawn_focal_operation_partition(
+                        localities(nr_partitions0 - 1, idx1),
                         action,
                         policies,
                         kernel,
                         functor,
-                        meh::south_side_input_partitions(c, input_arrays)...);
+                        meh::south_side_input_partitions(idx1, input_arrays)...);
                 }
             }
 
-            for (Index r = 1; r < nr_partitions0 - 1; ++r)
+            for (Index idx0 = 1; idx0 < nr_partitions0 - 1; ++idx0)
             {
-                output_partitions(r, 0) = spawn_focal_operation_partition(
-                    localities(r, 0),
+                output_partitions(idx0, 0) = spawn_focal_operation_partition(
+                    localities(idx0, 0),
                     action,
                     policies,
                     kernel,
                     functor,
-                    meh::west_side_input_partitions(r, input_arrays)...);
+                    meh::west_side_input_partitions(idx0, input_arrays)...);
             }
 
             if (nr_partitions1 > 1)
             {
-                for (Index r = 1; r < nr_partitions0 - 1; ++r)
+                for (Index idx0 = 1; idx0 < nr_partitions0 - 1; ++idx0)
                 {
-                    output_partitions(r, nr_partitions1 - 1) = spawn_focal_operation_partition(
-                        localities(r, nr_partitions1 - 1),
+                    output_partitions(idx0, nr_partitions1 - 1) = spawn_focal_operation_partition(
+                        localities(idx0, nr_partitions1 - 1),
                         action,
                         policies,
                         kernel,
                         functor,
-                        meh::east_side_input_partitions(r, input_arrays)...);
+                        meh::east_side_input_partitions(idx0, input_arrays)...);
                 }
             }
 
-            // r, c is the center partition
-            for (Index r = 1; r < nr_partitions0 - 1; ++r)
+            // idx0, idx1 is the center partition
+            for (Index idx0 = 1; idx0 < nr_partitions0 - 1; ++idx0)
             {
-                for (Index c = 1; c < nr_partitions1 - 1; ++c)
+                for (Index idx1 = 1; idx1 < nr_partitions1 - 1; ++idx1)
                 {
-                    output_partitions(r, c) = spawn_focal_operation_partition(
-                        localities(r, c),
+                    output_partitions(idx0, idx1) = spawn_focal_operation_partition(
+                        localities(idx0, idx1),
                         action,
                         policies,
                         kernel,
                         functor,
-                        meh::inner_input_partitions(r, c, input_arrays)...);
+                        meh::inner_input_partitions(idx0, idx1, input_arrays)...);
                 }
             }
 

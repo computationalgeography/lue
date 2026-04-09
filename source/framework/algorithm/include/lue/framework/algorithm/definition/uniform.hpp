@@ -23,81 +23,82 @@ namespace lue {
         auto uniform_partition(
             Policies const& policies,
             InputPartition const& input_partition,
-            policy::OutputElementT<Policies, 0> const min_value,
-            policy::OutputElementT<Policies, 0> const max_value)
+            hpx::shared_future<policy::OutputElementT<Policies, 0>> const min_value,
+            hpx::shared_future<policy::OutputElementT<Policies, 0>> const max_value)
             -> PartitionT<InputPartition, policy::OutputElementT<Policies, 0>>
         {
             using Offset = OffsetT<InputPartition>;
-            using Shape = ShapeT<InputPartition>;
             using Element = policy::OutputElementT<Policies, 0>;
+            using InputData = DataT<InputPartition>;
             using OutputPartition = PartitionT<InputPartition, Element>;
             using OutputData = DataT<OutputPartition>;
 
-            lue_hpx_assert(input_partition.is_ready());
-
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [policies, input_partition, min_value, max_value](
-                        Offset const& offset, Shape const& shape)
+                [policies](
+                    InputPartition const& input_partition,
+                    hpx::shared_future<Element> const min_value_f,
+                    hpx::shared_future<Element> const max_value_f) -> OutputPartition
+                {
+                    AnnotateFunction annotation{"uniform: partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    InputData const input_partition_data = input_partition.data(hpx::launch::sync);
+                    Element const min_value = min_value_f.get();
+                    Element const max_value = max_value_f.get();
+                    OutputData output_partition_data{input_partition_data.shape()};
+
+                    // TODO Use indp1 to test for no-data-ness in input partition's data(?)
+                    auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    if (indp2.is_no_data(min_value) || indp3.is_no_data(max_value))
                     {
-                        AnnotateFunction annotation{"uniform: partition"};
+                        Count const nr_elements{lue::nr_elements(output_partition_data)};
 
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_partition_data{shape};
-
-                        // TODO Use indp1 to test for no-data-ness in input partition's data(?)
-                        auto const& indp2 = std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& indp3 = std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        if (indp2.is_no_data(min_value) || indp3.is_no_data(max_value))
+                        for (Index i = 0; i < nr_elements; ++i)
                         {
-                            Count const nr_elements{lue::nr_elements(output_partition_data)};
+                            ondp.mark_no_data(output_partition_data, i);
+                        }
+                    }
+                    else
+                    {
+                        // Will be used to obtain a seed for the random number engine
+                        std::random_device random_device;
 
-                            for (Index i = 0; i < nr_elements; ++i)
+                        // Standard mersenne_twister_engine seeded with the random_device
+                        std::mt19937 random_number_engine(random_device());
+
+                        auto distribution = [min_value, max_value]() -> auto
+                        {
+                            if constexpr (std::is_floating_point_v<Element>)
                             {
-                                ondp.mark_no_data(output_partition_data, i);
+                                return std::uniform_real_distribution<Element>{min_value, max_value};
                             }
-                        }
-                        else
-                        {
-                            // Will be used to obtain a seed for the random number engine
-                            std::random_device random_device;
-
-                            // Standard mersenne_twister_engine seeded with the random_device
-                            std::mt19937 random_number_engine(random_device());
-
-                            auto distribution = [min_value, max_value]()
+                            else if constexpr (std::is_integral_v<Element>)
                             {
-                                if constexpr (std::is_floating_point_v<Element>)
-                                {
-                                    return std::uniform_real_distribution<Element>{min_value, max_value};
-                                }
-                                else if constexpr (std::is_integral_v<Element>)
-                                {
-                                    return std::uniform_int_distribution<Element>{min_value, max_value};
-                                }
-                            }();
+                                return std::uniform_int_distribution<Element>{min_value, max_value};
+                            }
+                        }();
 
-                            std::generate(
-                                output_partition_data.begin(),
-                                output_partition_data.end(),
+                        std::generate(
+                            output_partition_data.begin(),
+                            output_partition_data.end(),
 
-                                [&distribution, &random_number_engine]()
-                                { return distribution(random_number_engine); }
+                            [&distribution, &random_number_engine]() -> auto
+                            { return distribution(random_number_engine); }
 
-                            );
-                        }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                        );
                     }
 
-                    ),
-                input_partition.offset(),
-                input_partition.shape());
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                },
+
+                input_partition,
+                min_value,
+                max_value);
         }
 
 
@@ -163,15 +164,10 @@ namespace lue {
 
         for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[partition_idx] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[partition_idx], action, policies](
-                    InputPartition const& input_partition,
-                    hpx::shared_future<Element> const& min_value,
-                    hpx::shared_future<Element> const& max_value)
-                { return action(locality_id, policies, input_partition, min_value.get(), max_value.get()); },
-
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
                 input_partitions[partition_idx],
                 min_value.future(),
                 max_value.future());

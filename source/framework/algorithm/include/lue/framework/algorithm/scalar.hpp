@@ -41,12 +41,7 @@ namespace lue {
                 The layered future will be copied from the instance passed in. Not that these
                 copies share state (the actual value).
             */
-            Scalar(Scalar const& other):
-
-                _value_f{other._value_f}
-
-            {
-            }
+            Scalar(Scalar const& other) = default;
 
 
             /*!

@@ -7,11 +7,11 @@ namespace lue {
     namespace detail {
 
         template<typename InputElement, typename OutputElement, Rank rank>
-        ArrayPartition<OutputElement, rank> mesh_grid_partition(
+        auto mesh_grid_partition(
             ArrayPartition<InputElement, rank> const& input_partition,
-            OutputElement const first_value,
-            OutputElement const step,
-            Index const dimension)
+            hpx::shared_future<OutputElement> const first_value,
+            hpx::shared_future<OutputElement> const step,
+            Index const dimension) -> ArrayPartition<OutputElement, rank>
         {
             using InputPartition = ArrayPartition<InputElement, rank>;
             using Offset = OffsetT<InputPartition>;
@@ -20,61 +20,65 @@ namespace lue {
             using OutputPartition = ArrayPartition<OutputElement, rank>;
             using OutputData = DataT<OutputPartition>;
 
-            lue_hpx_assert(input_partition.is_ready());
-
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [input_partition, first_value, step, dimension](Offset const& offset, Shape const& shape)
+                [dimension](
+                    InputPartition const& input_partition,
+                    hpx::shared_future<OutputElement> const& first_value_f,
+                    hpx::shared_future<OutputElement> const& step_f) -> OutputPartition
+                {
+                    AnnotateFunction annotation{"mesh_grid_partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    Shape const shape = input_partition.shape(hpx::launch::sync);
+                    OutputElement const first_value{first_value_f.get()};
+                    OutputElement const step{step_f.get()};
+
+                    OutputData output_data{shape};
+
+                    if constexpr (rank == 1)
                     {
-                        AnnotateFunction annotation{"mesh_grid_partition"};
+                        lue_hpx_assert(dimension == 0);
 
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_data{shape};
-
-                        if constexpr (rank == 1)
+                        for (Index i = 0; i < shape[0]; ++i)
                         {
-                            lue_hpx_assert(dimension == 0);
-
-                            for (Index i = 0; i < shape[0]; ++i)
-                            {
-                                output_data(i) = first_value + (offset[dimension] + i) * step;
-                            }
+                            output_data(i) = first_value + ((offset[dimension] + i) * step);
                         }
-                        else if constexpr (rank == 2)
-                        {
-                            lue_hpx_assert(dimension == 0 || dimension == 1);
+                    }
+                    else if constexpr (rank == 2)
+                    {
+                        lue_hpx_assert(dimension == 0 || dimension == 1);
 
-                            if (dimension == 0)
+                        if (dimension == 0)
+                        {
+                            for (Index idx0 = 0; idx0 < shape[0]; ++idx0)
                             {
-                                for (Index r = 0; r < shape[0]; ++r)
+                                for (Index idx1 = 0; idx1 < shape[1]; ++idx1)
                                 {
-                                    for (Index c = 0; c < shape[1]; ++c)
-                                    {
-                                        output_data(r, c) = first_value + (offset[dimension] + r) * step;
-                                    }
-                                }
-                            }
-                            else if (dimension == 1)
-                            {
-                                for (Index r = 0; r < shape[0]; ++r)
-                                {
-                                    for (Index c = 0; c < shape[1]; ++c)
-                                    {
-                                        output_data(r, c) = first_value + (offset[dimension] + c) * step;
-                                    }
+                                    output_data(idx0, idx1) =
+                                        first_value + ((offset[dimension] + idx0) * step);
                                 }
                             }
                         }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                        else if (dimension == 1)
+                        {
+                            for (Index idx0 = 0; idx0 < shape[0]; ++idx0)
+                            {
+                                for (Index idx1 = 0; idx1 < shape[1]; ++idx1)
+                                {
+                                    output_data(idx0, idx1) =
+                                        first_value + ((offset[dimension] + idx1) * step);
+                                }
+                            }
+                        }
                     }
 
-                    ),
-                input_partition.offset(),
-                input_partition.shape());
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                },
+                input_partition,
+                first_value,
+                step);
         }
 
 
@@ -91,30 +95,28 @@ namespace lue {
 
 
     /*!
-        @brief      Create partitioned arrays with values starting with
-                    @a first_value and @a step apart
-        @param      input_array Input array used for information about the
-                    shape and locations of the partitions
+        @brief      Create partitioned arrays with values starting with @a first_value and @a step apart
+        @param      input_array Input array used for information about the shape and locations of the
+                    partitions
         @param      first_value Value to put in the first cell along a dimension
-        @param      step Value to increment @a first_value with when moving
-                    to the next cell along a dimension
+        @param      step Value to increment @a first_value with when moving to the next cell along a dimension
         @return     Collection of @rank partitioned arrays
         @sa         https://docs.scipy.org/doc/numpy/reference/generated/numpy.mgrid.html
 
-        For each dimension a partitioned array is returned. Within such an
-        array, the values vary along the associated dimension.
+        For each dimension a partitioned array is returned. Within such an array, the values vary along the
+        associated dimension.
     */
     template<typename InputElement, typename OutputElement, Rank rank>
-    std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
+    auto mesh_grid(
         PartitionedArray<InputElement, rank> const& input_array,
         hpx::shared_future<OutputElement> const& first_value,
         hpx::shared_future<OutputElement> const& step)
+        -> std::array<PartitionedArray<OutputElement, rank>, rank>
     {
         static_assert(rank == 1 || rank == 2);
 
         using InputArray = PartitionedArray<InputElement, rank>;
         using InputPartitions = PartitionsT<InputArray>;
-        using InputPartition = PartitionT<InputArray>;
 
         using OutputArray = PartitionedArray<OutputElement, rank>;
         using OutputPartitions = PartitionsT<OutputArray>;
@@ -127,40 +129,31 @@ namespace lue {
         // For each rank a collection of partitions
         std::array<OutputPartitions, rank> output_partitions;
 
-        for (Rank r = 0; r < rank; ++r)
+        for (Rank rank_idx = 0; rank_idx < rank; ++rank_idx)
         {
-            output_partitions[r] = OutputPartitions{shape_in_partitions(input_array)};
+            output_partitions[rank_idx] = OutputPartitions{shape_in_partitions(input_array)};
         }
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            for (Rank r = 0; r < rank; ++r)
+            for (Rank rank_idx = 0; rank_idx < rank; ++rank_idx)
             {
-                output_partitions[r][p] = hpx::dataflow(
-                    hpx::launch::async,
-
-                    [locality_id = localities[p], action, r](
-                        InputPartition const& input_partition,
-                        hpx::shared_future<OutputElement> const& first_value,
-                        hpx::shared_future<OutputElement> const& step)
-                    {
-                        AnnotateFunction annotation{"mesh_grid"};
-
-                        return action(locality_id, input_partition, first_value.get(), step.get(), r);
-                    },
-
-                    input_partitions[p],
+                output_partitions[rank_idx][partition_idx] = hpx::async(
+                    action,
+                    localities[partition_idx],
+                    input_partitions[partition_idx],
                     first_value,
-                    step);
+                    step,
+                    rank_idx);
             }
         }
 
         std::array<OutputArray, rank> result;
 
-        for (Rank r = 0; r < rank; ++r)
+        for (Rank rank_idx = 0; rank_idx < rank; ++rank_idx)
         {
-            result[r] = OutputArray{
-                shape(input_array), Localities<rank>{localities}, std::move(output_partitions[r])};
+            result[rank_idx] = OutputArray{
+                shape(input_array), Localities<rank>{localities}, std::move(output_partitions[rank_idx])};
         }
 
         return result;
@@ -171,10 +164,10 @@ namespace lue {
         @overload
     */
     template<typename InputElement, typename OutputElement, Rank rank>
-    std::array<PartitionedArray<OutputElement, rank>, rank> mesh_grid(
+    auto mesh_grid(
         PartitionedArray<InputElement, rank> const& input_array,
         OutputElement const first_value,
-        OutputElement const step)
+        OutputElement const step) -> std::array<PartitionedArray<OutputElement, rank>, rank>
     {
         return mesh_grid(
             input_array,

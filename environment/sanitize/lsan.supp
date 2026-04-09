@@ -1,0 +1,7 @@
+leak:NpyString_new_allocator
+leak:PyUFunc_FromFuncAndDataAndSignatureAndIdentity
+leak:_PyObject_GC_Resize
+leak:_PyObject_Malloc
+leak:default_malloc
+leak:pybind11::cpp_function::make_function_record
+leak:resize_compact

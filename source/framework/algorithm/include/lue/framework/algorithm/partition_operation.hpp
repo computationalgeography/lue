@@ -8,7 +8,7 @@ namespace lue {
     namespace detail {
 
         template<typename Offset, typename Shape>
-        Offset offset_in_partitions(Offset const& partition_offset, Shape const& partition_shape)
+        auto offset_in_partitions(Offset const& partition_offset, Shape const& partition_shape) -> Offset
         {
             Offset result{partition_offset};
             constexpr Rank rank{lue::rank<Offset>};
@@ -24,8 +24,9 @@ namespace lue {
 
 
         template<typename Policies, typename InputPartition, typename OutputPartition, typename Functor>
-        OutputPartition partition_aggregate_operation_partition(
+        auto partition_aggregate_operation_partition(
             Policies const& policies, InputPartition const& input_partition, Functor functor)
+            -> OutputPartition
         {
             using Offset = OffsetT<InputPartition>;
             using InputData = DataT<InputPartition>;
@@ -33,51 +34,48 @@ namespace lue {
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [input_partition, policies, functor](
-                        Offset const& offset, InputData const& input_partition_data) mutable
+                [policies, functor](InputPartition const& input_partition) mutable -> OutputPartition
+                {
+                    AnnotateFunction annotation{"partition_aggregate_operation_partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    InputData const input_partition_data = input_partition.data(hpx::launch::sync);
+
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                    for (Index idx = 0; idx < nr_elements; ++idx)
                     {
-                        AnnotateFunction annotation{"partition_aggregate_operation_partition"};
-
-                        HPX_UNUSED(input_partition);
-
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                        for (Index idx = 0; idx < nr_elements; ++idx)
+                        if (!indp.is_no_data(input_partition_data, idx))
                         {
-                            if (!indp.is_no_data(input_partition_data, idx))
-                            {
-                                functor.add_value(input_partition_data[idx]);
-                            }
+                            functor.add_value(input_partition_data[idx]);
                         }
-
-                        OutputElement result{};
-
-                        if (functor.result_is_valid())
-                        {
-                            result = functor.result();
-                        }
-                        else
-                        {
-                            ondp.mark_no_data(result);
-                        }
-
-                        OutputPartition output_partition{
-                            hpx::find_here(),
-                            offset_in_partitions(offset, input_partition_data.shape()),
-                            {1, 1},
-                            result};
-
-                        return output_partition;
                     }
 
-                    ),
-                input_partition.offset(),
-                input_partition.data());
+                    OutputElement result{};
+
+                    if (functor.result_is_valid())
+                    {
+                        result = functor.result();
+                    }
+                    else
+                    {
+                        ondp.mark_no_data(result);
+                    }
+
+                    OutputPartition output_partition{
+                        hpx::find_here(),
+                        offset_in_partitions(offset, input_partition_data.shape()),
+                        {1, 1},
+                        result};
+
+                    return output_partition;
+                },
+
+                input_partition);
         }
 
 
@@ -102,10 +100,10 @@ namespace lue {
 
 
     template<typename Policies, typename InputElement, Rank rank, typename Functor>
-    PartitionedArray<OutputElementT<Functor>, rank> partition_operation(
+    auto partition_operation(
         Policies const& policies,
         PartitionedArray<InputElement, rank> const& input_array,
-        Functor const& functor)
+        Functor const& functor) -> PartitionedArray<OutputElementT<Functor>, rank>
     {
         // Add a continuation to each partition which asynchronously calls
         // a remote action, passing in the partition client instance and
@@ -129,20 +127,10 @@ namespace lue {
         Count const nr_partitions{lue::nr_partitions(input_array)};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions; ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, functor](
-                    InputPartition const& input_partition)
-                {
-                    AnnotateFunction annotation{"partition_aggregate_operation"};
-
-                    return action(locality_id, policies, input_partition, functor);
-                },
-
-                input_partitions[p]);
+            output_partitions[partition_idx] = hpx::async(
+                action, localities[partition_idx], policies, input_partitions[partition_idx], functor);
         }
 
         return OutputArray{

@@ -19,59 +19,50 @@ namespace lue {
             using InputData = DataT<InputPartition>;
             using OutputData = DataT<OutputPartition>;
 
-            lue_hpx_assert(input_partition.is_ready());
-
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [input_partition, policies, functor](
-                        Offset const& offset, InputData const& input_partition_data)
+                [policies, functor](InputPartition const& input_partition) -> OutputPartition
+                {
+                    AnnotateFunction const annotation{std::format("{}: partition", functor_name<Functor>)};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    InputData const input_partition_data = input_partition.data(hpx::launch::sync);
+                    OutputData output_partition_data{input_partition_data.shape()};
+
+                    auto const& dp = policies.domain_policy();
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+                    auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
+
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                    for (Index element_idx = 0; element_idx < nr_elements; ++element_idx)
                     {
-                        AnnotateFunction const annotation{
-                            std::format("{}: partition", functor_name<Functor>)};
-
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_partition_data{input_partition_data.shape()};
-
-                        auto const& dp = policies.domain_policy();
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-                        auto const& rp = std::get<0>(policies.outputs_policies()).range_policy();
-
-                        Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                        for (Index element_idx = 0; element_idx < nr_elements; ++element_idx)
+                        if (indp.is_no_data(input_partition_data, element_idx))
                         {
-                            if (indp.is_no_data(input_partition_data, element_idx))
-                            {
-                                ondp.mark_no_data(output_partition_data, element_idx);
-                            }
-                            else if (!dp.within_domain(input_partition_data[element_idx]))
-                            {
-                                ondp.mark_no_data(output_partition_data, element_idx);
-                            }
-                            else
-                            {
-                                output_partition_data[element_idx] =
-                                    functor(input_partition_data[element_idx]);
+                            ondp.mark_no_data(output_partition_data, element_idx);
+                        }
+                        else if (!dp.within_domain(input_partition_data[element_idx]))
+                        {
+                            ondp.mark_no_data(output_partition_data, element_idx);
+                        }
+                        else
+                        {
+                            output_partition_data[element_idx] = functor(input_partition_data[element_idx]);
 
-                                if (!rp.within_range(
-                                        input_partition_data[element_idx],
-                                        output_partition_data[element_idx]))
-                                {
-                                    ondp.mark_no_data(output_partition_data, element_idx);
-                                }
+                            if (!rp.within_range(
+                                    input_partition_data[element_idx], output_partition_data[element_idx]))
+                            {
+                                ondp.mark_no_data(output_partition_data, element_idx);
                             }
                         }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                     }
 
-                    ),
-                input_partition.offset(),
-                input_partition.data());
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                },
+
+                input_partition);
         }
 
 
@@ -121,14 +112,8 @@ namespace lue {
 
         for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[partition_idx] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[partition_idx], action, policies, functor](
-                    InputPartition const& input_partition)
-                { return action(locality_id, policies, input_partition, functor); },
-
-                input_partitions[partition_idx]);
+            output_partitions[partition_idx] = hpx::async(
+                action, localities[partition_idx], policies, input_partitions[partition_idx], functor);
         }
 
         return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};

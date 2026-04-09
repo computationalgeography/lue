@@ -1,8 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm abs
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/default_policies/abs.hpp"
-#include "lue/framework/algorithm/default_policies/all.hpp"
-#include "lue/framework/algorithm/default_policies/equal_to.hpp"
+#include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/abs.hpp"
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/none.hpp"
@@ -14,9 +12,9 @@
 
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
-    if constexpr (lue::BuildOptions::default_policies_enabled)
+    if constexpr (lue::BuildOptions::default_value_policies_enabled)
     {
-        using namespace lue::default_policies;
+        using namespace lue::value_policies;
 
         using Element = lue::FloatingPointElement<0>;
         lue::Rank const rank = 2;

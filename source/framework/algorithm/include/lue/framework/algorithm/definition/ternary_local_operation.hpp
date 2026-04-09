@@ -45,89 +45,83 @@ namespace lue {
                     using InputPartition2 = ArrayPartition<InputElement2, rank>;
                     using InputPartition3 = ArrayPartition<InputElement3, rank>;
 
-                    static OutputPartition ternary_local_operation_partition(
+                    static auto ternary_local_operation_partition(
                         Policies const& policies,
                         InputPartition1 const& input_partition1,
                         InputPartition2 const& input_partition2,
                         InputPartition3 const& input_partition3,
-                        Functor functor)
+                        Functor functor) -> OutputPartition
                     {
                         using Offset = OffsetT<InputPartition1>;
                         using InputData1 = DataT<InputPartition1>;
                         using InputData2 = DataT<InputPartition2>;
                         using InputData3 = DataT<InputPartition3>;
-
                         using OutputData = DataT<OutputPartition>;
-
-                        lue_hpx_assert(input_partition1.is_ready());
-                        lue_hpx_assert(input_partition2.is_ready());
-                        lue_hpx_assert(input_partition3.is_ready());
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::unwrapping(
 
-                                [policies, input_partition1, input_partition2, input_partition3, functor](
-                                    Offset const& offset,
-                                    InputData1 const& input_partition_data1,
-                                    InputData2 const& input_partition_data2,
-                                    InputData3 const& input_partition_data3)
+                            [policies, functor](
+                                InputPartition1 const& input_partition1,
+                                InputPartition2 const& input_partition2,
+                                InputPartition3 const& input_partition3) -> OutputPartition
+                            {
+                                AnnotateFunction annotation{"ternary_local_operation"};
+
+                                InputData1 const input_partition_data1 =
+                                    input_partition1.data(hpx::launch::sync);
+                                InputData2 const input_partition_data2 =
+                                    input_partition2.data(hpx::launch::sync);
+                                InputData3 const input_partition_data3 =
+                                    input_partition3.data(hpx::launch::sync);
+                                Offset const offset = input_partition1.offset(hpx::launch::sync);
+                                OutputData output_partition_data{input_partition_data1.shape()};
+
+                                auto const& dp = policies.domain_policy();
+                                auto const& indp1 =
+                                    std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp2 =
+                                    std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp3 =
+                                    std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& ondp =
+                                    std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                Count const nr_elements{lue::nr_elements(input_partition_data1)};
+                                lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+                                lue_hpx_assert(lue::nr_elements(input_partition_data3) == nr_elements);
+
+                                for (Index i = 0; i < nr_elements; ++i)
                                 {
-                                    AnnotateFunction annotation{"ternary_local_operation"};
-
-                                    HPX_UNUSED(input_partition1);
-                                    HPX_UNUSED(input_partition2);
-                                    HPX_UNUSED(input_partition3);
-
-                                    OutputData output_partition_data{input_partition_data1.shape()};
-
-                                    auto const& dp = policies.domain_policy();
-                                    auto const& indp1 =
-                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp2 =
-                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp3 =
-                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& ondp =
-                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                    Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                                    lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
-                                    lue_hpx_assert(lue::nr_elements(input_partition_data3) == nr_elements);
-
-                                    for (Index i = 0; i < nr_elements; ++i)
+                                    if (indp1.is_no_data(input_partition_data1, i) ||
+                                        indp2.is_no_data(input_partition_data2, i) ||
+                                        indp3.is_no_data(input_partition_data3, i))
                                     {
-                                        if (indp1.is_no_data(input_partition_data1, i) ||
-                                            indp2.is_no_data(input_partition_data2, i) ||
-                                            indp3.is_no_data(input_partition_data3, i))
-                                        {
-                                            ondp.mark_no_data(output_partition_data, i);
-                                        }
-                                        else if (!dp.within_domain(
-                                                     input_partition_data1[i],
-                                                     input_partition_data2[i],
-                                                     input_partition_data3[i]))
-                                        {
-                                            ondp.mark_no_data(output_partition_data, i);
-                                        }
-                                        else
-                                        {
-                                            output_partition_data[i] = functor(
-                                                input_partition_data1[i],
-                                                input_partition_data2[i],
-                                                input_partition_data3[i]);
-                                        }
+                                        ondp.mark_no_data(output_partition_data, i);
                                     }
-
-                                    return OutputPartition{
-                                        hpx::find_here(), offset, std::move(output_partition_data)};
+                                    else if (!dp.within_domain(
+                                                 input_partition_data1[i],
+                                                 input_partition_data2[i],
+                                                 input_partition_data3[i]))
+                                    {
+                                        ondp.mark_no_data(output_partition_data, i);
+                                    }
+                                    else
+                                    {
+                                        output_partition_data[i] = functor(
+                                            input_partition_data1[i],
+                                            input_partition_data2[i],
+                                            input_partition_data3[i]);
+                                    }
                                 }
 
-                                ),
-                            input_partition1.offset(),
-                            input_partition1.data(),
-                            input_partition2.data(),
-                            input_partition3.data());
+                                return OutputPartition{
+                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                            },
+
+                            input_partition1,
+                            input_partition2,
+                            input_partition3);
                     }
 
                     struct Action:
@@ -164,92 +158,89 @@ namespace lue {
                     using InputPartition1 = ArrayPartition<InputElement1, rank>;
                     using InputPartition2 = ArrayPartition<InputElement2, rank>;
 
-                    static OutputPartition ternary_local_operation_partition(
+                    static auto ternary_local_operation_partition(
                         Policies const& policies,
                         InputPartition1 const& input_partition1,
                         InputPartition2 const& input_partition2,
-                        InputElement3 const input_scalar,
-                        Functor functor)
+                        hpx::shared_future<InputElement3> const& input_scalar,
+                        Functor functor) -> OutputPartition
                     {
                         using Offset = OffsetT<InputPartition1>;
                         using InputData1 = DataT<InputPartition1>;
                         using InputData2 = DataT<InputPartition2>;
-
                         using OutputData = DataT<OutputPartition>;
-
-                        lue_hpx_assert(input_partition1.is_ready());
-                        lue_hpx_assert(input_partition2.is_ready());
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::unwrapping(
 
-                                [policies, input_partition1, input_partition2, functor, input_scalar](
-                                    Offset const& offset,
-                                    InputData1 const& input_partition_data1,
-                                    InputData2 const& input_partition_data2)
+                            [policies, functor](
+                                InputPartition1 const& input_partition1,
+                                InputPartition2 const& input_partition2,
+                                hpx::shared_future<InputElement3> const& input_scalar) -> OutputPartition
+                            {
+                                AnnotateFunction annotation{"ternary_local_operation_partition"};
+
+                                InputData1 const input_partition_data1 =
+                                    input_partition1.data(hpx::launch::sync);
+                                InputData2 const input_partition_data2 =
+                                    input_partition2.data(hpx::launch::sync);
+                                InputElement3 const input_value = input_scalar.get();
+                                Offset const offset = input_partition.offset(hpx::launch::sync);
+                                OutputData output_partition_data{input_partition_data1.shape()};
+
+                                auto const& dp = policies.domain_policy();
+                                auto const& indp1 =
+                                    std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp2 =
+                                    std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp3 =
+                                    std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& ondp =
+                                    std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                Count const nr_elements{lue::nr_elements(input_partition_data1)};
+                                lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+
+                                if (indp3.is_no_data(input_value))
                                 {
-                                    AnnotateFunction annotation{"ternary_local_operation_partition"};
-
-                                    HPX_UNUSED(input_partition1);
-                                    HPX_UNUSED(input_partition2);
-
-                                    OutputData output_partition_data{input_partition_data1.shape()};
-
-                                    auto const& dp = policies.domain_policy();
-                                    auto const& indp1 =
-                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp2 =
-                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp3 =
-                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& ondp =
-                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                    Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                                    lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
-
-                                    if (indp3.is_no_data(input_scalar))
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        ondp.mark_no_data(output_partition_data, i);
+                                    }
+                                }
+                                else
+                                {
+                                    for (Index i = 0; i < nr_elements; ++i)
+                                    {
+                                        if (indp1.is_no_data(input_partition_data1, i) ||
+                                            indp2.is_no_data(input_partition_data2, i))
                                         {
                                             ondp.mark_no_data(output_partition_data, i);
                                         }
-                                    }
-                                    else
-                                    {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        else if (!dp.within_domain(
+                                                     input_partition_data1[i],
+                                                     input_partition_data2[i],
+                                                     input_value))
                                         {
-                                            if (indp1.is_no_data(input_partition_data1, i) ||
-                                                indp2.is_no_data(input_partition_data2, i))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if (!dp.within_domain(
-                                                         input_partition_data1[i],
-                                                         input_partition_data2[i],
-                                                         input_scalar))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                output_partition_data[i] = functor(
-                                                    input_partition_data1[i],
-                                                    input_partition_data2[i],
-                                                    input_scalar);
-                                            }
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            output_partition_data[i] = functor(
+                                                input_partition_data1[i],
+                                                input_partition_data2[i],
+                                                input_value);
                                         }
                                     }
-
-                                    return OutputPartition{
-                                        hpx::find_here(), offset, std::move(output_partition_data)};
                                 }
 
-                                ),
-                            input_partition1.offset(),
-                            input_partition1.data(),
-                            input_partition2.data());
+                                return OutputPartition{
+                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                            },
+
+                            input_partition1,
+                            input_partition2,
+                            input_scalar);
                     }
 
                     struct Action:
@@ -286,92 +277,89 @@ namespace lue {
                     using InputPartition1 = ArrayPartition<InputElement1, rank>;
                     using InputPartition2 = ArrayPartition<InputElement3, rank>;
 
-                    static OutputPartition ternary_local_operation_partition(
+                    static auto ternary_local_operation_partition(
                         Policies const& policies,
                         InputPartition1 const& input_partition1,
-                        InputElement2 const input_scalar,
+                        hpx::shared_future<InputElement2> const& input_scalar,
                         InputPartition2 const& input_partition2,
-                        Functor functor)
+                        Functor functor) -> OutputPartition
                     {
                         using Offset = OffsetT<InputPartition1>;
                         using InputData1 = DataT<InputPartition1>;
                         using InputData2 = DataT<InputPartition2>;
-
                         using OutputData = DataT<OutputPartition>;
-
-                        lue_hpx_assert(input_partition1.is_ready());
-                        lue_hpx_assert(input_partition2.is_ready());
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::unwrapping(
 
-                                [policies, input_partition1, input_partition2, functor, input_scalar](
-                                    Offset const& offset,
-                                    InputData1 const& input_partition_data1,
-                                    InputData2 const& input_partition_data2)
+                            [policies, functor](
+                                InputPartition1 const& input_partition1,
+                                hpx::shared_future<InputElement2> const& input_scalar,
+                                InputPartition2 const& input_partition2) -> OutputPartition
+                            {
+                                AnnotateFunction annotation{"ternary_local_operation_partition"};
+
+                                InputData1 const input_partition_data1 =
+                                    input_partition1.data(hpx::launch::sync);
+                                InputElement2 const input_value = input_scalar.get();
+                                InputData2 const input_partition_data2 =
+                                    input_partition2.data(hpx::launch::sync);
+                                Offset const offset = input_partition1.offset(hpx::launch::sync);
+                                OutputData output_partition_data{input_partition_data1.shape()};
+
+                                auto const& dp = policies.domain_policy();
+                                auto const& indp1 =
+                                    std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp2 =
+                                    std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp3 =
+                                    std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& ondp =
+                                    std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                Count const nr_elements{lue::nr_elements(input_partition_data1)};
+                                lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
+
+                                if (indp2.is_no_data(input_value))
                                 {
-                                    AnnotateFunction annotation{"ternary_local_operation_partition"};
-
-                                    HPX_UNUSED(input_partition1);
-                                    HPX_UNUSED(input_partition2);
-
-                                    OutputData output_partition_data{input_partition_data1.shape()};
-
-                                    auto const& dp = policies.domain_policy();
-                                    auto const& indp1 =
-                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp2 =
-                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp3 =
-                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& ondp =
-                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                    Count const nr_elements{lue::nr_elements(input_partition_data1)};
-                                    lue_hpx_assert(lue::nr_elements(input_partition_data2) == nr_elements);
-
-                                    if (indp2.is_no_data(input_scalar))
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        ondp.mark_no_data(output_partition_data, i);
+                                    }
+                                }
+                                else
+                                {
+                                    for (Index i = 0; i < nr_elements; ++i)
+                                    {
+                                        if (indp1.is_no_data(input_partition_data1, i) ||
+                                            indp3.is_no_data(input_partition_data2, i))
                                         {
                                             ondp.mark_no_data(output_partition_data, i);
                                         }
-                                    }
-                                    else
-                                    {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        else if (!dp.within_domain(
+                                                     input_partition_data1[i],
+                                                     input_value,
+                                                     input_partition_data2[i]))
                                         {
-                                            if (indp1.is_no_data(input_partition_data1, i) ||
-                                                indp3.is_no_data(input_partition_data2, i))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if (!dp.within_domain(
-                                                         input_partition_data1[i],
-                                                         input_scalar,
-                                                         input_partition_data2[i]))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                output_partition_data[i] = functor(
-                                                    input_partition_data1[i],
-                                                    input_scalar,
-                                                    input_partition_data2[i]);
-                                            }
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            output_partition_data[i] = functor(
+                                                input_partition_data1[i],
+                                                input_value,
+                                                input_partition_data2[i]);
                                         }
                                     }
-
-                                    return OutputPartition{
-                                        hpx::find_here(), offset, std::move(output_partition_data)};
                                 }
 
-                                ),
-                            input_partition1.offset(),
-                            input_partition1.data(),
-                            input_partition2.data());
+                                return OutputPartition{
+                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                            },
+
+                            input_partition1,
+                            input_scalar,
+                            input_partition2);
                     }
 
                     struct Action:
@@ -407,82 +395,81 @@ namespace lue {
 
                     using InputPartition = ArrayPartition<InputElement1, rank>;
 
-                    static OutputPartition ternary_local_operation_partition(
+                    static auto ternary_local_operation_partition(
                         Policies const& policies,
                         InputPartition const& input_partition,
-                        InputElement2 const input_scalar1,
-                        InputElement3 const input_scalar2,
-                        Functor functor)
+                        hpx::shared_future<InputElement2> const& input_scalar1,
+                        hpx::shared_future<InputElement3> const& input_scalar2,
+                        Functor functor) -> OutputPartition
                     {
                         using Offset = OffsetT<InputPartition>;
                         using InputData = DataT<InputPartition>;
-
                         using OutputData = DataT<OutputPartition>;
-
-                        lue_hpx_assert(input_partition.is_ready());
 
                         return hpx::dataflow(
                             hpx::launch::async,
-                            hpx::unwrapping(
 
-                                [policies, input_partition, functor, input_scalar1, input_scalar2](
-                                    Offset const& offset, InputData const& input_partition_data)
+                            [policies, functor](
+                                InputPartition const& input_partition,
+                                hpx::shared_future<InputElement2> const& input_scalar1,
+                                hpx::shared_future<InputElement3> const& input_scalar2) -> OutputPartition
+                            {
+                                AnnotateFunction annotation{"ternary_local_operation_partition"};
+
+                                InputData const input_partition_data =
+                                    input_partition.data(hpx::launch::sync);
+                                InputElement2 const input_value1 = input_scalar1.get();
+                                InputElement3 const input_value2 = input_scalar2.get();
+                                Offset const offset = input_partition.offset(hpx::launch::sync);
+                                OutputData output_partition_data{input_partition_data.shape()};
+
+                                auto const& dp = policies.domain_policy();
+                                auto const& indp1 =
+                                    std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp2 =
+                                    std::get<1>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& indp3 =
+                                    std::get<2>(policies.inputs_policies()).input_no_data_policy();
+                                auto const& ondp =
+                                    std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                                Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                                if (indp2.is_no_data(input_value1) || indp3.is_no_data(input_value2))
                                 {
-                                    AnnotateFunction annotation{"ternary_local_operation_partition"};
-
-                                    HPX_UNUSED(input_partition);
-
-                                    OutputData output_partition_data{input_partition_data.shape()};
-
-                                    auto const& dp = policies.domain_policy();
-                                    auto const& indp1 =
-                                        std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp2 =
-                                        std::get<1>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& indp3 =
-                                        std::get<2>(policies.inputs_policies()).input_no_data_policy();
-                                    auto const& ondp =
-                                        std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                                    Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                                    if (indp2.is_no_data(input_scalar1) || indp3.is_no_data(input_scalar2))
+                                    for (Index i = 0; i < nr_elements; ++i)
                                     {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        ondp.mark_no_data(output_partition_data, i);
+                                    }
+                                }
+                                else
+                                {
+                                    for (Index i = 0; i < nr_elements; ++i)
+                                    {
+                                        if (indp1.is_no_data(input_partition_data, i))
                                         {
                                             ondp.mark_no_data(output_partition_data, i);
                                         }
-                                    }
-                                    else
-                                    {
-                                        for (Index i = 0; i < nr_elements; ++i)
+                                        else if (!dp.within_domain(
+                                                     input_partition_data[i], input_value1, input_value2))
                                         {
-                                            if (indp1.is_no_data(input_partition_data, i))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else if (!dp.within_domain(
-                                                         input_partition_data[i],
-                                                         input_scalar1,
-                                                         input_scalar2))
-                                            {
-                                                ondp.mark_no_data(output_partition_data, i);
-                                            }
-                                            else
-                                            {
-                                                output_partition_data[i] = functor(
-                                                    input_partition_data[i], input_scalar1, input_scalar2);
-                                            }
+                                            ondp.mark_no_data(output_partition_data, i);
+                                        }
+                                        else
+                                        {
+                                            output_partition_data[i] =
+                                                functor(input_partition_data[i], input_value1, input_value2);
                                         }
                                     }
-
-                                    return OutputPartition{
-                                        hpx::find_here(), offset, std::move(output_partition_data)};
                                 }
 
-                                ),
-                            input_partition.offset(),
-                            input_partition.data());
+                                return OutputPartition{
+                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                            },
+
+                            input_partition,
+                            input_scalar1,
+                            input_scalar2);
                     }
 
                     struct Action:
@@ -561,25 +548,16 @@ namespace lue {
         InputPartitions3 const& input_partitions3{input_array3.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
-        for (Index p = 0; p < nr_partitions(input_array1); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array1); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, functor](
-                    InputPartition1 const& input_partition1,
-                    InputPartition2 const& input_partition2,
-                    InputPartition2 const& input_partition3)
-                {
-                    AnnotateFunction annotation{"ternary_local_operation"};
-
-                    return action(
-                        locality_id, policies, input_partition1, input_partition2, input_partition3, functor);
-                },
-
-                input_partitions1[p],
-                input_partitions2[p],
-                input_partitions3[p]);
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
+                input_partitions1[partition_idx],
+                input_partitions2[partition_idx],
+                input_partitions3[partition_idx],
+                functor);
         }
 
         return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
@@ -630,30 +608,16 @@ namespace lue {
         InputPartitions2 const& input_partitions2{input_array2.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
-        for (Index p = 0; p < nr_partitions(input_array1); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array1); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, functor](
-                    InputPartition1 const& input_partition1,
-                    InputPartition2 const& input_partition2,
-                    hpx::shared_future<InputElement3> const& input_scalar)
-                {
-                    AnnotateFunction annotation{"ternary_local_operation"};
-
-                    return action(
-                        locality_id,
-                        policies,
-                        input_partition1,
-                        input_partition2,
-                        input_scalar.get(),
-                        functor);
-                },
-
-                input_partitions1[p],
-                input_partitions2[p],
-                input_scalar);
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
+                input_partitions1[partition_idx],
+                input_partitions2[partition_idx],
+                input_scalar,
+                functor);
         }
 
         return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
@@ -704,30 +668,16 @@ namespace lue {
         InputPartitions2 const& input_partitions2{input_array2.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array1)};
 
-        for (Index p = 0; p < nr_partitions(input_array1); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array1); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, functor](
-                    InputPartition1 const& input_partition1,
-                    hpx::shared_future<InputElement2> const& input_scalar,
-                    InputPartition2 const& input_partition2)
-                {
-                    AnnotateFunction annotation{"ternary_local_operation"};
-
-                    return action(
-                        locality_id,
-                        policies,
-                        input_partition1,
-                        input_scalar.get(),
-                        input_partition2,
-                        functor);
-                },
-
-                input_partitions1[p],
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
+                input_partitions1[partition_idx],
                 input_scalar,
-                input_partitions2[p]);
+                input_partitions2[partition_idx],
+                functor);
         }
 
         return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
@@ -770,30 +720,16 @@ namespace lue {
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
-        for (Index p = 0; p < nr_partitions(input_array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(input_array); ++partition_idx)
         {
-            output_partitions[p] = hpx::dataflow(
-                hpx::launch::async,
-
-                [locality_id = localities[p], action, policies, functor](
-                    InputPartition const& input_partition,
-                    hpx::shared_future<InputElement2> const& input_scalar1,
-                    hpx::shared_future<InputElement3> const& input_scalar2)
-                {
-                    AnnotateFunction annotation{"ternary_local_operation"};
-
-                    return action(
-                        locality_id,
-                        policies,
-                        input_partition,
-                        input_scalar1.get(),
-                        input_scalar2.get(),
-                        functor);
-                },
-
-                input_partitions[p],
+            output_partitions[partition_idx] = hpx::async(
+                action,
+                localities[partition_idx],
+                policies,
+                input_partitions[partition_idx],
                 input_scalar1,
-                input_scalar2);
+                input_scalar2,
+                functor);
         }
 
         return OutputArray{shape(input_array), localities, std::move(output_partitions)};

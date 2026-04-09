@@ -1,72 +1,12 @@
 #pragma once
 #include "lue/framework/algorithm/global_operation_export.hpp"
 #include "lue/framework/algorithm/reclassify.hpp"
+#include "lue/framework/core/annotate.hpp"
 #include "lue/macro.hpp"
 
 
 namespace lue {
     namespace detail {
-
-        template<typename OutputPartition, typename Policies, typename InputPartition>
-        auto reclassify_partition_ready(
-            Policies const& policies,
-            InputPartition const& input_partition,
-            LookupTable<ElementT<InputPartition>, ElementT<OutputPartition>> const& lookup_table)
-            -> OutputPartition
-        {
-            using Offset = OffsetT<InputPartition>;
-            using InputData = DataT<InputPartition>;
-            using FromElement = ElementT<InputPartition>;
-
-            using OutputData = DataT<OutputPartition>;
-
-            return hpx::dataflow(
-                hpx::launch::async,
-                hpx::unwrapping(
-
-                    [input_partition, policies, lookup_table](
-                        Offset const& offset, InputData const& input_partition_data)
-                    {
-                        HPX_UNUSED(input_partition);
-
-                        OutputData output_partition_data{input_partition_data.shape()};
-
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                        Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                        for (Index i = 0; i < nr_elements; ++i)
-                        {
-                            if (indp.is_no_data(input_partition_data, i))
-                            {
-                                ondp.mark_no_data(output_partition_data, i);
-                            }
-                            else
-                            {
-                                FromElement const from_value{input_partition_data[i]};
-
-                                auto const it{lookup_table.find(from_value)};
-
-                                if (it == lookup_table.end())
-                                {
-                                    ondp.mark_no_data(output_partition_data, i);
-                                }
-                                else
-                                {
-                                    output_partition_data[i] = (*it).second;
-                                }
-                            }
-                        }
-
-                        return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
-                    }
-
-                    ),
-                input_partition.offset(),
-                input_partition.data());
-        }
-
 
         template<typename Policies, typename InputPartition, typename OutputPartition>
         auto reclassify_partition(
@@ -75,18 +15,56 @@ namespace lue {
             hpx::shared_future<LookupTable<ElementT<InputPartition>, ElementT<OutputPartition>>> const&
                 lookup_table) -> OutputPartition
         {
+            using Offset = OffsetT<InputPartition>;
+            using InputData = DataT<InputPartition>;
             using FromElement = ElementT<InputPartition>;
             using ToElement = ElementT<OutputPartition>;
+            using OutputData = DataT<OutputPartition>;
 
             return hpx::dataflow(
                 hpx::launch::async,
 
                 [policies](
                     InputPartition const& input_partition,
-                    hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table)
+                    hpx::shared_future<LookupTable<FromElement, ToElement>> const& lookup_table_f)
+                    -> OutputPartition
                 {
-                    return reclassify_partition_ready<OutputPartition>(
-                        policies, input_partition, lookup_table.get());
+                    AnnotateFunction const annotation{"reclassify partition"};
+
+                    Offset const offset = input_partition.offset(hpx::launch::sync);
+                    InputData const input_partition_data = input_partition.data(hpx::launch::sync);
+                    auto const& lookup_table = lookup_table_f.get();
+                    OutputData output_partition_data{input_partition_data.shape()};
+
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                    auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                    for (Index idx = 0; idx < nr_elements; ++idx)
+                    {
+                        if (indp.is_no_data(input_partition_data, idx))
+                        {
+                            ondp.mark_no_data(output_partition_data, idx);
+                        }
+                        else
+                        {
+                            FromElement const from_value{input_partition_data[idx]};
+
+                            auto const it{lookup_table.find(from_value)};
+
+                            if (it == lookup_table.end())
+                            {
+                                ondp.mark_no_data(output_partition_data, idx);
+                            }
+                            else
+                            {
+                                output_partition_data[idx] = (*it).second;
+                            }
+                        }
+                    }
+
+                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
                 },
 
                 input_partition,

@@ -9,7 +9,7 @@ namespace lue {
     namespace detail {
 
         template<typename Policies, typename Partition>
-        auto unique_partition_ready(Policies const& policies, Partition const& partition)
+        auto unique_partition_ready(Policies const& policies, Partition const& input_partition)
             -> hpx::future<std::set<ElementT<Partition>>>
         {
             using Data = DataT<Partition>;
@@ -17,48 +17,46 @@ namespace lue {
 
             return hpx::dataflow(
                 hpx::launch::async,
-                hpx::unwrapping(
 
-                    [partition, policies](Data const& input_partition_data)
+                [policies](Partition const& input_partition) -> auto
+                {
+                    Data const input_partition_data = input_partition.data(hpx::launch::sync);
+
+                    // Copy values from input array into a set
+                    std::set<Element> unique_values;
+
+                    auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+
+                    Count const nr_elements{lue::nr_elements(input_partition_data)};
+
+                    for (Index i = 0; i < nr_elements; ++i)
                     {
-                        HPX_UNUSED(partition);
-
-                        // Copy values from input array into a set
-                        std::set<Element> unique_values;
-
-                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-
-                        Count const nr_elements{lue::nr_elements(input_partition_data)};
-
-                        for (Index i = 0; i < nr_elements; ++i)
+                        if (!indp.is_no_data(input_partition_data, i))
                         {
-                            if (!indp.is_no_data(input_partition_data, i))
-                            {
-                                unique_values.insert(input_partition_data[i]);
-                            }
+                            unique_values.insert(input_partition_data[i]);
                         }
-
-#ifndef NDEBUG
-                        auto const nr_unique_values = static_cast<Count>(unique_values.size());
-                        lue_hpx_assert(nr_unique_values <= input_partition_data.nr_elements());
-#endif
-
-                        return unique_values;
                     }
 
-                    ),
-                partition.data());
+#ifndef NDEBUG
+                    auto const nr_unique_values = static_cast<Count>(unique_values.size());
+                    lue_hpx_assert(nr_unique_values <= input_partition_data.nr_elements());
+#endif
+
+                    return unique_values;
+                },
+
+                input_partition);
         }
 
 
         template<typename Policies, typename Partition>
-        hpx::future<std::set<ElementT<Partition>>> unique_partition(
-            Policies const& policies, Partition const& partition)
+        auto unique_partition(Policies const& policies, Partition const& partition)
+            -> hpx::future<std::set<ElementT<Partition>>>
         {
             return hpx::dataflow(
                 hpx::launch::async,
 
-                [policies](Partition const& partition)
+                [policies](Partition const& partition) -> auto
                 { return unique_partition_ready(policies, partition); },
 
                 partition);
@@ -94,16 +92,17 @@ namespace lue {
         std::vector<hpx::future<std::set<Element>>> output_partitions{
             static_cast<std::size_t>(nr_partitions(array))};
 
-        for (Index p = 0; p < nr_partitions(array); ++p)
+        for (Index partition_idx = 0; partition_idx < nr_partitions(array); ++partition_idx)
         {
-            output_partitions[p] = hpx::async(action, localities[p], policies, input_partitions[p]);
+            output_partitions[partition_idx] =
+                hpx::async(action, localities[partition_idx], policies, input_partitions[partition_idx]);
         }
 
         return hpx::when_all(output_partitions.begin(), output_partitions.end())
             .then(
                 hpx::unwrapping(
 
-                    [](auto&& partitions)
+                    [](auto&& partitions) -> auto
                     {
                         std::set<Element> unique_values{};
 

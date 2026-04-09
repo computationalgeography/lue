@@ -9,7 +9,7 @@
 BOOST_AUTO_TEST_CASE(use_case_01)
 {
     using Count = lue::CountElement;
-    using Class = lue::UnsignedIntegralElement<0>;
+    using Class = lue::IDElement;
     std::size_t const rank = 2;
 
     using CountArray = lue::PartitionedArray<Count, rank>;
@@ -19,12 +19,12 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     Shape const array_shape{{9, 9}};
     Shape const partition_shape{{3, 3}};
 
-    ClassArray class_array{
+    ClassArray const class_array{
         lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
-    auto zonal_area = lue::value_policies::zonal_area<Count>(class_array);
+    auto const zonal_area = lue::value_policies::zonal_area<Count>(class_array);
 
-    CountArray array_we_want = lue::test::create_partitioned_array<CountArray>(
+    auto const array_we_want = lue::test::create_partitioned_array<CountArray>(
         array_shape,
         partition_shape,
         {

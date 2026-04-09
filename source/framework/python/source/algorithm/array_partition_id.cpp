@@ -18,7 +18,7 @@ namespace lue::framework {
 
                     module.def(
                         "array_partition_id",
-                        [](PartitionedArray<Element, rank> const& array)
+                        [](PartitionedArray<Element, rank> const& array) -> auto
                         { return array_partition_id<IDElement>(array); });
                 }
         };

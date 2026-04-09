@@ -50,7 +50,7 @@ namespace lue::framework {
         using BooleanElement = std::uint8_t;
 
         auto class_ =
-            pybind11::class_<Scalar>(
+            pybind11::class_<Scalar, pybind11::smart_holder>(
                 module,
                 std::format("Scalar<{}>", as_string<Element>()).c_str(),
                 std::format(

@@ -361,26 +361,21 @@ namespace lue {
                 template<typename Policies>
                 auto instantiate(
                     hpx::id_type const locality_id,
-                    [[maybe_unused]] Policies const& policies,
+                    Policies const& policies,
                     [[maybe_unused]] Shape const& array_shape,
                     std::vector<Offset> partition_offsets,
                     std::vector<Shape> partition_shapes) -> hpx::future<std::vector<Partition>>
                 {
                     using Action = ReadPartitionsPerLocalityAction<Policies, Partition>;
-                    Action action{};
 
                     return hpx::async(
-
-                        [locality_id,
-                         action = std::move(action),
-                         policies,
-                         name = _name,
-                         hyperslab_offset = _hyperslab_offset,
-                         partition_offsets = std::move(partition_offsets),
-                         partition_shapes = std::move(partition_shapes)]()
-                        { return action(locality_id, policies, name, hyperslab_offset, partition_offsets, partition_shapes); }
-
-                    );
+                        Action{},
+                        locality_id,
+                        policies,
+                        _name,
+                        _hyperslab_offset,
+                        std::move(partition_offsets),
+                        std::move(partition_shapes));
                 }
 
             private:

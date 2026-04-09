@@ -12,7 +12,8 @@ namespace lue {
             Policies const& policies,
             ConditionPartition const& condition_partition,
             Index const dimension_idx,
-            Index const idx_offset)
+            Index const partition_idx,
+            hpx::shared_future<Count> const& partition_extent)
             -> std::tuple<PartitionT<ConditionPartition, IndexElement>, hpx::future<Count>>
         {
             // TODO Generalize for all ranks and all dimension_idx values. Use mdspan?
@@ -27,84 +28,84 @@ namespace lue {
             using IndexPartition = PartitionT<ConditionPartition, IndexElement>;
             using IndexData = DataT<IndexPartition>;
 
-            lue_hpx_assert(condition_partition.is_ready());
-
             return hpx::split_future(
                 hpx::dataflow(
                     hpx::launch::async,
-                    hpx::unwrapping(
-                        [policies, condition_partition, dimension_idx, idx_offset](
-                            Offset const& offset,
-                            ConditionData const& condition_data) -> std::tuple<IndexPartition, Count>
+                    [policies, dimension_idx, partition_idx](
+                        ConditionPartition const& condition_partition,
+                        hpx::shared_future<Count> const& partition_extent_f)
+                        -> std::tuple<IndexPartition, Count>
+                    {
+                        Offset const offset = condition_partition.offset(hpx::launch::sync);
+                        ConditionData const condition_data = condition_partition.data(hpx::launch::sync);
+                        Index const idx_offset = partition_idx * partition_extent_f.get();
+
+                        auto const partition_shape = condition_data.shape();
+                        Count count{};
+                        IndexData index_data{partition_shape};
+
+                        auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
+                        auto const& ondp = std::get<0>(policies.outputs_policies()).output_no_data_policy();
+
+                        if (dimension_idx == 0)
                         {
-                            HPX_UNUSED(condition_partition);
+                            Index idx{0};
 
-                            auto const partition_shape = condition_data.shape();
-                            Count count{};
-                            IndexData index_data{partition_shape};
-
-                            auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
-                            auto const& ondp =
-                                std::get<0>(policies.outputs_policies()).output_no_data_policy();
-
-                            if (dimension_idx == 0)
+                            for (Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
                             {
-                                Index idx{0};
-
-                                for (Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
+                                for (Index idx1 = 0; idx1 < partition_shape[1]; ++idx1)
                                 {
-                                    for (Index idx1 = 0; idx1 < partition_shape[1]; ++idx1)
+                                    if (indp.is_no_data(condition_data, idx) ||
+                                        condition_data[idx] == ConditionElement{0})
                                     {
-                                        if (indp.is_no_data(condition_data, idx) ||
-                                            condition_data[idx] == ConditionElement{0})
-                                        {
-                                            ondp.mark_no_data(index_data, idx);
-                                        }
-                                        else
-                                        {
-                                            if (condition_data[idx])
-                                            {
-                                                index_data[idx] = idx_offset + idx0;
-                                            }
-                                        }
-
-                                        ++idx;
+                                        ondp.mark_no_data(index_data, idx);
                                     }
-                                }
-
-                                count = std::get<1>(partition_shape);
-                            }
-                            else if (dimension_idx == 1)
-                            {
-                                Index idx{0};
-
-                                for (Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
-                                {
-                                    for (Index idx1 = 0; idx1 < partition_shape[1]; ++idx1)
+                                    else
                                     {
-                                        if (indp.is_no_data(condition_data, idx) ||
-                                            condition_data[idx] == ConditionElement{0})
+                                        if (condition_data[idx])
                                         {
-                                            ondp.mark_no_data(index_data, idx);
+                                            index_data[idx] = idx_offset + idx0;
                                         }
-                                        else
-                                        {
-                                            index_data[idx] = idx_offset + idx1;
-                                        }
-
-                                        ++idx;
                                     }
-                                }
 
-                                count = std::get<0>(partition_shape);
+                                    ++idx;
+                                }
                             }
 
-                            IndexPartition partition{hpx::find_here(), offset, std::move(index_data)};
+                            count = std::get<1>(partition_shape);
+                        }
+                        else if (dimension_idx == 1)
+                        {
+                            Index idx{0};
 
-                            return {std::move(partition), count};
-                        }),
-                    condition_partition.offset(),
-                    condition_partition.data()));
+                            for (Index idx0 = 0; idx0 < partition_shape[0]; ++idx0)
+                            {
+                                for (Index idx1 = 0; idx1 < partition_shape[1]; ++idx1)
+                                {
+                                    if (indp.is_no_data(condition_data, idx) ||
+                                        condition_data[idx] == ConditionElement{0})
+                                    {
+                                        ondp.mark_no_data(index_data, idx);
+                                    }
+                                    else
+                                    {
+                                        index_data[idx] = idx_offset + idx1;
+                                    }
+
+                                    ++idx;
+                                }
+                            }
+
+                            count = std::get<0>(partition_shape);
+                        }
+
+                        IndexPartition partition{hpx::find_here(), offset, std::move(index_data)};
+
+                        return {std::move(partition), count};
+                    },
+
+                    condition_partition,
+                    partition_extent));
         }
 
 
@@ -174,18 +175,14 @@ namespace lue {
                  ++partition_idx1)
             {
                 std::tie(partition, nr_elements0_f_) = hpx::split_future(
-                    hpx::dataflow(
-                        hpx::launch::async,
-                        [locality_id = localities(partition_idx0, partition_idx1),
-                         action,
-                         policies,
-                         dimension_idx](ConditionPartition const& condition_partition)
-                        {
-                            Index const offset{0};
-
-                            return action(locality_id, policies, condition_partition, dimension_idx, offset);
-                        },
-                        condition_partitions(partition_idx0, partition_idx1)));
+                    hpx::async(
+                        action,
+                        localities(partition_idx0, partition_idx1),
+                        policies,
+                        condition_partitions(partition_idx0, partition_idx1),
+                        dimension_idx,
+                        partition_idx0,
+                        hpx::make_ready_future<Count>(0)));
 
                 index_partitions(partition_idx0, partition_idx1) = std::move(partition);
 
@@ -205,24 +202,14 @@ namespace lue {
                      ++partition_idx1)
                 {
                     std::tie(partition, std::ignore) = hpx::split_future(
-                        hpx::dataflow(
-                            hpx::launch::async,
-                            [locality_id = localities(partition_idx0, partition_idx1),
-                             action,
-                             policies,
-                             dimension_idx,
-                             partition_idx0](
-                                ConditionPartition const& condition_partition,
-                                hpx::shared_future<Count> const& nr_elements)
-                            {
-                                Index const offset{partition_idx0 * nr_elements.get()};
-
-                                return action(
-                                    locality_id, policies, condition_partition, dimension_idx, offset);
-                            },
+                        hpx::async(
+                            action,
+                            localities(partition_idx0, partition_idx1),
+                            policies,
                             condition_partitions(partition_idx0, partition_idx1),
+                            dimension_idx,
+                            partition_idx0,
                             nr_elements0_f));
-
                     index_partitions(partition_idx0, partition_idx1) = std::move(partition);
                 }
             }
@@ -240,18 +227,14 @@ namespace lue {
                  ++partition_idx0)
             {
                 std::tie(partition, nr_elements1_f_) = hpx::split_future(
-                    hpx::dataflow(
-                        hpx::launch::async,
-                        [locality_id = localities(partition_idx0, partition_idx1),
-                         action,
-                         policies,
-                         dimension_idx](ConditionPartition const& condition_partition)
-                        {
-                            Index const offset{0};
-
-                            return action(locality_id, policies, condition_partition, dimension_idx, offset);
-                        },
-                        condition_partitions(partition_idx0, partition_idx1)));
+                    hpx::async(
+                        action,
+                        localities(partition_idx0, partition_idx1),
+                        policies,
+                        condition_partitions(partition_idx0, partition_idx1),
+                        dimension_idx,
+                        partition_idx1,
+                        hpx::make_ready_future<Count>(0)));
 
                 index_partitions(partition_idx0, partition_idx1) = std::move(partition);
 
@@ -271,24 +254,14 @@ namespace lue {
                      ++partition_idx1)
                 {
                     std::tie(partition, std::ignore) = hpx::split_future(
-                        hpx::dataflow(
-                            hpx::launch::async,
-                            [locality_id = localities(partition_idx0, partition_idx1),
-                             action,
-                             policies,
-                             dimension_idx,
-                             partition_idx1](
-                                ConditionPartition const& condition_partition,
-                                hpx::shared_future<Count> const& nr_elements)
-                            {
-                                Index const offset{partition_idx1 * nr_elements.get()};
-
-                                return action(
-                                    locality_id, policies, condition_partition, dimension_idx, offset);
-                            },
+                        hpx::async(
+                            action,
+                            localities(partition_idx0, partition_idx1),
+                            policies,
                             condition_partitions(partition_idx0, partition_idx1),
+                            dimension_idx,
+                            partition_idx1,
                             nr_elements1_f));
-
                     index_partitions(partition_idx0, partition_idx1) = std::move(partition);
                 }
             }
