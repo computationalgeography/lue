@@ -34,8 +34,6 @@ namespace lue {
                         using ZonesData = DataT<ZonesPartition>;
                         using Aggregator = AggregatorT<Functor>;
 
-                        lue_hpx_assert(zones_partition.is_ready());
-
                         return hpx::dataflow(
                             hpx::launch::async,
 
