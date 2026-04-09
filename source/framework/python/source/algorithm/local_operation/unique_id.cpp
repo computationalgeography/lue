@@ -41,6 +41,17 @@ namespace lue::framework {
 
                             break;
                         }
+                        case 2:
+                        {
+                            using Element = std::int16_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::unique_id<Element>(condition));
+                            }
+
+                            break;
+                        }
                         case 4:
                         {
                             using Element = std::int32_t;
@@ -75,6 +86,17 @@ namespace lue::framework {
                         case 1:
                         {
                             using Element = std::uint8_t;
+
+                            if constexpr (arithmetic_element_supported<Element>)
+                            {
+                                result = pybind11::cast(value_policies::unique_id<Element>(condition));
+                            }
+
+                            break;
+                        }
+                        case 2:
+                        {
+                            using Element = std::uint16_t;
 
                             if constexpr (arithmetic_element_supported<Element>)
                             {

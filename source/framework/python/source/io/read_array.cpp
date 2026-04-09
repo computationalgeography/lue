@@ -77,6 +77,14 @@ namespace lue::framework {
             {
                 result = read<std::uint8_t, 2>(io, array_pathname, partition_shape, object_id);
             }
+            else if (datatype == lh5::std_uint16_le)
+            {
+                result = read<std::uint16_t, 2>(io, array_pathname, partition_shape, object_id);
+            }
+            else if (datatype == lh5::std_int16_le)
+            {
+                result = read<std::int16_t, 2>(io, array_pathname, partition_shape, object_id);
+            }
             else if (datatype == lh5::std_uint32_le)
             {
                 result = read<std::uint32_t, 2>(io, array_pathname, partition_shape, object_id);

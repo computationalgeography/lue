@@ -84,6 +84,22 @@ namespace lue::framework {
             }
 #endif
 
+            if constexpr (lue::arithmetic_element_supported<std::uint16_t>)
+            {
+                if (data_type == GDT_UInt16)
+                {
+                    result = framework::from_gdal<uint16_t>(name, hyperslab, static_partition_shape);
+                }
+            }
+
+            if constexpr (lue::arithmetic_element_supported<std::int16_t>)
+            {
+                if (data_type == GDT_Int16)
+                {
+                    result = framework::from_gdal<int16_t>(name, hyperslab, static_partition_shape);
+                }
+            }
+
             if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
             {
                 if (data_type == GDT_UInt32)
@@ -196,6 +212,22 @@ namespace lue::framework {
                 }
             }
 #endif
+
+            if constexpr (lue::arithmetic_element_supported<std::uint16_t>)
+            {
+                if (data_type == GDT_UInt16)
+                {
+                    result = from_gdal<uint16_t>(name, static_partition_shape);
+                }
+            }
+
+            if constexpr (lue::arithmetic_element_supported<std::int16_t>)
+            {
+                if (data_type == GDT_Int16)
+                {
+                    result = from_gdal<int16_t>(name, static_partition_shape);
+                }
+            }
 
             if constexpr (lue::arithmetic_element_supported<std::uint32_t>)
             {

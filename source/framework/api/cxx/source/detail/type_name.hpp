@@ -18,6 +18,14 @@ namespace lue::api::detail {
         {
             return "uint8";
         }
+        else if (std::is_same_v<Element, std::int16_t>)
+        {
+            return "int16";
+        }
+        else if (std::is_same_v<Element, std::uint16_t>)
+        {
+            return "uint16";
+        }
         else if (std::is_same_v<Element, std::int32_t>)
         {
             return "int32";

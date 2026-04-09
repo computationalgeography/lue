@@ -21,6 +21,16 @@ namespace lue::framework {
 
 
     template<>
+    class TypeTraits<std::vector<PartitionedArray<std::uint16_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint16_t, 2>>"};
+    };
+
+
+    template<>
     class TypeTraits<std::vector<PartitionedArray<std::uint32_t, 2>>>
     {
 
@@ -47,6 +57,16 @@ namespace lue::framework {
         public:
 
             inline static std::string const name{"std::vector<lue::PartitionedArray<std::int8_t, 2>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::vector<PartitionedArray<std::int16_t, 2>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int16_t, 2>>"};
     };
 
 
@@ -101,6 +121,16 @@ namespace lue::framework {
 
 
     template<>
+    class TypeTraits<std::map<std::uint16_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint16_t, std::vector<float>>"};
+    };
+
+
+    template<>
     class TypeTraits<std::map<std::uint32_t, std::vector<float>>>
     {
 
@@ -127,6 +157,16 @@ namespace lue::framework {
         public:
 
             inline static std::string const name{"std::map<std::int8_t, std::vector<float>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int16_t, std::vector<float>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int16_t, std::vector<float>>"};
     };
 
 
@@ -161,6 +201,16 @@ namespace lue::framework {
 
 
     template<>
+    class TypeTraits<std::map<std::uint16_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::uint16_t, std::vector<double>>"};
+    };
+
+
+    template<>
     class TypeTraits<std::map<std::uint32_t, std::vector<double>>>
     {
 
@@ -187,6 +237,16 @@ namespace lue::framework {
         public:
 
             inline static std::string const name{"std::map<std::int8_t, std::vector<double>>"};
+    };
+
+
+    template<>
+    class TypeTraits<std::map<std::int16_t, std::vector<double>>>
+    {
+
+        public:
+
+            inline static std::string const name{"std::map<std::int16_t, std::vector<double>>"};
     };
 
 

@@ -73,6 +73,11 @@ namespace lue::framework {
                             result = reclassify<std::int8_t>(array, lookup_table);
                             break;
                         }
+                        case 2:
+                        {
+                            result = reclassify<std::int16_t>(array, lookup_table);
+                            break;
+                        }
                         case 4:
                         {
                             result = reclassify<std::int32_t>(array, lookup_table);
@@ -95,6 +100,11 @@ namespace lue::framework {
                         case 1:
                         {
                             result = reclassify<std::uint8_t>(array, lookup_table);
+                            break;
+                        }
+                        case 2:
+                        {
+                            result = reclassify<std::uint16_t>(array, lookup_table);
                             break;
                         }
                         case 4:

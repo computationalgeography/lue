@@ -70,6 +70,14 @@ namespace lue {
                     result = from_gdal<std::int8_t>(name, partition_shape);
                 }
 #endif
+                else if (data_type == GDT_UInt16)
+                {
+                    result = from_gdal<std::uint16_t>(name, partition_shape);
+                }
+                else if (data_type == GDT_Int16)
+                {
+                    result = from_gdal<std::int16_t>(name, partition_shape);
+                }
                 else if (data_type == GDT_UInt32)
                 {
                     result = from_gdal<std::uint32_t>(name, partition_shape);

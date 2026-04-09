@@ -234,6 +234,20 @@ namespace lue {
 
 
     template<>
+    struct TypeTraits<std::uint16_t>
+    {
+            static constexpr auto name{"uint16"};
+    };
+
+
+    template<>
+    struct TypeTraits<std::int16_t>
+    {
+            static constexpr auto name{"int16"};
+    };
+
+
+    template<>
     struct TypeTraits<std::uint32_t>
     {
             static constexpr auto name{"uint32"};
