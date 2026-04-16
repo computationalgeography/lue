@@ -29,6 +29,7 @@ class MyModel(lfr.Model):
 
     def simulate(self, time_step):
         self.simulate_called += 1
+        return lfr.as_state(None)
 
     def finalize(self):
         self.finalize_called += 1

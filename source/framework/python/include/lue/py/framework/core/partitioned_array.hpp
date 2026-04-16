@@ -99,14 +99,6 @@ namespace lue::framework {
                     "shape_in_partitions docstring...")
 
                 .def(
-                    "future",
-                    [](Array const& array) -> hpx::shared_future<void>
-                    {
-                        return hpx::when_all(array.partitions().begin(), array.partitions().end())
-                            .then([](auto&&) -> auto { return hpx::make_ready_future<void>(); });
-                    })
-
-                .def(
                     "__repr__",
                     [](Array const& array) -> auto { return detail::formal_string_representation(array); })
 
@@ -540,6 +532,17 @@ namespace lue::framework {
                     { return pow(argument1, argument2); },
                     pybind11::is_operator());
         }
+
+
+        module.def(
+            "as_state",
+            [](Array const& array) -> hpx::shared_future<void>
+            {
+                return hpx::when_all(array.partitions().begin(), array.partitions().end())
+                    .then(
+                        []([[maybe_unused]] auto const& partitions) -> hpx::shared_future<void>
+                        { return hpx::make_ready_future<void>(); });
+            });
     }
 
 }  // namespace lue::framework

@@ -129,6 +129,14 @@ namespace lue::framework {
                 static void bind(pybind11::module& module)
                 {
                     bind_scalar<Element>(module);
+
+                    module.def(
+                        "as_state",
+                        [](Scalar<Element> const& scalar) -> hpx::shared_future<void>
+                        {
+                            return scalar.future().then(
+                                []([[maybe_unused]] auto const& future) -> void { return; });
+                        });
                 }
         };
 
