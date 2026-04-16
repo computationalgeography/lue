@@ -93,12 +93,23 @@ class DynamicModel(lfr.DynamicModel):
         raise NotImplementedError
 
 
+def decorated_dynamic(function):
+    def wrapper(*args):
+        function(*args)
+        return lfr.as_state(None)
+
+    return wrapper
+
+
 class DynamicFramework(lfr.DynamicModelRunner):
     """
     Class for running dynamic models
     """
 
     def __init__(self, model, last_time_step=0, first_time_step=1):
+        if hasattr(model, "dynamic"):
+            setattr(model, "dynamic", decorated_dynamic(model.dynamic))
+
         super().__init__(model, last_time_step, first_time_step)
         self.quiet = False
 

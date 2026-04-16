@@ -1,6 +1,7 @@
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/concept.hpp"
 #include "lue/framework.hpp"
+#include "lue/py/bind.hpp"
 #include "lue/py/framework/stream.hpp"
 #include <hpx/config.hpp>
 #include <hpx/future.hpp>
@@ -10,269 +11,33 @@
 
 namespace lue::framework {
 
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::uint8_t, 2>>>
+    template<Arithmetic Element>
+    class TypeTraits<std::vector<PartitionedArray<Element, 2>>>
     {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint8_t, 2>>"};
+            inline static std::string const name{
+                std::format("std::vector<lue::PartitionedArray<{}, 2>>", as_string<Element>())};
     };
 
 
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::uint16_t, 2>>>
+    template<std::integral IntegralElement, std::floating_point FloatingPointElement>
+    class TypeTraits<std::map<IntegralElement, std::vector<FloatingPointElement>>>
     {
 
         public:
 
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint16_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::uint32_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint32_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::uint64_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::uint64_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::int8_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int8_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::int16_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int16_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::int32_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int32_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<std::int64_t, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<std::int64_t, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<float, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<float, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::vector<PartitionedArray<double, 2>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::vector<lue::PartitionedArray<double, 2>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint8_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint8_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint16_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint16_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint32_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint32_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint64_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint64_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int8_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int8_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int16_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int16_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int32_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int32_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int64_t, std::vector<float>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int64_t, std::vector<float>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint8_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint8_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint16_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint16_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint32_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint32_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::uint64_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::uint64_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int8_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int8_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int16_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int16_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int32_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int32_t, std::vector<double>>"};
-    };
-
-
-    template<>
-    class TypeTraits<std::map<std::int64_t, std::vector<double>>>
-    {
-
-        public:
-
-            inline static std::string const name{"std::map<std::int64_t, std::vector<double>>"};
+            inline static std::string const name{std::format(
+                "std::map<{}, std::vector<{}>>",
+                as_string<IntegralElement>(),
+                as_string<FloatingPointElement>())};
     };
 
 
     namespace {
 
-        template<typename Element>
+        template<Arithmetic Element>
         auto formal_string_representation([[maybe_unused]] hpx::shared_future<Element> const& future)
             -> std::string
         {
@@ -280,239 +45,87 @@ namespace lue::framework {
         }
 
 
-        template<typename Element>
+        template<Arithmetic Element>
         auto informal_string_representation(hpx::shared_future<Element> const& future) -> std::string
         {
             return formal_string_representation(future);
         }
 
 
-        template<typename Element>
-        void bind_future(pybind11::module& module)
-        {
-            pybind11::class_<hpx::future<Element>>(
-                module, std::format("future<{}>", as_string<Element>()).c_str())
-
-                .def("get", [](hpx::future<Element>& future) { return future.get(); })
-
-                ;
-        }
-
-
-        template<typename Element>
+        template<Arithmetic T>
         void bind_shared_future(pybind11::module& module)
         {
-            pybind11::class_<hpx::shared_future<Element>>(
-                module, std::format("shared_future<{}>", as_string<Element>()).c_str())
+            pybind11::class_<hpx::shared_future<T>>(
+                module, std::format("shared_future<{}>", as_string<T>()).c_str())
 
                 .def(
                     "__repr__",
-                    [](hpx::shared_future<Element> const& future)
+                    [](hpx::shared_future<T> const& future) -> std::string
                     { return formal_string_representation(future); })
 
                 .def(
                     "__str__",
-                    [](hpx::shared_future<Element> const& future)
+                    [](hpx::shared_future<T> const& future) -> std::string
                     { return informal_string_representation(future); })
 
                 .def(
                     "get",
-                    pybind11::overload_cast<>(&hpx::shared_future<Element>::get, pybind11::const_),
-                    // Copy to keep things simple. Use const reference in case Element can be big.
+                    pybind11::overload_cast<>(&hpx::shared_future<T>::get, pybind11::const_),
                     pybind11::return_value_policy::move)
 
                 ;
         }
 
 
-        template<typename T>
-        auto make_ready_future(T const& value) -> hpx::shared_future<T>
+        class SharedFutureBinder
         {
-            return hpx::make_ready_future<T>(value).share();
-        }
+            public:
+
+                template<Arithmetic Element>
+                static void bind(pybind11::module& module)
+                {
+                    Rank const rank{2};
+
+                    bind_shared_future<Element>(module);
+                    bind_shared_future<std::vector<PartitionedArray<Element, rank>>>(module);
+                }
+
+            private:
+        };
 
 
-        template<typename T>
-        void bind_make_ready_future(pybind11::module& module)
+        class SharedFutureBinder2
         {
-            module.def(
-                "make_ready_future",
-                make_ready_future<T>,
-                pybind11::arg("value"),
-                pybind11::return_value_policy::move);
-        }
+            public:
 
+                template<std::integral IntegralElement, std::floating_point FloatingPointElement>
+                static void bind(pybind11::module& module)
+                {
+                    bind_shared_future<std::map<IntegralElement, std::vector<FloatingPointElement>>>(module);
+                }
 
-        template<Arithmetic Element>
-        void bind(pybind11::module& module)
-        {
-            bind_shared_future<Element>(module);
-            bind_shared_future<std::vector<PartitionedArray<Element, 2>>>(module);
-            pybind11::implicitly_convertible<hpx::shared_future<Element>, hpx::shared_future<void>>();
-        }
+            private:
+        };
 
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module)
-            requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::module& module)
-            requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(module);
-            bind<Elements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(module);
-        }
-
-
-        template<typename Element, typename FloatingPointElement>
-        void bind(pybind11::module& module)
-        {
-            bind_shared_future<std::map<Element, std::vector<FloatingPointElement>>>(module);
-        }
-
-
-        template<typename Element, TupleLike FloatingPointElements, std::size_t idx>
-        void bind(pybind11::module& module)
-            requires(idx == 0)
-        {
-            bind<Element, std::tuple_element_t<idx, FloatingPointElements>>(module);
-        }
-
-
-        template<typename Element, TupleLike FloatingPointElements, std::size_t idx>
-        void bind(pybind11::module& module)
-            requires(idx > 0)
-        {
-            bind<Element, std::tuple_element_t<idx, FloatingPointElements>>(module);
-            bind<Element, FloatingPointElements, idx - 1>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx, TupleLike FloatingPointElements>
-        void bind(pybind11::module& module)
-            requires(idx == 0)
-        {
-            bind<
-                std::tuple_element_t<idx, Elements>,
-                FloatingPointElements,
-                std::tuple_size_v<FloatingPointElements> - 1>(module);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx, TupleLike FloatingPointElements>
-        void bind(pybind11::module& module)
-            requires(idx > 0)
-        {
-            bind<
-                std::tuple_element_t<idx, Elements>,
-                FloatingPointElements,
-                std::tuple_size_v<FloatingPointElements> - 1>(module);
-            bind<Elements, idx - 1, FloatingPointElements>(module);
-        }
-
-
-        template<TupleLike Elements, TupleLike FloatingPointElements>
-        void bind(pybind11::module& module)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1, FloatingPointElements>(module);
-        }
-
-
-        template<typename Element>
-        void bind(pybind11::class_<hpx::shared_future<void>>& class_)
-        {
-            class_.def(pybind11::init<hpx::shared_future<Element>>());
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::class_<hpx::shared_future<void>>& class_)
-            requires(idx == 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(class_);
-        }
-
-
-        template<TupleLike Elements, std::size_t idx>
-        void bind(pybind11::class_<hpx::shared_future<void>>& class_)
-            requires(idx > 0)
-        {
-            bind<std::tuple_element_t<idx, Elements>>(class_);
-            bind<Elements, idx - 1>(class_);
-        }
-
-
-        template<TupleLike Elements>
-        void bind(pybind11::class_<hpx::shared_future<void>>& class_)
-        {
-            bind<Elements, std::tuple_size_v<Elements> - 1>(class_);
-        }
-
-    }  // Anonymous namespace
+    }  // namespace
 
 
     void bind_hpx(pybind11::module& module)
     {
-        bind_future<void>(module);
+        auto const shared_future_void =
+            pybind11::class_<hpx::shared_future<void>>(module, "shared_future<void>");
+        pybind11::setattr(module, "State", shared_future_void);
 
-        auto shared_future_class =
-            pybind11::class_<hpx::shared_future<void>>(
-                module, std::format("shared_future<{}>", as_string<void>()).c_str())
-                .def(pybind11::init([](pybind11::none const&) { return hpx::make_ready_future<void>(); }))
+        pybind11::class_<hpx::future<void>>(module, "future<void>")
+            .def("get", pybind11::overload_cast<>(&hpx::future<void>::get));
 
-                .def(
-                    "__repr__",
-                    [](hpx::shared_future<void> const& future)
-                    { return formal_string_representation(future); })
 
-                .def(
-                    "__str__",
-                    [](hpx::shared_future<void> const& future)
-                    { return informal_string_representation(future); })
+        bind<SharedFutureBinder1, ArithmeticElements>(module);
+        bind<SharedFutureBinder2, IntegralElements, FloatingPointElements>(module);
 
-                .def("get", [](hpx::shared_future<void>& future) { return future.get(); })
-
-            ;
-
-        // TODO Use bind<> from bind.hpp, and a Binder
-
-        bind<ArithmeticElements>(module);
-        bind<IntegralElements, FloatingPointElements>(module);
-
-        pybind11::implicitly_convertible<pybind11::none, hpx::shared_future<void>>();
-        bind<ArithmeticElements>(shared_future_class);
-
-        // // These are required by image land.
-        // // TODO: Refactor and only bind for types we need.
-        // bind_make_ready_future<std::map<std::uint8_t, std::vector<float>>>(module);
-        // bind_make_ready_future<std::map<std::uint8_t, std::vector<double>>>(module);
-
-        // // bind_make_ready_future<std::map<std::int8_t, std::vector<float>>>(module);
-        // // bind_make_ready_future<std::map<std::int8_t, std::vector<double>>>(module);
-
-        // // bind_make_ready_future<std::map<std::uint32_t, std::vector<float>>>(module);
-        // // bind_make_ready_future<std::map<std::uint32_t, std::vector<double>>>(module);
-
-        // bind_make_ready_future<std::map<std::int32_t, std::vector<float>>>(module);
-        // bind_make_ready_future<std::map<std::int32_t, std::vector<double>>>(module);
-
-        // // bind_make_ready_future<std::map<std::uint64_t, std::vector<float>>>(module);
-        // // bind_make_ready_future<std::map<std::uint64_t, std::vector<double>>>(module);
-
-        // // bind_make_ready_future<std::map<std::int64_t, std::vector<float>>>(module);
-        // // bind_make_ready_future<std::map<std::int64_t, std::vector<double>>>(module);
+        module.def(
+            "as_state",
+            [](pybind11::none const&) -> hpx::shared_future<void> { return hpx::make_ready_future(); });
     }
 
-}  // namespace lue::framework
+}  // Namespace lue::framework
