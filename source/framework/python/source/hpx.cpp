@@ -37,22 +37,21 @@ namespace lue::framework {
 
     namespace {
 
-        template<Arithmetic Element>
-        auto formal_string_representation([[maybe_unused]] hpx::shared_future<Element> const& future)
-            -> std::string
+        template<typename T>
+        auto formal_string_representation([[maybe_unused]] hpx::shared_future<T> const& future) -> std::string
         {
-            return std::format("shared_future<{}>", as_string<Element>());
+            return std::format("shared_future<{}>", as_string<T>());
         }
 
 
-        template<Arithmetic Element>
-        auto informal_string_representation(hpx::shared_future<Element> const& future) -> std::string
+        template<typename T>
+        auto informal_string_representation(hpx::shared_future<T> const& future) -> std::string
         {
             return formal_string_representation(future);
         }
 
 
-        template<Arithmetic T>
+        template<typename T>
         void bind_shared_future(pybind11::module& module)
         {
             pybind11::class_<hpx::shared_future<T>>(
@@ -77,7 +76,7 @@ namespace lue::framework {
         }
 
 
-        class SharedFutureBinder
+        class SharedFutureBinder1
         {
             public:
 
