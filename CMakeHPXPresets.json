@@ -76,10 +76,6 @@
         {
             "name": "hpx_relwithdebinfo_configuration",
             "hidden": true,
-            "$comment": [
-                "When sanitizing:",
-                "- Set HPX_WITH_APEX and HPX_WITH_API to FALSE"
-            ],
             "cacheVariables": {
                 "HPX_WITH_FETCH_APEX": "TRUE",
                 "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "TRUE",
