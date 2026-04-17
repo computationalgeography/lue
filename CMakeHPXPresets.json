@@ -82,7 +82,6 @@
                 "HPX_WITH_THREAD_IDLE_RATES": "TRUE",
                 "HPX_WITH_APEX": "TRUE",
                 "HPX_WITH_PAPI": "TRUE"
-                
             }
         },
         {
