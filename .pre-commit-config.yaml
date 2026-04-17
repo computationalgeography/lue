@@ -4,84 +4,95 @@
 #       It is OK to bump versions, but do it consiously. Run `pre-commit run --all-files` afterwards and
 #       commit any updates.
 exclude: |
-    (?x)^(
-      environment/cmake/.*\.patch|
-      environment/cmake/UseLATEX\.cmake|
-      environment/cmake/conan-.*\.cmake|
-      source/framework/algorithm/include/lue/framework/algorithm/definition/FastNoiseLite.h|
-      source/view/imgui/include/lue/imgui/font/.*
-    )$
+  (?x)^(
+    environment/cmake/.*\.patch|
+    environment/cmake/UseLATEX\.cmake|
+    environment/cmake/conan-.*\.cmake|
+    source/framework/algorithm/include/lue/framework/algorithm/definition/FastNoiseLite.h|
+    source/view/imgui/include/lue/imgui/font/.*
+  )$
 repos:
-    - repo: https://github.com/pre-commit/pre-commit-hooks
-      rev: v5.0.0
-      hooks:
-          - id: trailing-whitespace
-          - id: end-of-file-fixer
-          # - id: check-yaml
-          - id: check-added-large-files
-    - repo: https://github.com/psf/black
-      rev: 25.1.0
-      hooks:
-          - id: black
-    - repo: https://github.com/pre-commit/mirrors-mypy
-      rev: v1.17.1
-      hooks:
-          - id: mypy
-            # args: [--verbose]
-            # Skip game_of_life.py because a same-named script exists in quick_start ...
-            exclude: |
-                (?x)^(
-                  source/data_model/python/test/.*|
-                  document/luepy/ext/.*|
-                  document/doc/manual/quality_assurance/scalability/game_of_life.py|
-                  source/framework/case_study/.*|
-                  source/framework/python/test/.*|
-                )$
-            additional_dependencies:
-                - types-python-dateutil==2.9.0.20250809
-    - repo: https://github.com/pycqa/isort
-      rev: 6.0.1
-      hooks:
-          - id: isort
-            files: |
-                (?x)^(
-                  .*\.py|
-                  .*\.py.in|
-                )$
-    # TODO REQUIRES RUBY - repo: https://github.com/markdownlint/markdownlint
-    # TODO REQUIRES RUBY   rev: v0.12.0
-    # TODO REQUIRES RUBY   hooks:
-    # TODO REQUIRES RUBY   - id: markdownlint
-    - repo: https://github.com/codespell-project/codespell
-      rev: v2.4.1
-      hooks:
-          - id: codespell
-            additional_dependencies:
-                - tomli
-    - repo: https://github.com/crate-ci/typos
-      rev: v1.35.4
-      hooks:
-          - id: typos
-            args: [] # Relevant: don't update files, just report
-    - repo: https://github.com/cpp-linter/cpp-linter-hooks
-      rev: v1.1.10
-      hooks:
-          # Keep clang-* versions in sync with environment/configuration/requirements-dev.txt
-          - id: clang-format
-            args: [--version=21.1.6, --dry-run]
-          - id: clang-tidy
-            args: [--version=21.1.6, --quiet]
-            # TODO: Update code and remove excluded directories from this list
-            exclude: |
-                (?x)^(
-                  source/data_model/.*/test/.*|
-                  source/data_model/gdal/include/lue/gdal/library.hpp|
-                  source/data_model/python/.*|
-                  source/data_model/utility/.*|
-                  source/data_model/validate/.*|
-                  source/framework/.*|
-                  source/python/.*|
-                  source/python/test/.*|
-                  source/quality_assurance/.*|
-                  source/view/.*|
-                )$
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      # - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.10
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        # Skip game_of_life.py because a same-named script exists in quick_start ...
+        exclude: |
+          (?x)^(
+            environment/conda/run_test.py|
+            environment/script/.*|
+            source/data_model/python/test/.*|
+            document/luepy/ext/.*|
+            document/doc/manual/quality_assurance/scalability/game_of_life.py|
+            source/framework/api/python/.*|
+            source/framework/case_study/.*|
+            source/framework/python/test/.*|
+          )$
+      # Run the formatter.
+      - id: ruff-format
+        files: |
+          (?x)^(
+            .*\.py|
+            .*\.py.in|
+          )$
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.17.1
+    hooks:
+      - id: mypy
+        # args: [--verbose]
+        # Skip game_of_life.py because a same-named script exists in quick_start ...
+        exclude: |
+          (?x)^(
+            source/data_model/python/test/.*|
+            document/luepy/ext/.*|
+            document/doc/manual/quality_assurance/scalability/game_of_life.py|
+            source/framework/case_study/.*|
+            source/framework/python/test/.*|
+          )$
+        additional_dependencies:
+          - types-python-dateutil==2.9.0.20250809
+  # TODO REQUIRES RUBY - repo: https://github.com/markdownlint/markdownlint
+  # TODO REQUIRES RUBY   rev: v0.12.0
+  # TODO REQUIRES RUBY   hooks:
+  # TODO REQUIRES RUBY   - id: markdownlint
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        additional_dependencies:
+          - tomli
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.35.4
+    hooks:
+      - id: typos
+        args: [] # Relevant: don't update files, just report
+  - repo: https://github.com/cpp-linter/cpp-linter-hooks
+    rev: v1.1.10
+    hooks:
+      # Keep clang-* versions in sync with environment/configuration/requirements-dev.txt
+      - id: clang-format
+        args: [--version=21.1.6, --dry-run]
+      - id: clang-tidy
+        args: [--version=21.1.6, --quiet]
+        # TODO: Update code and remove excluded directories from this list
+        exclude: |
+          (?x)^(
+            source/data_model/.*/test/.*|
+            source/data_model/gdal/include/lue/gdal/library.hpp|
+            source/data_model/python/.*|
+            source/data_model/utility/.*|
+            source/data_model/validate/.*|
+            source/framework/.*|
+            source/python/.*|
+            source/python/test/.*|
+            source/quality_assurance/.*|
+            source/view/.*|
+          )$

@@ -397,9 +397,7 @@ packages that can be used to build LUE with. It is not a replacement for the
 
 As a side effect, Conan's settings.yml may be updated in case it does not yet
 contain the version of the compiler.
-""".format(
-        command=os.path.basename(sys.argv[0])
-    )
+""".format(command=os.path.basename(sys.argv[0]))
 
     arguments = docopt.docopt(usage)
 

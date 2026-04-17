@@ -58,27 +58,31 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, filetype
         if count == 1:
             duration = lue_measurement.duration.value[:][sort_idxs]
             y_label = "duration ({})".format(time_point_units)
-            plot_actual = lambda data: axis.plot(
-                nr_workers,
-                data,
-                linewidth=plot.default_linewidth,
-                color=plot.actual_color,
-                marker="o",
-            )
+
+            def plot_actual(data):
+                axis.plot(
+                    nr_workers,
+                    data,
+                    linewidth=plot.default_linewidth,
+                    color=plot.actual_color,
+                    marker="o",
+                )
         else:
             duration = lue_scaling.mean_duration.value[:][sort_idxs]
             error = lue_scaling.std_duration.value[:][sort_idxs]
             y_label = "duration ({}) ± stddev (count={})".format(
                 time_point_units, count
             )
-            plot_actual = lambda data: axis.errorbar(
-                x=nr_workers,
-                y=data,
-                yerr=error,
-                linewidth=plot.default_linewidth,
-                color=plot.actual_color,
-                marker="o",
-            )
+
+            def plot_actual(data):
+                axis.errorbar(
+                    x=nr_workers,
+                    y=data,
+                    yerr=error,
+                    linewidth=plot.default_linewidth,
+                    color=plot.actual_color,
+                    marker="o",
+                )
 
         serial_duration = duration[0] * nr_workers
         axis.plot(
@@ -103,26 +107,30 @@ def post_process_raw_results(lue_dataset, result_prefix, plot_pathname, filetype
     def plot_relative_efficiency(axis):
         if count == 1:
             relative_efficiency = lue_scaling.relative_efficiency.value[:][sort_idxs]
-            plot_actual = lambda data: axis.plot(
-                nr_workers,
-                data,
-                linewidth=plot.default_linewidth,
-                color=plot.actual_color,
-                marker="o",
-            )
+
+            def plot_actual(data):
+                axis.plot(
+                    nr_workers,
+                    data,
+                    linewidth=plot.default_linewidth,
+                    color=plot.actual_color,
+                    marker="o",
+                )
         else:
             relative_efficiency = lue_scaling.mean_relative_efficiency.value[:][
                 sort_idxs
             ]
             error = lue_scaling.std_relative_efficiency.value[:][sort_idxs]
-            plot_actual = lambda data: axis.errorbar(
-                x=nr_workers,
-                y=data,
-                yerr=error,
-                linewidth=plot.default_linewidth,
-                color=plot.actual_color,
-                marker="o",
-            )
+
+            def plot_actual(data):
+                axis.errorbar(
+                    x=nr_workers,
+                    y=data,
+                    yerr=error,
+                    linewidth=plot.default_linewidth,
+                    color=plot.actual_color,
+                    marker="o",
+                )
 
         serial_relative_efficiency = relative_efficiency[0] / nr_workers
         axis.plot(

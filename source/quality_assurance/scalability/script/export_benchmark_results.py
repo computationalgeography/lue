@@ -2,11 +2,8 @@
 import os.path
 import sys
 
-
-sys.path = [
-    os.path.join(os.path.split(__file__)[0], "..", "..", "benchmark", "lue")
-] + sys.path
 import docopt
+
 from benchmark import export_results
 
 
@@ -20,9 +17,7 @@ Options:
     dataset    Pathname of dataset containing benchmark results
     csv_file   Pathname of CSV file to write output to
     -h --help  Show this screen
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 if __name__ == "__main__":

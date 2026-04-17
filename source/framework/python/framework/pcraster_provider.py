@@ -36,7 +36,7 @@ def pcraster_by_provider():
 
     if provider_name not in pcraster_by_provider_name:
         raise RuntimeError(
-            f'Select a PCRaster provider by setting the LUE_PCRASTER_PROVIDER_NAME environment variable to one of {", ".join(pcraster_by_provider_name)}'
+            f"Select a PCRaster provider by setting the LUE_PCRASTER_PROVIDER_NAME environment variable to one of {', '.join(pcraster_by_provider_name)}"
         )
 
     pcr, pcrfw = pcraster_by_provider_name[provider_name]()

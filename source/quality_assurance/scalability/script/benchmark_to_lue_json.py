@@ -29,9 +29,7 @@ synchronize the epochs from the different JSON files.
 Use the --meta option to only write the meta information to a LUE
 JSON file. This information does not change between benchmark runs,
 so it should be generated and translated only once.
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
@@ -86,8 +84,9 @@ def benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=None):
 
     if epoch_offset < 0:
         raise RuntimeError(
-            "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch)
+            "epoch passed in is later than epoch from benchmark: {} > {}".format(
+                epoch, benchmark_epoch
+            )
         )
 
     # Calculate number of seconds sinds the epoch

@@ -30,9 +30,7 @@ Options:
 Wikipedia:
     In the context of computer memory, gigabyte and GB are customarily
     used to mean 1024³ (2³⁰) bytes.
-""".format(
-        command=os.path.basename(sys.argv[0])
-    )
+""".format(command=os.path.basename(sys.argv[0]))
 
     arguments = docopt.docopt(usage, version=lue_version)
 
@@ -61,7 +59,5 @@ Wikipedia:
     print(
         """\
 shape (total): {}
-shape (node): {}""".format(
-            array_shape_, array_shape_per_node
-        )
+shape (node): {}""".format(array_shape_, array_shape_per_node)
     )
