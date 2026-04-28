@@ -355,9 +355,9 @@ class TreeCrownTest(lue_test.TestCase):
                 ).reshape(nr_starting_trees, space_rank * 2)
 
                 # Store IDs of starting trees in collection of IDs
-                trees.object_id.expand(nr_starting_trees)[
-                    -nr_starting_trees
-                ] = starting_tree_ids
+                trees.object_id.expand(nr_starting_trees)[-nr_starting_trees] = (
+                    starting_tree_ids
+                )
 
                 # Store stem locations of starting trees
                 stems.space_domain.value.expand(nr_starting_trees)[
@@ -383,18 +383,18 @@ class TreeCrownTest(lue_test.TestCase):
                 crowns_active_set_index.expand(1)[-1] = object_index
                 nr_active_trees = len(active_tree_ids)
 
-                crowns_active_object_id.expand(nr_active_trees)[
-                    object_index:
-                ] = active_tree_ids
+                crowns_active_object_id.expand(nr_active_trees)[object_index:] = (
+                    active_tree_ids
+                )
 
                 # For all active trees, calculate new biomass values and
                 # write them to the biomass property
                 crowns_biomass_values = np.arange(
                     nr_active_trees * nr_cells_in_crown, dtype=biomass_datatype
                 ).reshape(nr_active_trees, max_size_of_crown, max_size_of_crown)
-                crowns_biomass.value.expand(nr_active_trees)[
-                    object_index:
-                ] = crowns_biomass_values
+                crowns_biomass.value.expand(nr_active_trees)[object_index:] = (
+                    crowns_biomass_values
+                )
 
                 # Store IDs of active forests in the active set
                 # Currently this is the one and only forest containing
@@ -404,12 +404,12 @@ class TreeCrownTest(lue_test.TestCase):
                 object_index = areas_active_object_id.nr_ids
                 areas_active_set_index.expand(1)[-1] = object_index
                 nr_active_forests = len(active_forest_ids)
-                areas_active_object_id.expand(nr_active_forests)[
-                    object_index:
-                ] = active_forest_ids
-                areas_active_object_idx.expand(nr_active_forests)[
-                    object_index:
-                ] = active_forest_idxs
+                areas_active_object_id.expand(nr_active_forests)[object_index:] = (
+                    active_forest_ids
+                )
+                areas_active_object_idx.expand(nr_active_forests)[object_index:] = (
+                    active_forest_idxs
+                )
 
                 # For all forests, calculate new biomass values and
                 # write them to the biomass property

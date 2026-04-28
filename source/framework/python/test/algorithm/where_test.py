@@ -42,7 +42,6 @@ class WhereTest(OperationTest):
         condition_array = lfr.create_array(array_shape, lfr.boolean_element_type, 1)
 
         for element_type in lfr.arithmetic_element_types:
-
             expression_array1 = lfr.create_array(array_shape, element_type, fill_value1)
             expression_array2 = lfr.create_array(array_shape, element_type, fill_value2)
 

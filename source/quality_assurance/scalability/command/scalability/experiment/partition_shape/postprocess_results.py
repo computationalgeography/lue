@@ -154,8 +154,7 @@ def post_process_raw_results(
         )
 
     figure.suptitle(
-        "{}, {}, {}\n"
-        "Partition shape scalability experiment ({})".format(
+        "{}, {}, {}\nPartition shape scalability experiment ({})".format(
             name,
             system_name,
             time_point,

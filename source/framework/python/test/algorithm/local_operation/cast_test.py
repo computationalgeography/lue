@@ -13,7 +13,6 @@ class CastTest(OperationTest):
             array = self.array[input_element_type]
 
             for output_element_types in lfr.arithmetic_element_types:
-
                 self.assert_overload(lfr.cast, array, output_element_types)
                 self.assert_overload(lfr.cast, scalar, output_element_types)
                 self.assert_overload(lfr.cast, value, output_element_types)

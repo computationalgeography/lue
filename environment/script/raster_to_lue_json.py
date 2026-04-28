@@ -26,9 +26,7 @@ of the rasters, which therefore must exist.
 
 The prefix directory is used to make relative paths to rasters
 absolute. Absolute paths to rasters will be used as is.
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 def raster_to_lue_json(raster_pathnames, lue_file, extent, discretization):

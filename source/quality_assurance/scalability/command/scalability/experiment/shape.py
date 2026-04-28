@@ -137,7 +137,9 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
     if method == "linear":
         # Increase the number of cells linearly, by
         # i * (multiplier - 1) * sizes[0]
-        new_size = lambda i: sizes[0] + i * (multiplier - 1) * sizes[0]
+        def new_size(i: int) -> int:
+            return sizes[0] + i * (multiplier - 1) * sizes[0]
+
         i = 1
 
         while new_size(i) <= max_nr_elements:
@@ -153,9 +155,9 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
     normalized_shape = tuple([float(extent) / max(min_shape) for extent in min_shape])
     shapes = [shape(size, normalized_shape) for size in sizes]
 
-    assert (
-        len(shapes) == 0 or nr_elements(shapes[-1]) <= max_nr_elements
-    ), "{}, {}".format(shapes, max_nr_elements)
+    assert len(shapes) == 0 or nr_elements(shapes[-1]) <= max_nr_elements, (
+        "{}, {}".format(shapes, max_nr_elements)
+    )
 
     return shapes
 

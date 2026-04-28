@@ -52,7 +52,7 @@ def program_configuration(
     assert nr_workers is not None
 
     if result_pathname is None:
-        assert not nr_workers is None
+        assert nr_workers is not None
         result_pathname = experiment.benchmark_result_pathname(
             result_prefix, cluster.name, benchmark.scenario_name, nr_workers, "json"
         )
@@ -170,9 +170,7 @@ def write_script(commands, script_pathname):
 set -e
 
 {commands}
-""".format(
-                commands="\n".join(commands)
-            )
+""".format(commands="\n".join(commands))
         )
 
 

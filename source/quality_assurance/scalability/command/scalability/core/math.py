@@ -7,4 +7,4 @@ def is_monotonically_increasing(array) -> bool:
     # Cast to float64 because when the type is unsigned int, this
     # logic fails because a negative value cannot be stored (out of range)
 
-    return np.all(np.diff(array.astype(np.float64)) > 0) == True
+    return bool(np.all(np.diff(array.astype(np.float64)) > 0))

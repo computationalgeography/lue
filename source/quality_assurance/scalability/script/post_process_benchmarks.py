@@ -26,9 +26,7 @@ Usage:
 Options:
     lue_file        Pathname to file containing benchmark results
     -h --help       Show this screen
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 def post_process_strong_scaling_benchmarks(

@@ -127,9 +127,7 @@ Options:
     result_pathname   Pathname of input LUE file containing postprocessed results
     csv_pathname      Pathname of output CSV file for storing exported durations
     platform          Name of platform
-""".format(
-        command=Path(sys.argv[0]).name
-    )
+""".format(command=Path(sys.argv[0]).name)
 
     arguments = docopt.docopt(usage, version=lue_version)
 

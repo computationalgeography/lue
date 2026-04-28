@@ -314,9 +314,7 @@ Examples:
     {command} 'slope.tif = slope("$MY_DATA/elevation.tif", 100.0)'
     {command} 'flux, state =
         accu_threshold("flow_direction", "material", "threshold")'
-""".format(
-        command=os.path.basename(sys.argv[0])
-    )
+""".format(command=os.path.basename(sys.argv[0]))
 
     argv = [arg for arg in sys.argv[1:] if not arg.startswith("--hpx:")]
     arguments = docopt.docopt(usage, argv, version=lue_version)

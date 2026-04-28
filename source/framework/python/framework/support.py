@@ -98,9 +98,9 @@ class DynamicModelRunner(object):
         self.model = model  # Inherits from lfr.Model
         self.last_time_step = last_time_step
         self.first_time_step = first_time_step
-        assert (
-            1 <= first_time_step <= last_time_step
-        ), f"{first_time_step}, {last_time_step}"
+        assert 1 <= first_time_step <= last_time_step, (
+            f"{first_time_step}, {last_time_step}"
+        )
 
     def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
         assert rate_limit >= 0, rate_limit
@@ -225,7 +225,7 @@ class MonteCarloModelRunner(object):
 
             if not os.path.isdir(directory_pathname):
                 os.mkdir(directory_pathname)
-            elif remove_existing_directories == True:
+            elif remove_existing_directories:
                 shutil.rmtree(directory_pathname)
                 os.mkdir(directory_pathname)
 
@@ -240,9 +240,9 @@ class MonteCarloModelRunner(object):
 
     def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
         assert rate_limit >= 0, rate_limit
-        assert (
-            self.framework_model.first_time_step == 1
-        ), self.framework_model.first_time_step
+        assert self.framework_model.first_time_step == 1, (
+            self.framework_model.first_time_step
+        )
 
         lfr.run_stochastic(
             self.framework_model.model,

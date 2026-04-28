@@ -28,11 +28,12 @@ def create_raster(arguments) -> int:
     }
     element_type = string_to_type[arguments["<type>"]]
 
-    value_or_none = lambda name: (
-        element_type(arguments[f"<{name}>"])
-        if arguments[f"<{name}>"] is not None
-        else None
-    )
+    def value_or_none(name):
+        return (
+            element_type(arguments[f"<{name}>"])
+            if arguments[f"<{name}>"] is not None
+            else None
+        )
 
     fill_value = value_or_none("fill")
     min_value = value_or_none("min")

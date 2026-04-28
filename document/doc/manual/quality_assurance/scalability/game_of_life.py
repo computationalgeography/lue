@@ -106,9 +106,7 @@ Usage:
 
 Options:
     <nr_generations>  Number of Game of Life generations to calculate
-""".format(
-        command=Path(sys.argv[0]).name
-    )
+""".format(command=Path(sys.argv[0]).name)
 
     # Filter out arguments meant for the HPX runtime
     argv = [arg for arg in sys.argv[1:] if not arg.startswith("--hpx")]

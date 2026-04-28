@@ -14,7 +14,7 @@ def checked_call(function):
         result = 0
         try:
             result = function(*args, **kwargs)
-        except:
+        except Exception:
             traceback.print_exc(file=sys.stderr)
             result = 1
         return 0 if result is None else result
@@ -37,9 +37,7 @@ Options:
     node_name        Name of node to update
     attribute_name   Name of attribute
     attribute_value  Value of attribute
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 @checked_call

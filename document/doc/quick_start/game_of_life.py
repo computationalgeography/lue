@@ -59,7 +59,6 @@ def next_generation(generation: Generation) -> Generation:
 
 
 class GameOfLife(lfr.Model):
-
     def __init__(
         self, array_shape: Shape, partition_shape: Shape | None, generation_path: Path
     ):
@@ -121,9 +120,7 @@ Options:
     <pathname>                 Pathname of GeoTiffs, without extension
     --partition_shape=<shape>  Shape of the array partitions. If not provided,
                                a default shape will be used.
-""".format(
-        command=Path(sys.argv[0]).name
-    )
+""".format(command=Path(sys.argv[0]).name)
 
     def parse_shape(string: str) -> Shape:
         string = string.strip("[]")

@@ -137,8 +137,9 @@ def benchmark_to_lue_json(
 
     if epoch_offset < 0:
         raise RuntimeError(
-            "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch)
+            "epoch passed in is later than epoch from benchmark: {} > {}".format(
+                epoch, benchmark_epoch
+            )
         )
 
     # Benchmarks are sorted by benchmark epochs. Keep the information
@@ -291,7 +292,7 @@ def write_scalability_results(lue_dataset):
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     lue_measurement = lue_dataset.benchmark.measurement
-    lue_meta_information = lue_dataset.benchmark.meta_information
+    # lue_meta_information = lue_dataset.benchmark.meta_information
 
     # Write property-set to dataset containing the scalability information
     # - benchmark
@@ -386,9 +387,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the mean of the relative "
             "efficiency of the {} experiments.".format(count),
         )
-        mean_relative_efficiency_property.value.expand(nr_durations)[
-            :
-        ] = mean_relative_efficiency
+        mean_relative_efficiency_property.value.expand(nr_durations)[:] = (
+            mean_relative_efficiency
+        )
 
         std_relative_efficiency_property = scaling_property_set.add_property(
             "std_relative_efficiency",
@@ -398,9 +399,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the standard deviation of the "
             "relative efficiency of the {} experiments.".format(count),
         )
-        std_relative_efficiency_property.value.expand(nr_durations)[
-            :
-        ] = std_relative_efficiency
+        std_relative_efficiency_property.value.expand(nr_durations)[:] = (
+            std_relative_efficiency
+        )
 
         # mean_lups_property = scaling_property_set.add_property(
         #     "mean_lups", np.dtype(np.float64), shape=(),

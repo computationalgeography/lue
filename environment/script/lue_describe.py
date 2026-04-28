@@ -15,9 +15,7 @@ Usage:
 
 Options:
     -h --help      Show this screen
-""".format(
-    command=os.path.basename(sys.argv[0])
-)
+""".format(command=os.path.basename(sys.argv[0]))
 
 
 def print_message(indent, message):

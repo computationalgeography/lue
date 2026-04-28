@@ -22,9 +22,7 @@ Options:
     value        Key-value pairs to use for substitutions: Python dictionary
                  formatted as a single string
     -h --help    Show this screen
-""".format(
-        command=os.path.basename(sys.argv[0])
-    )
+""".format(command=os.path.basename(sys.argv[0]))
 
     arguments = docopt.docopt(usage)
 

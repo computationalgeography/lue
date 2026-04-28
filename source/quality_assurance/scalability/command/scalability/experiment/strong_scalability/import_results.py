@@ -135,8 +135,9 @@ def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
 
     if epoch_offset < 0:
         raise RuntimeError(
-            "epoch passed in is later than epoch from benchmark: "
-            "{} > {}".format(epoch, benchmark_epoch)
+            "epoch passed in is later than epoch from benchmark: {} > {}".format(
+                epoch, benchmark_epoch
+            )
         )
 
     # Benchmarks are sorted by benchmark epochs. Keep the information
@@ -276,7 +277,7 @@ def write_scalability_results(lue_dataset):
     count = lue_dataset.benchmark.measurement.duration.value.shape[1]
 
     lue_measurement = lue_dataset.benchmark.measurement
-    lue_meta_information = lue_dataset.benchmark.meta_information
+    # lue_meta_information = lue_dataset.benchmark.meta_information
 
     # Write property-set to dataset containing the scalability information
     # - benchmark
@@ -325,7 +326,7 @@ def write_scalability_results(lue_dataset):
         np.dtype(np.float64),
         shape=(count,),
         value_variability=ldm.ValueVariability.variable,
-        description="Relative efficiency: 100% * relative_speed_up / " "nr_workers",
+        description="Relative efficiency: 100% * relative_speed_up / nr_workers",
     )
     relative_efficiency_property.value.expand(nr_durations)[:] = relative_efficiency
 
@@ -386,9 +387,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the mean of the relative "
             "speed-up of the {} experiments.".format(count),
         )
-        mean_relative_speed_up_property.value.expand(nr_durations)[
-            :
-        ] = mean_relative_speed_up
+        mean_relative_speed_up_property.value.expand(nr_durations)[:] = (
+            mean_relative_speed_up
+        )
 
         std_relative_speed_up_property = scaling_property_set.add_property(
             "std_relative_speed_up",
@@ -398,9 +399,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the standard deviation of the "
             "relative speed-ups of the {} experiments.".format(count),
         )
-        std_relative_speed_up_property.value.expand(nr_durations)[
-            :
-        ] = std_relative_speed_up
+        std_relative_speed_up_property.value.expand(nr_durations)[:] = (
+            std_relative_speed_up
+        )
 
         mean_relative_efficiency_property = scaling_property_set.add_property(
             "mean_relative_efficiency",
@@ -410,9 +411,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the mean of the relative "
             "efficiency of the {} experiments.".format(count),
         )
-        mean_relative_efficiency_property.value.expand(nr_durations)[
-            :
-        ] = mean_relative_efficiency
+        mean_relative_efficiency_property.value.expand(nr_durations)[:] = (
+            mean_relative_efficiency
+        )
 
         std_relative_efficiency_property = scaling_property_set.add_property(
             "std_relative_efficiency",
@@ -422,9 +423,9 @@ def write_scalability_results(lue_dataset):
             description="For a number of workers, the standard deviation of the "
             "relative efficiency of the {} experiments.".format(count),
         )
-        std_relative_efficiency_property.value.expand(nr_durations)[
-            :
-        ] = std_relative_efficiency
+        std_relative_efficiency_property.value.expand(nr_durations)[:] = (
+            std_relative_efficiency
+        )
 
         # mean_lups_property = scaling_property_set.add_property(
         #     "mean_lups", np.dtype(np.float64), shape=(),

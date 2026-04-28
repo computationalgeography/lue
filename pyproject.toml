@@ -1,19 +1,10 @@
-[tool.isort]
-known_lue = "lue, lue_test"
-lines_after_imports = 2
-sections = "FUTURE,STDLIB,THIRDPARTY,LUE,FIRSTPARTY,LOCALFOLDER"
-profile = "black"
-# line_length = 110
-
-# [tool.black]
-# line-length = 110
-
 [tool.codespell]
 skip = "*.cpp,*.cpp.in,*.hpp,*.hpp.in,*.tex,*_test.py,pyproject.toml"
 ignore-words-list = "nD"
 
-# [tool.pyright]
-# max-line-length = 110
+# https://docs.astral.sh/ruff/configuration/
+[tool.ruff.lint]
+ignore = ["F403"]
 
 [tool.typos]
 default.extend-ignore-identifiers-re = [
