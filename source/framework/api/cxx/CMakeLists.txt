@@ -89,6 +89,10 @@ target_sources(lue_framework_api_cxx
         source/focal/mean.cpp
         source/io.cpp
         source/local/add.cpp
+        source/local/logical_and.cpp
+        source/local/logical_exclusive_or.cpp
+        source/local/logical_inclusive_or.cpp
+        source/local/logical_not.cpp
         source/local/uniform.cpp
         source/routing/accu.cpp
 )

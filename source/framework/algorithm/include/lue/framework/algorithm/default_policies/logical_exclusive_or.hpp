@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::logical_exclusive_or {
 
-        template<typename OutputElement, typename InputElement>
+        template<std::integral OutputElement, std::integral InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -18,7 +18,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            logical_exclusive_or, policy::logical_exclusive_or::DefaultPolicies)
+            logical_exclusive_or, policy::logical_exclusive_or::DefaultPolicies, std::integral, std::integral)
 
     }  // namespace default_policies
 }  // namespace lue

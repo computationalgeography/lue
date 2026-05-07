@@ -2,18 +2,17 @@
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/concept.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<Arithmetic InputElement, std::integral OutputElement_>
         class LessThan
         {
 
             public:
-
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"less_than"};
 
@@ -31,6 +30,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(less_than, detail::LessThan)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        less_than, detail::LessThan, Arithmetic, std::integral)
 
 }  // namespace lue

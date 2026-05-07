@@ -7,7 +7,7 @@ namespace lue {
 
         // No-op: all input values are valid
 
-        template<typename BooleanElement, typename ExpressionElement>
+        template<std::integral BooleanElement, Arithmetic ExpressionElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<ExpressionElement>,
             OutputElements<BooleanElement>,
@@ -19,7 +19,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            valid, policy::valid::DefaultPolicies)
+            valid, policy::valid::DefaultPolicies, Arithmetic, std::integral)
 
     }  // namespace default_policies
 }  // namespace lue

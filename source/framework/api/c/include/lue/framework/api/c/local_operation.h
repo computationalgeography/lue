@@ -10,6 +10,14 @@ extern "C" {
 
 LUE_FCAPI_EXPORT Field* add(Field const* field1, Field const* field2);
 
+LUE_FCAPI_EXPORT Field* logical_and(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* logical_exclusive_or(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* logical_inclusive_or(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* logical_not(Field const* field);
+
 
 #ifdef __cplusplus
 }

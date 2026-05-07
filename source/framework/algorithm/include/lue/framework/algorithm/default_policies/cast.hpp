@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::cast {
 
-        template<typename OutputElement, typename InputElement>
+        template<Arithmetic OutputElement, Arithmetic InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -17,7 +17,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            cast, policy::cast::DefaultPolicies)
+            cast, policy::cast::DefaultPolicies, Arithmetic, Arithmetic)
 
     }  // namespace default_policies
 }  // namespace lue

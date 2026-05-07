@@ -9,14 +9,11 @@ namespace lue {
     namespace detail {
 
         // https://docs.scipy.org/doc/numpy/reference/generated/numpy.isclose.html
-        template<typename InputElement, typename OutputElement_>
+        template<std::floating_point InputElement, std::integral OutputElement_>
         class CloseTo
         {
 
             public:
-
-                static_assert(std::is_floating_point_v<InputElement>);
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"close_to"};
 
@@ -68,6 +65,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(close_to, detail::CloseTo)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        close_to, detail::CloseTo, std::floating_point, std::integral)
 
 }  // namespace lue

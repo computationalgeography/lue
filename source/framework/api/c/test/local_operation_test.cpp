@@ -9,6 +9,13 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 }
 
 
+// TODO
+// logical_and
+// logical_exclusive_or
+// logical_inclusive_or
+// logical_not
+
+
 // #include "lue/framework/api/c/local_operation.h"
 //
 //

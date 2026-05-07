@@ -2,18 +2,17 @@
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/concept.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<Arithmetic InputElement, std::integral OutputElement_>
         class NotEqualTo
         {
 
             public:
-
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"not_equal_to"};
 
@@ -32,6 +31,6 @@ namespace lue {
 
 
     LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-        not_equal_to, detail::NotEqualTo)
+        not_equal_to, detail::NotEqualTo, Arithmetic, std::integral)
 
 }  // namespace lue

@@ -6,6 +6,10 @@ set(focal_operation_names
 
 set(local_operation_names
     local/add
+    local/logical_and
+    local/logical_exclusive_or
+    local/logical_inclusive_or
+    local/logical_not
     local/uniform
 )
 

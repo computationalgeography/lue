@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::equal_to {
 
-        template<typename OutputElement, typename InputElement>
+        template<std::integral OutputElement, Arithmetic InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -18,7 +18,7 @@ namespace lue {
     namespace value_policies {
 
         // partition == scalar_f
-        template<typename OutputElement, typename InputElement, Rank rank>
+        template<std::integral OutputElement, Arithmetic InputElement, Rank rank>
         auto equal_to(
             hpx::id_type const locality_id,
             ArrayPartition<InputElement, rank> const& partition,
@@ -32,7 +32,7 @@ namespace lue {
 
 
         // partition == scalar
-        template<typename OutputElement, typename InputElement, Rank rank>
+        template<std::integral OutputElement, Arithmetic InputElement, Rank rank>
         auto equal_to(
             hpx::id_type const locality_id,
             ArrayPartition<InputElement, rank> const& partition,
@@ -44,7 +44,7 @@ namespace lue {
 
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            equal_to, policy::equal_to::DefaultValuePolicies)
+            equal_to, policy::equal_to::DefaultValuePolicies, Arithmetic, std::integral)
         LUE_BINARY_COMPARISON_OPERATOR(==, equal_to, BooleanElement)
 
     }  // namespace value_policies
