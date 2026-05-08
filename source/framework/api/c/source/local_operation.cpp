@@ -11,6 +11,46 @@ auto add(Field const* field1, Field const* field2) -> Field*
 }
 
 
+auto close_to(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::close_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto equal_to(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto greater_than(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::greater_than(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto greater_than_equal_to(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::greater_than_equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto less_than(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::less_than(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto logical_and(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::logical_and(as_cxx_field(field1), as_cxx_field(field2));

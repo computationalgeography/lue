@@ -113,7 +113,6 @@ class AddTest(lue_test.TestCase):
 # {
 #     using Element = std::int32_t;
 #     using Raster = lue::PartitionedArray<Element, 2>;
-#     using Element = Element;
 #
 #     lue::Field const raster = Raster{};
 #     lue::Field const value = Element{};

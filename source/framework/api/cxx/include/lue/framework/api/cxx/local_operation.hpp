@@ -1,6 +1,11 @@
 #pragma once
 
 #include "lue/framework/api/cxx/local/add.hpp"
+#include "lue/framework/api/cxx/local/close_to.hpp"
+#include "lue/framework/api/cxx/local/equal_to.hpp"
+#include "lue/framework/api/cxx/local/greater_than.hpp"
+#include "lue/framework/api/cxx/local/greater_than_equal_to.hpp"
+#include "lue/framework/api/cxx/local/less_than.hpp"
 #include "lue/framework/api/cxx/local/logical_and.hpp"
 #include "lue/framework/api/cxx/local/logical_exclusive_or.hpp"
 #include "lue/framework/api/cxx/local/logical_inclusive_or.hpp"

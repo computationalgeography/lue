@@ -98,7 +98,6 @@ BOOST_AUTO_TEST_CASE(logical_and_array_value)
 {
     using Element = lue::BooleanElement;
     using Array = lue::PartitionedArray<Element, 2>;
-    using Element = Element;
 
     lue::api::Field const array = Array{};
     lue::api::Field const value = Element{};

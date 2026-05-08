@@ -10,6 +10,11 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 
 
 // TODO
+// close_to
+// equal_to
+// greater_than
+// greater_than_equal_to
+// less_than
 // logical_and
 // logical_exclusive_or
 // logical_inclusive_or

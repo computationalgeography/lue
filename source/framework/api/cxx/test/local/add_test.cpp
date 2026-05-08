@@ -97,7 +97,6 @@ BOOST_AUTO_TEST_CASE(add_raster_value)
 {
     using Element = std::int32_t;
     using Array = lue::PartitionedArray<Element, 2>;
-    using Element = Element;
 
     lue::api::Field const raster = Array{};
     lue::api::Field const value = Element{};
