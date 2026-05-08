@@ -94,10 +94,12 @@ target_sources(lue_framework_api_cxx
         source/local/greater_than.cpp
         source/local/greater_than_equal_to.cpp
         source/local/less_than.cpp
+        source/local/less_than_equal_to.cpp
         source/local/logical_and.cpp
         source/local/logical_exclusive_or.cpp
         source/local/logical_inclusive_or.cpp
         source/local/logical_not.cpp
+        source/local/not_equal_to.cpp
         source/local/uniform.cpp
         source/routing/accu.cpp
 )

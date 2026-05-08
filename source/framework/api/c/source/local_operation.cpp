@@ -51,6 +51,14 @@ auto less_than(Field const* field1, Field const* field2) -> Field*
 }
 
 
+auto less_than_equal_to(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::less_than_equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto logical_and(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::logical_and(as_cxx_field(field1), as_cxx_field(field2));
@@ -78,6 +86,14 @@ auto logical_inclusive_or(Field const* field1, Field const* field2) -> Field*
 auto logical_not(Field const* field) -> Field*
 {
     lue::api::Field result = lue::api::logical_not(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto not_equal_to(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::not_equal_to(as_cxx_field(field1), as_cxx_field(field2));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }

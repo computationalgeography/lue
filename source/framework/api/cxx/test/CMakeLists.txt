@@ -11,10 +11,12 @@ set(local_operation_names
     local/greater_than
     local/greater_than_equal_to
     local/less_than
+    local/less_than_equal_to
     local/logical_and
     local/logical_exclusive_or
     local/logical_inclusive_or
     local/logical_not
+    local/not_equal_to
     local/uniform
 )
 

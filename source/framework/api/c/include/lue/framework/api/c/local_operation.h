@@ -20,6 +20,8 @@ LUE_FCAPI_EXPORT Field* greater_than_equal_to(Field const* field1, Field const* 
 
 LUE_FCAPI_EXPORT Field* less_than(Field const* field1, Field const* field2);
 
+LUE_FCAPI_EXPORT Field* less_than_equal_to(Field const* field1, Field const* field2);
+
 LUE_FCAPI_EXPORT Field* logical_and(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* logical_exclusive_or(Field const* field1, Field const* field2);
@@ -27,6 +29,8 @@ LUE_FCAPI_EXPORT Field* logical_exclusive_or(Field const* field1, Field const* f
 LUE_FCAPI_EXPORT Field* logical_inclusive_or(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* logical_not(Field const* field);
+
+LUE_FCAPI_EXPORT Field* not_equal_to(Field const* field1, Field const* field2);
 
 
 #ifdef __cplusplus

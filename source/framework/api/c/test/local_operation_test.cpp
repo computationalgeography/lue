@@ -15,10 +15,13 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // greater_than
 // greater_than_equal_to
 // less_than
+// less_than_equal_to
 // logical_and
 // logical_exclusive_or
 // logical_inclusive_or
 // logical_not
+// not_equal_to
+// uniform
 
 
 // #include "lue/framework/api/c/local_operation.h"
