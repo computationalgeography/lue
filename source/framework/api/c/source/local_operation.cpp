@@ -35,9 +35,25 @@ auto atan_(Field const* field) -> Field*
 }
 
 
+auto atan2_(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::atan2(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto close_to(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::close_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto cos_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::cos(as_cxx_field(field));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }
@@ -118,6 +134,22 @@ auto logical_not(Field const* field) -> Field*
 auto not_equal_to(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::not_equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto sin_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::sin(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto tan_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::tan(as_cxx_field(field));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }

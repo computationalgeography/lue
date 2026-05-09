@@ -92,7 +92,9 @@ target_sources(lue_framework_api_cxx
         source/local/add.cpp
         source/local/asin.cpp
         source/local/atan.cpp
+        source/local/atan2.cpp
         source/local/close_to.cpp
+        source/local/cos.cpp
         source/local/equal_to.cpp
         source/local/greater_than.cpp
         source/local/greater_than_equal_to.cpp
@@ -103,6 +105,8 @@ target_sources(lue_framework_api_cxx
         source/local/logical_inclusive_or.cpp
         source/local/logical_not.cpp
         source/local/not_equal_to.cpp
+        source/local/sin.cpp
+        source/local/tan.cpp
         source/local/uniform.cpp
         source/local/where2.cpp
         source/local/where3.cpp

@@ -2,7 +2,6 @@
 #include "detail/unsupported_overload.hpp"
 #include "overload.hpp"
 #include "lue/framework/algorithm/value_policies/asin.hpp"
-#include "lue/framework.hpp"
 
 
 namespace lue {

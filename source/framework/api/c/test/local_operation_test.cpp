@@ -14,7 +14,9 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // add
 // asin
 // atan
+// atan2
 // close_to
+// cos
 // equal_to
 // greater_than
 // greater_than_equal_to
@@ -25,6 +27,8 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // logical_inclusive_or
 // logical_not
 // not_equal_to
+// sin
+// tan
 // uniform
 // where2
 // where3
