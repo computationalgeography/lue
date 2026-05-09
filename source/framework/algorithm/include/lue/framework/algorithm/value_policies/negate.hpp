@@ -7,7 +7,7 @@
 namespace lue {
     namespace policy::negate {
 
-        template<typename Element>
+        template<SignedIntegralOrFloatingPoint Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -19,7 +19,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            negate, policy::negate::DefaultValuePolicies)
+            negate, policy::negate::DefaultValuePolicies, SignedIntegralOrFloatingPoint)
 
         LUE_UNARY_LOGICAL_OPERATOR(-, negate, BooleanElement)
 

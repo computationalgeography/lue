@@ -70,10 +70,13 @@ namespace lue {
 
 
 // All overloads *with* a Policies template parameter
-#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(name, Functor)                 \
+#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(name, Functor, ElementConcept) \
                                                                                                              \
     /* f(policies, array) */                                                                                 \
     template<typename Policies, Rank rank>                                                                   \
+        requires(ElementConcept<policy::InputElementT<Policies, 0>> &&                                       \
+                 ElementConcept<policy::OutputElementT<Policies, 0>> &&                                      \
+                 std::same_as<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>)      \
     auto name(                                                                                               \
         Policies const& policies, PartitionedArray<policy::InputElementT<Policies, 0>, rank> const& array)   \
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, rank>                                       \
@@ -84,6 +87,9 @@ namespace lue {
                                                                                                              \
     /* f(policies, scalar) */                                                                                \
     template<typename Policies>                                                                              \
+        requires(ElementConcept<policy::InputElementT<Policies, 0>> &&                                       \
+                 ElementConcept<policy::OutputElementT<Policies, 0>> &&                                      \
+                 std::same_as<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>)      \
     auto name(Policies const& policies, Scalar<policy::InputElementT<Policies, 0>> const& scalar)            \
         -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
@@ -93,7 +99,9 @@ namespace lue {
                                                                                                              \
     /* f(policies, value) */                                                                                 \
     template<typename Policies>                                                                              \
-        requires std::is_arithmetic_v<policy::InputElementT<Policies, 0>>                                    \
+        requires(ElementConcept<policy::InputElementT<Policies, 0>> &&                                       \
+                 ElementConcept<policy::OutputElementT<Policies, 0>> &&                                      \
+                 std::same_as<policy::InputElementT<Policies, 0>, policy::OutputElementT<Policies, 0>>)      \
     auto name(Policies const& policies, policy::InputElementT<Policies, 0> const& value)                     \
         -> Scalar<policy::OutputElementT<Policies, 0>>                                                       \
     {                                                                                                        \
@@ -138,10 +146,12 @@ namespace lue {
 
 // All overloads *without* a Policies template parameter
 // Create a Policies instance and call the general implementation
-#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(name, Policies)             \
+#define LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(                            \
+    name, Policies, ElementConcept)                                                                          \
                                                                                                              \
     /* f(array) */                                                                                           \
     template<typename Element, Rank rank>                                                                    \
+        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
     auto name(PartitionedArray<Element, rank> const& array) -> PartitionedArray<Element, rank>               \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
@@ -152,6 +162,7 @@ namespace lue {
                                                                                                              \
     /* f(scalar) */                                                                                          \
     template<typename Element>                                                                               \
+        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
     auto name(Scalar<Element> const& scalar) -> Scalar<Element>                                              \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
@@ -162,7 +173,7 @@ namespace lue {
                                                                                                              \
     /* f(value) */                                                                                           \
     template<typename Element>                                                                               \
-        requires std::is_arithmetic_v<Element>                                                               \
+        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
     auto name(Element const& value) -> Scalar<Element>                                                       \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \

@@ -1,22 +1,22 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/unary_local_operation.hpp"
+#include "lue/concept.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<SignedIntegralOrFloatingPoint InputElement>
         class Negate
         {
 
             public:
 
-                static_assert(std::is_signed_v<InputElement> || std::is_floating_point_v<InputElement>);
-
                 static constexpr char const* name{"negate"};
 
                 using OutputElement = InputElement;
+
 
                 auto operator()(InputElement const& input_element) const noexcept -> OutputElement
                 {
@@ -27,6 +27,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(negate, detail::Negate)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        negate, detail::Negate, SignedIntegralOrFloatingPoint)
 
 }  // namespace lue

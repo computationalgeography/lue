@@ -7,13 +7,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<std::floating_point InputElement>
         class ASin
         {
 
             public:
-
-                static_assert(std::is_floating_point_v<InputElement>);
 
                 static constexpr char const* name{"asin"};
 
@@ -29,6 +27,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(asin, detail::ASin)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        asin, detail::ASin, std::floating_point)
 
 }  // namespace lue

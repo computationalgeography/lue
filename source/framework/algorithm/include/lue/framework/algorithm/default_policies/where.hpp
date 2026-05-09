@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::where {
 
-        template<typename OutputElement, typename ConditionElement, typename... ExpressionElement>
+        template<typename OutputElement, std::integral ConditionElement, typename... ExpressionElement>
         using DefaultPolicies = policy::DefaultPolicies<
             DomainPolicy<ConditionElement, ExpressionElement...>,
             OutputElements<OutputElement>,
@@ -17,7 +17,7 @@ namespace lue {
     namespace default_policies {
 
         // where(array, array, array)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             PartitionedArray<Element, rank> const& true_array,
@@ -30,7 +30,7 @@ namespace lue {
 
 
         // where(array, array, value_f)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             PartitionedArray<Element, rank> const& true_array,
@@ -43,7 +43,7 @@ namespace lue {
 
 
         // where(array, value_f, array)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             hpx::shared_future<Element> const& true_value_f,
@@ -56,7 +56,7 @@ namespace lue {
 
 
         // where(array, value_f, value_f)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             hpx::shared_future<Element> const& true_value_f,
@@ -69,7 +69,7 @@ namespace lue {
 
 
         // where(array, array, scalar)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             PartitionedArray<Element, rank> const& true_array,
@@ -82,7 +82,7 @@ namespace lue {
 
 
         // where(array, scalar, array)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             Scalar<Element> const& true_scalar,
@@ -95,7 +95,7 @@ namespace lue {
 
 
         // where(array, scalar, scalar)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             Scalar<Element> const& true_scalar,
@@ -108,7 +108,7 @@ namespace lue {
 
 
         // where(array, array, value)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             PartitionedArray<Element, rank> const& true_array,
@@ -121,7 +121,7 @@ namespace lue {
 
 
         // where(array, value, array)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             Element const true_value,
@@ -134,7 +134,7 @@ namespace lue {
 
 
         // where(array, value, value)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             Element const true_value,
@@ -146,11 +146,37 @@ namespace lue {
         }
 
 
+        // where(array, scalar, value)
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
+        auto where(
+            PartitionedArray<ConditionElement, rank> const& condition,
+            Scalar<Element> const& true_scalar,
+            Element const false_value) -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::where::DefaultPolicies<Element, ConditionElement, Element, Element>;
+
+            return where(Policies{}, condition, true_scalar, false_value);
+        }
+
+
+        // where(array, value, scalar)
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
+        auto where(
+            PartitionedArray<ConditionElement, rank> const& condition,
+            Element const true_value,
+            Scalar<Element> const& false_scalar) -> PartitionedArray<Element, rank>
+        {
+            using Policies = policy::where::DefaultPolicies<Element, ConditionElement, Element, Element>;
+
+            return where(Policies{}, condition, true_value, false_scalar);
+        }
+
+
         // ---------------------------------------------------------------------
 
 
         // where(array, array)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             PartitionedArray<Element, rank> const& true_array) -> PartitionedArray<Element, rank>
@@ -162,7 +188,7 @@ namespace lue {
 
 
         // where(array, value_f)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition,
             hpx::shared_future<Element> const& true_value_f) -> PartitionedArray<Element, rank>
@@ -174,7 +200,7 @@ namespace lue {
 
 
         // where(array, scalar)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(
             PartitionedArray<ConditionElement, rank> const& condition, Scalar<Element> const& true_scalar)
             -> PartitionedArray<Element, rank>
@@ -186,7 +212,7 @@ namespace lue {
 
 
         // where(array, value)
-        template<typename ConditionElement, typename Element, Rank rank>
+        template<std::integral ConditionElement, Arithmetic Element, Rank rank>
         auto where(PartitionedArray<ConditionElement, rank> const& condition, Element const true_value)
             -> PartitionedArray<Element, rank>
         {

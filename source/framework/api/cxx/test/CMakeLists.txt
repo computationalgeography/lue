@@ -5,7 +5,10 @@ set(focal_operation_names
 )
 
 set(local_operation_names
+    local/acos
     local/add
+    local/asin
+    local/atan
     local/close_to
     local/equal_to
     local/greater_than
@@ -18,6 +21,7 @@ set(local_operation_names
     local/logical_not
     local/not_equal_to
     local/uniform
+    local/where
 )
 
 set(routing_operation_names

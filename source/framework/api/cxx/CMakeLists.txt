@@ -88,7 +88,10 @@ target_sources(lue_framework_api_cxx
         source/create_scalar.cpp
         source/focal/mean.cpp
         source/io.cpp
+        source/local/acos.cpp
         source/local/add.cpp
+        source/local/asin.cpp
+        source/local/atan.cpp
         source/local/close_to.cpp
         source/local/equal_to.cpp
         source/local/greater_than.cpp
@@ -101,6 +104,8 @@ target_sources(lue_framework_api_cxx
         source/local/logical_not.cpp
         source/local/not_equal_to.cpp
         source/local/uniform.cpp
+        source/local/where2.cpp
+        source/local/where3.cpp
         source/routing/accu.cpp
 )
 

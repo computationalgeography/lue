@@ -6,7 +6,10 @@ namespace lue::api {
 
     void bind_local_operations(pybind11::module& module)
     {
+        module.def("acos", acos);
         module.def("add", add);
+        module.def("asin", asin);
+        module.def("atan", atan);
         module.def("close_to", close_to);
         module.def("equal_to", equal_to);
         module.def("greater_than", greater_than);
@@ -18,6 +21,14 @@ namespace lue::api {
         module.def("logical_inclusive_or", logical_inclusive_or);
         module.def("logical_not", logical_not);
         module.def("not_equal_to", equal_to);
+        module.def(
+            "where",
+            [](Field const& condition_field, Field const& true_field) -> Field
+            { return where(condition_field, true_field); });
+        module.def(
+            "where",
+            [](Field const& condition_field, Field const& true_field, Field const& false_field) -> Field
+            { return where(condition_field, true_field, false_field); });
 
         module.def(
             "uniform",

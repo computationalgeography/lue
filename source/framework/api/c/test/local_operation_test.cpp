@@ -10,6 +10,10 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 
 
 // TODO
+// acos
+// add
+// asin
+// atan
 // close_to
 // equal_to
 // greater_than
@@ -22,6 +26,8 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // logical_not
 // not_equal_to
 // uniform
+// where2
+// where3
 
 
 // #include "lue/framework/api/c/local_operation.h"

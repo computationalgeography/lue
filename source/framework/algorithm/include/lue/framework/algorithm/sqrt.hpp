@@ -7,17 +7,16 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<std::floating_point InputElement>
         class Sqrt
         {
 
             public:
 
-                static_assert(std::is_floating_point_v<InputElement>);
-
                 static constexpr char const* name{"sqrt"};
 
                 using OutputElement = InputElement;
+
 
                 auto operator()(InputElement const& input_element) const noexcept -> OutputElement
                 {
@@ -30,7 +29,7 @@ namespace lue {
 
     namespace policy::sqrt {
 
-        template<typename Element>
+        template<std::floating_point Element>
         class DomainPolicy
         {
 
@@ -45,6 +44,7 @@ namespace lue {
     }  // namespace policy::sqrt
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(sqrt, detail::Sqrt)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        sqrt, detail::Sqrt, std::floating_point)
 
 }  // namespace lue

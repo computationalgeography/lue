@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::abs {
 
-        template<typename Element>
+        template<SignedIntegralOrFloatingPoint Element>
         class RangePolicy
         {
 
@@ -28,7 +28,7 @@ namespace lue {
         };
 
 
-        template<typename Element>
+        template<SignedIntegralOrFloatingPoint Element>
         using DefaultValuePolicies = policy::Policies<
             AllValuesWithinDomain<Element>,
             OutputsPolicies<OutputPolicies<DefaultOutputNoDataPolicy<Element>, RangePolicy<Element>>>,
@@ -40,7 +40,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            abs, policy::abs::DefaultValuePolicies)
+            abs, policy::abs::DefaultValuePolicies, SignedIntegralOrFloatingPoint)
 
     }  // namespace value_policies
 }  // namespace lue

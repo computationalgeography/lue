@@ -1,6 +1,9 @@
 #pragma once
 
+#include "lue/framework/api/cxx/local/acos.hpp"
 #include "lue/framework/api/cxx/local/add.hpp"
+#include "lue/framework/api/cxx/local/asin.hpp"
+#include "lue/framework/api/cxx/local/atan.hpp"
 #include "lue/framework/api/cxx/local/close_to.hpp"
 #include "lue/framework/api/cxx/local/equal_to.hpp"
 #include "lue/framework/api/cxx/local/greater_than.hpp"
@@ -13,3 +16,4 @@
 #include "lue/framework/api/cxx/local/logical_not.hpp"
 #include "lue/framework/api/cxx/local/not_equal_to.hpp"
 #include "lue/framework/api/cxx/local/uniform.hpp"
+#include "lue/framework/api/cxx/local/where.hpp"
