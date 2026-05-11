@@ -284,6 +284,14 @@ auto trunc_(Field const* field) -> Field*
 }
 
 
+auto valid(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::valid(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto where(Field const* field1, Field const* field2, Field const* field3) -> Field*
 {
     lue::api::Field result =

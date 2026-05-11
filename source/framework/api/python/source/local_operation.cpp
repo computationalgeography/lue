@@ -29,6 +29,7 @@ namespace lue::api {
         module.def("logical_exclusive_or", logical_exclusive_or);
         module.def("logical_inclusive_or", logical_inclusive_or);
         module.def("logical_not", logical_not);
+        module.def("valid", valid);
         module.def("modulus", modulus);
         module.def("multiply", multiply);
         module.def("negate", negate);

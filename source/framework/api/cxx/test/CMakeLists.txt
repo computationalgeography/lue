@@ -41,6 +41,7 @@ set(local_operation_names
     local/tan
     local/trunc
     local/uniform
+    local/valid
     local/where
 )
 

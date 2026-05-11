@@ -12,8 +12,6 @@ namespace lue {
 
             public:
 
-                static_assert(std::is_integral_v<OutputElement_>);
-
                 static constexpr char const* name{"valid"};
 
                 using OutputElement = OutputElement_;

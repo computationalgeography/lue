@@ -46,6 +46,7 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // tan
 // trunc
 // uniform
+// valid
 // where2
 // where3
 

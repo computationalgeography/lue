@@ -36,4 +36,5 @@
 #include "lue/framework/api/cxx/local/tan.hpp"
 #include "lue/framework/api/cxx/local/trunc.hpp"
 #include "lue/framework/api/cxx/local/uniform.hpp"
+#include "lue/framework/api/cxx/local/valid.hpp"
 #include "lue/framework/api/cxx/local/where.hpp"
