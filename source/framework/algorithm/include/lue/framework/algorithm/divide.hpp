@@ -49,6 +49,6 @@ namespace lue {
     }  // namespace policy::divide
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(divide, detail::Divide)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(divide, detail::Divide, Arithmetic)
 
 }  // namespace lue

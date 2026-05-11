@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/api/cxx/local/add.hpp"
+#include "lue/framework/api/cxx/local/divide.hpp"
 #include "lue/framework/api/cxx/local/equal_to.hpp"
 #include "lue/framework/api/cxx/local/greater_than.hpp"
 #include "lue/framework/api/cxx/local/greater_than_equal_to.hpp"
@@ -8,12 +9,22 @@
 #include "lue/framework/api/cxx/local/logical_and.hpp"
 #include "lue/framework/api/cxx/local/logical_inclusive_or.hpp"
 #include "lue/framework/api/cxx/local/logical_not.hpp"
+#include "lue/framework/api/cxx/local/modulus.hpp"
+#include "lue/framework/api/cxx/local/multiply.hpp"
+#include "lue/framework/api/cxx/local/negate.hpp"
 #include "lue/framework/api/cxx/local/not_equal_to.hpp"
+#include "lue/framework/api/cxx/local/subtract.hpp"
 
 
 inline auto operator+(lue::api::Field const& lhs, lue::api::Field const& rhs)
 {
     return lue::api::add(lhs, rhs);
+}
+
+
+inline auto operator/(lue::api::Field const& lhs, lue::api::Field const& rhs)
+{
+    return lue::api::divide(lhs, rhs);
 }
 
 
@@ -65,7 +76,31 @@ inline auto operator!(lue::api::Field const& argument)
 }
 
 
+inline auto operator%(lue::api::Field const& lhs, lue::api::Field const& rhs)
+{
+    return lue::api::modulus(lhs, rhs);
+}
+
+
+inline auto operator*(lue::api::Field const& lhs, lue::api::Field const& rhs)
+{
+    return lue::api::multiply(lhs, rhs);
+}
+
+
+inline auto operator-(lue::api::Field const& argument)
+{
+    return lue::api::negate(argument);
+}
+
+
 inline auto operator!=(lue::api::Field const& lhs, lue::api::Field const& rhs)
 {
     return lue::api::not_equal_to(lhs, rhs);
+}
+
+
+inline auto operator-(lue::api::Field const& lhs, lue::api::Field const& rhs)
+{
+    return lue::api::subtract(lhs, rhs);
 }

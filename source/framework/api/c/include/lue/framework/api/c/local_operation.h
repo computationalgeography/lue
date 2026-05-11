@@ -8,6 +8,8 @@ extern "C" {
 #endif
 
 
+LUE_FCAPI_EXPORT Field* abs_(Field const* field);
+
 LUE_FCAPI_EXPORT Field* acos_(Field const* field);
 
 LUE_FCAPI_EXPORT Field* add(Field const* field1, Field const* field2);
@@ -24,7 +26,11 @@ LUE_FCAPI_EXPORT Field* close_to(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* cos_(Field const* field);
 
+LUE_FCAPI_EXPORT Field* divide(Field const* field1, Field const* field2);
+
 LUE_FCAPI_EXPORT Field* equal_to(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* exp_(Field const* field);
 
 LUE_FCAPI_EXPORT Field* floor_(Field const* field);
 
@@ -36,6 +42,10 @@ LUE_FCAPI_EXPORT Field* less_than(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* less_than_equal_to(Field const* field1, Field const* field2);
 
+LUE_FCAPI_EXPORT Field* log_(Field const* field);
+
+LUE_FCAPI_EXPORT Field* log10_(Field const* field);
+
 LUE_FCAPI_EXPORT Field* logical_and(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* logical_exclusive_or(Field const* field1, Field const* field2);
@@ -43,6 +53,12 @@ LUE_FCAPI_EXPORT Field* logical_exclusive_or(Field const* field1, Field const* f
 LUE_FCAPI_EXPORT Field* logical_inclusive_or(Field const* field1, Field const* field2);
 
 LUE_FCAPI_EXPORT Field* logical_not(Field const* field);
+
+LUE_FCAPI_EXPORT Field* modulus(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* multiply(Field const* field1, Field const* field2);
+
+LUE_FCAPI_EXPORT Field* negate(Field const* field);
 
 LUE_FCAPI_EXPORT Field* not_equal_to(Field const* field1, Field const* field2);
 

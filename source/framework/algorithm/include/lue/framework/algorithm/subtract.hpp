@@ -7,7 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<Arithmetic InputElement, Arithmetic OutputElement_ = InputElement>
         class Subtract
         {
 
@@ -29,6 +29,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(subtract, detail::Subtract)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        subtract, detail::Subtract, Arithmetic)
 
 }  // namespace lue

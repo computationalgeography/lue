@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::multiply {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<Element, Element>,
             OutputElements<Element>,
@@ -17,7 +17,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            multiply, policy::multiply::DefaultPolicies)
+            multiply, policy::multiply::DefaultPolicies, Arithmetic)
         LUE_BINARY_ARITHMETIC_OPERATOR(*, multiply)
 
     }  // namespace default_policies

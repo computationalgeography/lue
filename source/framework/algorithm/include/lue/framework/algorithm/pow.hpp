@@ -7,17 +7,15 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<std::floating_point InputElement, std::floating_point OutputElement_ = InputElement>
         class Pow
         {
 
             public:
 
-                static_assert(std::is_floating_point_v<InputElement>);
-
                 static constexpr char const* name{"pow"};
 
-                using OutputElement = OutputElement_;
+                using OutputElement = InputElement;
 
 
                 auto operator()(InputElement const input_element, InputElement const exponent) const noexcept
@@ -32,12 +30,13 @@ namespace lue {
 
     namespace policy::pow {
 
-        template<typename InputElement>
+        template<std::floating_point InputElement>
         using DomainPolicy = AllValuesWithinDomain<InputElement, InputElement>;
 
     }
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(pow, detail::Pow)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        pow, detail::Pow, std::floating_point)
 
 }  // namespace lue

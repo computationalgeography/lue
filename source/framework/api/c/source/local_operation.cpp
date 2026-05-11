@@ -3,6 +3,14 @@
 #include "lue/framework/api/cxx/local_operation.hpp"
 
 
+auto abs_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::abs(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto acos_(Field const* field) -> Field*
 {
     lue::api::Field result = lue::api::acos(as_cxx_field(field));
@@ -67,9 +75,25 @@ auto cos_(Field const* field) -> Field*
 }
 
 
+auto divide(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::divide(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto equal_to(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto exp_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::exp(as_cxx_field(field));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }
@@ -115,6 +139,22 @@ auto less_than_equal_to(Field const* field1, Field const* field2) -> Field*
 }
 
 
+auto log_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::log(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto log10_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::log10(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto logical_and(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::logical_and(as_cxx_field(field1), as_cxx_field(field2));
@@ -147,9 +187,50 @@ auto logical_not(Field const* field) -> Field*
 }
 
 
+auto modulus(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::modulus(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto multiply(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::multiply(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto negate(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::negate(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
 auto not_equal_to(Field const* field1, Field const* field2) -> Field*
 {
     lue::api::Field result = lue::api::not_equal_to(as_cxx_field(field1), as_cxx_field(field2));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto open_simplex_noise(Field const* x_coordinates, Field const* y_coordinates, int const seed) -> Field*
+{
+    lue::api::Field result =
+        lue::api::open_simplex_noise(as_cxx_field(x_coordinates), as_cxx_field(y_coordinates), seed);
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto pow(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::pow(as_cxx_field(field1), as_cxx_field(field2));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }
@@ -166,6 +247,22 @@ auto round_(Field const* field) -> Field*
 auto sin_(Field const* field) -> Field*
 {
     lue::api::Field result = lue::api::sin(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto sqrt_(Field const* field) -> Field*
+{
+    lue::api::Field result = lue::api::sqrt(as_cxx_field(field));
+
+    return new Field{.instance = new lue::api::Field{std::move(result)}};
+}
+
+
+auto subtract(Field const* field1, Field const* field2) -> Field*
+{
+    lue::api::Field result = lue::api::subtract(as_cxx_field(field1), as_cxx_field(field2));
 
     return new Field{.instance = new lue::api::Field{std::move(result)}};
 }

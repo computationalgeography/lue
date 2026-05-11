@@ -150,8 +150,7 @@ namespace lue {
     name, Policies, ElementConcept)                                                                          \
                                                                                                              \
     /* f(array) */                                                                                           \
-    template<typename Element, Rank rank>                                                                    \
-        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
+    template<ElementConcept Element, Rank rank>                                                              \
     auto name(PartitionedArray<Element, rank> const& array) -> PartitionedArray<Element, rank>               \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
@@ -161,8 +160,7 @@ namespace lue {
                                                                                                              \
                                                                                                              \
     /* f(scalar) */                                                                                          \
-    template<typename Element>                                                                               \
-        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
+    template<ElementConcept Element>                                                                         \
     auto name(Scalar<Element> const& scalar) -> Scalar<Element>                                              \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \
@@ -172,8 +170,7 @@ namespace lue {
                                                                                                              \
                                                                                                              \
     /* f(value) */                                                                                           \
-    template<typename Element>                                                                               \
-        requires(ElementConcept<Element> && ElementConcept<Element>)                                         \
+    template<ElementConcept Element>                                                                         \
     auto name(Element const& value) -> Scalar<Element>                                                       \
     {                                                                                                        \
         using Policies_ = Policies<Element>;                                                                 \

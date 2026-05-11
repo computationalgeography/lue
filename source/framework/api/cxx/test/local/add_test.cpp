@@ -1,11 +1,12 @@
 #define BOOST_TEST_MODULE lue framework api cxx local add
 #include "lue/framework/api/cxx/operator.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
+#include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(add_raster_raster)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Array = lue::PartitionedArray<Element, 2>;
 
     lue::api::Field const raster1 = Array{};
@@ -27,7 +28,7 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 
 BOOST_AUTO_TEST_CASE(add_raster_scalar)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Array = lue::PartitionedArray<Element, 2>;
     using Scalar = lue::Scalar<Element>;
 
@@ -50,7 +51,7 @@ BOOST_AUTO_TEST_CASE(add_raster_scalar)
 
 BOOST_AUTO_TEST_CASE(add_scalar_raster)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
     using Array = lue::PartitionedArray<Element, 2>;
 
@@ -73,7 +74,7 @@ BOOST_AUTO_TEST_CASE(add_scalar_raster)
 
 BOOST_AUTO_TEST_CASE(add_scalar_scalar)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const scalar1 = Scalar{};
@@ -95,7 +96,7 @@ BOOST_AUTO_TEST_CASE(add_scalar_scalar)
 
 BOOST_AUTO_TEST_CASE(add_raster_value)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Array = lue::PartitionedArray<Element, 2>;
 
     lue::api::Field const raster = Array{};
@@ -117,8 +118,8 @@ BOOST_AUTO_TEST_CASE(add_raster_value)
 
 BOOST_AUTO_TEST_CASE(add_value_raster)
 {
-    using Element = std::int32_t;
-    using Array = lue::PartitionedArray<std::int32_t, 2>;
+    using Element = lue::LargestIntegralElement;
+    using Array = lue::PartitionedArray<Element, 2>;
 
     lue::api::Field const value = Element{};
     lue::api::Field const raster = Array{};
@@ -139,7 +140,7 @@ BOOST_AUTO_TEST_CASE(add_value_raster)
 
 BOOST_AUTO_TEST_CASE(add_scalar_value)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const scalar = Scalar{};
@@ -161,7 +162,7 @@ BOOST_AUTO_TEST_CASE(add_scalar_value)
 
 BOOST_AUTO_TEST_CASE(add_value_scalar)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const scalar = Scalar{};
@@ -183,7 +184,7 @@ BOOST_AUTO_TEST_CASE(add_value_scalar)
 
 BOOST_AUTO_TEST_CASE(add_value_value)
 {
-    using Element = std::int32_t;
+    using Element = lue::LargestIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const value1 = Element{};

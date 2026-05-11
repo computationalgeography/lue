@@ -10,6 +10,7 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 
 
 // TODO
+// abs
 // acos
 // add
 // asin
@@ -18,19 +19,30 @@ BOOST_AUTO_TEST_CASE(add_raster_raster)
 // ceil
 // close_to
 // cos
+// divide
 // equal_to
+// exp
 // floor
 // greater_than
 // greater_than_equal_to
 // less_than
 // less_than_equal_to
+// log
+// log10
 // logical_and
 // logical_exclusive_or
 // logical_inclusive_or
 // logical_not
+// modulus
+// multiply
+// negate
 // not_equal_to
+// open_simplex_noise
+// pow
 // round
 // sin
+// sqrt
+// subtract
 // tan
 // trunc
 // uniform

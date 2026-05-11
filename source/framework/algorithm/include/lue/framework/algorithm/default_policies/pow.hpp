@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::pow {
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultPolicies = policy::
             DefaultPolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element, Element>>;
 
@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            pow, policy::pow::DefaultPolicies)
+            pow, policy::pow::DefaultPolicies, std::floating_point)
 
     }  // namespace default_policies
 
