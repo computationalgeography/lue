@@ -10,9 +10,11 @@ set(local_operation_names
     local/asin
     local/atan
     local/atan2
+    local/ceil
     local/close_to
     local/cos
     local/equal_to
+    local/floor
     local/greater_than
     local/greater_than_equal_to
     local/less_than
@@ -22,7 +24,10 @@ set(local_operation_names
     local/logical_inclusive_or
     local/logical_not
     local/not_equal_to
+    local/round
     local/sin
+    local/tan
+    local/trunc
     local/uniform
     local/where
 )

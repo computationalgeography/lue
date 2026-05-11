@@ -11,9 +11,11 @@ namespace lue::api {
         module.def("asin", asin);
         module.def("atan", atan);
         module.def("atan2", atan2);
+        module.def("ceil", ceil);
         module.def("close_to", close_to);
         module.def("cos", cos);
         module.def("equal_to", equal_to);
+        module.def("floor", floor);
         module.def("greater_than", greater_than);
         module.def("greater_than_equal_to", greater_than_equal_to);
         module.def("less_than", less_than);
@@ -22,9 +24,11 @@ namespace lue::api {
         module.def("logical_exclusive_or", logical_exclusive_or);
         module.def("logical_inclusive_or", logical_inclusive_or);
         module.def("logical_not", logical_not);
-        module.def("not_equal_to", equal_to);
+        module.def("not_equal_to", not_equal_to);
+        module.def("round", round);
         module.def("sin", sin);
         module.def("tan", tan);
+        module.def("trunc", trunc);
         module.def(
             "where",
             [](Field const& condition_field, Field const& true_field) -> Field
