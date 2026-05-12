@@ -92,6 +92,8 @@ repos:
                   source/data_model/validate/.*|
                   source/framework/algorithm/.*|
                   source/framework/api/c/.*|
+                  source/framework/api/cxx/test/io_test.cpp|
+                  source/framework/api/python/source/io.cpp|
                   source/framework/core/.*|
                   source/framework/image_land/.*|
                   source/framework/io/.*|

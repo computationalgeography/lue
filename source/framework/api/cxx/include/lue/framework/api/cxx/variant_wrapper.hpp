@@ -11,7 +11,7 @@ namespace lue::api {
         struct is_one_of;
 
         template<typename T, typename U>
-        inline constexpr bool is_one_of_v = is_one_of<T, U>::value;
+        constexpr bool is_one_of_v = is_one_of<T, U>::value;
 
         template<class T, class... Ts>
         struct is_one_of<T, std::variant<Ts...>>: std::bool_constant<(std::is_same_v<T, Ts> || ...)>
@@ -46,7 +46,7 @@ namespace lue::api {
             using allowed = detail::is_one_of<T, Variant>;
 
             template<typename T>
-            static inline bool constexpr is_allowed_v = allowed<T>::value;
+            static bool constexpr is_allowed_v = allowed<T>::value;
 
 
             template<typename T>
