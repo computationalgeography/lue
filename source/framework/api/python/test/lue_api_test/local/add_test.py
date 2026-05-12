@@ -3,14 +3,7 @@ import numpy as np
 import lue.framework as lfr
 import lue.framework_x as lfrx
 import lue_test
-
-
-def setUpModule():
-    lue_test.start_hpx_runtime()
-
-
-def tearDownModule():
-    lue_test.stop_hpx_runtime()
+from lue_test.operation_test import setUpModule, tearDownModule
 
 
 class AddTest(lue_test.TestCase):
@@ -120,7 +113,6 @@ class AddTest(lue_test.TestCase):
 # {
 #     using Element = std::int32_t;
 #     using Raster = lue::PartitionedArray<Element, 2>;
-#     using Element = Element;
 #
 #     lue::Field const raster = Raster{};
 #     lue::Field const value = Element{};

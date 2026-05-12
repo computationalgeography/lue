@@ -7,13 +7,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<std::floating_point InputElement>
         class Ceil
         {
 
             public:
-
-                static_assert(std::is_floating_point_v<InputElement>);
 
                 static constexpr char const* name{"ceil"};
 
@@ -29,6 +27,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(ceil, detail::Ceil)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        ceil, detail::Ceil, std::floating_point)
 
 }  // namespace lue

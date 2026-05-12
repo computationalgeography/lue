@@ -17,7 +17,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            modulus, policy::modulus::DefaultValuePolicies)
+            modulus, policy::modulus::DefaultValuePolicies, Arithmetic)
         LUE_BINARY_ARITHMETIC_OPERATOR(%, modulus)
 
     }  // namespace value_policies

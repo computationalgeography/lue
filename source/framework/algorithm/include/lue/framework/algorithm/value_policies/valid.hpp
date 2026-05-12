@@ -10,7 +10,7 @@ namespace lue {
         // In the result, each elements contains a 0 or 1. No element
         // contains a no-data value, or any other value.
 
-        template<typename BooleanElement, typename ExpressionElement>
+        template<std::integral BooleanElement, Arithmetic ExpressionElement>
         using DefaultValuePoliciesBase = Policies<
             AllValuesWithinDomain<ExpressionElement>,
             OutputsPolicies<OutputPolicies<
@@ -19,7 +19,7 @@ namespace lue {
             InputsPolicies<InputPolicies<DefaultInputNoDataPolicy<ExpressionElement>>>>;
 
 
-        template<typename BooleanElement, typename ExpressionElement>
+        template<std::integral BooleanElement, Arithmetic ExpressionElement>
         class DefaultValuePolicies: public DefaultValuePoliciesBase<BooleanElement, ExpressionElement>
         {
 
@@ -44,7 +44,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            valid, policy::valid::DefaultValuePolicies)
+            valid, policy::valid::DefaultValuePolicies, Arithmetic, std::integral)
 
     }  // namespace value_policies
 }  // namespace lue

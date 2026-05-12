@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::atan2 {
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element, Element>,
             OutputElements<Element>,
@@ -17,6 +17,7 @@ namespace lue {
     namespace value_policies {
 
         template<typename Element, Rank rank>
+            requires std::floating_point<Element>
         auto atan2(
             PartitionedArray<Element, rank> const& array1, PartitionedArray<Element, rank> const& array2)
         {

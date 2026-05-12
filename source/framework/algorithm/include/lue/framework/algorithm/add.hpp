@@ -7,7 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<Arithmetic InputElement, Arithmetic OutputElement_ = InputElement>
         class Add
         {
 
@@ -16,6 +16,7 @@ namespace lue {
                 static constexpr char const* name{"add"};
 
                 using OutputElement = OutputElement_;
+
 
                 constexpr auto operator()(
                     InputElement const& input_element1, InputElement const& input_element2) const noexcept
@@ -30,12 +31,12 @@ namespace lue {
 
     namespace policy::add {
 
-        template<typename InputElement>
+        template<Arithmetic InputElement>
         using DomainPolicy = AllValuesWithinDomain<InputElement, InputElement>;
 
     }  // namespace policy::add
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(add, detail::Add)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(add, detail::Add, Arithmetic)
 
 }  // namespace lue

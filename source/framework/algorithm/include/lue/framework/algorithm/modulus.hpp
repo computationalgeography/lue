@@ -54,6 +54,7 @@ namespace lue {
     }  // namespace policy::modulus
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(modulus, detail::Modulus)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        modulus, detail::Modulus, Arithmetic)
 
 }  // namespace lue

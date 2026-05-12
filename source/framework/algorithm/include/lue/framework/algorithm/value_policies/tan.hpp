@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::tan {
 
-        template<typename Element>
+        template<std::floating_point Element>
         class DomainPolicy
         {
 
@@ -18,7 +18,7 @@ namespace lue {
         };
 
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultValuePolicies = policy::
             DefaultValuePolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element>>;
 
@@ -28,7 +28,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            tan, policy::tan::DefaultValuePolicies)
+            tan, policy::tan::DefaultValuePolicies, std::floating_point)
 
     }  // namespace value_policies
 }  // namespace lue

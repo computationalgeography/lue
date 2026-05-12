@@ -56,7 +56,7 @@ jobs:
       - name: Build package
         run: |
           conda install conda-build
-          conda build environment/conda ${{ matrix.conda-bld-arg }}
+          conda-build environment/conda ${{ matrix.conda-bld-arg }}
       - name: Upload
         uses: Dylan700/sftp-upload-action@latest
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'

@@ -7,7 +7,7 @@
 namespace lue {
     namespace policy::logical_not {
 
-        template<typename OutputElement, typename InputElement>
+        template<std::integral OutputElement, std::integral InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement>,
             OutputElements<OutputElement>,
@@ -19,7 +19,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            logical_not, policy::logical_not::DefaultPolicies)
+            logical_not, policy::logical_not::DefaultPolicies, std::integral, std::integral)
 
         LUE_UNARY_LOGICAL_OPERATOR(!, logical_not, BooleanElement)
 

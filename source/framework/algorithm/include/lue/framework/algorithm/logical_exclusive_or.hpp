@@ -6,14 +6,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<std::integral InputElement, std::integral OutputElement_>
         class LogicalExclusiveOr
         {
 
             public:
-
-                static_assert(std::is_integral_v<InputElement>);
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"logical_exclusive_or"};
 
@@ -32,6 +29,6 @@ namespace lue {
 
 
     LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-        logical_exclusive_or, detail::LogicalExclusiveOr)
+        logical_exclusive_or, detail::LogicalExclusiveOr, std::integral, std::integral)
 
 }  // namespace lue

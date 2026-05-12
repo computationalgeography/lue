@@ -11,7 +11,7 @@ namespace lue::api {
             // bool(a), not a, if a, while a, ...
             .def(
                 "__bool__",
-                []([[maybe_unused]] Field const& field)
+                []([[maybe_unused]] Field const& field) -> void
                 {
                     // ValueError
                     throw std::invalid_argument("The truth value of a field is ambiguous");

@@ -7,13 +7,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement>
+        template<std::floating_point InputElement>
         class Log10
         {
 
             public:
-
-                static_assert(std::is_floating_point_v<InputElement>);
 
                 static constexpr char const* name{"log10"};
 
@@ -31,7 +29,7 @@ namespace lue {
 
     namespace policy::log10 {
 
-        template<typename Element>
+        template<std::floating_point Element>
         class DomainPolicy
         {
 
@@ -46,6 +44,7 @@ namespace lue {
     }  // namespace policy::log10
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(log10, detail::Log10)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        log10, detail::Log10, std::floating_point)
 
 }  // namespace lue

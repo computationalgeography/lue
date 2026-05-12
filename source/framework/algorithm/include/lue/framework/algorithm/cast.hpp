@@ -6,7 +6,7 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<Arithmetic InputElement, Arithmetic OutputElement_>
         class Cast
         {
 
@@ -15,9 +15,6 @@ namespace lue {
                 static constexpr char const* name{"cast"};
 
                 using OutputElement = OutputElement_;
-
-                static_assert(std::is_arithmetic_v<InputElement>);
-                static_assert(std::is_arithmetic_v<OutputElement>);
 
 
                 constexpr auto operator()(InputElement const& input_element) const noexcept -> OutputElement
@@ -29,6 +26,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(cast, detail::Cast)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        cast, detail::Cast, Arithmetic, Arithmetic)
 
 }  // namespace lue

@@ -2,18 +2,17 @@
 #include "lue/framework/algorithm/binary_local_operation.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/concept.hpp"
 
 
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<Arithmetic InputElement, std::integral OutputElement_>
         class EqualTo
         {
 
             public:
-
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"equal_to"};
 
@@ -30,6 +29,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(equal_to, detail::EqualTo)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        equal_to, detail::EqualTo, Arithmetic, std::integral)
 
 }  // namespace lue

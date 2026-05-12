@@ -6,13 +6,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<Arithmetic InputElement, std::integral OutputElement_>
         class Valid
         {
 
             public:
-
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"valid"};
 
@@ -29,6 +27,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(valid, detail::Valid)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
+        valid, detail::Valid, Arithmetic, std::integral)
 
 }  // namespace lue

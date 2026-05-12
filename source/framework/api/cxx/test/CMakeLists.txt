@@ -5,8 +5,44 @@ set(focal_operation_names
 )
 
 set(local_operation_names
+    local/abs
+    local/acos
     local/add
+    local/asin
+    local/atan
+    local/atan2
+    local/ceil
+    local/close_to
+    local/cos
+    local/divide
+    local/equal_to
+    local/exp
+    local/floor
+    local/greater_than
+    local/greater_than_equal_to
+    local/less_than
+    local/less_than_equal_to
+    local/log
+    local/log10
+    local/logical_and
+    local/logical_exclusive_or
+    local/logical_inclusive_or
+    local/logical_not
+    local/modulus
+    local/multiply
+    local/negate
+    local/not_equal_to
+    local/open_simplex_noise
+    local/pow
+    local/round
+    local/sin
+    local/sqrt
+    local/subtract
+    local/tan
+    local/trunc
     local/uniform
+    local/valid
+    local/where
 )
 
 set(routing_operation_names

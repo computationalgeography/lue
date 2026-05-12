@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::add {
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultPolicies = policy::
             DefaultPolicies<DomainPolicy<Element>, OutputElements<Element>, InputElements<Element, Element>>;
 
@@ -16,7 +16,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            add, policy::add::DefaultPolicies)
+            add, policy::add::DefaultPolicies, Arithmetic)
         LUE_BINARY_ARITHMETIC_OPERATOR(+, add)
 
     }  // namespace default_policies

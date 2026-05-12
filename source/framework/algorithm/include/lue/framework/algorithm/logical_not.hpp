@@ -6,14 +6,11 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_>
+        template<std::integral InputElement, std::integral OutputElement_>
         class LogicalNot
         {
 
             public:
-
-                static_assert(std::is_integral_v<InputElement>);
-                static_assert(std::is_integral_v<OutputElement_>);
 
                 static constexpr char const* name{"logical_not"};
 
@@ -31,6 +28,6 @@ namespace lue {
 
 
     LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-        logical_not, detail::LogicalNot)
+        logical_not, detail::LogicalNot, std::integral, std::integral)
 
 }  // namespace lue

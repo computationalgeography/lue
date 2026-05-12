@@ -9,7 +9,7 @@
 namespace lue {
     namespace detail::where {
 
-        template<typename ConditionElement, typename InputElement>
+        template<std::integral ConditionElement, typename InputElement>
         class Where
         {
 
@@ -42,7 +42,7 @@ namespace lue {
         };
 
 
-        template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+        template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
         class OverloadPicker<
             Policies,
             ArrayPartition<ConditionElement, rank>,
@@ -152,7 +152,7 @@ namespace lue {
         };
 
 
-        template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+        template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
         class OverloadPicker<
             Policies,
             ArrayPartition<ConditionElement, rank>,
@@ -261,7 +261,7 @@ namespace lue {
         };
 
 
-        template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+        template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
         class OverloadPicker<
             Policies,
             ArrayPartition<ConditionElement, rank>,
@@ -370,7 +370,7 @@ namespace lue {
         };
 
 
-        template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+        template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
         class OverloadPicker<Policies, ArrayPartition<ConditionElement, rank>, Element, Element>
         {
 
@@ -486,7 +486,7 @@ namespace lue {
 
 
     // where(array, array, array)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -529,7 +529,7 @@ namespace lue {
 
 
     // where(array, array, value_f)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -571,7 +571,7 @@ namespace lue {
 
 
     // where(array, value_f, array)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -613,7 +613,7 @@ namespace lue {
 
 
     // where(array, value_f, value_f)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -653,7 +653,7 @@ namespace lue {
 
 
     // where(array, array)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -666,7 +666,7 @@ namespace lue {
 
 
     // where(array, value_f)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,
@@ -679,7 +679,7 @@ namespace lue {
 
 
     // where(array, scalar)
-    template<typename Policies, typename ConditionElement, typename Element, Rank rank>
+    template<typename Policies, std::integral ConditionElement, Arithmetic Element, Rank rank>
     auto where(
         Policies const& policies,
         PartitionedArray<ConditionElement, rank> const& condition,

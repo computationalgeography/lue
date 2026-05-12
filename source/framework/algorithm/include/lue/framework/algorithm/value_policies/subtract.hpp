@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::subtract {
 
-        template<typename OutputElement, typename InputElement>
+        template<Arithmetic OutputElement, Arithmetic InputElement>
         class RangePolicy
         {
 
@@ -23,7 +23,7 @@ namespace lue {
         };
 
 
-        template<typename Element>
+        template<Arithmetic Element>
         using DefaultValuePolicies = policy::Policies<
             AllValuesWithinDomain<Element, Element>,
             OutputsPolicies<
@@ -38,7 +38,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            subtract, policy::subtract::DefaultValuePolicies)
+            subtract, policy::subtract::DefaultValuePolicies, Arithmetic)
         LUE_BINARY_ARITHMETIC_OPERATOR(-, subtract)
 
     }  // namespace value_policies

@@ -88,8 +88,45 @@ target_sources(lue_framework_api_cxx
         source/create_scalar.cpp
         source/focal/mean.cpp
         source/io.cpp
+        source/local/abs.cpp
+        source/local/acos.cpp
         source/local/add.cpp
+        source/local/asin.cpp
+        source/local/atan.cpp
+        source/local/atan2.cpp
+        source/local/ceil.cpp
+        source/local/close_to.cpp
+        source/local/cos.cpp
+        source/local/divide.cpp
+        source/local/equal_to.cpp
+        source/local/exp.cpp
+        source/local/floor.cpp
+        source/local/greater_than.cpp
+        source/local/greater_than_equal_to.cpp
+        source/local/less_than.cpp
+        source/local/less_than_equal_to.cpp
+        source/local/log.cpp
+        source/local/log10.cpp
+        source/local/logical_and.cpp
+        source/local/logical_exclusive_or.cpp
+        source/local/logical_inclusive_or.cpp
+        source/local/logical_not.cpp
+        source/local/modulus.cpp
+        source/local/multiply.cpp
+        source/local/negate.cpp
+        source/local/not_equal_to.cpp
+        source/local/open_simplex_noise.cpp
+        source/local/pow.cpp
+        source/local/round.cpp
+        source/local/sin.cpp
+        source/local/sqrt.cpp
+        source/local/subtract.cpp
+        source/local/tan.cpp
+        source/local/trunc.cpp
         source/local/uniform.cpp
+        source/local/valid.cpp
+        source/local/where2.cpp
+        source/local/where3.cpp
         source/routing/accu.cpp
 )
 

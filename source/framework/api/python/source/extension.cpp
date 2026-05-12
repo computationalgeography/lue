@@ -1,7 +1,6 @@
 #include "lue/configure.hpp"
 #include "lue/git.hpp"
 #include "lue/version.hpp"
-
 #include <pybind11/pybind11.h>
 
 

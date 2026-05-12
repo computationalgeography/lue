@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::exp {
 
-        template<typename Element>
+        template<std::floating_point Element>
         class RangePolicy
         {
 
@@ -19,7 +19,7 @@ namespace lue {
         };
 
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultValuePolicies = policy::Policies<
             AllValuesWithinDomain<Element>,
             OutputsPolicies<OutputPolicies<DefaultOutputNoDataPolicy<Element>, RangePolicy<Element>>>,
@@ -31,7 +31,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            exp, policy::exp::DefaultValuePolicies)
+            exp, policy::exp::DefaultValuePolicies, std::floating_point)
 
     }  // namespace value_policies
 }  // namespace lue

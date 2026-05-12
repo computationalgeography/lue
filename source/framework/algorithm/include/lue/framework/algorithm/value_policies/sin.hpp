@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::sin {
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,7 +17,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            sin, policy::sin::DefaultValuePolicies)
+            sin, policy::sin::DefaultValuePolicies, std::floating_point)
 
     }  // namespace value_policies
 }  // namespace lue

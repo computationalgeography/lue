@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::less_than {
 
-        template<typename OutputElement, typename InputElement>
+        template<std::integral OutputElement, Arithmetic InputElement>
         using DefaultPolicies = policy::DefaultPolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -18,7 +18,7 @@ namespace lue {
     namespace default_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            less_than, policy::less_than::DefaultPolicies)
+            less_than, policy::less_than::DefaultPolicies, Arithmetic, std::integral)
         LUE_BINARY_COMPARISON_OPERATOR(<, less_than, BooleanElement)
 
     }  // namespace default_policies

@@ -6,7 +6,7 @@
 namespace lue {
     namespace policy::not_equal_to {
 
-        template<typename OutputElement, typename InputElement>
+        template<std::integral OutputElement, Arithmetic InputElement>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<InputElement, InputElement>,
             OutputElements<OutputElement>,
@@ -18,7 +18,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            not_equal_to, policy::not_equal_to::DefaultValuePolicies)
+            not_equal_to, policy::not_equal_to::DefaultValuePolicies, Arithmetic, std::integral)
         LUE_BINARY_COMPARISON_OPERATOR(!=, not_equal_to, BooleanElement)
 
     }  // namespace value_policies

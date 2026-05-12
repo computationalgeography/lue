@@ -7,7 +7,7 @@
 namespace lue {
     namespace detail {
 
-        template<typename InputElement, typename OutputElement_ = InputElement>
+        template<Arithmetic InputElement, Arithmetic OutputElement_ = InputElement>
         class Multiply
         {
 
@@ -29,6 +29,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(multiply, detail::Multiply)
+    LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        multiply, detail::Multiply, Arithmetic)
 
 }  // namespace lue

@@ -34,14 +34,14 @@ namespace lue {
 
     namespace policy::cast {
 
-        template<typename T>
+        template<Arithmetic T>
         constexpr bool is_signed_integral_v = std::is_integral_v<T> && std::is_signed_v<T>;
 
-        template<typename T>
+        template<Arithmetic T>
         constexpr bool is_unsigned_integral_v = std::is_integral_v<T> && std::is_unsigned_v<T>;
 
 
-        template<typename OutputElement, typename InputElement>
+        template<Arithmetic OutputElement, Arithmetic InputElement>
         class RangePolicy
         {
 
@@ -124,7 +124,7 @@ namespace lue {
         };
 
 
-        template<typename OutputElement, typename InputElement>
+        template<Arithmetic OutputElement, Arithmetic InputElement>
         using DefaultValuePolicies = policy::Policies<
             AllValuesWithinDomain<InputElement>,
             OutputsPolicies<OutputPolicies<
@@ -138,7 +138,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_DIFFERENT_OUTPUT_ELEMENT(
-            cast, policy::cast::DefaultValuePolicies)
+            cast, policy::cast::DefaultValuePolicies, Arithmetic, Arithmetic)
 
     }  // namespace value_policies
 }  // namespace lue

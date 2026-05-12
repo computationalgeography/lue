@@ -27,6 +27,7 @@ namespace lue {
     }  // namespace detail
 
 
-    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(trunc, detail::Trunc)
+    LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITH_POLICIES_SAME_OUTPUT_ELEMENT(
+        trunc, detail::Trunc, std::floating_point)
 
 }  // namespace lue

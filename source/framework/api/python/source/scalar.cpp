@@ -37,6 +37,7 @@ namespace lue::api {
             auto const size = dtype.itemsize();  // bytes
             std::optional<Field> field{};
 
+            // NOLINTBEGIN(bugprone-switch-missing-default-case)
             switch (kind)
             {
                 case 'i':
@@ -117,6 +118,7 @@ namespace lue::api {
                     break;
                 }
             }
+            // NOLINTEND(bugprone-switch-missing-default-case)
 
             if (!field)
             {

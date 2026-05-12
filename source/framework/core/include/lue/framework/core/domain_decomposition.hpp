@@ -193,7 +193,7 @@ namespace lue {
             area_shape.end(),
             partition_shape.begin(),
             result.begin(),
-            [](Index const area_extent, Index const partition_extent)
+            [](Index const area_extent, Index const partition_extent) -> auto
             { return static_cast<Index>(std::ceil(double(area_extent) / double(partition_extent))); });
 
         return result;
@@ -206,7 +206,7 @@ namespace lue {
     {
         auto const shape = shape_in_partitions(area_shape, partition_shape);
 
-        return std::accumulate(shape.begin(), shape.end(), std::size_t{1}, std::multiplies<std::size_t>());
+        return std::accumulate(shape.begin(), shape.end(), std::size_t{1}, std::multiplies<>());
     }
 
 
@@ -307,7 +307,7 @@ namespace lue {
             area_shape.end(),
             partition_shape.begin(),
             result.begin(),
-            [](Index const area_extent, Index const partition_extent)
+            [](Index const area_extent, Index const partition_extent) -> auto
             {
                 return static_cast<Index>(std::ceil(double(area_extent) / double(partition_extent))) *
                        partition_extent;

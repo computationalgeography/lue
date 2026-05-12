@@ -5,7 +5,7 @@
 namespace lue {
     namespace policy::atan {
 
-        template<typename Element>
+        template<std::floating_point Element>
         using DefaultValuePolicies = policy::DefaultValuePolicies<
             AllValuesWithinDomain<Element>,
             OutputElements<Element>,
@@ -17,7 +17,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_UNARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            atan, policy::atan::DefaultValuePolicies)
+            atan, policy::atan::DefaultValuePolicies, std::floating_point)
 
     }  // namespace value_policies
 }  // namespace lue

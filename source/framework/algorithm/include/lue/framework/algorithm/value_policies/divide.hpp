@@ -38,7 +38,7 @@ namespace lue {
     namespace value_policies {
 
         LUE_BINARY_LOCAL_OPERATION_OVERLOADS_WITHOUT_POLICIES_SAME_OUTPUT_ELEMENT(
-            divide, policy::divide::DefaultValuePolicies)
+            divide, policy::divide::DefaultValuePolicies, Arithmetic)
         LUE_BINARY_ARITHMETIC_OPERATOR(/, divide)
 
     }  // namespace value_policies
