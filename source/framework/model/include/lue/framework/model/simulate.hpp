@@ -23,11 +23,14 @@ namespace lue {
                 {
                     lue_hpx_assert(previous_state.is_ready());
 
-                    // ... and once the current state is ready...
+                    // ... and once the current state is ready ...
                     return current_state.then(
                         [&semaphore, lower_limit]([[maybe_unused]] auto const& current_state) -> auto
                         {
                             lue_hpx_assert(current_state.is_ready());
+
+                            // ... collect some garbage, and ...
+                            hpx::agas::garbage_collect();
 
                             // ... notify the semaphore about the new lower limit
                             semaphore.signal(lower_limit);
