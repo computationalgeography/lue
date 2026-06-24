@@ -54,7 +54,7 @@ jobs:
       build_directory: $GITHUB_WORKSPACE/../build
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: "computationalgeography/lue_consume"
 
