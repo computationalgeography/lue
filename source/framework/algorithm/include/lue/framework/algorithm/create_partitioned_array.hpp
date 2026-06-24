@@ -688,8 +688,9 @@ namespace lue {
                 Shape const& partition_shape) const -> Partition
             {
                 return _fill_value.then(
-                    [locality_id, offset, partition_shape](hpx::shared_future<Element> const& fill_value)
-                    { return Partition{locality_id, offset, partition_shape, fill_value.get()}; });
+                    [locality_id, offset, partition_shape](
+                        hpx::shared_future<Element> const& fill_value) -> Partition
+                    { return {locality_id, offset, partition_shape, fill_value.get()}; });
             }
 
 
@@ -793,7 +794,7 @@ namespace lue {
                      partition_shape,
                      buffer_handle = _buffer_handle,  // Copy, increases reference count
                      grab_buffer = _grab_buffer,
-                     no_data_value = _no_data_value]()
+                     no_data_value = _no_data_value]() -> Partition
                     {
                         // Create a partition instance and copy the relevant cells from the input buffer to
                         // the partition instance
@@ -828,7 +829,7 @@ namespace lue {
                             source += array_shape[1];
                         }
 
-                        return Partition{locality_id, offset, std::move(data)};
+                        return {locality_id, offset, std::move(data)};
                     }
 
                 );
@@ -920,16 +921,14 @@ namespace lue {
         // Create the array partitions that, together make up the partitioned
         // array.
 
-        using Element = OutputElementT<Functor>;
-        using OutputArray = PartitionedArray<Element, rank>;
-
         // Given the shape of the array and the shape of the array partitions,
         // determine the shape of the array in partitions
 
         auto [localities, partitions] =
             detail::instantiate_partitions(policies, array_shape, partition_shape, partition_creator);
 
-        return OutputArray{array_shape, std::move(localities), std::move(partitions)};
+        return {
+            array_shape, std::make_shared<Localities<rank>>(std::move(localities)), std::move(partitions)};
     }
 
 
@@ -942,13 +941,11 @@ namespace lue {
         // of the output array and the individual partitions, and the distribution of the
         // partitions over the localities must be the same as that / those of the input array.
 
-        using Element = OutputElementT<Functor>;
-        using OutputArray = PartitionedArray<Element, rank>;
-
         auto [localities, partitions] =
             detail::instantiate_partitions(policies, route.shape(), route.partitions(), partition_creator);
 
-        return OutputArray{route.shape(), std::move(localities), std::move(partitions)};
+        return {
+            route.shape(), std::make_shared<Localities<rank>>(std::move(localities)), std::move(partitions)};
     }
 
 

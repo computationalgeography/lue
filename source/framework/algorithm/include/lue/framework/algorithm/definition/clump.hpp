@@ -1965,7 +1965,7 @@ namespace lue {
         auto clump_partitions = detail::clump::solve_clump_globally<Policies, ClumpPartitions>(
             policies, zone.partitions().shape(), std::move(local_results_f));
 
-        return {shape(zone), Localities<rank>{zone.localities()}, std::move(clump_partitions)};
+        return {zone, std::move(clump_partitions)};
     }
 
 }  // namespace lue

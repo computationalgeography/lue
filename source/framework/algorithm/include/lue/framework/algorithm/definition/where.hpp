@@ -137,7 +137,7 @@ namespace lue {
                                 }
                             }
 
-                            return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
+                            return {hpx::find_here(), offset, std::move(output_partition_data)};
                         },
 
                         condition_partition,
@@ -181,7 +181,7 @@ namespace lue {
                         [policies](
                             ConditionPartition const& condition_partition,
                             Partition const& true_partition,
-                            hpx::shared_future<Element> const& false_scalar) -> auto
+                            hpx::shared_future<Element> const& false_scalar) -> Partition
                         {
                             AnnotateFunction const annotation{"where: partition"};
 
@@ -246,7 +246,7 @@ namespace lue {
                                 }
                             }
 
-                            return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
+                            return {hpx::find_here(), offset, std::move(output_partition_data)};
                         },
 
                         condition_partition,
@@ -290,7 +290,7 @@ namespace lue {
                         [policies](
                             ConditionPartition const& condition_partition,
                             hpx::shared_future<Element> const& true_scalar,
-                            Partition const& false_partition) -> auto
+                            Partition const& false_partition) -> Partition
                         {
                             AnnotateFunction const annotation{"where: partition"};
 
@@ -355,7 +355,7 @@ namespace lue {
                                 }
                             }
 
-                            return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
+                            return {hpx::find_here(), offset, std::move(output_partition_data)};
                         },
 
                         condition_partition,
@@ -459,7 +459,7 @@ namespace lue {
                                 }
                             }
 
-                            return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
+                            return {hpx::find_here(), offset, std::move(output_partition_data)};
                         },
 
                         condition_partition,
@@ -507,7 +507,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Partition> action;
 
-        Localities<rank> localities{condition.localities()};
+        Localities<rank> const& localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& true_partitions{true_array.partitions()};
         Partitions const& false_partitions{false_array.partitions()};
@@ -524,7 +524,7 @@ namespace lue {
                 false_partitions[partition_idx]);
         }
 
-        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
+        return {condition, std::move(output_partitions)};
     }
 
 
@@ -550,7 +550,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Element> action;
 
-        Localities<rank> localities{condition.localities()};
+        Localities<rank> const& localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& true_partitions{true_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
@@ -566,7 +566,7 @@ namespace lue {
                 false_value_f);
         }
 
-        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
+        return {condition, std::move(output_partitions)};
     }
 
 
@@ -592,7 +592,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Partition> action;
 
-        Localities<rank> localities{condition.localities()};
+        Localities<rank> const& localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions const& false_partitions{false_array.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
@@ -608,7 +608,7 @@ namespace lue {
                 false_partitions[partition_idx]);
         }
 
-        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
+        return {condition, std::move(output_partitions)};
     }
 
 
@@ -631,7 +631,7 @@ namespace lue {
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Element> action;
 
-        Localities<rank> localities{condition.localities()};
+        Localities<rank> const& localities{condition.localities()};
         ConditionPartitions const& condition_partitions{condition.partitions()};
         Partitions output_partitions{shape_in_partitions(condition)};
 
@@ -648,7 +648,7 @@ namespace lue {
             );
         }
 
-        return Array{shape(condition), std::move(localities), std::move(output_partitions)};
+        return {condition, std::move(output_partitions)};
     }
 
 

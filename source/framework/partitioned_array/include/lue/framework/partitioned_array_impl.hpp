@@ -11,9 +11,7 @@ namespace lue {
     template<typename Element, Rank rank>
     PartitionedArray<Element, rank>::PartitionedArray():
 
-        _shape{},
-        _localities{},
-        _partitions{}
+        PartitionedArray{Shape{}, std::make_shared<Localities<rank>>(), Partitions{}}
 
     {
         // Shape is filled with indeterminate values! This may or may not
@@ -28,17 +26,17 @@ namespace lue {
     /*!
         @brief      Construct an instance
         @param      shape Shape of the array
-        @param      localities Localities where the partitions are located
+        @param      localities_ptr Shared pointer to the localities where the partitions are located
         @param      partitions Collection of array partitions
 
         The shape of the partitions together must equal the shape passed in
     */
     template<typename Element, Rank rank>
     PartitionedArray<Element, rank>::PartitionedArray(
-        Shape const& shape, Localities<rank>&& localities, Partitions&& partitions):
+        Shape const& shape, LocalitiesPtr<rank> localities_ptr, Partitions&& partitions):
 
         _shape{shape},
-        _localities{std::move(localities)},
+        _localities_ptr{std::move(localities_ptr)},
         _partitions{std::move(partitions)}
 
     {
@@ -72,7 +70,19 @@ namespace lue {
     template<typename Element, Rank rank>
     auto PartitionedArray<Element, rank>::localities() const -> Localities<rank> const&
     {
-        return _localities;
+        lue_hpx_assert(_localities_ptr);
+        return *_localities_ptr;
+    }
+
+
+    /*!
+        @brief      Return the localities
+    */
+    template<typename Element, Rank rank>
+    auto PartitionedArray<Element, rank>::localities_ptr() const -> LocalitiesPtr<rank> const&
+    {
+        lue_hpx_assert(_localities_ptr);
+        return _localities_ptr;
     }
 
 
@@ -109,14 +119,19 @@ namespace lue {
     template<typename Element, Rank rank>
     void PartitionedArray<Element, rank>::assert_invariants() const
     {
-        lue_hpx_assert(_partitions.shape() == _localities.shape());
-
-        // The array is either empty, or all localities are valid / known
+        // Shape of the localities array must match the partitioned array's shape
         lue_hpx_assert(
-            _localities.empty() || std::all_of(
-                                       _localities.begin(),
-                                       _localities.end(),
-                                       [](hpx::id_type const& locality_id) { return bool{locality_id}; }));
+            (_localities_ptr->empty() &&
+             std::all_of(
+                 _shape.begin(), _shape.end(), [](Count const extent) -> bool { return extent == 0; })) ||
+            (_partitions.shape() == _localities_ptr->shape()));
+
+        // All locality IDs must be valid
+        lue_hpx_assert(
+            std::all_of(
+                _localities_ptr->begin(),
+                _localities_ptr->end(),
+                [](hpx::id_type const& locality_id) -> bool { return bool{locality_id}; }));
     }
 
 }  // namespace lue

@@ -502,7 +502,7 @@ namespace lue {
             .then([components = std::move(walk_components)](auto&&) { HPX_UNUSED(components); });
 
         // TODO Get rid of this wait and localities stuff
-        Array<hpx::id_type, rank> localities{locality_fs.shape()};
+        Localities<rank> localities{locality_fs.shape()};
         {
             hpx::wait_all(locality_fs.begin(), locality_fs.end());
             std::transform(
@@ -512,7 +512,8 @@ namespace lue {
                 [](hpx::future<hpx::id_type>& locality_f) { return locality_f.get(); });
         }
 
-        return OutputArray{route.shape(), std::move(localities), std::move(partitions)};
+        return {
+            route.shape(), std::make_shared<Localities<rank>>(std::move(localities)), std::move(partitions)};
     }
 
 }  // namespace lue

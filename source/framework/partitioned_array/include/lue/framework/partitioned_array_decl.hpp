@@ -7,6 +7,9 @@ namespace lue {
     template<Rank rank>
     using Localities = Array<hpx::id_type, rank>;
 
+    template<Rank rank>
+    using LocalitiesPtr = std::shared_ptr<Localities<rank>>;
+
 
     /*!
         @brief      Class template for representing partitioned arrays
@@ -47,7 +50,17 @@ namespace lue {
             PartitionedArray(PartitionedArray&& other) = default;
 
 
-            PartitionedArray(Shape const& shape, Localities<rank>&& localities, Partitions&& partitions);
+            PartitionedArray(Shape const& shape, LocalitiesPtr<rank> localities_ptr, Partitions&& partitions);
+
+            template<typename OtherElement>
+            PartitionedArray(
+                PartitionedArray<OtherElement, rank> const& other_array, Partitions&& partitions):
+
+                PartitionedArray{other_array.shape(), other_array.localities_ptr(), std::move(partitions)}
+
+            {
+            }
+
 
             ~PartitionedArray() = default;
 
@@ -62,6 +75,8 @@ namespace lue {
 
             auto localities() const -> Localities<rank> const&;
 
+            auto localities_ptr() const -> LocalitiesPtr<rank> const&;
+
             auto nr_partitions() const -> Count;
 
             auto partitions() -> Partitions&;
@@ -75,8 +90,8 @@ namespace lue {
             //! Shape of the partitioned array
             Shape _shape;
 
-            //! Localities the partitions are located in
-            Localities<rank> _localities;
+            //! Shared pointer to the localities the partitions are located in
+            LocalitiesPtr<rank> _localities_ptr;
 
             //! Array of partitions
             Partitions _partitions;

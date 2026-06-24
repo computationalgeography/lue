@@ -59,7 +59,7 @@ namespace lue {
 
         detail::TimestampAction<InputElement, rank> action{};
 
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         Count const nr_partitions{lue::nr_partitions(input_array)};
         TimestampPartitions timestamp_partitions{shape_in_partitions(input_array)};
@@ -75,7 +75,9 @@ namespace lue {
         }
 
         return TimestampArray{
-            shape_in_partitions(input_array), std::move(localities), std::move(timestamp_partitions)};
+            shape_in_partitions(input_array),
+            std::make_shared<Localities<rank>>(std::move(localities)),
+            std::move(timestamp_partitions)};
     }
 
 }  // namespace lue

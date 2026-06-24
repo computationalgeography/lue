@@ -52,7 +52,7 @@ namespace lue {
                         }
                     }
 
-                    return Partition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    return {hpx::find_here(), offset, std::move(output_partition_data)};
                 },
 
                 input_partition);
@@ -105,7 +105,7 @@ namespace lue {
         using OutputPartitions = PartitionsT<OutputArray>;
 
         CopyPartitionAction<Policies, InputPartition> action;
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -115,7 +115,7 @@ namespace lue {
                 hpx::async(action, localities[partition_idx], policies, input_partitions[partition_idx]);
         }
 
-        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 

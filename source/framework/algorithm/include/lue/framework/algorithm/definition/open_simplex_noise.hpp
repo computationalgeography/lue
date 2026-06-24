@@ -119,7 +119,7 @@ namespace lue {
 
         detail::open_simplex_noise::OpenSimplex2PartitionAction<Policies, Partition> action;
 
-        Localities<rank> localities{x_coordinates.localities()};
+        Localities<rank> const& localities{x_coordinates.localities()};
         Partitions const& x_coordinate_partitions{x_coordinates.partitions()};
         Partitions const& y_coordinate_partitions{y_coordinates.partitions()};
         Partitions output_partitions{shape_in_partitions(x_coordinates)};
@@ -135,7 +135,7 @@ namespace lue {
                 seed);
         }
 
-        return Array{shape(x_coordinates), std::move(localities), std::move(output_partitions)};
+        return {x_coordinates, std::move(output_partitions)};
     }
 
 }  // namespace lue

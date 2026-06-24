@@ -134,7 +134,9 @@ namespace lue {
         }
 
         return OutputArray{
-            shape_in_partitions(input_array), std::move(localities), std::move(output_partitions)};
+            shape_in_partitions(input_array),
+            std::make_shared<Localities<rank>>(std::move(localities)),
+            std::move(output_partitions)};
     }
 
 }  // namespace lue

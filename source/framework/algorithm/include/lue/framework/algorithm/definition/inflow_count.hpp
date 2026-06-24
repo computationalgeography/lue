@@ -672,7 +672,7 @@ namespace lue {
         // (less memory accesses)
 
         using InflowCountArray = PartitionedArray<CountElement, rank>;
-        Localities<rank> localities{flow_direction.localities()};
+        Localities<rank> const& localities{flow_direction.localities()};
 
         // ---------------------------------------------------------------------
         // Create an array of communicators which will be used to communicate
@@ -722,8 +722,7 @@ namespace lue {
             });
 
 
-        return InflowCountArray{
-            flow_direction.shape(), std::move(localities), std::move(inflow_count_partitions)};
+        return {flow_direction, std::move(inflow_count_partitions)};
     }
 
 }  // namespace lue

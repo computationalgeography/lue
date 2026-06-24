@@ -224,7 +224,7 @@ namespace lue {
                         }
                     }
 
-                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    return {hpx::find_here(), offset, std::move(output_partition_data)};
                 },
 
                 zones_partition);
@@ -268,7 +268,7 @@ namespace lue {
 
         Count const nr_partitions{lue::nr_partitions(zones_array)};
 
-        Localities<rank> localities{zones_array.localities()};
+        Localities<rank> const& localities{zones_array.localities()};
         ZonesPartitions const& zones_partitions{zones_array.partitions()};
 
         // -------------------------------------------------------------------------
@@ -339,7 +339,7 @@ namespace lue {
             }
         }
 
-        return OutputArray{shape(zones_array), std::move(localities), std::move(output_partitions)};
+        return {zones_array, std::move(output_partitions)};
     }
 
 
@@ -381,7 +381,7 @@ namespace lue {
 
         Count const nr_partitions{lue::nr_partitions(zones_array)};
 
-        Localities<rank> localities{zones_array.localities()};
+        Localities<rank> const& localities{zones_array.localities()};
         ZonesPartitions const& zones_partitions{zones_array.partitions()};
 
         // -------------------------------------------------------------------------
@@ -459,7 +459,7 @@ namespace lue {
             }
         }
 
-        return OutputArray{shape(zones_array), std::move(localities), std::move(output_partitions)};
+        return {zones_array, std::move(output_partitions)};
     }
 
 }  // namespace lue
