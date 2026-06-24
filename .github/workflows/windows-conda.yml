@@ -68,10 +68,6 @@ jobs:
           path: ${{ env.lue_source_directory }}
 
       - uses: ilammy/msvc-dev-cmd@v1
-        # This section should not be needed anymore if msvc-dev-cmd gets updated
-        # https://github.com/BenJule/BambuStudio/pull/364
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           arch: ${{ matrix.architecture }}
           toolset: ${{ matrix.vs.msvc_toolset }}
