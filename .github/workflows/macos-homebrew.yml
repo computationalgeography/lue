@@ -64,7 +64,7 @@ jobs:
       mdspan_install_directory: mdspan_install
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: ${{ env.lue_source_directory }}
 

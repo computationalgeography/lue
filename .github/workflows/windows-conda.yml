@@ -63,7 +63,7 @@ jobs:
       conda_packages: "conda-build cxxopts docopt jinja2 hdf5 hpx libboost-devel libboost-headers libgdal libhwloc matplotlib ninja nlohmann_json numpy pybind11 ruamel.yaml"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: ${{ env.lue_source_directory }}
 
@@ -72,7 +72,7 @@ jobs:
           arch: ${{ matrix.architecture }}
           toolset: ${{ matrix.vs.msvc_toolset }}
 
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           auto-update-conda: true
           miniforge-version: latest

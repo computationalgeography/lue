@@ -77,7 +77,7 @@ jobs:
       mdspan_install_directory: mdspan_install
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: ${{ env.lue_source_directory }}
 
@@ -86,17 +86,7 @@ jobs:
           arch: ${{ matrix.architecture }}
           toolset: ${{ matrix.vs.msvc_toolset }}
 
-      # - name: cache conda
-      #   id: cache-conda
-      #   uses: actions/cache@v4
-      #   env:
-      #     cache-name: cache-conda
-      #     conda_build_nr: 1
-      #   with:
-      #     path: ${{ env.conda_package_prefix }}
-      #     key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conda_packages }}-${{ env.conda_build_nr }}
-
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@v4
         with:
           auto-update-conda: true
           miniforge-version: latest
@@ -113,10 +103,10 @@ jobs:
 
       - name: cache conan
         id: cache-conan
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         env:
           cache-name: cache-conan
-          conan_build_nr: 2
+          conan_build_nr: 3
         with:
           path: ${{ env.conan_package_prefix }}
           key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}

@@ -46,9 +46,9 @@ jobs:
             conda-bld-arg: ""
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install Conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           conda-remove-defaults: "true"
           miniforge-version: latest
