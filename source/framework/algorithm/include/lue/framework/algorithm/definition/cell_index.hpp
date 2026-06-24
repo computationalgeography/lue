@@ -153,7 +153,7 @@ namespace lue {
 
         detail::cell_index::CellIndexPartitionAction<Policies, ConditionPartition, IndexElement> action;
 
-        Localities<rank> localities{condition.localities()};
+        Localities<rank> const& localities{condition.localities()};
         auto const& condition_partitions{condition.partitions()};
         IndexPartitions index_partitions{condition_partitions.shape()};
 
@@ -267,7 +267,7 @@ namespace lue {
             }
         }
 
-        return {shape(condition), std::move(localities), std::move(index_partitions)};
+        return {condition, std::move(index_partitions)};
     }
 
 }  // namespace lue

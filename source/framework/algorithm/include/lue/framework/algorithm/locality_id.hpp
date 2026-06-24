@@ -70,8 +70,12 @@ namespace lue {
                 output_partitions.shape());
         }
 
-        return OutputArray{
-            shape_in_partitions(input_array), std::move(localities), std::move(output_partitions)};
+        // On each locality a small partition with a single value. So, same distribution of partitions, but
+        // differently shaped partitions compared to the input array.
+        return {
+            shape_in_partitions(input_array),
+            std::make_shared<Localities<rank>>(std::move(localities)),
+            std::move(output_partitions)};
     }
 
 }  // namespace lue

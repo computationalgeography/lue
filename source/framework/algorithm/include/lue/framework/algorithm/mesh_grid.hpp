@@ -74,7 +74,7 @@ namespace lue {
                         }
                     }
 
-                    return OutputPartition{hpx::find_here(), offset, std::move(output_data)};
+                    return {hpx::find_here(), offset, std::move(output_data)};
                 },
                 input_partition,
                 first_value,
@@ -152,8 +152,7 @@ namespace lue {
 
         for (Rank rank_idx = 0; rank_idx < rank; ++rank_idx)
         {
-            result[rank_idx] = OutputArray{
-                shape(input_array), Localities<rank>{localities}, std::move(output_partitions[rank_idx])};
+            result[rank_idx] = OutputArray{input_array, std::move(output_partitions[rank_idx])};
         }
 
         return result;

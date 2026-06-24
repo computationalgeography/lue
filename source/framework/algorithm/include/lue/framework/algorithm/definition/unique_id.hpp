@@ -59,7 +59,7 @@ namespace lue {
                         }
                     }
 
-                    return IDPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    return {hpx::find_here(), offset, std::move(output_partition_data)};
                 },
 
                 condition_partition);
@@ -255,8 +255,7 @@ namespace lue {
             condition_array.partitions(),
             std::move(partition_sizes))};
 
-        return IDArray{
-            shape(condition_array), Localities<rank>{condition_array.localities()}, std::move(id_partitions)};
+        return {condition_array, std::move(id_partitions)};
     }
 
 }  // namespace lue

@@ -427,7 +427,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> localities{input_array1.localities()};
+        Localities<rank> const& localities{input_array1.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -447,7 +447,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array1), std::move(localities), std::move(output_partitions)};
+        return {input_array1, std::move(output_partitions)};
     }
 
 
@@ -482,7 +482,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -501,7 +501,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 
@@ -536,7 +536,7 @@ namespace lue {
             Functor>
             action;
 
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         Shape const shape_in_partitions{localities.shape()};
         Count const nr_partitions{nr_elements(localities)};
 
@@ -555,7 +555,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 

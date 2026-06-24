@@ -1256,7 +1256,7 @@ namespace lue {
         }
 
         // TODO Get rid of this wait and localities stuff
-        Array<hpx::id_type, rank> localities{locality_fs.shape()};
+        Localities<rank> localities{locality_fs.shape()};
         {
             hpx::wait_all(locality_fs.begin(), locality_fs.end());
             std::transform(
@@ -1272,7 +1272,7 @@ namespace lue {
         {
             crop_fraction_arrays[crop_idx] = CropFractionArray{
                 routes.shape(),
-                Localities<rank>{localities},
+                std::make_shared<Localities<rank>>(localities),
                 std::move(crop_fractions_per_crop_partitions_array[crop_idx])};
         }
 

@@ -90,14 +90,13 @@ namespace lue {
     auto results_partitions_to_arrays(
         std::tuple<ArrayPartitionData<lue::ArrayPartition<Element, 2>, 2>...>& results_partitions,
         auto const& array_shape,
-        auto const& localities) -> std::tuple<PartitionedArray<Element, 2>...>
+        auto localities_ptr) -> std::tuple<PartitionedArray<Element, 2>...>
     {
         return std::apply(
-            [&array_shape, &localities](auto&... partitions)
+            [&array_shape, &localities_ptr](auto&... partitions)
             {
                 return std::make_tuple(
-                    PartitionedArray<Element, 2>{
-                        array_shape, Localities<2>{localities}, std::move(partitions)}...);
+                    PartitionedArray<Element, 2>{array_shape, localities_ptr, std::move(partitions)}...);
             },
             results_partitions);
     }
@@ -1415,7 +1414,8 @@ namespace lue {
             std::move(material_communicators));
 
         // Return partitioned arrays containing the collections of partitions just created
-        return results_partitions_to_arrays(results_partitions, flow_direction.shape(), localities);
+        return results_partitions_to_arrays(
+            results_partitions, flow_direction.shape(), flow_direction.localities_ptr());
     }
 
 

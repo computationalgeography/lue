@@ -106,7 +106,7 @@ namespace lue {
 
         detail::UnaryLocalOperationPartitionAction<Policies, InputPartition, OutputPartition, Functor> action;
 
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -116,7 +116,7 @@ namespace lue {
                 action, localities[partition_idx], policies, input_partitions[partition_idx], functor);
         }
 
-        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 

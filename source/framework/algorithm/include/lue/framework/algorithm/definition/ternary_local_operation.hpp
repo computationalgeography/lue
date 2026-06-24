@@ -115,8 +115,7 @@ namespace lue {
                                     }
                                 }
 
-                                return OutputPartition{
-                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                                return {hpx::find_here(), offset, std::move(output_partition_data)};
                             },
 
                             input_partition1,
@@ -234,8 +233,7 @@ namespace lue {
                                     }
                                 }
 
-                                return OutputPartition{
-                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                                return {hpx::find_here(), offset, std::move(output_partition_data)};
                             },
 
                             input_partition1,
@@ -353,8 +351,7 @@ namespace lue {
                                     }
                                 }
 
-                                return OutputPartition{
-                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                                return {hpx::find_here(), offset, std::move(output_partition_data)};
                             },
 
                             input_partition1,
@@ -463,8 +460,7 @@ namespace lue {
                                     }
                                 }
 
-                                return OutputPartition{
-                                    hpx::find_here(), offset, std::move(output_partition_data)};
+                                return {hpx::find_here(), offset, std::move(output_partition_data)};
                             },
 
                             input_partition,
@@ -560,7 +556,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
+        return {input_array1, std::move(output_partitions)};
     }
 
 
@@ -620,7 +616,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
+        return {input_array1, std::move(output_partitions)};
     }
 
 
@@ -680,7 +676,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array1), localities, std::move(output_partitions)};
+        return {input_array1, std::move(output_partitions)};
     }
 
 
@@ -732,7 +728,7 @@ namespace lue {
                 functor);
         }
 
-        return OutputArray{shape(input_array), localities, std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 }  // namespace lue

@@ -64,7 +64,7 @@ namespace lue {
                         }
                     }
 
-                    return OutputPartition{hpx::find_here(), offset, std::move(output_partition_data)};
+                    return {hpx::find_here(), offset, std::move(output_partition_data)};
                 },
 
                 input_partition,
@@ -105,7 +105,7 @@ namespace lue {
 
         detail::ReclassifyPartitionAction<Policies, InputPartition, OutputPartition> action;
 
-        Localities<rank> localities{input_array.localities()};
+        Localities<rank> const& localities{input_array.localities()};
         InputPartitions const& input_partitions{input_array.partitions()};
         OutputPartitions output_partitions{shape_in_partitions(input_array)};
 
@@ -115,7 +115,7 @@ namespace lue {
                 action, localities[partition_idx], policies, input_partitions[partition_idx], lookup_table);
         }
 
-        return OutputArray{shape(input_array), std::move(localities), std::move(output_partitions)};
+        return {input_array, std::move(output_partitions)};
     }
 
 }  // namespace lue
