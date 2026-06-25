@@ -38,7 +38,7 @@ namespace lue {
                 localities[partition_idx],
                 policies,
                 input_partitions[partition_idx],
-                hpx::make_ready_future<IDElement>(partition_idx).share());
+                hpx::make_ready_future(static_cast<IDElement>(partition_idx)).share());
         }
 
         return {input_array, std::move(output_partitions)};
