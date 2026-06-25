@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_CASE(negate_array)
 {
-    using Element = lue::SmallestIntegralElement;
+    using Element = lue::SmallestSignedIntegralElement;
     using Array = lue::PartitionedArray<Element, 2>;
 
     lue::api::Field const array = Array{};
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(negate_array)
 
 BOOST_AUTO_TEST_CASE(negate_scalar)
 {
-    using Element = lue::SmallestIntegralElement;
+    using Element = lue::SmallestSignedIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const scalar = Scalar{};
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(negate_scalar)
 
 BOOST_AUTO_TEST_CASE(negate_value)
 {
-    using Element = lue::SmallestIntegralElement;
+    using Element = lue::SmallestSignedIntegralElement;
     using Scalar = lue::Scalar<Element>;
 
     lue::api::Field const value = Element{};
