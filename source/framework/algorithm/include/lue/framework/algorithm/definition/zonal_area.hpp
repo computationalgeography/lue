@@ -6,8 +6,8 @@
 namespace lue {
 
     template<typename Count, typename Policies, typename Zone, Rank rank>
-    PartitionedArray<Count, rank> zonal_area(
-        Policies const& policies, PartitionedArray<Zone, rank> const& zones)
+    auto zonal_area(Policies const& policies, PartitionedArray<Zone, rank> const& zones)
+        -> PartitionedArray<Count, rank>
     {
         using Functor = detail::ZonalSum<Count, Zone>;
 
