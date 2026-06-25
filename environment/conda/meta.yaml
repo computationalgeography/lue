@@ -21,7 +21,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake
+    - conda-forge::cmake
     - ninja
 
   host:
