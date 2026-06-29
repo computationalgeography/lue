@@ -52,7 +52,7 @@ jobs:
         with:
           environment-file: environment.yml
           init-shell: bash
-          cache-environment: no
+          cache-environment: false
           post-cleanup: "all"
       - name: Build package
         run: |
