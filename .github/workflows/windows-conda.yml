@@ -10,14 +10,16 @@ on:
     #   - "*"
     paths:
       - "**"
-      - "!.github/workflows/*"
+      - "!.github/workflows/**"
       - ".github/workflows/windows-conda.yml"
-      - "!environment/easybuild/*"
+      - "!environment/conda/**"
+      - "!environment/easybuild/**"
   push:
     branches:
       - "master"
     paths-ignore:
-      - "environment/easybuild/*"
+      - "environment/conda/**"
+      - "environment/easybuild/**"
   workflow_dispatch:
 
 concurrency:

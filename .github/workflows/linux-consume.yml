@@ -5,12 +5,14 @@ on:
     branches-ignore:
       - "*"
     paths-ignore:
-      - "environment/easybuild/*"
+      - "environment/conda/**"
+      - "environment/easybuild/**"
   push:
     branches-ignore:
       - "*"
     paths-ignore:
-      - "environment/easybuild/*"
+      - "environment/conda/**"
+      - "environment/easybuild/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
