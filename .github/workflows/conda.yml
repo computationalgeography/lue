@@ -50,7 +50,7 @@ jobs:
       - name: Install Conda
         uses: mamba-org/setup-micromamba@v3
         with:
-          environment-file: environment.yml
+          environment-file: environment/conda/conda_build_environment.yml
           init-shell: bash
           cache-environment: false
           post-cleanup: "all"
@@ -58,7 +58,8 @@ jobs:
         run: |
           python --version
           conda --version
-          conda install conda-build
+          conda-build --version
+          # conda install conda-build
           conda-build environment/conda ${{ matrix.conda-bld-arg }}
       - name: Upload
         uses: Dylan700/sftp-upload-action@latest

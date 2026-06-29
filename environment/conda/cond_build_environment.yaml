@@ -1,0 +1,7 @@
+# Environment file used by the C/I Conda Build runs
+name: lue
+channels:
+    - conda-forge
+dependencies:
+    - python ==3.14
+    - conda-build
