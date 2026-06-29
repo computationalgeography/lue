@@ -32,17 +32,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "macos-15"
+          - os: "macos-26"
             target-platform: osx-arm64
-            conda-bld-dir: "/Users/runner/miniconda3/envs/test/conda-bld/osx-arm64/"
+            conda-bld-dir: "/Users/runner/micromamba/envs/lue/conda-bld/osx-arm64/"
             conda-bld-arg: ""
           - os: "ubuntu-24.04"
             target-platform: linux-64
-            conda-bld-dir: "/home/runner/miniconda3/envs/test/conda-bld/linux-64/"
+            conda-bld-dir: "/home/runner/micromamba/envs/lue/conda-bld/linux-64/"
             conda-bld-arg: ""
-          - os: "windows-2022"
+          - os: "windows-2025-vs2026"
             target-platform: win-64
-            conda-bld-dir: "C:/Users/runneradmin/miniconda3/envs/test/conda-bld/win-64/"
+            conda-bld-dir: "C:/Users/runneradmin/micromamba/envs/lue/conda-bld/win-64/"
             conda-bld-arg: ""
     steps:
       - name: Checkout
@@ -56,10 +56,6 @@ jobs:
           post-cleanup: "all"
       - name: Build package
         run: |
-          python --version
-          conda --version
-          conda-build --version
-          # conda install conda-build
           conda-build environment/conda ${{ matrix.conda-bld-arg }}
       - name: Upload
         uses: Dylan700/sftp-upload-action@latest
