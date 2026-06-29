@@ -50,7 +50,7 @@ jobs:
       - name: Install Conda
         uses: mamba-org/setup-micromamba@v3
         with:
-          environment-file: environment/conda/conda_build_environment.yml
+          environment-file: environment/conda/conda_build_environment.yaml
           init-shell: bash
           cache-environment: false
           post-cleanup: "all"
