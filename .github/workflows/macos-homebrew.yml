@@ -1,8 +1,8 @@
 name: macOS CI (Homebrew)
 
-# TODO
-# - When using Conan icw Homebrew, HDF5 cannot be found anymore. Maybe this can be fіxed, but for now we just
-#   skip using Conan (for imgui) and dependent targets (lue_view).
+# TODO:
+# - When using Conan icw Homebrew, HDF5 cannot be found anymore. Maybe this can be fіxed, but for now we
+#   just skip using Conan (for imgui) and dependent targets (lue_view).
 # - Bash shell doesn't seem to exit with an error if a command fails
 
 on:
@@ -18,9 +18,12 @@ on:
   push:
     branches:
       - "master"
-    paths-ignore:
-      - "environment/conda/*"
-      - "environment/easybuild/*"
+    paths:
+      - "**"
+      - "!.github/workflows/*"
+      - ".github/workflows/macos-homebrew.yml"
+      - "!environment/conda/*"
+      - "!environment/easybuild/*"
   workflow_dispatch:
 
 concurrency:

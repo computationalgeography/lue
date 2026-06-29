@@ -1,6 +1,6 @@
 name: Windows CI (Conda)
 
-# TODO
+# TODO:
 # - Re-add lue_consume build, once mdspan is not needed anymore
 # - Excluded some tests. Revisit.
 
@@ -17,9 +17,12 @@ on:
   push:
     branches:
       - "master"
-    paths-ignore:
-      - "environment/conda/*"
-      - "environment/easybuild/*"
+    paths:
+      - "**"
+      - "!.github/workflows/*"
+      - ".github/workflows/windows-conda.yml"
+      - "!environment/conda/*"
+      - "!environment/easybuild/*"
   workflow_dispatch:
 
 concurrency:

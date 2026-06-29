@@ -1,6 +1,6 @@
 name: Windows CI (Conan)
 
-# TODO
+# TODO:
 # - Skipping consume for now. Boost isn't found for some reason.
 # - Skipping some tests. Revisit.
 
@@ -17,9 +17,12 @@ on:
   push:
     branches:
       - "master"
-    paths-ignore:
-      - "environment/conda/*"
-      - "environment/easybuild/*"
+    paths:
+      - "**"
+      - "!.github/workflows/*"
+      - ".github/workflows/windows-conan.yml"
+      - "!environment/conda/*"
+      - "!environment/easybuild/*"
   workflow_dispatch:
 
 concurrency:
