@@ -13,5 +13,7 @@ cxx_compiler:
     - vs2022 # [win]
 libgdal:
     - 3.12
+numpy:
+    - 2
 python:
     - 3.14
