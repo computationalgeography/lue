@@ -48,12 +48,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Install Conda
-        uses: conda-incubator/setup-miniconda@v4
+        uses: mamba-org/setup-micromamba@v3
         with:
-          miniforge-version: latest
-          python-version: 3.14
+          environment-file: environment.yml
+          init-shell: bash
+          cache-environment: no
+          post-cleanup: "all"
       - name: Build package
         run: |
+          python --version
+          conda --version
           conda install conda-build
           conda-build environment/conda ${{ matrix.conda-bld-arg }}
       - name: Upload
