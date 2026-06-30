@@ -11,11 +11,13 @@ on:
       - "**"
       - "!.github/workflows/*"
       - ".github/workflows/linux.yml"
+      - "!environment/conda/*"
       - "!environment/easybuild/*"
   push:
     branches:
       - "master"
     paths-ignore:
+      - "environment/conda/*"
       - "environment/easybuild/*"
   workflow_dispatch:
 

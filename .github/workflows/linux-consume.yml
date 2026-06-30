@@ -5,11 +5,13 @@ on:
     branches-ignore:
       - "*"
     paths-ignore:
+      - "environment/conda/*"
       - "environment/easybuild/*"
   push:
     branches-ignore:
       - "*"
     paths-ignore:
+      - "environment/conda/*"
       - "environment/easybuild/*"
 
 concurrency:

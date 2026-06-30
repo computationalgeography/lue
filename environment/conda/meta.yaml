@@ -40,7 +40,8 @@ requirements:
     - docopt  # lue.qa
     # For some reason, a dependency on libboost_context.dylib is introduced on osx-arm64...
     - libboost-devel                             # [osx and arm64]
-    - matplotlib-base  # lue.qa
+    # Free threaded version of Python is used while matplotlib-base isn't ported yet
+    - matplotlib-base  # lue.qa                  # [not win]
     - python
     - python-dateutil  # lue.qa
 

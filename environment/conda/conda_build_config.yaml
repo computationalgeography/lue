@@ -7,13 +7,13 @@
 
 # Keep in sync with https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml
 
-# vs2019 results in compiler error...
-
 c_compiler:
     - vs2022 # [win]
 cxx_compiler:
     - vs2022 # [win]
 libgdal:
-    - 3.11
-python:
     - 3.12
+numpy:
+    - 2
+python:
+    - 3.14
