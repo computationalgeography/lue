@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     ClassArray const class_array{
         lue::array_partition_id<Class>(lue::create_partitioned_array<Class>(array_shape, partition_shape))};
 
-    auto const zonal_area = lue::value_policies::zonal_area<Count>(class_array);
+    CountArray const zonal_area = lue::value_policies::zonal_area<Count>(class_array);
 
     auto const array_we_want = lue::test::create_partitioned_array<CountArray>(
         array_shape,

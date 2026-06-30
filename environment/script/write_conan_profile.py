@@ -336,6 +336,9 @@ def write_conan_profile(compiler_filename, profile_pathname):
     profile_options = {}
 
     if conan_os() == "Windows":
+        profile_options["boost/*"] = {
+            "without_cobalt": True,
+        }
         profile_options["gdal/*"] = {
             "gdal_optional_drivers": False,
             "ogr_optional_drivers": False,

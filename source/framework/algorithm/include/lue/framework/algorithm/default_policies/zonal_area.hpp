@@ -15,7 +15,7 @@ namespace lue {
     namespace default_policies {
 
         template<typename Count, typename Zone, Rank rank>
-        PartitionedArray<Count, rank> zonal_area(PartitionedArray<Zone, rank> const& zones)
+        auto zonal_area(PartitionedArray<Zone, rank> const& zones) -> PartitionedArray<Count, rank>
         {
             using Policies = policy::zonal_area::DefaultPolicies<Count, Zone>;
 
