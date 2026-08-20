@@ -96,7 +96,8 @@ def import_array(
             "value"
         ][0]["no_data"] = element_string_to_number(no_data_value)
 
-    json.dump(json_dict, open(json_path, "w"), indent=4)
+    with open(json_path, "w") as json_file:
+        json.dump(json_dict, json_file, indent=4)
 
     json_dict = {
         "datasets": [  # type: ignore[dict-item]
@@ -116,7 +117,8 @@ def import_array(
         ]
     }
 
-    json.dump(json_dict, open(meta_path, "w"), indent=4)
+    with open(meta_path, "w") as json_file:
+        json.dump(json_dict, json_file, indent=4)
 
 
 def import_kernel(
@@ -194,7 +196,8 @@ def import_kernel(
             "value"
         ][0]["no_data"] = element_string_to_number(no_data_value)
 
-    json.dump(json_dict, open(json_path, "w"), indent=4)
+    with open(json_path) as json_file:
+        json.dump(json_dict, json_file, indent=4)
 
     json_dict = {
         "datasets": [  # type: ignore[dict-item]
@@ -214,12 +217,15 @@ def import_kernel(
         ]
     }
 
-    json.dump(json_dict, open(meta_path, "w"), indent=4)
+    with open(meta_path, "w") as json_file:
+        json.dump(json_dict, json_file, indent=4)
 
 
 def import_example_data(text_path: Path, json_path: Path, meta_path: Path) -> None:
     # Read all lines
-    lines = open(text_path).read().splitlines()
+
+    with open(text_path) as text_file:
+        lines = text_file.read().splitlines()
 
     # An empty line separates the header from the values
     idx = lines.index("")

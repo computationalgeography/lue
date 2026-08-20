@@ -38,8 +38,6 @@ def post_process_raw_results(
     time_point = time_point.strftime("%c")
 
     array_shapes = lue_dataset.array.array.shape.value[:]
-    assert len(array_shapes) == len(array_shapes)
-    assert np.all(array_shapes == array_shapes)
 
     partition_shapes = lue_dataset.partition.partition.shape.value[:]
     partition_sizes = np.prod(partition_shapes, axis=1)

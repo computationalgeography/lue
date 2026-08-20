@@ -50,8 +50,12 @@ class StaticModelRunner:
     def __init__(self, model):
         self.model = model
 
-    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
+    def run(self, *, progressor=None, rate_limit=0):
         assert rate_limit >= 0, rate_limit
+
+        if progressor is None:
+            progressor = DefaultProgressor()
+
         lfr.run_deterministic(self.model, progressor, 0, rate_limit)
 
 
@@ -102,9 +106,12 @@ class DynamicModelRunner:
             f"{first_time_step}, {last_time_step}"
         )
 
-    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
+    def run(self, *, progressor=None, rate_limit=0):
         assert rate_limit >= 0, rate_limit
         assert self.first_time_step == 1, self.first_time_step
+
+        if progressor is None:
+            progressor = DefaultProgressor()
 
         lfr.run_deterministic(self.model, progressor, self.last_time_step, rate_limit)
 
@@ -238,11 +245,14 @@ class MonteCarloModelRunner:
             self.framework_model.model, remove_existing_directories
         )
 
-    def run(self, *, progressor=DefaultProgressor(), rate_limit=0):
+    def run(self, *, progressor=None, rate_limit=0):
         assert rate_limit >= 0, rate_limit
         assert self.framework_model.first_time_step == 1, (
             self.framework_model.first_time_step
         )
+
+        if progressor is None:
+            progressor = DefaultProgressor()
 
         lfr.run_stochastic(
             self.framework_model.model,

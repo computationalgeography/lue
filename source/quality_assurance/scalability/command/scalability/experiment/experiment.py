@@ -3,10 +3,8 @@ import os.path
 
 class Arguments:
     def __init__(self, json_dict):
-        self.positionals = (
-            json_dict["positionals"] if "positionals" in json_dict else []
-        )
-        self.options = json_dict["options"] if "options" in json_dict else {}
+        self.positionals = json_dict.get("positionals", [])
+        self.options = json_dict.get("options", {})
 
     @property
     def to_list(self):
@@ -33,10 +31,8 @@ class Experiment:
             Arguments(data["arguments"]) if "arguments" in data else Arguments({})
         )
 
-        self.max_duration = data["max_duration"] if "max_duration" in data else None
-        self.max_tree_depth = (
-            data["max_tree_depth"] if "max_tree_depth" in data else None
-        )
+        self.max_duration = data.get("max_duration", None)
+        self.max_tree_depth = data.get("max_tree_depth", None)
         # self.nr_time_steps = data["nr_time_steps"]
 
         self.program_name = os.path.basename(self.command_pathname)

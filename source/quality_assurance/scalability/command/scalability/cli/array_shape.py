@@ -53,7 +53,7 @@ Wikipedia:
 
     array_shape_per_node = tuple([float(extent) / nr_nodes for extent in array_shape_])
 
-    assert all([isinstance(extent, float) for extent in array_shape_per_node])
+    assert all(isinstance(extent, float) for extent in array_shape_per_node)
 
     print(
         f"""\

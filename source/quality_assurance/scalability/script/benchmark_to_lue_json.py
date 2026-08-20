@@ -33,7 +33,8 @@ so it should be generated and translated only once.
 
 def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
     # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
+    with open(benchmark_pathname) as json_file:
+        benchmark_json = json.loads(json_file.read())
 
     lue_json = {
         "dataset": {
@@ -69,12 +70,14 @@ def benchmark_meta_to_lue_json(benchmark_pathname, lue_pathname):
     }
 
     # Write results
-    open(lue_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    with open(lue_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=None):
     # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
+    with open(benchmark_pathname) as json_file:
+        benchmark_json = json.loads(json_file.read())
 
     time_units = "second"
     benchmark_epoch = dateutil.parser.parse(benchmark_json["start"])
@@ -193,7 +196,8 @@ def benchmark_to_lue_json(benchmark_pathname, lue_pathname, epoch=None):
     }
 
     # Write results
-    open(lue_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    with open(lue_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 if __name__ == "__main__":

@@ -67,8 +67,9 @@ def perform_experiment(arguments):
     )
 
     if task_name == "script" and result_path.exists():
+        # Aware time in UTC
         modification_time_point = datetime.datetime.fromtimestamp(
-            result_path.stat().st_mtime
+            result_path.stat().st_mtime, tz=datetime.UTC
         )
 
         result_path.rename(

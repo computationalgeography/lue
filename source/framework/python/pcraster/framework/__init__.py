@@ -9,7 +9,6 @@ See the `PCRaster Python Modelling Framework documentation`_ for more informatio
 
 import os.path
 import pathlib
-from typing import Union
 
 import lue.framework as lfr
 
@@ -378,7 +377,7 @@ def generateNameS(name, sample):
 
     See also: generateNameT(), generateNameST()
     """
-    return os.path.join("%d" % (sample), name)
+    return os.path.join(f"{name}", name)
 
 
 def generateNameST(name, sample, timestep):

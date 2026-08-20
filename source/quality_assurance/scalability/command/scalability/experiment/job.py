@@ -250,10 +250,8 @@ def create_slurm_script2(
     max_duration = experiment.max_duration
     software_environment = cluster.software_environment.configuration
 
-    exclusive = (
-        True
-        if benchmark.worker.type != "thread" and experiment.name == "strong_scalability"
-        else False
+    exclusive = bool(
+        benchmark.worker.type != "thread" and experiment.name == "strong_scalability"
     )
 
     return """\

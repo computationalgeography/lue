@@ -387,7 +387,7 @@ def harmonize_types(expression1, expression2):
 
 
 def read_if_necessary(*args) -> tuple:
-    return tuple(map(lambda arg: readmap(arg) if isinstance(arg, str) else arg, args))
+    return tuple(readmap(arg) if isinstance(arg, str) else arg for arg in args)
 
 
 def translate_window_length(pcraster_window_length):

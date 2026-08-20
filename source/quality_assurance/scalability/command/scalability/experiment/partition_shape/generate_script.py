@@ -201,4 +201,5 @@ def generate_script(configuration_data):
             result_prefix, cluster, benchmark, experiment, script_pathname
         )
 
-    dataset.write_script(lue_dataset, open(script_pathname).read())
+    with open(script_pathname) as script_file:
+        dataset.write_script(lue_dataset, script_file.read())

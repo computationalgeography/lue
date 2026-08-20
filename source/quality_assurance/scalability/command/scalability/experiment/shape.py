@@ -23,7 +23,7 @@ def array_shape(memory_available, rank, nr_arrays, size_of_element, nr_nodes):
     elements_per_array = nr_elements / nr_arrays
     elements_per_dimension = math.pow(elements_per_array, 1.0 / rank)
 
-    elements_per_dimension = int(math.floor(elements_per_dimension))
+    elements_per_dimension = math.floor(elements_per_dimension)
 
     return rank * (elements_per_dimension,)
 
@@ -39,15 +39,15 @@ def partition_shape_multipliers(shape, partition_shape):
     rank = len(shape)
     assert len(partition_shape) == rank
 
-    assert all([extent > 0 for extent in shape])
-    assert all([extent > 0 for extent in partition_shape])
+    assert all(extent > 0 for extent in shape)
+    assert all(extent > 0 for extent in partition_shape)
 
     for r in range(rank):
         assert shape[r] % partition_shape[r] == 0
 
     shape_multipliers = [shape[r] // partition_shape[r] for r in range(rank)]
 
-    assert all([isinstance(multiplier, int) for multiplier in shape_multipliers])
+    assert all(isinstance(multiplier, int) for multiplier in shape_multipliers)
 
     return shape_multipliers
 
@@ -68,10 +68,8 @@ def ranges_of_partition_shape_multipliers(
     rank = len(shape)
 
     assert all(
-        [
-            min_partition_shape_multipliers[r] >= max_partition_shape_multipliers[r]
-            for r in range(rank)
-        ]
+        min_partition_shape_multipliers[r] >= max_partition_shape_multipliers[r]
+        for r in range(rank)
     )
 
     multiplier_ranges = [
@@ -91,7 +89,7 @@ def shape_ranges(min_shape, max_shape, step):
     assert step > 0
     rank = len(min_shape)
     assert rank > 0
-    assert all([min_shape[r] <= max_shape[r] for r in range(rank)])
+    assert all(min_shape[r] <= max_shape[r] for r in range(rank))
 
     return [range(min_shape[r], max_shape[r] + 1, step) for r in range(rank)]
 
@@ -123,7 +121,7 @@ def range_of_shapes(min_shape, max_nr_elements, multiplier, method):
 
         return tuple(
             [
-                int(math.floor(nr_elements_per_dimension * extent))
+                math.floor(nr_elements_per_dimension * extent)
                 for extent in normalized_shape
             ]
         )

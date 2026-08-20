@@ -7,9 +7,7 @@ class HPX:
         self.from_json(data)
 
     def from_json(self, data):
-        self.performance_counters = (
-            data["performance_counters"] if "performance_counters" in data else None
-        )
+        self.performance_counters = data.get("performance_counters", None)
 
         if self.performance_counters:
             self.counter_interval = None
@@ -146,7 +144,7 @@ class Benchmark:
         return f"Benchmark(count={self.count}, worker={self.worker})"
 
     def from_json(self, data, cluster):
-        self.scenario_name = data["scenario"] if "scenario" in data else "default"
+        self.scenario_name = data.get("scenario", "default")
         self.count = data["count"]
 
         self.locality_per = data["locality_per"]

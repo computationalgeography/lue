@@ -53,7 +53,7 @@ def create_raster(arguments) -> int:
                 max_value=max_value,
             )
         lfr.to_gdal(raster, str(raster_path))
-    except Exception as exception:
+    except Exception as exception:  # noqa: BLE001
         sys.stderr.write(f"{exception}\n")
         status = 1
 

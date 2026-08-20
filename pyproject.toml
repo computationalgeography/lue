@@ -5,26 +5,7 @@ ignore-words-list = "nD"
 # https://docs.astral.sh/ruff/configuration/
 [tool.ruff.lint]
 extend-select = ["I"]
-ignore = [
-    # TODO: Get rid of all / most of these exceptions
-    "F403",
-    "B008",
-    "BLE001",
-    "C417",
-    "C419",
-    "DTZ006",
-    "F401",
-    "PLR0124",
-    "RUF007",
-    "RUF012",
-    "RUF015",
-    "RUF046",
-    "S102",
-    "SIM115",
-    "SIM210",
-    "SIM401",
-    "UP031",
-]
+# ignore = []
 
 [tool.ruff.lint.isort]
 known-first-party = ["lue_test"]

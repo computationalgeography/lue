@@ -20,7 +20,7 @@ def scale_array_shape(array_shape_per_worker, nr_workers):
     multiplier = work_scale_multiplier(rank, nr_workers)
     assert 1 <= multiplier <= nr_workers, multiplier
 
-    array_shape = tuple(int(round(multiplier * e)) for e in array_shape_per_worker)
+    array_shape = tuple(round(multiplier * e) for e in array_shape_per_worker)
 
     # We have rounded to whole numbers, but the result should be OK
     work_size = reduce((lambda x, y: x * y), array_shape)
@@ -390,4 +390,5 @@ def generate_script(configuration_data):
             result_prefix, cluster, benchmark, experiment, script_pathname
         )
 
-    dataset.write_script(lue_dataset, open(script_pathname).read())
+    with open(script_pathname) as script_file:
+        dataset.write_script(lue_dataset, script_file.read())

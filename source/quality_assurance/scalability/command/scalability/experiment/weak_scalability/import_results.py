@@ -115,16 +115,16 @@ def benchmark_meta_to_lue_json(
     }
 
     # Write results
-    open(lue_dataset_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4)
-    )
+    with open(lue_dataset_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def benchmark_to_lue_json(
     nr_workers, benchmark_pathname, lue_json_pathname, epoch, benchmark
 ):
     # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
+    with open(benchmark_pathname) as json_file:
+        benchmark_json = json.loads(json_file.read())
 
     time_units = benchmark_json["unit"]
     benchmark_epoch = dateutil.parser.isoparse(benchmark_json["start"])
@@ -220,7 +220,8 @@ def benchmark_to_lue_json(
     }
 
     # Write results
-    open(lue_json_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    with open(lue_json_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def import_raw_results(

@@ -2,6 +2,7 @@
 import ast
 import os.path
 import sys
+import typing
 
 import docopt
 import lue.framework as lfr
@@ -35,8 +36,8 @@ def raster_exists(pathname: str) -> bool:
 
 
 class NormalizePathnamesVisitor(ast.NodeTransformer):
-    default_extensions = ["tif", "map"]
-    default_extension = "tif"
+    default_extensions: typing.ClassVar = ["tif", "map"]
+    default_extension: typing.ClassVar = "tif"
 
     def __init__(self, *, direction):
         self.direction = direction
@@ -179,7 +180,7 @@ def statement_to_statement_block(
     # pathnames are found, then we will assume that we are generating rasters on the fly, using a call to
     # uniform, for example.
     clone_pathname = (
-        list(variable_name_by_pathname)[0] if variable_name_by_pathname else None
+        next(iter(variable_name_by_pathname)) if variable_name_by_pathname else None
     )
 
     if not clone_pathname:
@@ -247,7 +248,7 @@ def execute_statement_block(statement_block: list[str]) -> None:
     The statements have (only) access to functionality in the lue.framework
     subpackage, aliased as lfr.
     """
-    exec(
+    exec(  # noqa: S102
         "\n".join(statement_block),
         {"__builtins__": {"__import__": __import__}, "lfr": lfr, "np": np},
         {},

@@ -131,9 +131,9 @@ class SlurmSettings:
 
     def from_json(self, data):
         self.partition_name = data["partition"]
-        self.sbatch_options = data["sbatch_options"] if "sbatch_options" in data else ""
-        self.mpirun_options = data["mpirun_options"] if "mpirun_options" in data else ""
-        self.srun_options = data["srun_options"] if "srun_options" in data else ""
+        self.sbatch_options = data.get("sbatch_options", "")
+        self.mpirun_options = data.get("mpirun_options", "")
+        self.srun_options = data.get("srun_options", "")
 
     def to_json(self):
         result = {

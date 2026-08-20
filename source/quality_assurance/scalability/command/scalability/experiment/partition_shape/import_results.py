@@ -16,7 +16,9 @@ def benchmark_meta_to_lue_json(
     benchmark_pathname, lue_dataset_pathname, cluster, benchmark, experiment
 ):
     # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
+    with open(benchmark_pathname) as json_file:
+        benchmark_json = json.loads(json_file.read())
+
     environment_json = benchmark_json["environment"]
     nr_workers = [environment_json["nr_workers"]]
 
@@ -94,14 +96,14 @@ def benchmark_meta_to_lue_json(
     }
 
     # Write results
-    open(lue_dataset_pathname, "w").write(
-        json.dumps(lue_json, sort_keys=False, indent=4)
-    )
+    with open(lue_dataset_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
     # Read benchmark JSON
-    benchmark_json = json.loads(open(benchmark_pathname).read())
+    with open(benchmark_pathname) as json_file:
+        benchmark_json = json.loads(json_file.read())
 
     time_units = benchmark_json["unit"]
     benchmark_epoch = dateutil.parser.isoparse(benchmark_json["start"])
@@ -213,7 +215,8 @@ def benchmark_to_lue_json(benchmark_pathname, lue_json_pathname, epoch):
     }
 
     # Write results
-    open(lue_json_pathname, "w").write(json.dumps(lue_json, sort_keys=False, indent=4))
+    with open(lue_json_pathname, "w") as json_file:
+        json_file.write(json.dumps(lue_json, sort_keys=False, indent=4))
 
 
 def determine_epoch(result_prefix, cluster, benchmark, experiment):
@@ -234,7 +237,9 @@ def determine_epoch(result_prefix, cluster, benchmark, experiment):
             )
             assert os.path.exists(benchmark_pathname), benchmark_pathname
 
-            benchmark_json = json.loads(open(benchmark_pathname).read())
+            with open(benchmark_pathname) as json_file:
+                benchmark_json = json.loads(json_file.read())
+
             benchmark_start = dateutil.parser.isoparse(benchmark_json["start"])
 
             if epoch is None:
