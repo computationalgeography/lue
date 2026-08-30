@@ -191,13 +191,13 @@ jobs:
       # a fork.
       - name: deploy
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
-        uses: Dylan700/sftp-upload-action@latest
+        uses: eiserv/easySFTP@v3
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          host: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          uploads: |
-            ${{ env.lue_build_directory }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/build/windows-${{ matrix.compiler.name }}/
-          ignore: |
-            !.ninja_log
+          host-key: ${{ secrets.FTP_HOST_KEY }}
+          source: ${{ env.lue_build_directory }}/.ninja_log
+          target: ${{ secrets.FTP_REMOTE_DIR }}/download/build/windows-${{ matrix.compiler.name }}/
+          file-mode: "0644"

@@ -47,6 +47,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
       - name: Install Conda
+        id: install-conda
         uses: mamba-org/setup-micromamba@v3
         with:
           environment-file: environment/conda/conda_build_environment.yaml
@@ -57,13 +58,14 @@ jobs:
         run: |
           conda-build environment/conda $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}
       - name: Upload
-        uses: Dylan700/sftp-upload-action@latest
+        uses: eiserv/easySFTP@v3
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
         with:
-          server: ${{ secrets.FTP_SERVER }}
+          host: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
-          delete: true
-          uploads: |
-            $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }} => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
+          host-key: ${{ secrets.FTP_HOST_KEY }}
+          source: ${{ steps.install-conda.outputs.environment-path }}/conda-bld/${{ matrix.target-platform }}
+          target: ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform }}/
+          mode: clean
