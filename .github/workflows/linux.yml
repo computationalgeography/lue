@@ -257,6 +257,7 @@ jobs:
           pre-commit install
           ln -s ../${{ env.lue_build_directory }}/compile_commands.json .
           pre-commit run --all-files
+          environment/script/type_check_python_code.sh ${{ env.lue_build_directory }}
 
       # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
       # a fork.
