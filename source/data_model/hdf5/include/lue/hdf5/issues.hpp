@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/hdf5/issue.hpp"
+#include <vector>
 
 
 namespace lue::hdf5 {
