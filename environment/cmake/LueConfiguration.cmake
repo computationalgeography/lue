@@ -523,12 +523,13 @@ message(STATUS
 
 
 if(LUE_PYTHON_REQUIRED)
-    # This is the first numpy version supporting Python 3.10
-    set(LUE_MIN_NUMPY_VERSION 1.21)
+    set(LUE_MIN_PYTHON_VERSION 3.11)
+    set(LUE_MIN_NUMPY_VERSION 2.0)
+
     string(REPLACE "." "_" LUE_NPY_NO_DEPRECATED_API "NPY_${LUE_MIN_NUMPY_VERSION}_API_VERSION")
 
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(Python 3.10 REQUIRED COMPONENTS Interpreter Development NumPy)
+    find_package(Python ${LUE_MIN_PYTHON_VERSION} REQUIRED COMPONENTS Interpreter Development NumPy)
 
     set(LUE_PYTHON_FROM_CONDA FALSE)
 
@@ -563,7 +564,7 @@ if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
     FetchContent_Declare(pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG ed5057ded698e305210269dafa57574ecf964483  # 3.0.0
+        GIT_TAG 97bf890db679505a14dfe547a5e77bb2bd05dc90 # 3.1.0
         SYSTEM
         FIND_PACKAGE_ARGS 3.0 CONFIG
     )
