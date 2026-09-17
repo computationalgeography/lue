@@ -1,6 +1,10 @@
 import os
 import sys
 
+# While the LUE package is initialized, calls are made into the NumPy API. Without importing it first, this
+# crashes on some platforms: osx / python-3.14.
+import numpy  # noqa
+
 
 if sys.platform == "win32":
     # We are about to import the lue_py Python extension. Since Python 3.8, PATH is not searched anymore for
@@ -8,15 +12,12 @@ if sys.platform == "win32":
     # os.add_dll_directory. This needs to be done for those shared libraries that are not automatically found
     # by Python, because they are located in non-standard locations.
 
-
     def lue_is_installed(package_directory_pathname) -> bool:
         install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
 
         return not os.path.exists(os.path.join(install_prefix, "CMakeCache.txt"))
 
-
     package_directory_pathname = os.path.dirname(os.path.dirname(__file__))
-
 
     if lue_is_installed(package_directory_pathname):
         if os.path.basename(package_directory_pathname) == "site_packages":
@@ -29,7 +30,9 @@ if sys.platform == "win32":
             # location like lib/python<x>.<y>/lue. Our shared libraries are located in bin. We assume shared
             # libraries our shared libraries depend on are all located in standard locations and therefore
             # will be found.
-            install_prefix = os.path.dirname(os.path.dirname(package_directory_pathname))
+            install_prefix = os.path.dirname(
+                os.path.dirname(package_directory_pathname)
+            )
             bin_directory_pathname = os.path.join(install_prefix, "bin")
 
             if os.path.isdir(bin_directory_pathname):
