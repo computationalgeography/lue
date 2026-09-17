@@ -24,11 +24,6 @@ foreach(name focal global local miscellaneous routing zonal)
     add_library(lue_py_framework_${name}_operation SHARED)
     add_library(lue::py_framework_${name}_operation ALIAS lue_py_framework_${name}_operation)
 
-    target_compile_definitions(lue_py_framework_${name}_operation
-        PRIVATE
-            NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
-    )
-
     target_include_directories(lue_py_framework_${name}_operation
         PRIVATE
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/source>
@@ -38,8 +33,9 @@ foreach(name focal global local miscellaneous routing zonal)
     target_link_libraries(lue_py_framework_${name}_operation
         PRIVATE
             lue::framework_${name}_operation
-            pybind11::module
     )
+
+    lue_configure_python_shared_library(lue_py_framework_${name}_operation)
 endforeach()
 
 target_sources(lue_py_framework_focal_operation
@@ -162,11 +158,6 @@ endblock()
 add_library(lue_py_framework SHARED)
 add_library(lue::py_framework ALIAS lue_py_framework)
 
-target_compile_definitions(lue_py_framework
-    PRIVATE
-        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
-)
-
 target_include_directories(lue_py_framework
     PRIVATE
         $<TARGET_PROPERTY:lue::py_data_model,SOURCE_DIR>/include
@@ -227,8 +218,9 @@ target_link_libraries(lue_py_framework
         lue::framework_io
         lue::framework_model
         lue::gdal
-        pybind11::module
 )
+
+lue_configure_python_shared_library(lue_py_framework)
 
 set_target_properties(
     lue_py_framework_focal_operation
@@ -253,25 +245,6 @@ lue_install_runtime_libraries(
         lue_py_framework_zonal_operation
         lue_py_framework_routing_operation
 )
-
-if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
-    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
-    # to include the location of the Python libraries. But if we are building a Conda package,
-    # we assume Conda takes care of RPATH handling.
-    set_property(
-        TARGET
-            lue_py_framework
-            lue_py_framework_focal_operation
-            lue_py_framework_global_operation
-            lue_py_framework_local_operation
-            lue_py_framework_miscellaneous_operation
-            lue_py_framework_zonal_operation
-            lue_py_framework_routing_operation
-        APPEND
-        PROPERTY INSTALL_RPATH
-            ${Python_LIBRARY_DIRS}
-    )
-endif()
 
 install(
     DIRECTORY

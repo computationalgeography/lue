@@ -11,11 +11,6 @@ file(GENERATE
 add_library(lue_py_data_model SHARED)
 add_library(lue::py_data_model ALIAS lue_py_data_model)
 
-target_compile_definitions(lue_py_data_model
-    PRIVATE
-        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
-)
-
 set_target_properties(lue_py_data_model
     PROPERTIES
         VERSION ${LUE_VERSION}
@@ -107,24 +102,13 @@ target_link_libraries(lue_py_data_model
     PRIVATE
         lue::data_model_hl
         lue::shared
-        pybind11::module
 )
+
+lue_configure_python_shared_library(lue_py_data_model)
 
 lue_install_runtime_libraries(
     TARGETS lue_py_data_model
 )
-
-if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
-    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
-    # to include the location of the Python libraries. But if we are building a Conda package,
-    # we assume Conda takes care of RPATH handling.
-    set_property(
-        TARGET lue_py_data_model
-        APPEND
-        PROPERTY INSTALL_RPATH
-            ${Python_LIBRARY_DIRS}
-    )
-endif()
 
 install(
     DIRECTORY ${CMAKE_BINARY_DIR}/${LUE_BUILD_PYTHON_PACKAGE_DIR}/$<$<BOOL:${LUE_GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>/data_model
