@@ -9,11 +9,6 @@ endforeach()
 add_library(lue_py_image_land SHARED)
 add_library(lue::py_image_land ALIAS lue_py_image_land)
 
-target_compile_definitions(lue_py_image_land
-    PRIVATE
-        NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
-)
-
 set_target_properties(lue_py_image_land
     PROPERTIES
         VERSION ${LUE_VERSION}
@@ -42,24 +37,13 @@ target_include_directories(lue_py_image_land
 target_link_libraries(lue_py_image_land
     PRIVATE
         lue::image_land
-        pybind11::module
 )
+
+lue_configure_python_shared_library(lue_py_image_land)
 
 lue_install_runtime_libraries(
     TARGETS lue_py_image_land
 )
-
-if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
-    # If we are using a Python interpreter from a Conda environment then we must expand RPATH
-    # to include the location of the Python libraries. But if we are building a Conda package,
-    # we assume Conda takes care of RPATH handling.
-    set_property(
-        TARGET lue_py_image_land
-        APPEND
-        PROPERTY INSTALL_RPATH
-            ${Python_LIBRARY_DIRS}
-    )
-endif()
 
 install(
     DIRECTORY

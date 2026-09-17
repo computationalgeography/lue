@@ -1261,3 +1261,61 @@ function(link_example_arguments)
             ${link_names}
     )
 endfunction()
+
+
+function(lue_configure_python_shared_library)
+    set(target_name ${ARGV0})
+
+    target_compile_definitions(${target_name}
+        PRIVATE
+            NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
+    )
+
+    target_link_libraries(${target_name}
+        PRIVATE
+            pybind11::lto
+            pybind11::module
+            pybind11::windows_extras
+    )
+
+    if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+        # Strip unnecessary sections of the binary on Linux/macOS
+        pybind11_strip(${target_name})
+    endif()
+
+    if(LUE_PYTHON_FROM_CONDA AND NOT DEFINED ENV{CONDA_BUILD})
+        # If we are using a Python interpreter from a Conda environment then we must expand RPATH
+        # to include the location of the Python libraries. But if we are building a Conda package,
+        # we assume Conda takes care of RPATH handling.
+        set_property(
+            TARGET ${target_name}
+            APPEND
+            PROPERTY INSTALL_RPATH
+                ${Python_LIBRARY_DIRS}
+        )
+    endif()
+endfunction()
+
+
+function(lue_configure_python_module)
+    set(target_name ${ARGV0})
+
+    target_compile_definitions(${target_name}
+        PRIVATE
+            NPY_NO_DEPRECATED_API=${LUE_NPY_NO_DEPRECATED_API}
+    )
+
+    target_link_libraries(${target_name}
+        PRIVATE
+            pybind11::lto
+            pybind11::module
+            pybind11::windows_extras
+    )
+
+    if(NOT MSVC AND NOT ${CMAKE_BUILD_TYPE} MATCHES Debug|RelWithDebInfo)
+        # Strip unnecessary sections of the binary on Linux/macOS
+        pybind11_strip(${target_name})
+    endif()
+
+    pybind11_extension(lue_py)
+endfunction()
