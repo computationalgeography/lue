@@ -21,6 +21,7 @@ dependencies:
   - jinja2
   - libboost-devel
   - libgdal
+  - lldb
   - matplotlib-base
   - ninja
   - nlohmann_json
