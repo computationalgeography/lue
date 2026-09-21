@@ -18,9 +18,13 @@ authors:
     family-names: Schmitz
     orcid: 'https://orcid.org/0000-0002-0493-851X'
     affiliation: Utrecht University
+  - given-names: Saeb
+    family-names: Faraji Gargari
+    orcid: 'https://orcid.org/0000-0003-4690-9159'
+    affiliation: Utrecht University
 identifiers:
   - type: doi
     value: 10.5281/zenodo.5535685
 repository-code: 'https://github.com/computationalgeography/lue'
-url: 'https://lue.computationalgeography.org/'
+url: 'https://lue.computationalgeography.org'
 license: MIT
