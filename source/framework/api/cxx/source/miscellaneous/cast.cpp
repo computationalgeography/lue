@@ -4,7 +4,7 @@
 #include "lue/overload.hpp"
 
 
-namespace lue::api {
+namespace lue {
 
     namespace value_policies {
 
@@ -19,21 +19,23 @@ namespace lue::api {
     }  // namespace value_policies
 
 
+    namespace api {
+
 #define HANDLE_CASE(enum_, type)                                                                             \
-    case ElementType::enum_:                                                                                 \
-    {                                                                                                        \
-        return value_policies::cast<type>(field);                                                            \
-    }
+        case ElementType::enum_:                                                                                 \
+        {                                                                                                        \
+            return value_policies::cast<type>(field);                                                            \
+        }
 
 
-    auto cast(Field const& field, ElementType const element_type) -> Field
-    {
-        return std::visit(
-            overload{
-                [element_type](auto const& field) -> Field
-                {
-                    switch (element_type)
+        auto cast(Field const& field, ElementType const element_type) -> Field
+        {
+            return std::visit(
+                overload{
+                    [element_type](auto const& field) -> Field
                     {
+                        switch (element_type)
+                        {
 #ifdef LUE_FRAMEWORK_WITH_INT8_ELEMENT
                         HANDLE_CASE(Int8, std::int8_t)
 #endif
@@ -64,18 +66,19 @@ namespace lue::api {
 #ifdef LUE_FRAMEWORK_WITH_FLOAT64_ELEMENT
                         HANDLE_CASE(Float64, double)
 #endif
-                        default:
-                        {
-                            api::detail::unsupported_overload("field", field);
+                            default:
+                            {
+                                api::detail::unsupported_overload("cast", field);
 
-                            return {};
+                                return {};
+                            }
                         }
-                    }
-                }},
-            field.variant());
-    }
+                    }},
+                field.variant());
+        }
 
 
 #undef HANDLE_CASE
 
+    }  // namespace api
 }  // namespace lue::api
