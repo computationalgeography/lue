@@ -702,17 +702,6 @@ namespace lue {
     }
 
 
-<<<<<<< HEAD
-            hpx::future<void> result = hpx::async(
-                [name, partitions = std::move(partitions)]() mutable
-                -> auto {
-                    using Action = WritePartitionAction<Policies, Partition>;
-||||||| parent of 4cca28dd6 (Initial work on I/O of rasters instead of arrays)
-            hpx::future<void> result = hpx::async(
-                [name, partitions = std::move(partitions)]() mutable
-                {
-                    using Action = WritePartitionAction<Policies, Partition>;
-=======
     template<typename Element>
     auto to_gdal(
         PartitionedRaster<Element> const& raster,
@@ -726,7 +715,6 @@ namespace lue {
         else
         {
             // Write a partitioned array to a raster band using the GDAL API.
->>>>>>> 4cca28dd6 (Initial work on I/O of rasters instead of arrays)
 
             // Each partition that has become ready is written to the dataset, on the locality containing
             // the partition. No two partitions are written at the same time.
@@ -788,7 +776,8 @@ namespace lue {
         std::string const&, lue::Hyperslab<2> const&, lue::Shape<lue::Count, 2> const&);
 
     template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
-        lue::PartitionedArray<{{ Element }}, 2> const&, std::string const&, std::string const&);
+        lue::PartitionedArray<{{ Element }}, 2> const&, std::string const&, std::string const&,
+        std::map<std::string, std::string> const&);
 
     template LUE_FRAMEWORK_IO_EXPORT hpx::future<void> lue::to_gdal<{{ Element }}>(
         lue::PartitionedRaster<{{ Element }}> const&, std::string const&);

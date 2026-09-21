@@ -28,7 +28,14 @@ namespace lue::framework {
                         // version that supports them ...
                         module.def(
                             "to_gdal",
-                            to_gdal<Element>,
+                            [](
+                                PartitionedArray<Element, 2> const& array,
+                                std::string const& name,
+                                std::string const& clone_name,
+                                std::map<std::string, std::string> const& options) -> hpx::future<void>
+                            {
+                                return to_gdal(array, name, clone_name, options);
+                            },
                             R"(
     Write array to a dataset using GDAL
 

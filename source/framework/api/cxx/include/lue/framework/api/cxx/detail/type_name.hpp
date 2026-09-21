@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/kernel.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
-#include "lue/framework/partitioned_array_decl.hpp"
+#include "lue/framework/partitioned_raster.hpp"
 #include <format>
 #include <string>
 #include <type_traits>

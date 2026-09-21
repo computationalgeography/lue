@@ -93,6 +93,9 @@ namespace lue {
 
 
             auto variant() -> Variant&
+            {
+                return _variant;
+            }
 
         private:
 

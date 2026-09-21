@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/gdal/export.hpp"
-#include <gdal/ogr_spatialref.h>
+#include <ogr_spatialref.h>
 #include <string>
 
 

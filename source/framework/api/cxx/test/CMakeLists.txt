@@ -74,7 +74,6 @@ set(names
     ${miscellaneous_operation_names}
     ${routing_operation_names}
     field
-    variant_wrapper
 )
 
 foreach(name ${names})

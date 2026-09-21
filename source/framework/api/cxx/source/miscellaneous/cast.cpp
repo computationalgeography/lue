@@ -1,10 +1,22 @@
 #include "lue/framework/algorithm/value_policies/cast.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
 #include "lue/framework/api/cxx/miscellaneous/cast.hpp"
+#include "lue/overload.hpp"
 
 
 namespace lue::api {
+
+    namespace value_policies {
+
+        template<typename OutputElement>
+        auto cast(auto const& field) -> api::Field
+        {
+            api::detail::unsupported_overload("cast", field);
+
+            return {};
+        }
+
+    }  // namespace value_policies
 
 
 #define HANDLE_CASE(enum_, type)                                                                             \

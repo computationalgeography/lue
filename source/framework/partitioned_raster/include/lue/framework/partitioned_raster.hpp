@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/bounding_box.hpp"
-#include "lue/framework/partitioned_array.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework/partitioned_raster/crs.hpp"
 
 
@@ -63,10 +63,10 @@ namespace lue {
                 @brief      Construct an instance given a collection of raster cells and information about
                             the coordinate reference system
             */
-            PartitionedRaster(CRS const& crs, MBR const& mbr, Cells&& cells):
+            PartitionedRaster(CRS crs, MBR mbr, Cells&& cells):
 
-                _crs{crs},
-                _mbr{mbr},
+                _crs{std::move(crs)},
+                _mbr{std::move(mbr)},
                 _cells{std::move(cells)}
 
             {
