@@ -1166,14 +1166,13 @@ set(generated_source_files "")
 
 block()
     # Instantiate clump
-    set(count "0")
     set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" zone_element ${Zone})
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/clump-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/clump-${Policies}_${zone_element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1192,13 +1191,11 @@ endblock()
 
 block()
     # Instantiate zonal_area
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" zone_element ${Zone})
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_area-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_area-${Policies}_${zone_element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
@@ -1216,15 +1213,15 @@ block()
 endblock()
 
 block()
-    # Instantiate zonal_diversity
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_diversity-${count}.cpp")
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+                string(REPLACE "::" "_" zone_element ${Zone})
+
+                # Instantiate zonal_diversity
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_diversity-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1235,23 +1232,9 @@ block()
                         '{"Policies":"${Policies}","Count":"${LUE_FRAMEWORK_COUNT_ELEMENT}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
 
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    # Instantiate zonal_majority
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
-
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_majority-${count}.cpp")
+                # Instantiate zonal_majority
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_majority-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1270,15 +1253,15 @@ block()
 endblock()
 
 block()
-    # Instantiate zonal_maximum
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_maximum-${count}.cpp")
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+                string(REPLACE "::" "_" zone_element ${Zone})
+
+                # Instantiate zonal_maximum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_maximum-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1289,50 +1272,9 @@ block()
                         '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
 
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    # Instantiate zonal_mean
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
-
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_mean-${count}.cpp")
-
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_mean.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    # Instantiate zonal_minimum
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
-
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_minimum-${count}.cpp")
+                # Instantiate zonal_minimum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_minimum-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1343,50 +1285,9 @@ block()
                         '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
                 )
                 list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
 
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    # Instantiate zonal_normal
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
-
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_normal-${count}.cpp")
-
-                generate_template_instantiation(
-                    INPUT_PATHNAME
-                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_normal.cpp.in"
-                    OUTPUT_PATHNAME
-                        "${output_pathname}"
-                    DICTIONARY
-                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
-                )
-                list(APPEND generated_source_files "${output_pathname}")
-            endforeach()
-        endforeach()
-    endforeach()
-
-    set(generated_source_files ${generated_source_files} PARENT_SCOPE)
-endblock()
-
-block()
-    # Instantiate zonal_sum
-    set(count "0")
-
-    foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
-        foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
-
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_sum-${count}.cpp")
+                # Instantiate zonal_sum
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_sum-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1405,15 +1306,41 @@ block()
 endblock()
 
 block()
-    # Instantiate zonal_uniform
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_uniform-${count}.cpp")
+            foreach(Zone IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+                string(REPLACE "::" "_" zone_element ${Zone})
+
+                # Instantiate zonal_mean
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_mean-${Policies}_${element}_${zone_element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_mean.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate zonal_normal
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_normal-${Policies}_${element}_${zone_element}.cpp")
+
+                generate_template_instantiation(
+                    INPUT_PATHNAME
+                        "${CMAKE_CURRENT_SOURCE_DIR}/source/zonal_operation/zonal_normal.cpp.in"
+                    OUTPUT_PATHNAME
+                        "${output_pathname}"
+                    DICTIONARY
+                        '{"Policies":"${Policies}","Element":"${Element}","Zone":"${Zone}"}'
+                )
+                list(APPEND generated_source_files "${output_pathname}")
+
+                # Instantiate zonal_uniform
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/zonal_operation/zonal_uniform-${Policies}_${element}_${zone_element}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1484,15 +1411,13 @@ set(offset "source/global_operation")
 
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 # Instantiate unique
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/unique-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1511,15 +1436,13 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
-            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-                math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
+            foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                 # Instantiate maximum
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/maximum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/maximum-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1532,7 +1455,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate minimum
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/minimum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/minimum-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1545,7 +1468,7 @@ block()
                 list(APPEND generated_source_files "${output_pathname}")
 
                 # Instantiate sum
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sum-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/sum-${Policies}_${element}_${rank}.cpp")
 
                 generate_template_instantiation(
                     INPUT_PATHNAME
@@ -1564,16 +1487,16 @@ block()
 endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(InputElement IN LISTS LUE_FRAMEWORK_INTEGRAL_ELEMENTS)
-            foreach(OutputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-                    math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" input_element ${InputElement})
 
+            foreach(OutputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
+                string(REPLACE "::" "_" output_element ${OutputElement})
+
+                foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
                     # Instantiate reclassify
-                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/reclassify-${count}.cpp")
+                    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/reclassify-${Policies}_${input_element}_${output_element}_${rank}.cpp")
 
                     generate_template_instantiation(
                         INPUT_PATHNAME
@@ -1830,16 +1753,17 @@ endblock()
 
 
 block()
-    set(count "0")
     set(rank "2")
 
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+            string(REPLACE "::" "_" zone_element ${ZoneElement})
+
             foreach(InputElement IN LISTS LUE_FRAMEWORK_ELEMENTS)
-                math(EXPR count "${count} + 1")
+                string(REPLACE "::" "_" input_element ${InputElement})
 
                 # Instantiate decreasing_order (global)
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-global-${Policies}_${input_element}_${zone_element}_${rank}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/decreasing_order.cpp.in"
@@ -1850,10 +1774,8 @@ block()
                 )
                 list(APPEND generated_source_files "${output_pathname}")
 
-                math(EXPR count "${count} + 1")
-
                 # Instantiate decreasing_order (zonal)
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/decreasing_order-zonal-${Policies}_${input_element}_${zone_element}_${rank}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/decreasing_order.cpp.in"
@@ -1867,15 +1789,15 @@ block()
         endforeach()
     endforeach()
 
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(OutputElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+            string(REPLACE "::" "_" output_element ${OutputElement})
+
             foreach(ZoneElement IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
-                math(EXPR count "${count} + 1")
+                string(REPLACE "::" "_" zone_element ${ZoneElement})
 
                 # Instantiate first_n
-                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/first_n-${count}.cpp")
+                set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/first_n-${Policies}_${zone_element}_${output_element}_${rank}.cpp")
                 generate_template_instantiation(
                     INPUT_PATHNAME
                         "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/first_n.cpp.in"
@@ -1938,14 +1860,12 @@ endblock()
 # endblock()
 
 block()
-    set(count "0")
-
     foreach(Policies IN LISTS LUE_FRAMEWORK_ALGORITHM_POLICIES)
         foreach(Element IN LISTS LUE_FRAMEWORK_FLOATING_POINT_ELEMENTS)
-            math(EXPR count "${count} + 1")
+            string(REPLACE "::" "_" element ${Element})
 
             # Instantiate downstream_distance
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream_distance-${count}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/downstream_distance-${Policies}_${element}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
