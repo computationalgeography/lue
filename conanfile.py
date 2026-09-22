@@ -115,4 +115,20 @@ class LUERecipe(ConanFile):
         cmake.generate()
 
         toolchain = CMakeToolchain(self, generator="Ninja")
+
+        # geos-3.12.0 build failure:
+        #
+        # CMake Error at cmake/Ccache.cmake:10 (cmake_minimum_required):
+        # Compatibility with CMake < 3.5 has been removed from CMake.
+        #
+        # Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+        # to tell CMake that the project requires at least <min> but has been updated
+        # to work with policies introduced by <max> or earlier.
+        #
+        # Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+        # Call Stack (most recent call first):
+        # CMakeLists.txt:126 (include)
+
+        toolchain.variables["CMAKE_POLICY_VERSION_MINIMUM"] = "3.5"
+
         toolchain.generate()
