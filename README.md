@@ -21,8 +21,8 @@ information. It allows computations to be performed on hardware ranging from lap
 without the user having to know about high-performance computing and the related technology.
 
 - [Homepage](https://lue.computationalgeography.org)
-    - [Documentation](https://lue.computationalgeography.org/doc)
-    - [Publications](https://lue.computationalgeography.org/publication)
+  - [Documentation](https://lue.computationalgeography.org/doc)
+  - [Publications](https://lue.computationalgeography.org/publication)
 - [R&D team](https://www.computationalgeography.org)
 - [![Chat with us on Matrix](https://img.shields.io/badge/chat-on%20Matrix-%230098D4)](https://matrix.to/#/#lue:matrix.org)
   (users)
@@ -35,7 +35,7 @@ without the user having to know about high-performance computing and the related
 
 [![Linux build status](https://github.com/computationalgeography/lue/actions/workflows/linux.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/linux.yml)
 [![macOS build status](https://github.com/computationalgeography/lue/actions/workflows/macos-homebrew.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/macos-homebrew.yml)
-[![Windows (Conan) build status](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml)
+<!-- [![Windows (Conan) build status](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conan.yml) -->
 [![Windows (Conda) build status](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/windows-conda.yml)
 [![Conda packages build status](https://github.com/computationalgeography/lue/actions/workflows/conda.yml/badge.svg)](https://github.com/computationalgeography/lue/actions/workflows/conda.yml)
 
