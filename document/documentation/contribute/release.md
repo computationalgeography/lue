@@ -83,6 +83,7 @@ Useful links:
   - [ ] Bump version number in:
     - [ ] The main `CMakeLists.txt`
     - [ ] `environment/conda/meta.yaml`
+  - [ ] Update the Releases page in the documentation to contain a section for the next version
   - [ ] Write blog post about the release
   - [ ] Post about the release on [Mastodon](https://scicomm.xyz/@lue)
   - [ ] Update [tutorial repo](https://github.com/computationalgeography/lue_tutorial)
