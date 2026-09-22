@@ -66,7 +66,7 @@ Useful links:
 ## Release
 
 - [ ] Create a PR based on the LUE release branch and wait for the C/I builds to succeed
-- [ ] Merge the PR into master
+- [ ] Merge the LUE PR
 - [ ] Draft a release on GitHub. We do not use the letter v to prefix version numbers.
   - [ ] Create a new zip with the same name and determine sha256:
 
@@ -77,10 +77,10 @@ Useful links:
 
   - [ ] Upload zip to `https://lue.computationalgeography.org/download/lue-<version>.tar.bz2`
 
-  - [ ] Update the recipe files in the PR:
+  - [ ] Update the recipe files in the LUE feedstock PR:
     - [ ] Replace the sha256 with one just found
   - [ ] Wait for all builds to succeed
-- [ ] Merge Conda-Forge PR
+- [ ] Merge the LUE feedstock PR
 - [ ] Postprocess release:
   - [ ] Bump version number in:
     - [ ] The main `CMakeLists.txt`
