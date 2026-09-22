@@ -17,6 +17,8 @@ on:
       - "!document/*"
       - "!environment/easybuild/*"
   push:
+    branches-ignore:
+      - "*"
     branches:
       - "master"
     paths:
