@@ -65,6 +65,8 @@ Useful links:
 
 ## Release
 
+- [ ] Create a PR based on the LUE release branch and wait for the C/I builds to succeed
+- [ ] Merge the PR into master
 - [ ] Draft a release on GitHub. We do not use the letter v to prefix version numbers.
   - [ ] Create a new zip with the same name and determine sha256:
 
