@@ -35,21 +35,21 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["windows-2022"]
+        os: ["windows-2025"]
         compiler:
           - { name: "msvc", c: cl, cxx: cl }
-        vs:
-          - {
-              name: "Visual Studio Enterprise 2022",
-              version: "17",
-              msvc_toolset: "14",
-            }
+        # vs:
+        #   - {
+        #       name: "Visual Studio Enterprise 2022",
+        #       version: "17",
+        #       msvc_toolset: "14",
+        #     }
         python_version: ["3.14"]
         architecture: ["amd64"]
 
     runs-on: ${{ matrix.os }}
 
-    name: ${{ matrix.os }} / ${{ matrix.vs.name }} / python - ${{ matrix.python_version }}
+    name: ${{ matrix.os }} / python - ${{ matrix.python_version }}
 
     timeout-minutes: 360
 
@@ -91,7 +91,7 @@ jobs:
       - uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
           arch: ${{ matrix.architecture }}
-          toolset: ${{ matrix.vs.msvc_toolset }}
+      #     toolset: ${{ matrix.vs.msvc_toolset }}
 
       - uses: conda-incubator/setup-miniconda@v4
         with:
@@ -116,7 +116,7 @@ jobs:
           conan_build_nr: 3
         with:
           path: ${{ env.conan_package_prefix }}
-          key: ${{ matrix.os }}-${{ matrix.vs.name }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
+          key: ${{ matrix.os }}-${{ env.cache-name }}-${{ env.conan_packages }}-${{ env.conan_build_nr }}
 
       - name: install conan packages
         if: ${{steps.cache-conan.outputs.cache-hit != 'true'}}
@@ -177,9 +177,9 @@ jobs:
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
-          hpx_build_nr: 1 # Build number for current HPX version / branch
+          hpx_build_nr: 2 # Build number for current HPX version / branch
         with:
-          cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-${{ matrix.vs.msvc_toolset }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
+          cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
           c_compiler: ${{ matrix.compiler.c }}
           cxx_compiler: ${{ matrix.compiler.cxx }}
           build_type: ${{ env.build_type }}
