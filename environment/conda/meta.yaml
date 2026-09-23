@@ -1,4 +1,4 @@
-{% set version = "0.3.11" %}
+{% set version = "0.3.12" %}
 
 
 package:
