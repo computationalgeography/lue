@@ -66,3 +66,4 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           uploads: |
             $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
+          delete: 'true'
