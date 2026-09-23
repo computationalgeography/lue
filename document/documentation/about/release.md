@@ -2,6 +2,15 @@
 
 # Releases
 
+## 0.3.12
+
+- New features:
+  - ...
+- Improvements:
+  - ...
+- [Full list of closed issues on
+  Github](https://github.com/computationalgeography/lue/issues?q=is%3Aclosed+is%3Aissue+milestone%3A0.3.12+)
+
 ## 0.3.11
 
 - New features:
