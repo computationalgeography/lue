@@ -39,9 +39,9 @@ jobs:
         include:
           - os: "macos-26"
             target-platform: osx-arm64
-          - os: "ubuntu-24.04"
+          - os: "ubuntu-26.04"
             target-platform: linux-64
-          - os: "windows-2025-vs2026"
+          - os: "windows-2025"
             target-platform: win-64
     steps:
       - name: Checkout
