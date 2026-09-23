@@ -52,7 +52,7 @@ jobs:
           environment-file: environment/conda/conda_build_environment.yaml
           init-shell: bash
           cache-environment: false
-          post-cleanup: "all"
+          # post-cleanup: "all"
       - name: Build package
         run: |
           conda-build --old-build-string environment/conda $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}
