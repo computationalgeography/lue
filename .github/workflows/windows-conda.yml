@@ -189,7 +189,7 @@ jobs:
 
       # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
       # a fork.
-      - name: deploy
+      - name: upload Ninja log
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
         uses: Dylan700/sftp-upload-action@latest
         with:
