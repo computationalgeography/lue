@@ -52,7 +52,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    name: ${{ matrix.os }} / python - ${{ matrix.python_version }}
+    name: ${{ matrix.os }} / python - ${{ matrix.python_version }} (conan packages)
 
     timeout-minutes: 360
 
@@ -94,7 +94,7 @@ jobs:
       - uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
           arch: ${{ matrix.architecture }}
-      #     toolset: ${{ matrix.vs.msvc_toolset }}
+          # toolset: ${{ matrix.vs.msvc_toolset }}
 
       - uses: conda-incubator/setup-miniconda@v4
         with:

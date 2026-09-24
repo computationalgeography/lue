@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        macos_version: ["15"]
+        macos_version: ["26"]
         compiler:
           - { name: clang, c: clang, cxx: clang++ }
 
