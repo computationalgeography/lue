@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include "lue/variant_wrapper.hpp"
 #include <cstdint>
 
 

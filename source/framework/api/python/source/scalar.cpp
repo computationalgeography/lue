@@ -1,5 +1,5 @@
 #include "lue/framework/api/cxx/scalar.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/api/cxx/local/add.hpp"
 #include "lue/framework/api/cxx/local/subtract.hpp"
 #include <pybind11/numpy.h>

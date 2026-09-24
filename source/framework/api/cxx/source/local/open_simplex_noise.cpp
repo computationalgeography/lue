@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/local/open_simplex_noise.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/algorithm/value_policies/open_simplex_noise.hpp"
 
 

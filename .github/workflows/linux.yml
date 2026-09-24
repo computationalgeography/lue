@@ -102,6 +102,7 @@ jobs:
             libgdal-dev \
             libhdf5-dev \
             libjemalloc-dev \
+            libproj-dev \
             libvulkan-dev \
             ${{ matrix.compiler.package }} \
             ninja-build \

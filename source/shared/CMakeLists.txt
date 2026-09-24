@@ -43,3 +43,7 @@ target_link_libraries(lue_shared
 lue_install_development_libraries(
     TARGETS lue_shared
 )
+
+if(LUE_BUILD_TESTS)
+    add_subdirectory(test)
+endif()

@@ -1,0 +1,15 @@
+#include "lue/proj/version.hpp"
+#include <proj.h>
+
+
+namespace lue::proj {
+
+    /*!
+        @brief      Return the version of the PROJ library
+    */
+    auto version() -> std::string
+    {
+        return proj_info().version;
+    }
+
+}  // namespace lue::proj

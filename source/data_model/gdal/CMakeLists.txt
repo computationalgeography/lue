@@ -42,6 +42,7 @@ target_sources(lue_gdal
         source/error.cpp
         source/raster.cpp
         source/raster_band.cpp
+        source/spatial_reference.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
 )
 

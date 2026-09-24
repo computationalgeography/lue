@@ -3,7 +3,7 @@
 #include <variant>
 
 
-namespace lue::api {
+namespace lue {
 
     namespace detail {
 
@@ -29,8 +29,6 @@ namespace lue::api {
         hide this std::variant type from the outside world. An std::variant is an STL class template and
         libraries like pybind11 can do "smart" things with those, which we don't always want. Wrapping the
         variant in another type prevents this.
-
-        Copying is disabled.
     */
     template<typename... Ts>
     class VariantWrapper
@@ -99,16 +97,9 @@ namespace lue::api {
                 return _variant;
             }
 
-
-            // operator Variant const&() const
-            // {
-            //     return _variant;
-            // }
-
-
         private:
 
             Variant _variant;
     };
 
-}  // namespace lue::api
+}  // namespace lue
