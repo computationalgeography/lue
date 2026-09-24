@@ -39,10 +39,13 @@ jobs:
         include:
           - os: "macos-26"
             target-platform: osx-arm64
+            home: "/Users/runner"
           - os: "ubuntu-26.04"
             target-platform: linux-64
+            home: "/home/runner"
           - os: "windows-2025"
             target-platform: win-64
+            home: "C:/Users/runneradmin"
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -55,7 +58,7 @@ jobs:
           # post-cleanup: "all"
       - name: Build package
         run: |
-          conda-build --old-build-string environment/conda $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}
+          conda-build environment/conda $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}
       - name: Upload
         uses: Dylan700/sftp-upload-action@latest
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master'
@@ -65,5 +68,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT }}
           uploads: |
-            $MAMBA_ROOT_PREFIX/envs/lue/conda-bld/${{ matrix.target-platform }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform}}/
+            ${{ matrix.home }}/micromamba/envs/lue/conda-bld/${{ matrix.target-platform }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform }}/
           delete: 'true'
