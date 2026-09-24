@@ -1,4 +1,5 @@
 #include "lue/gdal/spatial_reference.hpp"
+#include <stdexcept>
 
 
 namespace lue::gdal {
