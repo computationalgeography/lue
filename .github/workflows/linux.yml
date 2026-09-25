@@ -37,13 +37,13 @@ jobs:
           # To be recognized by Conan, name must be one of:
           #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
           #     'msvc', 'qcc', 'sun-cc'
-          - { name: gcc, version: 13, c: gcc-13, cxx: g++-13, package: g++-13 }
+          - { name: gcc, version: 15, c: gcc-15, cxx: g++-15, package: g++-15 }
           - {
               name: clang,
-              version: 18,
-              c: clang-18,
-              cxx: clang++-18,
-              package: clang-18,
+              version: 22,
+              c: clang-22,
+              cxx: clang++-22,
+              package: clang-22,
             }
 
     runs-on: ${{ matrix.os }}
@@ -244,12 +244,12 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
       - name: documentation
-        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-15' && matrix.python_version == '3.14'
         run: |
           cmake --build ${{ env.lue_build_directory }} --target documentation
 
       - name: analyse
-        if: false && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        if: false && matrix.compiler.cxx == 'g++-15' && matrix.python_version == '3.14'
         run: |
           cd ${{ env.lue_source_directory }}
           pre-commit install
