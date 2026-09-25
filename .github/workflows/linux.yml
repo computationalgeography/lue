@@ -31,19 +31,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-24.04"]
+        os: ["ubuntu-26.04"]
         python_version: ["3.12", "3.14"]
         compiler:
           # To be recognized by Conan, name must be one of:
           #     'Visual Studio', 'apple-clang', 'clang', 'gcc', 'intel', 'intel-cc', 'mcst-lcc',
           #     'msvc', 'qcc', 'sun-cc'
-          - { name: gcc, version: 13, c: gcc-13, cxx: g++-13, package: g++-13 }
+          - { name: gcc, version: 15, c: gcc-15, cxx: g++-15, package: g++-15 }
           - {
               name: clang,
-              version: 18,
-              c: clang-18,
-              cxx: clang++-18,
-              package: clang-18,
+              version: 22,
+              c: clang-22,
+              cxx: clang++-22,
+              package: clang-22,
             }
 
     runs-on: ${{ matrix.os }}
@@ -95,7 +95,6 @@ jobs:
             graphviz \
             imagemagick \
             libhwloc-dev \
-            lftp \
             libasio-dev \
             libboost-dev \
             libglfw3-dev \
@@ -114,7 +113,7 @@ jobs:
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
-          hpx_build_nr: 1 # Build number for current HPX version / branch
+          hpx_build_nr: 2 # Build number for current HPX version / branch
         with:
           cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}_python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
           c_compiler: ${{ matrix.compiler.c }}
@@ -218,7 +217,6 @@ jobs:
           export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
           export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$LD_LIBRARY_PATH"
           export LD_PRELOAD="$(find /usr/lib -name libjemalloc.so):$LD_PRELOAD"
-          echo $LD_PRELOAD
 
           ${{ env.lue_runtime_install_directory }}/bin/lue_calculate.py --version
           ${{ env.lue_runtime_install_directory }}/bin/lue_scalability.py --version
@@ -246,12 +244,12 @@ jobs:
           ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
 
       - name: documentation
-        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-15' && matrix.python_version == '3.14'
         run: |
           cmake --build ${{ env.lue_build_directory }} --target documentation
 
       - name: analyse
-        if: false && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        if: false && matrix.compiler.cxx == 'g++-15' && matrix.python_version == '3.14'
         run: |
           cd ${{ env.lue_source_directory }}
           pre-commit install
@@ -260,26 +258,41 @@ jobs:
 
       # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
       # a fork.
-      - name: deploy
+      - name: upload documentation
         if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
-        env:
-          ftp_server: ${{ secrets.FTP_SERVER }}
-          ftp_port: ${{ secrets.FTP_PORT }}
-          ftp_username: ${{ secrets.FTP_USERNAME }}
-          ftp_password: ${{ secrets.FTP_PASSWORD }}
-          remote_dir: ${{ secrets.FTP_REMOTE_DIR }}
-          local_dir: "_build/html"
-        run: |
-          cd ${{ env.lue_build_directory }}
-          lftp \
-              -d \
-              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; put -O $remote_dir/download/build/linux-gcc .ninja_log; mput -O $remote_dir/download/logo document/logo/*.pdf document/logo/*.png document/logo/*.svg; quit" \
-              -u $ftp_username,$ftp_password \
-              -p $ftp_port \
-              sftp://$ftp_server
-          cd document/documentation
-          lftp \
-              -e "set sftp:auto-confirm yes; set ssl:verify-certificate false; mirror --reverse --delete --transfer-all --parallel=2 $local_dir $remote_dir/doc; quit" \
-              -u $ftp_username,$ftp_password \
-              -p $ftp_port \
-              sftp://$ftp_server
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          uploads: |
+            ${{ env.lue_build_directory }}/document/documentation/_build/html/ => ${{ secrets.FTP_REMOTE_DIR }}/doc/
+
+      - name: upload Ninja log
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          uploads: |
+            ${{ env.lue_build_directory }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/build/linux-${{ matrix.compiler.name }}/
+          ignore: |
+            !.ninja_log
+
+      - name: upload logo
+        if: github.repository == 'computationalgeography/lue' && github.ref == 'refs/heads/master' && matrix.compiler.cxx == 'g++-13' && matrix.python_version == '3.14'
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          uploads: |
+            ${{ env.lue_build_directory }}/document/logo/ => ${{ secrets.FTP_REMOTE_DIR }}/download/logo/
+          ignore: |
+            !*.pdf
+            !*.png
+            !*.svg
