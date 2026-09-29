@@ -35,7 +35,7 @@ option(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS
 
 option(LUE_BUILD_VIEW
     "Build LUE data model viewer"
-    TRUE)
+    FALSE)
 
 option(LUE_BUILD_DOCUMENTATION
     "Build documentation"
