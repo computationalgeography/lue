@@ -1,5 +1,5 @@
 {
-    "version": 6,
+    "version": 10,
     "configurePresets": [
         {
             "name": "hpx_shared_configuration",
@@ -7,7 +7,6 @@
             "cacheVariables": {
                 "HPX_USE_CMAKE_CXX_STANDARD": "TRUE",
                 "HPX_WITH_EXAMPLES": "FALSE",
-                "HPX_WITH_HWLOC": "TRUE",
                 "HPX_WITH_PKGCONFIG": "FALSE",
                 "HPX_WITH_TESTS": "FALSE"
             }
@@ -16,7 +15,6 @@
             "name": "hpx_node_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_NETWORKING": "TRUE",
                 "HPX_WITH_PARCELPORT_TCP": "TRUE",
                 "HPX_WITH_PARCELPORT_MPI": "FALSE"
             }
@@ -25,7 +23,6 @@
             "name": "hpx_cluster_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_NETWORKING": "TRUE",
                 "HPX_WITH_PARCELPORT_TCP": "FALSE",
                 "HPX_WITH_PARCELPORT_MPI": "TRUE"
             }
@@ -34,8 +31,6 @@
             "name": "hpx_linux_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_FETCH_ASIO": "FALSE",
-                "HPX_WITH_FETCH_HWLOC": "FALSE",
                 "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_MALLOC": "jemalloc"
             }
@@ -44,8 +39,6 @@
             "name": "hpx_macos_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_FETCH_ASIO": "TRUE",
-                "HPX_WITH_FETCH_HWLOC": "FALSE",
                 "HPX_WITH_HIDDEN_VISIBILITY": "FALSE",
                 "HPX_WITH_MALLOC": "jemalloc"
             }
@@ -54,8 +47,6 @@
             "name": "hpx_windows_configuration",
             "hidden": true,
             "cacheVariables": {
-                "HPX_WITH_FETCH_ASIO": "FALSE",
-                "HPX_WITH_FETCH_HWLOC": "FALSE",
                 "HPX_WITH_HIDDEN_VISIBILITY": "TRUE",
                 "HPX_WITH_MALLOC": "mimalloc"
             }
@@ -63,33 +54,17 @@
         {
             "name": "hpx_debug_configuration",
             "hidden": true,
-            "cacheVariables": {
-                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
-                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
-                "HPX_WITH_APEX": "FALSE",
-                "HPX_WITH_PAPI": "FALSE"
-            }
+            "cacheVariables": {}
         },
         {
             "name": "hpx_relwithdebinfo_configuration",
             "hidden": true,
-            "cacheVariables": {
-                "HPX_WITH_FETCH_APEX": "TRUE",
-                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "TRUE",
-                "HPX_WITH_THREAD_IDLE_RATES": "TRUE",
-                "HPX_WITH_APEX": "TRUE",
-                "HPX_WITH_PAPI": "TRUE"
-            }
+            "cacheVariables": {}
         },
         {
             "name": "hpx_release_configuration",
             "hidden": true,
-            "cacheVariables": {
-                "HPX_WITH_PARCELPORT_ACTION_COUNTERS": "FALSE",
-                "HPX_WITH_THREAD_IDLE_RATES": "FALSE",
-                "HPX_WITH_APEX": "FALSE",
-                "HPX_WITH_PAPI": "FALSE"
-            }
+            "cacheVariables": {}
         },
         {
             "name": "hpx_debug_linux_node_configuration",
