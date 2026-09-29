@@ -141,7 +141,7 @@ void game_of_life(
 
     lue::Progressor progressor{};
 
-    lue::run_deterministic(model, progressor, nr_generations, 5);
+    lue::run_deterministic(model, progressor, nr_generations, 2);
 }
 
 
@@ -178,20 +178,18 @@ auto parse_shape(std::string const& shape_as_string) -> Shape
     }
     catch (std::exception const& exception)
     {
-        handle_error(
-            std::format(
-                "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
-                rank,
-                shape_as_string));
+        handle_error(std::format(
+            "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
+            rank,
+            shape_as_string));
     }
 
     if (std::size(extents) != rank)
     {
-        handle_error(
-            std::format(
-                "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
-                rank,
-                shape_as_string));
+        handle_error(std::format(
+            "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
+            rank,
+            shape_as_string));
     }
 
     return {extents[0], extents[1]};
