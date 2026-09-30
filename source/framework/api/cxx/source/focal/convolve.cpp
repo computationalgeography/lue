@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/focal/convolve.hpp"
 #include "lue/framework/algorithm/value_policies/convolve.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
 
 

@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/type_info.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/core/type_traits.hpp"
 
 
@@ -27,6 +27,13 @@ namespace lue {
     //
     //     return {};
     // }
+
+
+    template<Arithmetic Element>
+    auto element_type([[maybe_unused]] PartitionedRaster<Element> const& raster)
+    {
+        return TypeTraits<Element>::element_type;
+    }
 
 
     template<Arithmetic Element, Rank rank>

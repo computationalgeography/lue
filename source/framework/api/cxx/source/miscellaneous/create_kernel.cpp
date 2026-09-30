@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/miscellaneous/create_kernel.hpp"
 #include "lue/framework/algorithm/kernel.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
 
 

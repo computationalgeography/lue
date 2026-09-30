@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/local/not_equal_to.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
 
 

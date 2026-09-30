@@ -1,6 +1,6 @@
 #include "lue/framework/api/cxx/as_state.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/overload.hpp"
 
 
 namespace lue {

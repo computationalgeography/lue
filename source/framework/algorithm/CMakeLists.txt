@@ -77,6 +77,7 @@ target_sources(lue_framework_algorithm
 target_link_libraries(lue_framework_algorithm
     INTERFACE
         lue::framework_partitioned_array
+        lue::framework_partitioned_raster
         lue::framework_partitioned_route
         lue::framework_core
         HPX::hpx

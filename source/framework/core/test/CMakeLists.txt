@@ -1,6 +1,7 @@
 set(names
     array
     array_visitor
+    bounding_box
     configuration_entry
     domain_decomposition
     hilbert_curve
