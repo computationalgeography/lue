@@ -47,16 +47,28 @@ set -eu
 #           lib/
 #           share/
 
+set -eu
+
+# See https://hub.docker.com/u/silkeh for possible versions
 # compiler_name=clang
 # compiler_version=21
 
+# See https://hub.docker.com/_/gcc/ for possible versions
 compiler_name=gcc
 compiler_version=15
+
+# Debug, RelWithDebInfo, Release
+build_type=Release
+
+# Change this value according to the capabilities of the hardware
+nr_threads=20
+
+# ---------- No need to adjust anything below this line ----------
 
 container_basename=${compiler_name}
 container_name=${container_basename}-${compiler_version}
 
-# Build an image for a container for building LUE
+# Build an image for a container for building LUE. The image will end up in the current directory.
 apptainer build --force \
     --build-arg COMPILER_VERSION=${compiler_version} \
     --build-arg LUE="$LUE" \
@@ -70,20 +82,20 @@ install_prefix="$container_name"
 apptainer exec \
     --bind "$LUE"/environment/apptainer/:/mnt ${container_name}.sif \
     /mnt/build_lue.py install_hpx \
-    /mnt/build_lue.toml Debug 20 \
+    /mnt/build_lue.toml $build_type $nr_threads \
     $source_prefix ${build_prefix} ${install_prefix}
 
 # Install MDSPAN
 apptainer exec \
     --bind "$LUE"/environment/apptainer/:/mnt ${container_name}.sif \
     /mnt/build_lue.py install_mdspan \
-    /mnt/build_lue.toml Debug 20 \
+    /mnt/build_lue.toml $build_type $nr_threads \
     $source_prefix ${build_prefix} ${install_prefix}
 
 # Install LUE
 apptainer exec \
     --bind "$LUE"/environment/apptainer/:/mnt ${container_name}.sif \
     /mnt/build_lue.py install_lue \
-    /mnt/build_lue.toml Debug 20 \
+    /mnt/build_lue.toml $build_type $nr_threads \
     $source_prefix ${build_prefix} ${install_prefix}
 ```

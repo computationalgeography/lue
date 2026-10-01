@@ -21,8 +21,8 @@ apt-get install -y \
     libasio-dev \
     libboost-dev \
     libgdal-dev \
-    libgoogle-perftools-dev \
     libhdf5-dev \
+    libjemalloc-dev \
     ninja-build \
     nlohmann-json3-dev \
     pybind11-dev \

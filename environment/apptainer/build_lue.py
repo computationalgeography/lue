@@ -26,10 +26,19 @@ CMAKE_ARGUMENTS = [
 ]
 
 
-def normalize(pathname: str) -> Path:
+def normalize(path: str, **variables) -> Path:
     """
-    Return the pathname passed in with all environment variables replaced and the result canonicalized
+    Return the path passed in with all custom and environment variables replaced and the result canonicalized
+
+    The variables passed is a dictionary with variable name, variable value mappings. Each occurrence of
+    `$variable_name` in path is replaced by the variable value. Regular environment variables are also
+    replaced by the their respective values.
     """
+    pathname = str(path)
+
+    for name, value in variables.items():
+        pathname = pathname.replace(f"${name}", value)
+
     return Path(os.path.expandvars(pathname)).expanduser().resolve(strict=False)
 
 
@@ -139,42 +148,26 @@ def configure_hpx_build(
     cmake_arguments += [
         "HPX_USE_CMAKE_CXX_STANDARD=TRUE",
         "HPX_WITH_EXAMPLES=FALSE",
-        "HPX_WITH_HWLOC=TRUE",
         "HPX_WITH_PKGCONFIG=FALSE",
         "HPX_WITH_TESTS=FALSE",
         "HPX_WITH_NETWORKING=TRUE",
         "HPX_WITH_PARCELPORT_TCP=TRUE",
         "HPX_WITH_PARCELPORT_MPI=FALSE",
-        "HPX_WITH_FETCH_ASIO=FALSE",
-        "HPX_WITH_FETCH_HWLOC=FALSE",
         "HPX_WITH_HIDDEN_VISIBILITY=TRUE",
-        "HPX_WITH_GOOGLE_PERFTOOLS=TRUE",
-        "HPX_WITH_MALLOC=tcmalloc",
+        "HPX_WITH_MALLOC=jemalloc",
     ]
 
     # Build-type specific HPX configuration
     if build_type == "Debug":
-        cmake_arguments += [
-            "HPX_WITH_PARCELPORT_ACTION_COUNTERS=FALSE",
-            "HPX_WITH_THREAD_IDLE_RATES=FALSE",
-            "HPX_WITH_APEX=FALSE",
-            "HPX_WITH_PAPI=FALSE",
-        ]
+        cmake_arguments += []
     elif build_type == "RelWithDebInfo":
         cmake_arguments += [
-            "HPX_WITH_FETCH_APEX=TRUE",
-            "HPX_WITH_PARCELPORT_ACTION_COUNTERS=TRUE",
-            "HPX_WITH_THREAD_IDLE_RATES=TRUE",
-            "HPX_WITH_APEX=TRUE",
-            "HPX_WITH_PAPI=TRUE",
+            "HPX_WITH_TRACY=TRUE",
+            "HPX_WITH_FETCH_TRACY=TRUE",
+            "HPX_WITH_PARCEL_PROFILING=TRUE",
         ]
     elif build_type == "Release":
-        cmake_arguments += [
-            "HPX_WITH_PARCELPORT_ACTION_COUNTERS=FALSE",
-            "HPX_WITH_THREAD_IDLE_RATES=FALSE",
-            "HPX_WITH_APEX=FALSE",
-            "HPX_WITH_PAPI=FALSE",
-        ]
+        cmake_arguments += []
 
     cmake_arguments = [f"-D {argument}" for argument in cmake_arguments]
 
@@ -198,10 +191,12 @@ def install_hpx(
         source_prefix_path / configuration["hpx"]["prefix"]["source"]
     )
     build_prefix_path = normalize(
-        build_prefix_path / configuration["hpx"]["prefix"]["build"]
+        build_prefix_path / configuration["hpx"]["prefix"]["build"],
+        build_type=build_type,
     )
     install_prefix_path = normalize(
-        install_prefix_path / configuration["hpx"]["prefix"]["install"]
+        install_prefix_path / configuration["hpx"]["prefix"]["install"],
+        build_type=build_type,
     )
     version = configuration["hpx"]["version"]
 
@@ -270,10 +265,12 @@ def install_mdspan(
         source_prefix_path / configuration["mdspan"]["prefix"]["source"]
     )
     build_prefix_path = normalize(
-        build_prefix_path / configuration["mdspan"]["prefix"]["build"]
+        build_prefix_path / configuration["mdspan"]["prefix"]["build"],
+        build_type=build_type,
     )
     install_prefix_path = normalize(
-        install_prefix_path / configuration["mdspan"]["prefix"]["install"]
+        install_prefix_path / configuration["mdspan"]["prefix"]["install"],
+        build_type=build_type,
     )
     commit = configuration["mdspan"]["commit"]
 
@@ -331,7 +328,7 @@ def configure_lue_build(
         "LUE_BUILD_DOCUMENTATION=TRUE",
         "LUE_DATA_MODEL_WITH_PYTHON_API=TRUE",
         "LUE_DATA_MODEL_WITH_UTILITIES=TRUE",
-        "LUE_FRAMEWORK_WITH_IMAGE_LAND=FALSE",
+        # "LUE_FRAMEWORK_WITH_IMAGE_LAND=FALSE",
         "LUE_FRAMEWORK_WITH_PYTHON_API=TRUE",
         "LUE_BUILD_QUALITY_ASSURANCE=TRUE",
         "LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE",
@@ -345,7 +342,7 @@ def configure_lue_build(
         "Python_EXECUTABLE=/bin/python3",
     ]
 
-    # Build-type specific LUE configuration
+    # Build-type-specific LUE configuration
     if build_type == "Debug":
         cmake_arguments += [
             "LUE_ASSERT_CONDITIONS=TRUE",
@@ -373,17 +370,21 @@ def install_lue(
         source_prefix_path / configuration["lue"]["prefix"]["source"]
     )
     build_prefix_path = normalize(
-        build_prefix_path / configuration["lue"]["prefix"]["build"]
+        build_prefix_path / configuration["lue"]["prefix"]["build"],
+        build_type=build_type,
     )
     lue_install_prefix_path = normalize(
-        install_prefix_path / configuration["lue"]["prefix"]["install"]
+        install_prefix_path / configuration["lue"]["prefix"]["install"],
+        build_type=build_type,
     )
     branch = configuration["lue"]["branch"]
     hpx_install_prefix_path = normalize(
-        install_prefix_path / configuration["hpx"]["prefix"]["install"]
+        install_prefix_path / configuration["hpx"]["prefix"]["install"],
+        build_type=build_type,
     )
     mdspan_install_prefix_path = normalize(
-        install_prefix_path / configuration["mdspan"]["prefix"]["install"]
+        install_prefix_path / configuration["mdspan"]["prefix"]["install"],
+        build_type=build_type,
     )
 
     if build_prefix_path.exists():
