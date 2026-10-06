@@ -68,7 +68,7 @@ namespace lue {
                 _shape{shape},
                 _nr_elements{lue::nr_elements(shape)},
                 _buffer_size{_nr_elements},
-                _elements{_buffer_size == 0 ? nullptr : std::make_unique<Element[]>(_buffer_size)},
+                _elements{_buffer_size <= 0 ? nullptr : std::make_unique<Element[]>(_buffer_size)},
                 _span{_elements.get(), _shape}
 
             {
