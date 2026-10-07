@@ -501,8 +501,6 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        AnnotateFunction const annotation{"where: array"};
-
         detail::verify_compatible(condition, true_array, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Partition> action;
@@ -544,8 +542,6 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        AnnotateFunction const annotation{"where: array"};
-
         detail::verify_compatible(condition, true_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Partition, Element> action;
@@ -586,8 +582,6 @@ namespace lue {
         using Partitions = PartitionsT<Array>;
         using Partition = PartitionT<Array>;
 
-        AnnotateFunction const annotation{"where: array"};
-
         detail::verify_compatible(condition, false_array);
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Partition> action;
@@ -626,8 +620,6 @@ namespace lue {
 
         using Array = PartitionedArray<Element, rank>;
         using Partitions = PartitionsT<Array>;
-
-        AnnotateFunction const annotation{"where: array"};
 
         detail::where::WherePartitionAction<Policies, ConditionPartition, Element, Element> action;
 

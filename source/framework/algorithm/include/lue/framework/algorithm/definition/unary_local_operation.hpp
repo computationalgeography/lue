@@ -12,8 +12,9 @@ namespace lue {
 
         template<typename Policies, typename InputPartition, typename OutputPartition, typename Functor>
         auto unary_local_operation_partition(
-            Policies const& policies, InputPartition const& input_partition, Functor const& functor)
-            -> OutputPartition
+            Policies const& policies,
+            InputPartition const& input_partition,
+            Functor const& functor) -> OutputPartition
         {
             using Offset = OffsetT<InputPartition>;
             using InputData = DataT<InputPartition>;
@@ -24,7 +25,8 @@ namespace lue {
 
                 [policies, functor](InputPartition const& input_partition) -> OutputPartition
                 {
-                    AnnotateFunction const annotation{std::format("{}: partition", functor_name<Functor>)};
+                    AnnotateFunction const annotation{
+                        std::format("{}: partition", functor_name<Functor>).c_str()};
 
                     Offset const offset = input_partition.offset(hpx::launch::sync);
                     InputData const input_partition_data = input_partition.data(hpx::launch::sync);
@@ -100,7 +102,7 @@ namespace lue {
         using OutputPartitions = PartitionsT<OutputArray>;
         using OutputPartition = PartitionT<OutputArray>;
 
-        AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>)};
+        // AnnotateFunction const annotation{std::format("{}: array", functor_name<Functor>).c_str()};
 
         lue_hpx_assert(all_are_valid(input_array.partitions()));
 
