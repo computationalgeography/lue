@@ -141,7 +141,8 @@ endforeach()
 
 set(scope lue.framework.api.cxx.test.stress)
 set(names
-    # game_of_life
+    game_of_life
+    focal_operation
     local_operation
 )
 
