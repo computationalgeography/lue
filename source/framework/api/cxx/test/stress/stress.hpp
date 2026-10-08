@@ -1,5 +1,4 @@
 #pragma once
-// #include "lue/core/define.hpp"
 #include "lue/framework/model/progressor.hpp"
 #include "lue/framework/model/simulate.hpp"
 #include "lue/utility/application.hpp"
@@ -32,6 +31,9 @@ namespace lue::stress {
                     hpx::cout << "]\n" << std::flush;
                 }
         };
+
+
+        using SilentProgressor = lue::Progressor;
 
     }  // Anonymous namespace
 
@@ -117,7 +119,12 @@ namespace lue::stress {
                 Model model{
                     {array_dimension_size, array_dimension_size},
                     {partition_dimension_size, partition_dimension_size}};
-                DefaultProgressor progressor{};
+
+                // bool const silent = true;
+                //
+                // auto progressor = silent ? Progressor{} : DefaultProgressor{};
+
+                Progressor progressor{};
 
                 lue::run_deterministic(model, progressor, nr_time_steps, rate_limit);
 
