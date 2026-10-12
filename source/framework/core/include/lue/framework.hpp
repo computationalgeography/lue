@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/configure.hpp"
+#include "lue/framework/core/export.hpp"
 #include <algorithm>
 
 
@@ -11,7 +12,7 @@ namespace lue {
     }
 
 
-    void verify_rank_supported(Rank rank);
+    LUE_FRAMEWORK_CORE_EXPORT void verify_rank_supported(Rank rank);
 
 
     constexpr static std::size_t nr_arithmetic_elements = std::tuple_size_v<ArithmeticElements>;

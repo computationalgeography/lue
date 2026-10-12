@@ -1,15 +1,16 @@
-#include "lue/git.hpp"
+#pragma once
+#include <string>
 
 
 namespace lue {
 
-    auto sha1() -> std::string
+    inline auto sha1() -> std::string
     {
         return "${LUE_GIT_SHA1}";
     }
 
 
-    auto short_sha1() -> std::string
+    inline auto short_sha1() -> std::string
     {
         return "${LUE_GIT_SHORT_SHA1}";
     }

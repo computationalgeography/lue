@@ -598,7 +598,7 @@ if(LUE_CUNIT_REQUIRED)
         OPTIONS
             "CUNIT_DISABLE_EXAMPLES TRUE"
             "CUNIT_DISABLE_TESTS TRUE"
-        SYSTEM  # NOTE: Has no effect ATM... Build still fails because warnings are treated as errors.
+        SYSTEM TRUE  # NOTE: Has no effect ATM... Build still fails because warnings are treated as errors.
     )
 
     # TODO: Hack until SYSTEM works well. May have to be ported to other platforms.
@@ -611,13 +611,11 @@ endif()
 
 
 if(LUE_CXXOPTS_REQUIRED)
-    FetchContent_Declare(cxxopts
-        GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
-        GIT_TAG 3bf268481da8208d171d8908e6491459de3651d7  # 3.2.0
-        SYSTEM
-        FIND_PACKAGE_ARGS 3.2 CONFIG
+    CPMAddPackage(
+        URI "gh:jarro2783/cxxopts"
+        GIT_TAG "v3.2.0"
+        SYSTEM TRUE
     )
-    FetchContent_MakeAvailable(cxxopts)
 endif()
 
 

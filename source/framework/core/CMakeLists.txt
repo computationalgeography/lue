@@ -1,10 +1,5 @@
-add_library(lue_framework_core STATIC)
+add_library(lue_framework_core SHARED)
 add_library(lue::framework_core ALIAS lue_framework_core)
-
-target_compile_definitions(lue_framework_core
-    PUBLIC
-        $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
-)
 
 set(generated_source_files "")
 
@@ -53,6 +48,22 @@ block()
     set(generated_source_files ${generated_source_files} PARENT_SCOPE)
 endblock()
 
+set_target_properties(lue_framework_core
+    PROPERTIES
+        EXPORT_NAME framework_core
+        VERSION ${LUE_VERSION}
+        SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
+)
+
+target_compile_definitions(lue_framework_core
+    PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:NOMINMAX>
+)
+
+generate_export_header(lue_framework_core
+    EXPORT_FILE_NAME include/lue/framework/core/export.hpp
+)
 
 target_sources(lue_framework_core
     PUBLIC
@@ -63,6 +74,7 @@ target_sources(lue_framework_core
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/configure.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/core/export.hpp
     PRIVATE
         ${generated_source_files}
         source/configuration_entry.cpp
@@ -72,29 +84,6 @@ target_sources(lue_framework_core
         source/numa_domain.cpp
         source/runtime.cpp
 )
-
-# set_target_properties(lue_framework_core
-#     PROPERTIES
-#         EXPORT_NAME framework_core
-# )
-
-# target_include_directories(lue_framework_core
-#     PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-# )
-
-# target_sources(lue_framework_core
-#     PUBLIC
-#         FILE_SET
-#             HEADERS
-#         BASE_DIRS
-#             include
-#             ${CMAKE_CURRENT_BINARY_DIR}/include
-#         FILES
-#             include/lue
-#             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/configure.hpp
-# )
 
 target_link_libraries(lue_framework_core
     PUBLIC
@@ -108,5 +97,11 @@ lue_install_development_libraries(
 )
 
 if(LUE_BUILD_TESTS)
+    lue_configure_static_library_for_tests(
+        TARGET_NAME_SHARED_LIB lue_framework_core
+        TARGET_NAME_STATIC_LIB lue_framework_core_static
+        EXPORT_MACRO_BASENAME FRAMEWORK_CORE
+    )
+
     add_subdirectory(test)
 endif()

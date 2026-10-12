@@ -1,10 +1,11 @@
 #pragma once
+#include "lue/framework/core/export.hpp"
 #include <hpx/hpx.hpp>
 
 
 namespace lue {
 
-    class Runtime
+    class LUE_FRAMEWORK_CORE_EXPORT Runtime
     {
 
         public:

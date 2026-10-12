@@ -1,33 +1,35 @@
-#include "lue/version.hpp"
+#pragma once
+#include <cstdint>
+#include <string>
 
 
 namespace lue {
 
-    auto version() -> std::string
+    inline auto version() -> std::string
     {
         return "${LUE_VERSION}";
     }
 
 
-    auto major_version() -> std::uint32_t
+    inline auto major_version() -> std::uint32_t
     {
         return ${LUE_VERSION_MAJOR};
     }
 
 
-    auto minor_version() -> std::uint32_t
+    inline auto minor_version() -> std::uint32_t
     {
         return ${LUE_VERSION_MINOR};
     }
 
 
-    auto patch_version() -> std::uint32_t
+    inline auto patch_version() -> std::uint32_t
     {
         return ${LUE_VERSION_PATCH};
     }
 
 
-    auto tweak_version() -> std::uint32_t
+    inline auto tweak_version() -> std::uint32_t
     {
         return ${LUE_VERSION_TWEAK} + 0;
     }

@@ -171,12 +171,6 @@ target_link_libraries(lue_framework_api_cxx
         lue::framework_partitioned_array
 )
 
-# Uncomment this in case of link errors:
-# target_link_options(lue_framework_api_cxx
-#     PRIVATE
-#         "-Wl,--no-undefined"
-# )
-
 lue_install_runtime_libraries(
     TARGETS
         lue_framework_api_cxx

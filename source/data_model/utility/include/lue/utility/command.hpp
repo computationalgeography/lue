@@ -1,4 +1,5 @@
 #pragma once
+#include "lue/utility/export.hpp"
 #include <cxxopts.hpp>
 #include <functional>
 #include <map>
@@ -16,7 +17,7 @@ namespace lue::utility {
         command, possibly using subcommands to implement parts of the functionality. Subcommands can also use
         subcommands, etc.
     */
-    class Command
+    class LUE_UTILITY_EXPORT Command
     {
 
         public:

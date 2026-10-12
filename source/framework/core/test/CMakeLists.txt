@@ -17,6 +17,9 @@ add_unit_tests(
     NAMES ${names}
     LIBRARIES
         lue::framework_test
+        lue_framework_core_static
+    EXPORT_MACRO_BASENAME
+        FRAMEWORK_CORE
     TARGETS
         test_names
 )

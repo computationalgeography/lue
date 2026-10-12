@@ -1,4 +1,4 @@
-add_library(lue_shared STATIC)
+add_library(lue_shared INTERFACE)
 add_library(lue::shared ALIAS lue_shared)
 
 set_target_properties(lue_shared
@@ -12,13 +12,13 @@ configure_file(
 )
 
 configure_file(
-    source/git.cpp.in
-    source/git.cpp
+    include/lue/git.hpp.in
+    include/lue/git.hpp
 )
 
 configure_file(
-    source/version.cpp.in
-    source/version.cpp
+    include/lue/version.hpp.in
+    include/lue/version.hpp
 )
 
 target_sources(lue_shared
@@ -30,13 +30,12 @@ target_sources(lue_shared
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/configure.hpp
-    PRIVATE
-        ${CMAKE_CURRENT_BINARY_DIR}/source/git.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/source/version.cpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/git.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/version.hpp
 )
 
 target_link_libraries(lue_shared
-    PUBLIC
+    INTERFACE
         lue::compile_features
 )
 
