@@ -92,6 +92,10 @@ target_link_libraries(lue_framework_core
         std::mdspan
 )
 
+lue_install_runtime_libraries(
+    TARGETS lue_framework_core
+)
+
 lue_install_development_libraries(
     TARGETS lue_framework_core
 )
