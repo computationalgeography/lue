@@ -41,8 +41,8 @@ namespace lue {
                                 hpx::shared_future<InputElement> const& input_scalar,
                                 ZonesPartition const& zones_partition) -> auto
                             {
-                                AnnotateFunction const annotation{
-                                    std::format("{}: partition", functor_name<Functor>).c_str()};
+                                std::string const label = std::format("{}: partition", functor_name<Functor>);
+                                AnnotateFunction const annotation{label.c_str()};
 
                                 InputElement const input_value = input_scalar.get();
                                 ZonesData const zones_partition_data =
@@ -126,8 +126,8 @@ namespace lue {
                                 InputPartition const& input_partition,
                                 ZonesPartition const& zones_partition) -> auto
                             {
-                                AnnotateFunction const annotation{
-                                    std::format("{}: partition", functor_name<Functor>).c_str()};
+                                std::string const label = std::format("{}: partition", functor_name<Functor>);
+                                AnnotateFunction const annotation{label.c_str()};
 
                                 InputData const input_partition_data =
                                     input_partition.data(hpx::launch::sync);
@@ -188,9 +188,8 @@ namespace lue {
         */
         template<typename Policies, typename ZonesPartition, typename OutputPartition, typename Functor>
         auto zonal_operation_partition2(
-            Policies const& policies,
-            ZonesPartition const& zones_partition,
-            AggregatorT<Functor> aggregator) -> OutputPartition
+            Policies const& policies, ZonesPartition const& zones_partition, AggregatorT<Functor> aggregator)
+            -> OutputPartition
         {
             using Offset = OffsetT<ZonesPartition>;
             using ZonesData = DataT<ZonesPartition>;
@@ -202,8 +201,8 @@ namespace lue {
                 [policies,
                  aggregator = std::move(aggregator)](ZonesPartition const& zones_partition) -> OutputPartition
                 {
-                    AnnotateFunction const annotation{
-                        std::format("{}: partition: reclass", functor_name<Functor>).c_str()};
+                    std::string const label = std::format("{}: partition: reclass", functor_name<Functor>);
+                    AnnotateFunction const annotation{label.c_str()};
 
                     ZonesData const zones_partition_data = zones_partition.data(hpx::launch::sync);
                     Offset const offset = zones_partition.offset(hpx::launch::sync);
@@ -303,8 +302,8 @@ namespace lue {
                 .then(
                     [](hpx::future<Aggregators>&& aggregators) -> auto
                     {
-                        AnnotateFunction const annotation{
-                            std::format("{}: aggregate", functor_name<Functor>).c_str()};
+                        std::string const label = std::format("{}: aggregate", functor_name<Functor>);
+                        AnnotateFunction const annotation{label.c_str()};
 
                         Aggregator result{};
 
@@ -418,8 +417,8 @@ namespace lue {
                 .then(
                     [](hpx::future<Aggregators>&& aggregators) -> auto
                     {
-                        AnnotateFunction const annotation{
-                            std::format("{}: array: merge", functor_name<Functor>).c_str()};
+                        std::string const label = std::format("{}: array: merge", functor_name<Functor>);
+                        AnnotateFunction const annotation{label.c_str()};
 
                         Aggregator result{};
 
@@ -450,8 +449,9 @@ namespace lue {
                      zones_partition = zones_partitions[partition_idx]](
                         hpx::shared_future<Aggregator> const& aggregator) -> OutputPartition
                     {
-                        AnnotateFunction const annotation{
-                            std::format("{}: partition: call reclass action", functor_name<Functor>).c_str()};
+                        std::string const label =
+                            std::format("{}: partition: call reclass action", functor_name<Functor>);
+                        AnnotateFunction const annotation{label.c_str()};
 
                         return hpx::async(action, locality_id, policies, zones_partition, aggregator.get());
                     },
