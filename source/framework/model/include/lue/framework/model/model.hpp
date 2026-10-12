@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/framework/model/export.hpp"
 #include <hpx/future.hpp>
 
 
@@ -12,7 +13,7 @@ namespace lue {
         then the default customization points used by the @a lue::simulate()
         function template can be used.
     */
-    class Model
+    class LUE_FRAMEWORK_MODEL_EXPORT Model
     {
 
         public:
@@ -43,14 +44,14 @@ namespace lue {
     };
 
 
-    void preprocess(Model& model, Count sample_nr);
+    LUE_FRAMEWORK_MODEL_EXPORT void preprocess(Model& model, Count sample_nr);
 
-    void initialize(Model& model);
+    LUE_FRAMEWORK_MODEL_EXPORT void initialize(Model& model);
 
-    auto simulate(Model& model, Count time_step) -> hpx::shared_future<void>;
+    LUE_FRAMEWORK_MODEL_EXPORT auto simulate(Model& model, Count time_step) -> hpx::shared_future<void>;
 
-    void finalize(Model& model);
+    LUE_FRAMEWORK_MODEL_EXPORT void finalize(Model& model);
 
-    void postprocess(Model& model);
+    LUE_FRAMEWORK_MODEL_EXPORT void postprocess(Model& model);
 
 }  // namespace lue

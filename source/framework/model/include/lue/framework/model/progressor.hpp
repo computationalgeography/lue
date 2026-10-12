@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include "lue/framework/model/export.hpp"
 
 
 namespace lue {
@@ -9,7 +10,7 @@ namespace lue {
 
         When a model is executed, progressors can be used to visualize the progress.
     */
-    class Progressor
+    class LUE_FRAMEWORK_MODEL_EXPORT Progressor
     {
 
         public:
@@ -40,14 +41,14 @@ namespace lue {
     };
 
 
-    void preprocess(Progressor& progressor, Count sample_nr);
+    LUE_FRAMEWORK_MODEL_EXPORT void preprocess(Progressor& progressor, Count sample_nr);
 
-    void initialize(Progressor& progressor);
+    LUE_FRAMEWORK_MODEL_EXPORT void initialize(Progressor& progressor);
 
-    void simulate(Progressor& progressor, Count time_step);
+    LUE_FRAMEWORK_MODEL_EXPORT void simulate(Progressor& progressor, Count time_step);
 
-    void finalize(Progressor& progressor);
+    LUE_FRAMEWORK_MODEL_EXPORT void finalize(Progressor& progressor);
 
-    void postprocess(Progressor& progressor);
+    LUE_FRAMEWORK_MODEL_EXPORT void postprocess(Progressor& progressor);
 
 }  // namespace lue

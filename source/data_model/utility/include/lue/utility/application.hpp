@@ -1,10 +1,11 @@
 #pragma once
 #include "lue/utility/command.hpp"
+#include "lue/utility/export.hpp"
 
 
 namespace lue::utility {
 
-    class Application: public Command
+    class LUE_UTILITY_EXPORT Application: public Command
     {
 
         public:

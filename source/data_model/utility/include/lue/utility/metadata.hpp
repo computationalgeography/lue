@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/core/clock.hpp"
 #include "lue/core/time/unit.hpp"
+#include "lue/utility/export.hpp"
 #include <istream>
 #include <nlohmann/json.hpp>
 
@@ -15,33 +16,35 @@ namespace lue {
 
         namespace json {
 
-            auto has_key(JSON const& object, std::string const& name) -> bool;
+            LUE_UTILITY_EXPORT auto has_key(JSON const& object, std::string const& name) -> bool;
 
-            auto has_key(JSON const& object, JSONPointer const& pointer) -> bool;
+            LUE_UTILITY_EXPORT auto has_key(JSON const& object, JSONPointer const& pointer) -> bool;
 
-            auto object(JSON const& object, std::string const& name) -> JSON;
+            LUE_UTILITY_EXPORT auto object(JSON const& object, std::string const& name) -> JSON;
 
-            auto object(JSON const& object, JSONPointer const& pointer) -> JSON;
+            LUE_UTILITY_EXPORT auto object(JSON const& object, JSONPointer const& pointer) -> JSON;
 
-            auto object(
+            LUE_UTILITY_EXPORT auto object(
                 JSON const& object,
                 JSONPointer const& pointer,
                 std::string const& key,
                 std::string const& value) -> JSON;
 
-            auto object(JSON const& object, std::string const& key, std::string const& value) -> JSON;
+            LUE_UTILITY_EXPORT auto object(
+                JSON const& object, std::string const& key, std::string const& value) -> JSON;
 
-            auto string(JSON const& object, std::string const& name) -> std::string;
+            LUE_UTILITY_EXPORT auto string(JSON const& object, std::string const& name) -> std::string;
 
-            auto string(JSON const& object, JSONPointer const& pointer) -> std::string;
+            LUE_UTILITY_EXPORT auto string(JSON const& object, JSONPointer const& pointer) -> std::string;
 
-            auto boolean(JSON const& object, JSONPointer const& pointer) -> bool;
+            LUE_UTILITY_EXPORT auto boolean(JSON const& object, JSONPointer const& pointer) -> bool;
 
-            auto pointer(JSON const& object, std::string const& name) -> JSONPointer;
+            LUE_UTILITY_EXPORT auto pointer(JSON const& object, std::string const& name) -> JSONPointer;
 
-            auto find(JSON const& object, std::string const& key, std::string const& value) -> JSONCIterator;
+            LUE_UTILITY_EXPORT auto find(JSON const& object, std::string const& key, std::string const& value)
+                -> JSONCIterator;
 
-            auto clock(JSON const& object) -> data_model::Clock;
+            LUE_UTILITY_EXPORT auto clock(JSON const& object) -> data_model::Clock;
 
         }  // namespace json
 
@@ -49,7 +52,7 @@ namespace lue {
         /*!
             @brief      Class for representing a collection of metadata items
         */
-        class Metadata
+        class LUE_UTILITY_EXPORT Metadata
         {
 
             public:
@@ -102,7 +105,7 @@ namespace lue {
 
     namespace data_model::time {
 
-        void from_json(utility::JSON const& object, Unit& unit);
+        LUE_UTILITY_EXPORT void from_json(utility::JSON const& object, Unit& unit);
 
     }  // namespace data_model::time
 
