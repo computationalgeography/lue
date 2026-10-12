@@ -217,7 +217,7 @@ namespace lue::utility {
                 // Work around GCCs -Werror=free-nonheap-object. It fires here when using set_idxs.size() - 1
                 // as the size of the set_sizes vector. We know set_idxs is not empty.
                 std::vector<std::size_t> set_sizes(set_idxs.size());
-                set_sizes.resize(set_sizes.size() - 1);
+                set_sizes.pop_back();
                 std::transform(
                     set_idxs.begin(),
                     set_idxs.end() - 1,    // First input range
