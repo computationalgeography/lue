@@ -213,7 +213,14 @@ namespace lue::utility {
             std::size_t max_size_active_set = 0;
             {
                 assert(!set_idxs.empty());
+#if __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
+#endif
                 std::vector<std::size_t> set_sizes(set_idxs.size() - 1);
+#if __GNUC__
+#pragma GCC diagnostic pop
+#endif
                 std::transform(
                     set_idxs.begin(),
                     set_idxs.end() - 1,    // First input range
