@@ -1,5 +1,4 @@
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 include(CompilerCache)
 useCompilerCache()
@@ -16,13 +15,10 @@ set(CMAKE_CXX_SCAN_FOR_MODULES FALSE)
 include(LueConfiguration)
 
 # ... only now set settings relevant for (only) our own targets
-# set(CMAKE_CXX_STANDARD ${LUE_MIN_CXX_STANDARD})
-# set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_EXTENSIONS FALSE)
-if(NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
-endif()
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 include(LueMacro)
 
