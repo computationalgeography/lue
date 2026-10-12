@@ -211,7 +211,6 @@ jobs:
           # Test of runtime targets
           ${{ env.lue_runtime_install_directory }}/bin/lue_translate --version
           ${{ env.lue_runtime_install_directory }}/bin/lue_validate --version
-          ${{ env.lue_runtime_install_directory }}/bin/lue_view --version
 
           export PYTHONPATH="${{ env.lue_runtime_install_directory }}/lib/python${{ matrix.python_version }}:$PYTHONPATH"
           export LD_LIBRARY_PATH="${{ env.hpx_install_directory }}/lib:$LD_LIBRARY_PATH"
