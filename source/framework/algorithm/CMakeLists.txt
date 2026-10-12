@@ -62,6 +62,7 @@ set_target_properties(lue_framework_algorithm
         EXPORT_NAME framework_algorithm
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 target_sources(lue_framework_algorithm
@@ -718,11 +719,12 @@ set_target_properties(lue_framework_local_operation
         EXPORT_NAME framework_local_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_local_operation
+    BASE_NAME LUE_LOCAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/local_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_LOCAL_OPERATION_EXPORT
 )
 
 target_sources(lue_framework_local_operation
@@ -956,11 +958,12 @@ set_target_properties(lue_framework_focal_operation
         EXPORT_NAME framework_focal_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_focal_operation
+    BASE_NAME LUE_FOCAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/focal_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_FOCAL_OPERATION_EXPORT
 )
 
 target_sources(lue_framework_focal_operation
@@ -1125,11 +1128,12 @@ set_target_properties(lue_framework_miscellaneous_operation
         EXPORT_NAME framework_miscellaneous_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_miscellaneous_operation
+    BASE_NAME LUE_MISCELLANEOUS_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/miscellaneous_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_MISCELLANEOUS_OPERATION_EXPORT
 )
 
 target_sources(lue_framework_miscellaneous_operation
@@ -1368,11 +1372,12 @@ set_target_properties(lue_framework_zonal_operation
         EXPORT_NAME framework_zonal_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_zonal_operation
+    BASE_NAME LUE_ZONAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/zonal_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_ZONAL_OPERATION_EXPORT
 )
 
 target_sources(lue_framework_zonal_operation
@@ -1525,11 +1530,12 @@ set_target_properties(lue_framework_global_operation
         EXPORT_NAME framework_global_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_global_operation
     EXPORT_FILE_NAME include/lue/framework/algorithm/global_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_GLOBAL_OPERATION_EXPORT
+    BASE_NAME LUE_GLOBAL_OPERATION
 )
 
 target_sources(lue_framework_global_operation
@@ -1915,11 +1921,12 @@ set_target_properties(lue_framework_routing_operation
         EXPORT_NAME framework_routing_operation
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_routing_operation
+    BASE_NAME LUE_ROUTING_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/routing_operation_export.hpp
-    EXPORT_MACRO_NAME LUE_ROUTING_OPERATION_EXPORT
 )
 
 target_sources(lue_framework_routing_operation

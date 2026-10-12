@@ -6,11 +6,11 @@ set_target_properties(lue_document_cxx
         EXPORT_NAME document_cxx
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_document_cxx
     EXPORT_FILE_NAME include/lue/document/cxx/export.hpp
-    EXPORT_MACRO_NAME LUE_DOCUMENT_CXX_EXPORT
 )
 
 target_sources(lue_document_cxx

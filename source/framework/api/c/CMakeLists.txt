@@ -11,11 +11,12 @@ set_target_properties(lue_framework_api_c
         EXPORT_NAME framework_api_c
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_api_c
+    BASE_NAME LUE_FCAPI
     EXPORT_FILE_NAME include/lue/framework/api/c/export.h
-    EXPORT_MACRO_NAME LUE_FCAPI_EXPORT
 )
 
 configure_file(

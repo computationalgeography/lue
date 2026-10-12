@@ -74,11 +74,12 @@ set_target_properties(lue_framework_api_cxx
         EXPORT_NAME framework_api_cxx
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_api_cxx
+    BASE_NAME LUE_FAPI
     EXPORT_FILE_NAME include/lue/framework/api/cxx/export.hpp
-    EXPORT_MACRO_NAME LUE_FAPI_EXPORT
 )
 
 target_sources(lue_framework_api_cxx

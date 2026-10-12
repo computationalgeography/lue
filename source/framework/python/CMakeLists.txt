@@ -233,6 +233,7 @@ set_target_properties(
     PROPERTIES
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 lue_install_runtime_libraries(

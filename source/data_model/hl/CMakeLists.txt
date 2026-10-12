@@ -3,7 +3,6 @@ add_library(lue::data_model_hl ALIAS lue_data_model_hl)
 
 generate_export_header(lue_data_model_hl
     EXPORT_FILE_NAME include/lue/data_model/hl/export.hpp
-    EXPORT_MACRO_NAME LUE_DATA_MODEL_HL_EXPORT
 )
 
 target_sources(lue_data_model_hl
