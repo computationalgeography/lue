@@ -1223,6 +1223,7 @@ namespace lue {
                             auto&& local_result_fs) -> LocalResults<Partition>
                         {
                             AnnotateFunction const annotation{"clump: array: determine_reclass_tables"};
+
                             auto const& indp = std::get<0>(policies.inputs_policies()).input_no_data_policy();
                             auto const& ondp =
                                 std::get<0>(policies.outputs_policies()).output_no_data_policy();

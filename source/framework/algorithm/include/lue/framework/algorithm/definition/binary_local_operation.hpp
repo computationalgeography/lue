@@ -63,8 +63,8 @@ namespace lue {
                                 InputPartition1 const& input_partition1,
                                 InputPartition2 const& input_partition2) -> OutputPartition
                             {
-                                AnnotateFunction const annotation{
-                                    std::format("{}: partition", functor_name<Functor>).c_str()};
+                                std::string const label = std::format("{}: partition", functor_name<Functor>);
+                                AnnotateFunction const annotation{label.c_str()};
 
                                 Offset const offset = input_partition1.offset(hpx::launch::sync);
                                 InputData1 const input_partition_data1 =
@@ -167,8 +167,8 @@ namespace lue {
                                 InputPartition const& input_partition,
                                 hpx::shared_future<InputElement> const& input_scalar) -> OutputPartition
                             {
-                                AnnotateFunction const annotation{
-                                    std::format("{}: partition", functor_name<Functor>).c_str()};
+                                std::string const label = std::format("{}: partition", functor_name<Functor>);
+                                AnnotateFunction const annotation{label.c_str()};
 
                                 Offset const offset = input_partition.offset(hpx::launch::sync);
                                 InputData const input_partition_data =
@@ -277,8 +277,8 @@ namespace lue {
                                 hpx::shared_future<InputElement> const& input_scalar,
                                 InputPartition const& input_partition) -> OutputPartition
                             {
-                                AnnotateFunction const annotation{
-                                    std::format("{}: partition", functor_name<Functor>).c_str()};
+                                std::string const label = std::format("{}: partition", functor_name<Functor>);
+                                AnnotateFunction const annotation{label.c_str()};
 
                                 InputElement const input_value = input_scalar.get();
                                 Offset const offset = input_partition.offset(hpx::launch::sync);
@@ -372,7 +372,8 @@ namespace lue {
         using InputPartition = ArrayPartition<policy::InputElementT<Policies, 0>, rank>;
         using OutputPartition = ArrayPartition<policy::OutputElementT<Policies, 0>, rank>;
 
-        AnnotateFunction const annotation{std::format("{}: partition", functor_name<Functor>).c_str()};
+        std::string const label = std::format("{}: partition", functor_name<Functor>);
+        AnnotateFunction const annotation{label.c_str()};
 
         lue_hpx_assert(input_partition.valid());
         lue_hpx_assert(input_scalar.valid());
