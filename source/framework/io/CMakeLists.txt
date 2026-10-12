@@ -22,11 +22,11 @@ set_target_properties(lue_framework_io
         EXPORT_NAME framework_io
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_io
     EXPORT_FILE_NAME include/lue/framework/io/export.hpp
-    EXPORT_MACRO_NAME LUE_FRAMEWORK_IO_EXPORT
 )
 
 target_sources(lue_framework_io

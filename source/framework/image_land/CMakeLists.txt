@@ -51,6 +51,7 @@ set_target_properties(lue_image_land
         EXPORT_NAME image_land
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_image_land

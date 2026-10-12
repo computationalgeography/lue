@@ -13,6 +13,7 @@ set_target_properties(lue_py_framework_x
     PROPERTIES
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 target_sources(lue_py_framework_x

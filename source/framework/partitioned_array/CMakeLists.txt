@@ -44,11 +44,12 @@ set_target_properties(lue_framework_partitioned_array
         EXPORT_NAME framework_partitioned_array
         VERSION ${LUE_VERSION}
         SOVERSION ${LUE_VERSION_MAJOR}
+        DLL_NAME_WITH_SOVERSION TRUE
 )
 
 generate_export_header(lue_framework_partitioned_array
+    BASE_NAME LUE_FPA
     EXPORT_FILE_NAME include/lue/framework/partitioned_array/export.hpp
-    EXPORT_MACRO_NAME LUE_FPA_EXPORT
 )
 
 target_sources(lue_framework_partitioned_array
