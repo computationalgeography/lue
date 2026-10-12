@@ -213,14 +213,11 @@ namespace lue::utility {
             std::size_t max_size_active_set = 0;
             {
                 assert(!set_idxs.empty());
-#if __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
-#endif
-                std::vector<std::size_t> set_sizes(set_idxs.size() - 1);
-#if __GNUC__
-#pragma GCC diagnostic pop
-#endif
+
+                // Work around GCCs -Werror=free-nonheap-object. It fires here when using set_idxs.size() - 1
+                // as the size of the set_sizes vector. We know set_idxs is not empty.
+                std::vector<std::size_t> set_sizes(set_idxs.size());
+                set_sizes.resize(set_sizes.size() - 1);
                 std::transform(
                     set_idxs.begin(),
                     set_idxs.end() - 1,    // First input range
