@@ -2,7 +2,6 @@
 #include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
 
 
-LUE_REGISTER_ARRAY_PARTITION_DECLARATION({{Element}}, {{rank}})
 LUE_REGISTER_ARRAY_PARTITION({{Element}}, {{rank}})
 
 

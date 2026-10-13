@@ -103,3 +103,10 @@ namespace lue::server {
                                                                                                              \
     LUE_REGISTER_ARRAY_PARTITION_ACTION_DECLARATIONS(                                                        \
         HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)));
+
+
+{% for Element in Elements %}
+    {% for rank in ranks %}
+        LUE_REGISTER_ARRAY_PARTITION_DECLARATION({{ Element | replace("std::", "") }}, {{rank}})
+    {% endfor %}
+{% endfor %}
