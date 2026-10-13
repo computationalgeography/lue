@@ -562,13 +562,11 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    FetchContent_Declare(pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG 97bf890db679505a14dfe547a5e77bb2bd05dc90 # 3.1.0
-        SYSTEM
-        FIND_PACKAGE_ARGS 3.0 CONFIG
-    )
-    FetchContent_MakeAvailable(pybind11)
+    find_package(pybind11 3.0 REQUIRED)
+
+    if(NOT pybind11_FOUND)
+        message(FATAL_ERROR "pybind11 not found")
+    endif()
 
     message(STATUS "Found pybind11:")
     message(STATUS "    pybind11_VERSION      : ${pybind11_VERSION}")
@@ -611,10 +609,10 @@ endif()
 
 
 if(LUE_CXXOPTS_REQUIRED)
-    CPMAddPackage(
-        URI "gh:jarro2783/cxxopts"
+    CPMFindPackage(
+        NAME cxxopts
+        GIT_REPOSITORY "https://github.com/jarro2783/cxxopts.git"
         GIT_TAG "v3.2.0"
-        SYSTEM TRUE
     )
 endif()
 
@@ -753,13 +751,7 @@ endif()
 
 
 if(LUE_NLOHMANN_JSON_REQUIRED)
-    FetchContent_Declare(nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG 9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03  # v3.11.3
-        SYSTEM
-        FIND_PACKAGE_ARGS 3.11 CONFIG
-    )
-    FetchContent_MakeAvailable(nlohmann_json)
+    find_package(nlohmann_json 3.11 REQUIRED)
 endif()
 
 
