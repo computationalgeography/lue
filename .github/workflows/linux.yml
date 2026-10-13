@@ -97,6 +97,7 @@ jobs:
             libhwloc-dev \
             libasio-dev \
             libboost-dev \
+            libcxxopts-dev \
             libglfw3-dev \
             libgdal-dev \
             libhdf5-dev \
