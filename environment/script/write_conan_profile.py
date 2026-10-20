@@ -342,6 +342,8 @@ def write_conan_profile(compiler_filename, profile_pathname):
         profile_options["gdal/*"] = {
             "gdal_optional_drivers": False,
             "ogr_optional_drivers": False,
+            # Arrow depends on thrift, which depends on Boost, which results in version conflicts
+            "with_arrow": False,
         }
         profile_options["hdf5/*"] = {
             "shared": True,
