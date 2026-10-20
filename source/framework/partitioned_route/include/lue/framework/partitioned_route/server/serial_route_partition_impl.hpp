@@ -1,5 +1,5 @@
 #pragma once
-#include "lue/framework/partitioned_route/server/serial_route_partition.hpp"
+#include "lue/framework/partitioned_route/server/serial_route_partition_decl.hpp"
 
 
 namespace lue::server {
@@ -148,3 +148,35 @@ namespace lue::server {
     }
 
 }  // namespace lue::server
+
+
+// Register route partition action definitions for a route partition type
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(RoutePartition)                                          \
+                                                                                                             \
+    HPX_REGISTER_ACTION(RoutePartition::OffsetAction, HPX_PP_CAT(RoutePartition, OffsetAction));             \
+    HPX_REGISTER_ACTION(RoutePartition::ShapeAction, HPX_PP_CAT(RoutePartition, ShapeAction));               \
+    HPX_REGISTER_ACTION(RoutePartition::NrRoutesAction, HPX_PP_CAT(RoutePartition, NrRoutesAction));         \
+    HPX_REGISTER_ACTION(                                                                                     \
+        RoutePartition::NrRouteFragmentsAction, HPX_PP_CAT(RoutePartition, NrRouteFragmentsAction));         \
+    HPX_REGISTER_ACTION(RoutePartition::RouteIDsAction, HPX_PP_CAT(RoutePartition, RouteIDsAction));         \
+    HPX_REGISTER_ACTION(                                                                                     \
+        RoutePartition::RouteFragmentsAction, HPX_PP_CAT(RoutePartition, RouteFragmentsAction));             \
+    HPX_REGISTER_ACTION(                                                                                     \
+        RoutePartition::RemoteRouteFragmentLocationsAction,                                                  \
+        HPX_PP_CAT(RoutePartition, RemoteRouteFragmentLocationsAction));                                     \
+    HPX_REGISTER_ACTION(                                                                                     \
+        RoutePartition::SetRouteFragmentsAction, HPX_PP_CAT(RoutePartition, SetRouteFragmentsAction));
+
+
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION_COMPONENT(RoutePartition)                                        \
+    using HPX_PP_CAT(RoutePartition, Component) = hpx::components::component<RoutePartition>;                \
+    HPX_REGISTER_COMPONENT(HPX_PP_CAT(RoutePartition, Component));
+
+// Register route partition definitions for an element type and rank
+#define LUE_REGISTER_SERIAL_ROUTE_PARTITION(Element, rank)                                                   \
+    using HPX_PP_CAT(RoutePartitionServer_, HPX_PP_CAT(Element, rank)) =                                     \
+        lue::server::SerialRoutePartition<Element, rank>;                                                    \
+                                                                                                             \
+    LUE_REGISTER_SERIAL_ROUTE_PARTITION_COMPONENT(                                                           \
+        HPX_PP_CAT(RoutePartitionServer_, HPX_PP_CAT(Element, rank)));                                       \
+    LUE_REGISTER_SERIAL_ROUTE_PARTITION_ACTIONS(HPX_PP_CAT(RoutePartitionServer_, HPX_PP_CAT(Element, rank)));

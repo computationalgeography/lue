@@ -48,6 +48,7 @@ target_link_libraries(lue_framework_io
     PRIVATE
         lue::framework_algorithm
         # HPX::iostreams_component
+        HPX::component
     PUBLIC
         lue::framework_partitioned_array
         lue::data_model_hl

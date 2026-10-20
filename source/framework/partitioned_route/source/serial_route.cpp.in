@@ -1,0 +1,8 @@
+#include "lue/framework/serial_route_impl.hpp"
+
+
+namespace lue {
+
+    template class SerialRoute<{{ RouteID }}, {{ rank }}>;
+
+}  // namespace lue

@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/partitioned_route/export.hpp"
-#include "lue/framework/partitioned_route/server/serial_route_partition.hpp"
+#include "lue/framework/partitioned_route/server/serial_route_partition_decl.hpp"
 
 
 namespace lue {
@@ -12,7 +12,7 @@ namespace lue {
         server instance. Multiple instances can be associated with a single server instance.
     */
     template<typename RouteID, Rank rank>
-    class SerialRoutePartition:
+    class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition:
         public hpx::components::
             client_base<SerialRoutePartition<RouteID, rank>, server::SerialRoutePartition<RouteID, rank>>
 
@@ -46,29 +46,58 @@ namespace lue {
 
             SerialRoutePartition(hpx::id_type locality_id, Offset const& offset, Shape const& shape);
 
+            SerialRoutePartition(
+                hpx::id_type locality_id,
+                Offset const& offset,
+                Shape const& shape,
+                RouteFragments&& route_fragments);
+
             SerialRoutePartition(SerialRoutePartition const&) = default;
 
             SerialRoutePartition(SerialRoutePartition&&) = default;
 
             ~SerialRoutePartition() = default;
 
-            SerialRoutePartition& operator=(SerialRoutePartition const&) = default;
+            auto operator=(SerialRoutePartition const&) -> SerialRoutePartition& = default;
 
-            SerialRoutePartition& operator=(SerialRoutePartition&&) = default;
+            auto operator=(SerialRoutePartition&&) -> SerialRoutePartition& = default;
 
-            hpx::future<Offset> offset() const;
+            auto offset(hpx::launch::async_policy) const -> hpx::future<Offset>;
 
-            hpx::future<Shape> shape() const;
+            auto offset(hpx::launch::sync_policy) const -> Offset;
 
-            hpx::future<Count> nr_routes() const;
+            auto shape(hpx::launch::async_policy) const -> hpx::future<Shape>;
 
-            hpx::future<Count> nr_route_fragments() const;
+            auto shape(hpx::launch::sync_policy) const -> Shape;
 
-            hpx::future<std::set<RouteID>> route_ids() const;
+            auto nr_routes(hpx::launch::async_policy) const -> hpx::future<Count>;
 
-            hpx::future<std::vector<RouteFragment>> route_fragments(RouteID const route_id) const;
+            auto nr_routes(hpx::launch::sync_policy) const -> Count;
 
-            hpx::future<std::vector<RouteFragmentLocation>> remote_route_fragment_locations() const;
+            auto nr_route_fragments(hpx::launch::async_policy) const -> hpx::future<Count>;
+
+            auto nr_route_fragments(hpx::launch::sync_policy) const -> Count;
+
+            auto route_ids(hpx::launch::async_policy) const -> hpx::future<std::set<RouteID>>;
+
+            auto route_ids(hpx::launch::sync_policy) const -> std::set<RouteID>;
+
+            auto route_fragments(hpx::launch::async_policy, RouteID route_id) const
+                -> hpx::future<std::vector<RouteFragment>>;
+
+            auto route_fragments(hpx::launch::sync_policy, RouteID route_id) const
+                -> std::vector<RouteFragment>;
+
+            auto remote_route_fragment_locations(hpx::launch::async_policy) const
+                -> hpx::future<std::vector<RouteFragmentLocation>>;
+
+            auto remote_route_fragment_locations(hpx::launch::sync_policy) const
+                -> std::vector<RouteFragmentLocation>;
+
+            auto set_route_fragments(hpx::launch::async_policy, RouteFragments&& route_fragments)
+                -> hpx::future<void>;
+
+            auto set_route_fragments(hpx::launch::sync_policy, RouteFragments&& route_fragments) -> void;
     };
 
 

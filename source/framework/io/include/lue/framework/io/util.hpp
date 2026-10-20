@@ -140,13 +140,15 @@ namespace lue::detail {
     }
 
 
-    template<typename PartitionServer>
-    auto hyperslab(PartitionServer const& partition_server) -> hdf5::Hyperslab
+    template<typename Partition>
+    auto hyperslab(Partition const& partition) -> hdf5::Hyperslab
     {
-        // Return the part of the array represented by the partition server
+        lue_hpx_assert(partition.is_ready());
+
+        // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
-        return hyperslab(partition_server.offset(), partition_server.shape());
+        return hyperslab(partition.offset(hpx::sync), partition.shape(hpx::sync));
     }
 
 
@@ -154,48 +156,50 @@ namespace lue::detail {
         @brief      .
         @param      .
         @return     array_hyperslab_start Offset of hyperslab represented
-                    by the partitioned array of which @a partition_server
+                    by the partitioned array of which @a partition
                     is a part.
         @exception  .
     */
-    template<typename PartitionServer>
-    auto hyperslab(hdf5::Offset const& array_hyperslab_start, PartitionServer const& partition_server)
+    template<typename Partition>
+    auto hyperslab(hdf5::Offset const& array_hyperslab_start, Partition const& partition)
         -> hdf5::Hyperslab
     {
-        // Return the part of the array represented by the partition server
+        lue_hpx_assert(partition.is_ready());
+
+        // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
-        return hyperslab(array_hyperslab_start, partition_server.offset(), partition_server.shape());
+        return hyperslab(array_hyperslab_start, partition.offset(hpx::launch::sync), partition.shape(hpx::launch::sync));
     }
 
 
-    template<typename PartitionServer>
+    template<typename Partition>
     auto hyperslab(
-        PartitionServer const& partition_server, Index const location_in_time_idx, Index const time_step_idx)
+        Partition const& partition, Index const location_in_time_idx, Index const time_step_idx)
         -> hdf5::Hyperslab
     {
-        // Return the part of the array represented by the partition server
+        // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
         return hyperslab(
-            partition_server.offset(), partition_server.shape(), location_in_time_idx, time_step_idx);
+            partition.offset(hpx::launch::sync), partition.shape(hpx::launch::sync), location_in_time_idx, time_step_idx);
     }
 
 
-    template<typename PartitionServer>
+    template<typename Partition>
     auto hyperslab(
         hdf5::Offset const& array_hyperslab_start,
-        PartitionServer const& partition_server,
+        Partition const& partition,
         Index const location_in_time_idx,
         Index const time_step_idx) -> hdf5::Hyperslab
     {
-        // Return the part of the array represented by the partition server
+        // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
         return hyperslab(
             array_hyperslab_start,
-            partition_server.offset(),
-            partition_server.shape(),
+            partition.offset(hpx::launch::sync),
+            partition.shape(hpx::launch::sync),
             location_in_time_idx,
             time_step_idx);
     }

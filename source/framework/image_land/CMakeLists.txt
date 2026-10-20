@@ -69,11 +69,13 @@ target_sources(lue_image_land
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/image_land_operation_export.hpp
     PRIVATE
-        source/integrate.cpp
+        source/component_module.cpp
         ${generated_source_files}
 )
 
 target_link_libraries(lue_image_land
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
         lue::framework_routing_operation

@@ -2,34 +2,16 @@
 set(generated_source_files "")
 
 block()
-    set(offset "include/lue/framework/partitioned_route/server")
-    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/serial_route_partition.hpp")
-
-    set(Elements ${LUE_FRAMEWORK_ZONE_ELEMENTS})
-    list(TRANSFORM Elements PREPEND "\"")
-    list(TRANSFORM Elements APPEND "\"")
-    list(JOIN Elements ", " Elements)
-
-    generate_template_instantiation(
-        INPUT_PATHNAME
-            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/serial_route_partition.hpp.in"
-        OUTPUT_PATHNAME
-            "${output_pathname}"
-        DICTIONARY
-            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
-    )
-
-    list(APPEND generated_source_files "${output_pathname}")
-
     foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
+        string(REPLACE "std::" "" RouteID ${RouteID})
         string(REPLACE "::" "_" element ${RouteID})
 
         foreach(rank IN LISTS LUE_FRAMEWORK_RANKS)
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/serial_route_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/serial_route-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/source/serial_route_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/serial_route.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -37,11 +19,11 @@ block()
             )
             list(APPEND generated_source_files "${output_pathname}")
 
-            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/server/serial_route_partition-${element}_${rank}.cpp")
+            set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/source/serial_route_partition-${element}_${rank}.cpp")
 
             generate_template_instantiation(
                 INPUT_PATHNAME
-                    "${CMAKE_CURRENT_SOURCE_DIR}/source/server/serial_route_partition.cpp.in"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/source/serial_route_partition.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
@@ -80,9 +62,8 @@ target_sources(lue_framework_partitioned_route
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition.hpp
     PRIVATE
-        source/server/serial_route_partition.cpp
+        source/component_module.cpp
         ${generated_source_files}
 )
 

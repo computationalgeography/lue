@@ -6,7 +6,6 @@
 #include "lue/gdal.hpp"
 #include <hpx/async_colocated/get_colocation_id.hpp>
 #include <hpx/async_combinators/when_any.hpp>
-#include <hpx/components/get_ptr.hpp>
 #include <hpx/shared_mutex.hpp>
 #include <memory>
 #include <utility>
@@ -404,18 +403,17 @@ namespace lue {
             gdal::Raster raster{gdal::open_dataset(name, ::GA_Update)};
             gdal::Raster::Band raster_band{raster.band(1)};
 
-            auto partition_server_ptr{hpx::get_ptr(hpx::launch::sync, partition)};
-            auto data{partition_server_ptr->data()};
-            auto offset{partition_server_ptr->offset()};
+            auto partition_data = partition.data(hpx::launch::sync);
+            auto offset = partition.offset(hpx::launch::sync);
 
             lue::gdal::Offset gdal_offset{
                 static_cast<lue::gdal::Offset::value_type>(offset[0]),
                 static_cast<lue::gdal::Offset::value_type>(offset[1])};
             lue::gdal::Shape gdal_shape{
-                static_cast<lue::gdal::Shape::value_type>(data.shape()[0]),
-                static_cast<lue::gdal::Shape::value_type>(data.shape()[1])};
+                static_cast<lue::gdal::Shape::value_type>(partition_data.shape()[0]),
+                static_cast<lue::gdal::Shape::value_type>(partition_data.shape()[1])};
 
-            raster_band.write(gdal_offset, gdal_shape, gdal::data_type_v<Element>, data.data());
+            raster_band.write(gdal_offset, gdal_shape, gdal::data_type_v<Element>, partition_data.data());
         }
 
 

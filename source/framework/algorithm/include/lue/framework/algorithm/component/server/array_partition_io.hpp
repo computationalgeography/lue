@@ -5,6 +5,7 @@
 
 namespace lue::server {
 
+    // TODO: Can this class and friends be removed? If not, how to integrate with locking_hook?
     template<typename Index, Rank rank, typename Value_>
     class ArrayPartitionIO:
         public hpx::components::migration_support<

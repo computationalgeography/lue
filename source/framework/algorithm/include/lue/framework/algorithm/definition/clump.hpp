@@ -1862,7 +1862,7 @@ namespace lue {
             // Iterate over all cells containing a valid local clump ID and replace this value
             // with the associated global clump ID
 
-            auto clump_data = ready_component_ptr(clump_partition)->data();
+            auto clump_data = clump_partition.data(hpx::launch::sync);
             auto const nr_elements = lue::nr_elements(clump_data.shape());
 
             for (Index idx = 0; idx < nr_elements; ++idx)

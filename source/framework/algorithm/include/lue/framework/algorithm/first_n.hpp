@@ -1,7 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
-#include "lue/framework/serial_route.hpp"
+#include "lue/framework/serial_route_decl.hpp"
 
 
 namespace lue {

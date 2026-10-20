@@ -109,10 +109,8 @@ namespace lue {
         ArrayPartitionData<Element, rank>&& partition_data) -> ArrayPartition<Element, rank>
     {
         using Partition = ArrayPartition<Element, rank>;
-        using PartitionServer = typename Partition::Server;
 
-        return Partition{
-            hpx::new_<PartitionServer>(locality_id, partition_offset, std::move(partition_data))};
+        return Partition{locality_id, partition_offset, std::move(partition_data)};
     }
 
 
@@ -746,8 +744,8 @@ namespace lue {
         template<Arithmetic Element, Rank rank>
         auto get_data(ArrayPartition<Element, rank> const& partition) -> DataT<ArrayPartition<Element, rank>>
         {
-            auto const partition_ptr{ready_component_ptr(partition)};
-            return partition_ptr->data();
+            lue_hpx_assert(partition.is_ready());
+            return partition.data(hpx::launch::sync);
         }
 
 
@@ -803,7 +801,7 @@ namespace lue {
                       material from the current partition using the corresponding channel in the NIDP
                       communicator.
                       Per neighbouring partition direction, store the location of the partition output cells.
-                    - Asynchrounously receive locations of partition input cells that will receive material
+                    - Asynchronously receive locations of partition input cells that will receive material
                       from neighbouring partitions. Per neighbouring partition direction, store the location
                       of these partition input cells.
                     - Once the collections of partition input cells have been received, calculate the NIDP
@@ -828,12 +826,8 @@ namespace lue {
                         AnnotateFunction const annotation{
                             "accumulating_router: partition: intra_partition_stream"};
 
-                        auto const flow_direction_partition_ptr{
-                            ready_component_ptr(flow_direction_partition)};
-                        FlowDirectionData const& flow_direction_data{flow_direction_partition_ptr->data()};
-
-                        auto const inflow_count_partition_ptr{ready_component_ptr(inflow_count_partition)};
-                        InflowCountData const& inflow_count_data{inflow_count_partition_ptr->data()};
+                        FlowDirectionData const flow_direction_data = flow_direction_partition.data(hpx::launch::sync);
+                        InflowCountData const inflow_count_data = inflow_count_partition.data(hpx::launch::sync);
 
                         auto const& partition_shape{inflow_count_data.shape()};
                         auto const [nr_elements0, nr_elements1] = partition_shape;
@@ -958,9 +952,7 @@ namespace lue {
                     // - accumulate material
                     // - release the lock
 
-                    auto const flow_direction_partition_ptr{ready_component_ptr(flow_direction_partition)};
-                    FlowDirectionData const& flow_direction_data{flow_direction_partition_ptr->data()};
-
+                    FlowDirectionData const flow_direction_data = flow_direction_partition.data(hpx::launch::sync);
                     InflowCountData inflow_count_data{inflow_count_data_f.get()};
 
                     auto result_data = std::apply(
@@ -1313,8 +1305,7 @@ namespace lue {
                                 // hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > >
                                 auto results_partition_data_fs = results_partition_data_fs_f.get();
 
-                                auto const partition_offset{
-                                    ready_component_ptr(flow_direction_partition)->offset()};
+                                auto const partition_offset = flow_direction_partition.offset(hpx::launch::sync);
 
                                 // std::apply icw hpx::tuple doesn't work
                                 return std::apply(
