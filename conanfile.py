@@ -38,7 +38,7 @@ class LUERecipe(ConanFile):
         # Multiple targets depend on Boost, resulting in version conflicts. Allow the version to be
         # overridden.
         if install_conan_package("boost"):
-            self.requires("boost/[1.74 || >1.75]", override=True)
+            self.requires("boost/[1.74 || >1.75]")
 
         if install_conan_package("cxxopts"):
             self.requires("cxxopts/3.2.0")
@@ -77,7 +77,7 @@ class LUERecipe(ConanFile):
             self.requires("nlohmann_json/[>=3.10]")
 
         if install_conan_package("pybind11"):
-            self.requires("pybind11/[>=2.10.1]")
+            self.requires("pybind11/[>=3.0]")
 
         # Depends on vulkan-headers and xorg/system
         if install_conan_package("vulkan-loader"):
