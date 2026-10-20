@@ -1,6 +1,5 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
-#include <hpx/components/get_ptr.hpp>
 #include <hpx/modules/async_combinators.hpp>
 #include <algorithm>
 
@@ -64,28 +63,4 @@ namespace lue {
         );
     }
 
-
-    namespace detail {
-
-        template<typename ComponentClient>
-        // std::shared_ptr<typename ComponentClient::Server> ready_component_ptr(
-        //     ComponentClient const& client)
-        auto ready_component_ptr(ComponentClient const& client)
-        {
-            // Only call this function on the same locality as the component
-            // Only call this function when the client is ready
-            lue_hpx_assert(client.valid());
-            lue_hpx_assert(client.is_ready());
-
-            return hpx::get_ptr(hpx::launch::sync, client);
-
-            // using ComponentServer = typename ComponentClient::Server;
-
-            // std::shared_ptr<ComponentServer> server_ptr_ftr{
-            //     hpx::get_ptr<ComponentServer>(hpx::launch::sync, client /* .get_id() */)};
-
-            // return server_ptr_ftr;
-        }
-
-    }  // namespace detail
 }  // namespace lue
