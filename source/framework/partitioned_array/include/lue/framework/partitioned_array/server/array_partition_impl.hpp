@@ -158,7 +158,7 @@ namespace lue::server {
 }  // namespace lue::server
 
 
-// Register array partition action declarations for an array partition type
+// Register array partition action definitions for an array partition type
 #define LUE_REGISTER_ARRAY_PARTITION_ACTIONS(ArrayPartition)                                                 \
     HPX_REGISTER_ACTION(ArrayPartition::DataAction, HPX_PP_CAT(ArrayPartition, DataAction));                 \
     HPX_REGISTER_ACTION(ArrayPartition::SliceAction, HPX_PP_CAT(ArrayPartition, SliceAction));               \
@@ -172,7 +172,7 @@ namespace lue::server {
     using HPX_PP_CAT(ArrayPartition, Component) = hpx::components::component<ArrayPartition>;                \
     HPX_REGISTER_COMPONENT(HPX_PP_CAT(ArrayPartition, Component));
 
-// Register array partition declaration for an element type and rank
+// Register array partition definitions for an element type and rank
 #define LUE_REGISTER_ARRAY_PARTITION(Element, rank)                                                          \
     using HPX_PP_CAT(ArrayPartitionServer_, HPX_PP_CAT(Element, rank)) =                                     \
         lue::server::ArrayPartition<Element, rank>;                                                          \

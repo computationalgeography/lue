@@ -173,8 +173,8 @@ namespace lue {
 
                                     // Write all route fragments to the partition
                                     lue_hpx_assert(route_partition.valid());
-                                    auto route_partition_ptr{ready_component_ptr(route_partition)};
-                                    route_partition_ptr->set_route_fragments(std::move(route_fragments));
+                                    route_partition.set_route_fragments(
+                                        hpx::launch::sync, std::move(route_fragments));
 
                                     // Done with this partition
                                     route_partition_p.set_value(route_partition.get_id());
@@ -206,7 +206,7 @@ namespace lue {
 
             template<typename Policies, Rank rank>
             class DecreasingOrderZonal:
-                public hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>
+                public hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>
             {
 
                 private:
@@ -214,7 +214,7 @@ namespace lue {
                     using Data = DecreasingOrderData<Policies, rank>;
 
                     using ComponentServerBase =
-                        hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>;
+                        hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>;
 
                     using RouteID = policy::InputElementT<Policies, 0>;
 
@@ -279,8 +279,8 @@ namespace lue {
                         auto const& value_ndp =
                             std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
-                        auto const zone_partition_data{ready_component_ptr(zone_partition)->data()};
-                        auto const value_partition_data{ready_component_ptr(value_partition)->data()};
+                        auto const zone_partition_data{zone_partition.data(hpx::launch::sync)};
+                        auto const value_partition_data{value_partition.data(hpx::launch::sync)};
 
                         Count const nr_elements{lue::nr_elements(value_partition_data)};
                         lue_hpx_assert(lue::nr_elements(value_partition_data) == nr_elements);
@@ -716,7 +716,7 @@ namespace lue {
 
             template<typename Policies, Rank rank>
             class DecreasingOrderGlobal:
-                public hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>
+                public hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>
             {
 
                 private:
@@ -724,7 +724,7 @@ namespace lue {
                     using Data = DecreasingOrderData<Policies, rank>;
 
                     using ComponentServerBase =
-                        hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>;
+                        hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>;
 
                     using RouteID = policy::InputElementT<Policies, 0>;
 
@@ -797,7 +797,7 @@ namespace lue {
                         auto const& value_ndp =
                             std::get<1>(policies.inputs_policies()).input_no_data_policy();
 
-                        auto const value_partition_data{ready_component_ptr(value_partition)->data()};
+                        auto const value_partition_data{value_partition.data(hpx::launch::sync)};
 
                         Count const nr_elements{lue::nr_elements(value_partition_data)};
                         lue_hpx_assert(lue::nr_elements(value_partition_data) == nr_elements);

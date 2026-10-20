@@ -33,6 +33,7 @@ foreach(name focal global local miscellaneous routing zonal)
     target_link_libraries(lue_py_framework_${name}_operation
         PRIVATE
             lue::framework_${name}_operation
+            HPX::component
     )
 
     lue_configure_python_shared_library(lue_py_framework_${name}_operation)
@@ -218,6 +219,7 @@ target_link_libraries(lue_py_framework
         lue::framework_io
         lue::framework_model
         lue::gdal
+        HPX::component
 )
 
 lue_configure_python_shared_library(lue_py_framework)

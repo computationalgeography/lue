@@ -222,12 +222,14 @@ namespace lue::detail::integrate_and_allocate {
     namespace server {
 
         template<typename Policies, Rank rank>
-        class Walk: public hpx::components::component_base<Walk<Policies, rank>>
+        class Walk:
+            public hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>
         {
 
             private:
 
-                using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
+                using ComponentServerBase =
+                    hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>;
                 using ComponentClient = integrate_and_allocate::Walk<Policies, rank>;
 
                 using RouteID = policy::InputElementT<Policies, 0>;
@@ -286,7 +288,6 @@ namespace lue::detail::integrate_and_allocate {
                     _crop_fraction_partitions_promises.resize(nr_crops);
 
                     lue_hpx_assert(_route_partition.is_ready());
-                    auto route_partition_ptr{ready_component_ptr(_route_partition)};
 
                     // Initialize output partitions with no-data
                     {
@@ -300,16 +301,15 @@ namespace lue::detail::integrate_and_allocate {
 
                         for (Index crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
                         {
-                            _crop_fractions_per_crop_partitions[crop_idx] =
-                                CropFractionPartition{hpx::new_<CropFractionPartitionServer>(
-                                    hpx::find_here(),
-                                    route_partition_ptr->offset(),
-                                    route_partition_ptr->shape(),
-                                    crop_fraction_no_data_value)};
+                            _crop_fractions_per_crop_partitions[crop_idx] = CropFractionPartition{
+                                hpx::find_here(),
+                                _route_partition.offset(hpx::launch::sync),
+                                _route_partition.shape(hpx::launch::sync),
+                                crop_fraction_no_data_value};
                         }
                     }
 
-                    std::set<RouteID> const route_ids{route_partition_ptr->route_ids()};
+                    std::set<RouteID> const route_ids{_route_partition.route_ids(hpx::launch::sync)};
 
                     for (RouteID const route_id : route_ids)
                     {
@@ -379,19 +379,19 @@ namespace lue::detail::integrate_and_allocate {
                     // TODO read_lock.lock();
                     write_lock.lock();
 
-                    auto route_partition_server_ptr{ready_component_ptr(_route_partition)};
-                    auto& route_partition_server{*route_partition_server_ptr};
-
-                    lue_hpx_assert(
-                        route_partition_server.route_ids().find(route_id) !=
-                        route_partition_server.route_ids().end());
+#ifndef NDEBUG
+                    lue_hpx_assert(_route_partition.is_ready());
+                    auto const route_ids = _route_partition.route_ids(hpx::launch::sync);
+                    lue_hpx_assert(route_ids.find(route_id) != route_ids.end());
+#endif
 
                     lue_hpx_assert(!_fragment_idxs.empty());
                     lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
 
                     Index& fragment_idx{_fragment_idxs.at(route_id)};
 
-                    auto const& route_fragments{route_partition_server.route_fragments(route_id)};
+                    auto const& route_fragments{
+                        _route_partition.route_fragments(hpx::launch::sync, route_id)};
 
                     lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
 
@@ -407,92 +407,60 @@ namespace lue::detail::integrate_and_allocate {
                     Count const nr_crops = std::size(_crop_fractions_per_crop_partitions);
 
                     // SDP factor -----
-                    std::vector<std::shared_ptr<typename SDPFactorPartition::Server>>
-                        sdp_factor_per_crop_partition_server_ptrs(std::size(_sdp_factor_per_crop_partitions));
-                    std::transform(
-                        _sdp_factor_per_crop_partitions.begin(),
-                        _sdp_factor_per_crop_partitions.end(),
-                        sdp_factor_per_crop_partition_server_ptrs.begin(),
-                        [](auto const& partition_client) { return ready_component_ptr(partition_client); });
-
                     std::vector<typename SDPFactorPartition::Data> sdp_factor_per_crop_partition_data(
                         std::size(_sdp_factor_per_crop_partitions));
                     std::transform(
-                        sdp_factor_per_crop_partition_server_ptrs.begin(),
-                        sdp_factor_per_crop_partition_server_ptrs.end(),
+                        _sdp_factor_per_crop_partitions.begin(),
+                        _sdp_factor_per_crop_partitions.end(),
                         sdp_factor_per_crop_partition_data.begin(),
-                        [](auto const& partition_server_ptr) { return partition_server_ptr->data(); });
+                        [](auto const& partition_client)
+                        { return partition_client.data(hpx::launch::sync); });
+
                     auto const& sdp_factor_per_crop_partition_indp =
                         std::get<1>(_policies.inputs_policies()).input_no_data_policy();
 
                     // Yield factor -----
-                    std::vector<std::shared_ptr<typename YieldFactorPartition::Server>>
-                        yield_factor_per_crop_partition_server_ptrs(
-                            std::size(_yield_factor_per_crop_partitions));
-                    std::transform(
-                        _yield_factor_per_crop_partitions.begin(),
-                        _yield_factor_per_crop_partitions.end(),
-                        yield_factor_per_crop_partition_server_ptrs.begin(),
-                        [](auto const& partition_client) { return ready_component_ptr(partition_client); });
-
                     std::vector<typename YieldFactorPartition::Data> yield_factor_per_crop_partition_data(
                         std::size(_yield_factor_per_crop_partitions));
                     std::transform(
-                        yield_factor_per_crop_partition_server_ptrs.begin(),
-                        yield_factor_per_crop_partition_server_ptrs.end(),
+                        _yield_factor_per_crop_partitions.begin(),
+                        _yield_factor_per_crop_partitions.end(),
                         yield_factor_per_crop_partition_data.begin(),
-                        [](auto const& partition_server_ptr) { return partition_server_ptr->data(); });
+                        [](auto const& partition_client)
+                        { return partition_client.data(hpx::launch::sync); });
+
                     auto const& yield_factor_per_crop_partition_indp =
                         std::get<2>(_policies.inputs_policies()).input_no_data_policy();
 
                     // Crop fraction -----
-                    std::vector<std::shared_ptr<typename CropFractionPartition::Server>>
-                        current_crop_fraction_per_crop_partition_server_ptrs(
-                            std::size(_current_crop_fraction_per_crop_partitions));
-                    std::transform(
-                        _current_crop_fraction_per_crop_partitions.begin(),
-                        _current_crop_fraction_per_crop_partitions.end(),
-                        current_crop_fraction_per_crop_partition_server_ptrs.begin(),
-                        [](auto const& partition_client) { return ready_component_ptr(partition_client); });
-
                     std::vector<typename CropFractionPartition::Data>
                         current_crop_fraction_per_crop_partition_data(
                             std::size(_current_crop_fraction_per_crop_partitions));
                     std::transform(
-                        current_crop_fraction_per_crop_partition_server_ptrs.begin(),
-                        current_crop_fraction_per_crop_partition_server_ptrs.end(),
+                        _current_crop_fraction_per_crop_partitions.begin(),
+                        _current_crop_fraction_per_crop_partitions.end(),
                         current_crop_fraction_per_crop_partition_data.begin(),
-                        [](auto const& partition_server_ptr) { return partition_server_ptr->data(); });
+                        [](auto const& partition_client)
+                        { return partition_client.data(hpx::launch::sync); });
+
                     auto const& current_crop_fraction_per_crop_partition_indp =
                         std::get<3>(_policies.inputs_policies()).input_no_data_policy();
 
                     // Irrigated crop fraction -----
-                    auto irrigated_crop_fraction_partition_server_ptr{
-                        ready_component_ptr(_irrigated_crop_fraction_partition)};
-                    auto& irrigated_crop_fraction_partition_server{
-                        *irrigated_crop_fraction_partition_server_ptr};
                     auto irrigated_crop_fraction_partition_data{
-                        irrigated_crop_fraction_partition_server.data()};
+                        _irrigated_crop_fraction_partition.data(hpx::launch::sync)};
                     auto const& irrigated_crop_fraction_partition_indp =
                         std::get<6>(_policies.inputs_policies()).input_no_data_policy();
 
                     // Crop fraction per crop partition (output) -----
-                    std::vector<std::shared_ptr<typename CropFractionPartition::Server>>
-                        crop_fraction_per_crop_partition_server_ptrs(
-                            std::size(_crop_fractions_per_crop_partitions));
-                    std::transform(
-                        _crop_fractions_per_crop_partitions.begin(),
-                        _crop_fractions_per_crop_partitions.end(),
-                        crop_fraction_per_crop_partition_server_ptrs.begin(),
-                        [](auto const& partition_client) { return ready_component_ptr(partition_client); });
-
                     std::vector<typename CropFractionPartition::Data> crop_fraction_per_crop_partition_data(
                         std::size(_crop_fractions_per_crop_partitions));
                     std::transform(
-                        crop_fraction_per_crop_partition_server_ptrs.begin(),
-                        crop_fraction_per_crop_partition_server_ptrs.end(),
+                        _crop_fractions_per_crop_partitions.begin(),
+                        _crop_fractions_per_crop_partitions.end(),
                         crop_fraction_per_crop_partition_data.begin(),
-                        [](auto const& partition_server_ptr) { return partition_server_ptr->data(); });
+                        [](auto const& partition_client)
+                        { return partition_client.data(hpx::launch::sync); });
 
                     // Within a single cell:
                     // Region cell is in is route_id, current_crop_fractions_per_crop is the list
@@ -799,7 +767,7 @@ namespace lue::detail::integrate_and_allocate {
                     Index& fragment_idx{_fragment_idxs.at(route_id)};
 
                     auto const& route_fragments{
-                        ready_component_ptr(_route_partition)->route_fragments(route_id)};
+                        _route_partition.route_fragments(hpx::launch::sync, route_id)};
                     lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
 
                     auto const& route_fragment{route_fragments[fragment_idx]};
@@ -916,6 +884,11 @@ namespace lue::detail::integrate_and_allocate {
             using CropFractionPartitions = typename ComponentServer::CropFractionPartitions;
             using ZonalProductionsF = typename ComponentServer::ZonalProductionsF;
 
+            using RoutePartition = typename ComponentServer::RoutePartition;
+            using SDPFactorPartitions = typename ComponentServer::SDPFactorPartitions;
+            using YieldFactorPartitions = typename ComponentServer::YieldFactorPartitions;
+            using IrrigatedCropFractionPartition = typename ComponentServer::IrrigatedCropFractionPartition;
+
         public:
 
             using RouteID = policy::InputElementT<Policies, 0>;
@@ -942,6 +915,36 @@ namespace lue::detail::integrate_and_allocate {
             Walk(hpx::future<hpx::id_type>&& component_id):
 
                 ComponentClientBase{std::move(component_id)}
+
+            {
+            }
+
+
+            Walk(hpx::future<Walk>&& client_f):
+
+                ComponentClientBase{std::move(client_f)}
+
+            {
+            }
+
+
+            Walk(
+                hpx::id_type const locality_id,
+                Policies const& policies,
+                RoutePartition route_partition,
+                SDPFactorPartitions sdp_factor_per_crop_partitions,
+                YieldFactorPartitions yield_factor_per_crop_partitions,
+                CropFractionPartitions current_crop_fraction_per_crop_partitions,
+                IrrigatedCropFractionPartition irrigated_crop_fraction_partition):
+
+                ComponentClientBase{hpx::new_<ComponentServer>(
+                    locality_id,
+                    policies,
+                    std::move(route_partition),
+                    std::move(sdp_factor_per_crop_partitions),
+                    std::move(yield_factor_per_crop_partitions),
+                    std::move(current_crop_fraction_per_crop_partitions),
+                    std::move(irrigated_crop_fraction_partition))}
 
             {
             }
@@ -1116,29 +1119,29 @@ namespace lue {
                     [partition_idx](CropFractionArray const& array)
                     { return array.partitions()[partition_idx]; });
 
-                walk_components[partition_idx] = WalkComponentClient{hpx::dataflow(
+                walk_components[partition_idx] = hpx::dataflow(
                     hpx::launch::async,
                     [policies](
                         RoutePartition const& route_partition,
                         hpx::future<SDPFactorPartitionArray>&& sdp_factor_partition_array_fs,
                         hpx::future<YieldFactorPartitionArray>&& yield_factor_partition_array_fs,
                         hpx::future<CropFractionPartitionArray>&& current_crop_fractions_partition_array_fs,
-                        CropFractionPartition const& current_crop_fraction_partition)
+                        CropFractionPartition const& current_crop_fraction_partition) -> WalkComponentClient
                     {
-                        return hpx::new_<WalkComponentServer>(
-                            hpx::colocated(route_partition.get_id()),
+                        return {
+                            hpx::get_colocation_id(hpx::launch::sync, route_partition.get_id()),
                             policies,
                             route_partition,
                             sdp_factor_partition_array_fs.get(),
                             yield_factor_partition_array_fs.get(),
                             current_crop_fractions_partition_array_fs.get(),
-                            current_crop_fraction_partition);
+                            current_crop_fraction_partition};
                     },
                     route_partitions[partition_idx],
                     hpx::when_all(sdp_factors),
                     hpx::when_all(yield_factors),
                     hpx::when_all(current_crop_fractions),
-                    irrigated_crop_fractions.partitions()[partition_idx])};
+                    irrigated_crop_fractions.partitions()[partition_idx]);
             }
         }
 

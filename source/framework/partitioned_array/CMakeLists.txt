@@ -2,22 +2,6 @@
 set(generated_source_files "")
 
 block()
-    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition_decl.hpp")
-
-    set(Elements ${LUE_FRAMEWORK_ELEMENTS})
-    list(TRANSFORM Elements PREPEND "\"")
-    list(TRANSFORM Elements APPEND "\"")
-    list(JOIN Elements ", " Elements)
-
-    generate_template_instantiation(
-        INPUT_PATHNAME
-            "${CMAKE_CURRENT_SOURCE_DIR}/include/lue/framework/partitioned_array/server/array_partition_decl.hpp.in"
-        OUTPUT_PATHNAME
-            "${output_pathname}"
-        DICTIONARY
-            '{"Elements":[${Elements}],"ranks":[${LUE_FRAMEWORK_RANKS}]}'
-    )
-
     foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
         string(REPLACE "std::" "" Element ${Element})
         string(REPLACE "::" "_" element ${Element})
@@ -77,9 +61,8 @@ target_sources(lue_framework_partitioned_array
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
-            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition_decl.hpp
     PRIVATE
-        source/array_partition.cpp
+        source/component_module.cpp
         ${generated_source_files}
 )
 

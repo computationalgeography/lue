@@ -741,6 +741,8 @@ target_sources(lue_framework_local_operation
 )
 
 target_link_libraries(lue_framework_local_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
 )
@@ -980,6 +982,8 @@ target_sources(lue_framework_focal_operation
 )
 
 target_link_libraries(lue_framework_focal_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
 )
@@ -1150,6 +1154,8 @@ target_sources(lue_framework_miscellaneous_operation
 )
 
 target_link_libraries(lue_framework_miscellaneous_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
 )
@@ -1394,6 +1400,8 @@ target_sources(lue_framework_zonal_operation
 )
 
 target_link_libraries(lue_framework_zonal_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
         lue::framework_global_operation  # unique
@@ -1552,6 +1560,8 @@ target_sources(lue_framework_global_operation
 )
 
 target_link_libraries(lue_framework_global_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
 )
@@ -1940,6 +1950,7 @@ target_sources(lue_framework_routing_operation
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/algorithm/routing_operation_export.hpp
     PRIVATE
         ${generated_source_files}
+        source/routing_operation/component_module.cpp
         source/routing_operation/channel.cpp
         source/routing_operation/walk/cell_counter.cpp
 )
@@ -1950,6 +1961,8 @@ target_include_directories(lue_framework_routing_operation
 )
 
 target_link_libraries(lue_framework_routing_operation
+    PRIVATE
+        HPX::component
     PUBLIC
         lue::framework_algorithm
         HPX::iostreams_component

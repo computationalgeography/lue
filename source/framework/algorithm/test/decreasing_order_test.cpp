@@ -270,11 +270,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(0, 0)
     {
         auto const& partition_we_got = partitions(0, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -290,7 +290,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 1
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(1).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 1);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -327,11 +327,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(0, 1)
     {
         auto const& partition_we_got = partitions(0, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 1
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(1).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 1);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 2
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(2).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 2);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -414,11 +414,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(0, 2)
     {
         auto const& partition_we_got = partitions(0, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 1
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(2).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 2);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -472,11 +472,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 0)
     {
         auto const& partition_we_got = partitions(1, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -493,7 +493,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 1
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(1).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 1);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 1);
 
@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 2);
 
@@ -538,11 +538,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 1)
     {
         auto const& partition_we_got = partitions(1, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -559,7 +559,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 2
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(2).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 2);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 2);
 
@@ -584,7 +584,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 2);
 
@@ -611,11 +611,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(1, 2)
     {
         auto const& partition_we_got = partitions(1, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -632,7 +632,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 2
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(2).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 2);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 2);
 
@@ -658,7 +658,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 1);
 
@@ -677,11 +677,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 0)
     {
         auto const& partition_we_got = partitions(2, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -697,7 +697,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -735,11 +735,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 1)
     {
         auto const& partition_we_got = partitions(2, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -755,7 +755,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -794,11 +794,11 @@ BOOST_AUTO_TEST_CASE(use_case_01)
     // partition(2, 2)
     {
         auto const& partition_we_got = partitions(2, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -814,7 +814,7 @@ BOOST_AUTO_TEST_CASE(use_case_01)
 
         // fragments 3
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -916,11 +916,11 @@ BOOST_AUTO_TEST_CASE(use_case_02)
     hpx::wait_all(partitions.begin(), partitions.end());
 
     auto const& partition_we_got = partitions(0, 0);
-    auto const offset_we_got = partition_we_got.offset().get();
-    auto const shape_we_got = partition_we_got.shape().get();
-    auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-    auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-    auto const route_ids_we_got = partition_we_got.route_ids().get();
+    auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+    auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+    auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+    auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+    auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
     Offset const offset_we_want{0, 0};
     BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -957,7 +957,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     // fragments 1
     {
-        auto const route_fragments_we_got = partition_we_got.route_fragments(1).get();
+        auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 1);
 
         BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 1);
 
@@ -982,7 +982,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     // fragments 2
     {
-        auto const route_fragments_we_got = partition_we_got.route_fragments(2).get();
+        auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 2);
 
         BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 1);
 
@@ -1016,7 +1016,7 @@ BOOST_AUTO_TEST_CASE(use_case_02)
 
     // fragments 3
     {
-        auto const route_fragments_we_got = partition_we_got.route_fragments(3).get();
+        auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, 3);
 
         BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 1);
 
@@ -1212,11 +1212,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(0, 0)
     {
         auto const& partition_we_got = partitions(0, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1231,7 +1231,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1269,11 +1269,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(0, 1)
     {
         auto const& partition_we_got = partitions(0, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1288,7 +1288,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1327,11 +1327,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(0, 2)
     {
         auto const& partition_we_got = partitions(0, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{0, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1346,7 +1346,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1385,11 +1385,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 0)
     {
         auto const& partition_we_got = partitions(1, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1404,7 +1404,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1443,11 +1443,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 1)
     {
         auto const& partition_we_got = partitions(1, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1462,7 +1462,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1500,11 +1500,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(1, 2)
     {
         auto const& partition_we_got = partitions(1, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{3, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1519,7 +1519,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1557,11 +1557,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 0)
     {
         auto const& partition_we_got = partitions(2, 0);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 0};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1576,7 +1576,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1614,11 +1614,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 1)
     {
         auto const& partition_we_got = partitions(2, 1);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 3};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1633,7 +1633,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 
@@ -1672,11 +1672,11 @@ BOOST_AUTO_TEST_CASE(use_case_03)
     // partition(2, 2)
     {
         auto const& partition_we_got = partitions(2, 2);
-        auto const offset_we_got = partition_we_got.offset().get();
-        auto const shape_we_got = partition_we_got.shape().get();
-        auto const nr_routes_we_got = partition_we_got.nr_routes().get();
-        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments().get();
-        auto const route_ids_we_got = partition_we_got.route_ids().get();
+        auto const offset_we_got = partition_we_got.offset(hpx::launch::sync);
+        auto const shape_we_got = partition_we_got.shape(hpx::launch::sync);
+        auto const nr_routes_we_got = partition_we_got.nr_routes(hpx::launch::sync);
+        auto const nr_route_fragments_we_got = partition_we_got.nr_route_fragments(hpx::launch::sync);
+        auto const route_ids_we_got = partition_we_got.route_ids(hpx::launch::sync);
 
         Offset const offset_we_want{6, 6};
         BOOST_CHECK_EQUAL(offset_we_got, offset_we_want);
@@ -1691,7 +1691,7 @@ BOOST_AUTO_TEST_CASE(use_case_03)
         BOOST_CHECK(route_ids_we_got.find(route_id) != route_ids_we_got.end());
 
         {
-            auto const route_fragments_we_got = partition_we_got.route_fragments(route_id).get();
+            auto const route_fragments_we_got = partition_we_got.route_fragments(hpx::launch::sync, route_id);
 
             BOOST_REQUIRE_EQUAL(std::size(route_fragments_we_got), 3);
 

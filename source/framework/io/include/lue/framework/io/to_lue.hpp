@@ -51,11 +51,10 @@ namespace lue {
 
             for (auto& partition : partitions)
             {
-                auto partition_ptr{detail::ready_component_ptr(partition)};
-                auto& partition_server{*partition_ptr};
-                Element* buffer{partition_server.data().data()};
+                auto partition_data = partition.data(hpx::launch::sync);
+                Element* buffer{partition_data.data()};
 
-                array.write(create_hyperslab(partition_server), transfer_property_list, buffer);
+                array.write(create_hyperslab(partition), transfer_property_list, buffer);
             }
         }
 
@@ -69,7 +68,6 @@ namespace lue {
             data_model::ID const object_id) -> hpx::future<void>
         {
             using Partition = typename Partitions::value_type;
-            using PartitionServer = Partition::Server;
 
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -122,8 +120,8 @@ namespace lue {
                         auto array{value[object_id]};
 
                         auto create_hyperslab =
-                            [array_hyperslab_start](PartitionServer const& partition_server) -> auto
-                        { return hyperslab(array_hyperslab_start, partition_server); };
+                            [array_hyperslab_start](Partition const& partition) -> auto
+                        { return hyperslab(array_hyperslab_start, partition); };
 
                         // Synchronous
                         write_partitions(policies, partitions_f.get(), create_hyperslab, array);
@@ -153,7 +151,6 @@ namespace lue {
             Index const time_step_idx) -> hpx::future<void>
         {
             using Partition = typename Partitions::value_type;
-            using PartitionServer = Partition::Server;
 
             auto const [dataset_pathname, phenomenon_name, property_set_name, property_name] =
                 parse_array_pathname(array_pathname);
@@ -211,8 +208,8 @@ namespace lue {
                         auto array{value[object_id]};
 
                         auto create_hyperslab = [array_hyperslab_start, time_step_idx](
-                                                    PartitionServer const& partition_server) -> auto
-                        { return hyperslab(array_hyperslab_start, partition_server, 0, time_step_idx); };
+                                                    Partition const& partition) -> auto
+                        { return hyperslab(array_hyperslab_start, partition, 0, time_step_idx); };
 
                         // Synchronous
                         write_partitions(policies, partitions_f.get(), create_hyperslab, array);

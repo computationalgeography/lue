@@ -28,12 +28,14 @@ namespace lue {
         namespace server {
 
             template<typename Policies, Rank rank>
-            class Walk: public hpx::components::component_base<Walk<Policies, rank>>
+            class Walk:
+                public hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>
             {
 
                 private:
 
-                    using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
+                    using ComponentServerBase =
+                        hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>;
                     using ComponentClient = first_n::Walk<Policies, rank>;
                     using OutputElement = policy::OutputElementT<Policies, 0>;
                     using RouteID = policy::InputElementT<Policies, 0>;
@@ -70,15 +72,14 @@ namespace lue {
                         ondp.mark_no_data(no_data_value);
 
                         _route_partition.get();
-                        auto route_partition_ptr{ready_component_ptr(_route_partition)};
 
-                        _output_partition = OutputPartition{hpx::new_<OutputPartitionServer>(
+                        _output_partition = OutputPartition{
                             hpx::find_here(),
-                            route_partition_ptr->offset(),
-                            route_partition_ptr->shape(),
-                            no_data_value)};
+                            _route_partition.offset(hpx::launch::sync),
+                            _route_partition.shape(hpx::launch::sync),
+                            no_data_value};
 
-                        std::set<RouteID> const route_ids{route_partition_ptr->route_ids()};
+                        std::set<RouteID> const route_ids{_route_partition.route_ids(hpx::launch::sync)};
 
                         for (RouteID const route_id : route_ids)
                         {
@@ -132,23 +133,20 @@ namespace lue {
                         // TODO read_lock.lock();
                         write_lock.lock();
 
-                        auto route_partition_server_ptr{ready_component_ptr(_route_partition)};
-                        auto& route_partition_server{*route_partition_server_ptr};
+                        auto output_partition_data{_output_partition.data(hpx::launch::sync)};
 
-                        auto output_partition_server_ptr{ready_component_ptr(_output_partition)};
-                        auto& output_partition_server{*output_partition_server_ptr};
-                        auto output_partition_data{output_partition_server.data()};
-
-                        lue_hpx_assert(
-                            route_partition_server.route_ids().find(route_id) !=
-                            route_partition_server.route_ids().end());
+#ifndef NDEBUG
+                        auto const route_ids = _route_partition.route_ids(hpx::launch::sync);
+                        lue_hpx_assert(route_ids.find(route_id) != route_ids.end());
+#endif
 
                         lue_hpx_assert(!_fragment_idxs.empty());
                         lue_hpx_assert(_fragment_idxs.find(route_id) != _fragment_idxs.end());
 
                         Index& fragment_idx{_fragment_idxs.at(route_id)};
 
-                        auto const& route_fragments{route_partition_server.route_fragments(route_id)};
+                        auto const& route_fragments{
+                            _route_partition.route_fragments(hpx::launch::sync, route_id)};
 
                         lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
 
@@ -254,7 +252,7 @@ namespace lue {
                         Index& fragment_idx{_fragment_idxs.at(route_id)};
 
                         auto const& route_fragments{
-                            ready_component_ptr(_route_partition)->route_fragments(route_id)};
+                            _route_partition.route_fragments(hpx::launch::sync, route_id)};
                         lue_hpx_assert(fragment_idx < static_cast<Size>(std::size(route_fragments)));
 
                         auto const& route_fragment{route_fragments[fragment_idx]};
@@ -350,6 +348,7 @@ namespace lue {
                 using ComponentClientBase =
                     hpx::components::client_base<Walk<Policies, rank>, ComponentServer>;
                 using OutputPartition = typename ComponentServer::OutputPartition;
+                using RoutePartition = typename ComponentServer::RoutePartition;
 
             public:
 
@@ -372,6 +371,24 @@ namespace lue {
                 Walk(hpx::future<hpx::id_type>&& component_id):
 
                     ComponentClientBase{std::move(component_id)}
+
+                {
+                }
+
+
+                Walk(hpx::future<Walk>&& client_f):
+
+                    ComponentClientBase{std::move(client_f)}
+
+                {
+                }
+
+
+                Walk(
+                    hpx::id_type const locality_id, Policies const& policies, RoutePartition route_partition):
+
+                    ComponentClientBase{
+                        hpx::new_<ComponentServer>(locality_id, policies, std::move(route_partition))}
 
                 {
                 }
@@ -457,7 +474,6 @@ namespace lue {
         // - Create a new Walk component, passing in the route partition
 
         using WalkComponentClient = detail::first_n::Walk<Policies, rank>;
-        using WalkComponentServer = detail::first_n::server::Walk<Policies, rank>;
 
         // TODO
         // Since a partitioned array currently caches locality IDs, we need to retrieve them,
@@ -473,14 +489,16 @@ namespace lue {
 
         for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
         {
-            walk_components[partition_idx] = WalkComponentClient{hpx::dataflow(
+            walk_components[partition_idx] = hpx::dataflow(
                 hpx::launch::async,
-                [policies](RoutePartition const& route_partition)
+                [policies](RoutePartition const& route_partition) -> WalkComponentClient
                 {
-                    return hpx::new_<WalkComponentServer>(
-                        hpx::colocated(route_partition.get_id()), policies, route_partition);
+                    return {
+                        hpx::get_colocation_id(hpx::launch::sync, route_partition.get_id()),
+                        policies,
+                        route_partition};
                 },
-                route_partitions[partition_idx])};
+                route_partitions[partition_idx]);
         }
 
         OutputPartitions partitions{walk_components.shape()};

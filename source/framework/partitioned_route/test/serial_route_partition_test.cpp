@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework partitioned_route serial_route_partition
 #include "stream.hpp"
-#include "lue/framework/partitioned_route/serial_route_partition.hpp"
+#include "lue/framework/partitioned_route/serial_route_partition_decl.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -32,21 +32,18 @@ BOOST_AUTO_TEST_CASE(default_construct_client)
 BOOST_AUTO_TEST_CASE(construct_server01)
 {
     using RouteID = lue::SignedIntegralElement<0>;
-    using RoutePartitionServer = lue::server::SerialRoutePartition<RouteID, 2>;
     using RoutePartition = lue::SerialRoutePartition<RouteID, 2>;
 
-    typename RoutePartitionServer::Offset const partition_offset{33, 44};
-    typename RoutePartitionServer::Shape const partition_shape{6, 4};
-    typename RoutePartitionServer::RouteFragments fragments{};
+    typename RoutePartition::Offset const partition_offset{33, 44};
+    typename RoutePartition::Shape const partition_shape{6, 4};
+    typename RoutePartition::RouteFragments fragments{};
 
-    hpx::future<hpx::id_type> partition_server_id{hpx::new_<RoutePartitionServer>(
-        hpx::find_here(), partition_offset, partition_shape, std::move(fragments))};
+    RoutePartition partition_client{
+        hpx::find_here(), partition_offset, partition_shape, std::move(fragments)};
 
-    RoutePartition partition_client{std::move(partition_server_id)};
-
-    BOOST_CHECK_EQUAL(partition_client.offset().get(), partition_offset);
-    BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_shape);
-    BOOST_CHECK_EQUAL(partition_client.nr_routes().get(), 0);
+    BOOST_CHECK_EQUAL(partition_client.offset(hpx::launch::sync), partition_offset);
+    BOOST_CHECK_EQUAL(partition_client.shape(hpx::launch::sync), partition_shape);
+    BOOST_CHECK_EQUAL(partition_client.nr_routes(hpx::launch::sync), 0);
 }
 
 
@@ -77,17 +74,17 @@ BOOST_AUTO_TEST_CASE(construct_server02)
     hpx::id_type server_locality{!other_localities.empty() ? other_localities.front() : hpx::find_here()};
 
     RoutePartition partition_client{
-        hpx::new_<RoutePartition>(server_locality, partition_offset, partition_shape, std::move(fragments))};
+        server_locality, partition_offset, partition_shape, std::move(fragments)};
 
     // Wait for the server component to be created in the remote locality before querying it
     partition_client.get();
 
-    BOOST_CHECK_EQUAL(partition_client.offset().get(), partition_offset);
-    BOOST_CHECK_EQUAL(partition_client.shape().get(), partition_shape);
-    BOOST_CHECK_EQUAL(partition_client.nr_routes().get(), 2);
-    BOOST_CHECK_EQUAL(partition_client.nr_route_fragments().get(), 3);
+    BOOST_CHECK_EQUAL(partition_client.offset(hpx::launch::sync), partition_offset);
+    BOOST_CHECK_EQUAL(partition_client.shape(hpx::launch::sync), partition_shape);
+    BOOST_CHECK_EQUAL(partition_client.nr_routes(hpx::launch::sync), 2);
+    BOOST_CHECK_EQUAL(partition_client.nr_route_fragments(hpx::launch::sync), 3);
 
-    BOOST_TEST(partition_client.route_ids().get() == route_ids, boost::test_tools::per_element());
+    BOOST_TEST(partition_client.route_ids(hpx::launch::sync) == route_ids, boost::test_tools::per_element());
 
     // TODO
     // BOOST_TEST(

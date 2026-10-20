@@ -9,7 +9,7 @@
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
-#include "lue/framework/serial_route.hpp"
+#include "lue/framework/serial_route_decl.hpp"
 #include <optional>
 
 
@@ -918,11 +918,10 @@ namespace lue {
         Shape<Count, rank> const& partition_shape,
         Functor const& partition_creator) -> PartitionedArray<OutputElementT<Functor>, rank>
     {
-        // Create the array partitions that, together make up the partitioned
-        // array.
+        // Create the array partitions that, together make up the partitioned array
 
-        // Given the shape of the array and the shape of the array partitions,
-        // determine the shape of the array in partitions
+        // Given the shape of the array and the shape of the array partitions, determine the shape of the
+        // array in partitions
 
         auto [localities, partitions] =
             detail::instantiate_partitions(policies, array_shape, partition_shape, partition_creator);

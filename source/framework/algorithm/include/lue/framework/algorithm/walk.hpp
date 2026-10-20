@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/partitioned_array_decl.hpp"
-#include "lue/framework/serial_route.hpp"
+#include "lue/framework/serial_route_decl.hpp"
 #include <hpx/include/components.hpp>
 #include <map>
 #include <vector>
@@ -100,7 +100,7 @@ namespace lue {
             downstream_route_partitions_ids_ff[partition_idx] = hpx::dataflow(
                 hpx::launch::async,
                 [](RoutePartition const& route_partition)
-                { return route_partition.remote_route_fragment_locations(); },
+                { return route_partition.remote_route_fragment_locations(hpx::launch::async); },
                 route_partitions[partition_idx]);
         }
 

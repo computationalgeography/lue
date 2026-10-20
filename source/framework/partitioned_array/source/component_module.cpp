@@ -2,4 +2,4 @@
 
 
 // Boilerplate required once per component module
-HPX_REGISTER_COMPONENT_MODULE()
+HPX_REGISTER_COMPONENT_MODULE();

@@ -1,4 +1,4 @@
-#include "lue/framework/serial_route.hpp"
+#include "lue/framework/serial_route_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include "lue/py/configure.hpp"
