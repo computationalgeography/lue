@@ -13,6 +13,8 @@ known-first-party = ["lue_test"]
 [tool.typos]
 default.extend-ignore-identifiers-re = [
     ".*_FPR_.*",
+    ".*bimap.*",
+    ".*BiMap.*",
     "InputElemenT",
     "nd",
     "ND",
