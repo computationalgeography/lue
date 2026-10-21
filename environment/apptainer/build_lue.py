@@ -12,11 +12,11 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import tomllib
 from pathlib import Path
 
 import docopt
 import requests
-import tomllib
 
 logger = logging.getLogger(__name__)
 
