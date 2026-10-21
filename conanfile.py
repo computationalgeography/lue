@@ -35,13 +35,11 @@ class LUERecipe(ConanFile):
         if install_conan_package("asio"):
             self.requires("asio/[>=1.21 <1.30]")
 
-        # Multiple targets depend on Boost, resulting in version conflicts. Allow the version to be
-        # overridden.
         if install_conan_package("boost"):
-            self.requires("boost/[1.74 || >1.75]")
+            self.requires("boost/[>=1.83]")
 
         if install_conan_package("cxxopts"):
-            self.requires("cxxopts/3.2.0")
+            self.requires("cxxopts/[>=3.2.0]")
 
         if install_conan_package("docopt.cpp"):
             self.requires("docopt.cpp/[>=0.6.2]")
