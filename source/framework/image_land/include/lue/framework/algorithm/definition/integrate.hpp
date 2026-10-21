@@ -96,8 +96,6 @@ namespace lue::detail::integrate {
                     _fragment_idxs{}
 
                 {
-                    using OutputPartitionServer = typename OutputPartition::Server;
-
                     auto const& ondp = std::get<0>(_policies.outputs_policies()).output_no_data_policy();
                     OutputElement no_data_value;
 
