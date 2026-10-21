@@ -503,6 +503,9 @@ endif()
 
 
 if(LUE_MDSPAN_REQUIRED)
+    # Download mdspan from kokkos repo. This library is not packaged yet. It will be added to the C++ standard
+    # library at some point. It is in C++23 but doesn't contain all the features we use yet. Try again once
+    # we start using C++26.
     CPMAddPackage(
         URI "gh:kokkos/mdspan#9ceface91483775a6c74d06ebf717bbb2768452f"  # 0.6.0
         SYSTEM TRUE
@@ -580,19 +583,15 @@ endif()
 
 
 if(LUE_BOOST_REQUIRED)
-    find_package(Boost 1.70 REQUIRED)
-
-    if(Boost_VERSION VERSION_EQUAL "1.75")
-        message(FATAL_ERROR
-            "Boost-1.75's safe_numerics library is known to contain a bug:\n"
-            "https://github.com/boostorg/safe_numerics/issues/94")
-    endif()
+    find_package(Boost 1.83 REQUIRED)
 endif()
 
 
 if(LUE_CUNIT_REQUIRED)
-    CPMAddPackage(
-        URI "gl:cunity/cunit#3.5.4"
+    CPMFindPackage(
+        NAME cunit
+        GIT_REPOSITORY "https://gitlab.com/cunity/cunit.git"
+        GIT_TAG "3.5.5"
         OPTIONS
             "CUNIT_DISABLE_EXAMPLES TRUE"
             "CUNIT_DISABLE_TESTS TRUE"
