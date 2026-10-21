@@ -202,21 +202,22 @@ jobs:
           # Test of imported CMake targets
           git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
 
+          # -D Boost_USE_DEBUG_RUNTIME=OFF
+
           cmake \
             -S ${{ env.lue_consume_source_directory }} \
             -B ${{ env.lue_consume_build_directory }} \
             -G "Ninja" \
             -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cxx }} \
-            -D CMAKE_BUILD_TYPE=Release \
-            -D Boost_USE_DEBUG_RUNTIME=OFF \
+            -D CMAKE_BUILD_TYPE=${{ env.build_type }} \
             -D lue_ROOT=${{ env.lue_development_install_directory }} \
             -D HPX_ROOT=${{ env.hpx_install_directory }} \
             -D mdspan_ROOT=${{ env.mdspan_install_directory }}
           cmake --build ${{ env.lue_consume_build_directory }} --target all
 
-          ${{ env.lue_consume_build_directory }}/lue_consume_data_model
-          ${{ env.lue_consume_build_directory }}/lue_consume_framework_algorithm
-          ${{ env.lue_consume_build_directory }}/lue_consume_framework_io
+          ${{ env.lue_consume_build_directory }}/data_model/lue_consume_data_model
+          ${{ env.lue_consume_build_directory }}/framework/lue_consume_framework_algorithm
+          ${{ env.lue_consume_build_directory }}/framework/lue_consume_framework_io
 
       # NOTE: Secrets and variables are not passed to workflows that are triggered by a pull request from
       # a fork.
