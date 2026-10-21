@@ -151,7 +151,6 @@ set(names
     ${zonal_operation_names}
     all
     any
-    array_partition_io
     communicator_array
     downstream_distance
     focal_operation
