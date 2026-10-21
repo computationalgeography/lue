@@ -297,8 +297,6 @@ namespace lue::detail::integrate_and_allocate {
                         CropFractionElement crop_fraction_no_data_value;
                         ondp0.mark_no_data(crop_fraction_no_data_value);
 
-                        using CropFractionPartitionServer = typename CropFractionPartition::Server;
-
                         for (Index crop_idx = 0; crop_idx < nr_crops; ++crop_idx)
                         {
                             _crop_fractions_per_crop_partitions[crop_idx] = CropFractionPartition{
@@ -1083,7 +1081,6 @@ namespace lue {
         }
 
         using WalkComponentClient = detail::integrate_and_allocate::Walk<Policies, rank>;
-        using WalkComponentServer = detail::integrate_and_allocate::server::Walk<Policies, rank>;
 
         RoutePartitions const& route_partitions{routes.partitions()};
 
