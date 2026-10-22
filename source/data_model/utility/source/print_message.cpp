@@ -8,8 +8,7 @@ namespace lue::utility {
         {
             std::size_t nr_white_space_chars{0};
 
-            for (auto const* char_it = view.begin(); char_it != view.end() && std::isspace(*char_it) != 0;
-                 ++char_it)
+            for (auto char_it = view.begin(); char_it != view.end() && std::isspace(*char_it) != 0; ++char_it)
             {
                 ++nr_white_space_chars;
             }
