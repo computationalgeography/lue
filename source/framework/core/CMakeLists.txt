@@ -41,7 +41,7 @@ block()
         OUTPUT_PATHNAME
             ${output_pathname}
         DICTIONARY
-        '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","IDElement":"${LUE_FRAMEWORK_ID_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","MaterialElements":[${MaterialElements}],"ZoneElements":[${ZoneElements}],"SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
+        '{"BooleanElement":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","CountElement":"${LUE_FRAMEWORK_COUNT_ELEMENT}","SmallCountElement":"${LUE_FRAMEWORK_SMALL_COUNT_ELEMENT}","IDElement":"${LUE_FRAMEWORK_ID_ELEMENT}","IndexElement":"${LUE_FRAMEWORK_INDEX_ELEMENT}","MaterialElements":[${MaterialElements}],"ZoneElements":[${ZoneElements}],"SignedIntegralElements":[${SignedIntegralElements}],"UnsignedIntegralElements":[${UnsignedIntegralElements}],"FloatingPointElements":[${FloatingPointElements}],"ranks":[${ranks}]}'
     )
 
     list(APPEND generated_source_files "${output_pathname}")

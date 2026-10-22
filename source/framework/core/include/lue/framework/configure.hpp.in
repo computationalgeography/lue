@@ -68,7 +68,7 @@ namespace lue {
     using ZoneElements = std::tuple< {{ ZoneElements | join(", ") }} >;
 
     /*!
-        @brief      The Boolean element type type for which relevant class and function templates are
+        @brief      The Boolean element type for which relevant class and function templates are
                     instantiated
 
         A Boolean is typically represented by a small integral element type, like uint8 or int8.
@@ -76,7 +76,7 @@ namespace lue {
     using BooleanElement = {{ BooleanElement }};
 
     /*!
-        @brief      The count element type type for which relevant class and function templates are
+        @brief      The count element type for which relevant class and function templates are
                     instantiated
 
         A count is typically represented by a large integral element type.
@@ -84,14 +84,22 @@ namespace lue {
     using CountElement = {{ CountElement }};
 
     /*!
-        @brief      The ID element type type for which relevant class and function templates are instantiated
+        @brief      The small count element type for which relevant class and function templates are
+                    instantiated
+
+        A small count is typically represented by a small integral element type.
+    */
+    using SmallCountElement = {{ SmallCountElement }};
+
+    /*!
+        @brief      The ID element type for which relevant class and function templates are instantiated
 
         An ID is typically represented by a large integral element type.
     */
     using IDElement = {{ IDElement }};
 
     /*!
-        @brief      The index element type type for which relevant class and function templates are
+        @brief      The index element type for which relevant class and function templates are
                     instantiated
 
         An index is typically represented by a large integral element type.
@@ -99,7 +107,7 @@ namespace lue {
     using IndexElement = {{ IndexElement }};
 
     /*!
-        @brief      The flow direction element type type for which relevant class and function templates are
+        @brief      The flow direction element type for which relevant class and function templates are
                     instantiated
 
         A flow direction is typically represented by a small integral element type, like uint8 or int8.

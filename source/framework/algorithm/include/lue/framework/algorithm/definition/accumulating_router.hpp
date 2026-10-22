@@ -1210,7 +1210,9 @@ namespace lue {
             ArrayPartition<FlowDirectionElement, rank> const& flow_direction_partition,
             InflowCountCommunicator<rank> inflow_count_communicator)
             -> hpx::tuple<
-                ArrayPartition<SmallestIntegralElement, rank>,
+                // TODO: The policies passed in contains a float as first output element type. Therefore we
+                // hardcode the element type as SmallCountElement. This should be fixed at the call site.
+                ArrayPartition<SmallCountElement, rank>,
                 hpx::shared_future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>,
                 hpx::future<std::array<std::vector<std::array<Index, rank>>, nr_neighbours<rank>()>>>
         {
@@ -1218,7 +1220,7 @@ namespace lue {
             // no-data in input, there is no need to mark no-data in the output of inflow_count. We
             // won't be reading these cells anyway.
 
-            using CountElement = SmallestIntegralElement;
+            using CountElement = SmallCountElement;
             using InflowCountOutputPolicies = policy::OutputPolicies<
                 policy::DontMarkNoData<CountElement>,
                 policy::AllValuesWithinRange<CountElement>>;
@@ -1439,7 +1441,7 @@ namespace lue {
         private:
 
             //! Type for representing the number of neighbouring cells draining into a cell (max 8)
-            using InflowCountElement = SmallestIntegralElement;
+            using InflowCountElement = SmallCountElement;
 
         public:
 
