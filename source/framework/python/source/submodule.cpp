@@ -126,6 +126,7 @@ namespace lue::framework {
         submodule.attr("zone_element_types") = type_of(ZoneElements{});
         submodule.attr("boolean_element_type") = type_of<BooleanElement>();
         submodule.attr("count_element_type") = type_of<CountElement>();
+        submodule.attr("small_count_element_type") = type_of<SmallCountElement>();
         submodule.attr("id_element_type") = type_of<IDElement>();
         submodule.attr("index_element_type") = type_of<IndexElement>();
         submodule.attr("flow_direction_element_type") = type_of<FlowDirectionElement>();

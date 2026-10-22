@@ -196,6 +196,10 @@ namespace lue {
         "Reconfigure: CountElement must be one of the integral elements");
 
     static_assert(
+        integral_element_supported<SmallCountElement>,
+        "Reconfigure: SmallCountElement must be one of the integral elements");
+
+    static_assert(
         integral_element_supported<IDElement>, "Reconfigure: IDElement must be one of the integral elements");
 
     static_assert(

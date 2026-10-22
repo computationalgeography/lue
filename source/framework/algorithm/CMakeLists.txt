@@ -1904,15 +1904,13 @@ block()
             # Instantiate inflow_count
             set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/inflow_count-${Policies}.cpp")
 
-            # We're using the boolean element type for the counts, assuming the boolean element type is a small
-            # integral capable of representing small numbers.
             generate_template_instantiation(
                 INPUT_PATHNAME
                     "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/inflow_count.cpp.in"
                 OUTPUT_PATHNAME
                     "${output_pathname}"
                 DICTIONARY
-                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${LUE_FRAMEWORK_BOOLEAN_ELEMENT}"}'
+                '{"Policies":"${Policies}","FlowDirectionElement":"${LUE_FRAMEWORK_FLOW_DIRECTION_ELEMENT}","Element":"${LUE_FRAMEWORK_SMALL_COUNT_ELEMENT}"}'
             )
             list(APPEND generated_source_files "${output_pathname}")
         endif()
