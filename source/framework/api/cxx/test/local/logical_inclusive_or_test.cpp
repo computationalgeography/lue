@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local logical_inclusive_or
-#include "lue/framework/api/cxx/local/logical_inclusive_or.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/logical_inclusive_or.hpp"
 #include "lue/framework.hpp"
 
 

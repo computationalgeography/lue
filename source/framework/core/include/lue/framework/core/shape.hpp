@@ -37,7 +37,7 @@ namespace lue {
     {
         static_assert(rank > 0);
 
-        using T = typename Shape<Count, rank>::value_type;
+        using T = Shape<Count, rank>::value_type;
 
         static_assert(std::is_same_v<T, Count>);
 
@@ -56,7 +56,7 @@ namespace lue {
     constexpr auto is_hypercube(Shape<Count, rank> const& shape) -> bool
     {
         return shape.empty() ? false
-                             : static_cast<typename Shape<Count, rank>::size_type>(
+                             : static_cast<Shape<Count, rank>::size_type>(
                                    std::count(shape.begin(), shape.end(), *shape.begin())) == shape.size();
     }
 

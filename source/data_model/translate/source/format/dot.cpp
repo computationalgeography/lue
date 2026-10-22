@@ -250,7 +250,7 @@ subgraph cluster_{} {{
                           utility::Record{"shape_per_object", "different"},
                           utility::Record{"rank", std::to_string(value.rank())},
                           utility::Record{
-                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                              "file_datatype", hdf5::standard_datatype_as_string(value.file_datatype())},
                       })
                 : value.id().name();
 
@@ -318,7 +318,7 @@ subgraph cluster_{} {{
                           utility::Record{"nr_objects", std::to_string(value.nr_objects())},
                           utility::Record{"rank", std::to_string(value.rank())},
                           utility::Record{
-                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                              "file_datatype", hdf5::standard_datatype_as_string(value.file_datatype())},
                       })
                 : value.id().name();
 
@@ -353,7 +353,7 @@ subgraph cluster_{} {{
                               "nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
                           utility::Record{"rank", std::to_string(value.rank())},
                           utility::Record{
-                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                              "file_datatype", hdf5::standard_datatype_as_string(value.file_datatype())},
                       })
                 : value.id().name();
 
@@ -388,7 +388,7 @@ subgraph cluster_{} {{
                               "nr_locations_in_time", std::to_string(value.nr_locations_in_time())},
                           utility::Record{"rank", std::to_string(value.rank())},
                           utility::Record{
-                              "file_datatype", hdf5::standard_datatype_as_string((value.file_datatype()))},
+                              "file_datatype", hdf5::standard_datatype_as_string(value.file_datatype())},
                       })
                 : value.id().name();
 

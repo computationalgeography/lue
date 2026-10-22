@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local round
-#include "lue/framework/api/cxx/local/round.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/round.hpp"
 #include "lue/framework.hpp"
 
 

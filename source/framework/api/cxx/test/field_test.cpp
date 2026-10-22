@@ -7,7 +7,7 @@
 BOOST_AUTO_TEST_CASE(implicit_conversion_from_element)
 {
     using Element = lue::FloatingPointElement<0>;
-    using Field = lue::api::Field;
+    using lue::api::Field;
 
     {
         Element const element{};
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(implicit_conversion_from_scalar)
 {
     using Element = lue::FloatingPointElement<0>;
     using Scalar = lue::Scalar<Element>;
-    using Field = lue::api::Field;
+    using lue::api::Field;
 
     {
         Scalar const scalar{};
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(implicit_conversion_from_array)
 {
     using Element = lue::FloatingPointElement<0>;
     using Array = lue::PartitionedArray<Element, 2>;
-    using Field = lue::api::Field;
+    using lue::api::Field;
 
     {
         Array array{};

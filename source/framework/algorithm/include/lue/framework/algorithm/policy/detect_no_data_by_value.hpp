@@ -35,7 +35,7 @@ namespace lue::policy {
                 | floating point | std::numeric_limits<Element>::lowest() |
             */
             static constexpr Element no_data_value{
-                []()
+                []
                 {
                     static_assert(std::is_floating_point_v<Element> || std::is_integral_v<Element>);
 

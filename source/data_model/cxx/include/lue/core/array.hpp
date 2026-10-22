@@ -30,18 +30,11 @@ namespace lue::data_model {
 
             auto file_datatype() const -> hdf5::Datatype;
 
+            using hdf5::Dataset::read;
+
             void read(void* buffer) const;
 
             void read(hdf5::Hyperslab const& hyperslab, void* buffer) const;
-
-            void read(
-                hdf5::Datatype const& memory_datatype, hdf5::Hyperslab const& hyperslab, void* buffer) const;
-
-            void read(
-                hdf5::Datatype const& memory_datatype,
-                hdf5::Hyperslab const& hyperslab,
-                TransferPropertyList const& transfer_property_list,
-                void* buffer) const;
 
             void read(hdf5::Dataspace const& memory_dataspace, void* buffer) const;
 

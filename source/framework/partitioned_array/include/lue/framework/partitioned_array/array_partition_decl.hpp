@@ -30,15 +30,15 @@ namespace lue {
 
             using Base = hpx::components::client_base<ArrayPartition<Element, rank>, Server>;
 
-            using Data = typename Server::Data;
+            using Data = Server::Data;
 
-            using Offset = typename Server::Offset;
+            using Offset = Server::Offset;
 
-            using Shape = typename Server::Shape;
+            using Shape = Server::Shape;
 
-            using Slice = typename Server::Slice;
+            using Slice = Server::Slice;
 
-            using Slices = typename Server::Slices;
+            using Slices = Server::Slices;
 
             ArrayPartition();
 
@@ -106,19 +106,19 @@ namespace lue {
 
                 constexpr static Rank rank = r;
 
-                using Offset = typename ArrayPartition<E, r>::Offset;
+                using Offset = ArrayPartition<E, r>::Offset;
 
-                using Shape = typename ArrayPartition<E, r>::Shape;
+                using Shape = ArrayPartition<E, r>::Shape;
 
-                using Slices = typename ArrayPartition<E, r>::Slices;
+                using Slices = ArrayPartition<E, r>::Slices;
 
-                using Slice = typename ArrayPartition<E, r>::Slice;
+                using Slice = ArrayPartition<E, r>::Slice;
 
                 template<typename E_, Rank r_>
                 using Partition = ArrayPartition<E_, r_>;
 
                 template<typename E_, Rank r_>
-                using Data = typename ArrayPartition<E_, r_>::Data;
+                using Data = ArrayPartition<E_, r_>::Data;
         };
 
 

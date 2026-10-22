@@ -41,7 +41,6 @@ namespace lue {
 
             hpx::spinlock _teardown_mutex;
             hpx::condition_variable_any _teardown_condition_variable;
-
     };
 
 }  // namespace lue

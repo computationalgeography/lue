@@ -87,7 +87,7 @@ namespace lue::hdf5 {
             throw std::runtime_error("Cannot create attribute");
         }
 
-        return id;
+        return Attribute{std::move(id)};
     }
 
 }  // namespace lue::hdf5

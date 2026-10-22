@@ -206,15 +206,16 @@ namespace lue {
 
             template<typename Policies, Rank rank>
             class DecreasingOrderZonal:
-                public hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>
+                public hpx::components::locking_hook<
+                    hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>
             {
 
                 private:
 
                     using Data = DecreasingOrderData<Policies, rank>;
 
-                    using ComponentServerBase =
-                        hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>;
+                    using ComponentServerBase = hpx::components::locking_hook<
+                        hpx::components::component_base<DecreasingOrderZonal<Policies, rank>>>;
 
                     using RouteID = policy::InputElementT<Policies, 0>;
 
@@ -716,15 +717,16 @@ namespace lue {
 
             template<typename Policies, Rank rank>
             class DecreasingOrderGlobal:
-                public hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>
+                public hpx::components::locking_hook<
+                    hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>
             {
 
                 private:
 
                     using Data = DecreasingOrderData<Policies, rank>;
 
-                    using ComponentServerBase =
-                        hpx::components::locking_hook<hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>;
+                    using ComponentServerBase = hpx::components::locking_hook<
+                        hpx::components::component_base<DecreasingOrderGlobal<Policies, rank>>>;
 
                     using RouteID = policy::InputElementT<Policies, 0>;
 

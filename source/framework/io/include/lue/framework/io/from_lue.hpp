@@ -36,10 +36,11 @@ namespace lue {
             // If no-data in the HDF5 dataset, write no-data to the LUE partition
 
             // Synchronously write all partitions, from the same OS thread
-            lue_hpx_assert(std::all_of(
-                partitions.begin(),
-                partitions.end(),
-                [](auto const& partition) -> auto { return partition.is_ready(); }));
+            lue_hpx_assert(
+                std::all_of(
+                    partitions.begin(),
+                    partitions.end(),
+                    [](auto const& partition) -> auto { return partition.is_ready(); }));
 
             // Open value. Configure for use of parallel I/O if relevant.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
@@ -63,8 +64,7 @@ namespace lue {
                 auto partition_data = partition.data(hpx::launch::sync);
                 Element* buffer{partition_data.data()};
 
-                array.read(
-                    memory_datatype, create_hyperslab(partition), transfer_property_list, buffer);
+                array.read(memory_datatype, create_hyperslab(partition), transfer_property_list, buffer);
             }
         }
 
@@ -130,8 +130,7 @@ namespace lue {
                         // constant: data_model::Array: hdf5::Dataset
                         auto array{value[object_id]};
 
-                        auto create_hyperslab =
-                            [array_hyperslab_start](Partition const& partition) -> auto
+                        auto create_hyperslab = [array_hyperslab_start](Partition const& partition) -> auto
                         { return hyperslab(array_hyperslab_start, partition); };
 
                         // Synchronous
@@ -217,8 +216,8 @@ namespace lue {
                         // constant: data_model::Array: hdf5::Dataset
                         auto const array{value[object_id]};
 
-                        auto create_hyperslab = [array_hyperslab_start, time_step_idx](
-                                                    Partition const& partition) -> auto
+                        auto create_hyperslab = [array_hyperslab_start,
+                                                 time_step_idx](Partition const& partition) -> auto
                         { return hyperslab(array_hyperslab_start, partition, 0, time_step_idx); };
 
                         // Synchronous
@@ -297,7 +296,7 @@ namespace lue {
                  dataset_path,
                  array_hyperslab_start,
                  object_id]([[maybe_unused]] auto const& precondition_f) mutable
-                -> std::tuple<std::vector<Partition>, hpx::future<void>>
+                    -> std::tuple<std::vector<Partition>, hpx::future<void>>
                 {
                     std::vector<hpx::future<void>> localities_finished{};
                     localities_finished.reserve(partition_idxs_by_locality.size());
@@ -383,10 +382,11 @@ namespace lue {
 
                     // All partitions have been replaced by one which becomes ready once the reading has
                     // finished
-                    lue_hpx_assert(std::all_of(
-                        array_partitions.begin(),
-                        array_partitions.end(),
-                        [](auto const& partition) -> auto { return partition.valid(); }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            array_partitions.begin(),
+                            array_partitions.end(),
+                            [](auto const& partition) -> auto { return partition.valid(); }));
 
                     hpx::future<void> from_lue_finished_f =
                         hpx::when_all(localities_finished.begin(), localities_finished.end());
@@ -422,10 +422,11 @@ namespace lue {
 
             std::move(partition_fs.begin(), partition_fs.end(), array.partitions().begin());
 
-            lue_hpx_assert(std::all_of(
-                array.partitions().begin(),
-                array.partitions().end(),
-                [](auto const& partition) -> auto { return partition.valid(); }));
+            lue_hpx_assert(
+                std::all_of(
+                    array.partitions().begin(),
+                    array.partitions().end(),
+                    [](auto const& partition) -> auto { return partition.valid(); }));
 
             return array;
         }
@@ -483,7 +484,7 @@ namespace lue {
                  array_hyperslab_start,
                  object_id,
                  time_step_idx]([[maybe_unused]] auto const& precondition_f) mutable
-                -> std::tuple<std::vector<Partition>, hpx::future<void>>
+                    -> std::tuple<std::vector<Partition>, hpx::future<void>>
                 {
                     std::vector<hpx::future<void>> localities_finished{};
                     localities_finished.reserve(partition_idxs_by_locality.size());
@@ -570,10 +571,11 @@ namespace lue {
 
                     // All partitions have been replaced by one which becomes ready once the reading has
                     // finished
-                    lue_hpx_assert(std::all_of(
-                        array_partitions.begin(),
-                        array_partitions.end(),
-                        [](auto const& partition) -> auto { return partition.valid(); }));
+                    lue_hpx_assert(
+                        std::all_of(
+                            array_partitions.begin(),
+                            array_partitions.end(),
+                            [](auto const& partition) -> auto { return partition.valid(); }));
 
                     hpx::future<void> from_lue_finished_f =
                         hpx::when_all(localities_finished.begin(), localities_finished.end());
@@ -609,10 +611,11 @@ namespace lue {
 
             std::move(partition_fs.begin(), partition_fs.end(), array.partitions().begin());
 
-            lue_hpx_assert(std::all_of(
-                array.partitions().begin(),
-                array.partitions().end(),
-                [](auto const& partition) -> auto { return partition.valid(); }));
+            lue_hpx_assert(
+                std::all_of(
+                    array.partitions().begin(),
+                    array.partitions().end(),
+                    [](auto const& partition) -> auto { return partition.valid(); }));
 
             return array;
         }
@@ -777,9 +780,8 @@ namespace lue {
     */
     template<typename Element, typename Shape>
     auto from_lue(
-        std::string const& array_pathname,
-        Shape const& partition_shape,
-        data_model::ID const object_id) -> PartitionedArray<Element, rank<Shape>>
+        std::string const& array_pathname, Shape const& partition_shape, data_model::ID const object_id)
+        -> PartitionedArray<Element, rank<Shape>>
     {
         using Policies = policy::from_lue::DefaultPolicies<Element>;
 

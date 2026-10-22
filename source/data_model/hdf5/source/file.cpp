@@ -72,14 +72,14 @@ namespace lue::hdf5 {
 
 
     void File::AccessPropertyList::set_close_degree(H5F_close_degree_t const degree)
-{
+    {
         herr_t const status{H5Pset_fclose_degree(id(), degree)};
 
         if (status < 0)
         {
             throw std::runtime_error("Cannot set file close degree");
         }
-}
+    }
 
 
     /*!

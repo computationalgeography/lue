@@ -24,9 +24,9 @@ namespace lue {
         auto d8_flow_direction(Field const& elevation) -> Field
         {
             return std::visit(
-                overload{[](auto const& elevation) -> Field {
-                    return value_policies::d8_flow_direction<FlowDirectionElement>(elevation);
-                }},
+                overload{
+                    [](auto const& elevation) -> Field
+                    { return value_policies::d8_flow_direction<FlowDirectionElement>(elevation); }},
                 elevation.variant());
         }
 

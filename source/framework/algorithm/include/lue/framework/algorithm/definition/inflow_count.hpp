@@ -428,22 +428,23 @@ namespace lue {
 
                 input_cells_idxs_f =
                     hpx::when_all(std::move(received_cells_idxs))
-                        .then(hpx::unwrapping(
+                        .then(
+                            hpx::unwrapping(
 
-                            [](std::array<hpx::future<CellsIdxs>, nr_neighbours> idxs_fs) -> auto
-                            {
-                                std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
+                                [](std::array<hpx::future<CellsIdxs>, nr_neighbours> idxs_fs) -> auto
+                                {
+                                    std::array<CellsIdxs, detail::nr_neighbours<rank>()> cells_idxs{};
 
-                                std::transform(
-                                    idxs_fs.begin(),
-                                    idxs_fs.end(),
-                                    cells_idxs.begin(),
-                                    [](auto& idxs_f) -> auto { return idxs_f.get(); });
+                                    std::transform(
+                                        idxs_fs.begin(),
+                                        idxs_fs.end(),
+                                        cells_idxs.begin(),
+                                        [](auto& idxs_f) -> auto { return idxs_f.get(); });
 
-                                return cells_idxs;
-                            }
+                                    return cells_idxs;
+                                }
 
-                            ));
+                                ));
             }
 
             return hpx::make_tuple(std::move(input_cells_idxs_f), std::move(output_cells_idxs));
@@ -461,18 +462,20 @@ namespace lue {
         {
             using FlowDirectionPartition = ArrayPartition<FlowDirectionElement, rank>;
 
-            return hpx::split_future(hpx::dataflow(
-                hpx::launch::async,
+            return hpx::split_future(
+                hpx::dataflow(
+                    hpx::launch::async,
 
-                [policies, communicator = std::move(communicator)](
-                    FlowDirectionPartition const& flow_direction_partition) mutable -> auto
-                {
-                    AnnotateFunction annotation{"connectivity"};
+                    [policies, communicator = std::move(communicator)](
+                        FlowDirectionPartition const& flow_direction_partition) mutable -> auto
+                    {
+                        AnnotateFunction annotation{"connectivity"};
 
-                    return connectivity_ready(policies, flow_direction_partition, std::move(communicator));
-                },
+                        return connectivity_ready(
+                            policies, flow_direction_partition, std::move(communicator));
+                    },
 
-                flow_direction_partition));
+                    flow_direction_partition));
         }
 
 
@@ -562,7 +565,8 @@ namespace lue {
                 [policies](
                     FlowDirectionPartition const& flow_direction_partition,
                     hpx::shared_future<std::array<CellsIdxs, nr_neighbours<rank>()>> const&
-                        input_cells_idxs_f) -> ArrayPartition<CountElement, rank> {
+                        input_cells_idxs_f) -> ArrayPartition<CountElement, rank>
+                {
                     return inflow_count_ready<CountElement>(
                         policies, flow_direction_partition, input_cells_idxs_f.get());
                 },
@@ -678,12 +682,13 @@ namespace lue {
 
                 for (Index partition_idx = 0; partition_idx < nr_partitions; ++partition_idx)
                 {
-                    inflow_count_partitions[partition_idx] = hpx::get<0>(hpx::split_future(hpx::async(
-                        hpx::annotated_function(action, "inflow_count"),
-                        localities[partition_idx],
-                        policies,
-                        flow_direction_partitions[partition_idx],
-                        std::move(inflow_count_communicators[partition_idx]))));
+                    inflow_count_partitions[partition_idx] = hpx::get<0>(hpx::split_future(
+                        hpx::async(
+                            hpx::annotated_function(action, "inflow_count"),
+                            localities[partition_idx],
+                            policies,
+                            flow_direction_partitions[partition_idx],
+                            std::move(inflow_count_communicators[partition_idx]))));
                 }
 
                 return inflow_count_partitions;

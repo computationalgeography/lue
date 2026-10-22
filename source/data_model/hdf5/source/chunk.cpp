@@ -123,9 +123,8 @@ namespace lue::hdf5 {
 
 
     auto chunk_shape(
-        Shape const& value_shape,
-        std::size_t const nr_dimensions_to_skip,
-        std::size_t const size_of_element) -> Shape
+        Shape const& value_shape, std::size_t const nr_dimensions_to_skip, std::size_t const size_of_element)
+        -> Shape
     {
         assert(
             (value_shape.empty() && nr_dimensions_to_skip == 0) ||

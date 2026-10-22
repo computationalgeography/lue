@@ -17,7 +17,7 @@ namespace lue::utility {
     Import::Import(int const argc, char const* const* argv):
 
         Command(
-            []() -> cxxopts::Options
+            [] -> cxxopts::Options
             {
                 cxxopts::Options options{Import::name, "Translate data into the LUE dataset format"};
 

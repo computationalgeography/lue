@@ -111,5 +111,5 @@ namespace lue {
     template LUE_MISCELLANEOUS_OPERATION_EXPORT auto array_like<policy::OutputElementT<Policies, 0>>(        \
         ArgumentType<void(Policies)> const&,                                                                 \
         PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&,                                      \
-        Scalar<policy::OutputElementT<Policies, 0>> const&)                                      \
+        Scalar<policy::OutputElementT<Policies, 0>> const&)                                                  \
         -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

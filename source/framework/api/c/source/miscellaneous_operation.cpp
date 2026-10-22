@@ -47,7 +47,7 @@ auto lue_create_box_kernel(LUE_Count const radius, LUE_Literal const* weight) ->
 
 
 #define CreateLiteral(type, type_name)                                                                       \
-    auto lue_create_literal_##type_name(type const value)->LUE_Literal*                                      \
+    auto lue_create_literal_##type_name(type const value) -> LUE_Literal*                                    \
     {                                                                                                        \
         lue::api::Literal result{value};                                                                     \
                                                                                                              \

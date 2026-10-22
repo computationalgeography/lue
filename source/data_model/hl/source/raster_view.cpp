@@ -74,7 +74,7 @@ namespace lue::data_model {
 
 
     template<typename DatasetPtr>
-    auto RasterView<DatasetPtr>::space_box() const -> typename RasterView<DatasetPtr>::SpaceBox const&
+    auto RasterView<DatasetPtr>::space_box() const -> RasterView<DatasetPtr>::SpaceBox const&
     {
         return _space_box;
     }
@@ -120,24 +120,25 @@ namespace lue::data_model {
 
 
     auto contains_raster(
-        Dataset const& dataset,
-        std::string const& phenomenon_name,
-        std::string const& property_set_name) -> bool
+        Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+        -> bool
     {
         bool result{false};
 
         if (!dataset.phenomena().contains(phenomenon_name))
         {
-            throw std::runtime_error(std::format(
-                "Dataset {} does not contain phenomenon {}", dataset.pathname(), phenomenon_name));
+            throw std::runtime_error(
+                std::format(
+                    "Dataset {} does not contain phenomenon {}", dataset.pathname(), phenomenon_name));
         }
 
         auto const& phenomenon{dataset.phenomena()[phenomenon_name]};
 
         if (!phenomenon.property_sets().contains(property_set_name))
         {
-            throw std::runtime_error(std::format(
-                "Phenomenon {} does not contain property-set {}", phenomenon_name, property_set_name));
+            throw std::runtime_error(
+                std::format(
+                    "Phenomenon {} does not contain property-set {}", phenomenon_name, property_set_name));
         }
 
         if (phenomenon.object_id().nr_objects() == 1)
@@ -271,8 +272,8 @@ namespace lue::data_model {
 
         template<typename DatasetPtr>
         auto RasterView<DatasetPtr>::add_layer(
-            std::string const& name, hdf5::Datatype const& datatype, void const* no_data_value) ->
-            typename RasterView<DatasetPtr>::Layer
+            std::string const& name, hdf5::Datatype const& datatype, void const* no_data_value)
+            -> RasterView<DatasetPtr>::Layer
         {
             if (this->contains(name))
             {
@@ -311,7 +312,7 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        auto RasterView<DatasetPtr>::layer(std::string const& name) -> typename RasterView<DatasetPtr>::Layer
+        auto RasterView<DatasetPtr>::layer(std::string const& name) -> RasterView<DatasetPtr>::Layer
         {
             if (!this->contains(name))
             {
@@ -339,9 +340,8 @@ namespace lue::data_model {
 
 
         auto contains_raster(
-            Dataset const& dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> bool
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool
         {
             bool result{false};
 
@@ -525,7 +525,7 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        auto RasterView<DatasetPtr>::time_box() const -> typename RasterView<DatasetPtr>::TimeBox const&
+        auto RasterView<DatasetPtr>::time_box() const -> RasterView<DatasetPtr>::TimeBox const&
         {
             return _time_box;
         }
@@ -540,9 +540,8 @@ namespace lue::data_model {
 
         template<typename DatasetPtr>
         auto RasterView<DatasetPtr>::add_layer(
-            std::string const& name,
-            hdf5::Datatype const& datatype,
-            std::optional<hdf5::Shape> chunk_shape) -> typename RasterView<DatasetPtr>::Layer
+            std::string const& name, hdf5::Datatype const& datatype, std::optional<hdf5::Shape> chunk_shape)
+            -> RasterView<DatasetPtr>::Layer
         {
             if (this->contains(name))
             {
@@ -615,7 +614,7 @@ namespace lue::data_model {
 
 
         template<typename DatasetPtr>
-        auto RasterView<DatasetPtr>::layer(std::string const& name) -> typename RasterView<DatasetPtr>::Layer
+        auto RasterView<DatasetPtr>::layer(std::string const& name) -> RasterView<DatasetPtr>::Layer
         {
             if (!this->contains(name))
             {
@@ -643,9 +642,8 @@ namespace lue::data_model {
 
 
         auto contains_raster(
-            Dataset const& dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> bool
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool
         {
             bool result{false};
 

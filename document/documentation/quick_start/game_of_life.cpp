@@ -19,8 +19,8 @@
 #include <utility>
 
 
-using Count = lue::Count;
-using Rank = lue::Rank;
+using lue::Count;
+using lue::Rank;
 Rank const rank{2};
 using Shape = lue::Shape<Count, rank>;
 
@@ -178,18 +178,20 @@ auto parse_shape(std::string const& shape_as_string) -> Shape
     }
     catch (std::exception const& exception)
     {
-        handle_error(std::format(
-            "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
-            rank,
-            shape_as_string));
+        handle_error(
+            std::format(
+                "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
+                rank,
+                shape_as_string));
     }
 
     if (std::size(extents) != rank)
     {
-        handle_error(std::format(
-            "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
-            rank,
-            shape_as_string));
+        handle_error(
+            std::format(
+                "A shape must be formatted as a list of {} sizes, separated by a comma (got: {})",
+                rank,
+                shape_as_string));
     }
 
     return {extents[0], extents[1]};

@@ -34,10 +34,11 @@ namespace lue {
             // If no-data in the LUE array, write no-data to the HDF5 dataset
 
             // Synchronously write all partitions, from the same OS thread
-            lue_hpx_assert(std::all_of(
-                partitions.begin(),
-                partitions.end(),
-                [](auto const& partition) -> auto { return partition.is_ready(); }));
+            lue_hpx_assert(
+                std::all_of(
+                    partitions.begin(),
+                    partitions.end(),
+                    [](auto const& partition) -> auto { return partition.is_ready(); }));
 
             // Open value. Configure for use of parallel I/O if relevant.
             hdf5::Dataset::TransferPropertyList transfer_property_list{};
@@ -119,8 +120,7 @@ namespace lue {
                         // constant: data_model::Array: hdf5::Dataset
                         auto array{value[object_id]};
 
-                        auto create_hyperslab =
-                            [array_hyperslab_start](Partition const& partition) -> auto
+                        auto create_hyperslab = [array_hyperslab_start](Partition const& partition) -> auto
                         { return hyperslab(array_hyperslab_start, partition); };
 
                         // Synchronous
@@ -207,8 +207,8 @@ namespace lue {
                         // hdf5::Dataset
                         auto array{value[object_id]};
 
-                        auto create_hyperslab = [array_hyperslab_start, time_step_idx](
-                                                    Partition const& partition) -> auto
+                        auto create_hyperslab = [array_hyperslab_start,
+                                                 time_step_idx](Partition const& partition) -> auto
                         { return hyperslab(array_hyperslab_start, partition, 0, time_step_idx); };
 
                         // Synchronous

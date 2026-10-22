@@ -83,10 +83,8 @@ namespace lue::data_model::different_shape::constant_shape {
 
 
     LUE_DATA_MODEL_EXPORT auto create_value(
-        hdf5::Group& parent,
-        std::string const& name,
-        hdf5::Datatype const& memory_datatype,
-        Rank rank) -> Value;
+        hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype, Rank rank)
+        -> Value;
 
     LUE_DATA_MODEL_EXPORT auto create_value(
         hdf5::Group& parent,

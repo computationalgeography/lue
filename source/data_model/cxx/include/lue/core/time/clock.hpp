@@ -38,7 +38,7 @@ namespace lue::data_model::time {
             auto tick_period() const -> TickPeriod const&;
 
             template<template<typename> class TimePoint>
-            auto nr_units(TimePoint<Clock> const& time_point) -> typename TickPeriod::Count;
+            auto nr_units(TimePoint<Clock> const& time_point) -> TickPeriod::Count;
 
         private:
 
@@ -80,7 +80,7 @@ namespace lue::data_model::time {
     */
     template<typename TickPeriod>
     template<template<typename> class TimePoint>
-    inline auto Clock<TickPeriod>::nr_units(TimePoint<Clock> const& time_point) -> typename TickPeriod::Count
+    inline auto Clock<TickPeriod>::nr_units(TimePoint<Clock> const& time_point) -> TickPeriod::Count
     {
         return time_point.nr_ticks() * _tick_period.nr_units();
     }

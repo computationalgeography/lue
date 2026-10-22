@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local logical_not
-#include "lue/framework/api/cxx/local/logical_not.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/logical_not.hpp"
 #include "lue/framework.hpp"
 
 
@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(logical_not_array)
     }
 
     {
-        lue::api::Field result = !(array);
+        lue::api::Field result = !array;
 
         BOOST_CHECK(std::holds_alternative<Array>(result.variant()));
     }

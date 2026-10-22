@@ -24,13 +24,13 @@ namespace lue::server {
 
             using Data = ArrayPartitionData<Element, rank>;
 
-            using Shape =  Data::Shape;
+            using Shape = Data::Shape;
 
             using Offset = lue::Offset<Index, rank>;
 
-            using Slice =  Data::Slice;
+            using Slice = Data::Slice;
 
-            using Slices =  Data::Slices;
+            using Slices = Data::Slices;
 
             ArrayPartition(Offset const& offset, Shape const& shape);
 
@@ -50,17 +50,17 @@ namespace lue::server {
 
             auto operator=(ArrayPartition&&) -> ArrayPartition& = delete;
 
-            auto offset() const -> typename ArrayPartition<Element, rank>::Offset;
+            auto offset() const -> ArrayPartition<Element, rank>::Offset;
 
-            auto data() const -> typename ArrayPartition<Element, rank>::Data;
+            auto data() const -> ArrayPartition<Element, rank>::Data;
 
-            auto slice(Slices const& slices) const -> typename ArrayPartition<Element, rank>::Data;
+            auto slice(Slices const& slices) const -> ArrayPartition<Element, rank>::Data;
 
             void fill(Element value);
 
             void set_data(Data const& data);
 
-            auto shape() const -> typename ArrayPartition<Element, rank>::Shape;
+            auto shape() const -> ArrayPartition<Element, rank>::Shape;
 
             auto nr_elements() const -> Count;
 

@@ -22,6 +22,6 @@ namespace lue {
 
 
     template<typename T>
-    using ArgumentType = typename detail::ArgumentType<T>::Argument;
+    using ArgumentType = detail::ArgumentType<T>::Argument;
 
 }  // namespace lue

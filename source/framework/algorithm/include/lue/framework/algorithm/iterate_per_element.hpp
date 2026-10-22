@@ -24,7 +24,7 @@ namespace lue {
                 {
                     // The use of volatile prevends the optimizing compiler
                     // to remove this iteration
-                    volatile InputElement nr_iterations{std::max<InputElement>(input_element, 0)};
+                    InputElement volatile nr_iterations{std::max<InputElement>(input_element, 0)};
 
                     while (nr_iterations > InputElement{0})
                     {

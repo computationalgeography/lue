@@ -55,12 +55,9 @@ namespace lue::api {
             // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#operator-overloading
 
             .def_property_readonly(
-                "data_model",
-                [](Field const& self) -> DataModel { return data_model(self); })
+                "data_model", [](Field const& self) -> DataModel { return data_model(self); })
 
-            .def_property_readonly(
-                "dtype",
-                [](Field const& self) -> pybind11::dtype { return dtype(self); })
+            .def_property_readonly("dtype", [](Field const& self) -> pybind11::dtype { return dtype(self); })
 
             ;
     }

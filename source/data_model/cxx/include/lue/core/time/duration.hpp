@@ -66,7 +66,7 @@ namespace lue::data_model::time {
 
 
     template<typename TickPeriod>
-    inline auto Duration<TickPeriod>::nr_ticks() const -> typename Duration<TickPeriod>::Count
+    inline auto Duration<TickPeriod>::nr_ticks() const -> Duration<TickPeriod>::Count
     {
         return _nr_ticks;
     }

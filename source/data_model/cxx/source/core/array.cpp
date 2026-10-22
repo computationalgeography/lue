@@ -69,23 +69,6 @@ namespace lue::data_model {
     }
 
 
-    void Array::read(
-        hdf5::Datatype const& memory_datatype, hdf5::Hyperslab const& hyperslab, void* buffer) const
-    {
-        hdf5::Dataset::read(memory_datatype, hyperslab, buffer);
-    }
-
-
-    void Array::read(
-        hdf5::Datatype const& memory_datatype,
-        hdf5::Hyperslab const& hyperslab,
-        TransferPropertyList const& transfer_property_list,
-        void* buffer) const
-    {
-        hdf5::Dataset::read(memory_datatype, hyperslab, transfer_property_list, buffer);
-    }
-
-
     void Array::read(hdf5::Dataspace const& memory_dataspace, void* buffer) const
     {
         hdf5::Dataset::read(_memory_datatype, memory_dataspace, buffer);

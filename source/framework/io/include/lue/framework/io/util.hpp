@@ -161,28 +161,30 @@ namespace lue::detail {
         @exception  .
     */
     template<typename Partition>
-    auto hyperslab(hdf5::Offset const& array_hyperslab_start, Partition const& partition)
-        -> hdf5::Hyperslab
+    auto hyperslab(hdf5::Offset const& array_hyperslab_start, Partition const& partition) -> hdf5::Hyperslab
     {
         lue_hpx_assert(partition.is_ready());
 
         // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
-        return hyperslab(array_hyperslab_start, partition.offset(hpx::launch::sync), partition.shape(hpx::launch::sync));
+        return hyperslab(
+            array_hyperslab_start, partition.offset(hpx::launch::sync), partition.shape(hpx::launch::sync));
     }
 
 
     template<typename Partition>
-    auto hyperslab(
-        Partition const& partition, Index const location_in_time_idx, Index const time_step_idx)
+    auto hyperslab(Partition const& partition, Index const location_in_time_idx, Index const time_step_idx)
         -> hdf5::Hyperslab
     {
         // Return the part of the array represented by the partition
         // instance passed in, as an HDF5 hyperslab. The result is useful
         // for performing I/O to the corresponding HDF5 dataset.
         return hyperslab(
-            partition.offset(hpx::launch::sync), partition.shape(hpx::launch::sync), location_in_time_idx, time_step_idx);
+            partition.offset(hpx::launch::sync),
+            partition.shape(hpx::launch::sync),
+            location_in_time_idx,
+            time_step_idx);
     }
 
 

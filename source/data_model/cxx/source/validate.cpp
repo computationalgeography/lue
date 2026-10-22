@@ -129,7 +129,7 @@ namespace lue::data_model {
     auto assert_strictly_increasing(
         hdf5::Identifier const& id, Collection const& collection, hdf5::Issues& issues) -> bool
     {
-        using Value = typename Collection::value_type;
+        using Value = Collection::value_type;
 
         // Find two adjacent values where the first value is larger or equal to
         // the second. In that case the collection is not strictly increasing.
@@ -160,7 +160,7 @@ namespace lue::data_model {
     auto assert_increasing(hdf5::Identifier const& id, Collection const& collection, hdf5::Issues& issues)
         -> bool
     {
-        using Value = typename Collection::value_type;
+        using Value = Collection::value_type;
 
         // Find two adjacent values where the first value is larger to
         // the second. In that case the collection is not increasing.
@@ -897,7 +897,7 @@ namespace lue::data_model {
     static void validate(ObjectID const& object_id, StationarySpaceBox const& space_box, hdf5::Issues& issues)
     {
         // A stationary space box is a same_shape::Value
-        using Value = same_shape::Value;
+        using same_shape::Value;
 
         validate_value(object_id, dynamic_cast<Value const&>(space_box), issues);
     }
@@ -907,7 +907,7 @@ namespace lue::data_model {
         ObjectID const& object_id, StationarySpacePoint const& space_point, hdf5::Issues& issues)
     {
         // A stationary space point is a same_shape::Value
-        using Value = same_shape::Value;
+        using same_shape::Value;
 
         validate_value(object_id, dynamic_cast<Value const&>(space_point), issues);
     }
@@ -917,7 +917,7 @@ namespace lue::data_model {
         ObjectTracker const& object_tracker, MobileSpaceBox const& space_box, hdf5::Issues& issues)
     {
         // A mobile space box is a same_shape::constant_shape::Value
-        using Value = same_shape::constant_shape::Value;
+        using same_shape::constant_shape::Value;
 
         validate_value(object_tracker, dynamic_cast<Value const&>(space_box), issues);
     }
@@ -927,7 +927,7 @@ namespace lue::data_model {
         ObjectTracker const& object_tracker, MobileSpacePoint const& space_point, hdf5::Issues& issues)
     {
         // A mobile space point is a same_shape::constant_shape::Value
-        using Value = same_shape::constant_shape::Value;
+        using same_shape::constant_shape::Value;
 
         validate_value(object_tracker, dynamic_cast<Value const&>(space_point), issues);
     }
@@ -1636,13 +1636,13 @@ namespace lue::data_model {
                 std::vector<bool> check_ids;
 
                 {
-                    using Properties = same_shape::Properties;
+                    using same_shape::Properties;
                     auto const& collection = properties.collection<Properties>();
                     check_ids.push_back(!collection.empty());
                 }
 
                 {
-                    using Properties = different_shape::Properties;
+                    using different_shape::Properties;
                     auto const& collection = properties.collection<Properties>();
                     check_ids.push_back(!collection.empty());
                 }
@@ -1674,19 +1674,19 @@ namespace lue::data_model {
                 bool check_active_object_indices = false;
 
                 {
-                    using Properties = same_shape::constant_shape::Properties;
+                    using same_shape::constant_shape::Properties;
                     auto const& collection = properties.collection<Properties>();
                     check_active_sets.push_back(!collection.empty());
                 }
 
                 {
-                    using Properties = same_shape::variable_shape::Properties;
+                    using same_shape::variable_shape::Properties;
                     auto const& collection = properties.collection<Properties>();
                     check_active_sets.push_back(!collection.empty());
                 }
 
                 {
-                    using Properties = different_shape::constant_shape::Properties;
+                    using different_shape::constant_shape::Properties;
                     auto const& collection = properties.collection<Properties>();
                     check_active_sets.push_back(!collection.empty());
                     check_active_object_indices = !collection.empty();

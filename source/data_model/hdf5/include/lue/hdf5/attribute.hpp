@@ -125,7 +125,7 @@ namespace lue::hdf5 {
 
             Attribute(Attribute&& other) = default;
 
-            Attribute(Identifier&& id);
+            explicit Attribute(Identifier&& id);
 
             ~Attribute() = default;
 

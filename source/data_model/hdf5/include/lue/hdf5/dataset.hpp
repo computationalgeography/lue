@@ -39,7 +39,7 @@ namespace lue::hdf5 {
                     template<typename Element>
                     void set_fill_value(Element const value)
                     {
-                        auto const datatype = []() -> auto
+                        auto const datatype = [] -> auto
                         {
                             if constexpr (std::is_same_v<Element, bool>)
                             {
@@ -59,7 +59,7 @@ namespace lue::hdf5 {
                     template<typename Element>
                     auto get_fill_value() const -> Element
                     {
-                        auto const datatype = []() -> auto
+                        auto const datatype = [] -> auto
                         {
                             if constexpr (std::is_same_v<Element, bool>)
                             {

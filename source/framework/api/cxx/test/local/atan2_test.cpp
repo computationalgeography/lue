@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local atan2
-#include "lue/framework/api/cxx/local/atan2.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/atan2.hpp"
 #include "lue/framework.hpp"
 
 

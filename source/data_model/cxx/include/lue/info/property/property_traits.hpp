@@ -10,6 +10,6 @@ namespace lue::data_model {
 
 
     template<typename Property>
-    using ValueT = typename PropertyTraits<Property>::Value;
+    using ValueT = PropertyTraits<Property>::Value;
 
 }  // namespace lue::data_model

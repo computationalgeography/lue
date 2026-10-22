@@ -1,7 +1,7 @@
 #include "lue/framework/api/cxx/local/modulus.hpp"
-#include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
-#include "lue/framework/api/cxx/detail/overload.hpp"
 #include "lue/framework/algorithm/value_policies/modulus.hpp"
+#include "lue/framework/api/cxx/detail/overload.hpp"
+#include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
 
 
 namespace lue {

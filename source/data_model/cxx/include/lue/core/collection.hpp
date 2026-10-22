@@ -24,9 +24,9 @@ namespace lue::data_model {
 
             using Element = T;
 
-            using iterator = typename std::map<std::string, T>::iterator;
+            using iterator = std::map<std::string, T>::iterator;
 
-            using const_iterator = typename std::map<std::string, T>::const_iterator;
+            using const_iterator = std::map<std::string, T>::const_iterator;
 
             template<typename... Argument>
             Collection(hdf5::Group const& parent, std::string const& name, Argument const&... argument);
@@ -223,28 +223,28 @@ namespace lue::data_model {
 
 
     template<typename T>
-    inline auto Collection<T>::begin() -> typename Collection<T>::iterator
+    inline auto Collection<T>::begin() -> Collection<T>::iterator
     {
         return _items.begin();
     }
 
 
     template<typename T>
-    inline auto Collection<T>::begin() const -> typename Collection<T>::const_iterator
+    inline auto Collection<T>::begin() const -> Collection<T>::const_iterator
     {
         return _items.begin();
     }
 
 
     template<typename T>
-    inline auto Collection<T>::end() -> typename Collection<T>::iterator
+    inline auto Collection<T>::end() -> Collection<T>::iterator
     {
         return _items.end();
     }
 
 
     template<typename T>
-    inline auto Collection<T>::end() const -> typename Collection<T>::const_iterator
+    inline auto Collection<T>::end() const -> Collection<T>::const_iterator
     {
         return _items.end();
     }

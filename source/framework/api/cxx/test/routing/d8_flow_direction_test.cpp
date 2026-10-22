@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_CASE(d8_flow_direction)
 {
-    using FlowDirectionElement = lue::FlowDirectionElement;
+    using lue::FlowDirectionElement;
     using ElevationElement = lue::FloatingPointElement<0>;
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
     using ElevationArray = lue::PartitionedArray<ElevationElement, 2>;

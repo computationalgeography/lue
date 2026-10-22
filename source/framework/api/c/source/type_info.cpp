@@ -1,8 +1,8 @@
+#include "type_info.hpp"
 #include "array.hpp"
 #include "field.hpp"
 #include "literal.hpp"
 #include "scalar.hpp"
-#include "type_info.hpp"
 
 
 auto lue_data_model(LUE_Field const* field) -> LUE_DataModel

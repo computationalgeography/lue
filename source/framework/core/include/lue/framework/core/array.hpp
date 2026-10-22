@@ -474,7 +474,7 @@ namespace lue {
 
                 constexpr static Rank rank = r;
 
-                using Shape = typename lue::Array<E, r>::Shape;
+                using Shape = lue::Array<E, r>::Shape;
         };
 
     }  // namespace detail

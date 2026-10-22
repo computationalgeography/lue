@@ -28,9 +28,9 @@ namespace lue {
         auto convolve(Field const& field, Kernel const& kernel) -> Field
         {
             return std::visit(
-                overload{[](auto const& field, auto const& kernel) -> Field {
-                    return value_policies::convolve(field, kernel);
-                }},
+                overload{
+                    [](auto const& field, auto const& kernel) -> Field
+                    { return value_policies::convolve(field, kernel); }},
                 field.variant(),
                 kernel.variant());
         }
