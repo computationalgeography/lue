@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm accu_kinematic_wave
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/definition/kinematic_wave.hpp"  // iterate_to_new_discharge
+#include "lue/framework/algorithm/detail/kinematic_wave.hpp"  // iterate_to_new_discharge
 #include "lue/framework/algorithm/value_policies/all.hpp"
 #include "lue/framework/algorithm/value_policies/greater_than.hpp"
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
