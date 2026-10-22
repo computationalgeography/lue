@@ -609,15 +609,21 @@ namespace lue {
     }  // namespace detail
 
 
-    template<typename CountElement, typename Policies, typename FlowDirectionElement, Rank rank>
+    template<typename Policies>
     auto inflow_count(
-        Policies const& policies, PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
-        -> PartitionedArray<CountElement, rank>
+        Policies const& policies,
+        PartitionedArray<policy::InputElementT<Policies, 0>, 2> const& flow_direction)
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>
     {
         // If this is the first time we are called, for this specific distribution of partitions, then create
         // a new set of channels to use. Otherwise, reuse the existing ones.
 
+        using CountElement = policy::OutputElementT<Policies, 0>;
+        using FlowDirectionElement = policy::InputElementT<Policies, 0>;
+
+        Rank const rank{2};
         using InflowCountArray = PartitionedArray<CountElement, rank>;
+
         Localities<rank> const& localities{flow_direction.localities()};
         LocalitiesPtr<rank> localities_ptr{flow_direction.localities_ptr()};
 
@@ -748,8 +754,8 @@ namespace lue {
 }  // namespace lue
 
 
-#define LUE_INSTANTIATE_INFLOW_COUNT(Policies, CountElement, FlowDirectionElement)                           \
+#define LUE_INSTANTIATE_INFLOW_COUNT(Policies)                                                               \
                                                                                                              \
-    template LUE_ROUTING_OPERATION_EXPORT PartitionedArray<CountElement, 2>                                  \
-    inflow_count<CountElement, ArgumentType<void(Policies)>, FlowDirectionElement, 2>(                       \
-        ArgumentType<void(Policies)> const&, PartitionedArray<FlowDirectionElement, 2> const&);
+    template LUE_ROUTING_OPERATION_EXPORT auto inflow_count<ArgumentType<void(Policies)>>(                   \
+        ArgumentType<void(Policies)> const&, PartitionedArray<policy::InputElementT<Policies, 0>, 2> const&) \
+        -> PartitionedArray<policy::OutputElementT<Policies, 0>, 2>;

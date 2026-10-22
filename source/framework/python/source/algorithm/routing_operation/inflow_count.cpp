@@ -1,4 +1,4 @@
-#include "lue/framework/algorithm/inflow_count.hpp"
+#include "lue/framework/algorithm/value_policies/inflow_count.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 
@@ -19,12 +19,7 @@ namespace lue::framework {
                     module.def(
                         "inflow_count",
                         [](PartitionedArray<FlowDirectionElement, rank> const& flow_direction)
-                        {
-                            using Policies = policy::inflow_count::
-                                DefaultValuePolicies<CountElement, FlowDirectionElement>;
-
-                            return inflow_count<CountElement>(Policies{}, flow_direction);
-                        });
+                        { return value_policies::inflow_count<CountElement>(flow_direction); });
                 }
         };
 

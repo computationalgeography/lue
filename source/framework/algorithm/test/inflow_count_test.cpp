@@ -1,15 +1,17 @@
 #define BOOST_TEST_MODULE lue framework algorithm inflow_count
 #include "flow_accumulation.hpp"
-#include "lue/framework/algorithm/definition/inflow_count.hpp"
 #include "lue/framework/algorithm/policy.hpp"
+#include "lue/framework/algorithm/value_policies/inflow_count.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
-
 namespace {
 
-    using FlowDirectionElement = lue::FlowDirectionElement;
-    using CountElement = std::uint8_t;  // TODO: This should be configurable (SMALL_COUNT, ...)
+    using lue::FlowDirectionElement;
+
+    // TODO: This small count should be named differently (LUE_SMALL_COUNT, ...)
+    using CountElement = lue::BooleanElement;
+
     std::size_t const rank = 2;
 
     using FlowDirection = lue::PartitionedArray<FlowDirectionElement, rank>;
@@ -31,30 +33,15 @@ namespace {
     auto const nd{lue::policy::no_data_value<FlowDirectionElement>};
 
 
-    template<typename Policies, typename FlowDirectionArray, typename InflowCountArray>
-    void test_inflow_count(
-        Policies const& policies,
-        FlowDirectionArray const& flow_direction,
-        InflowCountArray const& inflow_count_we_want)
-    {
-        using CountElement = lue::ElementT<InflowCountArray>;
-
-        InflowCount inflow_count_we_got = lue::inflow_count<CountElement>(policies, flow_direction);
-
-        lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
-    }
-
-
     template<typename FlowDirectionArray, typename InflowCountArray>
     void test_inflow_count(
         FlowDirectionArray const& flow_direction, InflowCountArray const& inflow_count_we_want)
     {
         using CountElement = lue::ElementT<InflowCountArray>;
-        using FlowDirectionElement = lue::ElementT<FlowDirectionArray>;
 
-        using Policies = lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+        InflowCount inflow_count_we_got = lue::value_policies::inflow_count<CountElement>(flow_direction);
 
-        test_inflow_count(Policies{}, flow_direction, inflow_count_we_want);
+        lue::test::check_arrays_are_equal(inflow_count_we_got, inflow_count_we_want);
     }
 
 }  // Anonymous namespace
@@ -1271,10 +1258,7 @@ BOOST_AUTO_TEST_CASE(all_no_data)
         }  // clang-format on
     );
 
-    test_inflow_count(
-        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-        flow_direction,
-        inflow_count_we_want);
+    test_inflow_count(flow_direction, inflow_count_we_want);
 }
 
 
@@ -1318,10 +1302,7 @@ BOOST_AUTO_TEST_CASE(no_data)
         }  // clang-format on
     );
 
-    test_inflow_count(
-        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-        flow_direction,
-        inflow_count_we_want);
+    test_inflow_count(flow_direction, inflow_count_we_want);
 }
 
 
@@ -1445,10 +1426,7 @@ BOOST_AUTO_TEST_CASE(merging_inter_partition_streams)
         }  // clang-format on
     );
 
-    test_inflow_count(
-        lue::policy::inflow_count::DefaultValuePolicies<CountElement, FlowDirectionElement>{},
-        flow_direction,
-        inflow_count_we_want);
+    test_inflow_count(flow_direction, inflow_count_we_want);
 }
 
 

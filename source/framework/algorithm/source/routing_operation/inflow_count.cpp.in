@@ -1,4 +1,6 @@
+#include "lue/framework/algorithm/default_policies/inflow_count.hpp"
 #include "lue/framework/algorithm/definition/inflow_count.hpp"
+#include "lue/framework/algorithm/value_policies/inflow_count.hpp"
 
 
 using lue_CellsIdxs = std::vector<lue::Index>;
@@ -11,8 +13,6 @@ HPX_REGISTER_CHANNEL_DECLARATION(lue_CellsIdxs)
 namespace lue {
 
     LUE_INSTANTIATE_INFLOW_COUNT(
-        ESC(policy::inflow_count::{{Policies}} < {{Element}}, {{FlowDirectionElement}} >),
-        {{Element}},
-        {{FlowDirectionElement}});
+        ESC(policy::inflow_count::{{ Policies }} < {{ Element }}, {{ FlowDirectionElement }} >));
 
 }  // namespace lue
