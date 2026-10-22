@@ -826,8 +826,10 @@ namespace lue {
                         AnnotateFunction const annotation{
                             "accumulating_router: partition: intra_partition_stream"};
 
-                        FlowDirectionData const flow_direction_data = flow_direction_partition.data(hpx::launch::sync);
-                        InflowCountData const inflow_count_data = inflow_count_partition.data(hpx::launch::sync);
+                        FlowDirectionData const flow_direction_data =
+                            flow_direction_partition.data(hpx::launch::sync);
+                        InflowCountData const inflow_count_data =
+                            inflow_count_partition.data(hpx::launch::sync);
 
                         auto const& partition_shape{inflow_count_data.shape()};
                         auto const [nr_elements0, nr_elements1] = partition_shape;
@@ -952,7 +954,8 @@ namespace lue {
                     // - accumulate material
                     // - release the lock
 
-                    FlowDirectionData const flow_direction_data = flow_direction_partition.data(hpx::launch::sync);
+                    FlowDirectionData const flow_direction_data =
+                        flow_direction_partition.data(hpx::launch::sync);
                     InflowCountData inflow_count_data{inflow_count_data_f.get()};
 
                     auto result_data = std::apply(
@@ -1305,7 +1308,8 @@ namespace lue {
                                 // hpx::tuple<hpx::future<lue::ArrayPartitionData<unsigned char, 2> > >
                                 auto results_partition_data_fs = results_partition_data_fs_f.get();
 
-                                auto const partition_offset = flow_direction_partition.offset(hpx::launch::sync);
+                                auto const partition_offset =
+                                    flow_direction_partition.offset(hpx::launch::sync);
 
                                 // std::apply icw hpx::tuple doesn't work
                                 return std::apply(

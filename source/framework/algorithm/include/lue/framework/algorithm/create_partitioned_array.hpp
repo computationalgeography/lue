@@ -643,7 +643,7 @@ namespace lue {
             {
                 return hpx::async(
 
-                    [locality_id, offset, partition_shape]()
+                    [locality_id, offset, partition_shape]
                     { return Partition{locality_id, offset, partition_shape}; }
 
                 );
@@ -794,7 +794,7 @@ namespace lue {
                      partition_shape,
                      buffer_handle = _buffer_handle,  // Copy, increases reference count
                      grab_buffer = _grab_buffer,
-                     no_data_value = _no_data_value]() -> Partition
+                     no_data_value = _no_data_value] -> Partition
                     {
                         // Create a partition instance and copy the relevant cells from the input buffer to
                         // the partition instance

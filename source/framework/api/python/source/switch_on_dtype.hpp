@@ -11,7 +11,7 @@ namespace lue::api {
         auto const size = dtype.itemsize();  // bytes
         std::optional<Result> result{};
 
-        // NOLINTBEGIN(bugprone-switch-missing-default-case)
+        // NOLINTBEGIN(bugprone-unhandled-code-paths, bugprone-switch-missing-default-case)
         switch (kind)
         {
             case 'i':
@@ -102,7 +102,7 @@ namespace lue::api {
                 break;
             }
         }
-        // NOLINTEND(bugprone-switch-missing-default-case)
+        // NOLINTEND(bugprone-unhandled-code-paths, bugprone-switch-missing-default-case)
 
         if (!result)
         {

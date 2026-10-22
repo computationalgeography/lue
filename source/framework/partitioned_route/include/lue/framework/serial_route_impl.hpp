@@ -121,18 +121,14 @@ namespace lue {
         // The array is either empty, or all partitions are valid (don't need to be ready)
         lue_hpx_assert(
             (std::all_of(
-                    _array_shape.begin(),
-                    _array_shape.end(),
-                    [](auto const extent) { return extent == 0; }) &&
-                nr_elements(_partitions.shape()) == 0) ||
+                 _array_shape.begin(), _array_shape.end(), [](auto const extent) { return extent == 0; }) &&
+             nr_elements(_partitions.shape()) == 0) ||
             (std::all_of(
-                    _array_shape.begin(),
-                    _array_shape.end(),
-                    [](auto const extent) { return extent > 0; }) &&
-                std::all_of(
-                    _partitions.begin(),
-                    _partitions.end(),
-                    [](auto const partition) { return partition.valid(); })));
+                 _array_shape.begin(), _array_shape.end(), [](auto const extent) { return extent > 0; }) &&
+             std::all_of(
+                 _partitions.begin(),
+                 _partitions.end(),
+                 [](auto const partition) { return partition.valid(); })));
     }
 
 }  // namespace lue

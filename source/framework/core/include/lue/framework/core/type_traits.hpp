@@ -66,11 +66,11 @@ namespace lue {
         element type.
     */
     template<typename Array>
-    using ElementT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Element;
+    using ElementT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Element;
 
 
     template<typename Array>
-    using ElementsT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Elements;
+    using ElementsT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Elements;
 
 
     namespace detail {
@@ -100,7 +100,7 @@ namespace lue {
 
 
     template<typename Array>
-    using OffsetT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Offset;
+    using OffsetT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Offset;
 
 
     /*!
@@ -111,15 +111,15 @@ namespace lue {
         shape type.
     */
     template<typename Array>
-    using ShapeT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Shape;
+    using ShapeT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Shape;
 
 
     template<typename Array>
-    using SlicesT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Slices;
+    using SlicesT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Slices;
 
 
     template<typename Array>
-    using SliceT = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::Slice;
+    using SliceT = detail::ArrayTraits<std::remove_cvref_t<Array>>::Slice;
 
 
     /*!
@@ -134,8 +134,8 @@ namespace lue {
         type alias for the container type.
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using DataT = typename detail::ArrayTraits<
-        std::remove_cvref_t<Array>>::template Data<std::remove_cvref_t<Element>, rank>;
+    using DataT =
+        detail::ArrayTraits<std::remove_cvref_t<Array>>::template Data<std::remove_cvref_t<Element>, rank>;
 
 
     /*!
@@ -149,12 +149,12 @@ namespace lue {
         alias for the partition type.
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using PartitionT = typename detail::ArrayTraits<
+    using PartitionT = detail::ArrayTraits<
         std::remove_cvref_t<Array>>::template Partition<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, Rank rank = rank<Array>>
-    using PartitionT2 = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partition<rank>;
+    using PartitionT2 = detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partition<rank>;
 
 
     /*!
@@ -168,21 +168,21 @@ namespace lue {
         type alias for the partition collection.
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using PartitionsT = typename detail::ArrayTraits<
+    using PartitionsT = detail::ArrayTraits<
         std::remove_cvref_t<Array>>::template Partitions<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, Rank rank = rank<Array>>
-    using PartitionsT2 = typename detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partitions<rank>;
+    using PartitionsT2 = detail::ArrayTraits<std::remove_cvref_t<Array>>::template Partitions<rank>;
 
 
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using ComponentT = typename detail::ArrayTraits<
+    using ComponentT = detail::ArrayTraits<
         std::remove_cvref_t<Array>>::template Component<std::remove_cvref_t<Element>, rank>;
 
 
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using ComponentsT = typename detail::ArrayTraits<
+    using ComponentsT = detail::ArrayTraits<
         std::remove_cvref_t<Array>>::template Components<std::remove_cvref_t<Element>, rank>;
 
 
@@ -197,7 +197,7 @@ namespace lue {
         type alias for the partitioned array.
     */
     template<typename Array, typename Element = ElementT<Array>, Rank rank = rank<Array>>
-    using PartitionedArrayT = typename detail::ArrayTraits<
+    using PartitionedArrayT = detail::ArrayTraits<
         std::remove_cvref_t<Array>>::template PartitionedArray<std::remove_cvref_t<Element>, rank>;
 
 

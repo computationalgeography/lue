@@ -612,6 +612,7 @@ if(LUE_CXXOPTS_REQUIRED)
         NAME cxxopts
         GIT_REPOSITORY "https://github.com/jarro2783/cxxopts.git"
         GIT_TAG "v3.2.0"
+        SYSTEM TRUE
     )
 endif()
 

@@ -33,7 +33,7 @@ namespace lue::data_model::detail {
         public:
 
             using Map = boost::bimap<T, std::string>;
-            using value_type = typename Map::value_type;
+            using value_type = Map::value_type;
 
             EnumStringBimap() = default;
 

@@ -149,9 +149,8 @@ namespace {
 
     template<typename Element>
     auto layout_constant_rasters(
-        std::string const& property_set_pathname,
-        Shape const& array_shape,
-        lue::Count const nr_rasters) -> std::tuple<ObjectID, std::vector<std::string>>
+        std::string const& property_set_pathname, Shape const& array_shape, lue::Count const nr_rasters)
+        -> std::tuple<ObjectID, std::vector<std::string>>
     {
         auto const [dataset_pathname, phenomenon_name, property_set_name, _] =
             lue::parse_array_pathname(std::format("{}/{}", property_set_pathname, "whatever"));

@@ -25,9 +25,9 @@ namespace lue {
         auto cell_index(Field const& condition, Index const dimension_idx) -> Field
         {
             return std::visit(
-                overload{[dimension_idx](auto const& condition) -> Field {
-                    return value_policies::cell_index<IndexElement>(condition, dimension_idx);
-                }},
+                overload{
+                    [dimension_idx](auto const& condition) -> Field
+                    { return value_policies::cell_index<IndexElement>(condition, dimension_idx); }},
                 condition.variant());
         }
 

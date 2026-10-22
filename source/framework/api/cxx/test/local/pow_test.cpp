@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local pow
-#include "lue/framework/api/cxx/local/pow.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/pow.hpp"
 #include "lue/framework.hpp"
 
 

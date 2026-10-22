@@ -42,9 +42,9 @@ namespace lue {
 
             using Slices = std::array<Slice, rank>;
 
-            using Iterator = typename Elements::Iterator;
+            using Iterator = Elements::Iterator;
 
-            using ConstIterator = typename Elements::ConstIterator;
+            using ConstIterator = Elements::ConstIterator;
 
             ArrayPartitionData();
 
@@ -77,8 +77,7 @@ namespace lue {
 
             void reshape(Shape const& shape);
 
-            void erase(
-                Rank const dimension_idx, Index const hyperslab_begin_idx, Index const hyperslab_end_idx);
+            void erase(Rank dimension_idx, Index hyperslab_begin_idx, Index hyperslab_end_idx);
 
             ConstIterator begin() const;
 
@@ -325,14 +324,14 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Shape const& ArrayPartitionData<Element, rank>::shape() const
+    ArrayPartitionData<Element, rank>::Shape const& ArrayPartitionData<Element, rank>::shape() const
     {
         return _shape;
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Count ArrayPartitionData<Element, rank>::nr_elements() const
+    ArrayPartitionData<Element, rank>::Count ArrayPartitionData<Element, rank>::nr_elements() const
     {
         return lue::nr_elements(_shape);
     }
@@ -387,43 +386,42 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Elements const& ArrayPartitionData<Element, rank>::elements()
-        const
+    ArrayPartitionData<Element, rank>::Elements const& ArrayPartitionData<Element, rank>::elements() const
     {
         return _elements;
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Elements& ArrayPartitionData<Element, rank>::elements()
+    ArrayPartitionData<Element, rank>::Elements& ArrayPartitionData<Element, rank>::elements()
     {
         return _elements;
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::begin() const
+    ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::begin() const
     {
         return elements().begin();
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::begin()
+    ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::begin()
     {
         return elements().begin();
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::end() const
+    ArrayPartitionData<Element, rank>::ConstIterator ArrayPartitionData<Element, rank>::end() const
     {
         return elements().end();
     }
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::end()
+    ArrayPartitionData<Element, rank>::Iterator ArrayPartitionData<Element, rank>::end()
     {
         return elements().end();
     }
@@ -448,7 +446,7 @@ namespace lue {
 
 
     template<typename Element, Rank rank>
-    typename ArrayPartitionData<Element, rank>::Span const& ArrayPartitionData<Element, rank>::span() const
+    ArrayPartitionData<Element, rank>::Span const& ArrayPartitionData<Element, rank>::span() const
     {
         return _span;
     }
@@ -478,8 +476,8 @@ namespace lue {
 
             if (!sliced_data.empty())
             {
-                auto const source_begin = &(operator()(begin));
-                auto destination = &(sliced_data(0));
+                auto const source_begin = &operator()(begin);
+                auto destination = &sliced_data(0);
 
                 std::copy(source_begin, source_begin + nr_elements_slice, destination);
             }
@@ -511,10 +509,10 @@ namespace lue {
             {
                 using Idx = std::tuple_element<0, Slice>::type;
 
-                for (Idx r = 0; r < nr_elements0_slice; ++r)
+                for (Idx idx0 = 0; idx0 < nr_elements0_slice; ++idx0)
                 {
-                    auto const source_begin = &(operator()(begin0 + r, begin1));
-                    auto destination = &(sliced_data(r, 0));
+                    auto const source_begin = &operator()(begin0 + idx0, begin1);
+                    auto destination = &sliced_data(idx0, 0);
 
                     std::copy(source_begin, source_begin + nr_elements1_slice, destination);
                 }
@@ -554,9 +552,9 @@ namespace lue {
 
             using Slices = std::array<Slice, 0>;
 
-            using Iterator = typename Elements::iterator;
+            using Iterator = Elements::iterator;
 
-            using ConstIterator = typename Elements::const_iterator;
+            using ConstIterator = Elements::const_iterator;
 
             ArrayPartitionData();
 
@@ -670,7 +668,7 @@ namespace lue {
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::Shape const& ArrayPartitionData<Element, 0>::shape() const
+    ArrayPartitionData<Element, 0>::Shape const& ArrayPartitionData<Element, 0>::shape() const
     {
         return _shape;
     }
@@ -685,7 +683,7 @@ namespace lue {
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::Count ArrayPartitionData<Element, 0>::nr_elements() const
+    ArrayPartitionData<Element, 0>::Count ArrayPartitionData<Element, 0>::nr_elements() const
     {
         lue_hpx_assert(lue::nr_elements(_shape) == 0);
         lue_hpx_assert(_elements.size() == 1);
@@ -702,28 +700,28 @@ namespace lue {
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::begin() const
+    ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::begin() const
     {
         return _elements.begin();
     }
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::begin()
+    ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::begin()
     {
         return _elements.begin();
     }
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::end() const
+    ArrayPartitionData<Element, 0>::ConstIterator ArrayPartitionData<Element, 0>::end() const
     {
         return _elements.end();
     }
 
 
     template<typename Element>
-    typename ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::end()
+    ArrayPartitionData<Element, 0>::Iterator ArrayPartitionData<Element, 0>::end()
     {
         return _elements.end();
     }
@@ -759,11 +757,11 @@ namespace lue {
 
                 constexpr static Rank rank = r;
 
-                using Shape = typename ArrayPartitionData<E, r>::Shape;
+                using Shape = ArrayPartitionData<E, r>::Shape;
 
-                using Slice = typename ArrayPartitionData<E, r>::Slice;
+                using Slice = ArrayPartitionData<E, r>::Slice;
 
-                using Slices = typename ArrayPartitionData<E, r>::Slices;
+                using Slices = ArrayPartitionData<E, r>::Slices;
         };
 
     }  // namespace detail

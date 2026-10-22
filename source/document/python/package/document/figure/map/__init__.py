@@ -127,12 +127,12 @@ def create_map(raster_path: Path, figure_path: Path, formats: list[str]) -> None
     if show_legend:
         image = plt.imshow(array, cmap=colour_map_)
         cax = figure.add_axes(
-            [
+            (
                 axes.get_position().x1 + 0.01,
                 axes.get_position().y0,
                 0.02,
                 axes.get_position().height,
-            ]
+            )
         )
         plt.colorbar(image, cax=cax)
 

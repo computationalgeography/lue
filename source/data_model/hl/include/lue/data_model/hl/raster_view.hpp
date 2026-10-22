@@ -134,16 +134,14 @@ namespace lue::data_model {
 
 
         LUE_DATA_MODEL_HL_EXPORT auto contains_raster(
-            Dataset const& dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> bool;
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool;
 
 
         template<typename DatasetPtr>
         auto open_raster_view(
-            DatasetPtr dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> RasterView<DatasetPtr>
+            DatasetPtr dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> RasterView<DatasetPtr>
         {
             return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
         }
@@ -235,16 +233,14 @@ namespace lue::data_model {
 
 
         LUE_DATA_MODEL_HL_EXPORT auto contains_raster(
-            Dataset const& dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> bool;
+            Dataset const& dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> bool;
 
 
         template<typename DatasetPtr>
         auto open_raster_view(
-            DatasetPtr dataset,
-            std::string const& phenomenon_name,
-            std::string const& property_set_name) -> RasterView<DatasetPtr>
+            DatasetPtr dataset, std::string const& phenomenon_name, std::string const& property_set_name)
+            -> RasterView<DatasetPtr>
         {
             return RasterView<DatasetPtr>{std::move(dataset), phenomenon_name, property_set_name};
         }

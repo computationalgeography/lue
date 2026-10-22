@@ -36,7 +36,7 @@ namespace lue::data_model::time {
 
         public:
 
-            using Duration = typename Clock::Duration;
+            using Duration = Clock::Duration;
 
             explicit TimePoint(Duration const& duration);
 
@@ -52,7 +52,7 @@ namespace lue::data_model::time {
 
             auto duration() const -> Duration const&;
 
-            auto nr_ticks() const -> typename Duration::Count;
+            auto nr_ticks() const -> Duration::Count;
 
         private:
 
@@ -78,7 +78,7 @@ namespace lue::data_model::time {
         @brief      Return duration
     */
     template<typename Clock>
-    inline auto TimePoint<Clock>::duration() const -> typename Clock::Duration const&
+    inline auto TimePoint<Clock>::duration() const -> Clock::Duration const&
     {
         return _duration;
     }
@@ -88,7 +88,7 @@ namespace lue::data_model::time {
         @brief      Return number of clock ticks since the Clock's epoch
     */
     template<typename Clock>
-    inline auto TimePoint<Clock>::nr_ticks() const -> typename Clock::Duration::Count
+    inline auto TimePoint<Clock>::nr_ticks() const -> Clock::Duration::Count
     {
         return _duration.nr_ticks();
     }

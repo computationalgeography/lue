@@ -468,9 +468,8 @@ namespace lue::hdf5 {
 
 
     auto open_dataset(
-        Identifier& parent,
-        std::string const& name,
-        Dataset::AccessPropertyList const& access_property_list) -> Dataset
+        Identifier& parent, std::string const& name, Dataset::AccessPropertyList const& access_property_list)
+        -> Dataset
     {
         Identifier dataset_location{H5Dopen(parent, name.c_str(), access_property_list.id()), H5Dclose};
 

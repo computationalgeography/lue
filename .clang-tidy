@@ -3,21 +3,35 @@ Checks: >
     -*,
     bugprone-*,
     -bugprone-easily-swappable-parameters,
+    -bugprone-exception-escape,
     -bugprone-macro-parentheses,
+    -bugprone-throwing-static-initialization,
     cppcoreguidelines-*,
     -cppcoreguidelines-avoid-magic-numbers,
+    -cppcoreguidelines-explicit-constructor,
     -cppcoreguidelines-macro-usage,
+    -cppcoreguidelines-macro-to-enum,
+    -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
     -cppcoreguidelines-pro-bounds-pointer-arithmetic,
     -cppcoreguidelines-readability-magic-numbers,
     modernize-*,
+    -modernize-macro-to-enum,
     -modernize-use-nodiscard,
+    -modernize-use-string-view,
     performance-*,
     readability-*,
+    -readability-convert-member-functions-to-static,
     -readability-function-cognitive-complexity,
     -readability-magic-numbers,
-    -readability-redundant-member-init
+    -readability-redundant-member-init,
+    -readability-redundant-nested-if,
+    -readability-trailing-comma,
+    -readability-trivial-switch
 CheckOptions:
     - key: readability-identifier-length.IgnoredVariableNames
       value: "id|it|x|y"
     - key: readability-identifier-length.IgnoredParameterNames
       value: "id|it|x|y"
+# If EasyBuild package is used, the compiler's headers are not marked as system headers.
+# Here we filter those headers out of the diagnostics.
+HeaderFilterRegex: "^((?!/./easybuild/).)*$" # Negative lookahead

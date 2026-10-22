@@ -1,12 +1,12 @@
 #define BOOST_TEST_MODULE lue framework api cxx routing accu
-#include "lue/framework/api/cxx/routing/accu.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/routing/accu.hpp"
 #include "lue/framework.hpp"
 
 
 BOOST_AUTO_TEST_CASE(accu_raster_raster)
 {
-    using FlowDirectionElement = lue::FlowDirectionElement;
+    using lue::FlowDirectionElement;
     using FloatingPointElement = lue::FloatingPointElement<0>;
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
     using FloatingPointArray = lue::PartitionedArray<FloatingPointElement, 2>;
@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(accu_raster_raster)
 
 BOOST_AUTO_TEST_CASE(accu_raster_scalar)
 {
-    using FlowDirectionElement = lue::FlowDirectionElement;
+    using lue::FlowDirectionElement;
     using FloatingPointElement = lue::FloatingPointElement<0>;
     using FlowDirectionArray = lue::PartitionedArray<FlowDirectionElement, 2>;
     using FloatingPointArray = lue::PartitionedArray<FloatingPointElement, 2>;

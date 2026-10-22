@@ -11,7 +11,7 @@ namespace lue::gdal {
     namespace {
 
         // GDAL driver name mapped by lower-cased file extension. Add to it whenever useful.
-        const std::map<std::string, std::string> driver_name_by_extension{
+        std::map<std::string, std::string> const driver_name_by_extension{
             {".tif", "GTiff"},
             {".hdf4", "HDF4"},
             {".h4", "HDF4"},

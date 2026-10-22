@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 
-int run_example(int const argc, char** argv)
+auto run_example(int const argc, char** argv) -> int
 {
     if (argc != 3)
     {
@@ -31,7 +31,7 @@ int run_example(int const argc, char** argv)
 }
 
 
-int main(int argc, char** argv)
+auto main(int argc, char** argv) -> int
 {
     return lue_initialize_runtime(&run_example, argc, argv);
 }

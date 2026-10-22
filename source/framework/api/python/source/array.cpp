@@ -68,13 +68,10 @@ namespace lue::api {
             // TODO
             // https://pybind11.readthedocs.io/en/stable/advanced/classes.html#operator-overloading
 
-            .def_property_readonly(
-                "dtype",
-                [](Array const& self) -> pybind11::dtype { return dtype(self); })
+            .def_property_readonly("dtype", [](Array const& self) -> pybind11::dtype { return dtype(self); })
 
             .def_property_readonly(
-                "shape",
-                [](Array const& self) -> std::tuple<Count, Count> { return shape(self); })
+                "shape", [](Array const& self) -> std::tuple<Count, Count> { return shape(self); })
 
             ;
     }

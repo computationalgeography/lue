@@ -73,7 +73,7 @@ namespace lue::data_model::time {
 
 
     template<typename Unit>
-    inline auto TickPeriod<Unit>::nr_units() const -> typename TickPeriod<Unit>::Count
+    inline auto TickPeriod<Unit>::nr_units() const -> TickPeriod<Unit>::Count
     {
         return _nr_units;
     }

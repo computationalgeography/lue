@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local multiply
-#include "lue/framework/api/cxx/local/multiply.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/multiply.hpp"
 #include "lue/framework.hpp"
 
 

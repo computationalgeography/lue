@@ -147,10 +147,8 @@ namespace lue::data_model::different_shape::constant_shape {
         @brief      Create value @a name in @a parent
     */
     auto create_value(
-        hdf5::Group& parent,
-        std::string const& name,
-        hdf5::Datatype const& memory_datatype,
-        Rank const rank) -> Value
+        hdf5::Group& parent, std::string const& name, hdf5::Datatype const& memory_datatype, Rank const rank)
+        -> Value
     {
         return create_value(parent, name, file_datatype(memory_datatype), memory_datatype, rank);
     }

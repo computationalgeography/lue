@@ -47,7 +47,7 @@ namespace lue::stress {
             StressTest(int argc, char** argv):
 
                 lue::utility::Application{
-                    [&]() -> cxxopts::Options
+                    [&] -> cxxopts::Options
                     {
                         cxxopts::Options options{
                             // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)

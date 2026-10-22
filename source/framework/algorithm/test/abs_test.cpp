@@ -1,8 +1,8 @@
 #define BOOST_TEST_MODULE lue framework algorithm abs
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/abs.hpp"
 #include "lue/framework/algorithm/value_policies/all.hpp"
+#include "lue/framework/algorithm/value_policies/equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/none.hpp"
 #include "lue/framework/algorithm/value_policies/valid.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"

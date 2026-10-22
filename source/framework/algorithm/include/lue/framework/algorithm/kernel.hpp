@@ -18,7 +18,7 @@ namespace lue {
 
             // using Index = typename Base::Index;
 
-            using Shape = typename Base::Shape;
+            using Shape = Base::Shape;
 
             // using Radius = std::ptrdiff_t;  // std::size_t;
 
@@ -114,7 +114,7 @@ namespace lue {
     template<typename Weight, Rank rank>
     Count Kernel<Weight, rank>::size() const
     {
-        return 2 * _radius + 1;
+        return (2 * _radius) + 1;
     }
 
 
@@ -125,7 +125,7 @@ namespace lue {
         using Shape = ShapeT<Kernel>;
 
         Shape shape{};
-        std::fill(shape.begin(), shape.end(), 2 * radius + 1);
+        std::fill(shape.begin(), shape.end(), (2 * radius) + 1);
         Kernel kernel{shape, value};
 
         return kernel;
@@ -147,7 +147,7 @@ namespace lue {
             using Shape = ShapeT<Kernel>;
 
             Shape shape{};
-            std::fill(shape.begin(), shape.end(), 2 * radius + 1);
+            std::fill(shape.begin(), shape.end(), (2 * radius) + 1);
 
             Kernel kernel{shape, Weight{0}};
 
@@ -156,7 +156,8 @@ namespace lue {
             Radius const distance_measure{radius * radius};
 
             {
-                Radius dist0, dist1;
+                Radius dist0;
+                Radius dist1;
 
                 for (Index idx0 = 0; idx0 < shape[0]; ++idx0)
                 {
@@ -191,7 +192,7 @@ namespace lue {
 
                 constexpr static Rank rank = r;
 
-                using Shape = typename Array<E, r>::Shape;
+                using Shape = Array<E, r>::Shape;
         };
 
     }  // namespace detail

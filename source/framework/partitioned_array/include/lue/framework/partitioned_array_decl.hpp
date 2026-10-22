@@ -36,11 +36,11 @@ namespace lue {
             //! Type of the collection of partitions
             using Partitions = ArrayPartitionData<Partition, rank>;
 
-            using Count = typename Partitions::Count;
+            using Count = Partitions::Count;
 
-            using Offset = typename PartitionClient::Offset;
+            using Offset = PartitionClient::Offset;
 
-            using Shape = typename Partitions::Shape;
+            using Shape = Partitions::Shape;
 
 
             PartitionedArray();
@@ -111,27 +111,27 @@ namespace lue {
 
                 static constexpr bool is_partitioned_array{true};
 
-                using Offset = typename PartitionedArray<E, r>::Offset;
+                using Offset = PartitionedArray<E, r>::Offset;
 
-                using Shape = typename PartitionedArray<E, r>::Shape;
-
-                template<typename E_, Rank r_>
-                using Partition = typename PartitionedArray<E_, r_>::Partition;
+                using Shape = PartitionedArray<E, r>::Shape;
 
                 template<typename E_, Rank r_>
-                using Partitions = typename PartitionedArray<E_, r_>::Partitions;
+                using Partition = PartitionedArray<E_, r_>::Partition;
+
+                template<typename E_, Rank r_>
+                using Partitions = PartitionedArray<E_, r_>::Partitions;
 
                 template<typename E_, Rank r_>
                 using PartitionedArray = PartitionedArray<E_, r_>;
 
                 template<typename E_, Rank r_>
-                using Data = typename Partition<E_, r_>::Data;
+                using Data = Partition<E_, r_>::Data;
 
                 template<typename E_, Rank r_>
-                using Component = typename PartitionedArray<E_, r_>::Partition;
+                using Component = PartitionedArray<E_, r_>::Partition;
 
                 template<typename E_, Rank r_>
-                using Components = typename PartitionedArray<E_, r_>::Partitions;
+                using Components = PartitionedArray<E_, r_>::Partitions;
         };
 
 
@@ -146,7 +146,7 @@ namespace lue {
 
                 constexpr static Rank rank = r;
 
-                using Shape = typename ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
+                using Shape = ArrayPartitionData<ArrayPartition<E, r>, r>::Shape;
 
                 template<typename E_, Rank r_>
                 using Partition = ArrayPartition<E_, r_>;
@@ -207,8 +207,8 @@ namespace lue {
         @brief      Return the number of elements in @a array
     */
     template<typename Element, Rank rank>
-    static auto nr_elements(PartitionedArray<Element, rank> const& array) ->
-        typename PartitionedArray<Element, rank>::Count
+    static auto nr_elements(PartitionedArray<Element, rank> const& array)
+        -> PartitionedArray<Element, rank>::Count
     {
         return array.nr_elements();
     }

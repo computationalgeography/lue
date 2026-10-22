@@ -18,7 +18,7 @@ namespace lue::utility {
 
 
     Command::Command(
-        cxxopts::Options&& options,
+        cxxopts::Options options,
         int const argc,
         char const* const* argv,
         SubcommandCreators&& subcommand_creators):

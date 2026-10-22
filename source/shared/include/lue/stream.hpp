@@ -21,6 +21,7 @@
 // include fmt/ostream.h as well.
 
 
+// NOLINTBEGIN(bugprone-std-namespace-modification)
 namespace std {
 
     template<typename Element, std::size_t size>
@@ -113,3 +114,4 @@ namespace std {
     }
 
 }  // namespace std
+// NOLINTEND(bugprone-std-namespace-modification)

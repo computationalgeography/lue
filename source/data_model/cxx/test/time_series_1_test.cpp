@@ -402,10 +402,11 @@ BOOST_FIXTURE_TEST_CASE(create, lue::data_model::DatasetFixture)
                 std::vector<lue::data_model::ID> active_ids_read(nr_time_boxes);
                 active_object_id.read(active_ids_read.data());
 
-                BOOST_CHECK(std::all_of(
-                    active_ids_read.begin(),
-                    active_ids_read.end(),
-                    [=](lue::data_model::ID const id) -> bool { return id == collection_id; }));
+                BOOST_CHECK(
+                    std::all_of(
+                        active_ids_read.begin(),
+                        active_ids_read.end(),
+                        [=](lue::data_model::ID const id) -> bool { return id == collection_id; }));
             }
 
             // Time domain

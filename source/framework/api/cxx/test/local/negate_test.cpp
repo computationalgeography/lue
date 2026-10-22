@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework api cxx local negate
-#include "lue/framework/api/cxx/local/negate.hpp"
 #include "unit_test.hpp"
+#include "lue/framework/api/cxx/local/negate.hpp"
 #include "lue/framework.hpp"
 
 

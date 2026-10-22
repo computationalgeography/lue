@@ -27,5 +27,5 @@ CU_SUITE_TEARDOWN()
     int main(int argc, char** argv)                                                                          \
     {                                                                                                        \
         /* init function that runs the whole test suite. Once it finishes, finalize can be called */         \
-        return lue_initialize_runtime(&test_suite, argc, argv);                                                  \
+        return lue_initialize_runtime(&test_suite, argc, argv);                                              \
     }

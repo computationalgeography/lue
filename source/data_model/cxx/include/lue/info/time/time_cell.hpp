@@ -53,7 +53,7 @@ namespace lue::data_model {
 
         public:
 
-            using Element = typename ValueTraits<LocationInTime>::Element;
+            using Element = ValueTraits<LocationInTime>::Element;
     };
 
 }  // namespace lue::data_model

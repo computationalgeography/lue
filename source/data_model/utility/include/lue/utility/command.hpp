@@ -69,7 +69,7 @@ namespace lue::utility {
             Command(cxxopts::Options&& options, int argc, char const* const* argv);
 
             Command(
-                cxxopts::Options&& options,
+                cxxopts::Options options,
                 int argc,
                 char const* const* argv,
                 SubcommandCreators&& subcommand_creators);

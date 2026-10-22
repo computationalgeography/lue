@@ -74,4 +74,4 @@ BOOST_AUTO_TEST_CASE(use_case03)
     cell_idxs.insert(cell_idxs.end(), cell_idxs.begin(), cell_idxs.end());
 
     BOOST_TEST(fragment.cell_idxs() == cell_idxs, boost::test_tools::per_element());
- }
+}
