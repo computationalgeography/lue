@@ -1,9 +1,9 @@
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
-#include "lue/framework/algorithm/definition/inflow_count.hpp"
 #include "lue/framework/algorithm/value_policies/accu.hpp"
 #include "lue/framework/algorithm/value_policies/cast.hpp"
 #include "lue/framework/algorithm/value_policies/cell_index.hpp"
 #include "lue/framework/algorithm/value_policies/d8_flow_direction.hpp"
+#include "lue/framework/algorithm/value_policies/inflow_count.hpp"
 #include "lue/framework/algorithm/value_policies/open_simplex_noise.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/model.hpp"
@@ -70,10 +70,10 @@ namespace {
                 // return hpx::when_all(_material.partitions().begin(),
                 // _material.partitions().end()).share();
 
-                using Policies =
-                    lue::policy::inflow_count::DefaultPolicies<CountElement, FlowDirectionElement>;
+                using SmallCountElement = lue::BooleanElement;  // TODO: Rename (LUE_SMALL_COUNT_ELEMENT?)
 
-                auto const inflow_count = lue::inflow_count<CountElement>(Policies{}, _flow_direction);
+                auto const inflow_count =
+                    lue::value_policies::inflow_count<SmallCountElement>(_flow_direction);
 
                 // // TODO: assert inflow count's data structs contain an single record
                 // hpx::cout << std::format(
