@@ -68,8 +68,12 @@ endforeach()
 
 
 set(names
-    memory
 )
+
+if(LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS)
+    # TODO: Update the test to use a more common operation which is always included(?)
+    list(APPEND names memory)
+endif()
 
 foreach(name ${names})
     set(target_name lue_framework_model_test_${name})
