@@ -1,5 +1,7 @@
 #pragma once
 #include "lue/framework/partitioned_array/array_partition_decl.hpp"
+#include "lue/framework/partitioned_array/server/array_partition_decl.hpp"
+#include <hpx/include/components.hpp>
 
 
 namespace lue {

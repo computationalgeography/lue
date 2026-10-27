@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/flow_direction.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
+#include <hpx/runtime.hpp>
 
 
 namespace lue::detail {

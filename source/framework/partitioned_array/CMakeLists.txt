@@ -47,6 +47,13 @@ set_target_properties(lue_framework_partitioned_array
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
+# if(MACOS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+#     set_target_properties(lue_framework_partitioned_array
+#         PROPERTIES
+#             CXX_VISIBILITY_PRESET default
+#     )
+# endif()
+
 generate_export_header(lue_framework_partitioned_array
     BASE_NAME LUE_FPA
     EXPORT_FILE_NAME include/lue/framework/partitioned_array/export.hpp

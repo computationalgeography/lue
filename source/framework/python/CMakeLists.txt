@@ -33,7 +33,6 @@ foreach(name focal global local miscellaneous routing zonal)
     target_link_libraries(lue_py_framework_${name}_operation
         PRIVATE
             lue::framework_${name}_operation
-            HPX::component
     )
 
     lue_configure_python_shared_library(lue_py_framework_${name}_operation)
@@ -57,7 +56,7 @@ target_sources(lue_py_framework_local_operation
     PRIVATE
         source/algorithm/local_operation.cpp
         source/algorithm/local_operation/abs.cpp
-        source/algorithm/local_operation/all.cpp
+        # TODO: source/algorithm/local_operation/all.cpp
         source/algorithm/local_operation/arithmetic.cpp
         source/algorithm/local_operation/cast.cpp
         source/algorithm/local_operation/cell_index.cpp
@@ -159,6 +158,13 @@ endblock()
 add_library(lue_py_framework SHARED)
 add_library(lue::py_framework ALIAS lue_py_framework)
 
+# if(WIN32)
+# target_compile_definitions(lue_framework_io
+#     PRIVATE
+#         HPX_COMPONENT_EXPORTS
+# )
+# endif()
+
 target_include_directories(lue_py_framework
     PRIVATE
         $<TARGET_PROPERTY:lue::py_data_model,SOURCE_DIR>/include
@@ -183,7 +189,7 @@ target_sources(lue_py_framework
         source/core/hyperslab.cpp
         source/core/scalar.cpp
 
-        source/io/read_array.cpp
+        # TODO: source/io/read_array.cpp
         source/io/write_array.cpp
 
         source/command_line.cpp
@@ -219,7 +225,6 @@ target_link_libraries(lue_py_framework
         lue::framework_io
         lue::framework_model
         lue::gdal
-        HPX::component
 )
 
 lue_configure_python_shared_library(lue_py_framework)

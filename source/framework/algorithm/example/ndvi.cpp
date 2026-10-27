@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/value_policies/subtract.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <hpx/hpx_init.hpp>
 
 

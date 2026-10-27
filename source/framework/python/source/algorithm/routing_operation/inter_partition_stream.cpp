@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/inter_partition_stream.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <pybind11/pybind11.h>
 
 

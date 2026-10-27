@@ -10,7 +10,9 @@
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/framework/core/type_traits.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
+#include <hpx/runtime.hpp>
 #include <concepts>
 
 

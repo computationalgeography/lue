@@ -2,7 +2,7 @@
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/core/concept.hpp"
-#include "lue/framework/partitioned_array_decl.hpp"
+#include "lue/framework/partitioned_array_fwd.hpp"
 
 
 namespace lue {

@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/kinematic_wave.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/py/bind.hpp"
 
 

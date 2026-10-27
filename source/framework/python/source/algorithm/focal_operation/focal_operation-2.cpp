@@ -1,5 +1,6 @@
 #include "array_to_kernel.hpp"
 #include "lue/framework/algorithm/value_policies/focal_operation.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 

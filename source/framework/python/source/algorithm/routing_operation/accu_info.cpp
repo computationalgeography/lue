@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/value_policies/accu_info.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <pybind11/pybind11.h>
 
 

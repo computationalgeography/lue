@@ -1,7 +1,8 @@
 #pragma once
 #include "lue/framework/core/offset.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
-#include <hpx/include/components.hpp>
+#include "lue/framework/partitioned_array/server/array_partition_fwd.hpp"
+#include <hpx/components_base/server/component_base.hpp>
 #include <hpx/preprocessor/cat.hpp>
 
 

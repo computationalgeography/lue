@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/value_policies/open_simplex_noise.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include <pybind11/pybind11.h>

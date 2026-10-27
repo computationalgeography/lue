@@ -8,6 +8,7 @@
 #include "lue/framework/core/array.hpp"
 #include "lue/framework/core/component.hpp"
 #include "lue/macro.hpp"
+#include <hpx/runtime.hpp>
 #include <boost/predef.h>
 #include <format>
 #include <stdexcept>

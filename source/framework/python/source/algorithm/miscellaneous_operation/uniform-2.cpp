@@ -1,6 +1,7 @@
 #include "shape.hpp"
 #include "lue/framework/algorithm/value_policies/uniform.hpp"
 #include "lue/framework/core/domain_decomposition.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>

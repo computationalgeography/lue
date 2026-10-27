@@ -2,6 +2,7 @@
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/index_util.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
+#include <hpx/runtime.hpp>
 #include <chrono>
 
 

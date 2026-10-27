@@ -25,6 +25,17 @@ set_target_properties(lue_framework_io
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
+if(WIN32)
+    # NOTE: For some reason the lib fails to build due to link errors related to a vector of partitions. This
+    # can be traced to ReadPartitionsPerLocality::instantiate, which is called from
+    # InstantiatePartitions::instantiate_partitions. Defining HPX_COMPONENT_EXPORTS (or linking against
+    # HPX::component) solves the issue. But why is this needed?
+    target_compile_definitions(lue_framework_io
+        PRIVATE
+            HPX_COMPONENT_EXPORTS
+    )
+endif()
+
 generate_export_header(lue_framework_io
     EXPORT_FILE_NAME include/lue/framework/io/export.hpp
 )
@@ -48,7 +59,6 @@ target_link_libraries(lue_framework_io
     PRIVATE
         lue::framework_algorithm
         # HPX::iostreams_component
-        HPX::component
     PUBLIC
         lue::framework_partitioned_array
         lue::data_model_hl

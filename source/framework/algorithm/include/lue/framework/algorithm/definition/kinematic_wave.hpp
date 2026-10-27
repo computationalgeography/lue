@@ -4,6 +4,7 @@
 #include "lue/framework/algorithm/detail/kinematic_wave.hpp"
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 
 

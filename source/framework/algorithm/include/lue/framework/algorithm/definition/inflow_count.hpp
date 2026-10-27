@@ -5,7 +5,9 @@
 #include "lue/framework/algorithm/inflow_count.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/core/serialize_resource_usage.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
+#include <hpx/runtime.hpp>
 
 
 namespace lue {

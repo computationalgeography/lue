@@ -1,6 +1,11 @@
 #pragma once
+#include "lue/framework/core/offset.hpp"
+#include "lue/framework/core/type_traits.hpp"
+#include "lue/framework/partitioned_array/array_partition_data.hpp"
+#include "lue/framework/partitioned_array/array_partition_fwd.hpp"
 #include "lue/framework/partitioned_array/export.hpp"
-#include "lue/framework/partitioned_array/server/array_partition_decl.hpp"
+#include "lue/framework/partitioned_array/server/array_partition_fwd.hpp"
+#include <hpx/components/client_base.hpp>
 
 
 namespace lue {
@@ -30,15 +35,15 @@ namespace lue {
 
             using Base = hpx::components::client_base<ArrayPartition<Element, rank>, Server>;
 
-            using Data = Server::Data;
+            using Data = ArrayPartitionData<Element, rank>;  // Server::Data;
 
-            using Offset = Server::Offset;
+            using Offset = lue::Offset<Index, rank>;  // Server::Offset;
 
-            using Shape = Server::Shape;
+            using Shape = Data::Shape;  // Server::Shape;
 
-            using Slice = Server::Slice;
+            using Slice = Data::Slice;  // Server::Slice;
 
-            using Slices = Server::Slices;
+            using Slices = Data::Slices;  // Server::Slices;
 
             ArrayPartition();
 
