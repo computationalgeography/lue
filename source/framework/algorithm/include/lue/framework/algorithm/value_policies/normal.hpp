@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/normal.hpp"
+#include "lue/framework/core/shape.hpp"
 
 
 namespace lue {

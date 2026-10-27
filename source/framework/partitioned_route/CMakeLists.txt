@@ -48,6 +48,13 @@ set_target_properties(lue_framework_partitioned_route
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
+# if(NOT (MACOS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+#     set_target_properties(lue_framework_partitioned_route
+#         PROPERTIES
+#             CXX_VISIBILITY_PRESET default
+#     )
+# endif()
+
 generate_export_header(lue_framework_partitioned_route
     BASE_NAME LUE_PARTITIONED_ROUTE
     EXPORT_FILE_NAME include/lue/framework/partitioned_route/export.hpp

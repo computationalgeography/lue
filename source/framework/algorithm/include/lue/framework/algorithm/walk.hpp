@@ -1,5 +1,4 @@
 #pragma once
-#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework/serial_route_decl.hpp"
 #include <hpx/include/components.hpp>
 #include <map>

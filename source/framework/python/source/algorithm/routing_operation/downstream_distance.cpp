@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/downstream_distance.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include <pybind11/numpy.h>
 #include <format>

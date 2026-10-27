@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/policy.hpp"
-#include "lue/framework/partitioned_array_decl.hpp"
+#include "lue/framework/partitioned_array_fwd.hpp"
 #include "lue/framework.hpp"
 
 

@@ -3,9 +3,10 @@
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/routing_operation_export.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/include/components.hpp>
-#include <hpx/synchronization/shared_mutex.hpp>
+#include <hpx/runtime.hpp>
 #include <algorithm>
 #include <map>
 #include <mutex>

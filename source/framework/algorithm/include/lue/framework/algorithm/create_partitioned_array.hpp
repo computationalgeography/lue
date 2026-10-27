@@ -1,5 +1,4 @@
 #pragma once
-#include "hpx/runtime_distributed/find_localities.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
@@ -10,6 +9,7 @@
 #include "lue/framework/core/math.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework/serial_route_decl.hpp"
+#include <hpx/runtime_distributed/find_localities.hpp>
 #include <optional>
 
 
@@ -348,9 +348,8 @@ namespace lue {
                 template<typename... Idxs>
                 void instantiate_partitions()
                 {
-                    // Ask for the creation of a set of partitions and assign
-                    // the resulting partition clients to the correct location
-                    // in the array.
+                    // Ask for the creation of a set of partitions and assign the resulting partition clients
+                    // to the correct location in the array.
                     using Partitions = typename Base::Partitions;
                     using Partition = PartitionT<Partitions>;
 
@@ -361,11 +360,9 @@ namespace lue {
                         _offsets,
                         _partition_shapes)};
 
-                    // The collection of partitions is ready. This does not
-                    // imply that the partitions themselves are ready. This
-                    // does not matter though.
-
-                    // Assign the partitions to their correct location in the array
+                    // The collection of partitions is ready. This does not imply that the partitions
+                    // themselves are ready. This does not matter though. Assign the partitions to their
+                    // correct location in the array
                     {
                         std::vector<Partition> partitions{partitions_f.get()};
                         lue_hpx_assert(partitions.size() == _idxs.size());

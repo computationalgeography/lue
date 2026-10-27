@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/value_policies/reclassify.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 #include <pybind11/numpy.h>

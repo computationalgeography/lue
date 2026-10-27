@@ -1,5 +1,6 @@
 #include "lue/framework/algorithm/value_policies/d8_flow_direction.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/py/bind.hpp"
 
 
