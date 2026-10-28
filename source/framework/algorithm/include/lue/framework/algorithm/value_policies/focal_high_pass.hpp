@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/focal_high_pass.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

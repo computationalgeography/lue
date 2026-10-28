@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/default_policies/zonal_sum.hpp"
 #include "lue/framework/algorithm/zonal_normal.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

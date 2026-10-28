@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/kinematic_wave.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <concepts>
 
 

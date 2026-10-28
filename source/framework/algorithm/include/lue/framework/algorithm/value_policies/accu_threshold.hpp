@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/accu_threshold.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <concepts>
 
 

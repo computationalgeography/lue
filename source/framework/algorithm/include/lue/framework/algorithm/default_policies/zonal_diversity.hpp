@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_diversity.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

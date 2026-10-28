@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/open_simplex_noise.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

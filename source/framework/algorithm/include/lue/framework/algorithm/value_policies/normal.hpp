@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/normal.hpp"
 #include "lue/framework/core/shape.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {
