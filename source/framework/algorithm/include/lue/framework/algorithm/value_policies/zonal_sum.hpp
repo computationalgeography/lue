@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_sum.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {
@@ -17,8 +18,9 @@ namespace lue {
     namespace value_policies {
 
         template<typename Element, typename Zone, Rank rank>
-        PartitionedArray<Element, rank> zonal_sum(
+        auto zonal_sum(
             PartitionedArray<Element, rank> const& array, PartitionedArray<Zone, rank> const& zones)
+            -> PartitionedArray<Element, rank>
         {
             using Policies = policy::zonal_sum::DefaultValuePolicies<Element, Zone>;
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_maximum.hpp"
-
+#include "lue/framework/partitioned_array_decl.hpp"
 
 namespace lue {
     namespace policy::zonal_maximum {
@@ -12,7 +12,6 @@ namespace lue {
             InputElements<Element, Zone>>;
 
     }  // namespace policy::zonal_maximum
-
 
     namespace default_policies {
 

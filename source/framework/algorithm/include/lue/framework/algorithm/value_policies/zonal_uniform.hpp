@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/zonal_uniform.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {
@@ -15,7 +16,7 @@ namespace lue {
     namespace value_policies {
 
         template<typename Element, typename Zone, Rank rank>
-        PartitionedArray<Element, rank> zonal_uniform(PartitionedArray<Zone, rank> const& zones)
+        auto zonal_uniform(PartitionedArray<Zone, rank> const& zones) -> PartitionedArray<Element, rank>
         {
             using Policies = policy::zonal_uniform::DefaultValuePolicies<Element, Zone>;
 

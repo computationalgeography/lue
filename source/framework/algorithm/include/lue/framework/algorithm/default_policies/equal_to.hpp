@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/equal_to.hpp"
 #include "lue/framework/algorithm/operator.hpp"
 #include "lue/framework/configure.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 
 
 namespace lue {

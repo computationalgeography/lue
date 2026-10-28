@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/default_policies/accu.hpp"
 #include "lue/framework/algorithm/partial_accu.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <concepts>
 
 

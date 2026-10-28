@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/downstream.hpp"
 #include "lue/framework/algorithm/flow_accumulation.hpp"
+#include "lue/framework/partitioned_array_decl.hpp"
 #include <concepts>
 
 
