@@ -48,7 +48,10 @@ target_sources(lue_py_framework_focal_operation
 target_sources(lue_py_framework_global_operation
     PRIVATE
         source/algorithm/global_operation.cpp
+        source/algorithm/global_operation/all.cpp
+        source/algorithm/global_operation/any.cpp
         source/algorithm/global_operation/global_operation.cpp
+        source/algorithm/global_operation/none.cpp
         source/algorithm/global_operation/reclassify.cpp
 )
 
@@ -56,7 +59,6 @@ target_sources(lue_py_framework_local_operation
     PRIVATE
         source/algorithm/local_operation.cpp
         source/algorithm/local_operation/abs.cpp
-        # TODO: source/algorithm/local_operation/all.cpp
         source/algorithm/local_operation/arithmetic.cpp
         source/algorithm/local_operation/cast.cpp
         source/algorithm/local_operation/cell_index.cpp
@@ -189,7 +191,7 @@ target_sources(lue_py_framework
         source/core/hyperslab.cpp
         source/core/scalar.cpp
 
-        # TODO: source/io/read_array.cpp
+        source/io/read_array.cpp
         source/io/write_array.cpp
 
         source/command_line.cpp

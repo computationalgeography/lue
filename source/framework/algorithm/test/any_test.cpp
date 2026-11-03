@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE lue framework algorithm any
-#include "lue/framework/algorithm/any.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
+#include "lue/framework/algorithm/default_policies/any.hpp"
 #include "lue/framework/test/hpx_unit_test.hpp"
 #include "lue/framework.hpp"
 
@@ -10,19 +10,24 @@ namespace {
     template<typename Element, std::size_t rank>
     void test_array()
     {
-        using Array = lue::PartitionedArray<Element, rank>;
+        if constexpr (lue::BuildOptions::default_policies_enabled)
+        {
+            using namespace lue::default_policies;
 
-        auto const array_shape{lue::Test<Array>::shape()};
-        auto const partition_shape{lue::Test<Array>::partition_shape()};
+            using Array = lue::PartitionedArray<Element, rank>;
 
-        Element const fill_value1{1};  // true
-        Element const fill_value2{0};  // false
+            auto const array_shape{lue::Test<Array>::shape()};
+            auto const partition_shape{lue::Test<Array>::partition_shape()};
 
-        Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
-        Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+            Element const fill_value1{1};  // true
+            Element const fill_value2{0};  // false
 
-        BOOST_CHECK_EQUAL(lue::any(array1).future().get(), Element{1});  // true
-        BOOST_CHECK_EQUAL(lue::any(array2).future().get(), Element{0});  // false
+            Array array1{lue::create_partitioned_array(array_shape, partition_shape, fill_value1)};
+            Array array2{lue::create_partitioned_array(array_shape, partition_shape, fill_value2)};
+
+            BOOST_CHECK_EQUAL(any(array1).future().get(), Element{1});  // true
+            BOOST_CHECK_EQUAL(any(array2).future().get(), Element{0});  // false
+        }
     }
 
 }  // Anonymous namespace

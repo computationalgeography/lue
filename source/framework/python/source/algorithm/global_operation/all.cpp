@@ -1,5 +1,4 @@
 #include "lue/framework/algorithm/value_policies/all.hpp"
-// #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"
 
@@ -28,7 +27,7 @@ namespace lue::framework {
 
     void bind_all(pybind11::module& module)
     {
-        bind<Binder, ArithmeticElements>(module);
+        bind<Binder, IntegralElements>(module);
     }
 
 }  // namespace lue::framework
