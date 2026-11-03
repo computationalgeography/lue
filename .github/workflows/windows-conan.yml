@@ -76,8 +76,8 @@ jobs:
       conda_package_prefix: "C:/Users/runneradmin/conda_pkgs_dir"
       # conda-build provides the conda-develop command
       conda_packages: "conda-build conan docopt jinja2 matplotlib ninja numpy ruamel.yaml"
-      hpx_version: 2.0.0-alpha
-      hpx_branch: master
+      hpx_version: 2.0.0
+      hpx_branch: v2.0.0
       hpx_source_directory: hpx_source
       hpx_build_directory: hpx_build
       hpx_install_directory: hpx_install
@@ -145,6 +145,7 @@ jobs:
           conan list
 
       - name: clone and patch hpx
+        if: "false"
         run: |
           git clone --depth 1 --branch ${{ env.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ env.hpx_source_directory }}
 
@@ -180,7 +181,7 @@ jobs:
       - name: "install hpx"
         uses: ./lue_source/.github/actions/install_hpx
         env:
-          hpx_build_nr: 2 # Build number for current HPX version / branch
+          hpx_build_nr: 1 # Build number for current HPX version / branch
         with:
           cache_key: ${{ matrix.os }}_${{ matrix.compiler.cxx }}-python-${{ matrix.python_version }}_hpx-${{ env.hpx_version }}-${{ env.hpx_build_nr }}
           c_compiler: ${{ matrix.compiler.c }}
