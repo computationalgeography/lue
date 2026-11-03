@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
-#include <hpx/modules/async_combinators.hpp>
+#include <hpx/future.hpp>
 #include <algorithm>
 
 
