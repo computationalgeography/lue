@@ -5,7 +5,6 @@
 namespace lue::framework {
 
     void bind_abs(pybind11::module& module);
-    // TODO: void bind_all(pybind11::module& module);
     void bind_arithmetic(pybind11::module& module);
     void bind_cast(pybind11::module& module);
     void bind_cell_index(pybind11::module& module);
@@ -25,7 +24,6 @@ namespace lue::framework {
     PYBIND11_EXPORT void bind_local_operations(pybind11::module& module)
     {
         bind_abs(module);
-        // TODO: bind_all(module);
         bind_arithmetic(module);
         bind_cast(module);
         bind_cell_index(module);

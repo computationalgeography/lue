@@ -80,7 +80,7 @@ namespace lue::framework {
     void bind_timestamp(pybind11::module& module);
 #endif
 
-    // TODO: void bind_read_array(pybind11::module& module);
+    void bind_read_array(pybind11::module& module);
     void bind_write_array(pybind11::module& module);
 
     void bind_model(pybind11::module& module);
@@ -147,7 +147,7 @@ namespace lue::framework {
         bind_miscellaneous_operations(submodule);
         bind_routing_operations(submodule);
         bind_zonal_operations(submodule);
-        // TODO: bind_read_array(submodule);
+        bind_read_array(submodule);
         bind_write_array(submodule);
 
 #ifdef LUE_FRAMEWORK_WITH_DEVELOPMENT_OPERATIONS

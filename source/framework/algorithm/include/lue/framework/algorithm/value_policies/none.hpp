@@ -19,10 +19,19 @@ namespace lue {
         template<typename Element, Rank rank>
         auto none(PartitionedArray<Element, rank> const& array) -> Scalar<Element>
         {
-            using Functor = detail::None<Element>;
             using Policies = policy::none::DefaultValuePolicies<Element>;
 
-            return unary_aggregate_operation(Policies{}, array, Functor{});
+            return none(Policies{}, array);
+        }
+
+
+        template<typename Element, Rank rank>
+        auto none(hpx::id_type const locality_id, ArrayPartition<Element, rank> const& partition)
+            -> Scalar<Element>
+        {
+            using Policies = policy::none::DefaultValuePolicies<Element>;
+
+            return none(locality_id, Policies{}, partition);
         }
 
     }  // namespace value_policies

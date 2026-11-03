@@ -1,0 +1,12 @@
+#include "lue/framework/algorithm/default_policies/none.hpp"
+#include "lue/framework/algorithm/definition/none.hpp"
+#include "lue/framework/algorithm/value_policies/none.hpp"
+
+
+namespace lue {
+
+    LUE_INSTANTIATE_NONE(
+        ESC(policy::none::{{ Policies }}<{{ Element }}>),
+        {{ rank }});
+
+}  // namespace lue
