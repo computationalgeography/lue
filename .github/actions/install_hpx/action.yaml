@@ -15,8 +15,6 @@ inputs:
     required: true
   hpx_branch:
     required: true
-  hpx_version:
-    required: true
   cache_key:
     required: true
   source_directory:
@@ -41,7 +39,7 @@ runs:
       if: steps.cache-hpx.outputs.cache-hit != 'true'
       run: |
         if [ ! -d "${{ inputs.source_directory }}" ]; then
-            git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ inputs.source_directory }}
+            git clone --depth 1 --branch ${{ inputs.hpx_branch }} https://github.com/TheHPXProject/hpx.git ${{ inputs.source_directory }}
         fi
 
         cp ${{ inputs.cmake_preset_file }} ${{ inputs.source_directory }}/CMakeUserPresets.json
