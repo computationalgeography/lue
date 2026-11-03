@@ -1,6 +1,6 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
-#include <hpx/modules/naming_base.hpp>
+#include <hpx/runtime.hpp>
 
 
 namespace lue {

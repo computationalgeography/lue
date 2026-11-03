@@ -2,7 +2,7 @@
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/core/shape.hpp"
 #include "lue/macro.hpp"  // ArgumentType
-#include <hpx/modules/runtime_local.hpp>
+#include <hpx/runtime.hpp>
 #include <boost/lexical_cast.hpp>
 #include <filesystem>
 #include <format>
