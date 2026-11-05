@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/detail/verify_compatible.hpp"
 #include "lue/framework/algorithm/functor_traits.hpp"
 #include "lue/framework/core/annotate.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/runtime.hpp>

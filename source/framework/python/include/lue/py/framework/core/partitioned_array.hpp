@@ -17,6 +17,7 @@
 #include "lue/framework/algorithm/value_policies/not_equal_to.hpp"
 #include "lue/framework/algorithm/value_policies/pow.hpp"
 #include "lue/framework/algorithm/value_policies/subtract.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"  // Because of as_state implementation
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/py/framework/stream.hpp"
 #include <pybind11/pybind11.h>

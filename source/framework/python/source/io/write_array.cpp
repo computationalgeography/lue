@@ -1,4 +1,5 @@
 #include "lue/framework/io/to_lue.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/data_model/hl/raster_view.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"

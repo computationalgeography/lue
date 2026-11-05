@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/miscellaneous_operation_export.hpp"
 #include "lue/framework/algorithm/resample.hpp"
 #include "lue/framework/core/annotate.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/macro.hpp"
 
 

@@ -1,4 +1,5 @@
 #include "lue/framework/algorithm/policy/default_value_policies.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework.hpp"
 #include "lue/py/bind.hpp"

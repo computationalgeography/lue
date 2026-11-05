@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/algorithm/cell_index.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/runtime.hpp>

@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/global_operation_export.hpp"
 #include "lue/framework/algorithm/reclassify.hpp"
 #include "lue/framework/core/annotate.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/runtime.hpp>

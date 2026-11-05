@@ -45,7 +45,7 @@ namespace lue::server {
 
             ArrayPartition(ArrayPartition&& other) noexcept;
 
-            ~ArrayPartition() = default;
+            ~ArrayPartition();
 
             auto operator=(ArrayPartition const&) -> ArrayPartition& = delete;
 

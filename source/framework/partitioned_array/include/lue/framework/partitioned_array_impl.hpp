@@ -37,10 +37,16 @@ namespace lue {
 
         _shape{shape},
         _localities_ptr{std::move(localities_ptr)},
-        _partitions{std::move(partitions)}
+        _partitions_ptr{std::make_unique<Partitions>(std::move(partitions))}
 
     {
         assert_invariants();
+    }
+
+
+    template<typename Element, Rank rank>
+    PartitionedArray<Element, rank>::~PartitionedArray()
+    {
     }
 
 
@@ -92,7 +98,7 @@ namespace lue {
     template<typename Element, Rank rank>
     auto PartitionedArray<Element, rank>::nr_partitions() const -> Count
     {
-        return _partitions.nr_elements();
+        return _partitions_ptr->nr_elements();
     }
 
 
@@ -102,7 +108,7 @@ namespace lue {
     template<typename Element, Rank rank>
     auto PartitionedArray<Element, rank>::partitions() -> Partitions&
     {
-        return _partitions;
+        return *_partitions_ptr;
     }
 
 
@@ -112,7 +118,7 @@ namespace lue {
     template<typename Element, Rank rank>
     auto PartitionedArray<Element, rank>::partitions() const -> Partitions const&
     {
-        return _partitions;
+        return *_partitions_ptr;
     }
 
 
@@ -124,7 +130,7 @@ namespace lue {
             (_localities_ptr->empty() &&
              std::all_of(
                  _shape.begin(), _shape.end(), [](Count const extent) -> bool { return extent == 0; })) ||
-            (_partitions.shape() == _localities_ptr->shape()));
+            (_partitions_ptr->shape() == _localities_ptr->shape()));
 
         // All locality IDs must be valid
         lue_hpx_assert(

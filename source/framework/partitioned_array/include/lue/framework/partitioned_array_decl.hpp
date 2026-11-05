@@ -1,7 +1,9 @@
 #pragma once
 #include "lue/framework/core/array.hpp"
+#include "lue/framework/core/offset.hpp"
 #include "lue/framework/partitioned_array/array_partition_data.hpp"
-#include "lue/framework/partitioned_array/array_partition_decl.hpp"
+#include "lue/framework/partitioned_array/array_partition_fwd.hpp"
+#include "lue/framework/partitioned_array/export.hpp"
 
 
 namespace lue {
@@ -38,11 +40,13 @@ namespace lue {
             //! Type of the collection of partitions
             using Partitions = ArrayPartitionData<Partition, rank>;
 
-            using Count = Partitions::Count;
+            using PartitionsPtr = std::unique_ptr<Partitions>;
 
-            using Offset = PartitionClient::Offset;
+            using Count = lue::Count;  // Partitions::Count;
 
-            using Shape = Partitions::Shape;
+            using Offset = lue::Offset<Index, rank>;  // PartitionClient::Offset;
+
+            using Shape = lue::Shape<Count, rank>;  // Partitions::Shape;
 
 
             PartitionedArray();
@@ -62,7 +66,7 @@ namespace lue {
             {
             }
 
-            ~PartitionedArray() = default;
+            ~PartitionedArray();
 
             auto operator=(PartitionedArray const& other) -> PartitionedArray& = delete;
 
@@ -94,7 +98,7 @@ namespace lue {
             LocalitiesPtr<rank> _localities_ptr;
 
             //! Array of partitions
-            Partitions _partitions;
+            PartitionsPtr _partitions_ptr;
     };
 
 

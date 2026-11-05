@@ -134,6 +134,12 @@ namespace lue {
     }
 
 
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::~ArrayPartition()
+    {
+    }
+
+
     /*!
         @brief      Return a future to the underlying data
     */
