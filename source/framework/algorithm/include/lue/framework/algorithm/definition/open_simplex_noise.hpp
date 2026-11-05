@@ -5,6 +5,7 @@
 #include "lue/framework/algorithm/open_simplex_noise.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/macro.hpp"
 
 

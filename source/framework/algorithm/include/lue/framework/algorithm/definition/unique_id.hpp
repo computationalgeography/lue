@@ -3,6 +3,7 @@
 #include "lue/framework/algorithm/detail/promise.hpp"
 #include "lue/framework/algorithm/local_operation_export.hpp"
 #include "lue/framework/algorithm/unique_id.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/async_combinators/when_any.hpp>

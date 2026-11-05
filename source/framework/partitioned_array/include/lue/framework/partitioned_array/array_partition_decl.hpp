@@ -63,7 +63,7 @@ namespace lue {
 
             ArrayPartition(ArrayPartition&&) = default;
 
-            ~ArrayPartition() = default;
+            ~ArrayPartition();
 
             auto operator=(ArrayPartition const&) -> ArrayPartition& = default;
 

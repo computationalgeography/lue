@@ -1,6 +1,7 @@
 #include "lue/framework/api/cxx/as_state.hpp"
 #include "lue/framework/api/cxx/detail/overload.hpp"
 #include "lue/framework/api/cxx/detail/unsupported_overload.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 
 
 namespace lue {

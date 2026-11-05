@@ -96,6 +96,12 @@ namespace lue::server {
     }
 
 
+    template<typename Element, Rank rank>
+    ArrayPartition<Element, rank>::~ArrayPartition()
+    {
+    }
+
+
     /*!
         @brief      Return this partition's data
     */

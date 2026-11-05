@@ -7,6 +7,7 @@
 #include "lue/framework/core/index_util.hpp"
 #include "lue/framework/core/linear_curve.hpp"
 #include "lue/framework/core/math.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/framework/serial_route_decl.hpp"
 #include <hpx/runtime_distributed/find_localities.hpp>

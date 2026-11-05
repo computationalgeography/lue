@@ -7,6 +7,7 @@
 #include "lue/framework/algorithm/routing/walk/cell_counter.hpp"
 #include "lue/framework/algorithm/walk.hpp"
 #include "lue/framework/core/component.hpp"
+#include "lue/framework/partitioned_array/array_partition_decl.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include "lue/macro.hpp"
 #include <hpx/include/components.hpp>
