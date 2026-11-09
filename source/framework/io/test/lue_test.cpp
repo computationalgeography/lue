@@ -308,9 +308,7 @@ BOOST_AUTO_TEST_CASE(constant_raster)
         lue::value_policies::uniform<Element>(array_shape, partition_shape, Element{0}, Element{10});
     hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id);
 
-#if !BOOST_OS_WINDOWS
     write_finished.wait();
-#endif
 
     Array<Element> array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
 
@@ -345,9 +343,7 @@ BOOST_AUTO_TEST_CASE(variable_raster)
         hpx::future<void> write_finished =
             lue::to_lue(array_written, array_pathname, object_id, time_step_idx);
 
-#if !BOOST_OS_WINDOWS
         write_finished.wait();
-#endif
 
         Array<Element> array_read =
             lue::from_lue<Element>(array_pathname, partition_shape, object_id, time_step_idx);
@@ -403,9 +399,7 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_1)
             lue::to_lue(arrays_written[property_idx], array_pathnames[property_idx], object_id);
     }
 
-#if !BOOST_OS_WINDOWS
     hpx::wait_all(writes_finished);
-#endif
 
     // Read arrays
     std::vector<Array<Element>> arrays_read(nr_properties);
@@ -483,12 +477,10 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_1)
         }
     }
 
-#if !BOOST_OS_WINDOWS
     for (lue::Index property_idx = 0; property_idx < nr_properties; ++property_idx)
     {
         hpx::wait_all(writes_finished[property_idx]);
     }
-#endif
 
     // Read arrays
     std::vector<std::vector<Array<Element>>> arrays_read(nr_properties);
@@ -551,9 +543,7 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_constant_raster_same_file_2)
         std::string const array_pathname{std::format("{}/{}", property_set_pathname, property_name)};
         hpx::future<void> write_finished = lue::to_lue(array_written, array_pathname, object_id);
 
-#if !BOOST_OS_WINDOWS
         write_finished.wait();
-#endif
 
         // Read array
         Array<Element> const array_read = lue::from_lue<Element>(array_pathname, partition_shape, object_id);
@@ -614,9 +604,7 @@ BOOST_AUTO_TEST_CASE(multiple_read_write_variable_raster_same_file_2)
                 lue::to_lue(array_stacks_written[time_step_idx], array_pathname, object_id, time_step_idx);
         }
 
-#if !BOOST_OS_WINDOWS
         hpx::wait_all(writes_finished);
-#endif
 
         // Read arrays
         std::vector<Array<Element>> arrays_read(nr_time_steps);
