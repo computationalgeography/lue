@@ -38,7 +38,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["windows-2025"]
+        os: [windows-2025]
         compiler:
           - { name: "msvc", c: cl, cxx: cl }
         # vs:
@@ -145,7 +145,7 @@ jobs:
           conan list
 
       - name: clone and patch hpx
-        if: "false"
+        if: false
         run: |
           git clone --depth 1 --branch ${{ env.hpx_branch }} https://github.com/STEllAR-GROUP/hpx.git ${{ env.hpx_source_directory }}
 
@@ -312,7 +312,7 @@ jobs:
           # python -c "import lue, lue.data_model, lue.framework, lue.framework_x, lue.pcraster, lue.qa.scalability; print(lue.__version__)"
 
       - name: consume
-        if: "false"
+        if: false
         run: |
           # Test of imported CMake targets
           git clone https://github.com/computationalgeography/lue_consume.git ${{ env.lue_consume_source_directory }}
