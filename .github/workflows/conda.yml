@@ -69,4 +69,4 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           uploads: |
             ${{ matrix.home }}/micromamba/envs/lue/conda-bld/${{ matrix.target-platform }}/ => ${{ secrets.FTP_REMOTE_DIR }}/download/conda/${{ matrix.target-platform }}/
-          delete: 'true'
+          delete: true
