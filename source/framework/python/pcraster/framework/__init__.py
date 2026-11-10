@@ -94,8 +94,11 @@ class DynamicModel(lfr.DynamicModel):
 
 def decorated_dynamic(function):
     def wrapper(*args):
-        function(*args)
-        return lfr.as_state(None)
+        result = function(*args)
+
+        # Support PCRaster models that don't return a state. Note that this won't work well for large models
+        # as the rate_limit "break" doesn't kick in.
+        return result if result is not None else lfr.as_state(None)
 
     return wrapper
 
