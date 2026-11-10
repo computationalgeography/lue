@@ -1,0 +1,30 @@
+#pragma once
+#include "lue/framework/algorithm/lookup_table.hpp"
+#include "lue/framework/api/cxx/variant_wrapper.hpp"
+#include <cstdint>
+
+
+namespace lue::api {
+
+    /*!
+        @brief      Class for representing lookup tables used in reclassify operations, for example
+    */
+    class LookupTable:
+        public VariantWrapper<
+            {% for FromElement in FromElements %}
+                {% for ToElement in ToElements %}
+                    lue::LookupTable<{{ FromElement }}, {{ ToElement }}>
+                    {{ ", " if not loop.last else "" }}
+                {% endfor %}
+                {{ ", " if not loop.last else "" }}
+            {% endfor %}
+        >
+
+    {
+
+        public:
+
+            using VariantWrapper::VariantWrapper;
+    };
+
+}  // namespace lue::api

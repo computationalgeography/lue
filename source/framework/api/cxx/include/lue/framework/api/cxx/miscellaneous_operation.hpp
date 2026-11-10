@@ -6,3 +6,4 @@
 #include "lue/framework/api/cxx/miscellaneous/create_array.hpp"
 #include "lue/framework/api/cxx/miscellaneous/create_kernel.hpp"
 #include "lue/framework/api/cxx/miscellaneous/create_scalar.hpp"
+#include "lue/framework/api/cxx/miscellaneous/reclassify.hpp"

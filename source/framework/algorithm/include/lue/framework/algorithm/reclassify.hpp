@@ -1,15 +1,11 @@
 #pragma once
+#include "lue/framework/algorithm/lookup_table.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include <hpx/future.hpp>
-#include <unordered_map>
 
 
 namespace lue {
-
-    template<typename FromElement, typename ToElement>
-    using LookupTable = std::unordered_map<FromElement, ToElement>;
-
 
     template<typename Policies, typename FromElement, typename ToElement, Rank rank>
     auto reclassify(

@@ -1,5 +1,6 @@
 #pragma once
 #include "lue/framework/algorithm/kernel.hpp"
+#include "lue/framework/algorithm/lookup_table.hpp"
 #include "lue/framework/algorithm/scalar.hpp"
 #include "lue/framework/partitioned_array_decl.hpp"
 #include <format>
@@ -96,6 +97,13 @@ namespace lue::api::detail {
     auto type_name([[maybe_unused]] lue::Kernel<Element, rank> const& argument) -> std::string
     {
         return std::format("Kernel<{}, {}>", type_name<Element>(), rank);
+    }
+
+
+    template<typename FromElement, typename ToElement>
+    auto type_name([[maybe_unused]] lue::LookupTable<FromElement, ToElement> const& argument) -> std::string
+    {
+        return std::format("LookupTable<{}, {}>", type_name<FromElement>(), type_name<ToElement>());
     }
 
 

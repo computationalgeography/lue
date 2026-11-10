@@ -8,6 +8,11 @@ block()
     list(TRANSFORM Elements APPEND "\"")
     list(JOIN Elements ", " Elements)
 
+    set(IntegralElements ${LUE_FRAMEWORK_INTEGRAL_ELEMENTS})
+    list(TRANSFORM IntegralElements PREPEND "\"")
+    list(TRANSFORM IntegralElements APPEND "\"")
+    list(JOIN IntegralElements ", " IntegralElements)
+
     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/array.hpp")
     generate_template_instantiation(
         INPUT_PATHNAME
@@ -49,6 +54,17 @@ block()
             ${output_pathname}
         DICTIONARY
             '{"Elements":[${Elements}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/lookup_table.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/lookup_table.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"FromElements":[${IntegralElements}],"ToElements":[${Elements}]}'
     )
     list(APPEND generated_source_files "${output_pathname}")
 
@@ -154,6 +170,7 @@ target_sources(lue_framework_api_cxx
         source/miscellaneous/create_array.cpp
         source/miscellaneous/create_kernel.cpp
         source/miscellaneous/create_scalar.cpp
+        source/miscellaneous/reclassify.cpp
         source/routing/accu.cpp
         source/routing/d8_flow_direction.cpp
         source/type_info.cpp
@@ -162,6 +179,7 @@ target_sources(lue_framework_api_cxx
 target_link_libraries(lue_framework_api_cxx
     PRIVATE
         lue::framework_focal_operation
+        lue::framework_global_operation
         lue::framework_io
         lue::framework_local_operation
         lue::framework_miscellaneous_operation
