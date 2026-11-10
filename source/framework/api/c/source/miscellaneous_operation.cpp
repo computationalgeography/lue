@@ -2,6 +2,7 @@
 #include "array.hpp"
 #include "field.hpp"
 #include "literal.hpp"
+#include "lookup_table.hpp"
 #include "scalar.hpp"
 #include "type_info.hpp"
 #include "lue/framework/api/cxx/miscellaneous_operation.hpp"
@@ -111,4 +112,13 @@ auto lue_create_scalar(LUE_Literal* fill_value) -> LUE_Scalar*
     lue::api::Scalar result = lue::api::create_scalar(lue_as_cxx_literal(fill_value));
 
     return new LUE_Scalar{.instance = new lue::api::Scalar{std::move(result)}};
+}
+
+
+auto lue_reclassify(LUE_Field* field, LUE_LookupTable* lookup_table) -> LUE_Field*
+{
+    lue::api::Field result =
+        lue::api::reclassify(lue_as_cxx_field(field), lue_as_cxx_lookup_table(lookup_table));
+
+    return new LUE_Field{.instance = new lue::api::Field{std::move(result)}};
 }

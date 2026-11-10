@@ -161,6 +161,9 @@ static void create_scalar_test(void)
 }
 
 
+// TODO: reclassify
+
+
 HPX_UNIT_TEST_SUITE(
     "miscellaneous_operation",
     CUNIT_CI_TEST(array_like_test),
