@@ -135,6 +135,8 @@ namespace lue::api {
             },
             "value"_a,
             "dtype"_a);
+
+        module.def("reclassify", reclassify, "field"_a, "lookup_table"_a);
     }
 
 }  // namespace lue::api

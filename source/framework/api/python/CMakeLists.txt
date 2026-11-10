@@ -31,6 +31,7 @@ target_sources(lue_py_framework_x
         source/io.cpp
         source/kernel.cpp
         source/literal.cpp
+        source/lookup_table.cpp
         source/local_operation.cpp
         source/miscellaneous_operation.cpp
         source/routing_operation.cpp
