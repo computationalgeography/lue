@@ -60,6 +60,7 @@ set(miscellaneous_operation_names
     miscellaneous/cell_index
     miscellaneous/create_array
     miscellaneous/create_scalar
+    miscellaneous/reclassify
 )
 
 set(routing_operation_names
@@ -144,6 +145,7 @@ set(names
     game_of_life
     focal_operation
     local_operation
+    reclassify
 )
 
 foreach(name ${names})
