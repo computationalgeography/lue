@@ -4,6 +4,8 @@
 
 namespace lue {
 
+    // clang-format off
     template class PartitionedArray<{{ Element }}, {{ rank }}>;
+    // clang-format on
 
 }  // namespace lue

@@ -2,6 +2,51 @@
 set(generated_source_files "")
 
 block()
+    set(offset "include/lue/framework")
+
+    set(Elements ${LUE_FRAMEWORK_ZONE_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    set(ranks ${LUE_FRAMEWORK_RANKS})
+    list(TRANSFORM ranks PREPEND "\"")
+    list(TRANSFORM ranks APPEND "\"")
+    list(JOIN ranks ", " ranks)
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/serial_route_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/serial_route_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_route/serial_route_partition_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_route/serial_route_partition_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_route/server/serial_route_partition_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_route/server/serial_route_partition_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+    list(APPEND generated_source_files "${output_pathname}")
+
     foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
         string(REPLACE "std::" "" RouteID ${RouteID})
         string(REPLACE "::" "_" element ${RouteID})
