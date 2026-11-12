@@ -160,13 +160,6 @@ endblock()
 add_library(lue_py_framework SHARED)
 add_library(lue::py_framework ALIAS lue_py_framework)
 
-if(WIN32)
-    target_compile_definitions(lue_py_framework
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
-
 target_include_directories(lue_py_framework
     PRIVATE
         $<TARGET_PROPERTY:lue::py_data_model,SOURCE_DIR>/include
