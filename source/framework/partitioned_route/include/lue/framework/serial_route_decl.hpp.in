@@ -22,7 +22,7 @@ namespace lue {
         collections of route fragments (SerialRouteFragment).
     */
     template<typename RouteID, Rank rank>
-    class LUE_PARTITIONED_ROUTE_EXPORT SerialRoute
+    class SerialRoute
     {
 
             static_assert(std::is_integral_v<RouteID>);
@@ -78,7 +78,7 @@ namespace lue {
     // clang-format off
     {% for Element in Elements %}
         {% for rank in ranks %}
-            extern template class SerialRoute<{{ Element }}, {{ rank }}>;
+            extern template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoute<{{ Element }}, {{ rank }}>;
         {% endfor %}
     {% endfor %}
     // clang-format on
