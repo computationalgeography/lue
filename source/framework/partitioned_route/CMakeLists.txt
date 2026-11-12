@@ -106,6 +106,7 @@ target_sources(lue_framework_partitioned_route
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/serial_route_decl.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/serial_route_partition_decl.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition_decl.hpp
     PRIVATE
         source/component_module.cpp
         ${generated_source_files}
