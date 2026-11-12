@@ -1,15 +1,12 @@
 #pragma once
 #include "lue/framework/core/define.hpp"
+#include <hpx/config.hpp>
 #include <array>
 #include <cstdint>
 #include <tuple>
-#include <hpx/config.hpp>
 
 
-// #if (defined(HPX_HAVE_NETWORKING) && defined(HPX_HAVE_PARCELPORT_MPI)) || defined(HPX_HAVE_MODULE_MPI_BASE)
-// #define LUE_HPX_WITH_MPI
-// #endif
-
+// clang-format off
 
 namespace lue {
 
@@ -121,3 +118,5 @@ namespace lue {
     constexpr static std::array<Rank, {{ ranks | length }}> ranks{ {{ ranks | join(", ") }} };
 
 }  // namespace lue
+
+// clang-format on

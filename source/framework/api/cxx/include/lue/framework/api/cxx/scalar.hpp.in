@@ -10,18 +10,19 @@ namespace lue::api {
         @brief      Class for representing scalars
     */
     class Scalar:
+        // clang-format off
         public VariantWrapper<
             {% for Element in Elements %}
                 lue::Scalar<{{ Element }}>,
             {% endfor %}
             {{ Elements | join(", ") }}
-        >
+        >  // clang-format on
 
     {
 
-        public:
+    public:
 
-            using VariantWrapper::VariantWrapper;
+        using VariantWrapper::VariantWrapper;
     };
 
 }  // namespace lue::api

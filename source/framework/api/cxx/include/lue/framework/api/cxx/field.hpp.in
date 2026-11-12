@@ -11,6 +11,7 @@ namespace lue::api {
         @brief      Class for representing continuous fields of information
     */
     class Field:
+        // clang-format off
         public VariantWrapper<
             {% for Element in Elements %}
                 lue::PartitionedArray<{{ Element }}, 2>,
@@ -19,13 +20,13 @@ namespace lue::api {
                 lue::Scalar<{{ Element }}>,
             {% endfor %}
             {{ Elements | join(", ") }}
-        >
+        >  // clang-format on
 
     {
 
-        public:
+    public:
 
-            using VariantWrapper::VariantWrapper;
+        using VariantWrapper::VariantWrapper;
     };
 
 
@@ -33,9 +34,10 @@ namespace lue::api {
         @brief      Class for representing continuous fields of flow directions
     */
     class FlowDirectionField:
+        // clang-format off
         public VariantWrapper<
             lue::PartitionedArray<{{ FlowDirectionElement }}, 2>
-        >
+        >  // clang-format on
 
     {
 
