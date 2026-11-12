@@ -101,6 +101,15 @@ namespace lue {
     };
 
 
+    // clang-format off
+    {% for Element in Elements %}
+        {% for rank in ranks %}
+            extern template class SerialRoutePartition<{{ Element }}, {{ rank }}>;
+        {% endfor %}
+    {% endfor %}
+    // clang-format on
+
+
     namespace detail {
 
         template<typename RouteID, Rank r>
