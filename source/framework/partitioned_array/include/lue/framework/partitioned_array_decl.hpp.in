@@ -102,6 +102,15 @@ namespace lue {
     };
 
 
+    // clang-format off
+    {% for Element in Elements %}
+        {% for rank in ranks %}
+            extern template class PartitionedArray<{{ Element }}, {{ rank }}>;
+        {% endfor %}
+    {% endfor %}
+    // clang-format on
+
+
     namespace detail {
 
         // Specialization for PartitionedArray
