@@ -9,7 +9,8 @@ import jinja2
 
 
 def main():
-    usage = """\
+    command = os.path.basename(sys.argv[0])
+    usage = f"""\
 Read a file, replace some placeholders with values, and write the result
 to a file
 
@@ -22,7 +23,7 @@ Options:
     value        Key-value pairs to use for substitutions: Python dictionary
                  formatted as a single string
     -h --help    Show this screen
-""".format(command=os.path.basename(sys.argv[0]))
+"""
 
     arguments = docopt.docopt(usage)
 
@@ -40,7 +41,9 @@ Options:
         pathlib.Path(os.path.dirname(destination_pathname)).mkdir(
             parents=True, exist_ok=True
         )
-        open(destination_pathname, "w").write(template.render(values))
+
+        with open(destination_pathname, "w") as destination_file:
+            destination_file.write(f"{template.render(values)}\n")
 
 
 if __name__ == "__main__":
