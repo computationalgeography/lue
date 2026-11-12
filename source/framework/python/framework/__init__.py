@@ -32,9 +32,8 @@ default_hpx_runtime_configuration = [
     "hpx.commandline.aliasing!=0",
     # Don't print diagnostics during forced terminate
     "hpx.diagnostics_on_terminate!=0",
-    # Make AGAS clean up resources faster than by default. This decreases the amount of
-    # memory used.
-    "hpx.agas.max_pending_refcnt_requests!=50",
+    # Make AGAS clean up resources faster than by default. This decreases the amount of memory used.
+    "hpx.agas.max_pending_refcnt_requests!=5",
     # Got an HPX error when processing a large dataset:
     #     mmap() failed to allocate thread stack due to
     #     insufficient resources, increase
