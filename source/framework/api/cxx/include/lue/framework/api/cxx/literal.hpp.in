@@ -9,9 +9,10 @@ namespace lue::api {
         @brief      Class for representing literals
     */
     class Literal:
+        // clang-format off
         public VariantWrapper<
             {{ Elements | join(", ") }}
-        >
+        >  // clang-format on
 
     {
 
