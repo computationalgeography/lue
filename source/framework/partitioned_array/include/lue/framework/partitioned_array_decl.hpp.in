@@ -25,7 +25,7 @@ namespace lue {
         PartitionedArray is a move-only type.
     */
     template<typename Element, Rank rank>
-    class LUE_FPA_EXPORT PartitionedArray
+    class PartitionedArray
     {
 
         private:
@@ -105,7 +105,7 @@ namespace lue {
     // clang-format off
     {% for Element in Elements %}
         {% for rank in ranks %}
-            extern template class PartitionedArray<{{ Element }}, {{ rank }}>;
+            extern template class LUE_FPA_EXPORT PartitionedArray<{{ Element }}, {{ rank }}>;
         {% endfor %}
     {% endfor %}
     // clang-format on

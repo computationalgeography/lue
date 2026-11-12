@@ -12,7 +12,7 @@ namespace lue {
         server instance. Multiple instances can be associated with a single server instance.
     */
     template<typename RouteID, Rank rank>
-    class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition:
+    class SerialRoutePartition:
         public hpx::components::
             client_base<SerialRoutePartition<RouteID, rank>, server::SerialRoutePartition<RouteID, rank>>
 
@@ -104,7 +104,7 @@ namespace lue {
     // clang-format off
     {% for Element in Elements %}
         {% for rank in ranks %}
-            extern template class SerialRoutePartition<{{ Element }}, {{ rank }}>;
+            extern template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition<{{ Element }}, {{ rank }}>;
         {% endfor %}
     {% endfor %}
     // clang-format on
