@@ -23,7 +23,6 @@ block()
         DICTIONARY
             '{"Elements":[${Elements}],"ranks":[${ranks}]}'
     )
-    list(APPEND generated_source_files "${output_pathname}")
 
     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array/array_partition_decl.hpp")
     generate_template_instantiation(
@@ -34,7 +33,6 @@ block()
         DICTIONARY
             '{"Elements":[${Elements}],"ranks":[${ranks}]}'
     )
-    list(APPEND generated_source_files "${output_pathname}")
 
     set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_array/server/array_partition_decl.hpp")
     generate_template_instantiation(
@@ -45,7 +43,6 @@ block()
         DICTIONARY
             '{"Elements":[${Elements}],"ranks":[${ranks}]}'
     )
-    list(APPEND generated_source_files "${output_pathname}")
 
     foreach(Element IN LISTS LUE_FRAMEWORK_ELEMENTS)
         string(REPLACE "std::" "" Element ${Element})
@@ -92,13 +89,6 @@ set_target_properties(lue_framework_partitioned_array
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
-# if(MACOS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#     set_target_properties(lue_framework_partitioned_array
-#         PROPERTIES
-#             CXX_VISIBILITY_PRESET default
-#     )
-# endif()
-
 generate_export_header(lue_framework_partitioned_array
     BASE_NAME LUE_FPA
     EXPORT_FILE_NAME include/lue/framework/partitioned_array/export.hpp
@@ -113,6 +103,8 @@ target_sources(lue_framework_partitioned_array
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array_decl.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/array_partition_decl.hpp
     PRIVATE
         source/component_module.cpp
         ${generated_source_files}
