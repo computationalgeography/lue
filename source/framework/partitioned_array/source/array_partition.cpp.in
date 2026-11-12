@@ -2,11 +2,19 @@
 #include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
 
 
+// clang-format off
 namespace lue {
 
     template class ArrayPartition<{{ Element }}, {{ rank }}>;
+
+    namespace server {
+
+        template class ArrayPartition<{{ Element }}, {{ rank }}>;
+
+    }  // namespace server
 
 }  // namespace lue
 
 
 LUE_REGISTER_ARRAY_PARTITION({{ Element }}, {{ rank }});
+// clang-format on
