@@ -105,6 +105,7 @@ target_sources(lue_framework_partitioned_array
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/export.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array_decl.hpp
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/array_partition_decl.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_array/server/array_partition_decl.hpp
     PRIVATE
         source/component_module.cpp
         ${generated_source_files}
