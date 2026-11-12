@@ -2,11 +2,20 @@
 #include "lue/framework/partitioned_route/server/serial_route_partition_impl.hpp"
 
 
+// clang-format off
+
 namespace lue {
 
     template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
 
+    namespace server {
+
+        template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
+
+    }  // namespace server
 }  // namespace lue
 
 
 LUE_REGISTER_SERIAL_ROUTE_PARTITION({{ RouteID }}, {{ rank }});
+
+// clang-format on

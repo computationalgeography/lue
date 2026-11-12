@@ -3,6 +3,8 @@
 
 namespace lue {
 
+    // clang-format off
     template class SerialRoute<{{ RouteID }}, {{ rank }}>;
+    // clang-format on
 
 }  // namespace lue
