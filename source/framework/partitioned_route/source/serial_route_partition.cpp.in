@@ -1,3 +1,4 @@
+// NOTE: Order matters: first server header then client header. Otherwise sfinae-incomplete issues.
 #include "lue/framework/partitioned_route/serial_route_partition_impl.hpp"
 #include "lue/framework/partitioned_route/server/serial_route_partition_impl.hpp"
 
