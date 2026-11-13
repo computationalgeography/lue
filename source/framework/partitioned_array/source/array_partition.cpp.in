@@ -1,5 +1,7 @@
-#include "lue/framework/partitioned_array/array_partition_impl.hpp"
+// NOTE: Order matters: first server header then client header. Otherwise sfinae-incomplete issues.
 #include "lue/framework/partitioned_array/server/array_partition_impl.hpp"
+
+#include "lue/framework/partitioned_array/array_partition_impl.hpp"
 
 
 // clang-format off

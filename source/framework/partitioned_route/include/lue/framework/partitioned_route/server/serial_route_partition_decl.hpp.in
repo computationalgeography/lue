@@ -3,7 +3,7 @@
 #include "lue/framework/core/shape.hpp"
 #include "lue/framework/partitioned_route/serial_route_fragment.hpp"
 #include "lue/framework/partitioned_route/serialize/serial_route_fragment.hpp"
-#include <hpx/include/components.hpp>
+#include <hpx/components_base/server/component_base.hpp>
 #include <hpx/preprocessor/cat.hpp>
 #include <set>
 #include <unordered_map>
