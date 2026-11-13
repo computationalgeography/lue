@@ -1,6 +1,7 @@
 #pragma once
 #include "lue/framework/core/assert.hpp"
 #include "lue/framework/partitioned_route/serial_route_partition_decl.hpp"
+#include <hpx/include/components.hpp>
 
 
 namespace lue {
