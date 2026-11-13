@@ -6,8 +6,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_FOCAL_MAXIMUM(
-            ESC(policy::focal_maximum::{{ Policies }}<{{ Element }}>),
-            ESC(Kernel<{{ Boolean }}, 2>)
-        );
+        // clang-format off
+        ESC(policy::focal_maximum::{{ Policies }}<{{ Element }}>),
+        ESC(Kernel<{{ Boolean }}, 2>)
+        // clang-format on
+    );
 
 }  // namespace lue

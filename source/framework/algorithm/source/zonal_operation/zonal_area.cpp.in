@@ -5,9 +5,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_ZONAL_AREA(
-            ESC(policy::zonal_area::{{ Policies }}<{{ Count }}, {{ Zone}}>),
-            {{ Count }},
-            {{ Zone }}
-        );
+        // clang-format off
+        ESC(policy::zonal_area::{{ Policies }}<{{ Count }}, {{ Zone}}>),
+        {{ Count }},
+        {{ Zone }}  // clang-format on
+    );
 
 }  // namespace lue

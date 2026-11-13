@@ -722,15 +722,6 @@ set_target_properties(lue_framework_local_operation
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
-if(WIN32)
-    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
-    # action involving partition component clients.
-    target_compile_definitions(lue_framework_local_operation
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
-
 generate_export_header(lue_framework_local_operation
     BASE_NAME LUE_LOCAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/local_operation_export.hpp
@@ -970,15 +961,6 @@ set_target_properties(lue_framework_focal_operation
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
-if(WIN32)
-    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
-    # action involving partition component clients.
-    target_compile_definitions(lue_framework_focal_operation
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
-
 generate_export_header(lue_framework_focal_operation
     BASE_NAME LUE_FOCAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/focal_operation_export.hpp
@@ -1148,15 +1130,6 @@ set_target_properties(lue_framework_miscellaneous_operation
         SOVERSION ${LUE_VERSION_MAJOR}
         DLL_NAME_WITH_SOVERSION TRUE
 )
-
-if(WIN32)
-    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
-    # action involving partition component clients.
-    target_compile_definitions(lue_framework_miscellaneous_operation
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
 
 generate_export_header(lue_framework_miscellaneous_operation
     BASE_NAME LUE_MISCELLANEOUS_OPERATION
@@ -1402,15 +1375,6 @@ set_target_properties(lue_framework_zonal_operation
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
-if(WIN32)
-    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
-    # action involving partition component clients.
-    target_compile_definitions(lue_framework_zonal_operation
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
-
 generate_export_header(lue_framework_zonal_operation
     BASE_NAME LUE_ZONAL_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/zonal_operation_export.hpp
@@ -1619,15 +1583,6 @@ set_target_properties(lue_framework_global_operation
         SOVERSION ${LUE_VERSION_MAJOR}
         DLL_NAME_WITH_SOVERSION TRUE
 )
-
-if(WIN32)
-    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
-    # action involving partition component clients.
-    target_compile_definitions(lue_framework_global_operation
-        PRIVATE
-            HPX_COMPONENT_EXPORTS
-    )
-endif()
 
 generate_export_header(lue_framework_global_operation
     EXPORT_FILE_NAME include/lue/framework/algorithm/global_operation_export.hpp

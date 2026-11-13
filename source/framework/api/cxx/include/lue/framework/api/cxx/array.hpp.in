@@ -10,18 +10,19 @@ namespace lue::api {
         @brief      Class for representing arrays
     */
     class Array:
+        // clang-format off
         public VariantWrapper<
             {% for Element in Elements %}
                 lue::PartitionedArray<{{ Element }}, 2>
                 {% if not loop.last %}, {% endif %}
             {% endfor %}
-        >
+        >  // clang-format on
 
     {
 
-        public:
+    public:
 
-            using VariantWrapper::VariantWrapper;
+        using VariantWrapper::VariantWrapper;
     };
 
 }  // namespace lue::api

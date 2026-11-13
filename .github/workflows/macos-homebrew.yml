@@ -7,8 +7,8 @@ name: macOS CI (Homebrew)
 
 on:
   pull_request:
-    branches-ignore:
-      - "*"
+    # branches-ignore:
+    #   - "*"
     paths:
       - "**"
       - "!.github/workflows/*"
@@ -17,10 +17,8 @@ on:
       - "!document/*"
       - "!environment/easybuild/*"
   push:
-    # branches:
-    #   - "master"
-    branches-ignore:
-      - "*"
+    branches:
+      - "master"
     paths:
       - "**"
       - "!.github/workflows/*"

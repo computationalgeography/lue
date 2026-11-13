@@ -5,8 +5,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_CLUMP(
-            ESC(policy::clump::{{ Policies }}<{{ Zone }}>),
-            {{ rank }}
-        );
+        // clang-format off
+        ESC(policy::clump::{{ Policies }}<{{ Zone }}>),
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

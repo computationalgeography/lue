@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/value_policies/first_n.hpp"
 
 
+// clang-format off
 LUE_REGISTER_FIRST_N_ACTION_DECLARATIONS(
     ESC(lue::policy::first_n::{{ Policies }}<{{ OutputElement }}, {{ RouteID }}>),
     {{ rank }},
@@ -10,12 +11,15 @@ LUE_REGISTER_FIRST_N_ACTIONS(
     ESC(lue::policy::first_n::{{ Policies }}<{{ OutputElement }}, {{ RouteID }}>),
     {{ rank }},
     {{ OutputElement | replace("::", "_") }}_{{ RouteID | replace("::", "_") }}_{{ rank }});
+// clang-format on
 
 
 namespace lue {
 
     LUE_INSTANTIATE_FIRST_N(
+        // clang-format off
         ESC(policy::first_n::{{ Policies }}<{{ OutputElement }}, {{ RouteID }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

@@ -2,6 +2,48 @@
 set(generated_source_files "")
 
 block()
+    set(offset "include/lue/framework")
+
+    set(Elements ${LUE_FRAMEWORK_ZONE_ELEMENTS})
+    list(TRANSFORM Elements PREPEND "\"")
+    list(TRANSFORM Elements APPEND "\"")
+    list(JOIN Elements ", " Elements)
+
+    set(ranks ${LUE_FRAMEWORK_RANKS})
+    list(TRANSFORM ranks PREPEND "\"")
+    list(TRANSFORM ranks APPEND "\"")
+    list(JOIN ranks ", " ranks)
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/serial_route_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/serial_route_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_route/serial_route_partition_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_route/serial_route_partition_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+
+    set(output_pathname "${CMAKE_CURRENT_BINARY_DIR}/${offset}/partitioned_route/server/serial_route_partition_decl.hpp")
+    generate_template_instantiation(
+        INPUT_PATHNAME
+            "${CMAKE_CURRENT_SOURCE_DIR}/${offset}/partitioned_route/server/serial_route_partition_decl.hpp.in"
+        OUTPUT_PATHNAME
+            ${output_pathname}
+        DICTIONARY
+            '{"Elements":[${Elements}],"ranks":[${ranks}]}'
+    )
+
     foreach(RouteID IN LISTS LUE_FRAMEWORK_ZONE_ELEMENTS)
         string(REPLACE "std::" "" RouteID ${RouteID})
         string(REPLACE "::" "_" element ${RouteID})
@@ -48,13 +90,6 @@ set_target_properties(lue_framework_partitioned_route
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
-# if(NOT (MACOS AND CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
-#     set_target_properties(lue_framework_partitioned_route
-#         PROPERTIES
-#             CXX_VISIBILITY_PRESET default
-#     )
-# endif()
-
 generate_export_header(lue_framework_partitioned_route
     BASE_NAME LUE_PARTITIONED_ROUTE
     EXPORT_FILE_NAME include/lue/framework/partitioned_route/export.hpp
@@ -69,6 +104,9 @@ target_sources(lue_framework_partitioned_route
         FILES
             include/lue
             ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/export.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/serial_route_decl.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/serial_route_partition_decl.hpp
+            ${CMAKE_CURRENT_BINARY_DIR}/include/lue/framework/partitioned_route/server/serial_route_partition_decl.hpp
     PRIVATE
         source/component_module.cpp
         ${generated_source_files}

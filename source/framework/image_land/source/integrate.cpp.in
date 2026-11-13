@@ -2,6 +2,8 @@
 #include "lue/framework/algorithm/value_policies/integrate.hpp"
 
 
+// clang-format off
+
 LUE_REGISTER_INTEGRATE_ACTION_DECLARATIONS(
     ESC(lue::policy::integrate::{{ Policies }}<{{ RouteID }}, {{ IntegrandElement }}>),
     {{ rank }},
@@ -19,3 +21,5 @@ namespace lue {
         {{ rank }});
 
 }  // namespace lue
+
+// clang-format on

@@ -3,20 +3,24 @@
 
 namespace lue::framework {
 
+    // clang-format off
     {% for Element in Elements %}
         {% for rank in ranks %}
             void bind_partitioned_array_{{ Element | replace("::", "_") }}_{{ rank }}(pybind11::module& module);
         {% endfor %}
     {% endfor %}
+    // clang-format on
 
 
     void bind_partitioned_array(pybind11::module& module)
     {
+        // clang-format off
         {% for Element in Elements %}
             {% for rank in ranks %}
                 bind_partitioned_array_{{ Element | replace("::", "_") }}_{{ rank }}(module);
             {% endfor %}
         {% endfor %}
+        // clang-format on
     }
 
 }  // namespace lue::framework
