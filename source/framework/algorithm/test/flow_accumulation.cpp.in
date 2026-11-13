@@ -4,7 +4,9 @@
 
 namespace lue::test {
 
-    {% raw %}
+    // clang-format off
+    {% raw %}  // clang-format on
+
     FlowDirectionArray merging_streams()
     {
         return create_partitioned_array<FlowDirectionArray>(
@@ -95,8 +97,7 @@ namespace lue::test {
                 }
                 // clang-format on
                 // NOLINTEND
-            }
-        );
+            });
     }
 
 
@@ -164,8 +165,7 @@ namespace lue::test {
                 },
                 // clang-format on
                 // NOLINTEND
-            }
-        );
+            });
     }
 
 
@@ -224,8 +224,7 @@ namespace lue::test {
                 },
                 // clang-format on
                 // NOLINTEND
-            }
-        );
+            });
     }
 
 
@@ -296,10 +295,15 @@ namespace lue::test {
                 // NOLINTEND
             });
     }
-    {% endraw %}
 
+    // clang-format off
+    {% endraw %}
+    // clang-format on
+
+    // clang-format off
     {% for Element in UnsignedIntegralElements + FloatingPointElements %}
         template PartitionedArray<{{ Element }}, 2> filled({{ Element }});
     {% endfor %}
+    // clang-format on
 
 }  // namespace lue::test

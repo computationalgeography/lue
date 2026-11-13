@@ -6,10 +6,11 @@
 namespace lue {
 
     LUE_INSTANTIATE_RECLASSIFY(
-            ESC(policy::reclassify::{{ Policies }}<{{ InputElement }}, {{ OutputElement }}>),
-            {{ InputElement }},
-            {{ OutputElement }},
-            {{ rank }}
-        );
+        // clang-format off
+        ESC(policy::reclassify::{{ Policies }}<{{ InputElement }}, {{ OutputElement }}>),
+        {{ InputElement }},
+        {{ OutputElement }},
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

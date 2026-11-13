@@ -6,7 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_MAXIMUM(
+        // clang-format off
         ESC(policy::maximum::{{ Policies }}<{{ Element }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

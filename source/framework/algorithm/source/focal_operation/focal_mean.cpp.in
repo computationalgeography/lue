@@ -6,8 +6,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_FOCAL_MEAN(
-            ESC(policy::focal_mean::{{ Policies }}<{{ Element }}>),
-            ESC(Kernel<{{ Boolean }}, 2>)
-        );
+        // clang-format off
+        ESC(policy::focal_mean::{{ Policies }}<{{ Element }}>),
+        ESC(Kernel<{{ Boolean }}, 2>)
+        // clang-format on
+    );
 
 }  // namespace lue

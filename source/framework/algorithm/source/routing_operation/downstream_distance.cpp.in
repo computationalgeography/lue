@@ -4,9 +4,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_DOWNSTREAM_DISTANCE(
-            ESC(policy::downstream_distance::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
-            {{ FlowDirectionElement }},
-            {{ Element }}
-        );
+        // clang-format off
+        ESC(policy::downstream_distance::{{ Policies }}<{{ FlowDirectionElement }}, {{ Element }}>),
+        {{ FlowDirectionElement }},
+        {{ Element }}  // clang-format on
+    );
 
 }  // namespace lue

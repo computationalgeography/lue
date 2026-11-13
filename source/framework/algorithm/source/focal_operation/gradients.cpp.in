@@ -5,8 +5,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_GRADIENTS(
-            ESC(policy::gradients::{{ Policies }}<{{ Element }}>),
-            {{ Element }}
-        );
+        // clang-format off
+        ESC(policy::gradients::{{ Policies }}<{{ Element }}>),
+        {{ Element }}  // clang-format on
+    );
 
 }  // namespace lue

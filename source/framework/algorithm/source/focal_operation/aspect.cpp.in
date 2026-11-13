@@ -5,7 +5,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_ASPECT(
-            ESC(policy::aspect::{{ Policies }}<{{ Element }}>)
-        );
+        // clang-format off
+        ESC(policy::aspect::{{ Policies }}<{{ Element }}>)
+        // clang-format on
+    );
 
 }  // namespace lue
