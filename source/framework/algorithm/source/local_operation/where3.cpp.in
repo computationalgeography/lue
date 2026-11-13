@@ -6,14 +6,15 @@
 namespace lue {
 
     LUE_INSTANTIATE_WHERE3(
-            ESC(policy::where::{{ Policies }}<
-                {{ ExpressionElement }},
-                {{ ConditionElement }},
-                {{ ExpressionElement }},
-                {{ ExpressionElement }}>),
+        // clang-format off
+        ESC(policy::where::{{ Policies }}<
+            {{ ExpressionElement }},
             {{ ConditionElement }},
             {{ ExpressionElement }},
-            {{ rank }}
-        );
+            {{ ExpressionElement }}>),
+        {{ ConditionElement }},
+        {{ ExpressionElement }},
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

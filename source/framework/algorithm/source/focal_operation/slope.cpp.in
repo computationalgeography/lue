@@ -5,7 +5,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_SLOPE(
-            ESC(policy::slope::{{ Policies }}<{{ Element }}>)
-        );
+        // clang-format off
+        ESC(policy::slope::{{ Policies }}<{{ Element }}>)
+        // clang-format on
+    );
 
 }  // namespace lue

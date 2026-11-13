@@ -6,7 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_NONE(
+        // clang-format off
         ESC(policy::none::{{ Policies }}<{{ Element }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

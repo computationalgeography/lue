@@ -8,6 +8,10 @@ namespace lue {
     using Shape_ = Shape<Count, 2>;
 
     LUE_INSTANTIATE_NORMAL_TEMPLATE(
-        ESC(policy::normal::{{Policies}} < {{Element}}, {{SomeElement}} >), Shape_);
+        // clang-format off
+        ESC(policy::normal::{{Policies}} < {{Element}}, {{SomeElement}} >),
+        Shape_
+        // clang-format on
+    );
 
 }  // namespace lue

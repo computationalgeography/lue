@@ -5,6 +5,10 @@
 
 namespace lue {
 
-    LUE_INSTANTIATE_ARRAY_LIKE(ESC(policy::array_like::{{Policies}} < {{OutputElement}}, {{InputElement}} >));
+    LUE_INSTANTIATE_ARRAY_LIKE(
+        // clang-format off
+        ESC(policy::array_like::{{ Policies }}<{{ OutputElement }}, {{ InputElement }} >)
+        // clang-format on
+    );
 
 }  // namespace lue

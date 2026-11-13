@@ -2,6 +2,7 @@
 #include "lue/framework/algorithm/value_policies/integrate_and_allocate.hpp"
 
 
+// clang-format off
 LUE_REGISTER_INTEGRATE_AND_ALLOCATE_ACTION_DECLARATIONS(
     ESC(lue::policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
     {{ rank }},
@@ -10,12 +11,15 @@ LUE_REGISTER_INTEGRATE_AND_ALLOCATE_ACTIONS(
     ESC(lue::policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
     {{ rank }},
     {{ ZoneElement | replace("::", "_") }}_{{ FloatingPointElement }}_{{ rank }});
+// clang-format on
 
 
 namespace lue {
 
     LUE_INSTANTIATE_INTEGRATE_AND_ALLOCATE(
+        // clang-format off
         ESC(policy::integrate_and_allocate::{{ Policies }}<{{ ZoneElement }}, {{ FloatingPointElement }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

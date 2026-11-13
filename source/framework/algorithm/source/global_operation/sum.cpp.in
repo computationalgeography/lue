@@ -6,7 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_SUM(
+        // clang-format off
         ESC(policy::sum::{{ Policies }}<{{ Element }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

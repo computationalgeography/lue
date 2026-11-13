@@ -6,8 +6,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_FOCAL_MINIMUM(
-            ESC(policy::focal_minimum::{{ Policies }}<{{ Element }}>),
-            ESC(Kernel<{{ Boolean }}, 2>)
-        );
+        // clang-format off
+        ESC(policy::focal_minimum::{{ Policies }}<{{ Element }}>),
+        ESC(Kernel<{{ Boolean }}, 2>)
+        // clang-format on
+    );
 
 }  // namespace lue
