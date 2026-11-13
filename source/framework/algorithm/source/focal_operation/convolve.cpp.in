@@ -6,8 +6,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_CONVOLVE(
-            ESC(policy::convolve::{{ Policies }}<{{ Element }}>),
-            ESC(Kernel<{{ Weight }}, 2>)
-        );
+        // clang-format off
+        ESC(policy::convolve::{{ Policies }}<{{ Element }}>),
+        ESC(Kernel<{{ Weight }}, 2>)
+        // clang-format on
+    );
 
 }  // namespace lue

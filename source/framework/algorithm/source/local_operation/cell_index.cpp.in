@@ -6,8 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_CELL_INDEX(
-            ESC(policy::cell_index::{{ Policies }}<{{ IndexElement }}, {{ ConditionElement }}>),
-            {{ rank }}
-        );
+        // clang-format off
+        ESC(policy::cell_index::{{ Policies }}<{{ IndexElement }}, {{ ConditionElement }}>),
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

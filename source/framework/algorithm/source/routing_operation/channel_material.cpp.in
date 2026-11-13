@@ -1,6 +1,8 @@
 #include "lue/framework/algorithm/definition/accumulating_router.hpp"
 
 
+// clang-format off
 using ChannelMaterial_{{ name }} = lue::detail::ChannelMaterial<{{ Element }}, 2>;
 
 HPX_REGISTER_CHANNEL(ChannelMaterial_{{ name }});
+// clang-format on

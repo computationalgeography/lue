@@ -6,9 +6,10 @@
 namespace lue {
 
     LUE_INSTANTIATE_UNIQUE(
-            ESC(policy::unique::{{ Policies }}<{{ Element }}>),
-            {{ Element }},
-            {{ rank }}
-        );
+        // clang-format off
+        ESC(policy::unique::{{ Policies }}<{{ Element }}>),
+        {{ Element }},
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

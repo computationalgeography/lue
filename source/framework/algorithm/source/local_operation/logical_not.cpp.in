@@ -6,9 +6,11 @@
 namespace lue {
 
     LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
-            ESC(policy::logical_not::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
-            {{ rank }},
-            ESC(detail::LogicalNot<{{ ExpressionElement }}, {{ BooleanElement }}>)
-        );
+        // clang-format off
+        ESC(policy::logical_not::{{ Policies }}<{{ BooleanElement }}, {{ ExpressionElement }}>),
+        {{ rank }},
+        ESC(detail::LogicalNot<{{ ExpressionElement }}, {{ BooleanElement }}>)
+        // clang-format on
+    );
 
 }  // namespace lue

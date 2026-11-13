@@ -1,8 +1,8 @@
-#include "lue/framework/io/gdal.hpp"
 #include "lue/framework/algorithm/create_partitioned_array.hpp"
 #include "lue/framework/algorithm/policy.hpp"
 #include "lue/framework/core/annotate.hpp"
 #include "lue/framework/core/assert.hpp"
+#include "lue/framework/io/gdal.hpp"
 #include "lue/gdal.hpp"
 #include <hpx/async_colocated/get_colocation_id.hpp>
 #include <hpx/async_combinators/when_any.hpp>
@@ -78,16 +78,14 @@ namespace lue {
 
     namespace {
 
-        void verify_compatibility(
-            Shape<Count, 2> const& array_shape,
-            Hyperslab<2> const& hyperslab)
+        void verify_compatibility(Shape<Count, 2> const& array_shape, Hyperslab<2> const& hyperslab)
         {
-            if(hyperslab.is_strided())
+            if (hyperslab.is_strided())
             {
                 throw std::runtime_error("Handling strided hyperslab is not supported yet");
             }
 
-            if(!hyperslab.is_contained_by(array_shape))
+            if (!hyperslab.is_contained_by(array_shape))
             {
                 throw std::runtime_error("Hyperslab extents beyond array");
             }
@@ -220,11 +218,12 @@ namespace lue {
                         // Offset within the raster to read the partition from
                         Offset offset{hyperslab_offset};
 
-                        std::transform(offset.begin(), offset.end(), partition_offset.begin(), offset.begin(),
-                            [](auto offset1, auto const offset2)
-                            {
-                                return offset1 + offset2;
-                            });
+                        std::transform(
+                            offset.begin(),
+                            offset.end(),
+                            partition_offset.begin(),
+                            offset.begin(),
+                            [](auto offset1, auto const offset2) { return offset1 + offset2; });
 
                         _band_ptr->read_partition(offset, data);
                     }
@@ -301,7 +300,10 @@ namespace lue {
                  hyperslab_offset = hyperslab_offset,
                  partition_offset = partition_offsets[0],
                  partition_shape = partition_shapes[0]]() mutable
-                { return partition_reader.instantiate(indp, ondp, hyperslab_offset, partition_offset, partition_shape); });
+                {
+                    return partition_reader.instantiate(
+                        indp, ondp, hyperslab_offset, partition_offset, partition_shape);
+                });
 
             for (std::size_t idx = 1; idx < nr_partitions; ++idx)
             {
@@ -313,7 +315,10 @@ namespace lue {
                      hyperslab_offset = hyperslab_offset,
                      partition_offset = partition_offsets[idx],
                      partition_shape = partition_shapes[idx]](auto const& /* previous_partition */) mutable
-                    { return partition_reader.instantiate(indp, ondp, hyperslab_offset, partition_offset, partition_shape); }
+                    {
+                        return partition_reader.instantiate(
+                            indp, ondp, hyperslab_offset, partition_offset, partition_shape);
+                    }
 
                 );
             }
@@ -348,7 +353,8 @@ namespace lue {
                 static constexpr bool instantiate_per_locality{true};
 
 
-                ReadPartitionsPerLocality(std::string name, Hyperslab<rank>::Offsets const& hyperslab_offset={0, 0}):
+                ReadPartitionsPerLocality(
+                    std::string name, Hyperslab<rank>::Offsets const& hyperslab_offset = {0, 0}):
 
                     _name{std::move(name)},
                     _hyperslab_offset{hyperslab_offset}
@@ -449,7 +455,8 @@ namespace lue {
 
 
     template<typename Element>
-    auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape) -> PartitionedArray<Element, 2>
+    auto from_gdal(std::string const& name, Shape<Count, 2> const& partition_shape)
+        -> PartitionedArray<Element, 2>
     {
         if constexpr (!gdal::supports<Element>())
         {
@@ -508,7 +515,8 @@ namespace lue {
 
 
     template<typename Element>
-    auto from_gdal(std::string const& name, Hyperslab<2> const& hyperslab, Shape<Count, 2> const& partition_shape)
+    auto from_gdal(
+        std::string const& name, Hyperslab<2> const& hyperslab, Shape<Count, 2> const& partition_shape)
         -> PartitionedArray<Element, 2>
     {
         if constexpr (!gdal::supports<Element>())
@@ -530,7 +538,8 @@ namespace lue {
 
                 using Policies = policy::from_gdal::DefaultPolicies<Element>;
                 Policies policies{};
-                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
+                return create_partitioned_array(
+                    policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
             }
 
             // A no-data value is set in the band. Let's be nice and use it. Upon reading,
@@ -542,14 +551,16 @@ namespace lue {
                 // by default.
                 using Policies = policy::from_gdal::ValuePolicies<Element>;
                 Policies policies{};
-                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
+                return create_partitioned_array(
+                    policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
             }
 
             {
                 // No-data value is not NaN. Use a special no-data policy for this special value.
                 using Policies = policy::from_gdal::SpecialValuePolicy<Element>;
                 Policies policies{no_data_value};
-                return create_partitioned_array(policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
+                return create_partitioned_array(
+                    policies, hyperslab.counts(), partition_shape, Functor{name, hyperslab.offsets()});
             }
         }
     }
@@ -595,8 +606,7 @@ namespace lue {
                     "GTiff",
                     name,
                     gdal::Shape{
-                        static_cast<gdal::Count>(raster_shape[0]),
-                        static_cast<gdal::Count>(raster_shape[1])},
+                        static_cast<gdal::Count>(raster_shape[0]), static_cast<gdal::Count>(raster_shape[1])},
                     nr_bands,
                     data_type,
                     options)};
@@ -607,12 +617,12 @@ namespace lue {
                 if (clone_name.empty())
                 {
                     gdal::GeoTransform geo_transform{
-                        0.0,  // west
-                        1.0,  // cell width
-                        0.0,  // row rotation
+                        0.0,                                             // west
+                        1.0,                                             // cell width
+                        0.0,                                             // row rotation
                         static_cast<gdal::Coordinate>(raster_shape[0]),  // north
-                        0.0,  // col rotation
-                        -1.0,  // cell height (neg for north-up)
+                        0.0,                                             // col rotation
+                        -1.0,                                            // cell height (neg for north-up)
                     };
 
                     gdal::set_geo_transform(*dataset_ptr, geo_transform);
@@ -651,8 +661,8 @@ namespace lue {
             std::vector<Partition> partitions(array.partitions().begin(), array.partitions().end());
 
             hpx::future<void> result = hpx::async(
-                [name, partitions = std::move(partitions)]() mutable
-                -> auto {
+                [name, partitions = std::move(partitions)]() mutable -> auto
+                {
                     using Action = WritePartitionAction<Policies, Partition>;
 
                     std::size_t nr_partitions_to_write{partitions.size()};
@@ -692,6 +702,7 @@ namespace lue {
 }  // namespace lue
 
 
+// clang-format off
 {% for Element in Elements %}
     {% for rank in ranks %}
 
@@ -706,3 +717,4 @@ namespace lue {
 
     {% endfor %}
 {% endfor %}
+// clang-format on

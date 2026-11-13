@@ -6,7 +6,9 @@
 namespace lue {
 
     LUE_INSTANTIATE_MINIMUM(
+        // clang-format off
         ESC(policy::minimum::{{ Policies }}<{{ Element }}>),
-        {{ rank }});
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue

@@ -6,9 +6,11 @@
 namespace lue {
 
     LUE_INSTANTIATE_UNARY_LOCAL_OPERATION(
-            ESC(policy::floor::{{ Policies }}<{{ Element }}>),
-            {{ rank }},
-            ESC(detail::Floor<{{ Element }}>)
-        );
+        // clang-format off
+        ESC(policy::floor::{{ Policies }}<{{ Element }}>),
+        {{ rank }},
+        ESC(detail::Floor<{{ Element }}>)
+        // clang-format on
+    );
 
 }  // namespace lue

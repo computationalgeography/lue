@@ -6,12 +6,13 @@
 namespace lue {
 
     LUE_INSTANTIATE_UNIQUE_ID(
-            ESC(policy::unique_id::{{ Policies }}<
-                {{ IDElement }},
-                {{ ConditionElement }}>),
+        // clang-format off
+        ESC(policy::unique_id::{{ Policies }}<
             {{ IDElement }},
-            {{ ConditionElement }},
-            {{ rank }}
-        );
+            {{ ConditionElement }}>),
+        {{ IDElement }},
+        {{ ConditionElement }},
+        {{ rank }}  // clang-format on
+    );
 
 }  // namespace lue
