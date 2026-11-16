@@ -380,7 +380,7 @@ def generateNameS(name, sample):
 
     See also: generateNameT(), generateNameST()
     """
-    return os.path.join(f"{name}", name)
+    return os.path.join(f"{sample}", name)
 
 
 def generateNameST(name, sample, timestep):
