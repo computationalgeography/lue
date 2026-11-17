@@ -7,7 +7,11 @@
 
 namespace lue {
 
+#ifdef _MSC_VER
+    template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
+#else
     template class SerialRoutePartition<{{ RouteID }}, {{ rank }}>;
+#endif
 
     namespace server {
 

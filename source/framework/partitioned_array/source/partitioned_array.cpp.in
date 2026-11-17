@@ -5,7 +5,11 @@
 namespace lue {
 
     // clang-format off
+#ifdef _MSC_VER
+    template class LUE_FPA_EXPORT PartitionedArray<{{ Element }}, {{ rank }}>;
+#else
     template class PartitionedArray<{{ Element }}, {{ rank }}>;
+#endif
     // clang-format on
 
 }  // namespace lue
