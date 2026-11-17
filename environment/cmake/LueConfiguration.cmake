@@ -579,7 +579,7 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(pybind11 3.0 REQUIRED)
+    find_package(pybind11 3.0)
 
     if(NOT pybind11_FOUND)
         CPMAddPackage(
