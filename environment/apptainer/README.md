@@ -1,8 +1,8 @@
 # Apptainer
 
 This directory contains files related to building and using container images for building LUE. The images
-differ with respect to the compiler and compiler version installed. Images can be built for various version of
-Clang and GCC. Given an image, LUE can be built using `build_lue.py`.
+differ with respect to the compiler and compiler version installed. Images can be built for various versions
+of Clang and GCC. Given an image, LUE can be built using `build_lue.py`.
 
 Below you can find an example Bash script for building LUE for a compiler version. Afterwards, all targets can
 be found in the install directory. A TOML file is used to configure the `build_lue.py` run. An example is
@@ -50,15 +50,15 @@ set -eu
 set -eu
 
 # See https://hub.docker.com/u/silkeh for possible versions
-# compiler_name=clang
-# compiler_version=21
+compiler_name="clang"
+compiler_version=22
 
 # See https://hub.docker.com/_/gcc/ for possible versions
-compiler_name=gcc
-compiler_version=15
+# compiler_name="gcc"
+# compiler_version=15
 
 # Debug, RelWithDebInfo, Release
-build_type=Release
+build_type="Release"
 
 # Change this value according to the capabilities of the hardware
 nr_threads=20
@@ -99,3 +99,11 @@ apptainer exec \
     /mnt/build_lue.toml $build_type $nr_threads \
     $source_prefix ${build_prefix} ${install_prefix}
 ```
+
+## FAQ
+
+- "ERROR : Failed to create mount namespace: mount namespace requires privileges, check Apptainer installation"
+
+    ```
+    sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+    ```

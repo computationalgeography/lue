@@ -6,7 +6,7 @@ source = "source/hpx"
 build = "build/$build_type/hpx"
 install = "install/$build_type"
 
-[mdspan]
+[mdspan.repository]
 commit = "9ceface91483775a6c74d06ebf717bbb2768452f" # 0.6.0
 
 [mdspan.prefix]
@@ -14,7 +14,8 @@ source = "source/mdspan"
 build = "build/$build_type/mdspan"
 install = "install/$build_type"
 
-[lue]
+[lue.repository]
+url = "https://github.com/computationalgeography/lue.git"
 branch = "master"
 
 [lue.prefix]
