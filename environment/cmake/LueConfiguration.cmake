@@ -582,7 +582,11 @@ if(LUE_PYBIND11_REQUIRED)
     find_package(pybind11 3.0 REQUIRED)
 
     if(NOT pybind11_FOUND)
-        message(FATAL_ERROR "pybind11 not found")
+        CPMAddPackage(
+            NAME pybind11
+            GIT_REPOSITORY "https://github.com/pybind/pybind11.git"
+            SYSTEM TRUE
+        )
     endif()
 
     message(STATUS "Found pybind11:")
