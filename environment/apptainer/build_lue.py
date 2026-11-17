@@ -110,7 +110,7 @@ def install_hpx_sources(source_prefix_path: Path, version: str) -> None:
     else:
         # Download sources zip
         url = (
-            f"https://github.com/STEllAR-GROUP/hpx/archive/refs/tags/v{version}.tar.gz"
+            f"https://github.com/TheHPXProject/hpx/archive/refs/tags/v{version}.tar.gz"
         )
         response = requests.get(url)
 
@@ -272,7 +272,7 @@ def install_mdspan(
         install_prefix_path / configuration["mdspan"]["prefix"]["install"],
         build_type=build_type,
     )
-    commit = configuration["mdspan"]["commit"]
+    repo_commit = configuration["mdspan"]["repository"]["commit"]
 
     if build_prefix_path.exists():
         logger.info(
@@ -284,7 +284,7 @@ def install_mdspan(
                 f"Source directory {source_prefix_path} already exists and will be reused"
             )
         else:
-            install_mdspan_sources(source_prefix_path, commit)
+            install_mdspan_sources(source_prefix_path, repo_commit)
 
         configure_mdspan_build(source_prefix_path, build_prefix_path, build_type)
 
@@ -297,11 +297,9 @@ def install_mdspan(
         subprocess.run(shlex.split(command), check=True)
 
 
-def install_lue_sources(source_prefix_path: Path, branch: str) -> None:
+def install_lue_sources(source_prefix_path: Path, url: str, branch: str) -> None:
     source_prefix_parent_path = source_prefix_path.parent
     source_prefix_parent_path.mkdir(parents=True, exist_ok=True)
-
-    url = "https://github.com/computationalgeography/lue.git"
 
     clone_branch(url, branch, source_prefix_path)
 
@@ -377,7 +375,8 @@ def install_lue(
         install_prefix_path / configuration["lue"]["prefix"]["install"],
         build_type=build_type,
     )
-    branch = configuration["lue"]["branch"]
+    lue_repo_url = configuration["lue"]["repository"]["url"]
+    lue_repo_branch = configuration["lue"]["repository"]["branch"]
     hpx_install_prefix_path = normalize(
         install_prefix_path / configuration["hpx"]["prefix"]["install"],
         build_type=build_type,
@@ -397,7 +396,7 @@ def install_lue(
                 f"Source directory {source_prefix_path} already exists and will be reused"
             )
         else:
-            install_lue_sources(source_prefix_path, branch)
+            install_lue_sources(source_prefix_path, lue_repo_url, lue_repo_branch)
 
         configure_lue_build(
             source_prefix_path,

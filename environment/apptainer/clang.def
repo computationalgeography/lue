@@ -13,7 +13,7 @@ From: silkeh/clang:{{COMPILER_VERSION}}
         gcc
 
     # ImageMagick security policy 'PDF' blocking conversion
-    sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
+    # sed -i '/disable ghostscript format types/,+6d' /etc/ImageMagick-6/policy.xml
 
 %environment
     export VIRTUAL_ENV=/usr/local/venv
