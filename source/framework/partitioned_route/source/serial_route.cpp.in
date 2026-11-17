@@ -4,7 +4,11 @@
 namespace lue {
 
     // clang-format off
+#ifdef _MSC_VER
+    template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoute<{{ RouteID }}, {{ rank }}>;
+#else
     template class SerialRoute<{{ RouteID }}, {{ rank }}>;
+#endif
     // clang-format on
 
 }  // namespace lue

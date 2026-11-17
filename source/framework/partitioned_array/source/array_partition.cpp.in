@@ -8,7 +8,11 @@
 
 namespace lue {
 
+#ifdef _MSC_VER
+    template class LUE_FPA_EXPORT ArrayPartition<{{ Element }}, {{ rank }}>;
+#else
     template class ArrayPartition<{{ Element }}, {{ rank }}>;
+#endif
 
     namespace server {
 

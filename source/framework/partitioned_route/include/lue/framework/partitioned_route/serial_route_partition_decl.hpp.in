@@ -105,7 +105,11 @@ namespace lue {
     // clang-format off
     {% for Element in Elements %}
         {% for rank in ranks %}
+#ifdef _MSC_VER
+            extern template class SerialRoutePartition<{{ Element }}, {{ rank }}>;
+#else
             extern template class LUE_PARTITIONED_ROUTE_EXPORT SerialRoutePartition<{{ Element }}, {{ rank }}>;
+#endif
         {% endfor %}
     {% endfor %}
     // clang-format on
