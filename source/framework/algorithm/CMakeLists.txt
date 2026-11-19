@@ -2018,6 +2018,15 @@ set_target_properties(lue_framework_routing_operation
         DLL_NAME_WITH_SOVERSION TRUE
 )
 
+if(WIN32)
+    # NOTE: For some reason this is needed to prevent link errors. Can be traced to a call to async with an
+    # action involving partition component clients.
+    target_compile_definitions(lue_framework_routing_operation
+        PRIVATE
+            HPX_COMPONENT_EXPORTS
+    )
+endif()
+
 generate_export_header(lue_framework_routing_operation
     BASE_NAME LUE_ROUTING_OPERATION
     EXPORT_FILE_NAME include/lue/framework/algorithm/routing_operation_export.hpp
