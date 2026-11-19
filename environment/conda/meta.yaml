@@ -27,7 +27,7 @@ requirements:
   host:
     - cxxopts
     - docopt-ng  # templatize.py
-    - hpx
+    - hpx >=2.0.0
     - jinja2  # templatize.py
     - libboost-devel
     - libgdal
