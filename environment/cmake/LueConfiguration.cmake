@@ -579,15 +579,13 @@ endif()
 
 if(LUE_PYBIND11_REQUIRED)
     # Order matters: Pybind11 must be searched for after Python has been found.
-    find_package(pybind11 3.0)
-
-    if(NOT pybind11_FOUND)
-        CPMAddPackage(
-            NAME pybind11
-            GIT_REPOSITORY "https://github.com/pybind/pybind11.git"
-            SYSTEM TRUE
-        )
-    endif()
+    CPMFindPackage(
+        NAME pybind11
+        GITHUB_REPOSITORY "pybind/pybind11"
+        VERSION 3.0  # For CMake's find_package
+        GIT_TAG v3.1.0  # For CPM's git clone if not found
+        SYSTEM TRUE
+    )
 
     message(STATUS "Found pybind11:")
     message(STATUS "    pybind11_VERSION      : ${pybind11_VERSION}")
