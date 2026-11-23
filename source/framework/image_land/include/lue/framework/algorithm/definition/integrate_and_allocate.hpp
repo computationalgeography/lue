@@ -224,14 +224,12 @@ namespace lue::detail::integrate_and_allocate {
     namespace server {
 
         template<typename Policies, Rank rank>
-        class Walk:
-            public hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>
+        class Walk: public hpx::components::component_base<Walk<Policies, rank>>
         {
 
             private:
 
-                using ComponentServerBase =
-                    hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>;
+                using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
                 using ComponentClient = integrate_and_allocate::Walk<Policies, rank>;
 
                 using RouteID = policy::InputElementT<Policies, 0>;
