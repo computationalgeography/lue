@@ -16,15 +16,12 @@ namespace lue::server {
         @brief      Component server class for serial route partitions
     */
     template<typename RouteID, Rank rank>
-    class SerialRoutePartition:
-        public hpx::components::locking_hook<
-            hpx::components::component_base<SerialRoutePartition<RouteID, rank>>>
+    class SerialRoutePartition: public hpx::components::component_base<SerialRoutePartition<RouteID, rank>>
     {
 
         public:
 
-            using Base = hpx::components::locking_hook<
-                hpx::components::component_base<SerialRoutePartition<RouteID, rank>>>;
+            using Base = hpx::components::component_base<SerialRoutePartition<RouteID, rank>>;
 
             using RouteFragment = SerialRouteFragment<rank>;
 

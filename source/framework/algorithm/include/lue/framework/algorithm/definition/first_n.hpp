@@ -30,14 +30,12 @@ namespace lue {
         namespace server {
 
             template<typename Policies, Rank rank>
-            class Walk:
-                public hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>
+            class Walk: public hpx::components::component_base<Walk<Policies, rank>>
             {
 
                 private:
 
-                    using ComponentServerBase =
-                        hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>;
+                    using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
                     using ComponentClient = first_n::Walk<Policies, rank>;
                     using OutputElement = policy::OutputElementT<Policies, 0>;
                     using RouteID = policy::InputElementT<Policies, 0>;

@@ -61,14 +61,12 @@ namespace lue::detail::integrate {
     namespace server {
 
         template<typename Policies, Rank rank>
-        class Walk:
-            public hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>
+        class Walk: public hpx::components::component_base<Walk<Policies, rank>>
         {
 
             private:
 
-                using ComponentServerBase =
-                    hpx::components::locking_hook<hpx::components::component_base<Walk<Policies, rank>>>;
+                using ComponentServerBase = hpx::components::component_base<Walk<Policies, rank>>;
                 using ComponentClient = integrate::Walk<Policies, rank>;
 
                 using OutputElement = policy::OutputElementT<Policies, 0>;

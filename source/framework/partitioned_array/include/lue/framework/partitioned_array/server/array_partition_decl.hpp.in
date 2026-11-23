@@ -12,14 +12,12 @@ namespace lue::server {
         @brief      Component server class for partitioned array partitions
     */
     template<typename Element, Rank rank>
-    class ArrayPartition:
-        public hpx::components::locking_hook<hpx::components::component_base<ArrayPartition<Element, rank>>>
+    class ArrayPartition: public hpx::components::component_base<ArrayPartition<Element, rank>>
     {
 
         private:
 
-            using Base =
-                hpx::components::locking_hook<hpx::components::component_base<ArrayPartition<Element, rank>>>;
+            using Base = hpx::components::component_base<ArrayPartition<Element, rank>>;
 
         public:
 
