@@ -1,0 +1,62 @@
+easyblock = "CMakeMake"
+
+name = "LUE"
+
+version = "0.3.11"
+
+homepage = "https://lue.computationalgeography.org"
+
+description = """LUE is a collection of software targeted at the
+development and deployment of spatio-temporal environmental models."""
+
+toolchain = {"name": "foss", "version": "2025a"}
+
+source_urls = ['https://lue.computationalgeography.org/download/']
+sources = ['lue-%(version)s.tar.bz2']
+checksums = ['6cc8b255543b979c877d265435ed1134d74dd124038c471c3c742c4955054ab1']
+
+builddependencies = [
+    ("CMake", "3.31.3"),
+    ("Boost", "1.88.0"),
+    ("git", "2.49.0"),
+]
+
+dependencies = [
+    ("Python", "3.13.1"),
+    ("GDAL", "3.11.1"),
+    ("HPX", "1.11.0"),
+    ("matplotlib", "3.10.3"),
+]
+
+configopts = " ".join([
+    "-D CMAKE_BUILD_TYPE=Release",
+    "-D LUE_DATA_MODEL_WITH_PYTHON_API=TRUE",
+    "-D LUE_DATA_MODEL_WITH_UTILITIES=TRUE",
+    "-D LUE_FRAMEWORK_WITH_PYTHON_API=TRUE",
+    "-D LUE_BUILD_QUALITY_ASSURANCE=TRUE",
+    "-D LUE_QUALITY_ASSURANCE_WITH_PYTHON_API=TRUE",
+    "-D LUE_BUILD_VIEW=OFF",
+    "-D LUE_FRAMEWORK_WITH_PARALLEL_IO=FALSE",
+    "-D Python_EXECUTABLE=$EBROOTPYTHON/bin/python",
+    "-D LUE_INSTALL_PYTHON_PACKAGE_DIR=%(installdir)s/python/lue",
+    "-D PYBIND11_FINDPYTHON=ON",
+])
+
+build_cmd = "cmake --build . --config Release --target all"
+
+install_cmd = "cmake --install . --component lue_development && cmake --install . --component lue_runtime"
+
+sanity_check_paths = {
+    "files": [f"bin/{x}" for x in ["lue_translate", "lue_validate", "lue_calculate.py", "lue_scalability.py"]],
+    "dirs": ["python/lue", "include/lue"],
+}
+
+modextrapaths = {
+    "PYTHONPATH": ["python"]
+}
+
+modluafooter = """
+prepend_path("LD_PRELOAD", pathJoin(os.getenv("EBROOTGPERFTOOLS"), "lib", "libtcmalloc_minimal.so.4"))
+"""
+
+moduleclass = "geo"
